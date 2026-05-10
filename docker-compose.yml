@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  zenith:
+    build: .
+    container_name: zenith-cms
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/zenith
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - NODE_ENV=production
+    volumes:
+      - zenith_media:/zenith/media
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:7
+    container_name: zenith-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+  zenith_media:

@@ -1,0 +1,19 @@
+# Zenith CMS Cursor Rules
+
+## Architecture
+- Zenith is a monorepo managed with pnpm workspaces.
+- Core logic is in `packages/core`.
+- Frontend Admin is in `packages/admin`.
+- Configuration is declarative via `cms.config.ts` in the root.
+
+## Coding Standards
+- Use TypeScript for everything.
+- Prefer Zod for validation.
+- All database models must inherit from `z_` internal collections prefix if system-related.
+- Use `logger.info/error` instead of `console.log`.
+
+## Directory Structure
+- `packages/core/src/api`: API route factories.
+- `packages/core/src/services`: Business logic services.
+- `packages/core/src/database`: Mongoose models and connections.
+- `packages/admin/src/pages`: Admin UI views.

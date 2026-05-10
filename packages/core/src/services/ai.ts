@@ -1,0 +1,245 @@
+import Anthropic from '@anthropic-ai/sdk';
+import { logger } from './logger';
+
+export interface ContentQualityResult {
+  score: number;          // 0-100
+  grade: 'A' | 'B' | 'C' | 'D' | 'F';
+  readabilityScore: number;
+  wordCount: number;
+  sentenceCount: number;
+  avgWordsPerSentence: number;
+  issues: string[];
+  suggestions: string[];
+}
+
+export interface SeoAnalysis {
+  score: number;          // 0-100
+  titleLength: number;
+  descriptionLength: number;
+  issues: string[];
+  suggestions: string[];
+  passed: string[];
+}
+
+/**
+ * Zenith AI Service
+ * ─────────────────────────────────────────────────
+ * Features content managers love:
+ * 1. AI content generation (Multi-provider: OpenRouter, Grok, OpenAI, Anthropic)
+ * 2. Alt-text generation for images
+ * 3. SEO score analysis — real-time feedback
+ * 4. Content quality scoring — readability, word count, structure
+ * 5. Auto meta description generation
+ */
+export class AIService {
+
+  private static async callAI(prompt: string, maxTokens: number = 1024): Promise<string> {
+    // 1. Try OpenRouter (Most flexible)
+    if (process.env.OPENROUTER_API_KEY) {
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': process.env.ADMIN_URL || 'http://localhost:3000',
+          'X-Title': 'Zenith CMS',
+        },
+        body: JSON.stringify({
+          model: 'anthropic/claude-3.5-sonnet', // Default OpenRouter model
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: maxTokens,
+        }),
+      });
+      const data = await res.json();
+      return data.choices?.[0]?.message?.content || '';
+    }
+
+    // 2. Try xAI (Grok)
+    if (process.env.XAI_API_KEY) {
+      const res = await fetch('https://api.x.ai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.XAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'grok-beta',
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: maxTokens,
+        }),
+      });
+      const data = await res.json();
+      return data.choices?.[0]?.message?.content || '';
+    }
+
+    // 3. Try OpenAI
+    if (process.env.OPENAI_API_KEY) {
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: maxTokens,
+        }),
+      });
+      const data = await res.json();
+      return data.choices?.[0]?.message?.content || '';
+    }
+
+    // 4. Try Anthropic (Legacy behavior)
+    if (process.env.ANTHROPIC_API_KEY) {
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+      const msg = await anthropic.messages.create({
+        model: 'claude-3-5-haiku-20241022',
+        max_tokens: maxTokens,
+        messages: [{ role: 'user', content: prompt }],
+      });
+      return (msg.content[0] as any).text || '';
+    }
+
+    throw new Error('No AI provider configured. Set OPENROUTER_API_KEY, XAI_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY in .env');
+  }
+
+  // ── Content Generation ────────────────────────────────────────────────────
+
+  static async generateContent(prompt: string): Promise<string> {
+    return this.callAI(prompt, 1024);
+  }
+
+  static async improveText(text: string, instruction: string): Promise<string> {
+    const prompt = `${instruction}\n\nText to improve:\n\n${text}\n\nReturn only the improved text, no commentary.`;
+    const res = await this.callAI(prompt, 2048);
+    return res || text;
+  }
+
+  static async generateMetaDescription(title: string, content: string): Promise<string> {
+    const truncated = content.replace(/<[^>]+>/g, '').substring(0, 500);
+    const prompt = `Write a compelling SEO meta description (max 160 characters) for this content.\nTitle: ${title}\nContent excerpt: ${truncated}\nReturn only the description, nothing else.`;
+    const res = await this.callAI(prompt, 200);
+    return res.substring(0, 160);
+  }
+
+  static async generateAltText(imageUrl: string, context?: string): Promise<string> {
+    const filename = imageUrl.split('/').pop()?.split('?')[0] || 'image';
+    const cleanName = filename.replace(/[-_]/g, ' ').replace(/\.[^.]+$/, '');
+
+    try {
+      const prompt = `Write a concise alt text (max 10 words) for an image named "${cleanName}" used in the context of: "${context || 'general content'}". Return only the alt text.`;
+      const res = await this.callAI(prompt, 100);
+      return res || cleanName;
+    } catch (err) {
+      logger.warn({ err }, 'Alt text generation failed, using filename');
+      return cleanName;
+    }
+  }
+
+  // ── Content Quality Scoring ───────────────────────────────────────────────
+  // No AI needed — pure algorithmic. Instant feedback for editors.
+
+  static analyzeContentQuality(text: string): ContentQualityResult {
+    const plain = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    const words = plain.split(/\s+/).filter(Boolean);
+    const sentences = plain.split(/[.!?]+/).filter(s => s.trim().length > 0);
+
+    const wordCount = words.length;
+    const sentenceCount = sentences.length;
+    const avgWordsPerSentence = sentenceCount > 0 ? wordCount / sentenceCount : 0;
+
+    // Flesch Reading Ease (simplified — without syllable count)
+    const avgSentenceLength = avgWordsPerSentence;
+    const readabilityScore = Math.max(0, Math.min(100, 206.835 - 1.015 * avgSentenceLength));
+
+    const issues: string[] = [];
+    const suggestions: string[] = [];
+
+    if (wordCount < 100) issues.push('Content is very short (under 100 words)');
+    if (wordCount < 300) suggestions.push('Consider expanding content to 300+ words for better SEO');
+    if (avgWordsPerSentence > 25) issues.push('Sentences are too long — aim for under 20 words per sentence');
+    if (avgWordsPerSentence > 20) suggestions.push('Break up long sentences for better readability');
+    if (readabilityScore < 40) issues.push('Content is difficult to read');
+    if (readabilityScore < 60) suggestions.push('Simplify language for a broader audience');
+
+    // Score out of 100
+    let score = 50;
+    if (wordCount >= 300) score += 15;
+    if (wordCount >= 600) score += 10;
+    if (avgWordsPerSentence <= 20) score += 15;
+    if (readabilityScore >= 60) score += 10;
+    if (issues.length === 0) score += 10;
+    score = Math.min(100, score);
+
+    const grade = score >= 90 ? 'A' : score >= 75 ? 'B' : score >= 60 ? 'C' : score >= 40 ? 'D' : 'F';
+
+    return { score, grade, readabilityScore: Math.round(readabilityScore), wordCount, sentenceCount, avgWordsPerSentence: Math.round(avgWordsPerSentence * 10) / 10, issues, suggestions };
+  }
+
+  // ── SEO Analysis ──────────────────────────────────────────────────────────
+
+  static analyzeSeo(data: { title?: string; description?: string; content?: string; slug?: string }): SeoAnalysis {
+    const issues: string[] = [];
+    const suggestions: string[] = [];
+    const passed: string[] = [];
+    let score = 0;
+
+    const titleLength = (data.title || '').length;
+    const descriptionLength = (data.description || '').length;
+    const wordCount = (data.content || '').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+
+    // Title checks
+    if (!data.title) {
+      issues.push('Missing page title');
+    } else if (titleLength < 30) {
+      suggestions.push(`Title is short (${titleLength} chars) — aim for 50-60 characters`);
+      score += 5;
+    } else if (titleLength > 60) {
+      issues.push(`Title too long (${titleLength} chars) — Google truncates after 60`);
+      score += 5;
+    } else {
+      passed.push(`Title length is good (${titleLength} chars)`);
+      score += 15;
+    }
+
+    // Meta description checks
+    if (!data.description) {
+      issues.push('Missing meta description — add one to improve click-through rates');
+    } else if (descriptionLength < 70) {
+      suggestions.push(`Meta description too short (${descriptionLength} chars) — aim for 120-160`);
+      score += 5;
+    } else if (descriptionLength > 160) {
+      issues.push(`Meta description too long (${descriptionLength} chars) — Google truncates after 160`);
+      score += 5;
+    } else {
+      passed.push(`Meta description length is good (${descriptionLength} chars)`);
+      score += 20;
+    }
+
+    // Slug checks
+    if (!data.slug) {
+      suggestions.push('Add a URL slug for better SEO');
+    } else if (data.slug.includes(' ') || /[A-Z]/.test(data.slug)) {
+      issues.push('Slug should be lowercase with hyphens, no spaces');
+    } else {
+      passed.push('URL slug is clean');
+      score += 10;
+    }
+
+    // Content length
+    if (wordCount < 100) {
+      issues.push(`Content very short (${wordCount} words) — thin content can hurt SEO`);
+    } else if (wordCount >= 300) {
+      passed.push(`Good content length (${wordCount} words)`);
+      score += 20;
+    } else {
+      suggestions.push(`Expand content to 300+ words (currently ${wordCount})`);
+      score += 10;
+    }
+
+    if (score >= 55) passed.push('Overall SEO score is good');
+
+    return { score: Math.min(100, score), titleLength, descriptionLength, issues, suggestions, passed };
+  }
+}

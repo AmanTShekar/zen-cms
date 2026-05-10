@@ -1,0 +1,57 @@
+import jwt from 'jsonwebtoken';
+import { CollectionConfig } from '@zenith/types';
+
+const PREVIEW_SECRET = process.env.PREVIEW_SECRET || 'zenith_preview_secret_v1';
+
+export class PreviewService {
+  /**
+   * Generates a signed preview token for a document.
+   * Short-lived (e.g. 1 hour).
+   */
+  static generatePreviewToken(collection: string, id: string): string {
+    return jwt.sign(
+      { collection, id, mode: 'preview' },
+      PREVIEW_SECRET,
+      { expiresIn: '1h' }
+    );
+  }
+
+  /** Alias for backward-compat with system.ts caller */
+  static generateToken(collection: string, id: string): string {
+    return this.generatePreviewToken(collection, id);
+  }
+
+
+  /**
+   * Verifies a preview token and returns the payload.
+   */
+  static verifyPreviewToken(token: string): { collection: string; id: string } | null {
+    try {
+      const decoded = jwt.verify(token, PREVIEW_SECRET) as any;
+      if (decoded.mode !== 'preview') return null;
+      return { collection: decoded.collection, id: decoded.id };
+    } catch (err) {
+      return null;
+    }
+  }
+
+  /**
+   * Formats the preview URL based on collection config.
+   */
+  static getPreviewUrl(config: CollectionConfig, doc: any): string | null {
+    if (!config.admin?.previewUrl) return null;
+
+    const baseUrl = typeof config.admin.previewUrl === 'function' 
+      ? config.admin.previewUrl(doc) 
+      : config.admin.previewUrl;
+
+    if (!baseUrl) return null;
+
+    const token = this.generatePreviewToken(config.slug, doc._id.toString());
+    const url = new URL(baseUrl);
+    url.searchParams.set('preview', 'true');
+    url.searchParams.set('token', token);
+    
+    return url.toString();
+  }
+}
