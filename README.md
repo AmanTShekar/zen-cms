@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://github.com/AmanTShekar/Zenith-CMS">
-    <img src="Logo/zenithclogo.png" alt="Zenith CMS Logo" width="300" />
+    <img src="Logo/zenithclogo copy.png" alt="Zenith CMS Logo" width="300" />
   </a>
   <br />
   <br />
