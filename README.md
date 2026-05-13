@@ -1,81 +1,88 @@
-# 🌌 Zenith CMS
-
-**Zenith** is a high-performance, developer-first headless CMS built for the modern web. It provides a declarative, TypeScript-driven engine that auto-generates REST and GraphQL APIs from your schema, paired with a stunning glassmorphic admin dashboard.
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Native-47A248.svg)](https://www.mongodb.com/)
+<div align="center">
+  <img src="packages/admin/public/logo/zenithlogo.svg" alt="Zenith CMS Logo" width="200" />
+  <h1>ZENITH CMS</h1>
+  <p><strong>The Industrial Operational Platform for High-Fidelity Digital Ecosystems.</strong></p>
+  
+  [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](https://opensource.org/licenses/MIT)
+  [![Version](https://img.shields.io/badge/version-0.2.0--beta-blueviolet.svg)]()
+  [![Hardened](https://img.shields.io/badge/Security-Hardened-success.svg)]()
+</div>
 
 ---
 
-## ✨ Key Features
+## 🌌 What is Zenith?
 
-- 🛠 **Declarative Schema**: Define your content structure in a single `cms.config.ts` file.
-- ⚡ **Auto-API**: Instant REST and GraphQL endpoints for every collection and singleton.
-- 💎 **Premium Admin UI**: A beautiful, responsive dashboard built with React 19, Tailwind, and Framer Motion.
-- 🧱 **Modular Blocks**: Drag-and-drop block builder for creating dynamic page layouts.
-- 🔐 **Security First**: Built-in RBAC, JWT authentication, and automated audit logging.
-- 🖼 **Media Engine**: Advanced media library with AI-assisted alt-text generation and image optimization.
-- 🔄 **Live Sync**: Real-time content synchronization between CMS and storefronts via BroadcastChannel.
+Zenith is not a framework. It is an **Industrial Operational Platform**. 
+
+Built for organizations that demand precision, performance, and pro-code control, Zenith bridges the gap between complex backend architecture and high-velocity visual editing. It is the **Central Processing Nucleus** for your digital identity.
+
+### Why choose Zenith?
+*   **Industrial Core**: A hardened TypeScript kernel designed for zero-latency operations.
+*   **Visual-First Schema**: Define complex data structures visually while maintaining strict Git-based versioning.
+*   **Neural Bridge (Webhooks)**: Event-driven architecture with built-in HMAC signing and exponential backoff.
+*   **Spatial Editor**: A revolutionary 2D canvas for orchestrating content layouts with pixel-perfect precision.
+*   **AI-Native**: Built-in AI writing assistants and automated content generation.
+
+---
+
+## 🛠️ The Tech Stack
+
+Zenith is engineered with a **"Performance-First"** philosophy:
+
+*   **Runtime Engine**: Node.js + Express (Hardened Middleware)
+*   **Validation Layer**: Zod (Optimized for AOT Compilation)
+*   **Database Agnostic**: Native support for **MongoDB** (Elastic) and **PostgreSQL** (Relational via Drizzle).
+*   **Frontend**: React 19 + Framer Motion (Industrial Aesthetic)
+*   **State Management**: Zustand (Atomic State Slices)
 
 ---
 
 ## 🚀 Quick Start
 
-### 1. Installation
-```bash
-pnpm install
-```
+### 1. Prerequisites
+*   **Node.js**: v20.0.0 or higher
+*   **Database**: MongoDB (v6.0+) or PostgreSQL (v15.0+)
+*   **NPM**: v10.0.0+
 
-### 2. Configuration
-Create a `.env` file based on `.env.example`:
+### 2. Installation
 ```bash
+# Clone the repository
+git clone https://github.com/AmanTShekar/Zenith-CMS.git
+cd Zenith-CMS
+
+# Install dependencies
+npm install
+
+# Initialize your environment
 cp .env.example .env
 ```
 
-### 3. Launch
+### 3. Launch the Nucleus
 ```bash
-# Start the entire ecosystem (API + Admin + Demo)
+# Start the development environment (Core + Admin)
 npm run dev
 ```
 
-| Service | Port | URL |
-| :--- | :--- | :--- |
-| **Zenith API** | 3000 | `http://localhost:3000` |
-| **Admin Panel** | 5175 | `http://localhost:5175` |
-| **Public Demo** | 5173 | `http://localhost:5173` |
+---
+
+## 🗺️ Documentation
+
+Explore the Zenith ecosystem in depth:
+
+*   [**Architecture**](./docs/ARCHITECTURE.md): Understand the Central Processing Nucleus and the Neural Bridge.
+*   [**Installation Guide**](./docs/INSTALLATION.md): Detailed setup for local and production environments.
+*   [**Security & Hardening**](./docs/SECURITY.md): Our "Air-Tight" validation and audit logging protocols.
+*   [**API Reference**](./docs/API.md): Hardened REST and GraphQL endpoint documentation.
 
 ---
 
-## 🛠 Technical Architecture
+## 🛡️ Security & Integrity
 
-Zenith is architected as a **pnpm monorepo** for maximum modularity:
-
-- **`packages/core`**: The heartbeat. Handles Mongoose models, API route generation, and core services.
-- **`packages/admin`**: The command center. A React-based SPA for content management.
-- **`packages/sdk`**: Lightweight TypeScript client for consuming Zenith APIs.
-- **`packages/demo`**: A reference storefront implementation showing off Zenith's capabilities.
+Zenith is **Hardened by Design**. Every request is validated by the **Zod AOT** engine, ensuring that malformed data never touches your database. Our **Audit Log Engine** tracks every mutation with surgical precision, providing enterprise-grade transparency.
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions! Please follow these steps:
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature/amazing-feature`).
-3. Commit your changes (`git commit -m 'Add amazing feature'`).
-4. Push to the branch (`git push origin feature/amazing-feature`).
-5. Open a Pull Request.
-
----
-
-## 📄 License
-
-Distributed under the **MIT License**. See `LICENSE` for more information.
-
----
-
-<p align="center">
-  Built with ❤️ by the Zenith Team
-</p>
+<div align="center">
+  <p><strong>Powered by the Zenith Operational Team.</strong></p>
+  <p>© 2026 Zenith Company. All rights reserved.</p>
+</div>
