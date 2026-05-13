@@ -1,284 +1,337 @@
-import React, { useEffect, useState } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { useEditor, EditorContent, Extension } from '@tiptap/react';
+// BubbleMenu and FloatingMenu removed as they were unused
 import { StarterKit } from '@tiptap/starter-kit';
 import { Underline } from '@tiptap/extension-underline';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
 import { FontFamily } from '@tiptap/extension-font-family';
-import { Link } from '@tiptap/extension-link';
-import { Image } from '@tiptap/extension-image';
+import { Link as TiptapLink } from '@tiptap/extension-link';
 import {
   Bold,
   Italic,
   Underline as UnderlineIcon,
-  Strikethrough,
   List,
-  ListOrdered,
-  Quote,
-  Heading1,
-  Heading2,
-  Heading3,
   Link as LinkIcon,
   ImageIcon,
   X,
-  Search,
+  Loader2,
+  ChevronDown,
+  Palette,
   Check,
-  Plus
+  Sparkles,
+  LetterText,
+  Eraser
 } from 'lucide-react';
-import api from '../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '../lib/utils';
+import api from '../lib/api';
+import { useTheme } from '../context/ThemeContext';
+
+// Custom_FontSize_Extension
+const FontSize = Extension.create({
+  name: 'fontSize',
+  addOptions() {
+    return {
+      types: ['textStyle'],
+    }
+  },
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          fontSize: {
+            default: null,
+            parseHTML: element => element.style.fontSize?.replace(/['"]+/g, ''),
+            renderHTML: attributes => {
+              if (!attributes.fontSize) return {}
+              return { style: `font-size: ${attributes.fontSize}` }
+            },
+          },
+        },
+      },
+    ]
+  },
+  addCommands() {
+    return {
+      setFontSize: (fontSize: string) => ({ chain }: any) => chain().setMark('textStyle', { fontSize }).run(),
+      unsetFontSize: () => ({ chain }: any) => chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run(),
+    } as any;
+  },
+});
+
+export type EditorMode = 'full' | 'inline' | 'heading' | 'micro';
 
 interface RichTextEditorProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  mode?: EditorMode;
+  className?: string;
 }
 
-const ToolBtn = ({
-  onClick,
-  isActive,
-  title,
-  children,
-}: {
-  onClick: () => void;
-  isActive?: boolean;
-  title: string;
-  children: React.ReactNode;
-}) => (
-  <button
-    type="button"
-    onClick={onClick}
-    title={title}
-    className={`p-1.5 rounded transition-colors ${
-      isActive
-        ? 'bg-accent text-white'
-        : 'text-text-secondary hover:bg-app-subtle hover:text-text-primary'
-    }`}
-  >
-    {children}
-  </button>
-);
-
-const Divider = () => <div className="w-px h-5 bg-border mx-0.5 shrink-0" />;
-
-const MenuBar = ({ editor, onOpenMedia }: { editor: any, onOpenMedia: () => void }) => {
-  if (!editor) return null;
-
-  const addLink = () => {
-    const existing = editor.getAttributes('link').href;
-    const url = window.prompt('Enter URL:', existing || 'https://');
-    if (url === null) return;
-    if (url === '') {
-      editor.chain().focus().unsetLink().run();
-    } else {
-      editor.chain().focus().setLink({ href: url, target: '_blank' }).run();
-    }
-  };
-
+const ToolBtn = ({ onClick, isActive, title, children, className }: any) => {
+  const { theme } = useTheme();
   return (
-    <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-border bg-app-subtle">
-      <ToolBtn onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor.isActive('bold')} title="Bold (Ctrl+B)">
-        <Bold size={15} />
-      </ToolBtn>
-      <ToolBtn onClick={() => editor.chain().focus().toggleItalic().run()} isActive={editor.isActive('italic')} title="Italic (Ctrl+I)">
-        <Italic size={15} />
-      </ToolBtn>
-      <ToolBtn onClick={() => editor.chain().focus().toggleUnderline().run()} isActive={editor.isActive('underline')} title="Underline (Ctrl+U)">
-        <UnderlineIcon size={15} />
-      </ToolBtn>
-      <ToolBtn onClick={() => editor.chain().focus().toggleStrike().run()} isActive={editor.isActive('strike')} title="Strikethrough">
-        <Strikethrough size={15} />
-      </ToolBtn>
+    <button
+      type="button"
+      onClick={onClick}
+      title={title}
+      className={cn(
+        "w-9 h-9 rounded-none transition-all flex items-center justify-center relative active:scale-90 group/btn",
+        isActive 
+          ? (theme === 'dark' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-indigo-50 text-indigo-600') 
+          : (theme === 'dark' ? 'text-gray-500 hover:bg-white/5 hover:text-white' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'),
+        className
+      )}
+    >
+      {React.cloneElement(children as React.ReactElement<any>, { size: 18, className: "group-hover/btn:scale-110 transition-transform" })}
+    </button>
+  );
+};
 
-      <Divider />
-
-      <ToolBtn onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} isActive={editor.isActive('heading', { level: 1 })} title="Heading 1">
-        <Heading1 size={15} />
-      </ToolBtn>
-      <ToolBtn onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} isActive={editor.isActive('heading', { level: 2 })} title="Heading 2">
-        <Heading2 size={15} />
-      </ToolBtn>
-      <ToolBtn onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} isActive={editor.isActive('heading', { level: 3 })} title="Heading 3">
-        <Heading3 size={15} />
-      </ToolBtn>
-
-      <Divider />
-
-      <ToolBtn onClick={() => editor.chain().focus().toggleBulletList().run()} isActive={editor.isActive('bulletList')} title="Bullet List">
-        <List size={15} />
-      </ToolBtn>
-      <ToolBtn onClick={() => editor.chain().focus().toggleOrderedList().run()} isActive={editor.isActive('orderedList')} title="Ordered List">
-        <ListOrdered size={15} />
-      </ToolBtn>
-      <ToolBtn onClick={() => editor.chain().focus().toggleBlockquote().run()} isActive={editor.isActive('blockquote')} title="Blockquote">
-        <Quote size={15} />
-      </ToolBtn>
-
-      <Divider />
-
-      <ToolBtn onClick={addLink} isActive={editor.isActive('link')} title="Insert / Edit Link">
-        <LinkIcon size={15} />
-      </ToolBtn>
-      <ToolBtn onClick={onOpenMedia} title="Insert Image from Library">
-        <ImageIcon size={15} />
-      </ToolBtn>
-
-      <Divider />
-
-      <select
-        onChange={(e) => {
-          if (e.target.value) {
-            editor.chain().focus().setFontFamily(e.target.value).run();
-          } else {
-            editor.chain().focus().unsetFontFamily().run();
-          }
-        }}
-        className="text-xs py-1 px-2 border border-border rounded bg-app-surface focus:outline-none focus:border-accent text-text-primary h-7"
-        title="Font Family"
-      >
-        <option value="">Default</option>
-        <option value="Inter, sans-serif">Inter</option>
-        <option value="Georgia, serif">Serif</option>
-        <option value="'Courier New', monospace">Monospace</option>
-      </select>
-
-      <label title="Text Color" className="cursor-pointer">
-        <input
-          type="color"
-          onInput={(e) => editor.chain().focus().setColor((e.target as HTMLInputElement).value).run()}
-          defaultValue="#0A0A0A"
-          className="w-7 h-7 p-0.5 border border-border rounded cursor-pointer bg-app-surface"
-        />
-      </label>
+const ColorPicker = ({ onSelect, activeColor }: { onSelect: (c: string) => void, activeColor?: string }) => {
+  const { theme } = useTheme();
+  const colors = [
+    '#000000', '#374151', '#6b7280', '#9ca3af', '#d1d5db', '#ffffff',
+    '#ef4444', '#f97316', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6',
+    '#6366f1', '#8b5cf6', '#d946ef', '#f43f5e', '#111827', '#4338ca'
+  ];
+  return (
+    <div className={cn(
+      "p-3 grid grid-cols-6 gap-2 border shadow-[0_30px_60px_rgba(0,0,0,0.5)] rounded-none w-52 backdrop-blur-2xl z-[1000]",
+      theme === 'dark' ? "bg-black/95 border-white/10" : "bg-white border-gray-200"
+    )}>
+      {colors.map(c => (
+        <button 
+          key={c} 
+          onClick={() => onSelect(c)} 
+          className="w-6 h-6 rounded-none border border-gray-100/10 flex items-center justify-center group shadow-sm transition-all hover:scale-110 active:scale-90"
+          style={{ backgroundColor: c }}
+        >
+          {activeColor?.toLowerCase() === c.toLowerCase() && <Check size={10} className={cn(c === '#ffffff' ? 'text-black' : 'text-white')} />}
+        </button>
+      ))}
     </div>
   );
 };
 
-export const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeholder }) => {
+const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, mode = 'full', className }) => {
+  const { theme } = useTheme();
   const [isMediaOpen, setIsMediaOpen] = useState(false);
   const [files, setFiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState('');
+  const [showColor, setShowColor] = useState(false);
+  const [showFont, setShowFont] = useState(false);
+  const [showFontSize, setShowFontSize] = useState(false);
+  const [showHeadings, setShowHeadings] = useState(false);
+  const [selectedFont, setSelectedFont] = useState('Inter');
+
+  const fonts = [
+    { name: 'Inter', family: 'Inter, sans-serif' },
+    { name: 'Roboto', family: 'Roboto, sans-serif' },
+    { name: 'Playfair Display', family: 'Playfair Display, serif' },
+    { name: 'Merriweather', family: 'Merriweather, serif' },
+    { name: 'JetBrains Mono', family: 'JetBrains Mono, monospace' },
+    { name: 'Outfit', family: 'Outfit, sans-serif' },
+    { name: 'Space Grotesk', family: 'Space Grotesk, sans-serif' }
+  ];
+
+  const fontSizes = ['12px', '14px', '16px', '18px', '20px', '24px', '32px', '40px', '48px', '64px', '72px', '80px'];
+
+  const extensions = useMemo(() => [
+    StarterKit.configure({ 
+      heading: { levels: [1, 2, 3] },
+      dropcursor: {},
+    }),
+    Underline,
+    TextStyle,
+    Color,
+    FontFamily,
+    FontSize,
+    TiptapLink.configure({ 
+      openOnClick: false, 
+      HTMLAttributes: { 
+        class: 'text-indigo-500 underline cursor-pointer transition-all hover:text-indigo-400' 
+      } 
+    }),
+  ], []);
 
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure(),
-      TextStyle,
-      Color,
-      FontFamily,
-      Image.configure({ inline: false, allowBase64: false }),
-    ],
+    extensions,
     content: value || '',
     editorProps: {
       attributes: {
-        class: 'prose prose-sm max-w-none focus:outline-none min-h-[300px] p-6 text-text-primary bg-white selection:bg-accent/20',
-        'data-placeholder': placeholder || 'Start writing…',
+        class: cn(
+          'prose prose-indigo max-w-none focus:outline-none transition-all selection:bg-indigo-500/30 leading-relaxed',
+          theme === 'dark' ? "prose-invert text-white" : "text-black",
+          mode === 'heading' ? "text-5xl md:text-7xl font-black italic tracking-tighter p-0 min-h-0 uppercase leading-[0.85]" : 
+          mode === 'inline' ? "text-2xl font-bold p-0 min-h-0 italic tracking-tight" :
+          mode === 'micro' ? "text-[12px] font-black uppercase tracking-[0.2em] p-2 min-h-0 italic opacity-80" :
+          "min-h-[300px] px-4 py-6 text-[16px]"
+        ),
+        style: `font-family: ${selectedFont}, sans-serif;`
       },
+      handleKeyDown: (_, event) => {
+        if ((mode === 'heading' || mode === 'inline' || mode === 'micro') && event.key === 'Enter') return true;
+        return false;
+      }
     },
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
-    },
+    onUpdate: ({ editor }) => onChange(editor.getHTML()),
   });
 
-  useEffect(() => {
-    if (editor && value !== undefined && value !== editor.getHTML()) {
-      editor.commands.setContent(value || '');
-    }
-  }, [value]);
-
-  const fetchFiles = async () => {
-    setLoading(true);
-    try {
-      const res = await api.get('/media');
-      setFiles(res.data.data);
-    } catch (err) {
-      console.error('Failed to fetch media');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (isMediaOpen) fetchFiles();
-  }, [isMediaOpen]);
+  useEffect(() => { if (editor && value !== editor.getHTML()) editor.commands.setContent(value || ''); }, [value, editor]);
 
   const insertImage = (url: string, alt: string) => {
     const fullUrl = url.startsWith('http') ? url : `http://localhost:3000${url}`;
+    // @ts-ignore
     editor?.chain().focus().setImage({ src: fullUrl, alt }).run();
     setIsMediaOpen(false);
   };
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.[0]) return;
-    const formData = new FormData();
-    formData.append('file', e.target.files[0]);
-
-    try {
-      const res = await api.post('/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      const newFile = res.data.data;
-      insertImage(newFile.url, newFile.alt || '');
-    } catch (err) {
-      console.error('Upload failed');
+  useEffect(() => {
+    if (isMediaOpen) {
+      setLoading(true);
+      api.get('/media').then(res => setFiles(res.data.data)).finally(() => setLoading(false));
     }
-  };
+  }, [isMediaOpen]);
+
+  if (!editor) return null;
+
+  const isFull = mode === 'full';
+  const isHeading = mode === 'heading';
+  const isMicro = mode === 'micro';
 
   return (
-    <div className="border border-border rounded-lg shadow-sm overflow-hidden bg-app-surface relative">
-      <MenuBar editor={editor} onOpenMedia={() => setIsMediaOpen(true)} />
-      <div className="bg-white max-h-[600px] overflow-y-auto custom-scrollbar">
-        <EditorContent editor={editor} />
+    <div className={cn(
+      "flex flex-col overflow-hidden transition-all duration-300 relative group",
+      isFull ? (theme === 'dark' ? "bg-[#080808] border border-white/5 shadow-2xl" : "bg-white border border-gray-100 shadow-xl") : "bg-transparent",
+      className
+    )}>
+      <AnimatePresence>
+        {(isFull || (editor.isFocused && !isMicro)) && (
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className={cn(
+            "flex items-center h-14 border-b px-4 gap-1.5 backdrop-blur-xl z-[100] transition-colors",
+            isFull ? (theme === 'dark' ? "bg-black/60 border-white/5" : "bg-white/95 border-gray-100 shadow-sm") : 
+            (theme === 'dark' ? "bg-black/95 border-white/10 absolute -top-16 left-0 right-0 rounded-none border shadow-2xl" : "bg-white/95 border-gray-200 absolute -top-16 left-0 right-0 rounded-none border shadow-xl")
+          )}>
+             {/* Typography_Control */}
+             <div className="relative">
+                <button onClick={() => { setShowFont(!showFont); setShowFontSize(false); setShowHeadings(false); setShowColor(false); }} className={cn("flex items-center gap-4 px-4 py-2 rounded-none hover:bg-indigo-500/10 transition-all min-w-[140px] justify-between group/ctrl", theme === 'dark' ? "text-white" : "text-black")}>
+                   <span className="text-[11px] font-black uppercase italic truncate tracking-tight">{selectedFont}</span>
+                   <ChevronDown size={12} className="opacity-40 group-hover/ctrl:opacity-100 transition-opacity" />
+                </button>
+                <AnimatePresence>
+                   {showFont && (
+                      <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 5 }} className={cn("absolute top-full left-0 mt-2 z-[600] border shadow-[0_40px_80px_rgba(0,0,0,0.6)] p-1 min-w-[200px] backdrop-blur-3xl", theme === 'dark' ? "bg-black border-white/10" : "bg-white border-gray-200")}>
+                         <div className="px-4 py-2 border-b border-white/5 mb-1"><span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-500 italic">Font Family</span></div>
+                         {fonts.map(f => (
+                            <button key={f.name} onClick={() => { setSelectedFont(f.name); editor.chain().focus().setFontFamily(f.family).run(); setShowFont(false); }} className={cn("w-full text-left px-5 py-3 text-[11px] font-black uppercase italic hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-between group", selectedFont === f.name && "text-indigo-500")} style={{ fontFamily: f.family }}>
+                               {f.name}
+                               {selectedFont === f.name && <Check size={10} />}
+                            </button>
+                         ))}
+                      </motion.div>
+                   )}
+                </AnimatePresence>
+             </div>
+
+             <div className="w-px h-6 bg-white/10 mx-1.5" />
+
+             {/* Size_Control */}
+             <div className="relative">
+                <button onClick={() => { setShowFontSize(!showFontSize); setShowFont(false); setShowHeadings(false); setShowColor(false); }} className={cn("flex items-center gap-3 px-4 py-2 rounded-none hover:bg-indigo-500/10 transition-all group/ctrl", theme === 'dark' ? "text-white" : "text-black")}>
+                   <LetterText size={18} />
+                   <ChevronDown size={12} className="opacity-40 group-hover/ctrl:opacity-100 transition-opacity" />
+                </button>
+                <AnimatePresence>
+                   {showFontSize && (
+                      <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 5 }} className={cn("absolute top-full left-0 mt-2 z-[600] border shadow-[0_40px_80px_rgba(0,0,0,0.6)] p-2 grid grid-cols-4 gap-1 min-w-[200px] backdrop-blur-3xl", theme === 'dark' ? "bg-black border-white/10" : "bg-white border-gray-200")}>
+                         {fontSizes.map(s => (
+                            <button key={s} onClick={() => { // @ts-ignore
+                            editor.chain().focus().setFontSize(s).run(); setShowFontSize(false); }} className="px-2 py-3 text-[10px] font-black hover:bg-indigo-600 hover:text-white transition-all border border-white/5 text-center">{s.replace('px', '')}</button>
+                         ))}
+                      </motion.div>
+                   )}
+                </AnimatePresence>
+             </div>
+
+             <div className="w-px h-6 bg-white/10 mx-1.5" />
+
+             {/* Heading_Control */}
+             <div className="relative">
+                <button onClick={() => { setShowHeadings(!showHeadings); setShowFont(false); setShowFontSize(false); setShowColor(false); }} className={cn("flex items-center gap-3 px-4 py-2 rounded-none hover:bg-indigo-500/10 transition-all group/ctrl", theme === 'dark' ? "text-white" : "text-black")}>
+                   <span className="text-[11px] font-black uppercase italic tracking-tight">Structure</span>
+                   <ChevronDown size={12} className="opacity-40 group-hover/ctrl:opacity-100 transition-opacity" />
+                </button>
+                <AnimatePresence>
+                   {showHeadings && (
+                      <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 5 }} className={cn("absolute top-full left-0 mt-2 z-[600] border shadow-[0_40px_80px_rgba(0,0,0,0.6)] p-1 min-w-[160px] backdrop-blur-3xl", theme === 'dark' ? "bg-black border-white/10" : "bg-white border-gray-200")}>
+                         <button onClick={() => { editor.chain().focus().setParagraph().run(); setShowHeadings(false); }} className="w-full text-left px-5 py-3 text-[10px] font-black uppercase italic hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-between">Paragraph {editor.isActive('paragraph') && <Check size={10} />}</button>
+                         <button onClick={() => { editor.chain().focus().toggleHeading({ level: 1 }).run(); setShowHeadings(false); }} className="w-full text-left px-5 py-3 text-[10px] font-black uppercase italic hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-between">H1 Primary {editor.isActive('heading', { level: 1 }) && <Check size={10} />}</button>
+                         <button onClick={() => { editor.chain().focus().toggleHeading({ level: 2 }).run(); setShowHeadings(false); }} className="w-full text-left px-5 py-3 text-[10px] font-black uppercase italic hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-between">H2 Secondary {editor.isActive('heading', { level: 2 }) && <Check size={10} />}</button>
+                         <button onClick={() => { editor.chain().focus().toggleHeading({ level: 3 }).run(); setShowHeadings(false); }} className="w-full text-left px-5 py-3 text-[10px] font-black uppercase italic hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-between">H3 Tertiary {editor.isActive('heading', { level: 3 }) && <Check size={10} />}</button>
+                      </motion.div>
+                   )}
+                </AnimatePresence>
+             </div>
+
+             <div className="w-px h-6 bg-white/10 mx-1.5" />
+
+             <ToolBtn onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor.isActive('bold')} title="Bold"><Bold size={18} /></ToolBtn>
+             <ToolBtn onClick={() => editor.chain().focus().toggleItalic().run()} isActive={editor.isActive('italic')} title="Italic"><Italic size={18} /></ToolBtn>
+             <ToolBtn onClick={() => editor.chain().focus().toggleUnderline().run()} isActive={editor.isActive('underline')} title="Underline"><UnderlineIcon size={18} /></ToolBtn>
+             
+             <div className="relative">
+                <ToolBtn onClick={() => { setShowColor(!showColor); setShowFont(false); setShowFontSize(false); setShowHeadings(false); }} isActive={showColor} title="Text Color"><Palette size={18} /></ToolBtn>
+                <AnimatePresence>
+                   {showColor && (
+                      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-0 mt-2 z-[500]"><ColorPicker onSelect={(c) => { editor.chain().focus().setColor(c).run(); setShowColor(false); }} activeColor={editor.getAttributes('textStyle').color} /></motion.div>
+                   )}
+                </AnimatePresence>
+             </div>
+
+             <ToolBtn onClick={() => editor.chain().focus().unsetAllMarks().run()} title="Clear Formatting"><Eraser size={18} /></ToolBtn>
+
+             {isFull && (
+               <>
+                 <div className="w-px h-6 bg-white/10 mx-1.5" />
+                 <ToolBtn onClick={() => editor.chain().focus().toggleBulletList().run()} isActive={editor.isActive('bulletList')} title="Bullet List"><List size={18} /></ToolBtn>
+                 <ToolBtn onClick={() => setIsMediaOpen(true)} title="Insert Image"><ImageIcon size={18} /></ToolBtn>
+                 <ToolBtn onClick={() => { const url = window.prompt('URL'); if (url) editor.chain().focus().setLink({ href: url }).run(); }} isActive={editor.isActive('link')} title="Insert Link"><LinkIcon size={18} /></ToolBtn>
+               </>
+             )}
+
+             <div className="ml-auto flex items-center gap-2">
+                <button className={cn("flex items-center gap-2 px-4 py-2 rounded-none text-[10px] font-black uppercase italic transition-all group/ai", theme === 'dark' ? "text-indigo-400 hover:bg-indigo-500/10" : "text-indigo-600 hover:bg-indigo-50")}>
+                   <Sparkles size={14} className="group-hover/ai:animate-pulse" /> AI Enhance
+                </button>
+             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className={cn("flex-1 overflow-visible flex flex-col transition-all duration-300", isFull ? (theme === 'dark' ? "bg-[#050505]" : "bg-white") : "bg-transparent")}>
+         <div className={cn("w-full transition-all duration-500", isFull ? "max-w-[1000px] mx-auto py-4 px-4" : "max-w-none p-0")}>
+            <EditorContent editor={editor} className={cn("relative z-10", isHeading && "leading-[0.85]")} />
+         </div>
       </div>
 
       <AnimatePresence>
         {isMediaOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-app-surface border border-border rounded-2xl w-full max-w-3xl h-[70vh] flex flex-col shadow-2xl overflow-hidden"
-            >
-              <div className="p-4 border-b border-border flex items-center justify-between">
-                <h3 className="font-bold">Insert Image</h3>
-                <button onClick={() => setIsMediaOpen(false)} className="p-2 hover:bg-app-subtle rounded-full"><X size={18} /></button>
+          <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6 bg-black/80 backdrop-blur-2xl">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className={cn("rounded-none w-full max-w-5xl h-[80vh] flex flex-col overflow-hidden shadow-2xl border", theme === 'dark' ? "bg-[#050505] border-white/10" : "bg-white border-gray-100")}>
+              <div className="p-8 border-b border-white/5 flex items-center justify-between">
+                 <h3 className={cn("text-2xl font-black uppercase italic", theme === 'dark' ? "text-white" : "text-gray-900")}>Media Library</h3>
+                 <button onClick={() => setIsMediaOpen(false)} className="p-2 border hover:bg-rose-500 hover:text-white transition-all"><X size={20} /></button>
               </div>
-              <div className="p-4 flex gap-4 border-b border-border bg-app-subtle">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={14} />
-                  <input 
-                    type="text" 
-                    placeholder="Search library..." 
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full bg-app-surface border border-border rounded-lg pl-9 pr-4 py-1.5 text-xs focus:border-accent outline-none"
-                  />
-                </div>
-                <label className="btn btn-primary btn-sm flex items-center gap-2 cursor-pointer whitespace-nowrap">
-                  <Plus size={14} /> Upload
-                  <input type="file" className="hidden" onChange={handleUpload} />
-                </label>
-              </div>
-              <div className="flex-1 overflow-y-auto p-4 grid grid-cols-4 lg:grid-cols-5 gap-4">
-                {loading ? (
-                  <div className="col-span-full flex items-center justify-center h-full text-text-muted text-xs">Loading...</div>
-                ) : (
-                  files.filter(f => (f.alt || f.id || '').toLowerCase().includes(search.toLowerCase())).map((file) => (
-                    <div 
-                      key={file._id}
-                      onClick={() => insertImage(file.url, file.alt || '')}
-                      className="aspect-square rounded-lg border border-border overflow-hidden cursor-pointer hover:border-accent transition-all group relative"
-                    >
-                      <img 
-                        src={file.url.startsWith('http') ? file.url : `http://localhost:3000${file.url}`} 
-                        className="w-full h-full object-cover" 
-                        alt="" 
-                      />
-                      <div className="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <Check size={20} className="text-white" />
-                      </div>
-                    </div>
+              <div className="flex-1 overflow-y-auto p-8 grid grid-cols-2 md:grid-cols-4 gap-6 no-scrollbar">
+                {loading ? ( <div className="col-span-full h-full flex items-center justify-center py-20"><Loader2 className="animate-spin text-indigo-500" /></div> ) : (
+                  files.map(file => ( 
+                    <div key={file._id} onClick={() => insertImage(file.url, file.alt || '')} className="aspect-square border border-white/5 cursor-pointer relative group overflow-hidden">
+                       <img src={file.url} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="" />
+                    </div> 
                   ))
                 )}
               </div>

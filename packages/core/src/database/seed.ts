@@ -60,26 +60,24 @@ export async function seedInitialData() {
             },
             {
               blockType: 'features',
-              blockData: {
-                heading: 'Why Developers Love Zenith',
-                featureList: [
-                  { 
-                    title: 'Lightning Fast API', 
-                    description: 'Optimized MongoDB queries and intelligent caching ensure sub-100ms response times.',
-                    icon: { url: 'https://images.unsplash.com/photo-1635332305373-c60368149806?auto=format&fit=crop&q=80&w=200' }
-                  },
-                  { 
-                    title: 'AI Co-pilot', 
-                    description: 'Auto-generate SEO meta, alt text, and even entire blog posts using integrated AI tools.',
-                    icon: { url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=200' }
-                  },
-                  { 
-                    title: 'Modular Design', 
-                    description: 'Use our Dynamic Blocks to build pages visually without touching a single line of code.',
-                    icon: { url: 'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=200' }
-                  }
-                ]
-              }
+              heading: 'Why Developers Love Zenith',
+              featureList: [
+                { 
+                  title: 'Lightning Fast API', 
+                  description: 'Optimized MongoDB queries and intelligent caching ensure sub-100ms response times.',
+                  icon: { url: 'https://images.unsplash.com/photo-1635332305373-c60368149806?auto=format&fit=crop&q=80&w=200' }
+                },
+                { 
+                  title: 'AI Co-pilot', 
+                  description: 'Auto-generate SEO meta, alt text, and even entire blog posts using integrated AI tools.',
+                  icon: { url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=200' }
+                },
+                { 
+                  title: 'Modular Design', 
+                  description: 'Use our Dynamic Blocks to build pages visually without touching a single line of code.',
+                  icon: { url: 'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=200' }
+                }
+              ]
             },
             {
               blockType: 'testimonials',

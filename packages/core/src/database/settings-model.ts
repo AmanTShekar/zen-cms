@@ -23,6 +23,7 @@ export interface ISystemSettings extends Document {
   maxPoolSize?: number;
   enableBackup?: boolean;
   backupInterval?: string;
+  customCSS?: string;
   updatedBy: mongoose.Types.ObjectId;
 }
 
@@ -49,6 +50,7 @@ const SystemSettingsSchema = new Schema<ISystemSettings>({
   maxPoolSize: { type: Number, default: 10 },
   enableBackup: { type: Boolean, default: false },
   backupInterval: { type: String, default: 'daily' },
+  customCSS: { type: String, default: '' },
   updatedBy: { type: Schema.Types.ObjectId, ref: 'User' },
 }, { timestamps: true });
 

@@ -36,7 +36,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ fields, initialData, onSubmit
             onChange(val);
           }}
           multiple={field.hasMany}
-          className="w-full bg-app-subtle border border-border rounded-lg px-3 py-2 text-sm focus:border-accent outline-none"
+          className="w-full bg-app-subtle border border-border rounded-none px-3 py-2 text-sm focus:border-accent outline-none"
         >
           {!field.required && !field.hasMany && <option value="">Select...</option>}
           {field.options?.map((opt: any) => (
@@ -55,7 +55,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ fields, initialData, onSubmit
             type="checkbox" 
             checked={!!value}
             onChange={(e) => onChange(e.target.checked)}
-            className="w-4 h-4 rounded border-border text-accent focus:ring-accent" 
+            className="w-4 h-4 rounded-none border-border text-accent focus:ring-accent" 
           />
         </div>
       );
@@ -67,7 +67,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ fields, initialData, onSubmit
           type="number" 
           value={value ?? ''}
           onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
-          className="w-full bg-app-subtle border border-border rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" 
+          className="w-full bg-app-subtle border border-border rounded-none px-3 py-2 text-sm focus:border-accent outline-none" 
         />
       );
     }
@@ -102,7 +102,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ fields, initialData, onSubmit
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
           rows={8}
-          className="w-full bg-app-subtle border border-border rounded-lg px-4 py-3 text-sm focus:border-accent outline-none min-h-[150px] transition-all focus:ring-2 focus:ring-accent/10"
+          className="w-full bg-app-subtle border border-border rounded-none px-4 py-3 text-sm focus:border-accent outline-none min-h-[150px] transition-all focus:ring-2 focus:ring-accent/10"
           placeholder={`Enter ${field.name}...`}
         />
       );
@@ -114,7 +114,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ fields, initialData, onSubmit
         type={field.type === 'date' ? 'date' : 'text'} 
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-app-subtle border border-border rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" 
+        className="w-full bg-app-subtle border border-border rounded-none px-3 py-2 text-sm focus:border-accent outline-none" 
         placeholder={`Enter ${field.name}...`} 
       />
     );

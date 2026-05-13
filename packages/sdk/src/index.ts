@@ -19,8 +19,11 @@ export class ZenithClient {
 
   constructor(config: ZenithConfig) {
     this.ttl = config.cacheTTL || 60000; // Default 1 min
+    const rawBase = config.baseURL || 'http://localhost:3000';
+    const cleanBase = rawBase.endsWith('/api/v1') ? rawBase : `${rawBase}/api/v1`;
+    
     this.api = axios.create({
-      baseURL: config.baseURL.endsWith('/api/v1') ? config.baseURL : `${config.baseURL}/api/v1`,
+      baseURL: cleanBase,
       headers: config.token ? { Authorization: `Bearer ${config.token}` } : {},
     });
   }

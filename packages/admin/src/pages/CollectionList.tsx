@@ -3,30 +3,37 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   Plus, 
   Search, 
-  Filter, 
-  MoreVertical, 
   ChevronLeft, 
   ChevronRight,
   Loader2,
-  FileText,
-  AlertCircle,
   Edit,
   Trash2,
-  Eye,
-  Star
+  Database,
+  Download,
+  Layers,
+  Fingerprint,
+  Activity as ActivityIcon,
+  ShieldCheck
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '../lib/utils';
 import api from '../lib/api';
-import DashboardLayout from '../layouts/DashboardLayout';
+import toast from 'react-hot-toast';
+import { useTheme } from '../context/ThemeContext';
 
 const CollectionList: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { theme } = useTheme();
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(['name', 'title', 'price', 'category', '_status', 'updatedAt']);
+  const [availableColumns, setAvailableColumns] = useState<string[]>([]);
+  const [columnMenuOpen, setColumnMenuOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,274 +54,263 @@ const CollectionList: React.FC = () => {
         }
 
         const res = await api.get(`/${slug}?page=${page}`);
-        setData(res.data.data || []);
-        setTotal(res.data.meta?.pagination?.total || (res.data.data?.length || 0));
+        const items = res.data.data || [];
+        setData(items);
+        setTotal(res.data.meta?.pagination?.total || (items.length || 0));
+
+        // Synthesize available columns
+        if (items.length > 0) {
+          const keys = Array.from(new Set(items.flatMap((item: any) => Object.keys(item))))
+            .filter((k: any) => !k.startsWith('_') && k !== 'id' && k !== '__v') as string[];
+          setAvailableColumns(keys);
+        }
       } catch (err: any) {
-        console.error('Fetch error:', err);
-        setError(err.response?.data?.error?.message || 'Failed to fetch collection data.');
+        setError('SYNCHRONIZATION_FAILED');
       } finally {
-        setLoading(false);
+        setTimeout(() => setLoading(false), 300);
       }
     };
 
     if (slug) fetchData();
   }, [slug, page, navigate]);
 
-  // Derive columns from the first item
-  const columns = data.length > 0 
-    ? Object.keys(data[0]).filter(k => k !== '__v' && k !== '_id' && typeof data[0][k] !== 'object') 
-    : ['id'];
-
-  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
-  const [kanbanData, setKanbanData] = useState<Record<string, any>>({});
-  const [kanbanLoading, setKanbanLoading] = useState(false);
-
-  useEffect(() => {
-    if (viewMode === 'kanban' && slug) {
-      const fetchKanban = async () => {
-        setKanbanLoading(true);
-        try {
-          const res = await api.get(`/${slug}/kanban?groupBy=_status`);
-          setKanbanData(res.data.data);
-        } catch (err) {
-          console.error(err);
-        } finally {
-          setKanbanLoading(false);
-        }
-      };
-      fetchKanban();
-    }
-  }, [slug, viewMode]);
-
-  const handleToggleFocus = async (item: any) => {
-    try {
-      const newVal = !item.isFocused;
-      await api.patch(`/${slug}/${item._id}`, { isFocused: newVal });
-      setData(prev => prev.map(i => i._id === item._id ? { ...i, isFocused: newVal } : i));
-      setActiveMenu(null);
-    } catch (err) {
-      console.error('Failed to toggle focus', err);
-    }
-  };
-
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this entry?')) return;
+    if (!window.confirm('Confirm deletion?')) return;
     try {
       await api.delete(`/${slug}/${id}`);
-      setData(prev => prev.filter(item => item._id !== id));
+      toast.success('Record purged');
+      setData(data.filter(item => item._id !== id));
       setTotal(prev => prev - 1);
     } catch (err) {
-      alert('Failed to delete entry');
+      toast.error('Purge failure');
     }
   };
 
+  const exportCSV = () => {
+    if (data.length === 0) return;
+    const headers = Object.keys(data[0]).filter(k => !k.startsWith('_')).join(',');
+    const rows = data.map(item => {
+      return Object.entries(item)
+        .filter(([k]) => !k.startsWith('_'))
+        .map(([, v]) => `"${String(v).replace(/"/g, '""')}"`)
+        .join(',');
+    });
+    const csv = [headers, ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', `${slug}_export_${Date.now()}.csv`);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    toast.success('CSV_EXPORT_COMPLETE');
+  };
+
+  const filteredData = data.filter(item => {
+    const searchStr = searchQuery.toLowerCase();
+    return Object.values(item).some(val => 
+      String(val).toLowerCase().includes(searchStr)
+    );
+  });
+
   return (
-    <DashboardLayout>
-      <div className="space-y-6 h-full flex flex-col">
-        <div className="flex items-end justify-between">
-          <div>
-            <h1 className="text-3xl font-black text-text-primary uppercase tracking-tighter italic">{slug?.replace(/-/g, ' ')}</h1>
-            <p className="text-text-muted text-sm mt-1 font-medium opacity-60">Manage and organize all entries for your {slug?.replace(/-/g, ' ')} collection.</p>
+    <div className={cn(
+      "p-10 space-y-10 min-h-screen transition-colors duration-500",
+      theme === 'dark' ? "bg-black text-white" : "bg-[#fafafa] text-gray-900"
+    )}>
+      {/* 🏛️ Compact Header */}
+      <header className="flex items-center justify-between">
+          <div className="flex items-center gap-6">
+             <div className={cn(
+               "w-12 h-12 rounded-none flex items-center justify-center shadow-lg transition-all",
+               theme === 'dark' ? "bg-white text-black" : "bg-gray-900 text-white"
+             )}>
+                <Layers size={24} />
+             </div>
+             <div className="flex flex-col">
+                <div className="flex items-center gap-3 mb-1">
+                   <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em] italic">REGISTRY_COLLECTION</span>
+                   <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 shadow-[0_0_8px_#10b981]" />
+                </div>
+                <h1 className="text-4xl font-black tracking-tighter uppercase italic leading-none">{slug?.replace(/-/g, '_')}</h1>
+             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="bg-app-surface p-1 rounded-lg border border-border flex items-center shadow-sm">
-               <button 
-                 onClick={() => setViewMode('list')}
-                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${viewMode === 'list' ? 'bg-accent text-white shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
-               >List</button>
-               <button 
-                 onClick={() => setViewMode('kanban')}
-                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${viewMode === 'kanban' ? 'bg-accent text-white shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
-               >Kanban</button>
-            </div>
-            <Link to={`/collections/${slug}/new`} className="btn btn-primary shadow-lg shadow-accent/20">
-              <Plus size={18} />
-              Create New
-            </Link>
+          
+          <div className="flex items-center gap-6">
+             <Link to={`/collections/${slug}/new`} className={cn(
+               "px-8 py-4 rounded-none font-black text-[11px] uppercase tracking-widest shadow-xl transition-all italic leading-none flex items-center gap-3",
+               theme === 'dark' ? "bg-white text-black hover:bg-gray-200" : "bg-indigo-600 text-white shadow-indigo-600/10"
+             )}>
+                <Plus size={16} strokeWidth={3} />
+                Initialize_Record
+             </Link>
           </div>
-        </div>
+      </header>
 
-        {viewMode === 'kanban' ? (
-          <div className="flex-1 min-h-[500px] flex gap-6 overflow-x-auto pb-4 custom-scrollbar">
-             {kanbanLoading ? (
-                <div className="w-full flex items-center justify-center"><Loader2 className="animate-spin text-accent" /></div>
-             ) : Object.keys(kanbanData).length === 0 ? (
-                <div className="w-full flex items-center justify-center text-text-muted border-2 border-dashed border-border rounded-2xl">No items found for Kanban view.</div>
-             ) : (
-                Object.entries(kanbanData).map(([column, colData]: [string, any]) => (
-                  <div key={column} className="flex-shrink-0 w-80 flex flex-col gap-4 bg-app-surface/50 p-4 rounded-xl border border-border/50">
-                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className={`w-2 h-2 rounded-full ${column === 'published' ? 'bg-success' : 'bg-warning'}`}></span>
-                          <h3 className="font-bold text-text-primary uppercase tracking-wider text-xs">{column === 'undefined' ? 'Draft' : column}</h3>
-                        </div>
-                        <span className="bg-app-surface border border-border px-2 py-0.5 rounded-full text-[10px] font-bold text-text-muted">{colData.count}</span>
-                     </div>
-                     <div className="flex flex-col gap-3">
-                        {colData.items.map((item: any) => (
-                           <Link key={item._id} to={`/collections/${slug}/${item._id}`} className="block bg-app-surface border border-border rounded-xl p-4 shadow-sm hover:shadow-md hover:border-accent transition-all cursor-pointer group relative">
-                              <h4 className="font-semibold text-text-primary group-hover:text-accent transition-colors truncate pr-6">
-                                {item.title || item.name || item._id}
-                              </h4>
-                              <p className="text-[10px] text-text-muted mt-2 font-medium">Updated {new Date(item.updatedAt || item.createdAt).toLocaleDateString()}</p>
-                           </Link>
-                        ))}
-                     </div>
-                  </div>
-                ))
-             )}
-          </div>
-        ) : (
-          <div className="card overflow-hidden shadow-xl border-border/40">
-            {/* Toolbar */}
-            <div className="px-6 py-4 border-b border-border bg-app-surface flex items-center justify-between">
-              <div className="flex items-center gap-3 flex-1 max-w-md">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
-                  <input 
-                    type="text" 
-                    placeholder="Search entries..." 
-                    className="w-full pl-9 h-9 bg-app-subtle border border-border rounded-lg text-sm focus:border-accent outline-none"
-                  />
-                </div>
-                <button className="btn btn-secondary border-dashed">
-                  <Filter size={16} />
-                  Filter
-                </button>
-              </div>
-              <div className="text-xs font-bold text-text-muted uppercase tracking-wider">
-                {total} entries
-              </div>
+      {/* 📊 High-Density Rail */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {[
+          { label: 'Total Units', value: total, icon: Database },
+          { label: 'Registry ID', value: slug?.toUpperCase().slice(0, 8), icon: Fingerprint },
+          { label: 'Status', value: 'OPTIMAL', icon: ActivityIcon },
+          { label: 'Security', value: 'HARDENED', icon: ShieldCheck },
+        ].map((stat) => (
+          <div key={stat.label} className={cn(
+            "border rounded-none p-6 flex flex-col transition-all",
+            theme === 'dark' ? "bg-white/[0.02] border-white/5" : "bg-white border-gray-100 shadow-sm"
+          )}>
+            <div className="flex items-center justify-between mb-4">
+               <stat.icon size={14} className="text-gray-500" />
+               <span className="text-[8px] font-black uppercase text-indigo-500 tracking-[0.2em] italic">Operational</span>
             </div>
+            <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest italic leading-none mb-2">{stat.label}</span>
+            <span className="text-3xl font-black italic tracking-tighter leading-none">{stat.value}</span>
+          </div>
+        ))}
+      </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto">
-              {loading ? (
-                <div className="py-20 flex flex-col items-center justify-center gap-3">
-                  <Loader2 size={32} className="animate-spin text-accent" />
-                  <p className="text-sm text-text-muted font-semibold tracking-tight">Accessing Database...</p>
-                </div>
-              ) : error ? (
-                <div className="py-20 flex flex-col items-center justify-center gap-4 text-danger px-10 text-center">
-                  <div className="w-16 h-16 bg-danger/10 rounded-full flex items-center justify-center">
-                    <AlertCircle size={32} />
-                  </div>
-                  <div>
-                    <p className="text-lg font-bold">Fetch Error</p>
-                    <p className="text-sm opacity-80 mt-1 max-w-sm mx-auto">{error}</p>
-                  </div>
-                  <button onClick={() => window.location.reload()} className="btn btn-secondary text-xs">Retry Connection</button>
-                </div>
-              ) : data.length === 0 ? (
-                <div className="py-24 flex flex-col items-center justify-center gap-4">
-                  <div className="w-20 h-20 bg-app-subtle rounded-full flex items-center justify-center">
-                    <FileText size={40} className="text-text-muted opacity-40" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-lg font-bold text-text-primary">No entries found</p>
-                    <p className="text-sm text-text-secondary mt-1">This collection is currently empty.</p>
-                  </div>
-                  <Link to={`/collections/${slug}/new`} className="btn btn-primary mt-2">
-                    <Plus size={18} />
-                    Create First Entry
-                  </Link>
-                </div>
-              ) : (
-                <table className="w-full">
-                  <thead>
-                    <tr>
-                      {columns.map(col => (
-                        <th key={col} className="text-xs uppercase tracking-widest text-text-muted py-4 px-6">{col}</th>
-                      ))}
-                      <th className="w-16"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.map((item) => (
-                      <tr key={item._id} className="group hover:bg-app-subtle/30 transition-colors">
-                        {columns.map(col => (
-                          <td key={col} className="py-4 px-6">
-                            <Link to={`/collections/${slug}/${item._id}`} className="hover:text-accent font-medium text-sm transition-colors">
-                              {String(item[col])}
-                            </Link>
+      {/* 📋 Data Registry */}
+      <div className={cn(
+        "border rounded-none overflow-hidden shadow-sm backdrop-blur-3xl transition-all",
+        theme === 'dark' ? "bg-[#080808]/80 border-white/5" : "bg-white border-gray-100"
+      )}>
+         <div className={cn(
+           "px-6 py-4 border-b flex items-center justify-between",
+           theme === 'dark' ? "bg-white/[0.02] border-white/5" : "bg-gray-50/20"
+         )}>
+            <div className="relative w-full max-w-sm">
+               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={14} />
+               <input 
+                  type="text" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="NEURAL_SEARCH_KERNEL..." 
+                  className={cn(
+                    "w-full border rounded-none py-2.5 pl-10 pr-4 text-[9px] font-black italic focus:ring-4 transition-all outline-none uppercase tracking-widest",
+                    theme === 'dark' ? "bg-black border-white/10 text-white focus:ring-indigo-500/20" : "bg-white border-gray-100 focus:ring-indigo-500/10"
+                  )} 
+               />
+            </div>
+            <div className="flex items-center gap-2 relative">
+               <div className="flex items-center gap-2 mr-4">
+                  <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest italic">{filteredData.length} Matches</span>
+               </div>
+               <div className="relative">
+                  <button 
+                    onClick={() => setColumnMenuOpen(!columnMenuOpen)}
+                    className="p-2.5 border rounded-none text-gray-500 hover:text-indigo-500 transition-colors"
+                  >
+                    <Layers size={14} />
+                  </button>
+                  <AnimatePresence>
+                    {columnMenuOpen && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className={cn(
+                          "absolute right-0 top-full mt-2 w-64 border rounded-none shadow-2xl z-50 p-4 backdrop-blur-3xl",
+                          theme === 'dark' ? "bg-black/90 border-white/10" : "bg-white border-gray-100"
+                        )}
+                      >
+                         <h4 className="text-[10px] font-black uppercase tracking-[0.2em] italic mb-4 text-indigo-500">Column_Orchestration</h4>
+                         <div className="space-y-2 max-h-64 overflow-y-auto no-scrollbar">
+                            {availableColumns.map(col => (
+                              <button 
+                                key={col}
+                                onClick={() => {
+                                  setVisibleColumns(prev => 
+                                    prev.includes(col) ? prev.filter(c => c !== col) : [...prev, col]
+                                  );
+                                }}
+                                className="w-full flex items-center justify-between p-2 rounded-none hover:bg-white/5 transition-all group"
+                              >
+                                 <span className="text-[9px] font-bold uppercase tracking-widest text-gray-500 group-hover:text-white">{col.replace(/_/g, ' ')}</span>
+                                 <div className={cn(
+                                   "w-3 h-3 rounded-none border transition-all",
+                                   visibleColumns.includes(col) ? "bg-emerald-500 border-emerald-500" : "border-white/20"
+                                 )} />
+                              </button>
+                            ))}
+                         </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+               </div>
+               <button 
+                 onClick={exportCSV}
+                 className="p-2.5 border rounded-none text-gray-500 hover:text-indigo-500 transition-colors"
+               >
+                 <Download size={14} />
+               </button>
+            </div>
+         </div>
+
+         <div className="overflow-x-auto">
+            <table className="w-full">
+               <thead>
+                  <tr className={cn("border-b text-left text-[8px] font-black text-gray-500 uppercase tracking-[0.4em] italic", theme === 'dark' ? "border-white/5" : "border-gray-50")}>
+                     <th className="px-6 py-4">Node_ID</th>
+                     {availableColumns.filter(c => visibleColumns.includes(c)).map(col => (
+                       <th key={col} className="px-6 py-4">{col.toUpperCase()}</th>
+                     ))}
+                     <th className="px-6 py-4 text-right">Actions</th>
+                  </tr>
+               </thead>
+               <tbody className={cn("divide-y", theme === 'dark' ? "divide-white/5" : "divide-gray-50")}>
+                  {loading ? (
+                     <tr><td colSpan={visibleColumns.length + 2} className="py-20 text-center"><Loader2 size={24} className="animate-spin mx-auto text-indigo-500 opacity-20" /></td></tr>
+                  ) : filteredData.length === 0 ? (
+                     <tr><td colSpan={visibleColumns.length + 2} className="py-20 text-center opacity-20 text-[9px] font-black uppercase italic tracking-[0.4em]">No_Records_Found</td></tr>
+                  ) : filteredData.map((item) => (
+                     <tr key={item._id} className="hover:bg-indigo-500/[0.02] transition-colors group cursor-pointer border-b border-white/[0.02]" onClick={() => navigate(`/collections/${slug}/${item._id}`)}>
+                        <td className="px-6 py-4">
+                           <div className="flex items-center gap-2">
+                              <div className="w-1.5 h-1.5 rounded-none bg-indigo-500" />
+                              <span className="text-[9px] font-black text-indigo-500 uppercase italic">#{item._id.slice(-6)}</span>
+                           </div>
+                        </td>
+                        {availableColumns.filter(c => visibleColumns.includes(c)).map(col => (
+                          <td key={col} className="px-6 py-4">
+                             <span className={cn(
+                               "text-[10px] font-black uppercase italic",
+                               col === '_status' && item[col] === 'published' ? "text-emerald-400" : 
+                               col === '_status' && item[col] === 'draft' ? "text-amber-400" : ""
+                             )}>
+                               {typeof item[col] === 'object' ? '[Complex_Object]' : String(item[col] || '—')}
+                             </span>
                           </td>
                         ))}
-                        <td className="py-4 px-6 text-right relative">
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setActiveMenu(activeMenu === item._id ? null : item._id);
-                            }}
-                            className={`p-2 rounded-lg transition-all ${activeMenu === item._id ? 'bg-accent text-white' : 'hover:bg-app-subtle text-text-muted hover:text-text-primary'}`}
-                          >
-                            <MoreVertical size={18} />
-                          </button>
-
-                          {/* Context Menu */}
-                          {activeMenu === item._id && (
-                            <>
-                              <div className="fixed inset-0 z-20" onClick={() => setActiveMenu(null)}></div>
-                              <div className="absolute right-6 top-12 w-40 bg-app-surface border border-border rounded-xl shadow-2xl z-30 overflow-hidden py-1">
-                                <Link to={`/collections/${slug}/${item._id}`} className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-text-primary hover:bg-app-subtle transition-colors">
-                                  <Edit size={14} /> Edit Entry
-                                </Link>
-                                <button 
-                                  onClick={() => handleToggleFocus(item)}
-                                  className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-text-primary hover:bg-app-subtle transition-colors text-left"
-                                >
-                                  <Star size={14} className={item.isFocused ? 'fill-warning text-warning' : 'text-text-muted'} /> 
-                                  {item.isFocused ? 'Unfocus Entry' : 'Focus Entry'}
-                                </button>
-                                <button className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-text-primary hover:bg-app-subtle transition-colors text-left">
-                                  <Eye size={14} /> Preview
-                                </button>
-                                <div className="h-px bg-border my-1 mx-2"></div>
-                                <button 
-                                  onClick={() => handleDelete(item._id)}
-                                  className="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-danger hover:bg-danger/10 transition-colors text-left"
-                                >
-                                  <Trash2 size={14} /> Delete
-                                </button>
-                              </div>
-                            </>
-                          )}
+                        <td className="px-6 py-4 text-right">
+                           <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                              <button className="p-2 rounded-none border hover:text-indigo-500"><Edit size={12} /></button>
+                              <button onClick={(e) => { e.stopPropagation(); handleDelete(item._id); }} className="p-2 rounded-none border hover:text-red-500"><Trash2 size={12} /></button>
+                           </div>
                         </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
+                     </tr>
+                  ))}
+               </tbody>
+            </table>
+         </div>
 
-            {/* Pagination */}
-            <div className="px-6 py-4 border-t border-border bg-app-surface flex items-center justify-between">
-              <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">
-                Showing {data.length} of {total} items
-              </span>
-              <div className="flex items-center gap-3">
-                <button 
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="p-2 hover:bg-app-subtle border border-border rounded-lg disabled:opacity-20 transition-all"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-                <div className="px-3 py-1.5 bg-app-subtle rounded-lg text-sm font-bold text-text-primary">
-                  {page}
-                </div>
-                <button 
-                  onClick={() => setPage(p => p + 1)}
-                  disabled={data.length < 25}
-                  className="p-2 hover:bg-app-subtle border border-border rounded-lg disabled:opacity-20 transition-all"
-                >
-                  <ChevronRight size={18} />
-                </button>
-              </div>
+         <div className={cn(
+           "p-4 border-t flex items-center justify-between text-[8px] font-black text-gray-500 uppercase italic",
+           theme === 'dark' ? "border-white/5" : "border-gray-50"
+         )}>
+            <div className="flex items-center gap-2">
+               <Fingerprint size={10} />
+               <span>REG_0x{slug?.length}•STABLE</span>
             </div>
-          </div>
-        )}
+            <div className="flex items-center gap-3">
+               <button disabled={page === 1} onClick={() => setPage(page - 1)} className="p-1.5 border rounded-none disabled:opacity-20"><ChevronLeft size={14} /></button>
+               <span className={cn("px-3 py-1 rounded-none text-white", theme === 'dark' ? "bg-white/10" : "bg-gray-900")}>{page}</span>
+               <button disabled={data.length < 10} onClick={() => setPage(page + 1)} className="p-1.5 border rounded-none disabled:opacity-20"><ChevronRight size={14} /></button>
+            </div>
+         </div>
       </div>
-    </DashboardLayout>
+    </div>
   );
 };
 

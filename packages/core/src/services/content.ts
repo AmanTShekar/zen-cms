@@ -1,232 +1,215 @@
-import { Model, ClientSession } from 'mongoose';
-import { CollectionConfig } from '@zenith/types';
+import { CollectionConfig, FieldConfig } from '@zenith/types';
 import { logger } from './logger';
-import { VersionModel } from '../database/version-model';
+import { DatabaseAdapter, BaseOptions } from '../database/adapters/BaseAdapter';
 import { NotFoundError } from '../errors';
 
+export interface ContentOperationOptions extends BaseOptions {
+  user?: any;
+  skipHooks?: boolean;
+  skipVersioning?: boolean;
+}
+
 /**
- * Zenith Content Service
- * ──────────────────────
- * Orchestrates CRUD operations with:
- * - Recursive field-level hooks (group, array, blocks)
- * - Row-Level Security (RLS)
- * - Transaction-aware delta auditing
- * - Automatic versioning
+ * Zenith Content Service — Re-Engineered
+ * ──────────────────────────────────────
+ * Orchestrates business logic with strict typing and atomic operations.
+ * Handles recursive field processing and Row-Level Security.
  */
-export class ContentService {
+export class ContentService<T = any> {
   constructor(
     private config: CollectionConfig,
-    private model: Model<any>
+    private adapter: DatabaseAdapter
   ) {}
 
   /**
-   * Recursively applies field-level hooks (beforeChange / afterRead)
-   * Handles: groups, arrays, blocks
+   * Applies recursive field hooks and cleans data for DB/API
    */
-  private async applyFieldHooks(
-    doc: any,
+  private async processFields(
+    data: any,
     user: any,
     action: 'afterRead' | 'beforeChange',
-    fields = this.config.fields
+    fields: FieldConfig[] = this.config.fields
   ): Promise<any> {
-    if (!doc) return doc;
-    const cleanDoc = typeof doc.toObject === 'function' ? doc.toObject() : { ...doc };
+    if (!data) return data;
+    
+    // Ensure we are working with a plain object
+    const cleanData = { ...data };
 
     for (const field of fields) {
-      // Skip virtual fields — not in DB
-      if (field.virtual) continue;
+      if (field.virtual && action === 'beforeChange') continue;
 
-      // Recurse into nested types
-      if (field.type === 'group' && cleanDoc[field.name] && field.fields) {
-        cleanDoc[field.name] = await this.applyFieldHooks(cleanDoc[field.name], user, action, field.fields);
-      } else if (field.type === 'array' && Array.isArray(cleanDoc[field.name]) && field.fields) {
-        cleanDoc[field.name] = await Promise.all(
-          cleanDoc[field.name].map((item: any) => this.applyFieldHooks(item, user, action, field.fields!))
+      // 1. Handle nested structures
+      if (field.type === 'group' && cleanData[field.name]) {
+        cleanData[field.name] = await this.processFields(cleanData[field.name], user, action, field.fields);
+      } else if (field.type === 'array' && Array.isArray(cleanData[field.name])) {
+        cleanData[field.name] = await Promise.all(
+          cleanData[field.name].map((item: any) => this.processFields(item, user, action, field.fields))
         );
-      } else if (field.type === 'blocks' && Array.isArray(cleanDoc[field.name])) {
-        cleanDoc[field.name] = await Promise.all(
-          cleanDoc[field.name].map((block: any) => {
-            const blockConfig = field.blocks?.find(b => b.slug === block.blockType);
-            if (!blockConfig) return block;
-            return this.applyFieldHooks(block, user, action, blockConfig.fields);
+      } else if (field.type === 'blocks' && Array.isArray(cleanData[field.name])) {
+        cleanData[field.name] = await Promise.all(
+          cleanData[field.name].map((block: any) => {
+            const blockDef = field.blocks.find(b => b.slug === block.blockType);
+            return blockDef ? this.processFields(block, user, action, blockDef.fields) : block;
           })
         );
       }
 
-      // Apply field-level hook
+      // 2. Apply field-level hook
       const hookFn = field.hooks?.[action];
-      if (hookFn && cleanDoc[field.name] !== undefined) {
-        cleanDoc[field.name] = await hookFn(cleanDoc[field.name]);
+      if (hookFn && cleanData[field.name] !== undefined) {
+        try {
+          cleanData[field.name] = await hookFn(cleanData[field.name]);
+        } catch (err: any) {
+          logger.warn({ field: field.name, err: err.message }, 'Field hook failed');
+        }
       }
     }
 
-    return cleanDoc;
+    return cleanData;
   }
 
-  async find(filter: Record<string, any> = {}, options: { user?: any; skipHooks?: boolean } = {}) {
-    let mongoFilter = { ...filter };
+  async find(filter: Record<string, any> = {}, options: ContentOperationOptions = {}): Promise<T[]> {
+    let query = { ...filter };
 
-    // Row-Level Security
+    // Apply RLS (Row Level Security)
     if (options.user && typeof this.config.access?.read === 'function') {
-      const accessFilter = this.config.access.read(options.user);
-      if (accessFilter === false) return [];
-      if (typeof accessFilter === 'object') {
-        mongoFilter = { ...mongoFilter, ...accessFilter };
-      }
+      const access = this.config.access.read(options.user);
+      if (access === false) return [];
+      if (typeof access === 'object') query = { ...query, ...access };
     }
 
-    let docs = await this.model.find(mongoFilter).lean().exec();
+    let docs = await this.adapter.find<T>(this.config.slug, query, options);
 
     if (!options.skipHooks) {
       if (this.config.hooks?.afterRead) {
         docs = await Promise.all(docs.map(doc => this.config.hooks!.afterRead!(doc, options.user)));
       }
-      docs = await Promise.all(docs.map(doc => this.applyFieldHooks(doc, options.user, 'afterRead')));
+      docs = await Promise.all(docs.map(doc => this.processFields(doc, options.user, 'afterRead')));
     }
 
     return docs;
   }
 
-  async findById(id: string, options: { user?: any; skipHooks?: boolean } = {}) {
-    // RLS check
-    if (options.user && typeof this.config.access?.read === 'function') {
-      const accessFilter = this.config.access.read(options.user);
-      if (accessFilter === false) return null;
-    }
-
-    const query = this.config.singleton && id === 'singleton'
-      ? this.model.findOne()
-      : this.model.findById(id);
-
-    let doc = await query.lean().exec();
+  async findById(id: string, options: ContentOperationOptions = {}): Promise<T | null> {
+    const query = this.config.singleton && id === 'singleton' ? {} : { _id: id };
+    let doc = await this.adapter.findOne<T>(this.config.slug, query, options);
+    
     if (!doc) return null;
 
     if (!options.skipHooks) {
       if (this.config.hooks?.afterRead) {
         doc = await this.config.hooks.afterRead(doc, options.user);
       }
-      doc = await this.applyFieldHooks(doc, options.user, 'afterRead');
-    }
-
-    // Auto-SEO metadata (Ghost-style)
-    if (this.config.seo && doc) {
-      const titleField = this.config.admin?.useAsTitle || 'title';
-      const anyDoc: any = doc;
-      (doc as any)._meta = {
-        title: anyDoc[titleField] || anyDoc.name || '',
-        description: anyDoc.description || anyDoc.excerpt || anyDoc.summary || '',
-        image: anyDoc.image?.url || anyDoc.thumbnail?.url || '',
-      };
+      doc = await this.processFields(doc, options.user, 'afterRead');
     }
 
     return doc;
   }
 
-  async create(data: any, options: { user: any; session?: ClientSession; skipHooks?: boolean }) {
-    let docData = { ...data };
+  async create(data: Partial<T>, options: ContentOperationOptions): Promise<T> {
+    return this.adapter.transaction(async (session) => {
+      let docData = { ...data };
+      const opts = { ...options, session };
 
-    if (!options.skipHooks) {
-      if (this.config.hooks?.beforeValidate) {
-        docData = await this.config.hooks.beforeValidate(docData, options.user);
+      if (!options.skipHooks) {
+        if (this.config.hooks?.beforeValidate) docData = await this.config.hooks.beforeValidate(docData, options.user);
+        docData = await this.processFields(docData, options.user, 'beforeChange');
+        if (this.config.hooks?.beforeCreate) docData = await this.config.hooks.beforeCreate(docData, options.user);
       }
-      docData = await this.applyFieldHooks(docData, options.user, 'beforeChange');
-      if (this.config.hooks?.beforeCreate) {
-        docData = await this.config.hooks.beforeCreate(docData, options.user);
+
+      const doc = await this.adapter.create<T>(this.config.slug, docData, opts);
+
+      if (!options.skipHooks && this.config.hooks?.afterCreate) {
+        await this.config.hooks.afterCreate(doc, options.user);
       }
-    }
 
-    const [doc] = await this.model.create([docData], { session: options.session });
+      if (this.config.versions) {
+        await this._createVersion(doc, options);
+      }
 
-    if (!options.skipHooks && this.config.hooks?.afterCreate) {
-      await this.config.hooks.afterCreate(doc, options.user);
-    }
-
-    if (this.config.versions) {
-      await this._createVersion(doc._id, doc.toObject(), options);
-    }
-
-    return doc;
+      return doc;
+    });
   }
 
-  async update(
-    id: string,
-    data: any,
-    options: { user: any; session?: ClientSession; skipVersioning?: boolean; skipHooks?: boolean }
-  ) {
-    let updateData = { ...data };
+  async update(id: string, data: Partial<T>, options: ContentOperationOptions): Promise<{ doc: T; delta: any }> {
+    return this.adapter.transaction(async (session) => {
+      const opts = { ...options, session };
+      const query = this.config.singleton && id === 'singleton' ? {} : { _id: id };
+      
+      const oldDoc = await this.adapter.findOne(this.config.slug, query, opts);
+      if (!oldDoc) throw new NotFoundError(this.config.name, id);
 
-    // Fetch original for delta
-    const oldDoc = this.config.singleton && id === 'singleton'
-      ? await this.model.findOne().session(options.session ?? null).lean().exec()
-      : await this.model.findById(id).session(options.session ?? null).lean().exec();
+      let updateData = { ...data };
 
-    if (!oldDoc && (!this.config.singleton || id !== 'singleton')) {
-      throw new NotFoundError(this.config.name, id);
-    }
-
-    if (!options.skipHooks) {
-      if (this.config.hooks?.beforeValidate) {
-        updateData = await this.config.hooks.beforeValidate(updateData, options.user);
+      if (!options.skipHooks) {
+        if (this.config.hooks?.beforeValidate) updateData = await this.config.hooks.beforeValidate(updateData, options.user);
+        updateData = await this.processFields(updateData, options.user, 'beforeChange');
+        if (this.config.hooks?.beforeUpdate) updateData = await this.config.hooks.beforeUpdate(updateData, options.user);
       }
-      updateData = await this.applyFieldHooks(updateData, options.user, 'beforeChange');
-      if (this.config.hooks?.beforeUpdate) {
-        updateData = await this.config.hooks.beforeUpdate(updateData, options.user);
+
+      const targetId = this.config.singleton && id === 'singleton' ? (oldDoc as any)._id : id;
+      const doc = await this.adapter.update<T>(this.config.slug, targetId, updateData, opts);
+      if (!doc) throw new NotFoundError(this.config.name, id);
+
+      const delta = this._calculateDelta(oldDoc, updateData);
+
+      if (!options.skipHooks && this.config.hooks?.afterUpdate) {
+        await this.config.hooks.afterUpdate(doc, options.user);
       }
-    }
 
-    const doc = this.config.singleton && id === 'singleton'
-      ? await this.model.findOneAndUpdate({}, { $set: updateData }, { new: true, upsert: true, session: options.session })
-      : await this.model.findByIdAndUpdate(id, { $set: updateData }, { new: true, session: options.session });
-
-    if (!doc) throw new NotFoundError(this.config.name, id);
-
-    // Calculate precise delta
-    const delta: Record<string, { from: any; to: any }> = {};
-    for (const key of Object.keys(updateData)) {
-      if (JSON.stringify((oldDoc as any)[key]) !== JSON.stringify(updateData[key])) {
-        delta[key] = { from: (oldDoc as any)[key], to: updateData[key] };
+      if (this.config.versions && !options.skipVersioning) {
+        await this._createVersion(doc, options, delta);
       }
-    }
 
-    if (!options.skipHooks && this.config.hooks?.afterUpdate) {
-      await this.config.hooks.afterUpdate(doc, options.user);
-    }
-
-    if (this.config.versions && !options.skipVersioning) {
-      await this._createVersion(doc._id, doc.toObject(), options, delta);
-    }
-
-    return { doc, delta };
+      return { doc, delta };
+    });
   }
 
-  async delete(id: string, options: { user: any; session?: ClientSession; skipHooks?: boolean }) {
+  async delete(id: string, options: ContentOperationOptions): Promise<boolean> {
     if (!options.skipHooks && this.config.hooks?.beforeDelete) {
       await this.config.hooks.beforeDelete(id, options.user);
     }
 
-    const result = await this.model.findByIdAndDelete(id, { session: options.session });
-    if (!result) throw new NotFoundError(this.config.name, id);
+    let targetId = id;
+    if (this.config.singleton && id === 'singleton') {
+      const doc = await this.adapter.findOne(this.config.slug, {}, options);
+      if (doc) targetId = (doc as any)._id;
+    }
+
+    const success = await this.adapter.delete(this.config.slug, targetId, options);
+    if (!success) throw new NotFoundError(this.config.name, id);
 
     if (!options.skipHooks && this.config.hooks?.afterDelete) {
       await this.config.hooks.afterDelete(id, options.user);
     }
 
-    return result;
+    return success;
   }
 
-  private async _createVersion(docId: any, snapshot: any, options: any, delta?: any) {
+  private _calculateDelta(oldDoc: any, newData: any): any {
+    const delta: Record<string, any> = {};
+    for (const key of Object.keys(newData)) {
+      if (JSON.stringify(oldDoc[key]) !== JSON.stringify(newData[key])) {
+        delta[key] = { from: oldDoc[key], to: newData[key] };
+      }
+    }
+    return delta;
+  }
+
+  private async _createVersion(doc: any, options: any, delta?: any) {
     try {
-      await VersionModel.create([{
-        collectionName: this.config.slug,  // consistent field name
-        collectionSlug: this.config.slug,
-        documentId: docId,
-        snapshot,
+      const isGlobal = this.config.singleton || !doc._id;
+      await this.adapter.createVersion({
+        collectionName: isGlobal ? 'globals' : (this.config.name || this.config.slug),
+        collectionSlug: isGlobal ? 'globals' : this.config.slug,
+        documentId: isGlobal ? this.config.slug : (doc._id?.toString() || 'singleton'),
+        snapshot: doc,
         delta,
-        createdBy: options.user?.id,
+        createdBy: options.user?.id || 'system',
         timestamp: new Date(),
-      }], { session: options.session });
+      });
     } catch (err) {
-      logger.error({ err }, 'Version snapshot failed — non-fatal');
+      logger.error({ err }, 'Versioning failed');
     }
   }
 }

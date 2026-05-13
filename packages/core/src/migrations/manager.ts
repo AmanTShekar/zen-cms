@@ -8,9 +8,14 @@ export interface Migration {
 }
 
 /**
- * Zenith Migration Manager
- * ────────────────────────
- * Handles database schema migrations and data transformations.
+ * ZENITH MIGRATION ENGINE
+ * ───────────────────────
+ * Orchestrates database schema evolution and transactional data transformations.
+ * 
+ * DESIGN PRINCIPLES:
+ * 1. Idempotency: Every migration must check if the change is already applied before executing.
+ * 2. Reversibility: The 'down' method must accurately revert all changes made by 'up'.
+ * 3. Atomic Handshakes: Failures should trigger a halt to prevent corrupt registry states.
  */
 export class MigrationManager {
   static async run(migrations: Migration[]) {

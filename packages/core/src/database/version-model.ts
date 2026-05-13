@@ -1,8 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
 
 const versionSchema = new Schema({
-  collectionSlug: { type: String, required: true, index: true },
-  documentId: { type: Schema.Types.ObjectId, required: true, index: true },
+  collectionName: { type: String, required: true, index: true },
+  documentId: { type: String, required: true, index: true },
   snapshot: { type: Schema.Types.Mixed, required: true },
   delta: { type: Schema.Types.Mixed },
   createdBy: { type: String },

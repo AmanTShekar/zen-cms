@@ -1,165 +1,358 @@
-import React, { useEffect, useState } from 'react';
-import DashboardLayout from '../layouts/DashboardLayout';
-import { Activity, ShieldCheck, Server, Cpu, Database, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { 
+  Activity, 
+  ShieldCheck, 
+  Server, 
+  Cpu, 
+  Database, 
+  RefreshCw, 
+  AlertCircle,
+  Zap,
+  Terminal,
+  Signal,
+  Key,
+  Globe,
+  Loader2,
+  Lock,
+  Network,
+  Radio
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../lib/api';
+import { cn } from '../lib/utils';
+import { useTheme } from '../context/ThemeContext';
+import { toast } from 'react-hot-toast';
 
 const SystemHealthPage = () => {
+  const { theme } = useTheme();
+  // --- INFRASTRUCTURE TELEMETRY STATE ---
   const [health, setHealth] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchHealth = async () => {
-    setLoading(true);
+  /**
+   * TELEMETRY HEARTBEAT: POLL SYSTEM KERNEL
+   * Fetches real-time hardware and service health from the /system/health node.
+   * This logic maintains the 'Live Pulse' of the administrative hub.
+   */
+  const fetchHealth = async (silent = false) => {
+    if (!silent) setIsRefreshing(true);
     try {
       const res = await api.get('/system/health');
       setHealth(res.data.data);
+      if (!silent && !loading) {
+        toast.success('Telemetry synchronized');
+      }
     } catch (err) {
-      console.error('Health check failed');
+      console.error('Health check failure: Connection interrupted');
+      if (!silent) toast.error('Sync failure: Connection interrupted');
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   };
 
+  /**
+   * INITIALIZATION & POLLING LIFECYCLE
+   * Orchestrates the 5-second automatic telemetry heartbeat.
+   */
   useEffect(() => {
-    fetchHealth();
+    fetchHealth(true);
+    const interval = setInterval(() => fetchHealth(true), 5000);
+    return () => clearInterval(interval);
   }, []);
 
-  const StatusCard = ({ title, status, icon: Icon, detail }: any) => (
-    <div className="card p-6 flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <div className="p-2 bg-app-subtle rounded-lg text-text-secondary">
+  const TelemetryCard = ({ title, status, icon: Icon, detail, subdetail, trend }: any) => (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={cn(
+        "p-8 border rounded-none transition-all duration-500 relative group overflow-hidden",
+        theme === 'dark' 
+          ? "bg-white/[0.02] border-white/[0.05] hover:border-white/10" 
+          : "bg-white border-gray-100 hover:border-gray-300 shadow-sm"
+      )}
+    >
+      <div className="absolute top-0 right-0 p-8 text-indigo-500/[0.02] pointer-events-none group-hover:text-indigo-500/[0.05] transition-colors">
+         <Icon size={100} strokeWidth={0.5} />
+      </div>
+
+      <div className="flex items-center justify-between mb-8 relative z-10">
+        <div className={cn(
+          "w-12 h-12 flex items-center justify-center transition-all",
+          theme === 'dark' ? "bg-white/5 text-white" : "bg-gray-900 text-white"
+        )}>
           <Icon size={20} />
         </div>
-        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-          status === 'healthy' || status === 'up' 
-            ? 'bg-success/10 text-success' 
-            : 'bg-danger/10 text-danger'
-        }`}>
-          {status === 'healthy' || status === 'up' ? (
-            <CheckCircle2 size={12} />
-          ) : (
-            <AlertCircle size={12} />
-          )}
-          {status}
+        <div className={cn(
+          "flex items-center gap-3 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] italic border",
+          status === 'healthy' || status === 'up' || status === 'ok'
+            ? "bg-emerald-500/5 text-emerald-500 border-emerald-500/10"
+            : "bg-amber-500/5 text-amber-500 border-amber-500/10"
+        )}>
+          <div className={cn(
+            "w-1.5 h-1.5 rounded-none",
+            status === 'healthy' || status === 'up' || status === 'ok' ? "bg-emerald-500 shadow-[0_0_8px_#10b981]" : "bg-amber-500"
+          )} />
+          {status === 'healthy' || status === 'up' || status === 'ok' ? 'Online' : 'Degraded'}
         </div>
       </div>
-      <div>
-        <p className="text-xs font-bold text-text-muted uppercase tracking-tight">{title}</p>
-        <p className="text-xl font-bold text-text-primary mt-0.5">{detail}</p>
+
+      <div className="relative z-10">
+        <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] italic mb-3">{title}</p>
+        <h3 className="text-3xl font-black tracking-tighter uppercase italic leading-none">{detail}</h3>
+        <div className="flex items-center justify-between mt-4">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic opacity-60">{subdetail}</p>
+          {trend && (
+            <span className="text-[9px] font-black text-emerald-500 uppercase tracking-tighter flex items-center gap-1">
+               <Zap size={10} /> Optimal
+            </span>
+          )}
+        </div>
       </div>
+    </motion.div>
+  );
+
+  if (loading) return (
+    <div className={cn("h-full w-full flex flex-col items-center justify-center gap-8", theme === 'dark' ? "bg-black" : "bg-[#fafafa]")}>
+       <div className="relative w-24 h-24">
+          <Loader2 size={32} className="absolute inset-0 m-auto animate-spin text-indigo-500" strokeWidth={1.5} />
+          <motion.div 
+            animate={{ rotate: 360 }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+            className="w-full h-full border border-indigo-500/10 border-t-indigo-500/40"
+          />
+       </div>
+       <div className="text-center">
+          <p className="text-[10px] font-black uppercase tracking-[0.6em] text-gray-400 italic mb-2">Establishing Uplink</p>
+          <p className="text-[9px] font-bold text-gray-600 uppercase tracking-[0.3em] animate-pulse">Scanning System Core...</p>
+       </div>
     </div>
   );
 
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-text-primary">System Health</h1>
-            <p className="text-text-secondary mt-1">Monitor core services and infrastructure stability</p>
+    <div className={cn(
+      "p-6 space-y-12 animate-fade-in transition-colors duration-500",
+      theme === 'dark' ? "text-white" : "text-gray-900"
+    )}>
+      {/* 👑 Tactical Header */}
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+         <div className="flex items-center gap-4">
+            <div className={cn(
+              "w-12 h-12 flex items-center justify-center shadow-lg transition-all",
+              theme === 'dark' ? "bg-white text-black" : "bg-gray-900 text-white"
+            )}>
+               <Radio size={24} className="animate-pulse" />
+            </div>
+            <div className="flex flex-col">
+               <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[9px] font-black text-indigo-500 uppercase tracking-[0.4em] italic">Telemetry Stream</span>
+                  <div className="w-1.5 h-1.5 bg-emerald-500 shadow-[0_0_8px_#10b981] animate-pulse" />
+               </div>
+               <h1 className="text-4xl font-black tracking-tighter uppercase italic leading-none">System Health</h1>
+               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2 italic opacity-60">Real-time performance audit and infrastructure heartbeat.</p>
+            </div>
+         </div>
+
+         <button 
+           onClick={() => fetchHealth()}
+           disabled={isRefreshing}
+           className={cn(
+             "px-8 py-3 rounded-none font-black text-[11px] uppercase tracking-[0.2em] italic flex items-center gap-3 transition-all active:scale-95",
+             theme === 'dark' ? "bg-white text-black hover:bg-gray-200" : "bg-gray-900 text-white hover:bg-black"
+           )}
+         >
+           <RefreshCw size={16} className={isRefreshing ? "animate-spin" : ""} />
+           <span>Sync Telemetry</span>
+         </button>
+      </header>
+
+      {/* 📊 High-Level Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <TelemetryCard 
+          title="Engine Build" 
+          status="up" 
+          icon={Zap} 
+          detail={health?.version || 'v6.0.45'} 
+          subdetail="Production Stable"
+          trend={true}
+        />
+        <TelemetryCard 
+          title="Data Link" 
+          status={health?.database === 'healthy' ? 'up' : 'down'} 
+          icon={Database} 
+          detail={health?.database === 'healthy' ? 'Optimal' : 'Degraded'} 
+          subdetail="Mongo Cluster 0"
+          trend={health?.database === 'healthy'}
+        />
+        <TelemetryCard 
+          title="Core Uptime" 
+          status="up" 
+          icon={Server} 
+          detail={`${Math.floor((health?.uptime || 0) / 3600)}h ${Math.floor(((health?.uptime || 0) % 3600) / 60)}m`} 
+          subdetail="System Uptime"
+        />
+        <TelemetryCard 
+          title="Infrastructure" 
+          status="up" 
+          icon={Globe} 
+          detail={(health?.environment || 'PROD').toUpperCase()} 
+          subdetail="Active Environment"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* 🧠 Neural Load / Resources */}
+        <div className={cn(
+          "p-10 border rounded-none relative group overflow-hidden",
+          theme === 'dark' ? "bg-white/[0.02] border-white/[0.05]" : "bg-white border-gray-100 shadow-sm"
+        )}>
+          <div className="absolute top-0 right-0 p-12 text-indigo-500/[0.01] pointer-events-none group-hover:text-indigo-500/[0.03] transition-colors">
+             <Cpu size={200} strokeWidth={0.5} />
           </div>
-          <button 
-            onClick={fetchHealth}
-            className={`btn btn-secondary flex items-center gap-2 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-            disabled={loading}
-          >
-            <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
-            Refresh Status
-          </button>
+
+          <div className="flex items-center gap-6 mb-12 relative z-10">
+             <div className="w-12 h-12 bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-500 italic font-black text-xl">
+                C
+             </div>
+             <div>
+                <h3 className="text-2xl font-black tracking-tight uppercase italic leading-none">Compute Resources</h3>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2 italic leading-none">Real-time hardware utilization</p>
+             </div>
+          </div>
+
+          <div className="space-y-10 relative z-10">
+            {/* Memory Bar */}
+            <div className="space-y-4">
+               <div className="flex justify-between items-end">
+                  <div className="space-y-1">
+                     <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic">Memory Allocation</p>
+                     <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{health?.memory.used} / {health?.memory.total}</p>
+                  </div>
+                  <span className="text-2xl font-black italic tracking-tighter">
+                    {health?.memory?.used?.includes('MB') && health?.memory?.total?.includes('GB') 
+                      ? Math.round((parseInt(health?.memory?.used) / (parseInt(health?.memory?.total) * 1024)) * 100)
+                      : Math.round((parseInt(health?.memory?.used || '0') / parseInt(health?.memory?.total || '1')) * 100)}%
+                  </span>
+               </div>
+               <div className="h-2 w-full bg-indigo-500/5 rounded-none overflow-hidden p-[2px] border border-indigo-500/10">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${health?.memory?.used?.includes('MB') && health?.memory?.total?.includes('GB') 
+                      ? Math.round((parseInt(health?.memory?.used) / (parseInt(health?.memory?.total) * 1024)) * 100)
+                      : Math.round((parseInt(health?.memory?.used || '0') / parseInt(health?.memory?.total || '1')) * 100)}%` }}
+                    className="h-full bg-indigo-500 shadow-[0_0_10px_#6366f1]"
+                  />
+               </div>
+            </div>
+
+            {/* CPU Bar */}
+            <div className="space-y-4">
+               <div className="flex justify-between items-end">
+                  <div className="space-y-1">
+                     <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic">Processor Load</p>
+                     <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Throughput: {health?.cpu?.cores || 0} Cores Active</p>
+                  </div>
+                  <span className="text-2xl font-black italic tracking-tighter">
+                    {health?.cpu?.usage || '0%'}
+                  </span>
+               </div>
+               <div className="h-2 w-full bg-indigo-500/5 rounded-none overflow-hidden p-[2px] border border-indigo-500/10">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: health?.cpu?.usage || '0%' }}
+                    className="h-full bg-indigo-500/40"
+                  />
+               </div>
+            </div>
+          </div>
         </div>
 
-        {loading && !health ? (
-          <div className="py-24 flex flex-col items-center justify-center gap-4 text-text-muted">
-            <RefreshCw size={48} className="animate-spin opacity-20" />
-            <p className="font-medium">Diagnosing system status...</p>
+        {/* 🔐 Security / Integrity */}
+        <div className={cn(
+          "p-10 border rounded-none relative group overflow-hidden",
+          theme === 'dark' ? "bg-white/[0.02] border-white/[0.05]" : "bg-white border-gray-100 shadow-sm"
+        )}>
+          <div className="absolute top-0 right-0 p-12 text-indigo-500/[0.01] pointer-events-none group-hover:text-indigo-500/[0.03] transition-colors">
+             <Lock size={200} strokeWidth={0.5} />
           </div>
-        ) : health ? (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <StatusCard 
-                title="Engine Version" 
-                status="up" 
-                icon={Activity} 
-                detail={`Zenith v${health.version}`} 
-              />
-              <StatusCard 
-                title="Database (MongoDB)" 
-                status={health.database} 
-                icon={Database} 
-                detail="Production Cluster" 
-              />
-              <StatusCard 
-                title="Uptime" 
-                status="up" 
-                icon={Server} 
-                detail={`${Math.floor(health.uptime / 60)} Minutes`} 
-              />
-              <StatusCard 
-                title="Environment" 
-                status="up" 
-                icon={ShieldCheck} 
-                detail={health.environment.toUpperCase()} 
-              />
-            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="card p-6 space-y-4">
-                <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
-                  <Cpu size={20} className="text-accent" /> System Resources
-                </h3>
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs font-bold text-text-muted uppercase">
-                      <span>Memory Usage</span>
-                      <span>{health.memory.used} / {health.memory.total}</span>
-                    </div>
-                    <div className="w-full h-2 bg-app-subtle rounded-full overflow-hidden">
-                      <div className="h-full bg-accent" style={{ width: '35%' }}></div>
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs font-bold text-text-muted uppercase">
-                      <span>CPU Load</span>
-                      <span>Balanced</span>
-                    </div>
-                    <div className="w-full h-2 bg-app-subtle rounded-full overflow-hidden">
-                      <div className="h-full bg-success" style={{ width: '12%' }}></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="card p-6 space-y-4">
-                <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
-                  <ShieldCheck size={20} className="text-success" /> Security Audit
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 p-3 bg-success/5 border border-success/20 rounded-xl">
-                    <CheckCircle2 size={18} className="text-success" />
-                    <div>
-                      <p className="text-sm font-semibold text-text-primary">SSL/TLS Encryption</p>
-                      <p className="text-[10px] text-text-secondary uppercase">Active & Valid</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 bg-success/5 border border-success/20 rounded-xl">
-                    <CheckCircle2 size={18} className="text-success" />
-                    <div>
-                      <p className="text-sm font-semibold text-text-primary">JWT Token Security</p>
-                      <p className="text-[10px] text-text-secondary uppercase">HS256 Protocol</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="card p-12 text-center text-text-muted">
-            <AlertCircle size={48} className="mx-auto mb-4 opacity-20 text-danger" />
-            <p>Could not connect to the system health service.</p>
+          <div className="flex items-center gap-6 mb-12 relative z-10">
+             <div className="w-12 h-12 bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-500">
+                <ShieldCheck size={24} />
+             </div>
+             <div>
+                <h3 className="text-2xl font-black tracking-tight uppercase italic leading-none">Security Protocols</h3>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2 italic leading-none">Integrity and authentication audit</p>
+             </div>
           </div>
-        )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+             {[
+               { label: 'Token Auth', status: 'Active', icon: Key, detail: 'HS256 Verified', path: '/settings?tab=security' },
+               { label: 'Cloud Storage', status: health?.services?.storage === 'cloudinary' ? 'Active' : 'Local', icon: Network, detail: health?.services?.storage?.toUpperCase() || 'LOCAL', path: '/settings?tab=database' },
+               { label: 'Email Relay', status: health?.services?.email === 'configured' ? 'Active' : 'Offline', icon: Signal, detail: 'Resend.com', path: '/settings?tab=notifications' },
+               { label: 'AI Engine', status: health?.services?.ai === 'configured' ? 'Active' : 'Disabled', icon: Terminal, detail: 'LLM Orchestrator', path: '/settings?tab=ai' }
+             ].map((svc, i) => (
+               <Link to={svc.path} key={i} className={cn(
+                 "p-6 border transition-all hover:bg-white/[0.02] group block",
+                 theme === 'dark' ? "bg-black/40 border-white/5 hover:border-indigo-500/20" : "bg-white border-gray-100 hover:border-indigo-500/10 shadow-sm"
+               )}>
+                  <div className="flex items-start justify-between">
+                     <div className="flex items-center gap-4">
+                        <div className={cn(
+                          "w-12 h-12 rounded-none flex items-center justify-center border transition-colors",
+                          theme === 'dark' ? "bg-white/5 border-white/10 group-hover:bg-indigo-500/10 group-hover:border-indigo-500/20" : "bg-gray-50 border-gray-100 group-hover:bg-indigo-50 group-hover:border-indigo-200"
+                        )}>
+                           <svc.icon size={20} className="text-gray-400 group-hover:text-indigo-500 transition-colors" />
+                        </div>
+                        <div className="flex flex-col leading-none">
+                           <span className="text-[12px] font-black uppercase italic leading-none">{svc.label}</span>
+                           <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-2">{svc.detail}</span>
+                        </div>
+                     </div>
+                     <div className="flex flex-col items-end gap-2">
+                        <span className={cn(
+                           "text-[9px] font-black uppercase px-3 py-1 border rounded-none italic",
+                           svc.status === 'Active' ? "text-emerald-500 border-emerald-500/20 bg-emerald-500/5" : "text-amber-500 border-amber-500/20 bg-amber-500/5"
+                        )}>
+                           {svc.status}
+                        </span>
+                        <span className="text-[8px] font-black text-indigo-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Configure →</span>
+                     </div>
+                  </div>
+               </Link>
+             ))}
+          </div>
+        </div>
       </div>
-    </DashboardLayout>
+
+      {/* 📜 Audit History Shortcut */}
+      <motion.div 
+        whileHover={{ x: 5 }}
+        onClick={() => toast.success('Redirecting to Audit Logs')}
+        className={cn(
+          "p-8 border rounded-none flex items-center justify-between group cursor-pointer transition-all",
+          theme === 'dark' ? "bg-white/[0.02] border-white/[0.05] hover:bg-white/5" : "bg-white border-gray-100 hover:border-gray-200 shadow-sm"
+        )}
+      >
+        <div className="flex items-center gap-8">
+           <div className="w-12 h-12 bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+              <Terminal size={24} />
+           </div>
+           <div>
+              <p className="text-[14px] font-black uppercase italic tracking-tight leading-none mb-2">View System Audit Logs</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest italic leading-none opacity-60">Complete history of administrative operations and system events.</p>
+           </div>
+        </div>
+        <div className="w-12 h-12 border border-indigo-500/20 flex items-center justify-center text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-all">
+           <Zap size={20} />
+        </div>
+      </motion.div>
+    </div>
   );
 };
 
 export default SystemHealthPage;
+

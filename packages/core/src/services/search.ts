@@ -5,6 +5,7 @@ export interface SearchResult {
   collection: string;
   collectionLabel: string;
   id: string;
+  title: string;
   field: string;
   snippet: string;
   score: number;
@@ -55,6 +56,7 @@ export class SearchService {
                     collection: col.slug,
                     collectionLabel: col.labels?.plural || col.name,
                     id: (doc as any)._id?.toString(),
+                    title: (doc as any)[col.admin?.useAsTitle || 'title'] || 'Untitled',
                     field,
                     snippet,
                     score: field === (col.admin?.useAsTitle || 'title') ? 2 : 1,

@@ -15,6 +15,17 @@ export interface WebhookPayload {
   timestamp: string;
 }
 
+/**
+ * ZENITH NEURAL BRIDGE: WEBHOOK DISPATCHER
+ * ───────────────────────────────────────
+ * Orchestrates event-driven communication between the Zenith kernel and 
+ * external administrative nodes (Zapier, Make, custom APIs).
+ * 
+ * FEATURES:
+ * 1. HMAC Cryptographic Handshakes: Secures the delivery path.
+ * 2. Exponential Backoff: Automated retries for network resilience.
+ * 3. Delivery Auditing: Full persistence of success/failure states.
+ */
 const MAX_RETRIES = 3;
 const RETRY_DELAYS_MS = [1000, 3000, 10000]; // exponential-style backoff
 

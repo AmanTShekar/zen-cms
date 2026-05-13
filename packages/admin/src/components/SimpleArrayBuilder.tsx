@@ -44,11 +44,11 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({ value = [], onC
 
       <div className="grid grid-cols-1 gap-4">
         {value.map((item, index) => (
-          <div key={index} className="bg-app-subtle border border-border rounded-xl p-4 relative group">
+          <div key={index} className="bg-app-subtle border border-border rounded-none p-4 relative group">
             <button 
               type="button" 
               onClick={() => removeItem(index)}
-              className="absolute top-2 right-2 p-1.5 hover:bg-error/10 hover:text-error rounded-lg opacity-0 group-hover:opacity-100 transition-all text-text-muted"
+              className="absolute top-2 right-2 p-1.5 hover:bg-error/10 hover:text-error rounded-none opacity-0 group-hover:opacity-100 transition-all text-text-muted"
             >
               <Trash2 size={14} />
             </button>
@@ -64,7 +64,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({ value = [], onC
         ))}
 
         {value.length === 0 && (
-          <div className="py-4 border border-dashed border-border rounded-xl text-center text-xs text-text-muted">
+          <div className="py-4 border border-dashed border-border rounded-none text-center text-xs text-text-muted">
             No items added to {label}.
           </div>
         )}

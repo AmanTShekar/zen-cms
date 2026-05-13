@@ -57,7 +57,7 @@ function mapFieldToMongoose(field: FieldConfig): any {
       if (field.blocks && field.blocks.length > 0) {
         // Blocks are stored as objects with a blockType discriminator
         type = [new Schema({
-          blockType: { type: String, required: true },
+          blockType: { type: String, index: true },
         }, { strict: false, _id: false })];
       } else {
         type = [Schema.Types.Mixed];

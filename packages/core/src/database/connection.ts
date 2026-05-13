@@ -9,7 +9,7 @@ async function sleep(ms: number) {
 }
 
 export async function connectToDatabase(): Promise<typeof mongoose> {
-  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/flowcms';
+  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/zenith';
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {

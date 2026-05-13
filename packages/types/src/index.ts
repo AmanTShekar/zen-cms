@@ -1,25 +1,23 @@
+/**
+ * Zenith CMS — Core Type System
+ * ─────────────────────────────
+ * Strictly typed configuration schema for collections, fields, and plugins.
+ * Uses Discriminated Unions for robust field-level validation and IntelliSense.
+ */
+
 export type FieldType = 
-  | 'text' 
-  | 'number' 
-  | 'email'
-  | 'textarea'
-  | 'checkbox'
-  | 'date'
-  | 'select' 
-  | 'media' 
-  | 'richtext' 
-  | 'json'
-  | 'group'
-  | 'tabs'
-  | 'array' 
-  | 'relation'
-  | 'blocks'
-  | 'boolean';
+  | 'text' | 'number' | 'email' | 'textarea' | 'checkbox' 
+  | 'date' | 'select' | 'media' | 'richtext' | 'json' 
+  | 'group' | 'tabs' | 'array' | 'relation' | 'blocks' | 'boolean';
 
 export interface BlockDefinition {
   slug: string;
   labels?: { singular: string; plural: string };
   fields: FieldConfig[];
+  admin?: {
+    description?: string;
+    icon?: string;
+  };
 }
 
 export interface FieldAdminConfig {
@@ -27,45 +25,24 @@ export interface FieldAdminConfig {
   description?: string;
   hidden?: boolean;
   readOnly?: boolean;
-  width?: string; // e.g. "50%"
+  width?: string;
   condition?: (data: any, siblingData: any) => boolean;
 }
 
-export interface FieldConfig {
+export interface BaseFieldConfig {
   name: string;
-  type: FieldType;
   label?: string;
   required?: boolean;
   unique?: boolean;
   localized?: boolean;
-  virtual?: boolean; // New: Virtual fields not stored in DB
+  virtual?: boolean;
   defaultValue?: any;
-  
-  // Specific to basic types (text, number, select)
-  hasMany?: boolean; 
-  options?: (string | { label: string; value: string })[];
-  
-  // Specific to groups, tabs, arrays
-  fields?: FieldConfig[];
-  tabs?: { label: string; fields: FieldConfig[] }[];
-  
-  // Specific to relations
-  collection?: string;
-  
-  // Specific to blocks
-  blocks?: BlockDefinition[];
-  
-  // Admin UI specific
   admin?: FieldAdminConfig;
-  
-  // Hooks
   hooks?: {
     beforeChange?: (value: any) => any | Promise<any>;
     afterRead?: (value: any) => any | Promise<any>;
     validate?: (value: any, data: any) => boolean | string | Promise<boolean | string>;
   };
-  
-  // Field-level Access
   access?: {
     read?: (user: any) => boolean;
     update?: (user: any) => boolean;
@@ -73,23 +50,45 @@ export interface FieldConfig {
   };
 }
 
+// ── Specific Field Interfaces ────────────────────────────────────────────────
+
+export interface TextFieldConfig extends BaseFieldConfig { type: 'text' | 'email' | 'textarea'; minLength?: number; maxLength?: number; }
+export interface NumberFieldConfig extends BaseFieldConfig { type: 'number'; min?: number; max?: number; }
+export interface CheckboxFieldConfig extends BaseFieldConfig { type: 'checkbox' | 'boolean'; }
+export interface SelectFieldConfig extends BaseFieldConfig { type: 'select'; options: (string | { label: string; value: string })[]; hasMany?: boolean; }
+export interface MediaFieldConfig extends BaseFieldConfig { type: 'media'; hasMany?: boolean; }
+export interface RelationFieldConfig extends BaseFieldConfig { type: 'relation'; relationTo: string; hasMany?: boolean; }
+export interface ArrayFieldConfig extends BaseFieldConfig { type: 'array'; fields: FieldConfig[]; minRows?: number; maxRows?: number; }
+export interface GroupFieldConfig extends BaseFieldConfig { type: 'group'; fields: FieldConfig[]; }
+export interface BlocksFieldConfig extends BaseFieldConfig { type: 'blocks'; blocks: BlockDefinition[]; }
+export interface BasicFieldConfig extends BaseFieldConfig { type: 'date' | 'richtext' | 'json'; }
+
+export type FieldConfig = 
+  | TextFieldConfig 
+  | NumberFieldConfig 
+  | CheckboxFieldConfig 
+  | SelectFieldConfig 
+  | MediaFieldConfig 
+  | RelationFieldConfig 
+  | ArrayFieldConfig 
+  | GroupFieldConfig 
+  | BlocksFieldConfig 
+  | BasicFieldConfig;
+
+// ── Collection & Global Config ───────────────────────────────────────────────
+
 export interface CollectionConfig {
   name: string;
   slug: string;
-  labels?: {
-    singular: string;
-    plural: string;
-  };
+  labels?: { singular: string; plural: string };
   fields: FieldConfig[];
   drafts?: boolean;
   seo?: boolean;
   timestamps?: boolean;
-  singleton?: boolean; 
-  versions?: boolean; // Enable document history tracking
-  scheduling?: boolean; // Enable post scheduling
-  publicRead?: boolean; // New: Allow unauthenticated read access
-
-  // Lifecycle Hooks (Strapi-inspired but pipeline-based)
+  singleton?: boolean;
+  versions?: boolean;
+  scheduling?: boolean;
+  publicRead?: boolean;
   hooks?: {
     beforeValidate?: (data: any, user: any) => any | Promise<any>;
     beforeCreate?: (data: any, user: any) => any | Promise<any>;
@@ -101,27 +100,21 @@ export interface CollectionConfig {
     afterRead?: (doc: any, user: any) => any | Promise<any>;
     afterError?: (error: Error, data: any, user: any) => void | Promise<void>;
   };
-
-  // Collection-level Access
   access?: {
-    read?: (user: any) => boolean | object; // Support query-based access
+    read?: (user: any) => boolean | object;
     create?: (user: any) => boolean;
     update?: (user: any) => boolean;
     delete?: (user: any) => boolean;
   };
-
-  // Admin UI Polish (Directus/Payload inspired)
   admin?: {
-    group?: string; // Sidebar grouping
+    group?: string;
     hidden?: boolean;
-    useAsTitle?: string; // Field to show in list views
-    displayTemplate?: string; // e.g. "{{title}} ({{author}})"
+    useAsTitle?: string;
+    displayTemplate?: string;
     defaultColumns?: string[];
-    icon?: string; // Lucide icon name
-    previewUrl?: string | ((doc: any) => string); // For live preview
+    icon?: string;
+    previewUrl?: string | ((doc: any) => string);
   };
-
-  // Custom Endpoints (Payload-style)
   endpoints?: {
     path: string;
     method: 'get' | 'post' | 'put' | 'delete' | 'patch';
@@ -129,14 +122,43 @@ export interface CollectionConfig {
   }[];
 }
 
+export type GlobalConfig = CollectionConfig; // Globals are singletons
+
+// ── Plugin & System Config ───────────────────────────────────────────────────
+
+export interface ZenithPlugin {
+  name: string;
+  version?: string;
+  description?: string;
+  author?: string;
+  downloads?: number;
+  apply: (config: CMSConfig) => CMSConfig | void;
+  onInit?: (app: any) => void | Promise<void>;
+  onReady?: (app: any) => void | Promise<void>;
+}
+
+export type DeploymentProvider = 'cloudflare' | 'netlify' | 'vercel' | 'custom';
+
+export interface DeploymentConfig {
+  provider: DeploymentProvider;
+  hookUrl: string;
+  triggerOn?: string[];
+  autoTrigger?: boolean;
+}
+
 export interface WebhookTarget {
   url: string;
-  secret: string;
-  events: string[]; // e.g. ['collection.created', '*' for all]
+  events: string[];
+  secret?: string;
 }
 
 export interface CMSConfig {
   collections: CollectionConfig[];
-  globals?: CollectionConfig[];
+  globals?: GlobalConfig[];
+  plugins?: ZenithPlugin[];
   webhooks?: WebhookTarget[];
+  deployment?: DeploymentConfig;
+  cors?: {
+    origins: string[];
+  };
 }

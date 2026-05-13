@@ -8,7 +8,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@zenith/sdk": "link:..\\sdk",
+    "@zenith/sdk": "*",
     "axios": "^1.16.0",
     "framer-motion": "^12.4.10",
     "lucide-react": "^1.14.0",

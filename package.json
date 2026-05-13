@@ -9,10 +9,12 @@
     "start": "tsx server.ts",
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present"
+    "lint": "npm run lint --workspaces --if-present",
+    "check-deps": "depcruise packages --config .dependency-cruiser.js"
   },
   "devDependencies": {
     "@types/express-mongo-sanitize": "^2.1.2",
+    "dependency-cruiser": "^16.0.0",
     "eslint": "^8.0.0",
     "prettier": "^3.0.0",
     "tsx": "^4.21.0",

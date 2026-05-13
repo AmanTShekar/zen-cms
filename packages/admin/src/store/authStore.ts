@@ -4,6 +4,7 @@ import api from '../lib/api';
 interface User {
   id: string;
   email: string;
+  name?: string;
   role: 'admin' | 'editor' | 'viewer';
 }
 
@@ -46,12 +47,19 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   checkAuth: async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      set({ isLoading: false, isAuthenticated: false });
+      return;
+    }
+    
     set({ isLoading: true });
     try {
       const res = await api.get('/auth/me');
       set({ user: res.data.data, isAuthenticated: true });
     } catch (error) {
       set({ user: null, isAuthenticated: false });
+      localStorage.removeItem('token');
     } finally {
       set({ isLoading: false });
     }

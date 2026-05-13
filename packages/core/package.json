@@ -16,11 +16,15 @@
     "typecheck": "tsc --noEmit",
     "schema:export": "tsx src/tools/export-schema.ts"
   },
+  "bin": {
+    "zenith": "dist/cli/index.js"
+  },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.20.0",
-    "@zenith/types": "workspace:*",
+    "@zenith/types": "*",
     "bcrypt": "^5.1.0",
     "cloudinary": "^2.5.0",
+    "commander": "^12.0.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

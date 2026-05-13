@@ -48,3 +48,25 @@ coverage/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Zenith Internal & Temporary
+.gemini/
+.cursor/
+internal/
+temp_docx/
+temp.zip
+uploads/
+coverage/
+*.txt
+*.md
+!README.md
+!CONTRIBUTING.md
+!LICENSE.md
+!docs/
+
+# Compiled artifacts
+packages/sdk/index.js
+packages/sdk/index.d.ts
+dist/
+build/
+node_modules/

@@ -21,6 +21,8 @@ import {
   TrendingUp
 } from 'lucide-react';
 
+const cn = (...classes: any[]) => classes.filter(Boolean).join(' ');
+
 // API Configuration
 const API_BASE = 'http://localhost:3000/api/v1';
 
@@ -41,6 +43,7 @@ const ZenithDemo = () => {
   const [loading, setLoading] = useState(true);
   const [cartCount, setCartCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
   const fetchData = async () => {
     setLoading(true);
@@ -68,6 +71,9 @@ const ZenithDemo = () => {
   useEffect(() => {
     fetchData();
 
+    // Set initial theme class
+    document.documentElement.classList.toggle('light', theme === 'light');
+
     // Listen for live updates from the CMS
     const channel = new BroadcastChannel('zenith-sync');
     channel.onmessage = (event) => {
@@ -77,24 +83,64 @@ const ZenithDemo = () => {
       }
     };
 
-    return () => channel.close();
-  }, []);
+    // Parent-to-Iframe Selection Sync & Live Data Update
+    const handleParentMessage = (event: MessageEvent) => {
+      if (event.data.type === 'SET_THEME') {
+        setTheme(event.data.theme);
+        document.documentElement.classList.toggle('light', event.data.theme === 'light');
+      }
+      if (event.data.type === 'ZENITH_PARENT_SELECT') {
+        const id = event.data.id;
+        const el = document.getElementById(id);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('ring-4', 'ring-emerald-500', 'ring-offset-8', 'ring-offset-black');
+          setTimeout(() => {
+            el.classList.remove('ring-4', 'ring-emerald-500', 'ring-offset-8', 'ring-offset-black');
+          }, 2000);
+        }
+      }
+
+      if (event.data.type === 'ZENITH_DATA_UPDATE') {
+        console.log('Zenith Live Preview: Updating state...');
+        setLandingPage(event.data.data);
+      }
+    };
+
+    window.addEventListener('message', handleParentMessage);
+
+    return () => {
+      channel.close();
+      window.removeEventListener('message', handleParentMessage);
+    };
+  }, [theme]);
+
+  // Bi-Directional Selection Hook
+  const handleSectionClick = (id: string) => {
+    const isPreview = new URLSearchParams(window.location.search).get('preview') === 'true';
+    if (!isPreview) return;
+    
+    window.parent.postMessage({ 
+      type: 'ZENITH_SECTION_SELECT', 
+      id: id 
+    }, '*');
+  };
 
   const addToCart = () => {
     setCartCount(prev => prev + 1);
   };
 
   return (
-    <div className="min-h-screen bg-[#030303] text-white">
+    <div className={cn("min-h-screen transition-colors duration-500", theme === 'dark' ? "bg-[#030303] text-white" : "bg-white text-black")}>
       {/* Navbar */}
-      <nav className="fixed top-0 w-full z-50 border-b border-white/5 glass px-6 md:px-12 py-4">
+      <nav className={cn("fixed top-0 w-full z-50 border-b glass px-6 md:px-12 py-4", theme === 'dark' ? "border-white/5" : "border-black/5")}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white text-black rounded-lg flex items-center justify-center font-black italic">Z</div>
+            <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center font-black italic", theme === 'dark' ? "bg-white text-black" : "bg-black text-white")}>Z</div>
             <span className="font-bold tracking-tighter text-xl uppercase">Zenith Studio</span>
           </div>
           
-          <div className="hidden md:flex items-center gap-8 text-[10px] font-bold uppercase tracking-widest text-white/40">
+          <div className={cn("hidden md:flex items-center gap-8 text-[10px] font-bold uppercase tracking-widest", theme === 'dark' ? "text-white/40" : "text-black/40")}>
             <a href="#products" className="hover:text-white transition-colors">Collection</a>
             <a href="#features" className="hover:text-white transition-colors">Technology</a>
             <a href="http://localhost:5175" target="_blank" className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300">
@@ -103,7 +149,7 @@ const ZenithDemo = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="relative p-2 hover:bg-white/5 rounded-full transition-colors">
+            <button className={cn("relative p-2 rounded-full transition-colors", theme === 'dark' ? "hover:bg-white/5" : "hover:bg-black/5")}>
               <ShoppingCart size={20} />
               {cartCount > 0 && (
                 <span className="absolute top-0 right-0 w-4 h-4 bg-emerald-500 text-black text-[10px] font-bold rounded-full flex items-center justify-center">
@@ -111,7 +157,7 @@ const ZenithDemo = () => {
                 </span>
               )}
             </button>
-            <button onClick={fetchData} className="p-2 hover:bg-white/5 rounded-full transition-colors text-white/40 hover:text-white">
+            <button onClick={fetchData} className={cn("p-2 rounded-full transition-colors", theme === 'dark' ? "text-white/40 hover:text-white hover:bg-white/5" : "text-black/40 hover:text-black hover:bg-black/5")}>
               <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
             </button>
           </div>
@@ -144,7 +190,7 @@ const ZenithDemo = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="max-w-2xl text-lg md:text-xl text-white/40 leading-relaxed text-center mb-12"
+          className={cn("max-w-2xl text-lg md:text-xl leading-relaxed text-center mb-12", theme === 'dark' ? "text-white/40" : "text-black/40")}
           dangerouslySetInnerHTML={{ __html: landingPage?.heroDescription || 'The future of headless commerce. Powered by AI. Controlled by you. Fast, secure, and infinitely scalable.' }}
         />
 
@@ -289,11 +335,17 @@ const ZenithDemo = () => {
 
         <section className="space-y-48">
           {landingPage?.sections?.map((section: any, idx: number) => {
-            const data = section;
+            const data = section.content || section.blockData || section;
+            const isPreview = new URLSearchParams(window.location.search).get('preview') === 'true';
+
+            const sectionWrapperProps = {
+              onClick: () => handleSectionClick(section.id),
+              className: isPreview ? "cursor-pointer hover:ring-2 hover:ring-emerald-500/50 transition-all rounded-[4rem]" : ""
+            };
 
             if (section.blockType === 'testimonials') {
               return (
-                <div key={idx} className="space-y-16">
+                <div key={idx} id={section.id} {...sectionWrapperProps} className={cn("space-y-16", sectionWrapperProps.className)}>
                   <div className="text-center">
                     <h2 className="text-5xl font-black tracking-tight mb-4 uppercase italic">{data.heading}</h2>
                     <p className="text-emerald-400 font-bold text-xs uppercase tracking-widest">What our community says</p>
@@ -327,7 +379,7 @@ const ZenithDemo = () => {
 
             if (section.blockType === 'pricing') {
               return (
-                <div key={idx} className="space-y-24">
+                <div key={idx} id={section.id} {...sectionWrapperProps} className={cn("space-y-24", sectionWrapperProps.className)}>
                   <div className="text-center">
                     <h2 className="text-7xl font-black tracking-tighter text-gradient mb-4">{data.heading}</h2>
                     <p className="text-white/30 text-lg font-medium">Simple, transparent pricing for any scale.</p>
@@ -362,7 +414,7 @@ const ZenithDemo = () => {
 
             if (section.blockType === 'faq') {
               return (
-                <div key={idx} className="max-w-4xl mx-auto space-y-16">
+                <div key={idx} id={section.id} {...sectionWrapperProps} className={cn("max-w-4xl mx-auto space-y-16", sectionWrapperProps.className)}>
                    <div className="text-center">
                     <h2 className="text-5xl font-black tracking-tight mb-4 uppercase italic">{data.heading}</h2>
                     <p className="text-white/30 font-bold text-xs uppercase tracking-widest">Common questions answered</p>
@@ -386,7 +438,7 @@ const ZenithDemo = () => {
 
             if (section.blockType === 'cta') {
               return (
-                <div key={idx} className="glass-card accent-gradient text-black text-center py-32 relative overflow-hidden rounded-[4rem]">
+                <div key={idx} id={section.id} {...sectionWrapperProps} className={cn("glass-card accent-gradient text-black text-center py-32 relative overflow-hidden rounded-[4rem]", sectionWrapperProps.className)}>
                    <div className="relative z-10">
                     <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9]">{data.title}</h2>
                     <p className="text-black/60 text-xl md:text-2xl font-bold mb-14 max-w-2xl mx-auto tracking-tight">{data.description}</p>
@@ -402,7 +454,7 @@ const ZenithDemo = () => {
 
             if (section.blockType === 'stats') {
               return (
-                <div key={idx} className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div key={idx} id={section.id} {...sectionWrapperProps} className={cn("grid grid-cols-2 md:grid-cols-4 gap-8", sectionWrapperProps.className)}>
                   {data.items?.map((stat: any, sidx: number) => (
                     <div key={sidx} className="glass p-10 rounded-[2.5rem] border border-white/5 text-center group hover:border-emerald-500/20 transition-all">
                       <div className="text-5xl font-black text-emerald-400 mb-2 tracking-tighter group-hover:scale-110 transition-transform">{stat.value}</div>
@@ -415,7 +467,7 @@ const ZenithDemo = () => {
 
             if (section.blockType === 'hero') {
               return (
-                <div key={idx} className="relative py-48 rounded-[4rem] overflow-hidden border border-white/10 glass px-12 text-center group">
+                <div key={idx} id={section.id} {...sectionWrapperProps} className={cn("relative py-48 rounded-[4rem] overflow-hidden border border-white/10 glass px-12 text-center group", sectionWrapperProps.className)}>
                    {data?.backgroundImage && (
                      <img 
                        src={data.backgroundImage.url?.startsWith('http') ? data.backgroundImage.url : `http://localhost:3000${data.backgroundImage.url}`} 
@@ -438,7 +490,7 @@ const ZenithDemo = () => {
 
             if (section.blockType === 'features') {
               return (
-                <div key={idx} className="space-y-24">
+                <div key={idx} id={section.id} {...sectionWrapperProps} className={cn("space-y-24", sectionWrapperProps.className)}>
                   <div className="text-center space-y-4">
                     <h2 className="text-6xl font-black tracking-tight text-gradient">{data?.heading || 'Core Features'}</h2>
                     <div className="w-24 h-1 bg-emerald-500 mx-auto rounded-full shadow-[0_0_20px_#10b981]" />
@@ -467,12 +519,39 @@ const ZenithDemo = () => {
 
             if (section.blockType === 'richTextSection') {
               return (
-                <div key={idx} className="glass rounded-[4rem] p-12 md:p-32 border border-white/5 relative overflow-hidden">
+                <div key={idx} id={section.id} {...sectionWrapperProps} className={cn("glass rounded-[4rem] p-12 md:p-32 border border-white/5 relative overflow-hidden", sectionWrapperProps.className)}>
                   <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-[100px]" />
                   <div 
                     className="prose prose-invert prose-2xl max-w-none prose-headings:text-gradient prose-headings:font-black prose-headings:tracking-tighter prose-p:font-medium prose-p:text-white/60"
                     dangerouslySetInnerHTML={{ __html: data?.content || '' }}
                   />
+                </div>
+              );
+            }
+
+            if (section.blockType === 'gallery') {
+              return (
+                <div key={idx} id={section.id} {...sectionWrapperProps} className={cn("space-y-16", sectionWrapperProps.className)}>
+                   <div className="text-center">
+                    <h2 className="text-5xl font-black tracking-tight mb-4 uppercase italic">{data.heading}</h2>
+                    <p className="text-emerald-400 font-bold text-xs uppercase tracking-widest">Visual Archive</p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {data.items?.map((item: any, iidx: number) => (
+                      <div key={iidx} className="group relative aspect-square rounded-[2rem] overflow-hidden border border-white/5 bg-white/5">
+                        {item.image && (
+                          <img 
+                            src={item.image.url?.startsWith('http') ? item.image.url : `http://localhost:3000${item.image.url}`} 
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            alt={item.caption}
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-white">{item.caption || 'Untitled_Entry'}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               );
             }

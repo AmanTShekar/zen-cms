@@ -7,33 +7,28 @@ export default {
   theme: {
     extend: {
       colors: {
-        app: {
-          bg: '#FAFAFA',
-          surface: '#FFFFFF',
-          subtle: '#F5F5F5',
-        },
+        app: 'rgb(var(--bg-app-rgb) / <alpha-value>)',
+        surface: 'rgb(var(--bg-surface-rgb) / <alpha-value>)',
+        subtle: 'rgb(var(--bg-subtle-rgb) / <alpha-value>)',
+        primary: 'rgb(var(--text-primary-rgb) / <alpha-value>)',
+        secondary: 'rgb(var(--text-secondary-rgb) / <alpha-value>)',
+        muted: 'rgb(var(--text-muted-rgb) / <alpha-value>)',
+        accent: 'rgb(var(--accent-rgb) / <alpha-value>)',
+        'accent-hover': 'rgb(var(--accent-hover-rgb) / <alpha-value>)',
+        danger: 'rgb(var(--danger-rgb) / <alpha-value>)',
+        success: 'rgb(var(--success-rgb) / <alpha-value>)',
+        warning: 'rgb(var(--warning-rgb) / <alpha-value>)',
         border: {
-          DEFAULT: '#E5E5E5',
-          strong: '#D4D4D4',
+          DEFAULT: 'rgb(var(--border-rgb) / <alpha-value>)',
+          strong: 'var(--border-strong)',
         },
-        text: {
-          primary: '#0A0A0A',
-          secondary: '#6B6B6B',
-          muted: '#A3A3A3',
-        },
-        accent: {
-          DEFAULT: '#0A0A0A',
-          hover: '#262626',
-        },
-        danger: '#DC2626',
-        success: '#16A34A',
-        warning: '#CA8A04',
       },
       borderRadius: {
-        DEFAULT: '4px',
-        sm: '2px',
-        md: '4px',
-        lg: '6px',
+        DEFAULT: '12px',
+        sm: '8px',
+        md: '12px',
+        lg: '16px',
+        xl: '24px',
       },
       height: {
         input: '36px',

@@ -4,14 +4,7 @@
  * Inspired by Payload's plugin and Strapi's provider patterns.
  * Plugins can extend collections, inject middleware, and add hooks.
  */
-import { Express } from 'express';
-import { CMSConfig } from '@zenith/types';
-
-export interface ZenithPlugin {
-  name: string;
-  version?: string;
-  apply: (config: CMSConfig, app?: Express) => CMSConfig | void;
-}
+import { CMSConfig, ZenithPlugin } from '@zenith/types';
 
 export type PluginFactory<TOptions = Record<string, unknown>> = (options: TOptions) => ZenithPlugin;
 
@@ -33,6 +26,10 @@ export function applyPlugins(config: CMSConfig, plugins: ZenithPlugin[]): CMSCon
  */
 export const seoPlugin: ZenithPlugin = {
   name: 'zenith-seo',
+  version: '1.2.4',
+  description: 'Enterprise-grade SEO metadata suite. Injects meta titles, descriptions, and OpenGraph fields into enabled collections.',
+  author: 'ROOT_KERNEL',
+  downloads: 12402,
   apply: (config) => {
     const updated = { ...config };
     updated.collections = config.collections.map(col => {
@@ -57,6 +54,10 @@ export const seoPlugin: ZenithPlugin = {
 export function slugPlugin(options: { from: string } = { from: 'title' }): ZenithPlugin {
   return {
     name: 'zenith-slug',
+    version: '1.0.8',
+    description: 'Dynamic URL routing engine. Automatically generates SEO-friendly slugs from title fields.',
+    author: 'ROOT_KERNEL',
+    downloads: 8920,
     apply: (config) => {
       const updated = { ...config };
       updated.collections = config.collections.map(col => {

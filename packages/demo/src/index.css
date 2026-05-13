@@ -10,10 +10,23 @@
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
   --accent: #10b981;
+  --bg-color: #030303;
+  --text-color: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.4);
+}
+
+.light {
+  --glass-bg: rgba(0, 0, 0, 0.03);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --text-muted: rgba(0, 0, 0, 0.4);
 }
 
 body {
-  @apply bg-[#030303] text-white selection:bg-emerald-500/30;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  @apply selection:bg-emerald-500/30 transition-colors duration-500;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }

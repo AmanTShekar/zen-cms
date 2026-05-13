@@ -26,7 +26,7 @@ router.get('/:collection/:id', async (req: Request, res: Response, next) => {
       collectionName: req.params.collection,
       documentId: req.params.id,
     })
-      .sort({ createdAt: -1 })
+      .sort({ timestamp: -1 })
       .limit(50)
       .lean();
 
@@ -47,17 +47,22 @@ router.post('/:collection/:id/:versionId/restore', async (req: Request, res: Res
     const version = await VersionModel.findById(req.params.versionId).lean() as any;
     if (!version) throw new NotFoundError('Version', req.params.versionId);
 
-    // Get the model for this collection
-    const Model = mongoose.model(req.params.collection);
+    const isGlobal = req.params.collection === 'globals';
+    const modelName = isGlobal ? req.params.id : req.params.collection;
+    const documentId = req.params.id;
+
+    // Get the model for this collection/global
+    const Model = mongoose.models[modelName] || mongoose.model(modelName);
 
     // Restore the document to the version snapshot
-    const restored = await Model.findByIdAndUpdate(
-      req.params.id,
+    const query = isGlobal ? {} : { _id: documentId };
+    const restored = await Model.findOneAndUpdate(
+      query,
       { $set: version.snapshot },
-      { new: true }
+      { new: true, upsert: isGlobal }
     );
 
-    if (!restored) throw new NotFoundError(req.params.collection, req.params.id);
+    if (!restored) throw new NotFoundError(modelName, documentId);
 
     res.json(createResponse({ message: 'Version restored successfully', document: restored }));
   } catch (err) { next(err); }

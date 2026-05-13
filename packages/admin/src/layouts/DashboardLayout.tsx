@@ -1,323 +1,356 @@
-import React, { type ReactNode } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, Outlet } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Database, 
-  Users, 
   Settings, 
   LogOut, 
   Menu, 
   X, 
-  Bell,
-  ChevronRight,
-  User as UserIcon,
-  Activity,
-  ShieldCheck,
+  Moon, 
+  Sun,
   Box,
-  Image as ImageIcon,
-  Globe,
-  Layout
+  Puzzle,
+  Command,
+  Sparkles,
+  ShieldCheck,
+  Workflow,
+  Users
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import { useTheme } from '../context/ThemeContext';
+import { cn } from '../lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../lib/api';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-import logo from '../assets/logo.svg';
-import CommandPalette from '../components/CommandPalette';
 
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import Logo from '../components/Logo';
+import GlobalSearch from '../components/GlobalSearch';
 
-interface DashboardLayoutProps {
-  children: ReactNode;
-}
-
-interface CollectionInfo {
-  slug: string;
-  name: string;
-}
-
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
-  const { user, logout } = useAuthStore();
+const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+  const { logout, user } = useAuthStore();
+  const { theme, toggleTheme } = useTheme();
+  const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [, setCommandPaletteOpen] = useState(false);
+  const [collections, setCollections] = useState<any[]>([]);
+  const [globals, setGlobals] = useState<any[]>([]);
+  const [health, setHealth] = useState<any>(null);
   const location = useLocation();
-  const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
-  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = React.useState(false);
-  const [collections, setCollections] = React.useState<CollectionInfo[]>([]);
 
-  React.useEffect(() => {
-    const fetchCollections = async () => {
+  useEffect(() => {
+    // SYSTEM HANDSHAKE
+    const fetchMetadata = async () => {
       try {
-        const res = await api.get('/health');
-        const cols = res.data.data.collections.map((c: any) => ({ 
-          slug: c.slug, 
-          name: c.labels?.plural || c.name || c.slug,
-          isSingleton: c.singleton 
-        }));
-        const globs = (res.data.data.globals || []).map((g: any) => ({ 
-          slug: g.slug, 
-          name: g.name || g.slug,
-          isSingleton: true 
-        }));
-        setCollections([...cols, ...globs]);
+        const response = await api.get('/health');
+        const data = response.data.data;
+        setCollections(data.collections || data.registry?.collections || []);
+        setGlobals(data.globals || data.registry?.globals || []);
+        setHealth(data);
       } catch (err) {
-        console.error('Failed to fetch collections');
+        console.error('System Handshake Failed');
       }
     };
-    fetchCollections();
-  }, []);
 
-  React.useEffect(() => {
+    // KEYBOARD INTERRUPTS
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        setIsCommandPaletteOpen(prev => !prev);
+        setCommandPaletteOpen(prev => !prev);
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-  };
+    fetchMetadata();
+    window.addEventListener('keydown', handleKeyDown);
+    const interval = setInterval(fetchMetadata, 30000);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      clearInterval(interval);
+    };
+  }, []);
 
   const navItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
-    { name: 'Media Library', path: '/media', icon: ImageIcon },
-    { name: 'Playground', path: '/playground', icon: Box },
-    { name: 'Audit Logs', path: '/audit-logs', icon: Activity, role: ['admin'] },
-    { 
-      name: 'System Admin', 
-      icon: ShieldCheck, 
-      role: ['admin'],
-      children: [
-        { name: 'General Settings', path: '/settings?tab=general', icon: Settings },
-        { name: 'Security & WAF', path: '/settings?tab=security', icon: ShieldCheck },
-        { name: 'Notifications', path: '/settings?tab=notifications', icon: Bell },
-        { name: 'Database Stats', path: '/settings?tab=database', icon: Database },
-        { name: 'User Management', path: '/users', icon: Users },
-      ]
-    },
+    { name: 'AI Content Hub', path: '/ai-architect', icon: Sparkles },
+    { name: 'Automations', path: '/automations', icon: Workflow },
+    { name: 'Plugins', path: '/plugins', icon: Puzzle },
+    { name: 'Media Library', path: '/media', icon: Box },
   ];
 
-  const filteredNavItems = navItems.filter(item => 
-    !item.role || (user && item.role.includes(user.role))
-  );
-
-  const NavItem = ({ item, isSidebarOpen, location }: any) => {
-    const [isOpen, setIsOpen] = React.useState(
-      item.children?.some((c: any) => location.pathname + location.search === c.path)
-    );
-    const Icon = item.icon;
-    const isActive = location.pathname === item.path || 
-                   (item.path && item.path !== '/' && location.pathname.startsWith(item.path));
-    
-    if (item.children && isSidebarOpen) {
-      return (
-        <div className="flex flex-col gap-1">
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className={cn(
-              "sidebar-link w-full justify-between",
-              (isOpen || item.children.some((c: any) => location.pathname + location.search === c.path)) && "text-text-primary bg-app-subtle/50"
-            )}
-          >
-            <div className="flex items-center gap-3">
-              <Icon size={20} />
-              <span>{item.name}</span>
+  return (
+    <div 
+      className={cn(
+        "flex h-full w-full transition-colors duration-500 font-sans",
+        theme === 'dark' ? "bg-black text-white" : "bg-[#fafafa] text-gray-900"
+      )}
+    >
+      {/* 🛡️ Compact Tactical Sidebar */}
+      <motion.aside 
+        initial={false}
+        animate={{ width: isSidebarOpen ? 260 : 90 }}
+        className={cn(
+          "h-full flex-shrink-0 flex flex-col border-r z-50 transition-colors duration-500 relative",
+          theme === 'dark' ? "bg-[#080808] border-white/5 shadow-2xl" : "bg-white border-gray-100 shadow-sm"
+        )}
+      >
+        {/* Brand Terminal */}
+        <div className="h-20 flex items-center justify-between px-6 border-b border-white/[0.03]">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className={cn(
+              "w-9 h-9 rounded-none flex items-center justify-center flex-shrink-0 transition-all relative overflow-hidden",
+              theme === 'dark' ? "bg-white text-black" : "bg-gray-900 text-white"
+            )}>
+              <Logo size="sm" />
+              {/* SYSTEM PULSE */}
+              <motion.div 
+                animate={{ opacity: [0.1, 0.4, 0.1], scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute inset-0 bg-indigo-500/20"
+              />
             </div>
-            <ChevronRight size={14} className={cn("transition-transform", isOpen && "rotate-90")} />
-          </button>
-          {isOpen && (
-            <div className="ml-4 pl-4 border-l border-border flex flex-col gap-1 mt-1 mb-2">
-              {item.children.map((child: any) => {
-                const ChildIcon = child.icon;
-                const isChildActive = location.pathname + location.search === child.path || (child.path.split('?')[0] === location.pathname && location.search === '');
+            <AnimatePresence>
+               {isSidebarOpen && (
+                 <motion.div initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col min-w-0">
+                   <div className="flex items-center gap-2">
+                     <span className="text-lg font-black tracking-tight uppercase italic leading-none">Zenith</span>
+                     <div className="w-1 h-1 bg-emerald-500 rounded-none animate-pulse" />
+                   </div>
+                   <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em] italic leading-none mt-1.5">v6.0 Stable</span>
+                 </motion.div>
+               )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Navigation Core */}
+        <div className="flex-1 overflow-y-auto no-scrollbar py-8 px-4 space-y-10">
+          <nav className="space-y-1.5">
+            <div className="px-3 mb-4 flex items-center justify-between">
+               {isSidebarOpen && <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] italic leading-none">Command Center</span>}
+               <Command size={10} className="text-gray-500" />
+            </div>
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link 
+                  key={item.name} 
+                  to={item.path}
+                  className={cn(
+                    "flex items-center gap-4 px-4 py-3 rounded-none transition-all group relative border",
+                    isActive 
+                      ? (theme === 'dark' ? "bg-white border-white text-black shadow-lg shadow-white/5" : "bg-gray-900 border-gray-800 text-white shadow-xl") 
+                      : (theme === 'dark' ? "text-gray-500 border-transparent hover:bg-white/[0.03] hover:text-gray-300" : "text-gray-500 border-transparent hover:bg-gray-100 hover:text-gray-900")
+                  )}
+                >
+                  <item.icon size={16} strokeWidth={isActive ? 3 : 1.5} className={cn("transition-transform relative z-10", isActive ? "scale-110" : "group-hover:scale-110")} />
+                  {isSidebarOpen && <span className="text-[12px] font-black uppercase tracking-[0.1em] relative z-10 italic leading-none truncate">{item.name}</span>}
+                  {isActive && !isSidebarOpen && (
+                    <motion.div layoutId="nav-glow-mini" className="absolute left-0 w-1 h-4 bg-indigo-500 rounded-none" />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+
+           <nav className="space-y-1.5 pt-4 border-t border-white/[0.03]">
+             <div className="px-3 mb-4 flex items-center justify-between">
+                {isSidebarOpen && <span className="text-[12px] font-black text-indigo-500 uppercase tracking-[0.4em] italic leading-none">Global Settings</span>}
+                <ShieldCheck size={10} className="text-indigo-500" />
+             </div>
+            
+            <div className="space-y-0.5">
+              {globals.map((global) => {
+                const isActive = location.pathname === `/globals/${global.slug}`;
                 return (
-                  <Link
-                    key={child.path}
-                    to={child.path}
+                  <Link 
+                    key={global.slug} 
+                    to={`/globals/${global.slug}`}
                     className={cn(
-                      "sidebar-link py-2 text-xs",
-                      isChildActive && "active"
+                      "flex items-center gap-4 px-4 py-3 rounded-none transition-all duration-300 group relative border",
+                      isActive 
+                        ? (theme === 'dark' ? "bg-white border-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]" : "bg-gray-900 border-gray-800 text-white shadow-xl") 
+                        : (theme === 'dark' ? "text-gray-500 border-white/5 hover:bg-white/[0.03] hover:text-gray-300" : "text-gray-500 border-gray-100 hover:bg-gray-100 hover:text-gray-900")
                     )}
                   >
-                    <ChildIcon size={16} />
-                    <span>{child.name}</span>
+                    <div className={cn(
+                      "w-2 h-2 rounded-none transition-all shadow-[0_0_10px_currentColor]",
+                      isActive ? (theme === 'dark' ? "bg-black" : "bg-emerald-400") : "bg-gray-700/40 group-hover:bg-indigo-500"
+                    )} />
+                    {isSidebarOpen && (
+                      <span className="text-[12px] font-black uppercase tracking-widest italic truncate">
+                        {global.slug === 'landing-page' ? 'Page Editor' : global.name.replace(/-/g, ' ').replace(/_/g, ' ')}
+                      </span>
+                    )}
                   </Link>
                 );
               })}
             </div>
-          )}
-        </div>
-      );
-    }
+          </nav>
 
-    return (
-      <Link
-        key={item.path}
-        to={item.path}
-        className={cn(
-          "sidebar-link",
-          isActive && "active",
-          !isSidebarOpen && "justify-center px-0"
-        )}
-        title={!isSidebarOpen ? item.name : undefined}
-      >
-        <Icon size={20} />
-        {isSidebarOpen && <span>{item.name}</span>}
-      </Link>
-    );
-  };
-
-  return (
-    <div className="min-h-screen bg-app-bg flex">
-      {/* Sidebar */}
-      <aside 
-        className={cn(
-          "bg-app-surface border-r border-border transition-all duration-300 flex flex-col",
-          isSidebarOpen ? "w-64" : "w-20"
-        )}
-      >
-        {/* Logo */}
-        <div className="h-16 border-b border-border flex items-center px-6 gap-3">
-          <div className="w-8 h-8 shrink-0">
-            <img src={logo} alt="Zenith Logo" className="w-full h-full object-contain" />
-          </div>
-          {isSidebarOpen && <span className="font-bold text-text-primary text-xl tracking-tight">Zenith CMS</span>}
+          <nav className="space-y-1.5">
+            <div className="px-3 mb-4 flex items-center justify-between">
+               {isSidebarOpen && <span className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em] italic leading-none">Collections</span>}
+               <Database size={10} className="text-gray-500" />
+            </div>
+            
+            <div className="space-y-0.5">
+              {collections.map((col) => {
+                const isActive = location.pathname.startsWith(`/collections/${col.slug}`);
+                return (
+                  <Link 
+                    key={col.slug} 
+                    to={`/collections/${col.slug}`}
+                    className={cn(
+                      "flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden",
+                      isActive 
+                        ? (theme === 'dark' ? "bg-white border-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]" : "bg-gray-900 border-gray-800 text-white shadow-xl") 
+                        : (theme === 'dark' ? "text-gray-400 border-white/5 hover:bg-white/[0.04] hover:text-white" : "text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-gray-900")
+                    )}
+                  >
+                    <div className={cn(
+                      "w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]",
+                      isActive ? (theme === 'dark' ? "bg-black scale-110" : "bg-emerald-400") : "bg-gray-700/40 group-hover:bg-indigo-500"
+                    )} />
+                    {isSidebarOpen && <span className="text-[12px] font-black uppercase tracking-tight italic leading-none truncate">{col.slug?.replace(/-/g, ' ').replace(/_/g, ' ').toUpperCase()}</span>}
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-4 flex flex-col gap-1 overflow-y-auto">
-          {filteredNavItems.map((item, idx) => (
-            <NavItem key={idx} item={item} isSidebarOpen={isSidebarOpen} location={location} />
-          ))}
-
-          {/* Global Sections */}
-          {isSidebarOpen && collections.some(c => c.isSingleton) && (
-            <div className="mt-6 mb-2 px-3 text-[10px] font-bold text-text-muted uppercase tracking-wider">
-              Sections
-            </div>
-          )}
-          {collections.filter(c => c.isSingleton).map((col) => {
-            const path = `/globals/${col.slug}`;
-            const isActive = location.pathname === path || location.pathname.startsWith(`/globals/${col.slug}`);
-            
-            return (
-              <Link
-                key={col.slug}
-                to={path}
-                className={cn(
-                  "sidebar-link",
-                  isActive && "active",
-                  !isSidebarOpen && "justify-center px-0"
-                )}
-              >
-                <Globe size={18} />
-                {isSidebarOpen && <span>{col.name.replace(/globals\//, '')}</span>}
-              </Link>
-            );
-          })}
-
-          {/* Standard Collections */}
-          {isSidebarOpen && collections.some(c => !c.isSingleton) && (
-            <div className="mt-8 mb-2 px-3 text-[10px] font-bold text-text-muted uppercase tracking-wider">
-              Collections
-            </div>
-          )}
-          {collections.filter(c => !c.isSingleton).map((col) => {
-            const path = `/collections/${col.slug}`;
-            const isActive = location.pathname === path || location.pathname.startsWith(`/collections/${col.slug}`);
-            
-            return (
-              <Link
-                key={col.slug}
-                to={path}
-                className={cn(
-                  "sidebar-link",
-                  isActive && "active",
-                  !isSidebarOpen && "justify-center px-0"
-                )}
-              >
-                <Layout size={18} />
-                {isSidebarOpen && <span>{col.name}</span>}
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* User Profile / Logout */}
-        <div className="p-4 border-t border-border flex flex-col gap-1">
-          <button
-            onClick={handleLogout}
+        {/* Footer */}
+        <div className="p-4 border-t border-white/[0.03] bg-black/[0.02]">
+          <button 
+            onClick={logout}
             className={cn(
-              "sidebar-link text-danger hover:bg-danger/10 hover:text-danger",
-              !isSidebarOpen && "justify-center px-0"
+              "w-full flex items-center justify-center gap-4 py-3.5 rounded-none transition-all group border border-transparent hover:border-red-500/20",
+              theme === 'dark' ? "bg-red-500/5 text-red-400 hover:bg-red-500/10" : "bg-red-50 text-red-600 hover:bg-red-100 shadow-sm"
             )}
-            title={!isSidebarOpen ? "Logout" : undefined}
           >
-            <LogOut size={20} />
-            {isSidebarOpen && <span>Logout</span>}
+            <LogOut size={16} className="group-hover:-translate-x-1 transition-transform" />
+            {isSidebarOpen && <span className="text-[10px] font-black uppercase tracking-[0.2em] italic">Logout</span>}
           </button>
         </div>
-      </aside>
+      </motion.aside>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        <header className="h-16 bg-app-surface border-b border-border flex items-center justify-between px-8 sticky top-0 z-10">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2 hover:bg-app-subtle rounded text-text-secondary"
-            >
-              {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-
-            {/* Breadcrumbs */}
-            <div className="flex items-center gap-2 text-sm text-text-secondary">
-              <span>Admin</span>
-              <ChevronRight size={14} />
-              <span className="text-text-primary font-medium">
-                {navItems.find(i => location.pathname === i.path || (i.path !== '/' && location.pathname.startsWith(i.path)))?.name || 'Dashboard'}
-              </span>
+      {/* 🚀 Dynamic Main Node */}
+      <main className={cn(
+        "flex-1 flex flex-col min-w-0 relative h-full overflow-hidden transition-colors duration-500",
+        theme === 'dark' ? "bg-black" : "bg-[#fafafa]"
+      )}>
+        <div className="flex-1 flex flex-col overflow-auto">
+          <header className={cn(
+            "h-20 flex items-center justify-between px-8 border-b z-40 transition-colors duration-500 backdrop-blur-xl shrink-0",
+            theme === 'dark' ? "bg-black/60 border-white/5" : "bg-white/60 border-gray-100"
+          )}>
+            <div className="flex items-center gap-4">
+               <button 
+                 onClick={() => setSidebarOpen(!isSidebarOpen)}
+                 title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+                 className={cn("p-2 rounded-none transition-all border", theme === 'dark' ? "bg-white/5 border-white/10 text-gray-400" : "bg-gray-50 border-gray-100 text-gray-400")}
+               >
+                 {isSidebarOpen ? <X size={18} /> : <Menu size={18} />}
+               </button>
+               <GlobalSearch />
             </div>
-          </div>
 
-          <div className="flex items-center gap-3">
-            <button className="p-2 hover:bg-app-subtle rounded text-text-secondary relative">
-              <Bell size={20} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-danger rounded-full border-2 border-app-surface"></span>
-            </button>
-            <div className="w-px h-6 bg-border mx-2"></div>
-            <div className="flex items-center gap-3 pl-2">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-text-primary">{user?.email}</p>
-                <p className="text-xs text-text-muted capitalize">{user?.role}</p>
+            <div className="flex items-center gap-5">
+              {/* Tactical Clock */}
+              <div className="hidden lg:flex flex-col items-end mr-4">
+                 <span className="text-[10px] font-black italic tracking-tighter tabular-nums leading-none">
+                    {new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                 </span>
+                 <span className="text-[7px] font-bold text-gray-500 uppercase tracking-widest mt-1">Universal Time</span>
               </div>
-              <div className="w-8 h-8 bg-app-subtle rounded-full flex items-center justify-center border border-border">
-                <UserIcon size={18} className="text-text-secondary" />
+
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/5 rounded-none border border-emerald-500/10 group cursor-help">
+                 <div className="w-1 h-1 bg-emerald-500 rounded-none animate-pulse shadow-[0_0_8px_#10b981]" />
+                 <span className="text-[8px] font-black uppercase tracking-widest text-emerald-500 italic">Core_Stable</span>
+                 {/* Status Tooltip Mock */}
+                 <div className="absolute top-full mt-2 right-0 hidden group-hover:block z-50">
+                    <div className={cn(
+                      "p-3 border rounded-none shadow-2xl min-w-[200px]",
+                      theme === 'dark' ? "bg-[#0a0a0a] border-white/10" : "bg-white border-gray-200"
+                    )}>
+                       <div className="flex flex-col gap-2">
+                          <div className="flex items-center justify-between">
+                             <span className="text-[8px] font-black text-gray-500 uppercase">Latency</span>
+                             <span className="text-[8px] font-black text-emerald-500">14ms</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                             <span className="text-[8px] font-black text-gray-500 uppercase">Uptime</span>
+                             <span className="text-[8px] font-black text-emerald-500">99.9%</span>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+              
+              <Link 
+                 to="/settings"
+                 title="System Settings"
+                 className={cn(
+                   "p-2 rounded-none border transition-all",
+                   theme === 'dark' ? "bg-white/5 border-white/10 text-gray-400" : "bg-gray-50 border-gray-100 text-gray-600"
+                 )}
+               >
+                 <Settings size={16} />
+               </Link>
+
+              <button 
+                onClick={toggleTheme}
+                title="Switch Visual Mode (Light/Dark)"
+                className={cn(
+                  "p-2 rounded-none border transition-all",
+                  theme === 'dark' ? "bg-white/5 border-white/10 text-amber-400" : "bg-gray-50 border-gray-100 text-gray-600"
+                )}
+              >
+                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              </button>
+
+               <div className="flex items-center gap-3 group cursor-pointer" title="User Profile">
+                 <div className="flex flex-col items-end">
+                   <span className="text-[9px] font-black uppercase italic leading-none">{user?.name || 'Operator'}</span>
+                   <span className="text-[7px] font-bold text-gray-500 uppercase tracking-widest mt-1">Admin</span>
+                 </div>
+                <div className={cn(
+                  "w-8 h-8 rounded-none flex items-center justify-center text-[10px] font-black shadow-xl transition-all",
+                  theme === 'dark' ? "bg-white text-black" : "bg-gray-900 text-white"
+                )}>
+                  {(user?.name || 'A')[0].toUpperCase()}
+                </div>
               </div>
             </div>
-          </div>
-        </header>
+          </header>
 
-        {/* Content Area */}
-        <div className="flex-1 p-8 overflow-auto">
-          <div className="max-w-6xl mx-auto">
-            {children}
+          <div className="flex-1 overflow-y-auto no-scrollbar scroll-smooth p-6">
+             <AnimatePresence>
+                {health?.maintenanceMode && (
+                  <motion.div 
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="mb-6 overflow-hidden"
+                  >
+                    <div className="bg-amber-500 text-black p-4 flex items-center justify-between shadow-[0_0_20px_rgba(245,158,11,0.2)] border border-amber-600">
+                      <div className="flex items-center gap-4">
+                        <div className="w-8 h-8 bg-black/10 flex items-center justify-center animate-pulse">
+                          <X size={16} />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em] leading-none mb-1">System Alert: Maintenance Protocol Active</span>
+                          <span className="text-[8px] font-bold opacity-80 uppercase tracking-widest leading-none">External handshakes are currently throttled for database optimization.</span>
+                        </div>
+                      </div>
+                      <Link to="/settings" className="px-4 py-2 bg-black text-white text-[8px] font-black uppercase tracking-widest hover:bg-black/80 transition-all">Configure</Link>
+                    </div>
+                  </motion.div>
+                )}
+             </AnimatePresence>
+             {children || <Outlet />}
           </div>
         </div>
       </main>
-
-      {/* Command Palette */}
-      <CommandPalette 
-        isOpen={isCommandPaletteOpen} 
-        onClose={() => setIsCommandPaletteOpen(false)} 
-      />
     </div>
   );
 };
