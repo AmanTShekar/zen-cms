@@ -33,12 +33,12 @@ Zenith is a **Visual-First, Pro-Code Operational Platform.**
 
 It was engineered for organizations that demand surgical precision, hyper-performance, and absolute architectural control. Zenith bridges the gap between complex backend engineering and high-velocity visual orchestration. It is the **Central Processing Nucleus** for your digital identity.
 
-### Why choose Zenith over a regular CMS?
-*   **Industrial Nucleus**: A hardened, type-safe Express kernel designed for zero-latency operations.
-*   **Visual-First Schema**: Define complex data structures visually while maintaining strict Git-based versioning.
-*   **Neural Bridge**: Advanced event-driven architecture with built-in HMAC signing and exponential backoff.
-*   **Spatial Editor**: A revolutionary 2D canvas for orchestrating content layouts with pixel-perfect precision.
-*   **AI-Native DNA**: Built-in AI writing assistants and automated content lifecycle management.
+### Industrial Advantages
+*   **Hybrid Data Engine**: Seamlessly switch between MongoDB (Elastic) and PostgreSQL (Relational) via the Unified Adapter Layer.
+*   **Zod AOT Validation**: Schema enforcement is compiled ahead-of-time for maximum server-side efficiency.
+*   **Spatial Content Mapping**: Orchestrate complex content relationships on a limitless 2D canvas, built for high-density information architecture.
+*   **Neural Bridge**: A state-of-the-art webhook engine with built-in HMAC signing, exponential backoff, and delivery auditing.
+*   **Pro-Code Extensibility**: Every aspect of the nucleus—from the API layer to the Admin dashboard—is 100% extensible via the Plugin Nucleus.
 
 ---
 
@@ -63,7 +63,22 @@ Before starting with Zenith, ensure you have the [required software](./docs/INST
 npx create-zenith-app@latest
 ```
 
-**New to Zenith?** Start with the **Industrial Website Template**. It demonstrates the full power of the Nucleus, including custom Rich Text blocks, on-demand revalidation, and live preview—all built with React 19 and Tailwind.
+---
+
+## Blueprints and Plugins
+
+Zenith is designed to be the foundation of your digital ecosystem.
+
+### Industrial Blueprints
+Jumpstart your next project with a production-ready example. These are end-to-end solutions designed for market speed.
+*   **Website**: High-performance marketing site with Next.js 19.
+*   **Ecommerce**: Scalable storefront with inventory management.
+*   **Docs Portal**: Content-focused portal for technical knowledge.
+[Explore all Blueprints](./docs/EXAMPLES.md)
+
+### Plugin Nucleus
+Extend the platform with modular, isolated plugins. From SEO management to Cloud Storage integration, our official and community plugins have you covered.
+[Learn more about Plugins](./docs/PLUGINS.md)
 
 ---
 
@@ -72,31 +87,31 @@ npx create-zenith-app@latest
 Deploy Zenith in seconds to high-performance infrastructure.
 
 ### Deploy on Vercel
-All-in-one on Vercel — one click to deploy Zenith with a **Next.js** front end, **MongoDB Atlas**, and **Vercel Blob** for media.
 [![Deploy with Vercel](https://vercel.com/button)](https://dub.sh/zenith-vercel)
 
 ### Deploy on Cloudflare
-Fully self-contained — one click to deploy Zenith with **Workers**, **R2** for uploads, and **D1** for relational data.
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://dub.sh/zenith-cloudflare)
+
+---
+
+## Community & Support
+
+Need help or want to join the conversation? Zenith is supported by a growing community of industrial engineers.
+
+*   **GitHub Discussions**: Ask questions and share ideas.
+*   **Discord Server**: Real-time chat with the core team.
+*   **Community Help**: Documentation and guides.
+*   **X (Twitter)**: Follow us for the latest Nucleus updates.
 
 ---
 
 ## Architecture: The Nucleus
 
-Zenith is not just a repository; it is a **Modular Kernel.**
+Zenith is a **Modular Kernel** built on three industrial pillars:
 
-1.  **The Kernel**: A hardened, type-safe Express core that handles the complex logic of content orchestration.
-2.  **The Adapters**: Native support for **MongoDB** (Elastic) and **PostgreSQL** (Relational via Drizzle).
-3.  **The SDK**: A lightweight, type-safe client that makes fetching content feel like native code.
-
----
-
-## Security & Integrity
-
-Zenith is **Hardened by Design.** We follow the **"Air-Tight Protocol":**
-*   **Zero-Trust Ingress**: Every payload is validated by the **Zod AOT** engine.
-*   **Audit-First Mutation**: Every change is logged with surgical precision for enterprise transparency.
-*   **Neural Security**: Outgoing webhooks are HMAC-signed to ensure integration integrity.
+1.  **The Kernel**: A hardened, type-safe Express core handling content orchestration.
+2.  **The Adapters**: Native support for **MongoDB** and **PostgreSQL**.
+3.  **The SDK**: A lightweight, type-safe client for native-feeling content fetching.
 
 ---
 

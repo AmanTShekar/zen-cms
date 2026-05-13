@@ -1,6 +1,11 @@
 # Contributing to Zenith CMS
 
-First of all, thank you for showing interest in contributing to Zenith! We believe in building the world's most powerful industrial operational platform, and we welcome developers who share that vision.
+## Foundational Principles
+
+1.  **Industrial Reliability**: Every feature must be built for 99.99% uptime and high-throughput environments.
+2.  **Architectural Integrity**: We strictly enforce monorepo boundaries and lazy-loading patterns to prevent kernel bloat.
+3.  **Pro-Code Control**: We prioritize programmatic flexibility over restrictive no-code abstractions.
+4.  **Zero-Trust Security**: Validation and auditing are not optional; they are the baseline for every mutation.
 
 ---
 
