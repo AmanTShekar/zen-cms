@@ -176,9 +176,11 @@ const SpatialEditor: React.FC<{ isGlobal?: boolean }> = ({ isGlobal }) => {
       setLoading(true);
       try {
         const res = isGlobal ? await api.get(`/globals/landing-page`) : await api.get(`/pages/${id}`);
-        const normalizedSections = (res.data.data.sections || []).map((s: any) => ({
+let globalNodeCounter = 0;
+
+        const normalizedSections = (res.data.data.sections || []).map((s: Record<string, unknown>) => ({
           ...s,
-          id: s.id || `node_${Math.random().toString(36).substr(2, 9)}`,
+          id: s.id || `node_${globalNodeCounter++}`,
           content: s.content || s.blockData || {}
         }));
         setData({ ...res.data.data, sections: normalizedSections });
@@ -187,7 +189,7 @@ const SpatialEditor: React.FC<{ isGlobal?: boolean }> = ({ isGlobal }) => {
         const docId = isGlobal ? 'landing-page' : id;
         const historyRes = await api.get(`/versions/${collection}/${docId}`);
         setHistory(historyRes.data.data || []);
-      } catch (err) {
+      } catch {
         toast.error('Failed to sync editor');
       } finally {
         setTimeout(() => setLoading(false), 500);
@@ -202,7 +204,7 @@ const SpatialEditor: React.FC<{ isGlobal?: boolean }> = ({ isGlobal }) => {
       if (isGlobal) await api.patch(`/globals/landing-page`, data);
       else await api.patch(`/pages/${id}`, data);
       toast.success('Changes saved successfully');
-    } catch (err) {
+    } catch {
       toast.error('Failed to save changes');
     } finally {
       setSaving(false);
@@ -213,13 +215,13 @@ const SpatialEditor: React.FC<{ isGlobal?: boolean }> = ({ isGlobal }) => {
     const block = BLOCK_LIBRARY.find(b => b.type === blockType);
     if (!block) return;
     const newSection = {
-      id: Math.random().toString(36).substring(7),
+      id: `block_${globalNodeCounter++}`,
       blockType: block.type,
       title: block.title,
       content: { ...block.defaultContent }
     };
-    setData((prev: any) => {
-      const sections = [...(prev.sections || [])];
+    setData((prev: Record<string, unknown>) => {
+      const sections = Array.isArray(prev.sections) ? [...prev.sections] : [];
       if (injectionIndex !== null) sections.splice(injectionIndex, 0, newSection);
       else sections.push(newSection);
       return { ...prev, sections };
@@ -241,7 +243,7 @@ const SpatialEditor: React.FC<{ isGlobal?: boolean }> = ({ isGlobal }) => {
   };
 
   const removeSection = (id: string) => {
-     setData((prev: any) => ({ ...prev, sections: prev.sections.filter((s: any) => s.id !== id) }));
+     setData((prev: Record<string, unknown>) => ({ ...prev, sections: Array.isArray(prev.sections) ? prev.sections.filter((s: Record<string, unknown>) => s.id !== id) : [] }));
      if (activeSection === id) setActiveSection(null);
      toast.error('Section removed');
   };
@@ -254,15 +256,15 @@ const SpatialEditor: React.FC<{ isGlobal?: boolean }> = ({ isGlobal }) => {
       const res = await api.post(`/versions/${collection}/${docId}/${versionId}/restore`);
       setData(res.data.data.document);
       toast.success('Version restored');
-    } catch (err) {
+    } catch {
       toast.error('Restore failed');
     } finally {
       setSaving(false);
     }
   };
 
-  const handleReorder = (newSections: any[]) => {
-    setData((prev: any) => ({ ...prev, sections: newSections }));
+  const handleReorder = (newSections: Record<string, unknown>[]) => {
+    setData((prev: Record<string, unknown>) => ({ ...prev, sections: newSections }));
   };
 
   const getSmartMode = (key: string): EditorMode => {
@@ -369,7 +371,7 @@ const SpatialEditor: React.FC<{ isGlobal?: boolean }> = ({ isGlobal }) => {
                           <span className="text-[8px] font-black text-white italic opacity-10">{data?.sections?.length || 0} Layers</span>
                        </div>
                       <Reorder.Group axis="y" values={data?.sections || []} onReorder={handleReorder} className="space-y-1">
-                         {data?.sections?.map((section: any) => (
+                         {data?.sections?.map((section: Record<string, unknown>) => (
                             <Reorder.Item key={section.id} value={section} className="relative group">
                                <button 
                                  onClick={() => setActiveSection(section.id)}
@@ -441,7 +443,7 @@ const SpatialEditor: React.FC<{ isGlobal?: boolean }> = ({ isGlobal }) => {
 
                    {/* Modular Sections */}
                    <Reorder.Group axis="y" values={data?.sections || []} onReorder={handleReorder} className="space-y-8">
-                      {data?.sections?.map((section: any, idx: number) => (
+                      {data?.sections?.map((section: Record<string, unknown>, idx: number) => (
                          <Reorder.Item key={section.id} value={section} className="relative group/item">
                             <div className="relative h-4 group/portal -mt-2">
                                <button onClick={() => { setInjectionIndex(idx); setBlockPickerOpen(true); }} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover/portal:opacity-100 transition-all z-20">

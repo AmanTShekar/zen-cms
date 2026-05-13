@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { 
   Settings, 
@@ -30,12 +30,31 @@ import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useTheme } from '../context/ThemeContext';
 
+interface Settings {
+  siteName: string;
+  publicUrl: string;
+  maintenanceMode: boolean;
+  jwtExpiresIn: string;
+  passwordMinLength: number;
+  customCSS: string;
+  smtpHost: string;
+  smtpPort: number;
+  smtpUser: string;
+  smtpPass: string;
+  fromEmail: string;
+  rateLimitWindow: number;
+  rateLimitMax: number;
+  aiModel: string;
+  aiApiKey: string;
+  enableTelemetry: boolean;
+}
+
 const SettingsPage = () => {
   const { theme } = useTheme();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const [activeTab, setActiveTab] = useState(queryParams.get('tab') || 'general');
-  const [settings, setSettings] = useState<any>({
+  const [settings, setSettings] = useState<Settings>({
     siteName: '',
     publicUrl: '',
     maintenanceMode: false,
@@ -61,7 +80,7 @@ const SettingsPage = () => {
   const [apiKeys, setApiKeys] = useState<any[]>([]);
   const [newKey, setNewKey] = useState<any>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [settingsRes, dbRes, usersRes, keysRes] = await Promise.all([
@@ -79,11 +98,11 @@ const SettingsPage = () => {
     } finally {
       setTimeout(() => setLoading(false), 300);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   useEffect(() => {
     const tab = queryParams.get('tab');

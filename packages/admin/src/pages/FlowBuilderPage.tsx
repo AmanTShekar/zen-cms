@@ -9,25 +9,19 @@ import {
   Database, 
   Trash2,
   Clock,
-  Activity,
   Terminal,
   Workflow,
-  Braces,
-  Save,
-  GripVertical,
-  ChevronRight,
-  X,
-  Play,
-  Loader2,
   Code2,
   Variable,
   Layers,
-  ArrowDown,
-  Info,
-  Maximize2,
+  Save,
+  GripVertical,
+  X,
+  Play,
+  Loader2,
   History,
   CheckCircle2,
-  AlertCircle
+  Info
 } from 'lucide-react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import api from '../lib/api';
@@ -38,7 +32,7 @@ interface FlowStep {
   id: string;
   type: string;
   name: string;
-  config: any;
+  config: Record<string, unknown>;
 }
 
 interface Flow {
@@ -48,7 +42,7 @@ interface Flow {
   active: boolean;
   trigger: {
     type: 'webhook' | 'collection_change' | 'schedule';
-    config: any;
+    config: Record<string, unknown>;
   };
   steps: FlowStep[];
 }
@@ -76,10 +70,6 @@ const FlowBuilderPage: React.FC = () => {
   const [showNodeMenu, setShowNodeMenu] = useState(false);
   const [viewMode, setViewMode] = useState<'visual' | 'code'>('visual');
 
-  useEffect(() => {
-    fetchFlows();
-  }, []);
-
   const fetchFlows = async () => {
     try {
       const res = await api.get('/flows');
@@ -90,6 +80,10 @@ const FlowBuilderPage: React.FC = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchFlows();
+  }, []);
 
   const createNewFlow = () => {
     const newFlow: Flow = {
@@ -141,7 +135,7 @@ const FlowBuilderPage: React.FC = () => {
     if (!selectedFlow) return;
     const type = STEP_TYPES.find(t => t.id === typeId);
     const newStep: FlowStep = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: `step_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
       type: typeId,
       name: type?.name || 'New Step',
       config: typeId === 'transform' ? { script: '// Execute custom logic\nreturn payload;' } : { message: '', target: '' }

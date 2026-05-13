@@ -1,6 +1,6 @@
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { Loader2, Plus, Trash2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import RichTextEditor from './RichTextEditor';
 import MediaPicker from './MediaPicker';
 import BlocksBuilder from './BlocksBuilder';

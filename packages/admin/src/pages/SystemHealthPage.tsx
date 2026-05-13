@@ -1,13 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Activity, 
   ShieldCheck, 
   Server, 
   Cpu, 
   Database, 
   RefreshCw, 
-  AlertCircle,
   Zap,
   Terminal,
   Signal,
@@ -18,16 +16,77 @@ import {
   Network,
   Radio
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import api from '../lib/api';
 import { cn } from '../lib/utils';
 import { useTheme } from '../context/ThemeContext';
 import { toast } from 'react-hot-toast';
 
+interface TelemetryCardProps {
+  title: string;
+  status: string;
+  icon: React.ElementType;
+  detail: string | number;
+  subdetail: string;
+  trend?: boolean;
+  theme: 'light' | 'dark';
+}
+
+const TelemetryCard = ({ title, status, icon: Icon, detail, subdetail, trend, theme }: TelemetryCardProps) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    className={cn(
+      "p-8 border rounded-none transition-all duration-500 relative group overflow-hidden",
+      theme === 'dark' 
+        ? "bg-white/[0.02] border-white/[0.05] hover:border-white/10" 
+        : "bg-white border-gray-100 hover:border-gray-300 shadow-sm"
+    )}
+  >
+    <div className="absolute top-0 right-0 p-8 text-indigo-500/[0.02] pointer-events-none group-hover:text-indigo-500/[0.05] transition-colors">
+       <Icon size={100} strokeWidth={0.5} />
+    </div>
+
+    <div className="flex items-center justify-between mb-8 relative z-10">
+      <div className={cn(
+        "w-12 h-12 flex items-center justify-center transition-all",
+        theme === 'dark' ? "bg-white/5 text-white" : "bg-gray-900 text-white"
+      )}>
+        <Icon size={20} />
+      </div>
+      <div className={cn(
+        "flex items-center gap-3 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] italic border",
+        status === 'healthy' || status === 'up' || status === 'ok'
+          ? "bg-emerald-500/5 text-emerald-500 border-emerald-500/10"
+          : "bg-amber-500/5 text-amber-500 border-amber-500/10"
+      )}>
+        <div className={cn(
+          "w-1.5 h-1.5 rounded-none",
+          status === 'healthy' || status === 'up' || status === 'ok' ? "bg-emerald-500 shadow-[0_0_8px_#10b981]" : "bg-amber-500"
+        )} />
+        {status === 'healthy' || status === 'up' || status === 'ok' ? 'Online' : 'Degraded'}
+      </div>
+    </div>
+
+    <div className="relative z-10">
+      <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] italic mb-3">{title}</p>
+      <h3 className="text-3xl font-black tracking-tighter uppercase italic leading-none">{detail}</h3>
+      <div className="flex items-center justify-between mt-4">
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic opacity-60">{subdetail}</p>
+        {trend && (
+          <span className="text-[9px] font-black text-emerald-500 uppercase tracking-tighter flex items-center gap-1">
+             <Zap size={10} /> Optimal
+          </span>
+        )}
+      </div>
+    </div>
+  </motion.div>
+);
+
 const SystemHealthPage = () => {
   const { theme } = useTheme();
   // --- INFRASTRUCTURE TELEMETRY STATE ---
-  const [health, setHealth] = useState<any>(null);
+  const [health, setHealth] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -36,7 +95,7 @@ const SystemHealthPage = () => {
    * Fetches real-time hardware and service health from the /system/health node.
    * This logic maintains the 'Live Pulse' of the administrative hub.
    */
-  const fetchHealth = async (silent = false) => {
+  const fetchHealth = useCallback(async (silent = false) => {
     if (!silent) setIsRefreshing(true);
     try {
       const res = await api.get('/system/health');
@@ -44,75 +103,32 @@ const SystemHealthPage = () => {
       if (!silent && !loading) {
         toast.success('Telemetry synchronized');
       }
-    } catch (err) {
+    } catch {
       console.error('Health check failure: Connection interrupted');
       if (!silent) toast.error('Sync failure: Connection interrupted');
     } finally {
       setLoading(false);
       setIsRefreshing(false);
     }
-  };
+  }, [loading]);
 
   /**
    * INITIALIZATION & POLLING LIFECYCLE
    * Orchestrates the 5-second automatic telemetry heartbeat.
    */
   useEffect(() => {
-    fetchHealth(true);
-    const interval = setInterval(() => fetchHealth(true), 5000);
+    const initTelemetry = async () => {
+      await fetchHealth(true);
+    };
+    initTelemetry();
+    
+    const interval = setInterval(() => {
+      void fetchHealth(true);
+    }, 5000);
+    
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchHealth]);
 
-  const TelemetryCard = ({ title, status, icon: Icon, detail, subdetail, trend }: any) => (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={cn(
-        "p-8 border rounded-none transition-all duration-500 relative group overflow-hidden",
-        theme === 'dark' 
-          ? "bg-white/[0.02] border-white/[0.05] hover:border-white/10" 
-          : "bg-white border-gray-100 hover:border-gray-300 shadow-sm"
-      )}
-    >
-      <div className="absolute top-0 right-0 p-8 text-indigo-500/[0.02] pointer-events-none group-hover:text-indigo-500/[0.05] transition-colors">
-         <Icon size={100} strokeWidth={0.5} />
-      </div>
-
-      <div className="flex items-center justify-between mb-8 relative z-10">
-        <div className={cn(
-          "w-12 h-12 flex items-center justify-center transition-all",
-          theme === 'dark' ? "bg-white/5 text-white" : "bg-gray-900 text-white"
-        )}>
-          <Icon size={20} />
-        </div>
-        <div className={cn(
-          "flex items-center gap-3 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] italic border",
-          status === 'healthy' || status === 'up' || status === 'ok'
-            ? "bg-emerald-500/5 text-emerald-500 border-emerald-500/10"
-            : "bg-amber-500/5 text-amber-500 border-amber-500/10"
-        )}>
-          <div className={cn(
-            "w-1.5 h-1.5 rounded-none",
-            status === 'healthy' || status === 'up' || status === 'ok' ? "bg-emerald-500 shadow-[0_0_8px_#10b981]" : "bg-amber-500"
-          )} />
-          {status === 'healthy' || status === 'up' || status === 'ok' ? 'Online' : 'Degraded'}
-        </div>
-      </div>
-
-      <div className="relative z-10">
-        <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] italic mb-3">{title}</p>
-        <h3 className="text-3xl font-black tracking-tighter uppercase italic leading-none">{detail}</h3>
-        <div className="flex items-center justify-between mt-4">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic opacity-60">{subdetail}</p>
-          {trend && (
-            <span className="text-[9px] font-black text-emerald-500 uppercase tracking-tighter flex items-center gap-1">
-               <Zap size={10} /> Optimal
-            </span>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
 
   if (loading) return (
     <div className={cn("h-full w-full flex flex-col items-center justify-center gap-8", theme === 'dark' ? "bg-black" : "bg-[#fafafa]")}>
@@ -177,6 +193,7 @@ const SystemHealthPage = () => {
           detail={health?.version || 'v6.0.45'} 
           subdetail="Production Stable"
           trend={true}
+          theme={theme}
         />
         <TelemetryCard 
           title="Data Link" 
@@ -185,6 +202,7 @@ const SystemHealthPage = () => {
           detail={health?.database === 'healthy' ? 'Optimal' : 'Degraded'} 
           subdetail="Mongo Cluster 0"
           trend={health?.database === 'healthy'}
+          theme={theme}
         />
         <TelemetryCard 
           title="Core Uptime" 
@@ -192,6 +210,7 @@ const SystemHealthPage = () => {
           icon={Server} 
           detail={`${Math.floor((health?.uptime || 0) / 3600)}h ${Math.floor(((health?.uptime || 0) % 3600) / 60)}m`} 
           subdetail="System Uptime"
+          theme={theme}
         />
         <TelemetryCard 
           title="Infrastructure" 
@@ -199,6 +218,7 @@ const SystemHealthPage = () => {
           icon={Globe} 
           detail={(health?.environment || 'PROD').toUpperCase()} 
           subdetail="Active Environment"
+          theme={theme}
         />
       </div>
 

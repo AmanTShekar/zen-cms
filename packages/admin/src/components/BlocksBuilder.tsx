@@ -19,14 +19,14 @@ import { cn } from '../lib/utils';
 
 interface Block {
   blockType: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface BlocksBuilderProps {
   value: Block[];
   onChange: (value: Block[]) => void;
-  availableBlocks: any[];
-  renderField: any;
+  availableBlocks?: unknown[];
+  renderField?: (field: any, value: any, onChange: (val: any) => void) => React.ReactNode;
 }
 
 const STOCK_BLOCKS = [
@@ -54,7 +54,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({ value, onChange }) => {
     onChange(newValue);
   };
 
-  const updateBlock = (index: number, updates: any) => {
+  const updateBlock = (index: number, updates: Partial<Block>) => {
     const newValue = [...value];
     newValue[index] = { ...newValue[index], ...updates };
     onChange(newValue);
@@ -171,7 +171,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({ value, onChange }) => {
                     className="flex items-start gap-5 p-5 hover:bg-indigo-50 rounded-none text-left group transition-all relative overflow-hidden"
                   >
                      <div className="w-12 h-12 rounded-none bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-white group-hover:text-indigo-600 group-hover:shadow-sm transition-all shadow-inner">
-                        {React.cloneElement(stock.icon as React.ReactElement<any>, { size: 20 })}
+                        {React.isValidElement(stock.icon) && React.cloneElement(stock.icon as React.ReactElement<{ size: number }>, { size: 20 })}
                      </div>
                      <div className="flex flex-col gap-0.5">
                         <div className="flex items-center gap-2">

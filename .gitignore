@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Environment variables & secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor & System files
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Zenith Internal & Temporary
+.gemini/
+.cursor/
+internal/
+temp_docx/
+temp.zip
+uploads/
+coverage/
+
+# OS metadata
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Zenith Internal & Temporary
+.gemini/
+.cursor/
+internal/
+temp_docx/
+temp.zip
+uploads/
+coverage/
+
+# Documentation
+# Allow specific text and markdown files
+!README.md
+!CONTRIBUTING.md
+!LICENSE.md
+!docs/
+
+# Compiled artifacts
+packages/sdk/index.js
+packages/sdk/index.d.ts
