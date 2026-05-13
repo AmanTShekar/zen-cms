@@ -42,16 +42,25 @@ It was engineered for organizations that demand surgical precision, hyper-perfor
 
 ---
 
-## Features that Reach the Zenith
+---
 
-| Feature | Description | Status |
-| :--- | :--- | :--- |
-| **Visual Builder** | Define collections and globals with a high-fidelity drag-and-drop interface. | **Stable** |
-| **Spatial Editor** | Orchestrate your content layouts on a limitless 2D canvas. | **Beta** |
-| **Neural Bridge** | Advanced webhook engine with HMAC security and delivery auditing. | **Stable** |
-| **Air-Tight Security** | Zod AOT validation and comprehensive Audit Log Engine. | **Hardened** |
-| **Plugin Nucleus** | Extend the core with a modular, isolated plugin architecture. | **Stable** |
-| **Lazy-Loaded Engine** | Millisecond cold starts for hyper-scale serverless deployments. | **Optimized** |
+## Project Status and Operational Roadmap
+
+Zenith is currently in **Active Development (Phase 2: Architectural Hardening)**.
+
+### Current Capabilities (Stable)
+*   **Industrial Core**: Type-safe Express kernel with zero-trust ingress.
+*   **Neural Bridge**: Advanced webhook engine with HMAC security.
+*   **Elastic Storage**: Native MongoDB adapter with high-throughput synchronization.
+*   **Media Nucleus**: Local and Cloud-based media orchestration.
+*   **Hardened Auth**: RBAC and JWT-based session management.
+
+### Coming Soon (Q3 2026)
+*   **SQL Catalyst**: Native PostgreSQL support via Drizzle ORM (Beta).
+*   **Spatial Editor v2**: Enhanced 2D canvas for complex relationship mapping.
+*   **Plugin Nucleus**: Official marketplace for community extensions.
+*   **AOT Compiler**: Full Ahead-of-Time compilation for Zod schemas.
+*   **Edge SDK**: Optimized client for Cloudflare Workers and Vercel Edge.
 
 ---
 

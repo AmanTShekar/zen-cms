@@ -12,8 +12,8 @@ The kernel is the brain of Zenith. It manages:
 
 ## 2. The Data Adapters
 Zenith is **Database Agnostic**. All database operations are abstracted behind the `DatabaseAdapter` interface.
-*   **MongooseAdapter**: Optimized for high-velocity, flexible content.
-*   **DrizzleAdapter (SQL)**: Optimized for strict relational integrity and enterprise ledgers.
+*   **MongooseAdapter**: Optimized for high-velocity, flexible content (Stable).
+*   **SQL Catalyst (Beta)**: Native PostgreSQL support via **Drizzle ORM** for strict relational integrity and enterprise ledgers.
 
 ## 3. The Neural Bridge (Webhooks)
 Zenith treats integrations as first-class citizens. The Neural Bridge ensures:
