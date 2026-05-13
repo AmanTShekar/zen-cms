@@ -4,7 +4,7 @@ Zenith can be deployed as a monolithic server or as a decoupled headless engine.
 
 ---
 
-## 💻 Local Development
+## Local Development
 
 ### 1. Environment Setup
 Create a `.env` file in the root directory:
@@ -51,7 +51,7 @@ npm run dev
 
 ---
 
-## 🚢 Production Deployment
+## Production Deployment
 
 ### 1. Build the Monorepo
 ```bash
@@ -69,7 +69,7 @@ Configure Nginx to forward traffic to the Zenith port (default 3000). Ensure tha
 
 ---
 
-## 🗄️ Database Specifics
+## Database Specifics
 
 ### MongoDB (Default)
 Ensure your MongoDB instance is running as a **Replica Set** if you wish to use transactions (highly recommended for data integrity).

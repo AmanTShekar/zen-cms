@@ -4,7 +4,7 @@ First of all, thank you for showing interest in contributing to Zenith! We belie
 
 ---
 
-## 🏗️ Development Workflow
+## Development Workflow
 
 1.  **Fork and Clone**: Create your own branch from `main`.
 2.  **Environment**: Set up your `.env` as described in the [Installation Guide](./docs/INSTALLATION.md).
@@ -13,19 +13,19 @@ First of all, thank you for showing interest in contributing to Zenith! We belie
     *   Follow the **"No-Barrel-File"** policy to keep builds lean.
     *   Run `npm run check-deps` before submitting any PR to ensure architectural integrity.
 
-## 🎨 Design Standards
+## Design Standards
 If you are contributing to the Admin UI:
 *   Follow the **Industrial Aesthetic** (High-density, monochromatic, monochromatic-accented).
 *   Ensure all new components use **Framer Motion** for smooth, tactile transitions.
 *   Use **Lucide React** for icons.
 
-## 🧪 Testing
+## Testing
 We use **Vitest** for the core engine. Ensure that any new feature includes comprehensive unit and integration tests:
 ```bash
 npm run test
 ```
 
-## 📜 Commit Messages
+## Commit Messages
 We follow the **Conventional Commits** specification:
 *   `feat:` New features
 *   `fix:` Bug fixes

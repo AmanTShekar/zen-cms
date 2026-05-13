@@ -1,84 +1,102 @@
 <div align="center">
-  <img src="packages/admin/public/logo/zenithlogo.svg" alt="Zenith CMS Logo" width="200" />
-  <h1>ZENITH CMS</h1>
-  <p><strong>The Industrial Operational Platform for High-Fidelity Digital Ecosystems.</strong></p>
-  
-  [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](https://opensource.org/licenses/MIT)
-  [![Version](https://img.shields.io/badge/version-0.2.0--beta-blueviolet.svg)]()
-  [![Hardened](https://img.shields.io/badge/Security-Hardened-success.svg)]()
+  <a href="https://github.com/AmanTShekar/Zenith-CMS">
+    <img src="packages/admin/public/logo/zenithlogo.svg" alt="Zenith CMS Logo" width="300" />
+  </a>
+  <br />
+  <br />
+
+  <p align="center">
+    <a href="https://github.com/AmanTShekar/Zenith-CMS/actions"><img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/AmanTShekar/Zenith-CMS/main.yml?style=flat-square&color=black"></a>
+    &nbsp;
+    <a href="https://discord.gg/zenith"><img alt="Discord" src="https://img.shields.io/discord/1234567890?label=Discord&color=000000&style=flat-square" /></a>
+    &nbsp;
+    <a href="https://www.npmjs.com/package/@zenith/core"><img alt="npm" src="https://img.shields.io/npm/v/@zenith/core?style=flat-square&color=000000" /></a>
+    &nbsp;
+    <a href="https://twitter.com/zenithcms"><img src="https://img.shields.io/badge/follow-zenithcms-black?logo=x&style=flat-square" alt="Zenith Twitter" /></a>
+  </p>
+
+  <h3>
+    <a href="./docs/ARCHITECTURE.md">Explore the Docs</a>&nbsp;·&nbsp;<a href="https://community.zenithcms.com">Community Help</a>&nbsp;·&nbsp;<a href="https://roadmap.zenithcms.com">Roadmap</a>
+  </h3>
 </div>
 
+<hr />
+
+> [!IMPORTANT]
+> **Zenith is the first-ever "Industrial Operational Platform" built for the next generation of digital engineering.** It is not just a CMS; it is a high-fidelity engine for orchestrating entire digital ecosystems.
+
 ---
 
-## 🌌 What is Zenith?
+## What is Zenith?
 
-Zenith is not a framework. It is an **Industrial Operational Platform**. 
+Zenith is a **Visual-First, Pro-Code Operational Platform.**
 
-Built for organizations that demand precision, performance, and pro-code control, Zenith bridges the gap between complex backend architecture and high-velocity visual editing. It is the **Central Processing Nucleus** for your digital identity.
+It was engineered for organizations that demand surgical precision, hyper-performance, and absolute architectural control. Zenith bridges the gap between complex backend engineering and high-velocity visual orchestration. It is the **Central Processing Nucleus** for your digital identity.
 
-### Why choose Zenith?
-*   **Industrial Core**: A hardened TypeScript kernel designed for zero-latency operations.
+### Why choose Zenith over a regular CMS?
+*   **Industrial Nucleus**: A hardened, type-safe Express kernel designed for zero-latency operations.
 *   **Visual-First Schema**: Define complex data structures visually while maintaining strict Git-based versioning.
-*   **Neural Bridge (Webhooks)**: Event-driven architecture with built-in HMAC signing and exponential backoff.
+*   **Neural Bridge**: Advanced event-driven architecture with built-in HMAC signing and exponential backoff.
 *   **Spatial Editor**: A revolutionary 2D canvas for orchestrating content layouts with pixel-perfect precision.
-*   **AI-Native**: Built-in AI writing assistants and automated content generation.
+*   **AI-Native DNA**: Built-in AI writing assistants and automated content lifecycle management.
 
 ---
 
-## 🛠️ The Tech Stack
+## Features that Reach the Zenith
 
-Zenith is engineered with a **"Performance-First"** philosophy:
-
-*   **Runtime Engine**: Node.js + Express (Hardened Middleware)
-*   **Validation Layer**: Zod (Optimized for AOT Compilation)
-*   **Database Agnostic**: Native support for **MongoDB** (Elastic) and **PostgreSQL** (Relational via Drizzle).
-*   **Frontend**: React 19 + Framer Motion (Industrial Aesthetic)
-*   **State Management**: Zustand (Atomic State Slices)
+| Feature | Description | Status |
+| :--- | :--- | :--- |
+| **Visual Builder** | Define collections and globals with a high-fidelity drag-and-drop interface. | **Stable** |
+| **Spatial Editor** | Orchestrate your content layouts on a limitless 2D canvas. | **Beta** |
+| **Neural Bridge** | Advanced webhook engine with HMAC security and delivery auditing. | **Stable** |
+| **Air-Tight Security** | Zod AOT validation and comprehensive Audit Log Engine. | **Hardened** |
+| **Plugin Nucleus** | Extend the core with a modular, isolated plugin architecture. | **Stable** |
+| **Lazy-Loaded Engine** | Millisecond cold starts for hyper-scale serverless deployments. | **Optimized** |
 
 ---
 
-## 🚀 Quick Start
+## Quickstart
 
-### 1. Prerequisites
-*   **Node.js**: v20.0.0 or higher
-*   **Database**: MongoDB (v6.0+) or PostgreSQL (v15.0+)
-*   **NPM**: v10.0.0+
+Before starting with Zenith, ensure you have the [required software](./docs/INSTALLATION.md).
 
-### 2. Installation
 ```bash
-# Clone the repository
-git clone https://github.com/AmanTShekar/Zenith-CMS.git
-cd Zenith-CMS
-
-# Install dependencies
-npm install
-
-# Initialize your environment
-cp .env.example .env
+npx create-zenith-app@latest
 ```
 
-### 3. Launch the Nucleus
-```bash
-# Start the development environment (Core + Admin)
-npm run dev
-```
+**New to Zenith?** Start with the **Industrial Website Template**. It demonstrates the full power of the Nucleus, including custom Rich Text blocks, on-demand revalidation, and live preview—all built with React 19 and Tailwind.
 
 ---
 
-## 🗺️ Documentation
+## One-Click Deployment
 
-Explore the Zenith ecosystem in depth:
+Deploy Zenith in seconds to high-performance infrastructure.
 
-*   [**Architecture**](./docs/ARCHITECTURE.md): Understand the Central Processing Nucleus and the Neural Bridge.
-*   [**Installation Guide**](./docs/INSTALLATION.md): Detailed setup for local and production environments.
-*   [**Security & Hardening**](./docs/SECURITY.md): Our "Air-Tight" validation and audit logging protocols.
-*   [**API Reference**](./docs/API.md): Hardened REST and GraphQL endpoint documentation.
+### Deploy on Vercel
+All-in-one on Vercel — one click to deploy Zenith with a **Next.js** front end, **MongoDB Atlas**, and **Vercel Blob** for media.
+[![Deploy with Vercel](https://vercel.com/button)](https://dub.sh/zenith-vercel)
+
+### Deploy on Cloudflare
+Fully self-contained — one click to deploy Zenith with **Workers**, **R2** for uploads, and **D1** for relational data.
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://dub.sh/zenith-cloudflare)
 
 ---
 
-## 🛡️ Security & Integrity
+## Architecture: The Nucleus
 
-Zenith is **Hardened by Design**. Every request is validated by the **Zod AOT** engine, ensuring that malformed data never touches your database. Our **Audit Log Engine** tracks every mutation with surgical precision, providing enterprise-grade transparency.
+Zenith is not just a repository; it is a **Modular Kernel.**
+
+1.  **The Kernel**: A hardened, type-safe Express core that handles the complex logic of content orchestration.
+2.  **The Adapters**: Native support for **MongoDB** (Elastic) and **PostgreSQL** (Relational via Drizzle).
+3.  **The SDK**: A lightweight, type-safe client that makes fetching content feel like native code.
+
+---
+
+## Security & Integrity
+
+Zenith is **Hardened by Design.** We follow the **"Air-Tight Protocol":**
+*   **Zero-Trust Ingress**: Every payload is validated by the **Zod AOT** engine.
+*   **Audit-First Mutation**: Every change is logged with surgical precision for enterprise transparency.
+*   **Neural Security**: Outgoing webhooks are HMAC-signed to ensure integration integrity.
 
 ---
 
