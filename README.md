@@ -6,17 +6,19 @@
   <br />
 
   <p align="center">
-    <a href="https://github.com/AmanTShekar/Zenith-CMS/actions"><img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/AmanTShekar/Zenith-CMS/main.yml?style=flat-square&color=black"></a>
+    <a href="https://github.com/AmanTShekar/Zenith-CMS/actions"><img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/AmanTShekar/Zenith-CMS/main.yml?branch=main&style=flat-square&color=black"></a>
     &nbsp;
-    <a href="https://discord.gg/zenith"><img alt="Discord" src="https://img.shields.io/discord/1234567890?label=Discord&color=000000&style=flat-square" /></a>
+    <a href="https://www.npmjs.com/package/@zenith/core"><img alt="NPM Version" src="https://img.shields.io/npm/v/@zenith/core?style=flat-square&color=black" /></a>
     &nbsp;
-    <a href="https://www.npmjs.com/package/@zenith/core"><img alt="npm" src="https://img.shields.io/npm/v/@zenith/core?style=flat-square&color=000000" /></a>
+    <a href="https://www.npmjs.com/package/@zenith/core"><img alt="NPM Downloads" src="https://img.shields.io/npm/dm/@zenith/core?style=flat-square&color=black" /></a>
     &nbsp;
-    <a href="https://twitter.com/zenithcms"><img src="https://img.shields.io/badge/follow-zenithcms-black?logo=x&style=flat-square" alt="Zenith Twitter" /></a>
+    <a href="https://discord.gg/zenith"><img alt="Discord" src="https://img.shields.io/discord/1234567890?label=Discord&color=black&style=flat-square" /></a>
+    &nbsp;
+    <a href="https://github.com/AmanTShekar/Zenith-CMS/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/AmanTShekar/Zenith-CMS?style=flat-square&color=black"></a>
   </p>
 
   <h3>
-    <a href="./docs/ARCHITECTURE.md">Explore the Docs</a>&nbsp;·&nbsp;<a href="https://community.zenithcms.com">Community Help</a>&nbsp;·&nbsp;<a href="https://roadmap.zenithcms.com">Roadmap</a>
+    <a href="./docs/README.md">Documentation</a>&nbsp;·&nbsp;<a href="./docs/EXAMPLES.md">Blueprints</a>&nbsp;·&nbsp;<a href="https://community.zenithcms.com">Community</a>&nbsp;·&nbsp;<a href="https://roadmap.zenithcms.com">Roadmap</a>
   </h3>
 </div>
 
