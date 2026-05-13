@@ -63,6 +63,7 @@ coverage/
 !CONTRIBUTING.md
 !LICENSE.md
 !docs/
+!docs/*.md
 
 # Compiled artifacts
 packages/sdk/index.js
