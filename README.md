@@ -6,11 +6,11 @@
   <br />
 
   <p align="center">
-    <a href="https://github.com/AmanTShekar/Zenith-CMS/actions"><img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/AmanTShekar/Zenith-CMS/main.yml?branch=main&style=flat-square&color=black"></a>
+    <a href="https://github.com/AmanTShekar/Zenith-CMS/actions"><img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/AmanTShekar/Zenith-CMS/ci.yml?branch=main&style=flat-square&color=black"></a>
     &nbsp;
-    <a href="https://www.npmjs.com/package/@zenith/core"><img alt="NPM Version" src="https://img.shields.io/npm/v/@zenith/core?style=flat-square&color=black" /></a>
+    <a href="https://github.com/AmanTShekar/Zenith-CMS"><img alt="Version" src="https://img.shields.io/badge/version-v0.2.0--beta-black?style=flat-square" /></a>
     &nbsp;
-    <a href="https://www.npmjs.com/package/@zenith/core"><img alt="NPM Downloads" src="https://img.shields.io/npm/dm/@zenith/core?style=flat-square&color=black" /></a>
+    <a href="https://github.com/AmanTShekar/Zenith-CMS"><img alt="Status" src="https://img.shields.io/badge/npm-coming--soon-black?style=flat-square" /></a>
     &nbsp;
     <a href="https://discord.gg/zenith"><img alt="Discord" src="https://img.shields.io/discord/1234567890?label=Discord&color=black&style=flat-square" /></a>
     &nbsp;
