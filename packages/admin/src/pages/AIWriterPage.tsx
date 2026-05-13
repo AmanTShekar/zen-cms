@@ -13,7 +13,7 @@ const AIWriterPage = () => {
   const { theme } = useTheme();
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<unknown>(null);
   const [mode, setMode] = useState<AIMode>('content');
   const [isInputVisible, setIsInputVisible] = useState(true);
   const [activeTool, setActiveTool] = useState<ToolType>('seo');
@@ -41,7 +41,7 @@ const AIWriterPage = () => {
       } else {
         // Tools mode
         const tool = tools.find(t => t.id === activeTool);
-        const payload: any = { content: prompt };
+        const payload: unknown = { content: prompt };
         
         if (activeTool === 'improve') {
           payload.text = prompt;
@@ -68,7 +68,7 @@ const AIWriterPage = () => {
         }
       }
       toast.success('Generation complete');
-    } catch (err: any) {
+    } catch {
       toast.error('Failed to generate');
     } finally {
       setLoading(false);
@@ -167,7 +167,7 @@ const AIWriterPage = () => {
             ].map((m) => (
               <button 
                 key={m.id}
-                onClick={() => setMode(m.id as any)}
+                onClick={() => setMode(m.id as AIMode)}
                 className={cn(
                   "px-8 py-3.5 text-[11px] font-black uppercase tracking-widest rounded-none transition-all italic leading-none flex items-center gap-3",
                   mode === m.id 
@@ -218,7 +218,7 @@ const AIWriterPage = () => {
                       {tools.map(tool => (
                         <button
                           key={tool.id}
-                          onClick={() => setActiveTool(tool.id as any)}
+                          onClick={() => setActiveTool(tool.id as ToolType)}
                           className={cn(
                             "w-full flex items-center justify-center gap-3 px-4 py-3 rounded-none text-[10px] font-black uppercase tracking-widest italic transition-all group border border-transparent",
                             activeTool === tool.id 

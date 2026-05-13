@@ -45,7 +45,7 @@ export class SearchService {
 
             for (const doc of docs) {
               for (const field of textFields) {
-                const value = (doc as any)[field];
+                const value = (doc as unknown)[field];
                 if (typeof value === 'string' && regex.test(value)) {
                   const matchIndex = value.toLowerCase().indexOf(query.toLowerCase());
                   const start = Math.max(0, matchIndex - 40);
@@ -55,8 +55,8 @@ export class SearchService {
                   results.push({
                     collection: col.slug,
                     collectionLabel: col.labels?.plural || col.name,
-                    id: (doc as any)._id?.toString(),
-                    title: (doc as any)[col.admin?.useAsTitle || 'title'] || 'Untitled',
+                    id: (doc as unknown)._id?.toString(),
+                    title: (doc as unknown)[col.admin?.useAsTitle || 'title'] || 'Untitled',
                     field,
                     snippet,
                     score: field === (col.admin?.useAsTitle || 'title') ? 2 : 1,

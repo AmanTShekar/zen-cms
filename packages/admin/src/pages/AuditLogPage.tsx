@@ -20,7 +20,7 @@ import toast from 'react-hot-toast';
 
 const AuditLogPage: React.FC = () => {
   const { theme } = useTheme();
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -33,7 +33,7 @@ const AuditLogPage: React.FC = () => {
       const res = await api.get(`/system/audit-logs?page=${page}&limit=25&search=${searchQuery}`);
       setLogs(res.data.data);
       setTotal(res.data.meta.pagination.total);
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch audit logs');
     } finally {
       setTimeout(() => setLoading(false), 300);
@@ -41,7 +41,9 @@ const AuditLogPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchLogs();
+    const timer = setTimeout(() => fetchLogs(), 0);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   const handleExport = async () => {
@@ -58,7 +60,7 @@ const AuditLogPage: React.FC = () => {
       link.remove();
       window.URL.revokeObjectURL(url);
       toast.success('Report exported');
-    } catch (err) {
+    } catch {
       toast.error('Export failed');
     } finally {
       setExporting(false);

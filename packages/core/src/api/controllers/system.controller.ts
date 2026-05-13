@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { createResponse } from '../utils';
-import { logger } from '../../services/logger';
+import { _logger } from '../../services/logger';
 import mongoose from 'mongoose';
 
 export const getHealth = async (req: Request, res: Response) => {

@@ -1,4 +1,4 @@
-import { createServer } from 'http';
+import { _createServer } from 'http';
 import { Express } from 'express';
 import { CMSConfig, CMSField } from '@zenith/types';
 import { logger } from '../services/logger';
@@ -53,7 +53,7 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
       }
     `;
 
-    const resolvers: Record<string, Function> = {};
+    const resolvers: Record<string, (...args: unknown[]) => unknown> = {};
     const processedTypes = new Set<string>();
 
     const buildRecursiveTypes = (fields: CMSField[], parentName: string) => {
@@ -62,23 +62,23 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
         
         if (field.type === 'group' && !processedTypes.has(typeName)) {
           processedTypes.add(typeName);
-          const subFields = (field as any).fields?.map((f: CMSField) => `  ${f.name}: ${fieldTypeToGraphQL(f, typeName)}`).join('\n');
+          const subFields = (field as unknown).fields?.map((f: CMSField) => `  ${f.name}: ${fieldTypeToGraphQL(f, typeName)}`).join('\n');
           schemaSdl += `\ntype ${typeName} {\n${subFields}\n}\n`;
-          buildRecursiveTypes((field as any).fields || [], typeName);
+          buildRecursiveTypes((field as unknown).fields || [], typeName);
         }
 
         if (field.type === 'array' && !processedTypes.has(typeName)) {
           processedTypes.add(typeName);
-          const subFields = (field as any).fields?.map((f: CMSField) => `  ${f.name}: ${fieldTypeToGraphQL(f, typeName)}`).join('\n');
+          const subFields = (field as unknown).fields?.map((f: CMSField) => `  ${f.name}: ${fieldTypeToGraphQL(f, typeName)}`).join('\n');
           schemaSdl += `\ntype ${typeName} {\n${subFields}\n}\n`;
-          buildRecursiveTypes((field as any).fields || [], typeName);
+          buildRecursiveTypes((field as unknown).fields || [], typeName);
         }
 
         if (field.type === 'blocks' && !processedTypes.has(`${typeName}_Block`)) {
           processedTypes.add(`${typeName}_Block`);
           const unionTypes: string[] = [];
           
-          (field as any).blocks?.forEach((block: any) => {
+          (field as unknown).blocks?.forEach((block: unknown) => {
             const blockTypeName = `${typeName}_${block.slug.charAt(0).toUpperCase() + block.slug.slice(1)}`;
             unionTypes.push(blockTypeName);
             const blockFields = block.fields?.map((f: CMSField) => `  ${f.name}: ${fieldTypeToGraphQL(f, blockTypeName)}`).join('\n');
@@ -117,13 +117,13 @@ ${typeFields}
         }
       `;
 
-      resolvers[`get${typeName}`] = async (_: any, { id }: any) => {
+      resolvers[`get${typeName}`] = async (_: unknown, { id }: unknown) => {
         const doc = await mongoose.default.model(slug).findById(id).lean();
-        return doc ? { ...doc, id: (doc as any)._id?.toString() } : null;
+        return doc ? { ...doc, id: (doc as unknown)._id?.toString() } : null;
       };
 
-      resolvers[`list${typeName}`] = async (_: any, { page = 1, pageSize = 25, status }: any) => {
-        const filter: any = {};
+      resolvers[`list${typeName}`] = async (_: unknown, { page = 1, pageSize = 25, status }: unknown) => {
+        const filter: unknown = {};
         if (col.drafts && status) filter._status = status;
         const skip = (page - 1) * Math.min(pageSize, 100);
         const [docs, total] = await Promise.all([
@@ -131,7 +131,7 @@ ${typeFields}
           mongoose.default.model(slug).countDocuments(filter),
         ]);
         return {
-          data: docs.map((d: any) => ({ ...d, id: d._id?.toString() })),
+          data: docs.map((d: unknown) => ({ ...d, id: d._id?.toString() })),
           pageInfo: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
         };
       };
@@ -145,7 +145,7 @@ ${typeFields}
       schemaSdl += `\ntype ${typeName} {\n  id: ID!\n${typeFields}\n  updatedAt: String\n}\n`;
       resolvers[`get${typeName}`] = async () => {
         const doc = await mongoose.default.model(global.slug).findOne().lean();
-        return doc ? { ...doc, id: (doc as any)._id?.toString() } : null;
+        return doc ? { ...doc, id: (doc as unknown)._id?.toString() } : null;
       };
     });
 

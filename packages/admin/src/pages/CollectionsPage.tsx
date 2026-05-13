@@ -13,14 +13,14 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
 import api from '../lib/api';
-import { useTheme } from '../context/ThemeContext';
+import {  } from '../context/ThemeContext';
 
 const CollectionsPage: React.FC = () => {
   // --- REGISTRY STATE: CONTENT INFRASTRUCTURE ---
-  const [collections, setCollections] = useState<any[]>([]);
+  const [collections, setCollections] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [stats, setStats] = useState<any>({});
+  const [stats, setStats] = useState<unknown>({});
 
   /**
    * REGISTRY HARVEST: SYNCHRONIZE CONTENT NODES
@@ -44,14 +44,14 @@ const CollectionsPage: React.FC = () => {
          * Ensures every collection has a valid renderable label.
          * Falls back to slug/name or 'Unnamed Collection' to prevent UI blank states.
          */
-        const processedCollections = rawCollections.map((c: any) => ({
+        const processedCollections = rawCollections.map((c: unknown) => ({
           ...c,
           label: c.label || c.name || c.slug || 'Unnamed Collection'
         }));
 
         setCollections(processedCollections);
         setStats(countsRes?.data?.data || {});
-      } catch (err) {
+      } catch {
         console.error('Critical Registry Synchronization Failure', err);
       } finally {
         setLoading(false);
@@ -120,7 +120,7 @@ const CollectionsPage: React.FC = () => {
       {/* 📊 System Integrity Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: 'Total Records', value: Object.values(stats).reduce((a: any, b: any) => a + b, 0), icon: Activity, sub: 'Global Synchronization' },
+          { label: 'Total Records', value: Object.values(stats).reduce((a: unknown, b: unknown) => a + b, 0), icon: Activity, sub: 'Global Synchronization' },
           { label: 'Schema Health', value: '100%', icon: Shield, sub: 'Optimal Performance' },
           { label: 'Latency', value: '14ms', icon: Zap, sub: 'Neural Processing' }
         ].map((item, i) => (

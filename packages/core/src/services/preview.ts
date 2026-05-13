@@ -27,10 +27,10 @@ export class PreviewService {
    */
   static verifyPreviewToken(token: string): { collection: string; id: string } | null {
     try {
-      const decoded = jwt.verify(token, PREVIEW_SECRET) as any;
+      const decoded = jwt.verify(token, PREVIEW_SECRET) as unknown;
       if (decoded.mode !== 'preview') return null;
       return { collection: decoded.collection, id: decoded.id };
-    } catch (err) {
+    } catch (_err) {
       return null;
     }
   }
@@ -38,7 +38,7 @@ export class PreviewService {
   /**
    * Formats the preview URL based on collection config.
    */
-  static getPreviewUrl(config: CollectionConfig, doc: any): string | null {
+  static getPreviewUrl(config: CollectionConfig, doc: unknown): string | null {
     if (!config.admin?.previewUrl) return null;
 
     const baseUrl = typeof config.admin.previewUrl === 'function' 

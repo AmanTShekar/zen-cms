@@ -11,7 +11,7 @@
     "start": "tsx server.ts",
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
+    "lint": "npm run lint --workspaces",
     "check-deps": "depcruise packages --config .dependency-cruiser.js"
   },
   "devDependencies": {

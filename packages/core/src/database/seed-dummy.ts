@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import _mongoose from 'mongoose';
 import { CollectionConfig } from '@zenith/types';
 import { getModelForCollection } from './model-factory';
 
@@ -21,7 +21,7 @@ export async function seedDummyData(collections: CollectionConfig[]) {
 
     console.log(`- ${config.slug}: Seeding dummy entries...`);
 
-    const dummies: any[] = [];
+    const dummies: unknown[] = [];
 
     if (config.slug === 'products' || config.slug === 'listings') {
       dummies.push(

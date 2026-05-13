@@ -26,10 +26,10 @@ export const upload = isConfigured
       limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
     })
   : {
-      single: () => (_req: any, res: any, _next: any) => {
+      single: () => (_req: unknown, res: unknown, _next: unknown) => {
         res.status(503).json({ error: 'Media service unavailable' });
       },
-      array: () => (_req: any, res: any, _next: any) => {
+      array: () => (_req: unknown, res: unknown, _next: unknown) => {
         res.status(503).json({ error: 'Media service unavailable' });
       },
     };

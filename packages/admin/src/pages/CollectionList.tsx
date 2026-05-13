@@ -25,7 +25,7 @@ const CollectionList: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
   const [, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -44,8 +44,8 @@ const CollectionList: React.FC = () => {
         const globals = healthRes.data.data?.globals || [];
         const collections = healthRes.data.data?.collections || [];
         
-        const isGlobal = globals.some((g: any) => g.slug === slug);
-        const colConfig = collections.find((c: any) => c.slug === slug);
+        const isGlobal = globals.some((g: Record<string, unknown>) => g.slug === slug);
+        const colConfig = collections.find((c: Record<string, unknown>) => c.slug === slug);
         const isSingleton = colConfig?.singleton || isGlobal;
 
         if (isSingleton) {
@@ -60,11 +60,11 @@ const CollectionList: React.FC = () => {
 
         // Synthesize available columns
         if (items.length > 0) {
-          const keys = Array.from(new Set(items.flatMap((item: any) => Object.keys(item))))
-            .filter((k: any) => !k.startsWith('_') && k !== 'id' && k !== '__v') as string[];
+          const keys = Array.from(new Set(items.flatMap((item: Record<string, unknown>) => Object.keys(item))))
+            .filter((k) => typeof k === 'string' && !k.startsWith('_') && k !== 'id' && k !== '__v') as string[];
           setAvailableColumns(keys);
         }
-      } catch (err: any) {
+      } catch {
         setError('SYNCHRONIZATION_FAILED');
       } finally {
         setTimeout(() => setLoading(false), 300);
@@ -81,7 +81,7 @@ const CollectionList: React.FC = () => {
       toast.success('Record purged');
       setData(data.filter(item => item._id !== id));
       setTotal(prev => prev - 1);
-    } catch (err) {
+    } catch {
       toast.error('Purge failure');
     }
   };

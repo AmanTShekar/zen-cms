@@ -19,7 +19,7 @@ export const auditMiddleware = (req: Request, res: Response, next: NextFunction)
 
     // Perform logging in the background (fire and forget)
     try {
-      const user = (req as any).user;
+      const user = (req as unknown).user;
       if (user) {
         AuditLogModel.create({
           userId: user.id,

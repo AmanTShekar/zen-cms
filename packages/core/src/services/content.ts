@@ -4,7 +4,7 @@ import { DatabaseAdapter, BaseOptions } from '../database/adapters/BaseAdapter';
 import { NotFoundError } from '../errors';
 
 export interface ContentOperationOptions extends BaseOptions {
-  user?: any;
+  user?: unknown;
   skipHooks?: boolean;
   skipVersioning?: boolean;
 }
@@ -15,7 +15,7 @@ export interface ContentOperationOptions extends BaseOptions {
  * Orchestrates business logic with strict typing and atomic operations.
  * Handles recursive field processing and Row-Level Security.
  */
-export class ContentService<T = any> {
+export class ContentService<T = unknown> {
   constructor(
     private config: CollectionConfig,
     private adapter: DatabaseAdapter
@@ -25,11 +25,11 @@ export class ContentService<T = any> {
    * Applies recursive field hooks and cleans data for DB/API
    */
   private async processFields(
-    data: any,
-    user: any,
+    data: unknown,
+    user: unknown,
     action: 'afterRead' | 'beforeChange',
     fields: FieldConfig[] = this.config.fields
-  ): Promise<any> {
+  ): Promise<unknown> {
     if (!data) return data;
     
     // Ensure we are working with a plain object
@@ -43,11 +43,11 @@ export class ContentService<T = any> {
         cleanData[field.name] = await this.processFields(cleanData[field.name], user, action, field.fields);
       } else if (field.type === 'array' && Array.isArray(cleanData[field.name])) {
         cleanData[field.name] = await Promise.all(
-          cleanData[field.name].map((item: any) => this.processFields(item, user, action, field.fields))
+          cleanData[field.name].map((item: unknown) => this.processFields(item, user, action, field.fields))
         );
       } else if (field.type === 'blocks' && Array.isArray(cleanData[field.name])) {
         cleanData[field.name] = await Promise.all(
-          cleanData[field.name].map((block: any) => {
+          cleanData[field.name].map((block: unknown) => {
             const blockDef = field.blocks.find(b => b.slug === block.blockType);
             return blockDef ? this.processFields(block, user, action, blockDef.fields) : block;
           })
@@ -59,7 +59,7 @@ export class ContentService<T = any> {
       if (hookFn && cleanData[field.name] !== undefined) {
         try {
           cleanData[field.name] = await hookFn(cleanData[field.name]);
-        } catch (err: any) {
+        } catch (err: unknown) {
           logger.warn({ field: field.name, err: err.message }, 'Field hook failed');
         }
       }
@@ -68,7 +68,7 @@ export class ContentService<T = any> {
     return cleanData;
   }
 
-  async find(filter: Record<string, any> = {}, options: ContentOperationOptions = {}): Promise<T[]> {
+  async find(filter: Record<string, unknown> = {}, options: ContentOperationOptions = {}): Promise<T[]> {
     let query = { ...filter };
 
     // Apply RLS (Row Level Security)
@@ -131,7 +131,7 @@ export class ContentService<T = any> {
     });
   }
 
-  async update(id: string, data: Partial<T>, options: ContentOperationOptions): Promise<{ doc: T; delta: any }> {
+  async update(id: string, data: Partial<T>, options: ContentOperationOptions): Promise<{ doc: T; delta: unknown }> {
     return this.adapter.transaction(async (session) => {
       const opts = { ...options, session };
       const query = this.config.singleton && id === 'singleton' ? {} : { _id: id };
@@ -147,7 +147,7 @@ export class ContentService<T = any> {
         if (this.config.hooks?.beforeUpdate) updateData = await this.config.hooks.beforeUpdate(updateData, options.user);
       }
 
-      const targetId = this.config.singleton && id === 'singleton' ? (oldDoc as any)._id : id;
+      const targetId = this.config.singleton && id === 'singleton' ? (oldDoc as unknown)._id : id;
       const doc = await this.adapter.update<T>(this.config.slug, targetId, updateData, opts);
       if (!doc) throw new NotFoundError(this.config.name, id);
 
@@ -173,7 +173,7 @@ export class ContentService<T = any> {
     let targetId = id;
     if (this.config.singleton && id === 'singleton') {
       const doc = await this.adapter.findOne(this.config.slug, {}, options);
-      if (doc) targetId = (doc as any)._id;
+      if (doc) targetId = (doc as unknown)._id;
     }
 
     const success = await this.adapter.delete(this.config.slug, targetId, options);
@@ -186,8 +186,8 @@ export class ContentService<T = any> {
     return success;
   }
 
-  private _calculateDelta(oldDoc: any, newData: any): any {
-    const delta: Record<string, any> = {};
+  private _calculateDelta(oldDoc: unknown, newData: unknown): unknown {
+    const delta: Record<string, unknown> = {};
     for (const key of Object.keys(newData)) {
       if (JSON.stringify(oldDoc[key]) !== JSON.stringify(newData[key])) {
         delta[key] = { from: oldDoc[key], to: newData[key] };
@@ -196,7 +196,7 @@ export class ContentService<T = any> {
     return delta;
   }
 
-  private async _createVersion(doc: any, options: any, delta?: any) {
+  private async _createVersion(doc: unknown, options: unknown, delta?: unknown) {
     try {
       const isGlobal = this.config.singleton || !doc._id;
       await this.adapter.createVersion({

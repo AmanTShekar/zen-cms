@@ -13,7 +13,7 @@ import NodeCache from 'node-cache';
  */
 export class MongooseAdapter implements DatabaseAdapter {
   name = 'mongoose';
-  private models: Record<string, Model<any>> = {};
+  private models: Record<string, Model<unknown>> = {};
   private cache: NodeCache;
 
   constructor(private uri: string) {
@@ -29,7 +29,7 @@ export class MongooseAdapter implements DatabaseAdapter {
       });
       logger.info('MongooseAdapter: Connected to MongoDB');
       this._initSystemModels();
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ error: error.message }, 'MongooseAdapter: Connection failed');
       throw error;
     }
@@ -77,23 +77,23 @@ export class MongooseAdapter implements DatabaseAdapter {
     this.models[config.slug] = model;
   }
 
-  private getModel(collection: string): Model<any> {
+  private getModel(collection: string): Model<unknown> {
     const model = this.models[collection] || mongoose.models[collection];
     if (!model) throw new Error(`Collection "${collection}" not registered`);
     return model;
   }
 
-  private _getCacheKey(collection: string, query: any, options: any): string {
+  private _getCacheKey(collection: string, query: unknown, options: unknown): string {
     return `${collection}:${JSON.stringify(query)}:${JSON.stringify(options)}`;
   }
 
-  async find<T = any>(collection: string, query: Record<string, any>, options: FindOptions = {}): Promise<T[]> {
+  async find<T = unknown>(collection: string, query: Record<string, unknown>, options: FindOptions = {}): Promise<T[]> {
     const cacheKey = this._getCacheKey(collection, query, options);
     const cached = this.cache.get<T[]>(cacheKey);
     if (cached) return cached;
 
     const model = this.getModel(collection);
-    let q = model.find(query);
+    const q = model.find(query);
     
     if (options.select) q.select(options.select);
     if (options.populate) {
@@ -112,13 +112,13 @@ export class MongooseAdapter implements DatabaseAdapter {
     return docs;
   }
 
-  async findOne<T = any>(collection: string, query: Record<string, any>, options: FindOptions = {}): Promise<T | null> {
+  async findOne<T = unknown>(collection: string, query: Record<string, unknown>, options: FindOptions = {}): Promise<T | null> {
     const cacheKey = this._getCacheKey(collection, query, options);
     const cached = this.cache.get<T>(cacheKey);
     if (cached) return cached;
 
     const model = this.getModel(collection);
-    let q = model.findOne(query);
+    const q = model.findOne(query);
     
     if (options.select) q.select(options.select);
     if (options.populate) {
@@ -137,14 +137,14 @@ export class MongooseAdapter implements DatabaseAdapter {
     this.cache.del(targets);
   }
 
-  async create<T = any>(collection: string, data: Partial<T>, options: BaseOptions = {}): Promise<T> {
+  async create<T = unknown>(collection: string, data: Partial<T>, options: BaseOptions = {}): Promise<T> {
     const model = this.getModel(collection);
     const [doc] = await model.create([data], { session: options.session });
     this._invalidateCache(collection);
     return doc.toObject() as T;
   }
 
-  async update<T = any>(collection: string, id: string, data: Partial<T>, options: BaseOptions = {}): Promise<T | null> {
+  async update<T = unknown>(collection: string, id: string, data: Partial<T>, options: BaseOptions = {}): Promise<T | null> {
     const model = this.getModel(collection);
     const doc = await model.findByIdAndUpdate(id, { $set: data }, { 
       new: true, 
@@ -155,7 +155,7 @@ export class MongooseAdapter implements DatabaseAdapter {
     return doc as T | null;
   }
 
-  async updateMany(collection: string, query: Record<string, any>, data: any, options: BaseOptions = {}): Promise<number> {
+  async updateMany(collection: string, query: Record<string, unknown>, data: unknown, options: BaseOptions = {}): Promise<number> {
     const model = this.getModel(collection);
     const result = await model.updateMany(query, { $set: data }, { session: options.session });
     this._invalidateCache(collection);
@@ -169,19 +169,19 @@ export class MongooseAdapter implements DatabaseAdapter {
     return !!result;
   }
 
-  async deleteMany(collection: string, query: Record<string, any>, options: BaseOptions = {}): Promise<number> {
+  async deleteMany(collection: string, query: Record<string, unknown>, options: BaseOptions = {}): Promise<number> {
     const model = this.getModel(collection);
     const result = await model.deleteMany(query, { session: options.session });
     this._invalidateCache(collection);
     return result.deletedCount;
   }
 
-  async count(collection: string, query: Record<string, any>): Promise<number> {
+  async count(collection: string, query: Record<string, unknown>): Promise<number> {
     const model = this.getModel(collection);
     return model.countDocuments(query);
   }
 
-  async aggregate<T = any>(collection: string, pipeline: any[]): Promise<T[]> {
+  async aggregate<T = unknown>(collection: string, pipeline: unknown[]): Promise<T[]> {
     const model = this.getModel(collection);
     return model.aggregate(pipeline).exec() as Promise<T[]>;
   }
@@ -195,20 +195,20 @@ export class MongooseAdapter implements DatabaseAdapter {
           result = await fn(session);
         });
         return result! as T;
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Fallback for standalone MongoDB (no replica set)
         if (error.message?.includes('replica set') || error.codeName === 'NotAReplicaSet') {
           logger.warn('Transactions not supported on this MongoDB instance. Running without transaction.');
-          return await fn(undefined as any);
+          return await fn(undefined as unknown);
         }
         throw error;
       } finally {
         session.endSession();
       }
-    } catch (sessionError: any) {
+    } catch (sessionError: unknown) {
       // If we can't even start a session
       logger.warn({ err: sessionError.message }, 'Failed to start MongoDB session. Running without transaction.');
-      return await fn(undefined as any);
+      return await fn(undefined as unknown);
     }
   }
 

@@ -24,13 +24,13 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
   const { slug: routeSlug, id: routeId } = useParams<{ slug: string, id: string }>();
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const [data, setData] = useState<any>(null);
-  const [fields, setFields] = useState<any[]>([]);
-  const [config, setConfig] = useState<any>(null);
+  const [data, setData] = useState<Record<string, unknown> | null>(null);
+  const [fields, setFields] = useState<Record<string, unknown>[]>([]);
+  const [config, setConfig] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isZenMode, setIsZenMode] = useState(false);
-  const [versions, setVersions] = useState<any[]>([]);
+  const [versions, setVersions] = useState<Record<string, unknown>[]>([]);
   const [isGlobal, setIsGlobal] = useState(initialIsGlobal);
   const [resolvedSlug, setResolvedSlug] = useState(routeSlug);
   const [resolvedId, setResolvedId] = useState(routeId?.split(':')[0] || 'singleton');
@@ -43,8 +43,8 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
         const collections = healthRes.data.data?.collections || [];
         const globals = healthRes.data.data?.globals || [];
         
-        const globalMatch = globals.find((g: any) => g.slug === routeSlug);
-        const collectionMatch = collections.find((c: any) => c.slug === routeSlug);
+        const globalMatch = globals.find((g: Record<string, unknown>) => g.slug === routeSlug);
+        const collectionMatch = collections.find((c: Record<string, unknown>) => c.slug === routeSlug);
         
         const effectiveIsGlobal = !!globalMatch || initialIsGlobal;
         const effectiveSlug = effectiveIsGlobal ? `globals/${routeSlug}` : routeSlug;
@@ -69,17 +69,17 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
               try {
                 const versionsRes = await api.get(`/${effectiveSlug}/${effectiveId}/versions`);
                 setVersions(versionsRes.data.data || []);
-              } catch (vErr) {
+              } catch {
                 setVersions([]);
               }
             }
-          } catch (dErr) {
+          } catch {
             console.error('Failed to fetch data');
           }
         } else {
           setData({});
         }
-      } catch (err) {
+      } catch {
         console.error('Failed to fetch schema');
       } finally {
         setTimeout(() => setLoading(false), 300);
@@ -91,7 +91,7 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
 
   const id = resolvedId;
 
-  const handleSave = async (formData: any) => {
+  const handleSave = async (formData: Record<string, unknown>) => {
     // 🔍 Pre-flight Validation check
     if (Object.keys(formData).length === 0 && id === 'new') {
       toast.error('EMPTY_MANIFEST_REJECTED');
@@ -118,8 +118,8 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
           setVersions(versionsRes.data.data || []);
         }
       }
-    } catch (err: any) {
-      const errorMsg = err.response?.data?.message || 'SYNCHRONIZATION_FAILURE';
+    } catch (err: unknown) {
+      const errorMsg = (err as { response?: { data?: { message?: string } } }).response?.data?.message || 'SYNCHRONIZATION_FAILURE';
       toast.error(errorMsg.toUpperCase());
       console.error('Persistence Error:', err);
     } finally {

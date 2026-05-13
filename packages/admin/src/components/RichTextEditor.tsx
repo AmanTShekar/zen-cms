@@ -55,9 +55,9 @@ const FontSize = Extension.create({
   },
   addCommands() {
     return {
-      setFontSize: (fontSize: string) => ({ chain }: any) => chain().setMark('textStyle', { fontSize }).run(),
-      unsetFontSize: () => ({ chain }: any) => chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run(),
-    } as any;
+      setFontSize: (fontSize: string) => ({ chain }: unknown) => chain().setMark('textStyle', { fontSize }).run(),
+      unsetFontSize: () => ({ chain }: unknown) => chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run(),
+    } as Record<string, unknown>;
   },
 });
 
@@ -71,7 +71,7 @@ interface RichTextEditorProps {
   className?: string;
 }
 
-const ToolBtn = ({ onClick, isActive, title, children, className }: any) => {
+const ToolBtn = ({ onClick, isActive, title, children, className }: unknown) => {
   const { theme } = useTheme();
   return (
     <button
@@ -86,7 +86,7 @@ const ToolBtn = ({ onClick, isActive, title, children, className }: any) => {
         className
       )}
     >
-      {React.cloneElement(children as React.ReactElement<any>, { size: 18, className: "group-hover/btn:scale-110 transition-transform" })}
+      {React.cloneElement(children as React.ReactElement<unknown>, { size: 18, className: "group-hover/btn:scale-110 transition-transform" })}
     </button>
   );
 };
@@ -120,7 +120,7 @@ const ColorPicker = ({ onSelect, activeColor }: { onSelect: (c: string) => void,
 const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, mode = 'full', className }) => {
   const { theme } = useTheme();
   const [isMediaOpen, setIsMediaOpen] = useState(false);
-  const [files, setFiles] = useState<any[]>([]);
+  const [files, setFiles] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(false);
   const [showColor, setShowColor] = useState(false);
   const [showFont, setShowFont] = useState(false);
@@ -185,15 +185,18 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, mode =
 
   const insertImage = (url: string, alt: string) => {
     const fullUrl = url.startsWith('http') ? url : `http://localhost:3000${url}`;
-    // @ts-ignore
+    // @ts-expect-error: Fix any typing
     editor?.chain().focus().setImage({ src: fullUrl, alt }).run();
     setIsMediaOpen(false);
   };
 
   useEffect(() => {
     if (isMediaOpen) {
-      setLoading(true);
-      api.get('/media').then(res => setFiles(res.data.data)).finally(() => setLoading(false));
+      const timer = setTimeout(() => {
+        setLoading(true);
+        api.get('/media').then(res => setFiles(res.data.data)).finally(() => setLoading(false));
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [isMediaOpen]);
 
@@ -249,7 +252,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, mode =
                    {showFontSize && (
                       <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 5 }} className={cn("absolute top-full left-0 mt-2 z-[600] border shadow-[0_40px_80px_rgba(0,0,0,0.6)] p-2 grid grid-cols-4 gap-1 min-w-[200px] backdrop-blur-3xl", theme === 'dark' ? "bg-black border-white/10" : "bg-white border-gray-200")}>
                          {fontSizes.map(s => (
-                            <button key={s} onClick={() => { // @ts-ignore
+                            <button key={s} onClick={() => { // @ts-expect-error: Fix any typing
                             editor.chain().focus().setFontSize(s).run(); setShowFontSize(false); }} className="px-2 py-3 text-[10px] font-black hover:bg-indigo-600 hover:text-white transition-all border border-white/5 text-center">{s.replace('px', '')}</button>
                          ))}
                       </motion.div>

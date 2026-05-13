@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-export type ZenithEventListener = (...args: any[]) => Promise<void> | void;
+export type ZenithEventListener = (...args: unknown[]) => Promise<void> | void;
 
 /**
  * Zenith Event Hub
@@ -25,8 +25,8 @@ class ZenithEventHub {
   }
 
   /** Emit an event asynchronously — all listeners are awaited in order */
-  async emit(event: string, ...args: any[]): Promise<void> {
-    const listeners = this.emitter.rawListeners(event) as Function[];
+  async emit(event: string, ...args: unknown[]): Promise<void> {
+    const listeners = this.emitter.rawListeners(event) as ZenithEventListener[];
     for (const listener of listeners) {
       await listener(...args);
     }

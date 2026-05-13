@@ -9,7 +9,7 @@ export interface IMember extends Document {
   isSubscribed: boolean;
   subscriptionStatus: 'none' | 'trialing' | 'active' | 'canceled' | 'past_due';
   stripeCustomerId?: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   lastLogin?: Date;
   comparePassword: (password: string) => Promise<boolean>;
 }

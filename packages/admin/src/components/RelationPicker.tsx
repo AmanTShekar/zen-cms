@@ -4,21 +4,30 @@ import api from '../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 
+interface RelationItem {
+  _id: string;
+  name?: string;
+  title?: string;
+  email?: string;
+  id?: string;
+  [key: string]: unknown;
+}
+
 interface RelationPickerProps {
-  value?: any;
-  onChange: (value: any) => void;
+  value?: unknown;
+  onChange: (value: unknown) => void;
   relationTo: string;
   hasMany?: boolean;
 }
 
 const RelationPicker: React.FC<RelationPickerProps> = ({ value, onChange, relationTo, hasMany }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<RelationItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
-  const [, setSchema] = useState<any>(null);
+  const [, setSchema] = useState<Record<string, unknown> | null>(null);
 
-  const selectedItems = Array.isArray(value) ? value : value ? [value] : [];
+  const selectedItems = (Array.isArray(value) ? value : value ? [value] : []) as RelationItem[];
 
   const fetchData = async () => {
     setLoading(true);
@@ -27,13 +36,13 @@ const RelationPicker: React.FC<RelationPickerProps> = ({ value, onChange, relati
       const healthRes = await api.get('/health');
       const collections = healthRes.data.data?.collections || [];
       const globals = healthRes.data.data?.globals || [];
-      const colSchema = collections.find((c: any) => c.slug === relationTo) || globals.find((g: any) => g.slug === relationTo);
+      const colSchema = collections.find((c: { slug: string }) => c.slug === relationTo) || globals.find((g: { slug: string }) => g.slug === relationTo);
       setSchema(colSchema);
 
       // Then get the items
       const res = await api.get(`/${relationTo}`);
       setItems(res.data.data || []);
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch relation data');
     } finally {
       setLoading(false);
@@ -41,10 +50,14 @@ const RelationPicker: React.FC<RelationPickerProps> = ({ value, onChange, relati
   };
 
   useEffect(() => {
-    if (isOpen) fetchData();
+    if (isOpen) {
+      const timer = setTimeout(() => fetchData(), 0);
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, relationTo]);
 
-  const toggleSelect = (item: any) => {
+  const toggleSelect = (item: RelationItem) => {
     if (hasMany) {
       const exists = selectedItems.find(i => i._id === item._id);
       if (exists) {
@@ -58,7 +71,7 @@ const RelationPicker: React.FC<RelationPickerProps> = ({ value, onChange, relati
     }
   };
 
-  const getDisplayValue = (item: any) => {
+  const getDisplayValue = (item: RelationItem | string) => {
     if (!item) return '';
     if (typeof item === 'string') return item;
     return item.name || item.title || item.email || item.id || item._id;

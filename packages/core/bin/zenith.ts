@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 import { Command } from 'commander';
 import { ZenithEngine } from '../src/index';
-import { logger } from '../src/services/logger';
+import { _logger } from '../src/services/logger';
 
 const program = new Command();
 
@@ -17,7 +17,7 @@ program
   .action(async (options) => {
     // In a real CLI, we would load the zenith.config.ts here
     const config = { collections: [] }; 
-    const engine = new ZenithEngine(config as any);
+    const engine = new ZenithEngine(config as unknown);
     await engine.start(parseInt(options.port));
   });
 
@@ -26,7 +26,7 @@ program
   .description('Export the current CMS schema to a JSON file')
   .action(async () => {
     const config = { collections: [] };
-    const engine = new ZenithEngine(config as any);
+    const engine = new ZenithEngine(config as unknown);
     await engine.exportSchema();
   });
 

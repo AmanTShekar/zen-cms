@@ -11,7 +11,7 @@ export interface WebhookTarget {
 export interface WebhookPayload {
   event: string;
   collection?: string;
-  data: any;
+  data: unknown;
   timestamp: string;
 }
 
@@ -50,7 +50,7 @@ export const WebhookService = {
   async sendWebhook(
     target: WebhookTarget,
     event: string,
-    data: any,
+    data: unknown,
     collection?: string,
   ): Promise<{ success: boolean; status?: number; error?: string }> {
     const webhookPayload: WebhookPayload = {
@@ -93,7 +93,7 @@ export const WebhookService = {
         }
 
         logger.warn({ url: target.url, status: response.status, attempt: attempt + 1 }, 'Webhook delivery failed, retrying');
-      } catch (error: any) {
+      } catch (error: unknown) {
         logger.error({ url: target.url, error: error.message, attempt: attempt + 1 }, 'Webhook network error');
       }
 
@@ -112,7 +112,7 @@ export const WebhookService = {
         success: false,
         timestamp: new Date()
       });
-    } catch (err) {
+    } catch (_err) {
       logger.error('Failed to log webhook delivery');
     }
 
@@ -123,7 +123,7 @@ export const WebhookService = {
   async dispatchEvent(
     targets: WebhookTarget[],
     event: string,
-    data: any,
+    data: unknown,
     collection?: string,
   ) {
     const eligible = targets.filter(t => t.events.includes(event) || t.events.includes('*'));

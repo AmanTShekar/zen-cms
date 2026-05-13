@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import { requireAuth } from '../middleware/auth';
 import { createResponse, createErrorResponse } from './utils';
 import { getModelForCollection } from '../database/model-factory';
+import { AIService } from '../services/ai';
 
 const router: Router = Router();
 
@@ -27,7 +28,7 @@ const upload = multer({
  * ───────────────────
  * Handles secure file uploads and registers them in the Media collection.
  */
-router.post('/', requireAuth, upload.single('file'), async (req: any, res, next) => {
+router.post('/', requireAuth, upload.single('file'), async (req: unknown, res, next) => {
   try {
     if (!req.file) return res.status(400).json(createErrorResponse(400, 'No file uploaded'));
 
@@ -37,7 +38,7 @@ router.post('/', requireAuth, upload.single('file'), async (req: any, res, next)
 
     // If Cloudinary is configured, upload the file with AI Focal Point detection
     if (process.env.CLOUDINARY_URL || process.env.CLOUDINARY_CLOUD_NAME) {
-      const cloudinary = require('cloudinary').v2;
+      const cloudinary = (await import('cloudinary')).v2;
       const result = await cloudinary.uploader.upload(req.file.path, {
         gravity: "auto:subject", // AI focal point gravity
         crop: "fill"
@@ -48,7 +49,6 @@ router.post('/', requireAuth, upload.single('file'), async (req: any, res, next)
 
     // Auto-generate Alt Text if AI is enabled
     if (process.env.ANTHROPIC_API_KEY) {
-      const AIService = require('../services/ai').AIService;
       try {
         altText = await AIService.generateAltText(url, "uploaded media");
       } catch (e) {
@@ -61,7 +61,7 @@ router.post('/', requireAuth, upload.single('file'), async (req: any, res, next)
       name: 'Media',
       slug: 'media',
       fields: []
-    } as any);
+    } as unknown);
 
     const doc = await mediaModel.create({
       url,
@@ -73,7 +73,7 @@ router.post('/', requireAuth, upload.single('file'), async (req: any, res, next)
     });
 
     res.json(createResponse(doc));
-  } catch (error: any) {
+  } catch (error: unknown) {
     next(error);
   }
 });

@@ -19,7 +19,7 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
       });
       logger.info({ attempt }, 'Connected to MongoDB');
       return mongoose;
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ attempt, error: error.message }, `MongoDB connection failed`);
       if (attempt < MAX_RETRIES) {
         logger.info({ nextAttemptIn: RETRY_DELAY_MS }, 'Retrying database connection...');

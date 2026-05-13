@@ -20,7 +20,7 @@ router.use(requireAuth);
 router.get('/:key', async (req: Request, res: Response, next) => {
   try {
     const pref = await UserPreferenceModel.findOne({
-      userId: (req as any).user.id,
+      userId: (req as unknown).user.id,
       key: req.params.key,
     });
     if (!pref) throw new NotFoundError('Preference', req.params.key);
@@ -34,7 +34,7 @@ router.post('/:key', async (req: Request, res: Response, next) => {
     if (value === undefined) throw new InvalidPayloadError('"value" is required');
 
     const pref = await UserPreferenceModel.findOneAndUpdate(
-      { userId: (req as any).user.id, key: req.params.key },
+      { userId: (req as unknown).user.id, key: req.params.key },
       { value, updatedAt: new Date() },
       { upsert: true, new: true }
     );
@@ -45,7 +45,7 @@ router.post('/:key', async (req: Request, res: Response, next) => {
 router.delete('/:key', async (req: Request, res: Response, next) => {
   try {
     await UserPreferenceModel.deleteOne({
-      userId: (req as any).user.id,
+      userId: (req as unknown).user.id,
       key: req.params.key,
     });
     res.json(createResponse({ success: true }));

@@ -48,7 +48,7 @@ const LoginPage: React.FC = () => {
     try {
       await login(data.email, data.password);
       navigate('/');
-    } catch (err: any) {
+    } catch {
       if (err.code === 'ERR_NETWORK' || !err.response) {
         setError({ message: 'Kernel Offline: Connection Refused', type: 'network' });
       } else {

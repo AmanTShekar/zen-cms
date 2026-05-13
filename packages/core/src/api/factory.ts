@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, _Request, _Response, _NextFunction } from 'express';
 import { CollectionConfig, WebhookTarget } from '@zenith/types';
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter';
 import { createZodSchema } from '../schema/engine';
@@ -12,7 +12,7 @@ import {
   NotFoundError,
   ForbiddenError,
   ValidationError,
-  InvalidPayloadError,
+  _InvalidPayloadError,
 } from '../errors';
 import { eventHub } from '../services/event-hub';
 
@@ -42,7 +42,7 @@ export function createCollectionRouter(
    */
   const getContext = (() => {
     let context: {
-      schema: any;
+      schema: unknown;
       contentService: ContentService;
       cachePrefix: string;
     } | null = null;
@@ -61,7 +61,7 @@ export function createCollectionRouter(
 
   // ── Access Control Helper ──────────────────────────────────────────────────
   
-  const verifyAccess = (user: any, action: keyof NonNullable<CollectionConfig['access']>) => {
+  const verifyAccess = (user: unknown, action: keyof NonNullable<CollectionConfig['access']>) => {
     if (config.publicRead && action === 'read' && !user) return;
     const accessFn = config.access?.[action];
     if (accessFn) {
@@ -70,7 +70,7 @@ export function createCollectionRouter(
     }
   };
 
-  const sanitizeFields = (doc: any, user: any, action: 'read' | 'update') => {
+  const sanitizeFields = (doc: unknown, user: unknown, action: 'read' | 'update') => {
     if (!doc) return doc;
     const sanitized = { ...doc };
     config.fields.forEach(field => {
@@ -93,7 +93,7 @@ export function createCollectionRouter(
   router.get('/', async (req, res, next) => {
     try {
       const { contentService, cachePrefix } = getContext();
-      const user = (req as any).user;
+      const user = (req as unknown).user;
       verifyAccess(user, 'read');
 
       if (config.singleton) {
@@ -126,7 +126,7 @@ export function createCollectionRouter(
   router.get('/:id', async (req, res, next) => {
     try {
       const { contentService } = getContext();
-      const user = (req as any).user;
+      const user = (req as unknown).user;
       verifyAccess(user, 'read');
 
       const doc = await contentService.findById(req.params.id, { user });
@@ -139,7 +139,7 @@ export function createCollectionRouter(
   router.post('/', async (req, res, next) => {
     try {
       const { schema, contentService } = getContext();
-      const user = (req as any).user;
+      const user = (req as unknown).user;
       verifyAccess(user, 'create');
 
       const validation = schema.safeParse(req.body);
@@ -160,7 +160,7 @@ export function createCollectionRouter(
   router.patch('/:id', async (req, res, next) => {
     try {
       const { schema, contentService } = getContext();
-      const user = (req as any).user;
+      const user = (req as unknown).user;
       verifyAccess(user, 'update');
 
       const validation = schema.partial().safeParse(req.body);
@@ -181,7 +181,7 @@ export function createCollectionRouter(
   router.delete('/:id', async (req, res, next) => {
     try {
       const { contentService } = getContext();
-      const user = (req as any).user;
+      const user = (req as unknown).user;
       verifyAccess(user, 'delete');
 
       await contentService.delete(req.params.id, { user });

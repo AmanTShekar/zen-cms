@@ -3,6 +3,7 @@ import { requireAuth } from '../middleware/auth';
 import { createResponse } from './utils';
 import { AIService } from '../services/ai';
 import { InvalidPayloadError, ServiceUnavailableError } from '../errors';
+import mongoose from 'mongoose';
 
 const router: Router = Router();
 router.use(requireAuth);
@@ -101,14 +102,13 @@ router.post('/auto-link', async (req: Request, res: Response, next) => {
       throw new InvalidPayloadError('"content" string is required');
     }
 
-    const config = (req as any).zenith.config;
+    const config = (req as unknown).zenith.config;
     const suggestions: Array<{ text: string; url: string; collection: string }> = [];
-    const mongoose = require('mongoose');
 
     for (const col of config.collections) {
       // Check if collection has a title or name field we can match against
-      const hasTitle = col.fields.some((f: any) => f.name === 'title' && ['text', 'string'].includes(f.type));
-      const hasName = col.fields.some((f: any) => f.name === 'name' && ['text', 'string'].includes(f.type));
+      const hasTitle = col.fields.some((f: unknown) => f.name === 'title' && ['text', 'string'].includes(f.type));
+      const hasName = col.fields.some((f: unknown) => f.name === 'name' && ['text', 'string'].includes(f.type));
       
       if (!hasTitle && !hasName) continue;
 
@@ -119,7 +119,7 @@ router.post('/auto-link', async (req: Request, res: Response, next) => {
       const docs = await Model.find({}, projection).lean().exec();
 
       for (const doc of docs) {
-        const keyword = (doc as any).title || (doc as any).name;
+        const keyword = (doc as unknown).title || (doc as unknown).name;
         if (!keyword || keyword.length < 4) continue; // Ignore very short generic words
 
         // Case-insensitive exact word boundary match
@@ -127,7 +127,7 @@ router.post('/auto-link', async (req: Request, res: Response, next) => {
         if (regex.test(content)) {
           suggestions.push({
             text: keyword,
-            url: `/${col.slug}/${(doc as any).slug || doc._id}`,
+            url: `/${col.slug}/${(doc as unknown).slug || doc._id}`,
             collection: col.name,
           });
         }

@@ -44,7 +44,7 @@ export const AuthService = {
 
   verifyToken(token: string): AuthUser | null {
     try {
-      const decoded = jwt.verify(token, JWT_SECRET) as AuthUser & Record<string, any>;
+      const decoded = jwt.verify(token, JWT_SECRET) as AuthUser & Record<string, unknown>;
       return { id: decoded.id, email: decoded.email, role: decoded.role };
     } catch {
       return null;
@@ -53,7 +53,7 @@ export const AuthService = {
 
   verifyRefreshToken(token: string): AuthUser | null {
     try {
-      const decoded = jwt.verify(token, JWT_REFRESH_SECRET) as AuthUser & Record<string, any>;
+      const decoded = jwt.verify(token, JWT_REFRESH_SECRET) as AuthUser & Record<string, unknown>;
       return { id: decoded.id, email: decoded.email, role: decoded.role };
     } catch {
       return null;

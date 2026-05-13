@@ -98,7 +98,7 @@ export class AIService {
         max_tokens: maxTokens,
         messages: [{ role: 'user', content: prompt }],
       });
-      return (msg.content[0] as any).text || '';
+      return (msg.content[0] as unknown).text || '';
     }
 
     throw new Error('No AI provider configured. Set OPENROUTER_API_KEY, XAI_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY in .env');

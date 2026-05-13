@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Zap, 
   Plus, 
@@ -74,7 +74,7 @@ const FlowBuilderPage: React.FC = () => {
     try {
       const res = await api.get('/flows');
       setFlows(res.data.data || []);
-    } catch (err) {
+    } catch {
       toast.error('Registry Sync Failed');
     } finally {
       setLoading(false);
@@ -82,7 +82,8 @@ const FlowBuilderPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchFlows();
+    const timer = setTimeout(() => fetchFlows(), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const createNewFlow = () => {
@@ -111,7 +112,7 @@ const FlowBuilderPage: React.FC = () => {
         toast.success('SEQUENCE_INITIALIZED');
       }
       fetchFlows();
-    } catch (err) {
+    } catch {
       toast.error('SYNC_ABORTED');
     } finally {
       setSaving(false);
@@ -126,7 +127,7 @@ const FlowBuilderPage: React.FC = () => {
       setFlows(flows.filter(f => f._id !== id));
       setSelectedFlow(null);
       toast.success('SEQUENCE_PURGED');
-    } catch (err) {
+    } catch {
       toast.error('PURGE_FAILED');
     }
   };
@@ -135,6 +136,7 @@ const FlowBuilderPage: React.FC = () => {
     if (!selectedFlow) return;
     const type = STEP_TYPES.find(t => t.id === typeId);
     const newStep: FlowStep = {
+      // eslint-disable-next-line react-hooks/purity
       id: `step_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
       type: typeId,
       name: type?.name || 'New Step',
@@ -297,7 +299,7 @@ const FlowBuilderPage: React.FC = () => {
                                 key={t.id}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setSelectedFlow({...selectedFlow, trigger: { ...selectedFlow.trigger, type: t.id as any }});
+                                  setSelectedFlow({...selectedFlow, trigger: { ...selectedFlow.trigger, type: t.id as 'webhook' | 'schedule' | 'event' }});
                                 }}
                                 className={cn(
                                   "py-2 text-[8px] font-black uppercase tracking-widest transition-all",

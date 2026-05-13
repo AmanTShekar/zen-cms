@@ -19,24 +19,24 @@ export interface DatabaseAdapter {
   registerCollection(config: CollectionConfig): Promise<void>;
   
   // ── CRUD Operations ───────────────────────────────────────────────────────
-  find<T = any>(collection: string, query: Record<string, any>, options?: FindOptions): Promise<T[]>;
-  findOne<T = any>(collection: string, query: Record<string, any>, options?: BaseOptions): Promise<T | null>;
-  create<T = any>(collection: string, data: Partial<T>, options?: BaseOptions): Promise<T>;
-  update<T = any>(collection: string, id: string, data: Partial<T>, options?: BaseOptions): Promise<T | null>;
-  updateMany(collection: string, query: Record<string, any>, data: any, options?: BaseOptions): Promise<number>;
+  find<T = unknown>(collection: string, query: Record<string, unknown>, options?: FindOptions): Promise<T[]>;
+  findOne<T = unknown>(collection: string, query: Record<string, unknown>, options?: BaseOptions): Promise<T | null>;
+  create<T = unknown>(collection: string, data: Partial<T>, options?: BaseOptions): Promise<T>;
+  update<T = unknown>(collection: string, id: string, data: Partial<T>, options?: BaseOptions): Promise<T | null>;
+  updateMany(collection: string, query: Record<string, unknown>, data: unknown, options?: BaseOptions): Promise<number>;
   delete(collection: string, id: string, options?: BaseOptions): Promise<boolean>;
-  deleteMany(collection: string, query: Record<string, any>, options?: BaseOptions): Promise<number>;
+  deleteMany(collection: string, query: Record<string, unknown>, options?: BaseOptions): Promise<number>;
   
   // ── Advanced Operations ───────────────────────────────────────────────────
-  count(collection: string, query: Record<string, any>): Promise<number>;
-  aggregate<T = any>(collection: string, pipeline: any[]): Promise<T[]>;
+  count(collection: string, query: Record<string, unknown>): Promise<number>;
+  aggregate<T = unknown>(collection: string, pipeline: unknown[]): Promise<T[]>;
   
   /** 
    * Executes multiple operations in a transaction.
    * If the adapter does not support transactions (e.g. standalone Mongo), 
    * this will execute the function without a transaction context.
    */
-  transaction<T>(fn: (session: any) => Promise<T>): Promise<T>;
+  transaction<T>(fn: (session: unknown) => Promise<T>): Promise<T>;
   
   // ── Zenith Engine Features ────────────────────────────────────────────────
   createAuditLog(data: AuditLogData): Promise<void>;
@@ -45,11 +45,11 @@ export interface DatabaseAdapter {
 }
 
 export interface BaseOptions {
-  session?: any;
+  session?: unknown;
 }
 
 export interface FindOptions extends BaseOptions {
-  sort?: string | Record<string, any>;
+  sort?: string | Record<string, unknown>;
   skip?: number;
   limit?: number;
   select?: string | string[];
@@ -62,7 +62,7 @@ export interface AuditLogData {
   action: string;
   collectionName: string;
   documentId?: string;
-  changes?: any;
+  changes?: unknown;
   ip?: string;
   userAgent?: string;
   timestamp?: Date;
@@ -72,8 +72,8 @@ export interface VersionData {
   collectionName: string;
   collectionSlug: string;
   documentId: string;
-  snapshot: any;
-  delta?: any;
+  snapshot: unknown;
+  delta?: unknown;
   createdBy: string;
   timestamp: Date;
 }

@@ -1,11 +1,11 @@
 import { z } from 'zod';
 import { FieldConfig } from '@zenith/types';
 
-export function createZodSchema(fields: FieldConfig[], config?: any) {
-  const shape: Record<string, any> = {};
+export function createZodSchema(fields: FieldConfig[], config?: unknown) {
+  const shape: Record<string, unknown> = {};
 
   fields.forEach((field) => {
-    let schema: any;
+    let schema: unknown;
 
     switch (field.type) {
       // --- String-based types ---
@@ -30,7 +30,7 @@ export function createZodSchema(fields: FieldConfig[], config?: any) {
 
       // --- Boolean ---
       case 'checkbox':
-      case 'boolean' as any:
+      case 'boolean' as unknown:
         schema = z.boolean();
         break;
 
@@ -56,7 +56,7 @@ export function createZodSchema(fields: FieldConfig[], config?: any) {
 
       // --- Select ---
       case 'select': {
-        const rawOptions = (field.options || []).map((o: any) =>
+        const rawOptions = (field.options || []).map((o: unknown) =>
           typeof o === 'string' ? o : o.value
         );
         if (rawOptions.length > 0) {
@@ -89,8 +89,8 @@ export function createZodSchema(fields: FieldConfig[], config?: any) {
       // --- Tabs (flattened into fields) ---
       case 'tabs':
         if (field.tabs && field.tabs.length > 0) {
-          const tabShape: Record<string, any> = {};
-          field.tabs.forEach((tab: any) => {
+          const tabShape: Record<string, unknown> = {};
+          field.tabs.forEach((tab: unknown) => {
             const tabSchema = createZodSchema(tab.fields);
             Object.assign(tabShape, tabSchema.shape);
           });
@@ -104,14 +104,14 @@ export function createZodSchema(fields: FieldConfig[], config?: any) {
       // --- Blocks (Discriminated Union) ---
       case 'blocks':
         if (field.blocks && field.blocks.length > 0) {
-          const blockSchemas = field.blocks.map((block: any) => {
+          const blockSchemas = field.blocks.map((block: unknown) => {
             const blockShape = createZodSchema(block.fields).shape;
             return z.object({
               blockType: z.literal(block.slug),
               ...blockShape,
             });
           });
-          schema = z.array(z.union(blockSchemas as any));
+          schema = z.array(z.union(blockSchemas as unknown));
         } else {
           schema = z.array(z.record(z.any()));
         }
@@ -134,7 +134,7 @@ export function createZodSchema(fields: FieldConfig[], config?: any) {
     // Handle Custom Validation
     if (field.hooks?.validate) {
       const validateFn = field.hooks.validate;
-      schema = schema.refine(async (val: any) => {
+      schema = schema.refine(async (val: unknown) => {
         const result = await validateFn(val, {}); // Context available in next version
         return result === true;
       }, {

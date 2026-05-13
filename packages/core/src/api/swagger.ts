@@ -40,8 +40,8 @@ export function setupSwagger(app: Express, config: CMSConfig) {
     const slug = col.slug;
     const name = col.name;
 
-    if (!(specs as any).paths) (specs as any).paths = {};
-    (specs as any).paths[`/${slug}`] = {
+    if (!(specs as unknown).paths) (specs as unknown).paths = {};
+    (specs as unknown).paths[`/${slug}`] = {
       get: {
         tags: [name],
         summary: `List all ${slug}`,
@@ -57,7 +57,7 @@ export function setupSwagger(app: Express, config: CMSConfig) {
       },
     };
 
-    (specs as any).paths[`/${slug}/{id}`] = {
+    (specs as unknown).paths[`/${slug}/{id}`] = {
       get: {
         tags: [name],
         summary: `Get a single ${name}`,

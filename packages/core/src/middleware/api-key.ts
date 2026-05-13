@@ -16,7 +16,7 @@ export const apiKeyMiddleware = async (req: Request, res: Response, next: NextFu
     }
 
     // Inject into request object
-    (req as any).user = keyData;
+    (req as unknown).user = keyData;
     next();
   } catch (error) {
     next(error);

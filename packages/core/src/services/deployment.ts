@@ -55,7 +55,7 @@ export const DeploymentService = {
       } else {
         logger.warn({ status: response.status }, 'DeploymentService: Build hook failed');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err: err.message }, 'DeploymentService: Error triggering build hook');
     }
   }

@@ -5,14 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 
 interface MediaPickerProps {
-  value?: any;
-  onChange: (value: any) => void;
+  value?: unknown;
+  onChange: (value: unknown) => void;
   hasMany?: boolean;
 }
 
 const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [files, setFiles] = useState<any[]>([]);
+  const [files, setFiles] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
 
@@ -23,7 +23,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany }) =
     try {
       const res = await api.get('/media');
       setFiles(res.data.data || []);
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch media');
     } finally {
       setLoading(false);
@@ -31,10 +31,13 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany }) =
   };
 
   useEffect(() => {
-    if (isOpen) fetchFiles();
+    if (isOpen) {
+      const timer = setTimeout(() => fetchFiles(), 0);
+      return () => clearTimeout(timer);
+    }
   }, [isOpen]);
 
-  const toggleSelect = (file: any) => {
+  const toggleSelect = (file: unknown) => {
     if (hasMany) {
       const exists = selectedFiles.find(f => f._id === file._id);
       if (exists) {
@@ -63,7 +66,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany }) =
         onChange(newFile);
         setIsOpen(false);
       }
-    } catch (err) {
+    } catch {
       console.error('Upload failed');
     }
   };

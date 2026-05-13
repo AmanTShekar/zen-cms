@@ -6,12 +6,12 @@ export interface IFlow extends Document {
   active: boolean;
   trigger: {
     type: 'webhook' | 'collection_change' | 'schedule';
-    config: any;
+    config: unknown;
   };
   steps: Array<{
     id: string;
     type: string;
-    config: any;
+    config: unknown;
     next?: string;
   }>;
   createdAt: Date;

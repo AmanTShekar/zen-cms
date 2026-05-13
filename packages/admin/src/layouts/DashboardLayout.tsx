@@ -14,8 +14,7 @@ import {
   Command,
   Sparkles,
   ShieldCheck,
-  Workflow,
-  Users
+  Workflow
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useTheme } from '../context/ThemeContext';
@@ -26,14 +25,31 @@ import api from '../lib/api';
 import Logo from '../components/Logo';
 import GlobalSearch from '../components/GlobalSearch';
 
+interface RegistryItem {
+  slug: string;
+  name: string;
+  [key: string]: unknown;
+}
+
+interface HealthData {
+  maintenanceMode?: boolean;
+  collections?: RegistryItem[];
+  globals?: RegistryItem[];
+  registry?: {
+    collections?: RegistryItem[];
+    globals?: RegistryItem[];
+  };
+  [key: string]: unknown;
+}
+
 const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const { logout, user } = useAuthStore();
   const { theme, toggleTheme } = useTheme();
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [, setCommandPaletteOpen] = useState(false);
-  const [collections, setCollections] = useState<any[]>([]);
-  const [globals, setGlobals] = useState<any[]>([]);
-  const [health, setHealth] = useState<any>(null);
+  const [collections, setCollections] = useState<RegistryItem[]>([]);
+  const [globals, setGlobals] = useState<RegistryItem[]>([]);
+  const [health, setHealth] = useState<HealthData | null>(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -45,7 +61,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
         setCollections(data.collections || data.registry?.collections || []);
         setGlobals(data.globals || data.registry?.globals || []);
         setHealth(data);
-      } catch (err) {
+      } catch {
         console.error('System Handshake Failed');
       }
     };

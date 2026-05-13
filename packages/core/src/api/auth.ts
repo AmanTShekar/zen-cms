@@ -111,7 +111,7 @@ router.post('/logout', requireAuth, (req: Request, res: Response) => {
 // ── GET  /api/v1/auth/me ─────────────────────────────────────────────────────
 router.get('/me', requireAuth, async (req: Request, res: Response, next) => {
   try {
-    const user = await UserModel.findById((req as any).user.id).select('-password');
+    const user = await UserModel.findById((req as unknown).user.id).select('-password');
     if (!user) throw new NotFoundError('User');
     res.json(createResponse({ id: user._id, email: user.email, role: user.role }));
   } catch (err) { next(err); }

@@ -9,7 +9,7 @@ const GlobalSearch: React.FC = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<unknown[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -30,7 +30,7 @@ const GlobalSearch: React.FC = () => {
         try {
           const res = await api.get(`/system/search?q=${query}`);
           setResults(res.data.data);
-        } catch (err) {
+        } catch {
           console.error('Search failed');
         } finally {
           setIsSearching(false);
@@ -104,7 +104,7 @@ const GlobalSearch: React.FC = () => {
               {results.length > 0 && (
                 <div className="space-y-1">
                   <div className="px-3 py-1.5 text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 italic">Database Nodes</div>
-                  {results.map((res: any) => (
+                  {results.map((res: unknown) => (
                     <button
                       key={res.id}
                       onClick={() => handleSelect(`/collections/${res.collection}/${res.id}`)}

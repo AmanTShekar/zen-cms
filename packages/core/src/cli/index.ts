@@ -29,7 +29,7 @@ program
       
       console.log(`\n✅ Sync complete! Created/Updated ${stats.updated} collections.\n`);
       process.exit(0);
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err: err.message }, 'CLI Sync failed');
       process.exit(1);
     }

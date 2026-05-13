@@ -26,12 +26,12 @@ import { useTheme } from '../context/ThemeContext';
 
 const MediaLibrary = () => {
   const { theme } = useTheme();
-  const [files, setFiles] = useState<any[]>([]);
+  const [files, setFiles] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
   const [folders, setFolders] = useState<string[]>([]);
-  const [selectedFile, setSelectedFile] = useState<any>(null);
+  const [selectedFile, setSelectedFile] = useState<unknown>(null);
   const [previewWidth, setPreviewWidth] = useState(1200);
 
   const fetchFiles = async () => {
@@ -41,9 +41,9 @@ const MediaLibrary = () => {
       const allFiles = res.data.data || [];
       setFiles(allFiles);
       
-      const uniqueFolders = Array.from(new Set(allFiles.map((f: any) => f.folder).filter(Boolean))) as string[];
+      const uniqueFolders = Array.from(new Set(allFiles.map((f: unknown) => f.folder).filter(Boolean))) as string[];
       setFolders(uniqueFolders);
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch media');
       toast.error('REGISTRY_SYNC_FAILURE');
     } finally {
@@ -52,7 +52,10 @@ const MediaLibrary = () => {
   };
 
   useEffect(() => {
-    fetchFiles();
+    const timer = setTimeout(() => {
+      fetchFiles();
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +69,7 @@ const MediaLibrary = () => {
       });
       toast.success('ASSET_INGESTED');
       fetchFiles();
-    } catch (err) {
+    } catch {
       toast.error('INGESTION_PROTOCOL_FAILURE');
     }
   };
@@ -78,7 +81,7 @@ const MediaLibrary = () => {
       toast.success('NODE_PURGED');
       fetchFiles();
       if (selectedFile?._id === id) setSelectedFile(null);
-    } catch (err) {
+    } catch {
       toast.error('PURGE_SEQUENCE_TERMINATED');
     }
   };

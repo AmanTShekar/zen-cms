@@ -5,6 +5,7 @@ import { createErrorResponse } from '../api/utils';
 
 // Extend Express Request to include user
 declare global {
+// eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       user?: AuthUser;

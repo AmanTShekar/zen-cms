@@ -8,7 +8,7 @@ const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
 async function ensureDir() {
   try {
     await fs.mkdir(UPLOAD_DIR, { recursive: true });
-  } catch (err) {
+  } catch (_err) {
     logger.error('Failed to create upload directory');
   }
 }
@@ -32,7 +32,7 @@ export const StorageService = {
     const filePath = path.join(UPLOAD_DIR, fileId);
     try {
       await fs.unlink(filePath);
-    } catch (err) {
+    } catch (_err) {
       logger.warn({ fileId }, 'File not found during deletion');
     }
   }

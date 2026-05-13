@@ -26,7 +26,7 @@ export class SchemaSync {
         // For SQL adapters, this would generate/run ALTER TABLE queries
         await this.adapter.registerCollection(col);
         stats.updated++;
-      } catch (err: any) {
+      } catch (err: unknown) {
         logger.error({ col: col.slug, err: err.message }, 'SchemaSync: Failed to sync collection');
         stats.errors++;
       }

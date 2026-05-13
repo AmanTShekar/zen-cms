@@ -1,10 +1,10 @@
 import mongoose, { Schema, Model } from 'mongoose';
 import { CollectionConfig, FieldConfig } from '@zenith/types';
 
-const models: Record<string, Model<any>> = {};
+const models: Record<string, Model<unknown>> = {};
 
-function mapFieldToMongoose(field: FieldConfig): any {
-  let type: any;
+function mapFieldToMongoose(field: FieldConfig): unknown {
+  let type: unknown;
 
   switch (field.type) {
     case 'text':
@@ -87,14 +87,14 @@ function mapFieldToMongoose(field: FieldConfig): any {
 }
 
 function generateSchemaFields(fields: FieldConfig[]) {
-  const schemaFields: Record<string, any> = {};
+  const schemaFields: Record<string, unknown> = {};
   fields.forEach(field => {
     schemaFields[field.name] = mapFieldToMongoose(field);
   });
   return schemaFields;
 }
 
-export function getModelForCollection(config: CollectionConfig): Model<any> {
+export function getModelForCollection(config: CollectionConfig): Model<unknown> {
   if (models[config.slug]) return models[config.slug];
 
   const schemaFields = generateSchemaFields(config.fields);

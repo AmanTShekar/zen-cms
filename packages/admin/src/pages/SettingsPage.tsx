@@ -49,6 +49,33 @@ interface Settings {
   enableTelemetry: boolean;
 }
 
+interface DBStats {
+  size?: number;
+  collections?: number | string;
+  [key: string]: unknown;
+}
+
+interface User {
+  _id: string;
+  email: string;
+  role: string;
+  [key: string]: unknown;
+}
+
+interface ApiKey {
+  _id: string;
+  name: string;
+  role: string;
+  expiresAt: string | number | Date;
+  [key: string]: unknown;
+}
+
+interface NewKey {
+  name: string;
+  key: string;
+  [key: string]: unknown;
+}
+
 const SettingsPage = () => {
   const { theme } = useTheme();
   const location = useLocation();
@@ -75,10 +102,10 @@ const SettingsPage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [testingSmtp, setTestingSmtp] = useState(false);
-  const [dbStats, setDbStats] = useState<any>(null);
-  const [users, setUsers] = useState<any[]>([]);
-  const [apiKeys, setApiKeys] = useState<any[]>([]);
-  const [newKey, setNewKey] = useState<any>(null);
+  const [dbStats, setDbStats] = useState<DBStats | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
+  const [newKey, setNewKey] = useState<NewKey | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -93,7 +120,7 @@ const SettingsPage = () => {
       setDbStats(dbRes.data.data);
       setUsers(usersRes.data.data);
       setApiKeys(keysRes.data.data);
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch system parameters');
     } finally {
       setTimeout(() => setLoading(false), 300);
@@ -101,12 +128,18 @@ const SettingsPage = () => {
   }, []);
 
   useEffect(() => {
-    fetchData();
+    const timer = setTimeout(() => {
+      fetchData();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [fetchData]);
 
   useEffect(() => {
     const tab = queryParams.get('tab');
-    if (tab) setActiveTab(tab);
+    if (tab) {
+      setTimeout(() => setActiveTab(tab), 0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
   const handleSave = async () => {
@@ -114,7 +147,7 @@ const SettingsPage = () => {
     try {
       await api.patch('/system/settings', settings);
       toast.success('Settings saved');
-    } catch (err) {
+    } catch {
       toast.error('Failed to save settings');
     } finally {
       setSaving(false);
@@ -126,7 +159,7 @@ const SettingsPage = () => {
     try {
       const res = await api.post('/system/smtp/test', settings);
       toast.success(res.data.data.handshake === 'OK' ? 'SMTP connected' : 'Relay verified');
-    } catch (err: any) {
+    } catch {
       toast.error('SMTP connection failed');
     } finally {
       setTestingSmtp(false);
@@ -146,8 +179,8 @@ const SettingsPage = () => {
         }
       );
       fetchData();
-    } catch (err) {
-      console.error(err);
+    } catch {
+      console.error('Failed to add operator');
     }
   };
 
@@ -157,7 +190,7 @@ const SettingsPage = () => {
       await api.patch(`/system/api-keys/${id}`, { revoked: true });
       toast.success('Access revoked');
       fetchData();
-    } catch (err) {
+    } catch {
       toast.error('Failed to revoke access');
     }
   };
@@ -170,7 +203,7 @@ const SettingsPage = () => {
       setNewKey(res.data.data);
       toast.success('API key generated');
       fetchData();
-    } catch (err) {
+    } catch {
       toast.error('Failed to generate key');
     }
   };

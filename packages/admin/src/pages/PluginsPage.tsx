@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { 
   Puzzle, 
-  Download, 
   Settings, 
   Trash2, 
   ExternalLink,
@@ -21,19 +20,32 @@ import { useTheme } from '../context/ThemeContext';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
 
+interface PluginData {
+  id?: string;
+  name: string;
+  author?: string;
+  enabled?: boolean;
+  version?: string;
+  description?: string;
+  status?: string;
+  type?: string;
+  verified?: boolean;
+  icon?: React.ReactNode;
+}
+
 const PluginsPage = () => {
   const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'installed' | 'marketplace'>('installed');
   const [loading, setLoading] = useState(true);
-  const [plugins, setPlugins] = useState<any[]>([]);
+  const [plugins, setPlugins] = useState<PluginData[]>([]);
 
   const fetchPlugins = async () => {
-    setLoading(true);
+    setTimeout(() => setLoading(true), 0);
     try {
       const res = await api.get('/system/plugins');
       const realPlugins = res.data.data || [];
-      setPlugins(realPlugins.map((p: any) => ({
+      setPlugins(realPlugins.map((p: PluginData) => ({
         ...p,
         id: p.name.toLowerCase().replace(/\s+/g, '-'),
         status: p.enabled ? 'active' : 'inactive',
@@ -41,7 +53,7 @@ const PluginsPage = () => {
         verified: p.author === 'ROOT_KERNEL' || p.author === 'ZENITH_CORE',
         icon: <Puzzle size={20} className="text-indigo-500" />
       })));
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch plugins');
       toast.error('Failed to load plugins');
     } finally {
@@ -55,13 +67,15 @@ const PluginsPage = () => {
       await api.post(`/system/plugins/${id}/${newEnabled ? 'enable' : 'disable'}`);
       toast.success(`Plugin ${newEnabled ? 'enabled' : 'disabled'}`);
       fetchPlugins();
-    } catch (err) {
+    } catch {
       toast.error('Failed to toggle plugin status');
     }
   };
 
   useEffect(() => {
-    fetchPlugins();
+    setTimeout(() => {
+      fetchPlugins();
+    }, 0);
   }, []);
 
   const filteredPlugins = plugins.filter(p => 
@@ -104,10 +118,10 @@ const PluginsPage = () => {
               "p-1 rounded-none border flex items-center shadow-sm backdrop-blur-xl",
               theme === 'dark' ? "bg-white/[0.02] border-white/5" : "bg-white border-gray-100"
             )}>
-               {['Installed', 'Marketplace'].map((tab) => (
+                {['Installed', 'Marketplace'].map((tab) => (
                   <button 
                     key={tab}
-                    onClick={() => setActiveTab(tab.toLowerCase() as any)}
+                    onClick={() => setActiveTab(tab.toLowerCase() as 'installed' | 'marketplace')}
                     className={cn(
                       "px-6 py-2 text-[9px] font-black uppercase tracking-widest rounded-none transition-all italic leading-none",
                       activeTab === tab.toLowerCase() 

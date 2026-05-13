@@ -23,16 +23,39 @@ import { cn } from '../lib/utils';
 import { useTheme } from '../context/ThemeContext';
 import { toast } from 'react-hot-toast';
 
+interface SystemStats {
+  members?: number;
+  users?: number;
+  [key: string]: unknown;
+}
+
+interface HealthData {
+  database?: { status?: string };
+  system?: { uptime?: number };
+  cpu?: { usage?: string };
+  memory?: { used?: string };
+  [key: string]: unknown;
+}
+
+interface AuditLogEntry {
+  _id?: string;
+  action?: string;
+  collection?: string;
+  timestamp: string | number | Date;
+  user?: { email?: string };
+  [key: string]: unknown;
+}
+
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   
   // --- CORE STATE: ADMINISTRATIVE TELEMETRY ---
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<SystemStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [healthData, setHealthData] = useState<any>(null);
-  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [healthData, setHealthData] = useState<HealthData | null>(null);
+  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
   const [lastUpdated, setLastUpdated] = useState<string>(new Date().toLocaleTimeString());
 
   /**
@@ -65,7 +88,7 @@ const Dashboard: React.FC = () => {
       if (!silent) {
         toast.success('System synchronized successfully');
       }
-    } catch (err) {
+    } catch {
       console.error('Critical Dashboard Handshake Failure');
       if (!silent) toast.error('Partial synchronization failure');
     } finally {
@@ -76,11 +99,16 @@ const Dashboard: React.FC = () => {
 
   // INITIALIZATION HANDSHAKE: Trigger initial load and periodic background sync
   useEffect(() => {
-    fetchData(true);
+    const timer = setTimeout(() => {
+      fetchData(true);
+    }, 0);
     const interval = setInterval(() => {
       api.get('/system/health').then(res => setHealthData(res.data.data));
     }, 10000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timer);
+    };
   }, []);
 
   if (loading) return (

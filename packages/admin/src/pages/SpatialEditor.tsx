@@ -89,7 +89,7 @@ const humanize = (str: string) => {
 //   id: string;
 //   blockType: string;
 //   title: string;
-//   content: any;
+//   content: unknown;
 //   align?: 'left' | 'center' | 'right';
 // }
 
@@ -112,7 +112,7 @@ const SpatialEditor: React.FC<{ isGlobal?: boolean }> = ({ isGlobal }) => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -125,7 +125,7 @@ const SpatialEditor: React.FC<{ isGlobal?: boolean }> = ({ isGlobal }) => {
   const [blockPickerOpen, setBlockPickerOpen] = useState(false);
   const [blockSearch, setBlockSearch] = useState('');
   const [injectionIndex, setInjectionIndex] = useState<number | null>(null);
-  const [history, setHistory] = useState<any[]>([]);
+  const [history, setHistory] = useState<Record<string, unknown>[]>([]);
   const [leftSidebarWidth, setLeftSidebarWidth] = useState(300);
   const [rightSidebarWidth, setRightSidebarWidth] = useState(400);
   const [resizingSide, setResizingSide] = useState<'left' | 'right' | null>(null);

@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../middleware/auth';
 import { createResponse } from './utils';
-import { AuditLogModel } from '../database/audit-model';
+import { _AuditLogModel } from '../database/audit-model';
 import { VersionModel } from '../database/version-model';
 import { NotFoundError } from '../errors';
 import mongoose from 'mongoose';
@@ -44,7 +44,7 @@ router.get('/:collection/:id/:versionId', async (req: Request, res: Response, ne
 
 router.post('/:collection/:id/:versionId/restore', async (req: Request, res: Response, next) => {
   try {
-    const version = await VersionModel.findById(req.params.versionId).lean() as any;
+    const version = await VersionModel.findById(req.params.versionId).lean() as unknown;
     if (!version) throw new NotFoundError('Version', req.params.versionId);
 
     const isGlobal = req.params.collection === 'globals';

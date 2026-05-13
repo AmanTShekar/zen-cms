@@ -66,7 +66,7 @@ router.get('/me', async (req: Request, res: Response, next) => {
     if (!authHeader?.startsWith('Bearer ')) throw new UnauthorizedError();
     
     const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const decoded = jwt.verify(token, JWT_SECRET) as unknown;
     
     const member = await MemberModel.findById(decoded.id);
     if (!member) throw new NotFoundError('Member', decoded.id);

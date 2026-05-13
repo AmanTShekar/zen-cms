@@ -1,12 +1,18 @@
 import React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 
+interface FieldConfig {
+  name: string;
+  label?: string;
+  [key: string]: unknown;
+}
+
 interface SimpleArrayBuilderProps {
-  value?: any[];
-  onChange: (value: any[]) => void;
-  fields: any[];
+  value?: Record<string, unknown>[];
+  onChange: (value: Record<string, unknown>[]) => void;
+  fields: FieldConfig[];
   label: string;
-  renderField: (field: any, value: any, onChange: (val: any) => void) => React.ReactNode;
+  renderField: (field: FieldConfig, value: unknown, onChange: (val: unknown) => void) => React.ReactNode;
 }
 
 const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({ value = [], onChange, fields, label, renderField }) => {
@@ -20,7 +26,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({ value = [], onC
     onChange(newValue);
   };
 
-  const updateItemData = (index: number, fieldName: string, fieldValue: any) => {
+  const updateItemData = (index: number, fieldName: string, fieldValue: unknown) => {
     const newValue = [...value];
     newValue[index] = {
       ...newValue[index],

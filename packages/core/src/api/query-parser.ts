@@ -1,7 +1,7 @@
 import { CollectionConfig } from '@zenith/types';
 
 interface ParsedQuery {
-  filter: Record<string, any>;
+  filter: Record<string, unknown>;
   sort: string;
   pagination: {
     page: number;
@@ -21,7 +21,7 @@ interface ParsedQuery {
  * - ?page=1&pageSize=10
  * - ?fields=title,slug
  */
-export function parseQueryParams(query: any, config: CollectionConfig): ParsedQuery {
+export function parseQueryParams(query: unknown, config: CollectionConfig): ParsedQuery {
   const parsed: ParsedQuery = {
     filter: {},
     sort: '-createdAt',

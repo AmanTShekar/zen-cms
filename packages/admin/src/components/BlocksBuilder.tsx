@@ -26,7 +26,7 @@ interface BlocksBuilderProps {
   value: Block[];
   onChange: (value: Block[]) => void;
   availableBlocks?: unknown[];
-  renderField?: (field: any, value: any, onChange: (val: any) => void) => React.ReactNode;
+  renderField?: (field: unknown, value: unknown, onChange: (val: unknown) => void) => React.ReactNode;
 }
 
 const STOCK_BLOCKS = [

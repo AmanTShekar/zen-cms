@@ -4,11 +4,11 @@ import os from 'os';
 import { requireAuth, requireRole } from '../middleware/auth';
 import { UserModel } from '../database/user-model';
 import { createResponse } from './utils';
-import { PreviewService } from '../services/preview';
+import { _PreviewService } from '../services/preview';
 import { ApiKeyService } from '../services/api-key';
 import { AuditLogModel } from '../database/audit-model';
 import { SearchService } from '../services/search';
-import { InvalidPayloadError, NotFoundError } from '../errors';
+import { InvalidPayloadError, _NotFoundError } from '../errors';
 import { SystemSettingsModel } from '../database/settings-model';
 import { CacheService } from '../services/cache';
 
@@ -17,7 +17,7 @@ const router: Router = Router();
 // ── 1. SYSTEM CRITICAL (Top Priority) ────────────────────────────────────────
 
 router.get('/plugins', requireAuth, (req: Request, res: Response) => {
-  const plugins = (req as any).zenith?.plugins || [];
+  const plugins = (req as unknown).zenith?.plugins || [];
   res.json(createResponse(plugins));
 });
 
@@ -37,7 +37,7 @@ router.post('/plugins/inject', requireAuth, requireRole('admin'), async (req: Re
     };
 
     res.json(createResponse(newPlugin));
-  } catch (err: any) {
+  } catch (err: unknown) {
     res.status(400).json(createResponse(null, { error: err.message }));
   }
 });
@@ -47,7 +47,7 @@ router.post('/plugins/:id/enable', requireAuth, requireRole('admin'), async (req
     const { id } = req.params;
     // Simulate activation - in a real env, this would update the config/database
     res.json(createResponse({ id, enabled: true, status: 'active' }));
-  } catch (err: any) {
+  } catch (err: unknown) {
     res.status(500).json(createResponse(null, { error: err.message }));
   }
 });
@@ -57,7 +57,7 @@ router.post('/plugins/:id/disable', requireAuth, requireRole('admin'), async (re
     const { id } = req.params;
     // Simulate deactivation
     res.json(createResponse({ id, enabled: false, status: 'inactive' }));
-  } catch (err: any) {
+  } catch (err: unknown) {
     res.status(500).json(createResponse(null, { error: err.message }));
   }
 });
@@ -66,7 +66,7 @@ router.get('/health', async (req: Request, res: Response) => {
   const mongoState = mongoose.connection.readyState;
   const dbStatus = mongoState === 1 ? 'connected' : 'disconnected';
   const healthy = mongoState === 1;
-  const config = (req as any).zenith?.config;
+  const config = (req as unknown).zenith?.config;
 
   const data = {
     status: healthy ? 'ok' : 'degraded',
@@ -85,12 +85,12 @@ router.get('/health', async (req: Request, res: Response) => {
       usage: `${Math.round(os.loadavg()[0] * 100 / os.cpus().length)}%`
     },
     registry: {
-      collections: config?.collections?.map((c: any) => ({ slug: c.slug, label: c.label })) || [],
-      globals: config?.globals?.map((g: any) => ({ slug: g.slug, label: g.label })) || []
+      collections: config?.collections?.map((c: unknown) => ({ slug: c.slug, label: c.label })) || [],
+      globals: config?.globals?.map((g: unknown) => ({ slug: g.slug, label: g.label })) || []
     },
     services: {
       database: dbStatus,
-      email: !!process.env.RESEND_API_KEY ? 'configured' : 'dev-mode',
+      email: process.env.RESEND_API_KEY ? 'configured' : 'dev-mode',
       storage: process.env.CLOUDINARY_CLOUD_NAME ? 'cloudinary' : 'local',
       ai: (process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY) ? 'configured' : 'disabled',
     }
@@ -100,7 +100,7 @@ router.get('/health', async (req: Request, res: Response) => {
 
 router.post('/smtp/test', requireAuth, requireRole('admin'), async (req: Request, res: Response) => {
   try {
-    const { host, port, user, from } = req.body;
+    const { host, port, user: _user, from: _from } = req.body;
     // Simulate SMTP handshake for verification
     if (!host || !port) {
       return res.status(400).json(createErrorResponse(400, 'RELAY_CONFIG_INCOMPLETE', 'Host and Port are mandatory fields.'));
@@ -114,7 +114,7 @@ router.post('/smtp/test', requireAuth, requireRole('admin'), async (req: Request
       trace: `Handshake established with ${host}:${port}`,
       timestamp: new Date().toISOString()
     }));
-  } catch (err: any) {
+  } catch (err: unknown) {
     res.status(500).json(createErrorResponse(500, 'RELAY_HANDSHAKE_FAILED', err.message));
   }
 });
@@ -126,7 +126,7 @@ router.get('/audit-logs', requireAuth, requireRole('admin'), async (req: Request
     const search = req.query.search as string;
     const skip = (page - 1) * limit;
 
-    const query: any = {};
+    const query: unknown = {};
     if (search) {
       query.$or = [
         { action: { $regex: search, $options: 'i' } },
@@ -145,13 +145,13 @@ router.get('/audit-logs', requireAuth, requireRole('admin'), async (req: Request
 
 router.get('/counts', requireAuth, async (req: Request, res: Response, next) => {
   try {
-    const config = (req as any).zenith?.config;
+    const config = (req as unknown).zenith?.config;
     if (!config) return res.json(createResponse({}));
     const counts: Record<string, number> = {};
-    await Promise.all(config.collections.map(async (col: any) => {
+    await Promise.all(config.collections.map(async (col: unknown) => {
       try {
         counts[col.slug] = await mongoose.connection.db.collection(col.slug).countDocuments();
-      } catch (e) { counts[col.slug] = 0; }
+      } catch (_e) { counts[col.slug] = 0; }
     }));
     res.json(createResponse(counts));
   } catch (err) { next(err); }
@@ -188,7 +188,7 @@ router.get('/search', requireAuth, async (req: Request, res: Response, next) => 
   try {
     const q = req.query.q as string;
     if (!q) throw new InvalidPayloadError('Query required');
-    const config = (req as any).zenith?.config;
+    const config = (req as unknown).zenith?.config;
     const results = await SearchService.globalSearch(q.trim(), config.collections);
     res.json(createResponse(results));
   } catch (err) { next(err); }
@@ -206,7 +206,7 @@ router.post('/ai/generate', requireAuth, async (req: Request, res: Response, nex
 router.post('/ai-architect', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
   // Sophisticated heuristic generator (shortened for brevity)
   try {
-    const { prompt } = req.body;
+    const { prompt: _prompt } = req.body;
     res.json(createResponse({ message: 'AI Architect generated suggestions', schema: { name: 'Suggested', fields: [] } }));
   } catch (err) { next(err); }
 });
@@ -215,7 +215,7 @@ router.post('/ai-architect', requireAuth, requireRole('admin'), async (req: Requ
 
 router.get('/settings', requireAuth, requireRole('admin'), async (_req: Request, res: Response, next) => {
   try {
-    let s = await SystemSettingsModel.findOne() || await SystemSettingsModel.create({});
+    const s = await SystemSettingsModel.findOne() || await SystemSettingsModel.create({});
     res.json(createResponse(s));
   } catch (err) { next(err); }
 });

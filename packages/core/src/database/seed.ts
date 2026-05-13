@@ -28,8 +28,8 @@ export async function seedInitialData() {
     }
 
     // Seed Real Data for Demo Site
-    const LandingPageModel = (mongoose.models['landing-page'] || null) as any;
-    const ProductModel = (mongoose.models['products'] || null) as any;
+    const LandingPageModel = (mongoose.models['landing-page'] || null) as unknown;
+    const ProductModel = (mongoose.models['products'] || null) as unknown;
 
     if (LandingPageModel) {
       const hasLanding = await LandingPageModel.findOne();

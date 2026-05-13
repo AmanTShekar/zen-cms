@@ -8,8 +8,9 @@ import 'dotenv/config';
 import { ZenithEngine } from './index';
 
 // Import your config file (adjust path as needed)
-let config: any;
+let config: unknown;
 try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   config = require('../../../cms.config').default || require('../../../cms.config');
 } catch {
   // Fallback: minimal config so the engine boots even without a config file

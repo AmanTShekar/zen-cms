@@ -3,7 +3,7 @@ import { ContentService } from '../src/services/content';
 import { CollectionConfig } from '../../types/src';
 
 // Mock Mongoose Model
-const mockModel: any = {
+const mockModel: unknown = {
   find: vi.fn(),
   findById: vi.fn(),
   create: vi.fn(),
@@ -38,7 +38,7 @@ describe('Zenith ContentService - Engine Validation', () => {
     };
     
     // We expect the recursive hook logic to work even with empty hooks
-    const result = await (service as any).applyFieldHooks(mockDoc, { id: '1' });
+    const result = await (service as unknown).applyFieldHooks(mockDoc, { id: '1' });
     expect(result.title).toBe('Hello');
   });
 

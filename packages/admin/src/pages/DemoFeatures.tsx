@@ -19,7 +19,7 @@ import { cn } from '../lib/utils';
 
 const DemoFeatures = () => {
   const [prompt, setPrompt] = useState('');
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<unknown>(null);
   const [aiResult, setAiResult] = useState('');
   const [loading, setLoading] = useState(false);
 

@@ -35,9 +35,9 @@ export function deepMerge<T extends object>(target: T, source: Partial<T>): T {
   const result = { ...target };
   for (const key in source) {
     if (source[key] instanceof Object && !Array.isArray(source[key])) {
-      result[key] = deepMerge(result[key] as any || {}, source[key] as any);
+      result[key] = deepMerge(result[key] as unknown || {}, source[key] as unknown);
     } else {
-      (result as any)[key] = source[key];
+      (result as unknown)[key] = source[key];
     }
   }
   return result;

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ZenithError, isZenithError } from '../errors';
+import { _ZenithError, isZenithError } from '../errors';
 import { logger } from '../services/logger';
 
 /**
@@ -25,8 +25,8 @@ export function globalErrorHandler(
   }
 
   // Mongoose duplicate key error
-  if ((err as any)?.code === 11000) {
-    const field = Object.keys((err as any).keyPattern || {})[0];
+  if ((err as unknown)?.code === 11000) {
+    const field = Object.keys((err as unknown).keyPattern || {})[0];
     logger.warn({ field }, 'Duplicate key violation');
     return res.status(409).json({ error: 'RECORD_NOT_UNIQUE', message: `A record with this "${field}" already exists`, status: 409 });
   }

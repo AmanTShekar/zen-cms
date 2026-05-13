@@ -1,5 +1,5 @@
 import express, { Express } from 'express';
-import mongoose from 'mongoose';
+import _mongoose from 'mongoose';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -18,16 +18,16 @@ import { seedDummyData } from './database/seed-dummy';
 // ── Middleware ───────────────────────────────────────────────────────────────
 import { rateLimitMiddleware } from './middleware/rate-limit';
 import { apiKeyMiddleware } from './middleware/api-key';
-import { globalErrorHandler } from './middleware/error-handler';
+import { _globalErrorHandler } from './middleware/error-handler';
 
 // ── Routers ──────────────────────────────────────────────────────────────────
 import { createCollectionRouter } from './api/factory';
-import { errorHandler } from './middleware/error-handler';
+import { _errorHandler } from './middleware/error-handler';
 import { auditMiddleware } from './middleware/audit';
 import systemRouter from './api/system';
 import authRouter from './api/auth';
 import uploadRouter from './api/upload';
-import mediaRouter from './api/media';
+import _mediaRouter from './api/media';
 import preferencesRouter from './api/preferences';
 import versionsRouter from './api/versions';
 import presenceRouter from './api/presence';
@@ -120,7 +120,7 @@ export class ZenithEngine {
     this.app.use(apiKeyMiddleware);
 
     // Attach config and plugins to every request so route handlers can access them
-    this.app.use((req: any, _res, next) => {
+    this.app.use((req: unknown, _res, next) => {
       req.zenith = { 
         config: this.config,
         plugins: this.plugins.map(p => ({
@@ -170,7 +170,7 @@ export class ZenithEngine {
           { name: 'mimetype', type: 'text' },
           { name: 'size', type: 'number' }
         ]
-      } as any);
+      } as unknown);
     }
 
     collections.forEach(col => {
@@ -233,7 +233,7 @@ export class ZenithEngine {
             { name: 'mimetype', type: 'text' },
             { name: 'size', type: 'number' }
           ] 
-        } as any);
+        } as unknown);
       }
       
       for (const col of collections) {

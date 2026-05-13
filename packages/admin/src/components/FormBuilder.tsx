@@ -7,14 +7,14 @@ import BlocksBuilder from './BlocksBuilder';
 import SimpleArrayBuilder from './SimpleArrayBuilder';
 
 interface FormBuilderProps {
-  fields: any[];
-  initialData?: any;
-  onSubmit: (data: any) => Promise<void>;
+  fields: unknown[];
+  initialData?: unknown;
+  onSubmit: (data: unknown) => Promise<void>;
   isSubmitting?: boolean;
 }
 
 const FormBuilder: React.FC<FormBuilderProps> = ({ fields, initialData, onSubmit, isSubmitting }) => {
-  const { register, handleSubmit, control, reset, formState: { errors } } = useForm({
+  const { handleSubmit, control, reset, formState: { errors } } = useForm({
     defaultValues: initialData || {},
   });
 
@@ -24,7 +24,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ fields, initialData, onSubmit
     }
   }, [initialData, reset]);
 
-  const renderField = (field: any, value: any, onChange: (val: any) => void) => {
+  const renderField = (field: unknown, value: unknown, onChange: (val: unknown) => void) => {
     if (field.type === 'select') {
       return (
         <select 
@@ -39,7 +39,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ fields, initialData, onSubmit
           className="w-full bg-app-subtle border border-border rounded-none px-3 py-2 text-sm focus:border-accent outline-none"
         >
           {!field.required && !field.hasMany && <option value="">Select...</option>}
-          {field.options?.map((opt: any) => (
+          {field.options?.map((opt: unknown) => (
             <option key={opt.value || opt} value={opt.value || opt}>
               {opt.label || opt}
             </option>
@@ -147,7 +147,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({ fields, initialData, onSubmit
               />
 
               {errors[field.name] && (
-                <p className="text-xs text-danger mt-1 font-medium">{(errors[field.name] as any).message}</p>
+                <p className="text-xs text-danger mt-1 font-medium">{(errors[field.name] as { message: string }).message}</p>
               )}
             </div>
           );

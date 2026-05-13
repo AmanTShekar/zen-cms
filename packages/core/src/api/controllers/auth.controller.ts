@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { AuthService } from '../../services/auth';
 import { UserModel } from '../../database/user-model';
 import { createResponse, createErrorResponse } from '../utils';
-import { logger } from '../../services/logger';
+import { _logger } from '../../services/logger';
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -24,7 +24,7 @@ export const login = async (req: Request, res: Response) => {
     });
 
     res.json(createResponse({ user: userPayload, accessToken }));
-  } catch (error: any) {
+  } catch (_error: unknown) {
     res.status(500).json(createErrorResponse(500, 'Login failed'));
   }
 };
@@ -35,6 +35,6 @@ export const logout = (req: Request, res: Response) => {
 };
 
 export const getMe = async (req: Request, res: Response) => {
-  const user = await UserModel.findById((req as any).user.id).select('-password');
+  const user = await UserModel.findById((req as unknown).user.id).select('-password');
   res.json(createResponse(user));
 };
