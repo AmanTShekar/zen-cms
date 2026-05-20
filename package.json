@@ -20,7 +20,7 @@
     "@types/express-mongo-sanitize": "^2.1.2",
     "@types/node": "^20.19.41",
     "dependency-cruiser": "^16.0.0",
-    "eslint": "^9.0.0",
+    "eslint": "^10.4.0",
     "globals": "^17.6.0",
     "prettier": "^3.0.0",
     "tsx": "^4.21.0",
