@@ -30,6 +30,7 @@ export interface BlockDefinition {
   admin?: {
     description?: string
     icon?: string
+    imageURL?: string
   }
 }
 

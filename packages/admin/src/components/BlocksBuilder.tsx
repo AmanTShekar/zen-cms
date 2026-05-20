@@ -92,7 +92,10 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
               { name: 'headline', label: 'Headline_Attribute', type: 'text' },
               { name: 'content', label: 'Body_Configuration', type: 'textarea' },
             ],
-            admin: { description: 'High-impact entry node with cinematic text and media.' },
+            admin: { 
+              description: 'High-impact entry node with cinematic text and media.',
+              imageURL: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400&h=200&auto=format&fit=crop'
+            },
           },
           {
             slug: 'features',
@@ -101,7 +104,10 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
               { name: 'headline', label: 'Headline_Attribute', type: 'text' },
               { name: 'content', label: 'Body_Configuration', type: 'textarea' },
             ],
-            admin: { description: 'Surgical arrangement of service attributes or product highlights.' },
+            admin: { 
+              description: 'Surgical arrangement of service attributes or product highlights.',
+              imageURL: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=400&h=200&auto=format&fit=crop'
+            },
           },
           {
             slug: 'pricing',
@@ -110,7 +116,10 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
               { name: 'headline', label: 'Headline_Attribute', type: 'text' },
               { name: 'content', label: 'Body_Configuration', type: 'textarea' },
             ],
-            admin: { description: 'Tiered subscription or product pricing visualization.' },
+            admin: { 
+              description: 'Tiered subscription or product pricing visualization.',
+              imageURL: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=400&h=200&auto=format&fit=crop'
+            },
           },
           {
             slug: 'testimonials',
@@ -119,7 +128,10 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
               { name: 'headline', label: 'Headline_Attribute', type: 'text' },
               { name: 'content', label: 'Body_Configuration', type: 'textarea' },
             ],
-            admin: { description: 'Trust-building feedback stream from the user collective.' },
+            admin: { 
+              description: 'Trust-building feedback stream from the user collective.',
+              imageURL: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=400&h=200&auto=format&fit=crop'
+            },
           },
         ]
 
@@ -297,22 +309,44 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
                   <Plus className="rotate-45" size={24} />
                 </button>
               </div>
-              <div className="p-4 grid grid-cols-1 gap-2 max-h-[400px] overflow-y-auto no-scrollbar">
+              <div className="p-6 grid grid-cols-2 gap-4 max-h-[500px] overflow-y-auto no-scrollbar">
                 {blocksList.map((stock) => (
                   <button
                     key={stock.slug}
                     type="button"
                     onClick={() => addBlock(stock.slug)}
-                    className="flex items-start gap-5 p-5 hover:bg-accent/5 rounded-none text-left group transition-all relative overflow-hidden"
+                    className="flex flex-col text-left group transition-all relative overflow-hidden rounded-none border border-border bg-app hover:border-accent/50 hover:shadow-[0_0_15px_rgba(139,92,246,0.15)]"
                   >
-                    <div className="w-12 h-12 rounded-none bg-app border border-border flex items-center justify-center text-text-muted group-hover:bg-app-subtle group-hover:text-accent group-hover:shadow-sm transition-all shadow-inner">
-                      {getBlockIcon(stock.slug)}
+                    {/* Thumbnail / Image Area */}
+                    <div className="w-full h-28 bg-app-subtle border-b border-border flex items-center justify-center overflow-hidden relative">
+                      {stock.admin?.imageURL ? (
+                        <img 
+                          src={stock.admin.imageURL} 
+                          alt={stock.slug}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-app to-app-subtle group-hover:from-accent/10 group-hover:to-app transition-colors duration-500 flex items-center justify-center">
+                           <div className="text-text-muted group-hover:text-accent transition-colors scale-150">
+                             {getBlockIcon(stock.slug)}
+                           </div>
+                        </div>
+                      )}
+                      
+                      {/* Top-right Icon Badge if image is present */}
+                      {stock.admin?.imageURL && (
+                        <div className="absolute top-2 right-2 w-6 h-6 bg-black/50 backdrop-blur-md rounded border border-white/10 flex items-center justify-center text-white shadow-lg">
+                          {getBlockIcon(stock.slug)}
+                        </div>
+                      )}
                     </div>
-                    <div className="flex flex-col gap-0.5">
+
+                    {/* Content Area */}
+                    <div className="p-4 flex flex-col gap-1.5 flex-1 w-full bg-app group-hover:bg-accent/5 transition-colors">
                       <span className="text-sm font-black text-text-primary uppercase italic tracking-tight">
                         {stock.labels?.singular || stock.slug}
                       </span>
-                      <p className="text-[11px] text-text-muted font-medium leading-tight">
+                      <p className="text-[10px] text-text-muted font-medium leading-relaxed line-clamp-2">
                         {stock.admin?.description || `Custom schema block configuration for ${stock.slug}.`}
                       </p>
                     </div>
