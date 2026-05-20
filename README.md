@@ -70,7 +70,7 @@
 Zenith CMS is an open-source, visual-first headless CMS engineered to maximize development velocity and operational safety. 
 
 *   **For Non-Technical Product Owners**: Zenith guarantees that content managers can edit, preview, and translate content without waiting for developer deploys. It actively blocks two managers from editing the same page simultaneously (preventing lost work) and provides side-by-side translation tools.
-*   **For Senior Engineers**: Zenith is structured as a clean TypeScript monorepo using `pnpm`. It features ahead-of-time (AOT) compiled schemas, isolated worker threads for lifecycle hooks, real-time synchronization, and multi-tenant database scoping out-of-the-box.
+*   **For Devs**: Zenith is structured as a clean TypeScript monorepo using `pnpm`. It features ahead-of-time (AOT) compiled schemas, isolated worker threads for lifecycle hooks, real-time synchronization, and multi-tenant database scoping out-of-the-box.
 
 ### Technical Stack Specifications
 *   **Node.js Compatibility**: `^20` or `^22`
