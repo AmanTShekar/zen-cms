@@ -1,19 +1,39 @@
-# Zenith CMS Cursor Rules
+# 🪐 Zenith CMS | Elite Developer & AI Workspace Guide (`.cursorrules`)
 
-## Architecture
-- Zenith is a monorepo managed with pnpm workspaces.
-- Core logic is in `packages/core`.
-- Frontend Admin is in `packages/admin`.
-- Configuration is declarative via `cms.config.ts` in the root.
+This file governs the coding standards, styling architectures, state boundaries, and environment rules of Zenith CMS. AI models (e.g. Cursor, Claude, ChatGPT) and developers MUST strictly conform to these constraints.
 
-## Coding Standards
-- Use TypeScript for everything.
-- Prefer Zod for validation.
-- All database models must inherit from `z_` internal collections prefix if system-related.
-- Use `logger.info/error` instead of `console.log`.
+---
 
-## Directory Structure
-- `packages/core/src/api`: API route factories.
-- `packages/core/src/services`: Business logic services.
-- `packages/core/src/database`: Mongoose models and connections.
-- `packages/admin/src/pages`: Admin UI views.
+## 🏛️ Monorepo Package Reference
+- **`@zenith/types`**: Shared schema interfaces, dynamic layout types, validation bounds.
+- **`@zenith/core`**: API Routing core, Postgres/MongoDB swapper engine, presence, hooks, controllers.
+- **`@zenith/admin`**: The React + Tailwind + Zustand operational console and visual dashboard.
+- **`@zenith/sdk`**: Client SDK to safely query partitioned data structures.
+
+---
+
+## 🎨 Styling & Glassmorphic Standards
+1. **Theme Scoping**: Enforce high-contrast dark visual tones with premium glassmorphism. Avoid plain/harsh primaries (e.g., `#FF0000`). Use Tailwind variables with HSL configurations.
+2. **Micro-Transitions**: All interactive targets (buttons, links, dashboard widgets) must present smooth responsive hover scaling (`transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98]`).
+3. **Grid Rigidity**: Custom components nested within the `DashboardBuilder` grid must strictly scale within dynamic wrappers (`w-full h-full select-none overflow-hidden`) to prevent layout ruptures.
+
+---
+
+## 📦 Atomic State & React Performance Axioms
+1. **Anti-Tangled Contexts**: Do NOT register duplicate drag-and-drop contexts. Maintain exactly one `<DndContext>` at the root grid canvas level.
+2. **No Inline Component Declarations**: Sub-components, modal sheets, and custom controllers must always be exported separately or defined at the module-root. Declaring components inline inside render triggers complete re-mount loops, disrupting field focus and state.
+3. **Zustand Splitting**: Keep Zustand slices thin and decoupled. Prevent parent re-renders by selector scoping (`const user = useStore(state => state.user)` instead of direct destructured store extraction).
+
+---
+
+## 🛢️ Database & Schema Synchronization Protocols
+1. **Dynamic Scoping**: Every mutation query MUST include the site isolation context `siteId` or query via the request scoped `X-Zenith-Site-Id` header.
+2. **Relational Push**: When editing schemas, ensure any database alterations run under transactions. Never execute destructive structural changes on live production SQL columns.
+3. **Zod Compilation**: All custom database structures must present compiled Zod validation middleware schemas.
+
+---
+
+## 🧪 Quality Gates & CI Hooks
+1. **Zero Lint Warnings**: Code edits must build flawlessly without ESLint overrides or TypeScript ignore directives.
+2. **Strict Compiler Verification**: Before committing edits, run `tsc -b` to guarantee full type compliance.
+3. **Deterministic Pre-Commits**: Always run formatting checks (`npx prettier --check .`) to protect code readability.

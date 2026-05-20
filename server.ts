@@ -7,26 +7,28 @@
  * All collections in cms.config.ts are auto-registered.
  * No extra code needed.
  */
-import { createZenith, seoPlugin, slugPlugin } from './packages/core/src';
-import config from './cms.config';
+import { createZenith, seoPlugin, slugPlugin } from './packages/core/src'
+import config from './cms.config'
 
 async function main() {
   const cms = await createZenith({
     config,
-    plugins: [
-      seoPlugin,
-      slugPlugin({ from: 'title' })
-    ],
+    plugins: [seoPlugin, slugPlugin({ from: 'title' })],
     port: Number(process.env.PORT) || 3000,
     cors: {
-      origins: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176']
-    }
-  });
+      origins: [
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'http://localhost:5175',
+        'http://localhost:5176',
+      ],
+    },
+  })
 
-  cms.start();
+  cms.start()
 }
 
-main().catch(err => {
-  console.error('Fatal startup error:', err);
-  process.exit(1);
-});
+main().catch((err) => {
+  console.error('Fatal startup error:', err)
+  process.exit(1)
+})

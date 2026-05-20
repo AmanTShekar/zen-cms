@@ -1,11 +1,12 @@
-import { Router, Request, Response } from 'express';
-import { requireAuth } from '../middleware/auth';
-import { createResponse } from './utils';
-import { NotFoundError, _InvalidPayloadError } from '../errors';
-import mongoose from 'mongoose';
+import { Router, Request, Response } from 'express'
+import { requireAuth } from '../middleware/auth'
+import { createResponse } from './utils'
+import { NotFoundError } from '../errors'
+import { ContentService } from '../services/content'
+import { CacheService } from '../services/cache'
 
-const router: Router = Router();
-router.use(requireAuth);
+const router: Router = Router()
+router.use(requireAuth)
 
 /**
  * Duplicate Document API
@@ -16,34 +17,52 @@ router.use(requireAuth);
  */
 router.post('/:collection/:id/duplicate', async (req: Request, res: Response, next) => {
   try {
-    const { collection, id } = req.params;
-    const config = (req as unknown).zenith?.config;
+    const { collection, id } = req.params
+    const config = (req as any).zenith?.config
+    const user = (req as any).user
+    const siteId = req.headers['x-zenith-site-id'] as string
+    const adapter = (req as any).__zenithAdapter
 
-    const colConfig = config?.collections?.find((c: unknown) => c.slug === collection);
-    if (!colConfig) throw new NotFoundError('Collection', collection);
+    if (!adapter) {
+      throw new Error('Database adapter not initialized on request context')
+    }
 
-    const Model = mongoose.model(collection);
-    const original = await Model.findById(id).lean();
-    if (!original) throw new NotFoundError(collection, id);
+    const colConfig = config?.collections?.find((c: any) => c.slug === collection)
+    if (!colConfig) throw new NotFoundError('Collection', collection)
+
+    const contentService = new ContentService(colConfig, adapter)
+    const original = await contentService.findById(id, { user, siteId })
+    if (!original) throw new NotFoundError(collection, id)
 
     // Strip _id, unique fields, and system timestamps to create a clean copy
-    const { _id, __v, createdAt: _createdAt, updatedAt: _updatedAt, ...data } = original as unknown;
+    const { _id, id: _pid, __v, createdAt: _createdAt, updatedAt: _updatedAt, ...data } = original as any
 
-    // Clear fields marked as unique to avoid constraint violations
-    colConfig.fields.forEach((field: unknown) => {
-      if (field.unique && data[field.name]) {
-        data[field.name] = `${data[field.name]} (Copy)`;
+    // Clear or modify fields marked as unique to avoid constraint violations based on type
+    colConfig.fields.forEach((field: any) => {
+      if (field.unique && data[field.name] !== undefined) {
+        if (field.type === 'text' || field.type === 'textarea') {
+          data[field.name] = `${data[field.name]} (Copy)`
+        } else if (field.type === 'slug') {
+          data[field.name] = `${data[field.name]}-copy`
+        } else {
+          // For numbers or other types, clear them so the user must fill them manually
+          data[field.name] = undefined
+        }
       }
-    });
+    })
 
     // If drafts are enabled, start as draft
     if (colConfig.drafts) {
-      data._status = 'draft';
+      data._status = 'draft'
     }
 
-    const duplicate = await Model.create(data);
-    res.status(201).json(createResponse(duplicate));
-  } catch (err) { next(err); }
-});
+    const duplicate = await contentService.create(data, { user, siteId })
+    CacheService.invalidateTag(collection)
 
-export default router;
+    res.status(201).json(createResponse(duplicate))
+  } catch (err) {
+    next(err)
+  }
+})
+
+export default router

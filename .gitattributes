@@ -1,0 +1,26 @@
+# 🚫 Git Attributes File (.gitattributes)
+# Normalises line endings across Windows, macOS, and Linux to prevent formatting noise.
+
+# Set default behaviour to automatically handle all line endings as LF (Unix style)
+* text=auto eol=lf
+
+# Force specific file types to remain as LF
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.css text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Mark binary files to prevent Git from altering them
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary

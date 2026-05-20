@@ -1,58 +1,202 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'events'
+import { logger } from './logger'
 
-export type ZenithEventListener = (...args: unknown[]) => Promise<void> | void;
+export type ZenithEventListener = (...args: any[]) => Promise<void> | void
+
+export interface EventHubBackend {
+  emit(event: string, ...args: unknown[]): Promise<void>
+  on(event: string, listener: ZenithEventListener): void
+  off(event: string, listener: ZenithEventListener): void
+  destroy(): Promise<void> | void
+}
 
 /**
- * Zenith Event Hub
- * ─────────────────
- * Inspired by Strapi's EventHub — a typed async pub/sub system
- * that decouples services from each other.
- *
- * Built-in events emitted by the engine:
- *   - 'content.created'  → { collection, document }
- *   - 'content.updated'  → { collection, document, delta }
- *   - 'content.deleted'  → { collection, documentId }
- *   - 'content.published'→ { collection, document }
- *   - 'auth.login'       → { userId, email }
- *   - 'auth.logout'      → { userId }
- *   - 'media.uploaded'   → { url, mimetype }
+ * In-Memory Event Hub Backend (Default)
+ * ──────────────────────────────────────
+ * Local event bus within a single Node.js process.
  */
-class ZenithEventHub {
-  private emitter = new EventEmitter();
+class InMemoryEventBackend implements EventHubBackend {
+  private emitter = new EventEmitter()
 
   constructor() {
-    this.emitter.setMaxListeners(50);
+    this.emitter.setMaxListeners(50)
   }
 
-  /** Emit an event asynchronously — all listeners are awaited in order */
   async emit(event: string, ...args: unknown[]): Promise<void> {
-    const listeners = this.emitter.rawListeners(event) as ZenithEventListener[];
-    for (const listener of listeners) {
-      await listener(...args);
+    const listeners = this.emitter.rawListeners(event) as ZenithEventListener[]
+    const promises = listeners.map(async (listener) => {
+      try {
+        await listener(...args)
+      } catch (err) {
+        logger.error({ err, event }, 'InMemoryEventBackend: Error in event listener')
+      }
+    })
+    await Promise.all(promises)
+  }
+
+  on(event: string, listener: ZenithEventListener): void {
+    this.emitter.on(event, listener)
+  }
+
+  off(event: string, listener: ZenithEventListener): void {
+    this.emitter.off(event, listener)
+  }
+
+  destroy(): void {
+    this.emitter.removeAllListeners()
+  }
+}
+
+/**
+ * Distributed Redis Pub/Sub Event Hub Backend
+ * ───────────────────────────────────────────
+ * Hardened distributed event bus. Connects multiple Zenith CMS nodes
+ * to keep local caches and states perfectly synchronized in production clusters.
+ */
+class RedisEventBackend implements EventHubBackend {
+  private pubClient: any = null
+  private subClient: any = null
+  private localEmitter = new EventEmitter()
+  private channelName = 'zenith_events'
+
+  constructor(redisUrl: string) {
+    this.localEmitter.setMaxListeners(50)
+    this.init(redisUrl)
+  }
+
+  private async init(redisUrl: string): Promise<void> {
+    try {
+      // Dynamic import of 'ioredis' to avoid hard dependency in non-Redis setups
+      /* eslint-disable-next-line @typescript-eslint/no-require-imports */
+      const Redis = require('ioredis')
+      
+      this.pubClient = new Redis(redisUrl, {
+        maxRetriesPerRequest: 3,
+        enableReadyCheck: true,
+      })
+      this.subClient = new Redis(redisUrl, {
+        maxRetriesPerRequest: 3,
+        enableReadyCheck: true,
+      })
+
+      this.pubClient.on('error', (err: any) => {
+        logger.error({ err }, 'RedisEventBackend (Pub): Connection error')
+      })
+
+      this.subClient.on('error', (err: any) => {
+        logger.error({ err }, 'RedisEventBackend (Sub): Connection error')
+      })
+
+      this.subClient.on('message', (channel: string, message: string) => {
+        if (channel !== this.channelName) return
+        try {
+          const { event, args } = JSON.parse(message)
+          const listeners = this.localEmitter.rawListeners(event) as ZenithEventListener[]
+          listeners.forEach(async (listener) => {
+            try {
+              await listener(...args)
+            } catch (err) {
+              logger.error({ err, event }, 'RedisEventBackend (Sub Handler): Error in listener')
+            }
+          })
+        } catch (err) {
+          logger.error({ err }, 'RedisEventBackend: Failed to parse distributed event packet')
+        }
+      })
+
+      await this.subClient.subscribe(this.channelName)
+      logger.info('RedisEventBackend: Distributed Redis Pub/Sub channel subscribed successfully')
+    } catch (err: any) {
+      logger.error(
+        { err: err.message },
+        'RedisEventBackend: Failed to initialize Redis Pub/Sub. Falling back to simple In-Memory bus.'
+      )
     }
   }
 
-  /** Register an async or sync listener for an event */
-  on(event: string, listener: ZenithEventListener): () => void {
-    this.emitter.on(event, listener);
-    return () => this.off(event, listener);
+  async emit(event: string, ...args: unknown[]): Promise<void> {
+    // If pubClient is active, broadcast to Redis
+    if (this.pubClient && this.pubClient.status === 'ready') {
+      try {
+        const payload = JSON.stringify({ event, args })
+        await this.pubClient.publish(this.channelName, payload)
+      } catch (err) {
+        logger.error({ err, event }, 'RedisEventBackend: Failed to publish event to Redis channel. Falling back locally.')
+        this.emitLocal(event, ...args)
+      }
+    } else {
+      // Fallback locally
+      this.emitLocal(event, ...args)
+    }
   }
 
-  /** Register a listener that fires only once */
-  once(event: string, listener: ZenithEventListener): void {
-    this.emitter.once(event, listener);
+  private async emitLocal(event: string, ...args: unknown[]): Promise<void> {
+    const listeners = this.localEmitter.rawListeners(event) as ZenithEventListener[]
+    const promises = listeners.map(async (listener) => {
+      try {
+        await listener(...args)
+      } catch (err) {
+        logger.error({ err, event }, 'RedisEventBackend (Local Fallback): Error in listener')
+      }
+    })
+    await Promise.all(promises)
   }
 
-  /** Remove a specific listener */
+  on(event: string, listener: ZenithEventListener): void {
+    this.localEmitter.on(event, listener)
+  }
+
   off(event: string, listener: ZenithEventListener): void {
-    this.emitter.off(event, listener);
+    this.localEmitter.off(event, listener)
   }
 
-  /** Remove all listeners — call this on shutdown */
-  destroy(): void {
-    this.emitter.removeAllListeners();
+  async destroy(): Promise<void> {
+    this.localEmitter.removeAllListeners()
+    if (this.pubClient) {
+      await this.pubClient.quit().catch(() => {})
+    }
+    if (this.subClient) {
+      await this.subClient.quit().catch(() => {})
+    }
+  }
+}
+
+/**
+ * Zenith Event Hub Manager
+ * ────────────────────────
+ * Facade pattern that resolves the optimal pub/sub driver dynamically on startup.
+ */
+class ZenithEventHub {
+  private backend: EventHubBackend
+
+  constructor() {
+    const redisUrl = process.env.REDIS_URL
+    if (redisUrl) {
+      logger.info('Zenith Event Hub: Initializing pluggable Distributed Redis event bus backend')
+      this.backend = new RedisEventBackend(redisUrl)
+    } else {
+      logger.info('Zenith Event Hub: Initializing standard In-Memory event bus backend')
+      this.backend = new InMemoryEventBackend()
+    }
+  }
+
+  async emit(event: string, ...args: unknown[]): Promise<void> {
+    await this.backend.emit(event, ...args)
+  }
+
+  on(event: string, listener: ZenithEventListener): () => void {
+    this.backend.on(event, listener)
+    return () => this.off(event, listener)
+  }
+
+  off(event: string, listener: ZenithEventListener): void {
+    this.backend.off(event, listener)
+  }
+
+  async destroy(): Promise<void> {
+    await this.backend.destroy()
   }
 }
 
 // Singleton export — one hub per process
-export const eventHub = new ZenithEventHub();
+export const eventHub = new ZenithEventHub()

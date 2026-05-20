@@ -1,44 +1,131 @@
-# Zenith Examples: Industrial Blueprints
+# Zenith Production Blueprints
 
-Explore our collection of "Industrial Blueprints"—production-ready examples designed to help you deploy the Zenith Nucleus across various use cases.
-
----
-
-## Starter Templates
-
-### 1. Industrial Website (Next.js 19)
-The flagship example. A high-performance, SEO-optimized website built with the latest React Server Components.
-*   **Features**: Live Preview, Draft Mode, Blocks Builder.
-*   **Tech**: Next.js, Tailwind, Framer Motion.
-*   **Path**: `packages/demo`
-
-### 2. Multi-Tenant E-Commerce
-A scalable e-commerce engine with product variants, inventory management, and Stripe integration.
-*   **Features**: Complex Relations, Custom Audit Logs, Webhook-driven shipping updates.
-*   **Path**: `examples/ecommerce`
-
-### 3. Headless Documentation Portal
-A clean, content-focused portal for technical documentation and knowledge bases.
-*   **Features**: Nested Collections, Search Indexing, Multi-language support.
-*   **Path**: `examples/docs-portal`
+Production-ready code structures to connect, consume, and secure Zenith CMS inside scalable client architectures.
 
 ---
 
-## Community Examples
+## 🔌 1. Decoupled Dynamic Client Scoping (Node SDK / Edge Services)
 
-We encourage the community to share their blueprints. If you have built something incredible with Zenith, please submit a Pull Request to add it here.
+When consuming Zenith CMS dynamically, configure your client to pass API credentials and target the specific tenant site workspace.
 
-*   **Zenith + Astro**: A ultra-fast static blog example.
-*   **Zenith + Vue 3**: A high-density admin dashboard variant.
-*   **Zenith + Flutter**: Mobile application content orchestration.
+```typescript
+import { createZenithClient } from '@zenithcms/sdk'
+
+// Initialize the enterprise headless client
+const cms = createZenithClient({
+  baseUrl: process.env.ZENITH_CORE_API_URL || 'http://localhost:3000/api/v1',
+  apiKey: process.env.ZENITH_WORKSPACE_TOKEN,
+  defaultSiteId: 'site_sandbox_901a', // Sets the global workspace tenant scoping
+})
+
+/**
+ * Fetch and render a dynamic workspace page
+ */
+export async function getStorefrontPage(slug: string) {
+  try {
+    const page = await cms.collections('pages').find({
+      filter: {
+        slug: slug,
+        status: 'published',
+      },
+      limit: 1,
+    })
+
+    if (!page.docs.length) {
+      throw new Error(`Page not found: ${slug}`)
+    }
+
+    return page.docs[0]
+  } catch (error) {
+    console.error('Failed to fetch storefront page payload:', error)
+    return null
+  }
+}
+```
 
 ---
 
-## Running an Example
+## 🔒 2. HMAC Webhook Payload Verification
 
-To run any of the official examples locally:
+Zenith signs webhook payloads using a private secret key via SHA256 signatures to secure your public integration hooks.
 
-1.  Clone the repository.
-2.  Navigate to the example directory: `cd examples/<blueprint_name>`.
-3.  Install dependencies: `npm install`.
-4.  Launch the development server: `npm run dev`.
+```typescript
+import crypto from 'crypto'
+import { Request, Response } from 'express'
+
+const WEBHOOK_SIGNING_SECRET = process.env.ZENITH_WEBHOOK_SECRET || 'your_secret'
+
+/**
+ * Secure Express Webhook Listener
+ */
+export async function handleZenithWebhook(req: Request, res: Response) {
+  const signature = req.headers['x-zenith-signature'] as string
+
+  if (!signature) {
+    return res.status(401).json({ error: 'Signature token header missing' })
+  }
+
+  // Calculate matching payload signature hash
+  const computedHash = crypto
+    .createHmac('sha256', WEBHOOK_SIGNING_SECRET)
+    .update(JSON.stringify(req.body))
+    .digest('hex')
+
+  // Secure constant-time comparison to prevent timing attacks
+  const isValid = crypto.timingSafeEqual(
+    Buffer.from(signature, 'hex'),
+    Buffer.from(computedHash, 'hex')
+  )
+
+  if (!isValid) {
+    return res.status(403).json({ error: 'Invalid HMAC signature hash' })
+  }
+
+  // Safely execute mutations...
+  const { event, collection, data } = req.body
+  console.log(`Received secure verified event: ${event} on ${collection}`, data)
+
+  return res.status(200).json({ received: true })
+}
+```
+
+---
+
+## ⚙️ 3. Dynamic API Request Lifecycle Hooks
+
+Register custom database lifecycle hooks directly within collections to compute values, trigger events, or validate states.
+
+```typescript
+import { CollectionConfig } from '@zenithcms/types'
+
+export const OrdersCollection: CollectionConfig = {
+  slug: 'orders',
+  name: 'Orders Ledger',
+  fields: [
+    { name: 'orderId', type: 'text', required: true },
+    { name: 'amount', type: 'number', required: true },
+    { name: 'tax', type: 'number' },
+    { name: 'status', type: 'text', defaultValue: 'pending' },
+  ],
+  hooks: {
+    beforeChange: [
+      async ({ data, operation }) => {
+        // Automatically calculate tax before saving
+        if (operation === 'create' || operation === 'update') {
+          data.tax = Number((data.amount * 0.18).toFixed(2))
+        }
+        return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, operation }) => {
+        if (operation === 'create') {
+          console.log(
+            `Successfully persisted order ${doc.orderId}. Triggering invoicing workflow...`
+          )
+        }
+      },
+    ],
+  },
+}
+```

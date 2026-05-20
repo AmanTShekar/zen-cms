@@ -1,11 +1,11 @@
-import type { CollectionConfig } from '@zenith/types';
+import type { CollectionConfig } from '@zenithcms/types'
 
 export const Member: CollectionConfig = {
   name: 'Members',
   slug: 'members',
   labels: {
     singular: 'Member',
-    plural: 'Members'
+    plural: 'Members',
   },
   admin: {
     useAsTitle: 'email',
@@ -14,9 +14,9 @@ export const Member: CollectionConfig = {
   fields: [
     { name: 'email', type: 'text', required: true, unique: true, label: 'Email Address' },
     { name: 'name', type: 'text', label: 'Full Name' },
-    { 
-      name: 'subscriptionStatus', 
-      type: 'select', 
+    {
+      name: 'subscriptionStatus',
+      type: 'select',
       label: 'Subscription Status',
       options: [
         { label: 'Standard', value: 'standard' },
@@ -24,12 +24,12 @@ export const Member: CollectionConfig = {
         { label: 'Nexus', value: 'nexus' },
         { label: 'None', value: 'none' },
       ],
-      defaultValue: 'none'
+      defaultValue: 'none',
     },
     { name: 'isSubscribed', type: 'checkbox', label: 'Is Paid Subscriber', defaultValue: false },
-    { 
-      name: 'activity', 
-      type: 'select', 
+    {
+      name: 'activity',
+      type: 'select',
       label: 'Pulse Engagement',
       options: [
         { label: 'Low', value: 'Low' },
@@ -37,9 +37,9 @@ export const Member: CollectionConfig = {
         { label: 'High', value: 'High' },
         { label: 'Critical', value: 'Critical' },
       ],
-      defaultValue: 'Medium'
+      defaultValue: 'Medium',
     },
     { name: 'avatar', type: 'media', label: 'Profile Avatar' },
     { name: 'bio', type: 'textarea', label: 'Member Biography' },
-  ]
-};
+  ],
+}

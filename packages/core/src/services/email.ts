@@ -1,15 +1,15 @@
-import { Resend } from 'resend';
-import { logger } from './logger';
+import { Resend } from 'resend'
+import { logger } from './logger'
 
 export interface EmailOptions {
-  to: string | string[];
-  subject: string;
-  html: string;
-  from?: string;
-  text?: string;
+  to: string | string[]
+  subject: string
+  html: string
+  from?: string
+  text?: string
 }
 
-const FROM_ADDRESS = process.env.EMAIL_FROM || 'Zenith CMS <noreply@zenith.local>';
+const FROM_ADDRESS = process.env.EMAIL_FROM || 'Zenith CMS <noreply@zenith.local>'
 
 /**
  * Zenith Email Service
@@ -20,31 +20,31 @@ const FROM_ADDRESS = process.env.EMAIL_FROM || 'Zenith CMS <noreply@zenith.local
 export class EmailService {
   private static client: Resend | null = process.env.RESEND_API_KEY
     ? new Resend(process.env.RESEND_API_KEY)
-    : null;
+    : null
 
   static async send(options: EmailOptions): Promise<void> {
     if (this.client) {
       try {
-        const to = Array.isArray(options.to) ? options.to : [options.to];
+        const to = Array.isArray(options.to) ? options.to : [options.to]
         await this.client.emails.send({
           from: options.from || FROM_ADDRESS,
           to,
           subject: options.subject,
           html: options.html,
           text: options.text,
-        });
-        logger.info({ to: options.to, subject: options.subject }, 'Email sent via Resend');
+        })
+        logger.info({ to: options.to, subject: options.subject }, 'Email sent via Resend')
       } catch (err) {
-        logger.error({ err, to: options.to }, 'Resend email failed');
+        logger.error({ err, to: options.to }, 'Resend email failed')
         // Don't throw — email failure should not break the request
       }
     } else {
       // Dev mode: pretty console log
-      logger.info('─── EMAIL (dev mode) ───────────────────────────────');
-      logger.info(`  To:      ${options.to}`);
-      logger.info(`  Subject: ${options.subject}`);
-      logger.info(`  Body:    ${options.html.replace(/<[^>]+>/g, '').substring(0, 120)}...`);
-      logger.info('────────────────────────────────────────────────────');
+      logger.info('─── EMAIL (dev mode) ───────────────────────────────')
+      logger.info(`  To:      ${options.to}`)
+      logger.info(`  Subject: ${options.subject}`)
+      logger.info(`  Body:    ${options.html.replace(/<[^>]+>/g, '').substring(0, 120)}...`)
+      logger.info('────────────────────────────────────────────────────')
     }
   }
 
@@ -57,7 +57,7 @@ export class EmailService {
         <p>You've been successfully added to the <strong>Zenith CMS</strong>.</p>
         <p>Log in at <a href="${process.env.ADMIN_URL || 'http://localhost:5173'}">${process.env.ADMIN_URL || 'http://localhost:5173'}</a></p>
       `,
-    });
+    })
   }
 
   static async sendPasswordResetEmail(email: string, resetUrl: string): Promise<void> {
@@ -74,6 +74,6 @@ export class EmailService {
         <hr/>
         <small>Or copy this link: ${resetUrl}</small>
       `,
-    });
+    })
   }
 }

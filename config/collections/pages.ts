@@ -1,24 +1,25 @@
-import type { CollectionConfig } from '@zenith/types';
+import type { CollectionConfig } from '@zenithcms/types'
 
 export const Page: CollectionConfig = {
   name: 'Pages',
   slug: 'pages',
+  publicRead: true,
   labels: {
     singular: 'Page',
-    plural: 'Pages'
+    plural: 'Pages',
   },
   versions: true,
   seo: true,
   fields: [
-    { 
-      name: 'meta', 
-      type: 'object', 
+    {
+      name: 'meta',
+      type: 'object',
       label: 'SEO Metadata',
       fields: [
         { name: 'title', type: 'text' },
         { name: 'description', type: 'textarea' },
-        { name: 'keywords', type: 'text' }
-      ]
+        { name: 'keywords', type: 'text' },
+      ],
     },
     { name: 'title', type: 'text', required: true, label: 'Page Title' },
     { name: 'slug', type: 'text', required: true, unique: true, label: 'URL Slug' },
@@ -35,7 +36,7 @@ export const Page: CollectionConfig = {
             { name: 'subheadline', type: 'textarea', label: 'Sub-headline Text' },
             { name: 'callToAction', type: 'text', label: 'Button Label' },
             { name: 'backgroundImage', type: 'media', label: 'Background Image' },
-          ]
+          ],
         },
         {
           slug: 'features',
@@ -50,9 +51,9 @@ export const Page: CollectionConfig = {
                 { name: 'title', type: 'text', label: 'Feature Title' },
                 { name: 'description', type: 'textarea', label: 'Description' },
                 { name: 'icon', type: 'media', label: 'Feature Icon' },
-              ]
-            }
-          ]
+              ],
+            },
+          ],
         },
         {
           slug: 'testimonials',
@@ -68,9 +69,9 @@ export const Page: CollectionConfig = {
                 { name: 'author', type: 'text', label: 'Author Name' },
                 { name: 'role', type: 'text', label: 'Author Role' },
                 { name: 'avatar', type: 'media', label: 'Author Avatar' },
-              ]
-            }
-          ]
+              ],
+            },
+          ],
         },
         {
           slug: 'pricing',
@@ -87,9 +88,9 @@ export const Page: CollectionConfig = {
                 { name: 'features', type: 'textarea', label: 'Features (one per line)' },
                 { name: 'buttonText', type: 'text', label: 'Button Label' },
                 { name: 'isPopular', type: 'checkbox', label: 'Highlight as Popular' },
-              ]
-            }
-          ]
+              ],
+            },
+          ],
         },
         {
           slug: 'faq',
@@ -103,9 +104,9 @@ export const Page: CollectionConfig = {
               fields: [
                 { name: 'question', type: 'text', label: 'Question' },
                 { name: 'answer', type: 'textarea', label: 'Answer' },
-              ]
-            }
-          ]
+              ],
+            },
+          ],
         },
         {
           slug: 'cta',
@@ -115,7 +116,7 @@ export const Page: CollectionConfig = {
             { name: 'description', type: 'textarea', label: 'Description' },
             { name: 'buttonText', type: 'text', label: 'Button Label' },
             { name: 'link', type: 'text', label: 'Button Link' },
-          ]
+          ],
         },
         {
           slug: 'stats',
@@ -128,18 +129,16 @@ export const Page: CollectionConfig = {
               fields: [
                 { name: 'value', type: 'text', label: 'Value (e.g. 99%)' },
                 { name: 'label', type: 'text', label: 'Label (e.g. Uptime)' },
-              ]
-            }
-          ]
+              ],
+            },
+          ],
         },
         {
           slug: 'richTextSection',
           labels: { singular: 'Custom Content', plural: 'Content Sections' },
-          fields: [
-            { name: 'content', type: 'richtext', label: 'Rich Text Body' }
-          ]
-        }
-      ]
-    }
-  ]
-};
+          fields: [{ name: 'content', type: 'richtext', label: 'Rich Text Body' }],
+        },
+      ],
+    },
+  ],
+}

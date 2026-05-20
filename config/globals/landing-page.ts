@@ -1,4 +1,4 @@
-import type { GlobalConfig } from '@zenith/types';
+import type { GlobalConfig } from '@zenithcms/types'
 
 export const LandingPage: GlobalConfig = {
   name: 'Landing Page',
@@ -21,7 +21,7 @@ export const LandingPage: GlobalConfig = {
             { name: 'subheadline', type: 'textarea', label: 'Sub-headline Text' },
             { name: 'callToAction', type: 'text', label: 'Button Label' },
             { name: 'backgroundImage', type: 'media', label: 'Background Image' },
-          ]
+          ],
         },
         {
           slug: 'features',
@@ -36,9 +36,9 @@ export const LandingPage: GlobalConfig = {
                 { name: 'title', type: 'text', label: 'Feature Title' },
                 { name: 'description', type: 'textarea', label: 'Feature Description' },
                 { name: 'icon', type: 'media', label: 'Feature Icon' },
-              ]
-            }
-          ]
+              ],
+            },
+          ],
         },
         {
           slug: 'testimonials',
@@ -54,9 +54,9 @@ export const LandingPage: GlobalConfig = {
                 { name: 'author', type: 'text', label: 'Author Name' },
                 { name: 'role', type: 'text', label: 'Author Role/Company' },
                 { name: 'avatar', type: 'media', label: 'Author Avatar' },
-              ]
-            }
-          ]
+              ],
+            },
+          ],
         },
         {
           slug: 'pricing',
@@ -73,9 +73,9 @@ export const LandingPage: GlobalConfig = {
                 { name: 'features', type: 'textarea', label: 'Features (one per line)' },
                 { name: 'buttonText', type: 'text', label: 'CTA Button' },
                 { name: 'isPopular', type: 'checkbox', label: 'Highlight as Popular' },
-              ]
-            }
-          ]
+              ],
+            },
+          ],
         },
         {
           slug: 'faq',
@@ -89,9 +89,9 @@ export const LandingPage: GlobalConfig = {
               fields: [
                 { name: 'question', type: 'text', label: 'Question' },
                 { name: 'answer', type: 'textarea', label: 'Answer' },
-              ]
-            }
-          ]
+              ],
+            },
+          ],
         },
         {
           slug: 'cta',
@@ -101,7 +101,7 @@ export const LandingPage: GlobalConfig = {
             { name: 'description', type: 'textarea', label: 'Description' },
             { name: 'buttonText', type: 'text', label: 'Button Label' },
             { name: 'link', type: 'text', label: 'Button Link' },
-          ]
+          ],
         },
         {
           slug: 'stats',
@@ -114,18 +114,16 @@ export const LandingPage: GlobalConfig = {
               fields: [
                 { name: 'value', type: 'text', label: 'Value (e.g. 99%)' },
                 { name: 'label', type: 'text', label: 'Label (e.g. Uptime)' },
-              ]
-            }
-          ]
+              ],
+            },
+          ],
         },
         {
           slug: 'richTextSection',
           labels: { singular: 'Custom Content', plural: 'Content Sections' },
-          fields: [
-            { name: 'content', type: 'richtext', label: 'Rich Text Body' }
-          ]
-        }
-      ]
-    }
-  ]
-};
+          fields: [{ name: 'content', type: 'richtext', label: 'Rich Text Body' }],
+        },
+      ],
+    },
+  ],
+}

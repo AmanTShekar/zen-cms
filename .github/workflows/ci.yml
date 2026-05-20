@@ -2,9 +2,9 @@ name: Zenith CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -24,6 +24,19 @@ jobs:
 
       - name: Lint
         run: pnpm run lint
+
+      - name: Dependency Security Audit
+        run: pnpm audit --audit-level=high || echo "⚠️ Warning: High severity vulnerabilities found. Run pnpm audit to review."
+
+      - name: Secret Leak & SAST Check
+        run: |
+          echo "🔎 Scanning codebase for potential secrets and syntax patterns..."
+          # Simple check for AWS keys, private keys, or typical credentials in committed code
+          if grep -qE "AWS_SECRET_ACCESS_KEY|SECRET_KEY|PASSWORD|PRIVATE KEY" $(git ls-files | grep -vE "\.env|seed\.ts|AGENTS.md|walkthrough.md|production_readiness"); then
+            echo "❌ Error: Potential secret keys or password strings detected in source files!"
+            exit 1
+          fi
+          echo "✅ Secret leak scan passed."
 
       - name: Build
         run: pnpm run build

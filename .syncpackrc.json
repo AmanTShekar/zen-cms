@@ -1,0 +1,19 @@
+{
+  "dependencyTypes": ["dev", "peer", "prod"],
+  "semverGroups": [],
+  "versionGroups": [
+    {
+      "dependencies": [
+        "react",
+        "react-dom",
+        "typescript",
+        "vitest",
+        "eslint",
+        "prettier",
+        "zod"
+      ],
+      "packages": ["**"],
+      "snapTo": "packages/types"
+    }
+  ]
+}

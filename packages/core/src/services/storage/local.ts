@@ -1,38 +1,69 @@
-import fs from 'fs/promises';
-import path from 'path';
-import { StorageProvider, UploadResult } from './base';
+import fs from 'fs/promises'
+import { mkdirSync } from 'fs'
+import path from 'path'
+import crypto from 'crypto'
+import { StorageProvider, UploadResult } from './base'
+import { logger } from '../../services/logger'
 
 export class LocalStorageProvider extends StorageProvider {
-  private uploadDir: string;
+  private uploadDir: string
 
   constructor() {
-    super();
-    this.uploadDir = path.resolve(process.cwd(), 'media');
-    // Ensure dir exists
-    fs.mkdir(this.uploadDir, { recursive: true }).catch(() => {});
+    super()
+    this.uploadDir = path.resolve(process.cwd(), 'media')
+    
+    try {
+      mkdirSync(this.uploadDir, { recursive: true })
+    } catch (err: any) {
+      logger.error({ err }, `[Zenith] FATAL: Failed to create upload directory`)
+      throw err
+    }
   }
 
-  async upload(buffer: Buffer, options: { filename: string; mimetype: string }): Promise<UploadResult> {
-    const filename = `${Date.now()}-${options.filename}`;
-    const filePath = path.join(this.uploadDir, filename);
+  async upload(
+    fileInput: Buffer | string,
+    options: { filename: string; mimetype: string }
+  ): Promise<UploadResult> {
+    // Guard Rail 2: Prevent directory traversal on upload and replace spaces
+    const safeBaseName = path.basename(options.filename).replace(/\s+/g, '-')
     
-    await fs.writeFile(filePath, buffer);
-    
+    // Guard Rail 3: Prevent race condition collisions using cryptographically secure UUIDs
+    const filename = `${crypto.randomUUID()}-${safeBaseName}`
+    const filePath = path.join(this.uploadDir, filename)
+
+    let size = 0
+    if (typeof fileInput === 'string') {
+      const stats = await fs.stat(fileInput)
+      size = stats.size
+      await fs.copyFile(fileInput, filePath)
+    } else {
+      size = fileInput.length
+      await fs.writeFile(filePath, fileInput)
+    }
+
     return {
       url: `/media/${filename}`,
       id: filename,
       filename,
       mimetype: options.mimetype,
-      size: buffer.length
-    };
+      size,
+    }
   }
 
   async delete(id: string): Promise<void> {
-    const filePath = path.join(this.uploadDir, id);
-    await fs.unlink(filePath).catch(() => {});
+    // Guard Rail 4: Prevent directory traversal attack on file deletion
+    const safeId = path.basename(id)
+    const filePath = path.join(this.uploadDir, safeId)
+    
+    await fs.unlink(filePath).catch((err) => {
+      // Log the warning instead of silently swallowing failure
+      logger.warn({ err, safeId }, `[Zenith] Warning: Failed to delete file`)
+    })
   }
 
   getUrl(id: string): string {
-    return `/media/${id}`;
+    // Guard Rail 5: Sanitize the ID in URL generation
+    const safeId = path.basename(id)
+    return `/media/${safeId}`
   }
 }

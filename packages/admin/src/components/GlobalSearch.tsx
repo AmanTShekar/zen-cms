@@ -1,77 +1,103 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Search, X, FileText, Database, Settings, Zap, Clock, Layout, Shield, Mail, Key, Sparkles, Palette, Users } from 'lucide-react';
-import { cn } from '../lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
-import api from '../lib/api';
+import React, { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import {
+  Search,
+  X,
+  FileText,
+  Database,
+  Settings,
+  Zap,
+  Clock,
+  Layout,
+  Shield,
+  Mail,
+  Key,
+  Sparkles,
+  Palette,
+  Users,
+} from 'lucide-react'
+import { cn } from '../lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
+import api from '../lib/api'
 
 const GlobalSearch: React.FC = () => {
-  const navigate = useNavigate();
-  const [query, setQuery] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
-  const [results, setResults] = useState<unknown[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate()
+  const [query, setQuery] = useState('')
+  const [isFocused, setIsFocused] = useState(false)
+  const [results, setResults] = useState<any[]>([])
+  const [isSearching, setIsSearching] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsFocused(false);
+        setIsFocused(false)
       }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
       if (query.length >= 2) {
-        setIsSearching(true);
+        setIsSearching(true)
         try {
-          const res = await api.get(`/system/search?q=${query}`);
-          setResults(res.data.data);
+          const res = await api.get(`/system/search?q=${query}`)
+          setResults(res.data.data)
         } catch {
-          console.error('Search failed');
+          console.error('Search failed')
         } finally {
-          setIsSearching(false);
+          setIsSearching(false)
         }
       } else {
-        setResults([]);
+        setResults([])
       }
-    }, 300);
+    }, 300)
 
-    return () => clearTimeout(delayDebounceFn);
-  }, [query]);
+    return () => clearTimeout(delayDebounceFn)
+  }, [query])
 
   const highlightMatch = (text: string, match: string) => {
-    if (!match) return text;
-    const parts = text.split(new RegExp(`(${match})`, 'gi'));
-    return parts.map((part, i) => 
-      part.toLowerCase() === match.toLowerCase() 
-        ? <span key={i} className="text-indigo-500 font-black underline decoration-2 underline-offset-2">{part}</span> 
-        : part
-    );
-  };
+    if (!match) return text
+    const escapedMatch = match.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const parts = text.split(new RegExp(`(${escapedMatch})`, 'gi'))
+    return parts.map((part, i) =>
+      part.toLowerCase() === match.toLowerCase() ? (
+        <span
+          key={i}
+          className="text-indigo-500 font-black underline decoration-2 underline-offset-2"
+        >
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    )
+  }
 
   const handleSelect = (path: string) => {
-    navigate(path);
-    setIsFocused(false);
-    setQuery('');
-  };
+    navigate(path)
+    setIsFocused(false)
+    setQuery('')
+  }
 
   return (
     <div ref={containerRef} className="relative z-[100]">
-      <motion.div 
+      <motion.div
         animate={{ width: isFocused ? 360 : 240 }}
         className={cn(
-          "flex items-center gap-2 px-4 py-2 rounded-none transition-all border",
-          isFocused 
-            ? "bg-white border-indigo-500 shadow-lg text-black" 
-            : "bg-white/5 border-white/5 text-gray-500 hover:bg-white/10"
+          'flex items-center gap-2 px-4 py-2 rounded-none transition-all border',
+          isFocused
+            ? 'bg-white border-indigo-500 shadow-lg text-black'
+            : 'bg-white/5 border-white/5 text-gray-500 hover:bg-white/10'
         )}
       >
-        <Search size={18} className={cn("transition-colors", isFocused ? "text-indigo-500" : "text-gray-500")} />
-        <input 
+        <Search
+          size={18}
+          className={cn('transition-colors', isFocused ? 'text-indigo-500' : 'text-gray-500')}
+        />
+        <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -103,8 +129,10 @@ const GlobalSearch: React.FC = () => {
             <div className="max-h-[400px] overflow-y-auto p-3 no-scrollbar">
               {results.length > 0 && (
                 <div className="space-y-1">
-                  <div className="px-3 py-1.5 text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 italic">Database Nodes</div>
-                  {results.map((res: unknown) => (
+                  <div className="px-3 py-1.5 text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 italic">
+                    Database Nodes
+                  </div>
+                  {results.map((res: any) => (
                     <button
                       key={res.id}
                       onClick={() => handleSelect(`/collections/${res.collection}/${res.id}`)}
@@ -117,7 +145,9 @@ const GlobalSearch: React.FC = () => {
                         <span className="text-[11px] font-black uppercase italic tracking-tight truncate">
                           {highlightMatch(res.title, query)}
                         </span>
-                        <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{res.collectionLabel}</span>
+                        <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">
+                          {res.collectionLabel}
+                        </span>
                       </div>
                     </button>
                   ))}
@@ -125,36 +155,101 @@ const GlobalSearch: React.FC = () => {
               )}
 
               {/* System Protocols & Settings Deep Search */}
-               <div className="mt-1 pt-1 border-t border-gray-100 space-y-1">
-                <div className="px-3 py-1.5 text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 italic">System Protocols</div>
+              <div className="mt-1 pt-1 border-t border-gray-100 space-y-1">
+                <div className="px-3 py-1.5 text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 italic">
+                  System Protocols
+                </div>
                 {(() => {
                   const commands = [
                     { label: 'Dashboard', path: '/', icon: Layout, sub: 'System Overview' },
-                    { label: 'General Settings', path: '/settings?tab=general', icon: Settings, sub: 'Site Name, URL, Maintenance' },
-                    { label: 'Maintenance Mode', path: '/settings?tab=general', icon: Zap, sub: 'Protocol Override' },
-                    { label: 'Security Protocols', path: '/settings?tab=security', icon: Shield, sub: 'Session Lifespan & Auth' },
-                    { label: 'SMTP Relay', path: '/settings?tab=notifications', icon: Mail, sub: 'Email Configuration' },
-                    { label: 'Operator Registry', path: '/settings?tab=users', icon: Users, sub: 'User Management' },
-                    { label: 'API Credentials', path: '/settings?tab=keys', icon: Key, sub: 'Access Tokens' },
-                    { label: 'Infrastructure Stats', path: '/settings?tab=database', icon: Database, sub: 'DB Health & Cache' },
-                    { label: 'AI Intelligence', path: '/settings?tab=ai', icon: Sparkles, sub: 'Neural Bridge Config' },
-                    { label: 'Custom Styles', path: '/settings?tab=appearance', icon: Palette, sub: 'CSS Overrides' },
-                    { label: 'Audit Logs', path: '/audit-logs', icon: Clock, sub: 'Security Events' },
-                    { label: 'Plugin Marketplace', path: '/plugins', icon: Zap, sub: 'Modular Extensions' },
-                  ].filter(cmd => 
-                    cmd.label.toLowerCase().includes(query.toLowerCase()) || 
-                    cmd.sub.toLowerCase().includes(query.toLowerCase())
-                  );
+                    {
+                      label: 'General Settings',
+                      path: '/settings?tab=general',
+                      icon: Settings,
+                      sub: 'Site Name, URL, Maintenance',
+                    },
+                    {
+                      label: 'Maintenance Mode',
+                      path: '/settings?tab=general',
+                      icon: Zap,
+                      sub: 'Protocol Override',
+                    },
+                    {
+                      label: 'Security Protocols',
+                      path: '/settings?tab=security',
+                      icon: Shield,
+                      sub: 'Session Lifespan & Auth',
+                    },
+                    {
+                      label: 'SMTP Relay',
+                      path: '/settings?tab=notifications',
+                      icon: Mail,
+                      sub: 'Email Configuration',
+                    },
+                    {
+                      label: 'Operator Registry',
+                      path: '/settings?tab=users',
+                      icon: Users,
+                      sub: 'User Management',
+                    },
+                    {
+                      label: 'API Credentials',
+                      path: '/settings?tab=keys',
+                      icon: Key,
+                      sub: 'Access Tokens',
+                    },
+                    {
+                      label: 'Infrastructure Stats',
+                      path: '/settings?tab=database',
+                      icon: Database,
+                      sub: 'DB Health & Cache',
+                    },
+                    {
+                      label: 'AI Intelligence',
+                      path: '/settings?tab=ai',
+                      icon: Sparkles,
+                      sub: 'Neural Bridge Config',
+                    },
+                    {
+                      label: 'Custom Styles',
+                      path: '/settings?tab=appearance',
+                      icon: Palette,
+                      sub: 'CSS Overrides',
+                    },
+                    {
+                      label: 'Audit Logs',
+                      path: '/audit-logs',
+                      icon: Clock,
+                      sub: 'Security Events',
+                    },
+                    {
+                      label: 'Plugin Marketplace',
+                      path: '/plugins',
+                      icon: Zap,
+                      sub: 'Modular Extensions',
+                    },
+                  ].filter(
+                    (cmd) =>
+                      cmd.label.toLowerCase().includes(query.toLowerCase()) ||
+                      cmd.sub.toLowerCase().includes(query.toLowerCase())
+                  )
 
-                  if (results.length === 0 && commands.length === 0 && query.length >= 2 && !isSearching) {
+                  if (
+                    results.length === 0 &&
+                    commands.length === 0 &&
+                    query.length >= 2 &&
+                    !isSearching
+                  ) {
                     return (
                       <div className="py-8 text-center">
-                        <span className="text-[10px] font-black uppercase italic text-gray-400 tracking-widest">No matching records found</span>
+                        <span className="text-[10px] font-black uppercase italic text-gray-400 tracking-widest">
+                          No matching records found
+                        </span>
                       </div>
-                    );
+                    )
                   }
 
-                  return commands.map(cmd => (
+                  return commands.map((cmd) => (
                     <button
                       key={cmd.label}
                       onClick={() => handleSelect(cmd.path)}
@@ -164,27 +259,35 @@ const GlobalSearch: React.FC = () => {
                         <cmd.icon size={14} />
                       </div>
                       <div className="flex flex-col min-w-0">
-                        <span className="text-[11px] font-black uppercase italic tracking-tight truncate">{highlightMatch(cmd.label, query)}</span>
-                        <span className="text-[7px] font-bold text-gray-400 uppercase tracking-widest truncate">{highlightMatch(cmd.sub, query)}</span>
+                        <span className="text-[11px] font-black uppercase italic tracking-tight truncate">
+                          {highlightMatch(cmd.label, query)}
+                        </span>
+                        <span className="text-[7px] font-bold text-gray-400 uppercase tracking-widest truncate">
+                          {highlightMatch(cmd.sub, query)}
+                        </span>
                       </div>
                     </button>
-                  ));
+                  ))
                 })()}
               </div>
             </div>
-            
-             <div className="px-4 py-2 bg-gray-900 border-t border-white/5 flex items-center justify-between">
-                <span className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-500 italic">Core_Intelligence_Stream</span>
-                <div className="flex items-center gap-2">
-                   <div className="w-1 h-1 bg-indigo-500 rounded-none animate-pulse" />
-                   <span className="text-[8px] font-black uppercase text-indigo-500 italic">Sync_Active</span>
-                </div>
-             </div>
+
+            <div className="px-4 py-2 bg-gray-900 border-t border-white/5 flex items-center justify-between">
+              <span className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-500 italic">
+                Core_Intelligence_Stream
+              </span>
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-1 bg-indigo-500 rounded-none animate-pulse" />
+                <span className="text-[8px] font-black uppercase text-indigo-500 italic">
+                  Sync_Active
+                </span>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
-  );
-};
+  )
+}
 
-export default GlobalSearch;
+export default GlobalSearch

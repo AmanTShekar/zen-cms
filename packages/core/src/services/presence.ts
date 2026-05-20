@@ -1,52 +1,98 @@
-import NodeCache from 'node-cache';
+import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 
 interface ActiveUser {
-  id: string;
-  email: string;
-  collection: string;
-  documentId: string;
-  lastActive: number;
+  userId: string
+  email: string
+  collectionName: string
+  documentId: string
+  lastActive: number
 }
 
 /**
- * Zenith Presence Service
+ * Zenith Presence Service (Distributed via Database)
  * ─────────────────────────────────────────────────────────────────
  * Tracks who is actively editing which document.
  * Auto-expires after 60 seconds of inactivity.
- *
- * The Admin UI should call POST /api/v1/presence/heartbeat every 30s
- * while the document editor is open, and DELETE when they leave.
+ * 
+ * Replaced NodeCache with DatabaseAdapter to support multi-instance deployments.
  */
 export class PresenceService {
-  private static store = new NodeCache({ stdTTL: 60 }); // auto-expire after 60s
+  private static adapter: DatabaseAdapter
+  private static TTL = 60000 // 60 seconds
 
-  private static key(userId: string, collection: string, documentId: string): string {
-    return `p:${collection}:${documentId}:${userId}`;
+  static init(adapter: DatabaseAdapter) {
+    this.adapter = adapter
   }
 
-  static async heartbeat(userId: string, email: string, collection: string, documentId: string): Promise<void> {
-    this.store.set(this.key(userId, collection, documentId), {
-      id: userId,
+  static async heartbeat(
+    userId: string,
+    email: string,
+    collection: string,
+    documentId: string
+  ): Promise<void> {
+    if (!this.adapter) return
+
+    const query = { userId, collectionName: collection, documentId }
+    
+    // Simulating upsert by deleting and recreating to avoid adapter-specific upsert gaps
+    await this.adapter.deleteMany('z_presence', query).catch(() => {})
+    
+    await this.adapter.create('z_presence', {
+      userId,
       email,
-      collection,
+      collectionName: collection,
       documentId,
       lastActive: Date.now(),
-    } as ActiveUser);
+    })
   }
 
   static async leave(userId: string, collection: string, documentId: string): Promise<void> {
-    this.store.del(this.key(userId, collection, documentId));
+    if (!this.adapter) return
+    const query = { userId, collectionName: collection, documentId }
+    await this.adapter.deleteMany('z_presence', query).catch(() => {})
   }
 
-  static async getActiveUsers(collection: string, documentId: string): Promise<Pick<ActiveUser, 'id' | 'email'>[]> {
-    const prefix = `p:${collection}:${documentId}:`;
-    return this.store
-      .keys()
-      .filter(k => k.startsWith(prefix))
-      .map(k => {
-        const u = this.store.get<ActiveUser>(k);
-        return u ? { id: u.id, email: u.email } : null;
-      })
-      .filter((u): u is Pick<ActiveUser, 'id' | 'email'> => u !== null);
+  static async getActiveUsers(
+    collection: string,
+    documentId: string
+  ): Promise<{ id: string; email: string }[]> {
+    if (!this.adapter) return []
+
+    const minLastActive = Date.now() - this.TTL
+    const query = {
+      collectionName: collection,
+      documentId,
+      lastActive: { $gt: minLastActive }
+    }
+
+    const records = await this.adapter.find<ActiveUser>('z_presence', query)
+    
+    return records.map((r) => ({
+      id: r.userId,
+      email: r.email
+    }))
+  }
+
+  static async getAllActiveUsers(): Promise<{ id: string; email: string }[]> {
+    if (!this.adapter) return []
+
+    const minLastActive = Date.now() - this.TTL
+    const query = {
+      lastActive: { $gt: minLastActive }
+    }
+
+    const records = await this.adapter.find<ActiveUser>('z_presence', query)
+    
+    // Deduplicate by user ID
+    const users: { id: string; email: string }[] = []
+    const seenIds = new Set<string>()
+
+    for (const r of records) {
+      if (!seenIds.has(r.userId)) {
+        seenIds.add(r.userId)
+        users.push({ id: r.userId, email: r.email })
+      }
+    }
+    return users
   }
 }

@@ -7,11 +7,12 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspaces --if-present",
+    "preinstall": "npx only-allow pnpm",
+    "dev": "pnpm -r dev",
     "start": "tsx server.ts",
-    "build": "npm run build --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
-    "lint": "npm run lint --workspaces",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
     "check-deps": "depcruise packages --config .dependency-cruiser.js"
   },
   "devDependencies": {
@@ -25,5 +26,15 @@
     "tsx": "^4.21.0",
     "typescript": "^5.4.0",
     "typescript-eslint": "^8.59.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "^19.2.0",
+      "react-dom": "^19.2.0"
+    },
+    "onlyBuiltDependencies": [
+      "sharp",
+      "bcrypt"
+    ]
   }
 }

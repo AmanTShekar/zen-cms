@@ -1,46 +1,109 @@
-import { z } from 'zod';
-import { FieldConfig } from '@zenith/types';
+import { z } from 'zod'
+import { FieldConfig } from '@zenithcms/types'
+import Ajv from 'ajv'
 
-export function createZodSchema(fields: FieldConfig[], config?: unknown) {
-  const shape: Record<string, unknown> = {};
+const ajv = new Ajv({ allErrors: true })
 
-  fields.forEach((field) => {
-    let schema: unknown;
+export function createZodSchema(fields: FieldConfig[], config?: any) {
+  const shape: Record<string, any> = {}
 
-    switch (field.type) {
+  fields.forEach((field: any) => {
+    let schema: any
+
+    switch (field.type as string) {
       // --- String-based types ---
       case 'text':
-      case 'richtext':
-      case 'json':
-        schema = z.string();
-        break;
+      case 'richtext': {
+        let s = z.string()
+        if (typeof field.minLength === 'number') s = s.min(field.minLength, { message: `${field.label || field.name} must be at least ${field.minLength} characters` })
+        if (typeof field.maxLength === 'number') s = s.max(field.maxLength, { message: `${field.label || field.name} must be at most ${field.maxLength} characters` })
+        schema = s
+        break
+      }
 
-      case 'email':
-        schema = z.string().email();
-        break;
+      case 'json': {
+        const jsonSchema = z.any().refine(
+          (val) => {
+            let parsed = val
+            if (typeof val === 'string') {
+              try {
+                parsed = JSON.parse(val)
+              } catch {
+                return false
+              }
+            }
+            if (field.jsonSchema) {
+              try {
+                const validate = ajv.compile(field.jsonSchema)
+                return validate(parsed)
+              } catch {
+                return false
+              }
+            }
+            return typeof parsed === 'object' && parsed !== null
+          },
+          (val) => {
+            let parsed = val
+            if (typeof val === 'string') {
+              try {
+                parsed = JSON.parse(val)
+              } catch {
+                return { message: `${field.label || field.name} must be a valid JSON string or object` }
+              }
+            }
+            if (field.jsonSchema) {
+              try {
+                const validate = ajv.compile(field.jsonSchema)
+                const valid = validate(parsed)
+                if (!valid && validate.errors) {
+                  const errMsgs = validate.errors.map((e) => `${e.instancePath || 'root'} ${e.message}`).join(', ')
+                  return { message: `${field.label || field.name} validation failed: ${errMsgs}` }
+                }
+              } catch (err: any) {
+                return { message: `${field.label || field.name} schema compilation failed: ${err.message}` }
+              }
+            }
+            return { message: `${field.label || field.name} must be a valid JSON string or object` }
+          }
+        )
+        schema = jsonSchema
+        break
+      }
 
-      case 'textarea':
-        schema = z.string();
-        break;
+      case 'email': {
+        // RFC-5321 compliant pattern — stricter than Zod default
+        const emailRegex = /^(?!.*\.\.)[\w!#$%&'*+/=?^`{|}~-](?:[\w!#$%&'*+/=?^`{|}~.-]*[\w!#$%&'*+/=?^`{|}~-])?@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}$/i
+        schema = z.string().regex(emailRegex, { message: 'Please enter a valid email address' })
+        break
+      }
+
+      case 'textarea': {
+        let s = z.string()
+        if (typeof field.minLength === 'number') s = s.min(field.minLength, { message: `${field.label || field.name} must be at least ${field.minLength} characters` })
+        if (typeof field.maxLength === 'number') s = s.max(field.maxLength, { message: `${field.label || field.name} must be at most ${field.maxLength} characters` })
+        schema = s
+        break
+      }
 
       // --- Number ---
-      case 'number':
-        schema = z.number();
-        break;
+      case 'number': {
+        let s = z.number()
+        if (typeof field.min === 'number') s = s.min(field.min, { message: `${field.label || field.name} must be at least ${field.min}` })
+        if (typeof field.max === 'number') s = s.max(field.max, { message: `${field.label || field.name} must be at most ${field.max}` })
+        schema = s
+        break
+      }
 
       // --- Boolean ---
       case 'checkbox':
-      case 'boolean' as unknown:
-        schema = z.boolean();
-        break;
+      case 'boolean':
+        schema = z.boolean()
+        break
 
       // --- Date ---
       case 'date':
-        schema = z.union([
-          z.date(),
-          z.string().transform((v) => new Date(v)),
-        ]);
-        break;
+        schema = z.union([z.date(), z.string().transform((v) => new Date(v))])
+        break
 
       // --- Media ---
       case 'media':
@@ -50,111 +113,149 @@ export function createZodSchema(fields: FieldConfig[], config?: unknown) {
           alt: z.string().optional(),
           width: z.number().optional(),
           height: z.number().optional(),
-        });
-        if (field.hasMany) schema = z.array(schema);
-        break;
+        })
+        if (field.hasMany) schema = z.array(schema)
+        break
 
       // --- Select ---
       case 'select': {
-        const rawOptions = (field.options || []).map((o: unknown) =>
+        const rawOptions = (field.options || []).map((o: any) =>
           typeof o === 'string' ? o : o.value
-        );
+        )
         if (rawOptions.length > 0) {
-          const enumSchema = z.enum(rawOptions as [string, ...string[]]);
-          schema = field.hasMany ? z.array(enumSchema) : enumSchema;
+          const enumSchema = z.enum(rawOptions as [string, ...string[]])
+          schema = field.hasMany ? z.array(enumSchema) : enumSchema
         } else {
-          schema = field.hasMany ? z.array(z.string()) : z.string();
+          schema = field.hasMany ? z.array(z.string()) : z.string()
         }
-        break;
+        break
       }
 
       // --- Array of sub-fields ---
-      case 'array':
+      case 'array': {
+        let itemSchema: z.ZodTypeAny
         if (field.fields && field.fields.length > 0) {
-          schema = z.array(createZodSchema(field.fields));
+          itemSchema = createZodSchema(field.fields)
         } else {
-          schema = z.array(z.any());
+          itemSchema = z.any()
         }
-        break;
+        let arrSchema = z.array(itemSchema)
+        if (typeof field.minRows === 'number') arrSchema = arrSchema.min(field.minRows, { message: `${field.label || field.name} requires at least ${field.minRows} row(s)` })
+        if (typeof field.maxRows === 'number') arrSchema = arrSchema.max(field.maxRows, { message: `${field.label || field.name} allows at most ${field.maxRows} row(s)` })
+        schema = arrSchema
+        break
+      }
 
       // --- Group (nested object) ---
       case 'group':
         if (field.fields && field.fields.length > 0) {
-          schema = createZodSchema(field.fields);
+          schema = createZodSchema(field.fields)
         } else {
-          schema = z.record(z.any());
+          schema = z.record(z.any())
         }
-        break;
+        break
 
       // --- Tabs (flattened into fields) ---
       case 'tabs':
-        if (field.tabs && field.tabs.length > 0) {
-          const tabShape: Record<string, unknown> = {};
-          field.tabs.forEach((tab: unknown) => {
-            const tabSchema = createZodSchema(tab.fields);
-            Object.assign(tabShape, tabSchema.shape);
-          });
-          schema = z.object(tabShape);
+        if ((field as any).tabs && (field as any).tabs.length > 0) {
+          const tabShape: Record<string, any> = {}
+          ;(field as any).tabs.forEach((tab: any) => {
+            const tabSchema = createZodSchema(tab.fields)
+            Object.assign(tabShape, tabSchema.shape)
+          })
+          schema = z.object(tabShape)
         } else {
-          schema = z.record(z.any());
+          schema = z.record(z.any())
         }
-        break;
+        break
 
       // --- Relation (ID reference) ---
       // --- Blocks (Discriminated Union) ---
       case 'blocks':
         if (field.blocks && field.blocks.length > 0) {
-          const blockSchemas = field.blocks.map((block: unknown) => {
-            const blockShape = createZodSchema(block.fields).shape;
+          const blockSchemas = field.blocks.map((block: any) => {
+            const blockShape = createZodSchema(block.fields).shape
             return z.object({
               blockType: z.literal(block.slug),
               ...blockShape,
-            });
-          });
-          schema = z.array(z.union(blockSchemas as unknown));
+            })
+          })
+          schema = z.array(z.union(blockSchemas as any))
         } else {
-          schema = z.array(z.record(z.any()));
+          schema = z.array(z.record(z.any()))
         }
-        break;
+        break
 
       default:
-        schema = z.any();
+        schema = z.any()
     }
 
     // Make optional unless required
     if (!field.required) {
-      schema = schema.optional().nullable();
+      schema = schema.optional().nullable()
     }
 
     // Handle i18n
     if (field.localized) {
-      schema = z.record(z.string(), schema);
+      schema = z.record(z.string(), schema)
     }
 
     // Handle Custom Validation
     if (field.hooks?.validate) {
-      const validateFn = field.hooks.validate;
-      schema = schema.refine(async (val: unknown) => {
-        const result = await validateFn(val, {}); // Context available in next version
-        return result === true;
-      }, {
-        message: 'Custom validation failed'
-      });
+      const validateFn = field.hooks.validate
+      schema = schema.refine(
+        async (val: any) => {
+          const result = await validateFn(val, {}) // Context available in next version
+          return result === true
+        },
+        {
+          message: 'Custom validation failed',
+        }
+      )
     }
 
-    shape[field.name] = schema;
-  });
+    shape[field.name] = schema
+  })
 
   // System Fields
   if (config?.drafts) {
-    shape._status = z.enum(['draft', 'published']).optional();
+    shape._status = z.enum(['draft', 'published']).optional()
   }
   if (config?.scheduling) {
-    shape.scheduledAt = z.union([
-      z.date(),
-      z.string().transform((v) => new Date(v)),
-    ]).optional().nullable();
+    shape.scheduledAt = z
+      .union([z.date(), z.string().transform((v) => new Date(v))])
+      .optional()
+      .nullable()
   }
 
-  return z.object(shape);
+  return z.object(shape as any)
+}
+
+const schemaCache = new Map<string, z.ZodObject<any>>()
+
+/**
+ * Returns a cached, pre-compiled Zod schema for maximum CPU and validation throughput.
+ * Bypasses real-time AST building and recursive traversals.
+ */
+export function getCompiledZodSchema(fields: FieldConfig[], config?: any): z.ZodObject<any> {
+  const cacheKey = config?.slug
+    ? `${config.slug}:${JSON.stringify(config.drafts || false)}:${JSON.stringify(config.scheduling || false)}:${fields.map((f) => `${f.name}-${f.type}-${f.required}`).join(',')}`
+    : ''
+
+  if (cacheKey && schemaCache.has(cacheKey)) {
+    return schemaCache.get(cacheKey)!
+  }
+
+  const schema = createZodSchema(fields, config)
+
+  if (cacheKey) {
+    schemaCache.set(cacheKey, schema)
+  }
+
+  return schema
+}
+
+/** Clears the Zod schema cache (e.g. when Visual Schema Architect schema undergoes changes) */
+export function clearSchemaCache() {
+  schemaCache.clear()
 }

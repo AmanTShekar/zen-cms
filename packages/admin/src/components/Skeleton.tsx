@@ -1,26 +1,20 @@
-import React from 'react';
-import { cn } from '../lib/utils';
+import React from 'react'
+import { cn } from '../lib/utils'
 
 interface SkeletonProps {
-  className?: string;
-  count?: number;
+  className?: string
+  count?: number
 }
 
 export const Skeleton: React.FC<SkeletonProps> = ({ className, count = 1 }) => {
   return (
     <>
       {Array.from({ length: count }).map((_, i) => (
-        <div 
-          key={i}
-          className={cn(
-            "animate-pulse bg-text-muted/10 rounded-none",
-            className
-          )}
-        />
+        <div key={i} className={cn('animate-pulse bg-text-muted/10 rounded-none', className)} />
       ))}
     </>
-  );
-};
+  )
+}
 
 export const TableSkeleton: React.FC = () => {
   return (
@@ -42,5 +36,5 @@ export const TableSkeleton: React.FC = () => {
         </div>
       ))}
     </div>
-  );
-};
+  )
+}

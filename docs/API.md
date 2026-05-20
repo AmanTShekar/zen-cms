@@ -1,81 +1,158 @@
-# Zenith API Reference: Hardened Endpoints
+# Zenith API Reference: Enterprise REST & GraphQL
 
-Zenith provides a state-of-the-art API layer that supports both **REST** and **GraphQL**. Our endpoints are hardened with Zod AOT validation and integrated with the CacheService for millisecond response times.
+The Zenith Core features a hardened, high-speed routing layer equipped with Ahead-Of-Time (AOT) schema validation and multi-site tenant isolation.
 
 ---
 
-## Authentication
+## 🔒 1. Global Session & Tenant Scoping Headers
 
-All API requests must be authenticated using a **Bearer Token** or an **X-API-KEY** header.
+All requests directed to the Zenith Core API must include a valid session token (or static API Key) paired with the workspace scoping header.
 
 ```http
-Authorization: Bearer <your_jwt_token>
-X-API-KEY: <your_api_key>
+Authorization: Bearer <JWT_TOKEN_HERE>
+X-API-KEY: <STATIC_ACCESS_KEY_HERE>
+X-Zenith-Site-Id: <SITE_OR_TENANT_ID_HERE>
+```
+
+> [!WARNING]
+> Requests omitted or presenting incorrect `X-Zenith-Site-Id` values will be instantly scoped out, resulting in empty responses or `403 Forbidden` statuses.
+
+---
+
+## 👥 2. Real-Time Collaborative Presence API
+
+Used to coordinate concurrent multi-editor collaboration and lock fields in real-time.
+
+### A. Publish Presence Heartbeat
+
+- **Endpoint**: `POST /api/v1/presence/heartbeat`
+- **Payload JSON**:
+
+```json
+{
+  "collection": "pages",
+  "documentId": "65e8f17c24f2b9001b9728cb"
+}
+```
+
+- **Success Response (200 OK)**:
+
+```json
+{
+  "success": true,
+  "data": {
+    "ok": true
+  }
+}
+```
+
+### B. List Online Editors for Document
+
+- **Endpoint**: `GET /api/v1/presence/:collection/:documentId`
+- **Success Response (200 OK)**:
+
+```json
+{
+  "success": true,
+  "data": {
+    "isLocked": true,
+    "activeUsers": [{ "id": "user_992", "email": "clara@zenith.io" }],
+    "message": "clara is also editing this document"
+  }
+}
+```
+
+### C. Retrieve All Active Editors Across Workspace (Dashboard Status)
+
+- **Endpoint**: `GET /api/v1/presence`
+- **Success Response (200 OK)**:
+
+```json
+{
+  "success": true,
+  "data": [
+    { "id": "user_992", "email": "clara@zenith.io" },
+    { "id": "user_104", "email": "dave@zenith.io" }
+  ]
+}
 ```
 
 ---
 
-## Collection Endpoints (REST)
+## 📦 3. Dynamic REST Collections API
 
-Every collection defined in your `CollectionConfig` automatically generates a set of standardized endpoints.
+Zenith dynamically synthesizes collections specified in `cms.config.ts` into individual Express endpoints.
 
-### 1. List Documents
-`GET /api/v1/:collection_slug`
-*   **Query Params**: 
-    *   `limit`: Number of items per page.
-    *   `page`: Current page number.
-    *   `sort`: Field name (prefix with `-` for descending).
-    *   `filter`: JSON-based filtering (e.g., `{"status": "published"}`).
+### A. Query/Filter Collection Documents
 
-### 2. Get Single Document
-`GET /api/v1/:collection_slug/:id`
+- **Endpoint**: `GET /api/v1/:collection_slug`
+- **Query Selectors**:
+  - `limit`: Integer (Default: `10`)
+  - `page`: Integer (Default: `1`)
+  - `sort`: String (e.g. `createdAt` or `-price` for descending)
+  - `filter`: Stringified JSON (e.g. `{"status": "published", "price": {"$gt": 49}}`)
 
-### 3. Create Document
-`POST /api/v1/:collection_slug`
-*   **Payload**: JSON object matching the collection schema.
+### B. Update Record
 
-### 4. Update Document
-`PATCH /api/v1/:collection_slug/:id`
-*   **Payload**: Partial JSON object.
-
-### 5. Delete Document
-`DELETE /api/v1/:collection_slug/:id`
+- **Endpoint**: `PATCH /api/v1/:collection_slug/:id`
+- **Payload JSON**: Only includes properties to update.
+- **Headers**: Requires JWT Authorization token.
 
 ---
 
-## GraphQL Endpoint
+## 🕸️ 4. Unified GraphQL Schema Core
 
-Zenith exposes a single unified GraphQL endpoint for complex data fetching.
+Exposes a rich type system for nested queries.
 
-`POST /api/v1/graphql`
+- **Endpoint**: `POST /api/v1/graphql`
+- **Query Payload**:
 
-### Sample Query
 ```graphql
-query {
-  getPosts(limit: 5, sort: "-createdAt") {
+query GetProducts($limit: Int) {
+  getProducts(limit: $limit, sort: "-createdAt") {
     docs {
+      id
       title
-      content
-      author {
+      price
+      category {
         name
+        slug
       }
     }
+    totalDocs
   }
 }
 ```
 
 ---
 
-## System Health & Telemetry
+## 📈 5. Telemetry & Workspace Health Diagnostics
 
-### Get System Status
-`GET /api/v1/system/health`
-Returns real-time telemetry on the Nucleus, Database, and Neural Bridge status.
+### A. Core Telemetry Diagnostic Pulse
 
-### Get Audit Logs
-`GET /api/v1/system/audit` (Requires Admin Access)
+- **Endpoint**: `GET /api/v1/system/health`
+- **Success Response (200 OK)**:
 
----
+```json
+{
+  "success": true,
+  "data": {
+    "status": "healthy",
+    "uptime": 184920,
+    "database": {
+      "adapter": "postgres-drizzle",
+      "latency": "4ms",
+      "connected": true
+    },
+    "presence": {
+      "activeKeys": 4
+    }
+  }
+}
+```
 
-## Rate Limiting & Safety
-To protect the Nucleus, Zenith implements a default rate limit of **100 requests per minute** per IP. This can be configured in your `cms.config.ts`.
+### B. Read Tenant Security Audit Trails
+
+- **Endpoint**: `GET /api/v1/system/audit`
+- **Query Selectors**: `limit=20`
+- **Security Level**: Admin restricted.

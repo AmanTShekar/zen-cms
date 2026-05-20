@@ -1,0 +1,13 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🪐 Zenith CI Gatekeeper: Running full production build verification..."
+
+# Run full project type-checking and build tests
+npm run build || {
+  echo "❌ Error: Production build failed! Please fix compiler errors before pushing."
+  exit 1
+}
+
+echo "✅ Success: Monorepo compiles cleanly! Push authorized."
+exit 0

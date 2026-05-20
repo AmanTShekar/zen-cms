@@ -5,7 +5,7 @@ services:
     build: .
     container_name: zenith-cms
     ports:
-      - "${PORT:-3000}:3000"
+      - '${PORT:-3000}:3000'
     environment:
       - MONGODB_URI=mongodb://mongo:27017/zenith
       - JWT_SECRET=${JWT_SECRET}
@@ -22,7 +22,7 @@ services:
     image: mongo:7
     container_name: zenith-mongo
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - mongo_data:/data/db
     healthcheck:

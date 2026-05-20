@@ -1,21 +1,21 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose'
 
 export interface IFlow extends Document {
-  name: string;
-  description?: string;
-  active: boolean;
+  name: string
+  description?: string
+  active: boolean
   trigger: {
-    type: 'webhook' | 'collection_change' | 'schedule';
-    config: unknown;
-  };
+    type: 'webhook' | 'collection_change' | 'schedule'
+    config: unknown
+  }
   steps: Array<{
-    id: string;
-    type: string;
-    config: unknown;
-    next?: string;
-  }>;
-  createdAt: Date;
-  updatedAt: Date;
+    id: string
+    type: string
+    config: unknown
+    next?: string
+  }>
+  createdAt: Date
+  updatedAt: Date
 }
 
 const FlowSchema = new Schema<IFlow>(
@@ -53,6 +53,6 @@ const FlowSchema = new Schema<IFlow>(
     ],
   },
   { timestamps: true }
-);
+)
 
-export const FlowModel = mongoose.models.Flow || mongoose.model<IFlow>('Flow', FlowSchema);
+export const FlowModel = mongoose.models.Flow || mongoose.model<IFlow>('Flow', FlowSchema)

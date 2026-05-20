@@ -1,0 +1,41 @@
+name: Zenith NPM Release Pipeline
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on version tags (e.g., v0.2.0)
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Install pnpm Package Manager
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Configure Node.js Environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
+
+      - name: Install Monorepo Dependencies
+        run: pnpm install --no-frozen-lockfile --no-strict-peer-dependencies
+
+      - name: Verify Quality Gates (Lint & Test)
+        run: |
+          pnpm run lint
+          pnpm run test
+
+      - name: Compile Monorepo Asset Bundles
+        run: pnpm run build
+
+      - name: Publish Workspace Packages to NPM Registry
+        run: pnpm -r publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

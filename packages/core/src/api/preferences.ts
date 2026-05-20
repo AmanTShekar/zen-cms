@@ -1,11 +1,12 @@
-import { Router, Request, Response } from 'express';
-import { UserPreferenceModel } from '../database/preference-model';
-import { requireAuth } from '../middleware/auth';
-import { createResponse } from './utils';
-import { NotFoundError, InvalidPayloadError } from '../errors';
+import { Router, Request, Response } from 'express'
+import { requireAuth } from '../middleware/auth'
+import { createResponse } from './utils'
+import { NotFoundError, InvalidPayloadError } from '../errors'
+import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 
-const router: Router = Router();
-router.use(requireAuth);
+const router: Router = Router()
+router.use(requireAuth)
 
 /**
  * User Preferences API
@@ -19,37 +20,57 @@ router.use(requireAuth);
 
 router.get('/:key', async (req: Request, res: Response, next) => {
   try {
-    const pref = await UserPreferenceModel.findOne({
-      userId: (req as unknown).user.id,
+    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const pref = await adapter.findOne<any>('z_preferences', {
+      user_id: (req as any).user.id,
       key: req.params.key,
-    });
-    if (!pref) throw new NotFoundError('Preference', req.params.key);
-    res.json(createResponse({ key: pref.key, value: pref.value }));
-  } catch (err) { next(err); }
-});
+    })
+    if (!pref) throw new NotFoundError('Preference', req.params.key)
+    res.json(createResponse({ key: pref.key, value: pref.value }))
+  } catch (err) {
+    next(err)
+  }
+})
 
 router.post('/:key', async (req: Request, res: Response, next) => {
   try {
-    const { value } = req.body;
-    if (value === undefined) throw new InvalidPayloadError('"value" is required');
+    const { value } = req.body
+    if (value === undefined) throw new InvalidPayloadError('"value" is required')
 
-    const pref = await UserPreferenceModel.findOneAndUpdate(
-      { userId: (req as unknown).user.id, key: req.params.key },
-      { value, updatedAt: new Date() },
-      { upsert: true, new: true }
-    );
-    res.json(createResponse({ key: pref.key, value: pref.value }));
-  } catch (err) { next(err); }
-});
+    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    let pref = await adapter.findOne<any>('z_preferences', {
+      user_id: (req as any).user.id,
+      key: req.params.key,
+    })
+
+    if (pref) {
+      pref = await adapter.update('z_preferences', (pref.id || pref._id).toString(), { value, updated_at: new Date() })
+    } else {
+      pref = await adapter.create('z_preferences', {
+        user_id: (req as any).user.id,
+        key: req.params.key,
+        value,
+        updated_at: new Date()
+      })
+    }
+
+    res.json(createResponse({ key: pref.key, value: pref.value }))
+  } catch (err) {
+    next(err)
+  }
+})
 
 router.delete('/:key', async (req: Request, res: Response, next) => {
   try {
-    await UserPreferenceModel.deleteOne({
-      userId: (req as unknown).user.id,
+    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    await adapter.deleteMany('z_preferences', {
+      user_id: (req as any).user.id,
       key: req.params.key,
-    });
-    res.json(createResponse({ success: true }));
-  } catch (err) { next(err); }
-});
+    })
+    res.json(createResponse({ success: true }))
+  } catch (err) {
+    next(err)
+  }
+})
 
-export default router;
+export default router

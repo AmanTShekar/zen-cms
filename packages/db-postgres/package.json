@@ -1,0 +1,24 @@
+{
+  "name": "@zenithcms/db-postgres",
+  "version": "0.1.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src/**/*.ts"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.30.0",
+    "pg": "^8.11.0",
+    "node-cache": "^5.1.2",
+    "pino": "^9.0.0",
+    "@zenithcms/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.0",
+    "typescript": "^5.4.0"
+  }
+}

@@ -39,8 +39,13 @@ COPY --from=builder /zenith/cms.config.ts ./
 COPY --from=builder /zenith/.env.example ./.env.example
 COPY --from=builder /zenith/server.ts ./
 
-RUN mkdir -p media uploads
+# Create media and uploads dirs and ensure the 'node' user owns the workspace
+RUN mkdir -p media uploads && chown -R node:node /zenith
+
+# Run as non-root user
+USER node
 
 EXPOSE 3000
 
-CMD ["pm2-runtime", "node", "--", "dist/server.js"]
+# Run the correct path in the monorepo after TypeScript compilation
+CMD ["pm2-runtime", "start", "packages/core/dist/packages/core/src/server.js", "--name", "zenith-cms"]

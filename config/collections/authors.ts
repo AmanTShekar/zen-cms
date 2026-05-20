@@ -1,14 +1,15 @@
-import type { CollectionConfig } from '@zenith/types';
+import type { CollectionConfig } from '@zenithcms/types'
 
 export const Author: CollectionConfig = {
   name: 'Author',
   slug: 'authors',
+  publicRead: true,
   timestamps: true,
   labels: { singular: 'Author', plural: 'Authors' },
   fields: [
-    { name: 'name',   type: 'text',  required: true  },
-    { name: 'email',  type: 'email', required: true, unique: true },
-    { name: 'bio',    type: 'textarea'               },
-    { name: 'avatar', type: 'media'                  },
+    { name: 'name', type: 'text', required: true },
+    { name: 'email', type: 'email', required: true, unique: true },
+    { name: 'bio', type: 'textarea' },
+    { name: 'avatar', type: 'media' },
   ],
-};
+}

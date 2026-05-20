@@ -1,14 +1,14 @@
-import { CollectionConfig } from '@zenith/types';
+import { CollectionConfig } from '@zenithcms/types'
 
 interface ParsedQuery {
-  filter: Record<string, unknown>;
-  sort: string;
+  filter: Record<string, unknown>
+  sort: string
   pagination: {
-    page: number;
-    pageSize: number;
-  };
-  select: string;
-  populate: string[];
+    page: number
+    pageSize: number
+  }
+  select: string
+  populate: string[]
 }
 
 /**
@@ -21,7 +21,7 @@ interface ParsedQuery {
  * - ?page=1&pageSize=10
  * - ?fields=title,slug
  */
-export function parseQueryParams(query: unknown, config: CollectionConfig): ParsedQuery {
+export function parseQueryParams(query: any, config: CollectionConfig): ParsedQuery {
   const parsed: ParsedQuery = {
     filter: {},
     sort: '-createdAt',
@@ -30,22 +30,22 @@ export function parseQueryParams(query: unknown, config: CollectionConfig): Pars
       pageSize: Math.min(parseInt(query.pageSize) || 25, 100),
     },
     select: '',
-    populate: []
-  };
+    populate: [],
+  }
 
   // 1. Sorting
   if (query.sort) {
-    parsed.sort = query.sort;
+    parsed.sort = query.sort
   }
 
   // 2. Select Fields
   if (query.fields) {
-    parsed.select = query.fields.split(',').join(' ');
+    parsed.select = query.fields.split(',').join(' ')
   }
 
   // 3. Populate (Relations)
   if (query.populate) {
-    parsed.populate = query.populate.split(',');
+    parsed.populate = query.populate.split(',')
   }
 
   // 4. Advanced Filtering
@@ -55,28 +55,44 @@ export function parseQueryParams(query: unknown, config: CollectionConfig): Pars
       if (typeof ops === 'object' && ops !== null) {
         Object.entries(ops).forEach(([op, value]) => {
           switch (op) {
-            case 'eq': parsed.filter[field] = value; break;
-            case 'ne': parsed.filter[field] = { $ne: value }; break;
-            case 'gt': parsed.filter[field] = { $gt: value }; break;
-            case 'lt': parsed.filter[field] = { $lt: value }; break;
-            case 'gte': parsed.filter[field] = { $gte: value }; break;
-            case 'lte': parsed.filter[field] = { $lte: value }; break;
-            case 'in': parsed.filter[field] = { $in: Array.isArray(value) ? value : [value] }; break;
-            case 'like': parsed.filter[field] = { $regex: value, $options: 'i' }; break;
+            case 'eq':
+              parsed.filter[field] = value
+              break
+            case 'ne':
+              parsed.filter[field] = { $ne: value }
+              break
+            case 'gt':
+              parsed.filter[field] = { $gt: value }
+              break
+            case 'lt':
+              parsed.filter[field] = { $lt: value }
+              break
+            case 'gte':
+              parsed.filter[field] = { $gte: value }
+              break
+            case 'lte':
+              parsed.filter[field] = { $lte: value }
+              break
+            case 'in':
+              parsed.filter[field] = { $in: Array.isArray(value) ? value : [value] }
+              break
+            case 'like':
+              parsed.filter[field] = { $regex: value, $options: 'i' }
+              break
           }
-        });
+        })
       } else {
         // Simple equality shorthand: ?filter[name]=Zenith
-        parsed.filter[field] = ops;
+        parsed.filter[field] = ops
       }
-    });
+    })
   }
 
   // Handle Search Q shorthand
   if (query.q) {
-    const titleField = config.admin?.useAsTitle || 'title';
-    parsed.filter[titleField] = { $regex: query.q, $options: 'i' };
+    const titleField = config.admin?.useAsTitle || 'title'
+    parsed.filter[titleField] = { $regex: query.q, $options: 'i' }
   }
 
-  return parsed;
+  return parsed
 }

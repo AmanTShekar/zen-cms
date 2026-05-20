@@ -6,14 +6,15 @@
 export const i18n = {
   defaultLocale: 'en',
   locales: ['en', 'es', 'fr', 'de', 'ja'],
-  
-  detectLocale(req: unknown): string {
-    const locale = req.query.locale || req.headers['accept-language']?.split(',')[0] || this.defaultLocale;
-    return this.locales.includes(locale) ? locale : this.defaultLocale;
+
+  detectLocale(req: any): string {
+    const locale =
+      req.query.locale || req.headers['accept-language']?.split(',')[0] || this.defaultLocale
+    return this.locales.includes(locale) ? locale : this.defaultLocale
   },
 
-  getLocalizedValue(value: unknown, locale: string): unknown {
-    if (typeof value !== 'object' || value === null) return value;
-    return value[locale] || value[this.defaultLocale] || value;
-  }
-};
+  getLocalizedValue(value: any, locale: string): unknown {
+    if (typeof value !== 'object' || value === null) return value
+    return value[locale] || value[this.defaultLocale] || value
+  },
+}

@@ -1,24 +1,28 @@
-import { Request, Response } from 'express';
-import { createResponse } from '../utils';
-import { _logger } from '../../services/logger';
-import mongoose from 'mongoose';
+import { Request, Response } from 'express'
+import { createResponse } from '../utils'
+import { logger } from '../../services/logger'
+import { AdapterFactory } from '../../database/adapters/AdapterFactory'
 
 export const getHealth = async (req: Request, res: Response) => {
+  const adapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+  const dbHealth = adapter.getHealth()
   const health = {
     status: 'ok',
     uptime: process.uptime(),
     memory: process.memoryUsage(),
-    db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    db: dbHealth === 'ok' ? 'connected' : dbHealth,
     timestamp: new Date(),
     nodeVersion: process.version,
-  };
-  res.json(createResponse(health));
-};
+  }
+  res.json(createResponse(health))
+}
 
 export const getSystemInfo = async (req: Request, res: Response) => {
-  res.json(createResponse({
-    version: '1.0.0-prime',
-    engine: 'Zenith Recursive Hook Engine',
-    features: ['Audit Logs', 'Delta Tracking', 'GraphQL', 'Swagger'],
-  }));
-};
+  res.json(
+    createResponse({
+      version: '1.0.0-prime',
+      engine: 'Zenith Recursive Hook Engine',
+      features: ['Audit Logs', 'Delta Tracking', 'GraphQL', 'Swagger'],
+    })
+  )
+}

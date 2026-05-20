@@ -1,44 +1,119 @@
-# Contributing to Zenith CMS
+# 🤝 Contributing to Zenith CMS
 
-## Foundational Principles
+First of all, thank you for taking the time to contribute! Zenith CMS is built on **Industrial Precision**, and we strive to maintain the highest standards of architectural stability, security, and developer experience.
 
-1.  **Industrial Reliability**: Every feature must be built for 99.99% uptime and high-throughput environments.
-2.  **Architectural Integrity**: We strictly enforce monorepo boundaries and lazy-loading patterns to prevent kernel bloat.
-3.  **Pro-Code Control**: We prioritize programmatic flexibility over restrictive no-code abstractions.
-4.  **Zero-Trust Security**: Validation and auditing are not optional; they are the baseline for every mutation.
+This guide outlines our development standards, commit workflows, and environment setups to ensure your contributions fit seamlessly into the platform.
 
 ---
 
-## Development Workflow
+## 🏛️ 1. Project Directory Topology
 
-1.  **Fork and Clone**: Create your own branch from `main`.
-2.  **Environment**: Set up your `.env` as described in the [Installation Guide](./docs/INSTALLATION.md).
-3.  **Monorepo Rules**: 
-    *   Never import from `packages/admin` into `packages/core`.
-    *   Follow the **"No-Barrel-File"** policy to keep builds lean.
-    *   Run `npm run check-deps` before submitting any PR to ensure architectural integrity.
+Zenith is organized as an enterprise-grade monorepo containing the following core workspaces:
 
-## Design Standards
-If you are contributing to the Admin UI:
-*   Follow the **Industrial Aesthetic** (High-density, monochromatic, monochromatic-accented).
-*   Ensure all new components use **Framer Motion** for smooth, tactile transitions.
-*   Use **Lucide React** for icons.
-
-## Testing
-We use **Vitest** for the core engine. Ensure that any new feature includes comprehensive unit and integration tests:
-```bash
-npm run test
+```text
+.
+├── packages/
+│   ├── types/          # Shared interfaces & validation schemas
+│   ├── core/           # Express-based REST & dynamic schema kernel
+│   ├── admin/          # Vite React dashboard with dark glassmorphic styling
+│   └── sdk/            # Headless Node & browser client SDK
+├── docs/               # Technical manuals and developer onboarding playbooks
+├── tests/              # Monorepo-wide integration and unit test fixtures
+└── .devcontainer/      # Isolated Docker containerized workspaces
 ```
 
-## Commit Messages
-We follow the **Conventional Commits** specification:
-*   `feat:` New features
-*   `fix:` Bug fixes
-*   `refactor:` Code changes that neither fix a bug nor add a feature
-*   `perf:` Performance improvements
+### Monorepo Boundaries:
+
+- **Core ↛ Admin**: Never import admin React files, hooks, or assets into `@zenithcms/core`.
+- **Types ↠ All**: `@zenithcms/types` is the single source of truth for both core validation and frontend builders.
+- **No Barrel Files**: Always use explicit named imports (`import { x } from './module'`) to facilitate Rollup and Vite tree-shaking and prevent server/client context bleeding.
+
+---
+
+## 🤖 2. AI Code Assistant Integration
+
+Zenith is an **AI-first codebase**, equipped with dedicated playbooks and environment integrations:
+
+| AI tool              |              Context Playbooks              | Auto-Hooks Verification  |  Dockerized Env  |
+| :------------------- | :-----------------------------------------: | :----------------------: | :--------------: |
+| **Claude Code**      | ✅ [`.claudeprompt`](file:///.claudeprompt) | ✅ Husky standard gates  | ✅ Dev Container |
+| **Cursor**           |  ✅ [`.cursorrules`](file:///.cursorrules)  | ✅ Pre-commit formatting | ✅ Dev Container |
+| **ChatGPT / Gemini** |           ✅ Playbook directives            |    ⚠️ Manual CLI run     | ✅ Dev Container |
+
+AI assistants working in this repository must strictly adhere to the guidelines outlined in the [AI-Driven Development Protocol](./docs/AI_DEVELOPMENT.md).
+
+---
+
+## 💻 3. Docker & Devcontainer Setup
+
+Zenith includes a fully-configured Dev Container setup to allow developers to spin up the entire development stack with one click:
+
+### Prerequisites:
+
+- Docker Desktop or OrbStack installed on your system.
+- VS Code with the **Dev Containers** extension.
+
+### Quick Start:
+
+1. Open the repository root in VS Code.
+2. Select **"Reopen in Container"** from the pop-up or run `Dev Containers: Reopen in Container` from the Command Palette (`Ctrl+Shift+P`).
+3. Once the environment initializes inside the Node.js 20/pnpm Docker container, run the monorepo services:
+   ```bash
+   pnpm install
+   npm run dev
+   ```
+
+---
+
+## 🧪 4. Testing & Validation Matrix
+
+We use **Vitest** for server-side core unit testing and schema checks:
+
+### Running Test Pipelines:
+
+```bash
+# Run integration and schema checks
+npm run test
+
+# Check all source files for formatting consistency
+npx prettier --check .
+
+# Validate typescript compilations
+npm run build
+```
+
+### Guidelines for Writing Tests:
+
+- **Clean State Hooks**: Always clean up dynamic test items inside database collections. Utilize `afterEach` hooks to delete newly inserted mock records so that test sequences remain strictly isolated.
+- **Defensive Error Assertions**: Write explicit assertions check for bad payloads (`422 Validation Errors`) rather than generic try/catch suppressions.
+
+---
+
+## 📝 5. Conventional Commits & Pull Requests
+
+This repository follows the **Conventional Commits** specification to automatically compile structured CHANGELOGs.
+
+### PR and Commit Title Format:
+
+`<type>(<scope>): <short description>`
+
+- **Types**:
+  - `feat`: A new user-facing feature.
+  - `fix`: A bug fix or minor patch.
+  - `docs`: Documentation edits.
+  - `refactor`: Code changes that neither fix a bug nor add a feature.
+  - `perf`: Performance-centric optimizations.
+  - `chore`: Tooling updates, dependency bumps, or config adjustments.
+- **Scopes**: Matches the corresponding monorepo package folder (e.g. `core`, `admin`, `sdk`, `types`).
+
+### Examples:
+
+- `feat(admin): integrate custom drag-and-drop widget grid`
+- `fix(core): secure dynamic postgres access rules`
+- `docs(onboarding): clarify quickstart env definitions`
 
 ---
 
 <div align="center">
-  <p><strong>Let's reach the Zenith together.</strong></p>
+  <p><strong>Let's scale the Zenith of headless content orchestration together! 🚀</strong></p>
 </div>

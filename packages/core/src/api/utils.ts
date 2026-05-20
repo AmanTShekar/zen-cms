@@ -1,20 +1,20 @@
 export interface CMSResponse<T = unknown> {
-  data: T | null;
+  data: T | null
   meta?: {
     pagination?: {
-      page: number;
-      pageSize: number;
-      totalPages: number;
-      total: number;
-    };
-    [key: string]: unknown;
-  };
+      page: number
+      pageSize: number
+      totalPages: number
+      total: number
+    }
+    [key: string]: unknown
+  }
   error: {
-    status: number;
-    name: string;
-    message: string;
-    details?: unknown;
-  } | null;
+    status: number
+    name: string
+    message: string
+    details?: unknown
+  } | null
 }
 
 export function createResponse<T>(data: T, meta?: CMSResponse['meta']): CMSResponse<T> {
@@ -22,7 +22,7 @@ export function createResponse<T>(data: T, meta?: CMSResponse['meta']): CMSRespo
     data,
     meta,
     error: null,
-  };
+  }
 }
 
 export function createErrorResponse(
@@ -39,5 +39,5 @@ export function createErrorResponse(
       message,
       details,
     },
-  };
+  }
 }

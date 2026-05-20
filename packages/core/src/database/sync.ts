@@ -1,6 +1,6 @@
-import { CMSConfig } from '@zenith/types';
-import { logger } from '../services/logger';
-import { DatabaseAdapter } from '../database/adapters/BaseAdapter';
+import { CMSConfig } from '@zenithcms/types'
+import { logger } from '../services/logger'
+import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 
 /**
  * Zenith Schema Sync Utility
@@ -15,37 +15,66 @@ export class SchemaSync {
   ) {}
 
   async sync() {
-    logger.info('SchemaSync: Starting analysis...');
-    
-    const collections = this.config.collections;
-    const stats = { created: 0, updated: 0, errors: 0 };
+    logger.info('SchemaSync: Starting analysis...')
+
+    const collections = this.config.collections
+    const stats = { created: 0, updated: 0, errors: 0 }
 
     for (const col of collections) {
       try {
         // Registering with adapter is essentially 'syncing' for Mongoose
         // For SQL adapters, this would generate/run ALTER TABLE queries
-        await this.adapter.registerCollection(col);
-        stats.updated++;
-      } catch (err: unknown) {
-        logger.error({ col: col.slug, err: err.message }, 'SchemaSync: Failed to sync collection');
-        stats.errors++;
+        await this.adapter.registerCollection(col)
+        stats.updated++
+      } catch (err: any) {
+        logger.error({ col: col.slug, err: err.message }, 'SchemaSync: Failed to sync collection')
+        stats.errors++
       }
     }
 
-    logger.info(stats, 'SchemaSync: Completed');
-    return stats;
+    logger.info(stats, 'SchemaSync: Completed')
+    return stats
   }
 
-  /**
-   * Generates a report of differences (useful for CLI 'diff' command)
-   */
   async diff() {
-    // Phase 5: Deep diffing logic
-    // Compare field types, indexes, and constraints
+    logger.info('SchemaSync: Calculating schema differences...')
+    const added: string[] = []
+    const removed: string[] = []
+    const changed: any[] = []
+
+    try {
+      const existingCollections = await this.adapter.getExistingCollections()
+      const configCollections = this.config.collections.map((c) => c.slug)
+
+      for (const slug of configCollections) {
+        if (!existingCollections.includes(slug)) {
+          added.push(slug)
+        }
+      }
+
+      for (const dbName of existingCollections) {
+        if (
+          dbName.startsWith('z_') ||
+          dbName.startsWith('audit') ||
+          dbName.startsWith('version') ||
+          dbName === 'sessions' ||
+          dbName === 'flows' ||
+          dbName === 'audit_logs' ||
+          dbName === 'versions'
+        )
+          continue
+        if (!configCollections.includes(dbName)) {
+          removed.push(dbName)
+        }
+      }
+    } catch (err: any) {
+      logger.error({ err: err.message }, 'SchemaSync.diff: Failed to execute schema inspect')
+    }
+
     return {
-      added: [],
-      removed: [],
-      changed: []
-    };
+      added,
+      removed,
+      changed,
+    }
   }
 }

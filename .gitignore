@@ -1,68 +1,80 @@
-# Dependencies
+# 📦 Dependencies & Packages
 node_modules/
 .pnpm-store/
+jspm_packages/
+web_modules/
 
-# Build outputs
+# 🏛️ Build & Compilation Targets
 dist/
 build/
 .next/
 out/
+.docusaurus/
+.nuxt/
+.vuepress/dist/
+.eslintcache
+.stylelintcache
 
-# Environment variables & secrets
+# 🔐 Environment Variables & Secrets
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 *.pem
+*.key
+*.cert
+*.pfx
 
-# Logs
+# 📝 System Logs & Telemetry
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 
-# Editor & System files
-.vscode/
+# 💻 System & IDE Metas
 .idea/
-.DS_Store
+.vscode/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-
-# Zenith Internal & Temporary
-.gemini/
-.cursor/
-internal/
-temp_docx/
-temp.zip
-uploads/
-coverage/
-
-# OS metadata
+.DS_Store
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 
-# Zenith Internal & Temporary
+# 🪐 Zenith Platform Scopes
 .gemini/
-.cursor/
 internal/
 temp_docx/
 temp.zip
 uploads/
 coverage/
+.zenith/
 
-# Documentation
-# Allow specific text and markdown files
-!README.md
-!CONTRIBUTING.md
-!LICENSE.md
-!docs/
+# 🛠️ AI Development Configurations
+# Explicitly allow Cursor/Claude configurations in the repository
+!.cursorrules
+!.claudeprompt
+!.github/
 
-# Compiled artifacts
+# 📄 Local SDK Compiled Artifacts
 packages/sdk/index.js
 packages/sdk/index.d.ts
+
+# 🛠️ Scratch Files & Directories
+scratch-*.*
+scratch/
+.claude/
+.claude-plugin/
+.cursor/
+
+# 📦 Compiled TypeScript output in types package
+packages/types/src/**/*.js
+packages/types/src/**/*.js.map
+packages/types/src/**/*.d.ts
+

@@ -1,26 +1,30 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-// api import removed as it was unused
-import { useAuthStore } from './store/authStore';
-import DashboardLayout from './layouts/DashboardLayout';
-import LoginPage from './pages/LoginPage';
-import CollectionList from './pages/CollectionList';
-import CollectionsPage from './pages/CollectionsPage';
-import CollectionDetail from './pages/CollectionDetail';
-import AuditLogPage from './pages/AuditLogPage';
-import MediaLibrary from './pages/MediaLibrary';
-import DemoFeatures from './pages/DemoFeatures';
-import SpatialEditor from './pages/SpatialEditor';
-import FlowBuilderPage from './pages/FlowBuilderPage';
-import SettingsPage from './pages/SettingsPage';
-import SystemHealthPage from './pages/SystemHealthPage';
-import AIWriterPage from './pages/AIWriterPage';
-import PluginsPage from './pages/PluginsPage';
-import Dashboard from './pages/Dashboard';
-import { Cpu } from 'lucide-react';
-import { Toaster } from 'react-hot-toast';
-import { ThemeProvider } from './context/ThemeContext';
+import React, { useEffect, useState } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useAuthStore } from './store/authStore'
+import DashboardLayout from './layouts/DashboardLayout'
+import LoginPage from './pages/LoginPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
+import SitePicker from './pages/SitePicker'
+import CollectionList from './pages/CollectionList'
+import CollectionsPage from './pages/CollectionsPage'
+import CollectionDetail from './pages/CollectionDetail'
+import AuditLogPage from './pages/AuditLogPage'
+import MediaLibrary from './pages/MediaLibrary'
+import DemoFeatures from './pages/DemoFeatures'
+import SpatialEditor from './pages/SpatialEditor'
+import FlowBuilderPage from './pages/FlowBuilderPage'
+import SettingsPage from './pages/SettingsPage'
+import SystemHealthPage from './pages/SystemHealthPage'
+import AIWriterPage from './pages/AIWriterPage'
+import PluginsPage from './pages/PluginsPage'
+import DashboardBuilder from './pages/DashboardBuilder'
+import SetupWizard from './pages/SetupWizard'
+import { Cpu } from 'lucide-react'
+import { Toaster } from 'react-hot-toast'
+import api from './lib/api'
+import { ThemeProvider } from './context/ThemeContext'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,42 +33,67 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
     },
   },
-});
+})
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
-  const location = useLocation();
+  const { isAuthenticated, isLoading, checkAuth } = useAuthStore()
+  const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null)
+  const location = useLocation()
 
   useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+    checkAuth()
+  }, [checkAuth])
 
-  if (isLoading) {
+  useEffect(() => {
+    if (!isAuthenticated) return
+    api
+      .get('/system/onboarding')
+      .then((r) => setOnboardingDone(!!r.data?.data?.completed))
+      .catch(() => setOnboardingDone(true)) // fail open
+  }, [isAuthenticated])
+
+  if (isLoading || (isAuthenticated && onboardingDone === null)) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-8">
         <div className="relative">
-           <Cpu size={64} className="text-white animate-pulse" strokeWidth={0.5} />
-           <div className="absolute inset-0 blur-3xl bg-white/10 animate-pulse"></div>
+          <Cpu size={64} className="text-white animate-pulse" strokeWidth={0.5} />
+          <div className="absolute inset-0 blur-3xl bg-white/10 animate-pulse"></div>
         </div>
-        <p className="text-[12px] font-black uppercase tracking-[0.6em] text-white/20 italic animate-pulse">Initializing System...</p>
+        <p className="text-[12px] font-black uppercase tracking-[0.6em] text-white/20 italic animate-pulse">
+          Initializing System...
+        </p>
       </div>
-    );
+    )
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  if (!isAuthenticated) return <Navigate to="/login" state={{ from: location }} replace />
+
+  // Show wizard if onboarding incomplete (but not if already on /setup)
+  if (!onboardingDone && location.pathname !== '/setup') {
+    return <Navigate to="/setup" replace />
   }
 
-  return <>{children}</>;
-};
+  // Ensure active site workspace is selected if onboarding is done
+  const activeSiteId = localStorage.getItem('activeSiteId')
+  if (
+    onboardingDone &&
+    !activeSiteId &&
+    location.pathname !== '/sites' &&
+    location.pathname !== '/setup'
+  ) {
+    return <Navigate to="/sites" replace />
+  }
+
+  return <>{children}</>
+}
 
 const App: React.FC = () => {
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <Toaster 
-          position="bottom-right" 
+        <Toaster
+          position="bottom-right"
           toastOptions={{
             style: {
               background: '#000',
@@ -76,61 +105,94 @@ const App: React.FC = () => {
               letterSpacing: '0.2em',
               padding: '16px 24px',
               borderRadius: '0px',
-              fontStyle: 'italic'
-            }
+              fontStyle: 'italic',
+            },
           }}
         />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          
-          {/* 🌑 Standalone Focused Spatial Architecture (No Sidebar) */}
-          <Route 
-            path="/collections/pages/:id" 
-            element={<ProtectedRoute><SpatialEditor /></ProtectedRoute>} 
-          />
-          <Route 
-            path="/collections/pages/new" 
-            element={<ProtectedRoute><SpatialEditor /></ProtectedRoute>} 
-          />
-          <Route 
-            path="/globals/landing-page" 
-            element={<ProtectedRoute><SpatialEditor isGlobal /></ProtectedRoute>} 
-          />
-          
-          {/* 🏛️ Standard Operational Routes (Wrapped in DashboardLayout) */}
-          <Route 
-            path="/*" 
-            element={
-              <ProtectedRoute>
-                <DashboardLayout>
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/collections" element={<CollectionsPage />} />
-                    <Route path="/collections/:slug" element={<CollectionList />} />
-                    <Route path="/collections/:slug/:id" element={<CollectionDetail />} />
-                    <Route path="/globals/:slug" element={<CollectionDetail isGlobal />} />
-                    <Route path="/globals/:slug/:id" element={<CollectionDetail isGlobal />} />
-                    <Route path="/audit-log" element={<AuditLogPage />} />
-                    <Route path="/media" element={<MediaLibrary />} />
-                    <Route path="/playground" element={<DemoFeatures />} />
-                    <Route path="/members" element={<Navigate to="/collections/members" replace />} />
-                    <Route path="/automations" element={<FlowBuilderPage />} />
-                    <Route path="/plugins" element={<PluginsPage />} />
-                    <Route path="/settings" element={<SettingsPage />} />
-                    <Route path="/ai-architect" element={<AIWriterPage />} />
-                    <Route path="/system" element={<SystemHealthPage />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
-                </DashboardLayout>
-              </ProtectedRoute>
-            } 
-          />
-        </Routes>
-      </BrowserRouter>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route
+              path="/setup"
+              element={
+                <ProtectedRoute>
+                  <SetupWizard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/sites"
+              element={
+                <ProtectedRoute>
+                  <SitePicker />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* 🌑 Standalone Focused Spatial Architecture (No Sidebar) */}
+            <Route
+              path="/collections/pages/:id"
+              element={
+                <ProtectedRoute>
+                  <SpatialEditor />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/collections/pages/new"
+              element={
+                <ProtectedRoute>
+                  <SpatialEditor />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/globals/landing-page"
+              element={
+                <ProtectedRoute>
+                  <SpatialEditor isGlobal />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* 🏛️ Standard Operational Routes (Wrapped in DashboardLayout) */}
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <Routes>
+                      <Route path="/" element={<DashboardBuilder />} />
+                      <Route path="/collections" element={<CollectionsPage />} />
+                      <Route path="/collections/:slug" element={<CollectionList />} />
+                      <Route path="/collections/:slug/:id" element={<CollectionDetail />} />
+                      <Route path="/globals/:slug" element={<CollectionDetail isGlobal />} />
+                      <Route path="/globals/:slug/:id" element={<CollectionDetail isGlobal />} />
+                      <Route path="/audit-log" element={<AuditLogPage />} />
+                      <Route path="/media" element={<MediaLibrary />} />
+                      <Route path="/playground" element={<DemoFeatures />} />
+                      <Route
+                        path="/members"
+                        element={<Navigate to="/collections/members" replace />}
+                      />
+                      <Route path="/automations" element={<FlowBuilderPage />} />
+                      <Route path="/plugins" element={<PluginsPage />} />
+                      <Route path="/settings" element={<SettingsPage />} />
+                      <Route path="/ai-architect" element={<AIWriterPage />} />
+                      <Route path="/system" element={<SystemHealthPage />} />
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                  </DashboardLayout>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
       </QueryClientProvider>
     </ThemeProvider>
-  );
-};
+  )
+}
 
-export default App;
+export default App

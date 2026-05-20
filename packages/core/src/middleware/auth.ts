@@ -1,14 +1,15 @@
-import { Request, Response, NextFunction } from 'express';
-import { isValidObjectId } from 'mongoose';
-import { AuthService, AuthUser } from '../services/auth';
-import { createErrorResponse } from '../api/utils';
+import { Request, Response, NextFunction } from 'express'
+import { isValidObjectId } from 'mongoose'
+import { AuthService, AuthUser } from '../services/auth'
+import { createErrorResponse } from '../api/utils'
+import { AdapterFactory } from '../database/adapters/AdapterFactory'
 
 // Extend Express Request to include user
 declare global {
-// eslint-disable-next-line @typescript-eslint/no-namespace
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
-      user?: AuthUser;
+      user?: AuthUser
     }
   }
 }
@@ -17,25 +18,32 @@ declare global {
  * Verifies Bearer token and attaches `req.user`.
  */
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
+  let token = req.cookies?.accessToken
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json(
-      createErrorResponse(401, 'Authentication required', undefined, 'AuthenticationError')
-    );
+  // Fallback to Bearer token in header if cookie not present
+  if (!token) {
+    const authHeader = req.headers.authorization
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1]
+    }
   }
 
-  const token = authHeader.split(' ')[1];
-  const decoded = AuthService.verifyToken(token);
+  if (!token) {
+    return res
+      .status(401)
+      .json(createErrorResponse(401, 'Authentication required', undefined, 'AuthenticationError'))
+  }
+
+  const decoded = AuthService.verifyToken(token)
 
   if (!decoded) {
-    return res.status(401).json(
-      createErrorResponse(401, 'Invalid or expired token', undefined, 'AuthenticationError')
-    );
+    return res
+      .status(401)
+      .json(createErrorResponse(401, 'Invalid or expired token', undefined, 'AuthenticationError'))
   }
 
-  req.user = decoded;
-  next();
+  req.user = decoded
+  next()
 }
 
 /**
@@ -44,30 +52,55 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 export function requireRole(...roles: Array<'admin' | 'editor' | 'viewer'>) {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
-      return res.status(401).json(
-        createErrorResponse(401, 'Authentication required', undefined, 'AuthenticationError')
-      );
+      return res
+        .status(401)
+        .json(createErrorResponse(401, 'Authentication required', undefined, 'AuthenticationError'))
     }
     if (!roles.includes(req.user.role)) {
-      return res.status(403).json(
-        createErrorResponse(403, 'Insufficient permissions', undefined, 'ForbiddenError')
-      );
+      return res
+        .status(403)
+        .json(createErrorResponse(403, 'Insufficient permissions', undefined, 'ForbiddenError'))
     }
-    next();
-  };
+    next()
+  }
 }
 
 /**
- * Validates that a route param `:id` is a valid MongoDB ObjectId.
- * Prevents Mongoose from throwing cast errors.
+ * Validates that a route param `:id` is a valid MongoDB ObjectId or PostgreSQL UUID.
+ * Prevents CastErrors across database engines.
  */
 export function validateObjectId(req: Request, res: Response, next: NextFunction) {
-  if (req.params.id === 'singleton') return next();
-  
-  if (!isValidObjectId(req.params.id)) {
-    return res.status(400).json(
-      createErrorResponse(400, `Invalid ID format: "${req.params.id}"`, undefined, 'ValidationError')
-    );
+  if (req.params.id === 'singleton') return next()
+
+  const adapter = AdapterFactory.getActiveAdapter()
+  if (adapter && (adapter.name === 'postgres-drizzle' || adapter.name === 'PostgresDrizzle')) {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    if (!uuidRegex.test(req.params.id)) {
+      return res
+        .status(400)
+        .json(
+          createErrorResponse(
+            400,
+            `Invalid UUID format: "${req.params.id}"`,
+            undefined,
+            'ValidationError'
+          )
+        )
+    }
+    return next()
   }
-  next();
+
+  if (!isValidObjectId(req.params.id)) {
+    return res
+      .status(400)
+      .json(
+        createErrorResponse(
+          400,
+          `Invalid ID format: "${req.params.id}"`,
+          undefined,
+          'ValidationError'
+        )
+      )
+  }
+  next()
 }

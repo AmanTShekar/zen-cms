@@ -1,11 +1,11 @@
-import { Router, Request, Response } from 'express';
-import { requireAuth } from '../middleware/auth';
-import { createResponse } from './utils';
-import { PresenceService } from '../services/presence';
-import { InvalidPayloadError } from '../errors';
+import { Router, Request, Response } from 'express'
+import { requireAuth } from '../middleware/auth'
+import { createResponse } from './utils'
+import { PresenceService } from '../services/presence'
+import { InvalidPayloadError } from '../errors'
 
-const router: Router = Router();
-router.use(requireAuth);
+const router: Router = Router()
+router.use(requireAuth)
 
 /**
  * Zenith Presence / Content Locking API
@@ -18,45 +18,63 @@ router.use(requireAuth);
  * DELETE /api/v1/presence/:collection/:id — I'm done editing
  */
 
+router.get('/', async (req: Request, res: Response, next) => {
+  try {
+    const users = await PresenceService.getAllActiveUsers()
+    res.json(createResponse(users))
+  } catch (err) {
+    next(err)
+  }
+})
+
 router.post('/heartbeat', async (req: Request, res: Response, next) => {
   try {
-    const { collection, documentId } = req.body;
+    const { collection, documentId } = req.body
     if (!collection || !documentId) {
-      throw new InvalidPayloadError('"collection" and "documentId" are required');
+      throw new InvalidPayloadError('"collection" and "documentId" are required')
     }
 
-    const user = (req as unknown).user;
-    await PresenceService.heartbeat(user.id, user.email, collection, documentId);
-    res.json(createResponse({ ok: true }));
-  } catch (err) { next(err); }
-});
+    const user = (req as any).user
+    await PresenceService.heartbeat(user.id, user.email, collection, documentId)
+    res.json(createResponse({ ok: true }))
+  } catch (err) {
+    next(err)
+  }
+})
 
 router.get('/:collection/:id', async (req: Request, res: Response, next) => {
   try {
-    const users = await PresenceService.getActiveUsers(req.params.collection, req.params.id);
-    const currentUserId = (req as unknown).user.id;
+    const users = await PresenceService.getActiveUsers(req.params.collection, req.params.id)
+    const currentUserId = (req as any).user.id
 
     // Filter out the current user from the response (they know they're here)
-    const others = users.filter(u => u.id !== currentUserId);
+    const others = users.filter((u) => u.id !== currentUserId)
 
-    res.json(createResponse({
-      isLocked: others.length > 0,
-      activeUsers: others,
-      message: others.length > 0
-        ? `${others.map(u => u.email?.split('@')[0]).join(', ')} ${others.length === 1 ? 'is' : 'are'} also editing this document`
-        : null,
-    }));
-  } catch (err) { next(err); }
-});
+    res.json(
+      createResponse({
+        isLocked: others.length > 0,
+        activeUsers: others,
+        message:
+          others.length > 0
+            ? `${others.map((u) => u.email?.split('@')[0]).join(', ')} ${others.length === 1 ? 'is' : 'are'} also editing this document`
+            : null,
+      })
+    )
+  } catch (err) {
+    next(err)
+  }
+})
 
 router.delete('/:collection/:id', async (req: Request, res: Response, next) => {
   try {
-    // The NodeCache TTL will expire the presence automatically,
+    // The database TTL will expire the presence automatically,
     // but we can call leave immediately for a snappier UX
-    const user = (req as unknown).user;
-    await PresenceService.leave(user.id, req.params.collection, req.params.id);
-    res.json(createResponse({ ok: true }));
-  } catch (err) { next(err); }
-});
+    const user = (req as any).user
+    await PresenceService.leave(user.id, req.params.collection, req.params.id)
+    res.json(createResponse({ ok: true }))
+  } catch (err) {
+    next(err)
+  }
+})
 
-export default router;
+export default router

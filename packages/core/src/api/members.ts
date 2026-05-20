@@ -1,78 +1,118 @@
-import { Router, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import { MemberModel } from '../database/member-model';
-import { createResponse } from './utils';
-import { InvalidPayloadError, NotFoundError, UnauthorizedError } from '../errors';
+import { Router, Request, Response } from 'express'
+import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
+import { createResponse } from './utils'
+import { InvalidPayloadError, NotFoundError, AuthenticationError } from '../errors'
+import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 
-const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'zenith-member-secret-key-12345';
+const router = Router()
+
+// ── Security: Hard-fail if JWT secret is missing in production ───────────────
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+  throw new Error('[Zenith] FATAL: JWT_SECRET environment variable must be set in production.')
+}
+
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_only_fallback_secret_never_use_in_prod'
 
 // ── Register ─────────────────────────────────────────────────────────────────
 router.post('/register', async (req: Request, res: Response, next) => {
   try {
-    const { email, password, name } = req.body;
-    if (!email || !password) throw new InvalidPayloadError('Email and password are required');
+    const { email, password, name } = req.body
+    if (!email || !password) throw new InvalidPayloadError('Email and password are required')
 
-    const existing = await MemberModel.findOne({ email });
-    if (existing) throw new InvalidPayloadError('Email already registered');
+    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-    const member = await MemberModel.create({ email, password, name });
-    
-    const token = jwt.sign({ id: member._id, type: 'member' }, JWT_SECRET, { expiresIn: '30d' });
+    const existing = await adapter.findOne<any>('z_members', { email })
+    if (existing) throw new InvalidPayloadError('Email already registered')
 
-    res.status(201).json(createResponse({
-      token,
-      member: {
-        id: member._id,
-        email: member.email,
-        name: member.name,
-        isSubscribed: member.isSubscribed
-      }
-    }));
-  } catch (err) { next(err); }
-});
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
+
+    const member = await adapter.create<any>('z_members', { 
+      email: email.toLowerCase(), 
+      password: hashedPassword, 
+      name,
+      is_subscribed: false,
+      subscription_status: 'none'
+    })
+
+    const token = jwt.sign({ id: member.id || member._id, type: 'member' }, JWT_SECRET, { expiresIn: '30d' })
+
+    res.status(201).json(
+      createResponse({
+        token,
+        member: {
+          id: member.id || member._id,
+          email: member.email,
+          name: member.name,
+          isSubscribed: member.is_subscribed || member.isSubscribed,
+        },
+      })
+    )
+  } catch (err) {
+    next(err)
+  }
+})
 
 // ── Login ────────────────────────────────────────────────────────────────────
 router.post('/login', async (req: Request, res: Response, next) => {
   try {
-    const { email, password } = req.body;
-    const member = await MemberModel.findOne({ email }).select('+password');
+    const { email, password } = req.body
+    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
     
-    if (!member || !(await member.comparePassword(password))) {
-      throw new UnauthorizedError('Invalid credentials');
+    // In SQL implementations, we fetch everything. If needed, you might need adapter method to fetch hidden fields.
+    // For now, adapter.findOne will fetch the password as well in generic Drizzle wrapper.
+    const member = await adapter.findOne<any>('z_members', { email: email.toLowerCase() })
+
+    if (!member || !member.password) {
+      throw new AuthenticationError('Invalid credentials')
     }
 
-    member.lastLogin = new Date();
-    await member.save();
+    const isValid = await bcrypt.compare(password, member.password)
+    if (!isValid) {
+      throw new AuthenticationError('Invalid credentials')
+    }
 
-    const token = jwt.sign({ id: member._id, type: 'member' }, JWT_SECRET, { expiresIn: '30d' });
+    await adapter.update('z_members', (member.id || member._id).toString(), { last_login: new Date() })
 
-    res.json(createResponse({
-      token,
-      member: {
-        id: member._id,
-        email: member.email,
-        name: member.name,
-        isSubscribed: member.isSubscribed
-      }
-    }));
-  } catch (err) { next(err); }
-});
+    const token = jwt.sign({ id: member.id || member._id, type: 'member' }, JWT_SECRET, { expiresIn: '30d' })
+
+    res.json(
+      createResponse({
+        token,
+        member: {
+          id: member.id || member._id,
+          email: member.email,
+          name: member.name,
+          isSubscribed: member.is_subscribed || member.isSubscribed,
+        },
+      })
+    )
+  } catch (err) {
+    next(err)
+  }
+})
 
 // ── Get Me ───────────────────────────────────────────────────────────────────
 router.get('/me', async (req: Request, res: Response, next) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) throw new UnauthorizedError();
-    
-    const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, JWT_SECRET) as unknown;
-    
-    const member = await MemberModel.findById(decoded.id);
-    if (!member) throw new NotFoundError('Member', decoded.id);
+    const authHeader = req.headers.authorization
+    if (!authHeader?.startsWith('Bearer ')) throw new AuthenticationError('No token provided')
 
-    res.json(createResponse(member));
-  } catch (err) { next(err); }
-});
+    const token = authHeader.split(' ')[1]
+    const decoded = jwt.verify(token, JWT_SECRET) as any
 
-export default router;
+    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const member = await adapter.findOne<any>('z_members', { _id: decoded.id })
+    if (!member) throw new NotFoundError('Member', decoded.id)
+
+    // Omit password
+    const { password, ...memberSafe } = member
+    res.json(createResponse(memberSafe))
+  } catch (err) {
+    next(err)
+  }
+})
+
+export default router

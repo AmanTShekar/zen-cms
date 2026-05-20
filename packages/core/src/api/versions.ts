@@ -1,13 +1,12 @@
-import { Router, Request, Response } from 'express';
-import { requireAuth } from '../middleware/auth';
-import { createResponse } from './utils';
-import { _AuditLogModel } from '../database/audit-model';
-import { VersionModel } from '../database/version-model';
-import { NotFoundError } from '../errors';
-import mongoose from 'mongoose';
+import { Router, Request, Response } from 'express'
+import { requireAuth } from '../middleware/auth'
+import { createResponse } from './utils'
+import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
+import { NotFoundError } from '../errors'
 
-const router: Router = Router();
-router.use(requireAuth);
+const router: Router = Router()
+router.use(requireAuth)
 
 /**
  * Versions API
@@ -20,52 +19,144 @@ router.use(requireAuth);
  * POST   /api/v1/versions/:collection/:id/:versionId/restore — restore a version
  */
 
+// ── GET /api/v1/versions/:collection/:id ───────────────────────────────────────
 router.get('/:collection/:id', async (req: Request, res: Response, next) => {
   try {
-    const versions = await VersionModel.find({
-      collectionName: req.params.collection,
-      documentId: req.params.id,
+    const user = (req as any).user
+    const engine = req.app.get('zenith_engine')
+    const collection = req.params.collection
+    const documentId = req.params.id
+
+    // Enforce read access checks (including RLS constraints)
+    await engine.local.findById(collection, documentId, { user })
+
+    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const versions = await adapter.find<any>('versions', {
+      collectionName: collection,
+      documentId: documentId,
+    }, {
+      sort: { timestamp: -1 },
+      limit: 50
     })
-      .sort({ timestamp: -1 })
-      .limit(50)
-      .lean();
 
-    res.json(createResponse(versions));
-  } catch (err) { next(err); }
-});
+    res.json(createResponse(versions))
+  } catch (err) {
+    next(err)
+  }
+})
 
+// ── GET /api/v1/versions/:collection/:id/:versionId ───────────────────────────
 router.get('/:collection/:id/:versionId', async (req: Request, res: Response, next) => {
   try {
-    const version = await VersionModel.findById(req.params.versionId).lean();
-    if (!version) throw new NotFoundError('Version', req.params.versionId);
-    res.json(createResponse(version));
-  } catch (err) { next(err); }
-});
+    const user = (req as any).user
+    const engine = req.app.get('zenith_engine')
+    const collection = req.params.collection
+    const documentId = req.params.id
 
+    // Enforce read access checks (including RLS constraints)
+    await engine.local.findById(collection, documentId, { user })
+
+    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const version = await adapter.findOne<any>('versions', { _id: req.params.versionId })
+    if (!version) throw new NotFoundError('Version', req.params.versionId)
+    res.json(createResponse(version))
+  } catch (err) {
+    next(err)
+  }
+})
+
+// ── GET /api/v1/versions/:collection/:id/:versionId/diff ──────────────────────────────
+router.get('/:collection/:id/:versionId/diff', async (req: Request, res: Response, next) => {
+  try {
+    const user = (req as any).user
+    const engine = req.app.get('zenith_engine')
+    const collection = req.params.collection
+    const documentId = req.params.id
+
+    // Enforce read access checks (including RLS constraints)
+    await engine.local.findById(collection, documentId, { user })
+
+    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const version = await adapter.findOne<any>('versions', { _id: req.params.versionId })
+    if (!version) throw new NotFoundError('Version', req.params.versionId)
+
+    // delta is stored as { fieldName: { from, to } } by ContentService._calculateDelta()
+    const delta = version.delta || {}
+    const diffs = Object.entries(delta).map(([field, change]: [string, any]) => ({
+      field,
+      from: change.from,
+      to: change.to,
+    }))
+
+    res.json(createResponse({ versionId: req.params.versionId, timestamp: version.timestamp, diffs }))
+  } catch (err) {
+    next(err)
+  }
+})
+
+// ── POST /api/v1/versions/:collection/:id/:versionId/restore ────────────────────────
 router.post('/:collection/:id/:versionId/restore', async (req: Request, res: Response, next) => {
   try {
-    const version = await VersionModel.findById(req.params.versionId).lean() as unknown;
-    if (!version) throw new NotFoundError('Version', req.params.versionId);
+    const user = (req as any).user
+    const engine = req.app.get('zenith_engine')
+    const collection = req.params.collection
+    const documentId = req.params.id
 
-    const isGlobal = req.params.collection === 'globals';
-    const modelName = isGlobal ? req.params.id : req.params.collection;
-    const documentId = req.params.id;
+    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const version = await adapter.findOne<any>('versions', { _id: req.params.versionId })
+    if (!version) throw new NotFoundError('Version', req.params.versionId)
 
-    // Get the model for this collection/global
-    const Model = mongoose.models[modelName] || mongoose.model(modelName);
+    const snapshot = version.snapshot
 
-    // Restore the document to the version snapshot
-    const query = isGlobal ? {} : { _id: documentId };
-    const restored = await Model.findOneAndUpdate(
-      query,
-      { $set: version.snapshot },
-      { new: true, upsert: isGlobal }
-    );
+    // Strip system fields from snapshot before restoring to avoid conflicts
+    const { _id, id, createdAt, updatedAt, ...restorable } = snapshot as any
 
-    if (!restored) throw new NotFoundError(modelName, documentId);
+    // Use local API to run update - this automatically validates RLS, runs hooks, and triggers webhooks
+    const { doc: restored } = await engine.local.update(collection, documentId, restorable, { user })
 
-    res.json(createResponse({ message: 'Version restored successfully', document: restored }));
-  } catch (err) { next(err); }
-});
+    res.json(createResponse({ message: 'Version restored successfully', document: restored }))
+  } catch (err) {
+    next(err)
+  }
+})
 
-export default router;
+// ── POST /api/v1/versions/:collection/:id/:versionId/rollback-fields ────────────────
+router.post('/:collection/:id/:versionId/rollback-fields', async (req: Request, res: Response, next) => {
+  try {
+    const user = (req as any).user
+    const engine = req.app.get('zenith_engine')
+    const collection = req.params.collection
+    const documentId = req.params.id
+
+    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const version = await adapter.findOne<any>('versions', { _id: req.params.versionId })
+    if (!version) throw new NotFoundError('Version', req.params.versionId)
+
+    const snapshot = version.snapshot
+    const { fields } = req.body
+
+    if (!Array.isArray(fields) || fields.length === 0) {
+      return res.status(400).json({ error: { message: 'fields parameter must be a non-empty array of field names.' } })
+    }
+
+    const rollbackData: Record<string, any> = {}
+    for (const field of fields) {
+      if (snapshot && field in snapshot) {
+        rollbackData[field] = snapshot[field]
+      }
+    }
+
+    if (Object.keys(rollbackData).length === 0) {
+      return res.status(400).json({ error: { message: 'None of the requested fields exist in the version snapshot.' } })
+    }
+
+    // Use local API to run update - this automatically validates RLS, runs hooks, and triggers webhooks
+    const { doc: restored } = await engine.local.update(collection, documentId, rollbackData, { user })
+
+    res.json(createResponse({ message: `Successfully rolled back fields: ${Object.keys(rollbackData).join(', ')}`, document: restored }))
+  } catch (err) {
+    next(err)
+  }
+})
+
+export default router

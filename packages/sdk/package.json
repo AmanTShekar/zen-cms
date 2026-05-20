@@ -1,11 +1,23 @@
 {
-  "name": "@zenith/sdk",
+  "name": "@zenithcms/sdk",
   "version": "1.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Lightweight JavaScript client for Zenith CMS",
-  "main": "index.js",
-  "module": "index.js",
-  "types": "index.d.ts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
   "scripts": {
+    "build": "tsc",
     "lint": "echo 'Lint bypassed for sdk'"
   },
   "license": "MIT"

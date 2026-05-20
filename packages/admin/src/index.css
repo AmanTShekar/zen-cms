@@ -11,114 +11,130 @@
 
 @layer base {
   :root {
-    /* Industrial Monochromatic Palette - DARK (Default) */
-    --bg-app: #000000;
-    --bg-app-rgb: 0 0 0;
-    --bg-surface: #080808;
-    --bg-surface-rgb: 8 8 8;
-    --bg-subtle: #0A0A0A;
-    --bg-subtle-rgb: 10 10 10;
-    
-    --text-primary: #FFFFFF;
+    /* Premium Obsidian Glassmorphism Design System */
+    --bg-app: #0B0F19;
+    --bg-app-rgb: 11 15 25;
+    --bg-surface: #111827;
+    --bg-surface-rgb: 17 24 39;
+    --bg-subtle: #1f2937;
+    --bg-subtle-rgb: 31 41 55;
+
+    --text-primary: #ffffff;
     --text-primary-rgb: 255 255 255;
-    --text-secondary: #71717A;
-    --text-secondary-rgb: 113 113 122;
-    --text-muted: #27272A;
-    --text-muted-rgb: 39 39 42;
-    
-    --border: rgba(255, 255, 255, 0.06);
+    --text-secondary: #9ca3af;
+    --text-secondary-rgb: 156 163 175;
+    --text-muted: #4b5563;
+    --text-muted-rgb: 75 85 99;
+
+    --border: rgba(255, 255, 255, 0.08);
     --border-rgb: 255 255 255;
-    --border-strong: rgba(255, 255, 255, 0.1);
-    
-    --accent-rgb: 255 255 255;
-    
+    --border-strong: rgba(255, 255, 255, 0.15);
+
+    --accent-rgb: 139 92 246; /* Cyber-Purple */
+    --color-cyber-purple: #8B5CF6;
+    --color-emerald-green: #10B981;
+
     /* Tactical Color Injection - High Saturation for observability */
-    --status-green: #22C55E;
-    --status-red: #EF4444;
-    --status-orange: #F59E0B;
-    --status-blue: #3B82F6;
-    
-    --glass-bg: rgba(0, 0, 0, 0.85);
+    --status-green: #10B981;
+    --status-red: #ef4444;
+    --status-orange: #f59e0b;
+    --status-blue: #3b82f6;
+
+    --glass-bg: rgba(17, 24, 39, 0.65);
     --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-blur: 40px;
-    
-    --shadow-premium: 0 20px 40px -10px rgba(0, 0, 0, 0.8);
+    --glass-blur: 16px;
+
+    --shadow-premium: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   }
 
   .light {
-    /* Industrial Monochromatic Palette - LIGHT */
-    --bg-app: #F8F8F8;
-    --bg-app-rgb: 248 248 248;
-    --bg-surface: #FFFFFF;
+    /* Elegant Obsidian Light Theme */
+    --bg-app: #f3f4f6;
+    --bg-app-rgb: 243 244 246;
+    --bg-surface: #ffffff;
     --bg-surface-rgb: 255 255 255;
-    --bg-subtle: #F2F2F2;
-    --bg-subtle-rgb: 242 242 242;
-    
-    --text-primary: #000000;
-    --text-primary-rgb: 0 0 0;
-    --text-secondary: #71717A;
-    --text-secondary-rgb: 113 113 122;
-    --text-muted: #D4D4D8;
-    --text-muted-rgb: 212 212 216;
-    
-    --border: rgba(0, 0, 0, 0.08);
-    --border-rgb: 0 0 0;
-    --border-strong: rgba(0, 0, 0, 0.15);
-    
-    --accent-rgb: 0 0 0;
-    
-    --status-green: #16A34A;
-    --status-red: #DC2626;
-    --status-orange: #D97706;
-    --status-blue: #2563EB;
-    
-    --glass-bg: rgba(255, 255, 255, 0.9);
-    --glass-border: rgba(0, 0, 0, 0.08);
-    
-    --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+    --bg-subtle: #e5e7eb;
+    --bg-subtle-rgb: 229 231 235;
+
+    --text-primary: #111827;
+    --text-primary-rgb: 17 24 39;
+    --text-secondary: #4b5563;
+    --text-secondary-rgb: 75 85 99;
+    --text-muted: #9ca3af;
+    --text-muted-rgb: 156 163 175;
+
+    --border: rgba(17, 24, 39, 0.08);
+    --border-rgb: 17 24 39;
+    --border-strong: rgba(17, 24, 39, 0.15);
+
+    --accent-rgb: 139 92 246;
+
+    --status-green: #10b981;
+    --status-red: #dc2626;
+    --status-orange: #d97706;
+    --status-blue: #2563eb;
+
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(17, 24, 39, 0.08);
+
+    --shadow-premium: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
   }
 
   * {
     @apply border-border selection:bg-primary selection:text-app transition-colors duration-200;
   }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background: #000000;
-}
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #0B0F19;
+  }
 
-#root {
-  width: 100%;
-  height: 100%;
-  background-color: var(--background-color, #000000);
-}
+  #root {
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-color, #0B0F19);
+  }
 
   body {
     @apply bg-app text-primary font-sans antialiased overflow-x-hidden;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01", "ss03";
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01', 'ss03';
     letter-spacing: -0.01em;
     font-size: 17.2px; /* Precision Operational Font */
   }
 
-  /* 💎 Refined Industrial Components - Softer but Sharp Radius */
+  /* 💎 Premium Obsidian Glassmorphism Card Style */
   .card {
-    @apply bg-surface border border-border rounded-none shadow-premium transition-all duration-500 overflow-hidden;
+    background-color: rgba(17, 24, 39, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
   }
-  
-  .dark .card {
-    @apply shadow-[0_20px_50px_-15px_rgba(0,0,0,0.9)] border-white/[0.04];
+
+  .card-interactive {
+    @apply card cursor-pointer;
+  }
+
+  .card-interactive:hover {
+    transform: scale(1.02);
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 8px 30px rgba(139, 92, 246, 0.15);
   }
 
   .btn-primary {
-    @apply bg-primary text-app hover:brightness-110 active:scale-95 px-8 py-3 rounded-none font-black uppercase tracking-[0.15em] transition-all shadow-premium flex items-center justify-center gap-3 text-[13px];
+    @apply bg-primary text-app hover:brightness-110 active:scale-95 px-8 py-3 rounded-xl font-black uppercase tracking-[0.15em] transition-all shadow-premium flex items-center justify-center gap-3 text-[13px];
   }
 
   .btn-secondary {
-    @apply bg-primary/5 text-primary border border-primary/10 hover:bg-primary/10 px-6 py-3 rounded-none font-black uppercase tracking-[0.1em] transition-all flex items-center justify-center gap-2.5 text-[12px];
+    @apply bg-primary/5 text-primary border border-primary/10 hover:bg-primary/10 px-6 py-3 rounded-xl font-black uppercase tracking-[0.1em] transition-all flex items-center justify-center gap-2.5 text-[12px];
   }
 
   /* 📊 Data Grids - More Spacious */
@@ -139,35 +155,58 @@ html, body {
   }
 
   /* 💎 Typography Scales */
-  h1 { @apply text-7xl tracking-tighter font-black text-primary uppercase italic leading-none; }
-  h2 { @apply text-6xl tracking-tighter font-black text-primary uppercase italic leading-none; }
-  h3 { @apply text-5xl tracking-tighter font-black text-primary uppercase italic leading-none; }
-  h4 { @apply text-3xl tracking-tighter font-black text-primary uppercase italic leading-none; }
+  h1 {
+    @apply text-7xl tracking-tighter font-black text-primary uppercase italic leading-none;
+  }
+  h2 {
+    @apply text-6xl tracking-tighter font-black text-primary uppercase italic leading-none;
+  }
+  h3 {
+    @apply text-5xl tracking-tighter font-black text-primary uppercase italic leading-none;
+  }
+  h4 {
+    @apply text-3xl tracking-tighter font-black text-primary uppercase italic leading-none;
+  }
 
   /* 🎨 Premium Elements */
   .glass {
-    @apply bg-glass-bg backdrop-blur-[var(--glass-blur)] border border-glass-border shadow-premium;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-  }
-
-  .dark .glass {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.4) 100%);
+    background-color: rgba(11, 15, 25, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
   }
 
   .input-premium {
-    @apply bg-primary/[0.02] border border-border rounded-none px-5 h-12 text-[14px] font-bold transition-all outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/[0.02] placeholder:text-primary/20 uppercase italic tracking-tight;
+    @apply bg-primary/[0.02] border border-border rounded-xl px-5 h-12 text-[14px] font-bold transition-all outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/[0.02] placeholder:text-primary/20 uppercase italic tracking-tight;
   }
 
   /* Tactical Status Indicators */
-  .indicator-green { @apply bg-[var(--status-green)] shadow-[0_0_15px_var(--status-green)]; }
-  .indicator-red { @apply bg-[var(--status-red)] shadow-[0_0_15px_var(--status-red)]; }
-  .indicator-orange { @apply bg-[var(--status-orange)] shadow-[0_0_15px_var(--status-orange)]; }
-  .indicator-blue { @apply bg-[var(--status-blue)] shadow-[0_0_15px_var(--status-blue)]; }
+  .indicator-green {
+    @apply bg-[var(--status-green)] shadow-[0_0_15px_var(--status-green)];
+  }
+  .indicator-red {
+    @apply bg-[var(--status-red)] shadow-[0_0_15px_var(--status-red)];
+  }
+  .indicator-orange {
+    @apply bg-[var(--status-orange)] shadow-[0_0_15px_var(--status-orange)];
+  }
+  .indicator-blue {
+    @apply bg-[var(--status-blue)] shadow-[0_0_15px_var(--status-blue)];
+  }
 
-  .text-status-green { color: var(--status-green); }
-  .text-status-red { color: var(--status-red); }
-  .text-status-orange { color: var(--status-orange); }
-  .text-status-blue { color: var(--status-blue); }
+  .text-status-green {
+    color: var(--status-green);
+  }
+  .text-status-red {
+    color: var(--status-red);
+  }
+  .text-status-orange {
+    color: var(--status-orange);
+  }
+  .text-status-blue {
+    color: var(--status-blue);
+  }
 
   /* Custom Scrollbar Precision - Global Industrial Theme */
   ::-webkit-scrollbar {
@@ -195,8 +234,14 @@ html, body {
 
   /* 🌊 Animations */
   @keyframes fade-in {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .animate-fade-in {
@@ -205,8 +250,12 @@ html, body {
 }
 
 @layer utilities {
-  .shadow-premium { box-shadow: var(--shadow-premium); }
-  .text-glow { text-shadow: 0 0 20px rgba(var(--text-primary-rgb), 0.3); }
+  .shadow-premium {
+    box-shadow: var(--shadow-premium);
+  }
+  .text-glow {
+    text-shadow: 0 0 20px rgba(var(--text-primary-rgb), 0.3);
+  }
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
