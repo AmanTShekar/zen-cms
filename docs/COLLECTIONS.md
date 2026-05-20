@@ -1,41 +1,43 @@
-# 🏛️ Zenith Schema & Collections Blueprint (`COLLECTIONS.md`)
+# Schemas & Collections
 
-Zenith's dynamic collection schema engine lies at the heart of its headless CMS capabilities. It provides developers and AI assistants with a unified, strongly-typed system for modeling metadata, structured fields, validation constraints, and database relationships.
-
----
-
-## 🏛️ 1. Core Schema Topology
-
-Zenith configurations map directly to database collections and automatically synthesize:
-
-1. **TypeScript Interfaces** for end-to-end type safety.
-2. **Zod Validation Schemas** for real-time API request gating.
-3. **Admin Form Layouts** inside the Vite dynamic React dashboard.
-4. **REST API endpoints** for immediate CRUD operations.
-
-```
-┌────────────────────────────────────────────────────────┐
-│                   cms.config.ts                        │ (Pro-code definition)
-└──────────────────────────┬─────────────────────────────┘
-                           │
-                 [ Schema Synthesizer ]
-                           │
-        ┌──────────────────┼──────────────────┐
-        ▼                  ▼                  ▼
-┌───────────────┐  ┌───────────────┐  ┌───────────────┐
-│ Database Table│  │  Zod Schema   │  │   Admin UI    │
-│  & Collection │  │  Validation   │  │ Form Layouts  │
-└───────────────┘  └───────────────┘  └───────────────┘
-```
+At the core of Zenith CMS is the schema engine. Instead of manually creating database tables or writing boilerplate code, you define collections in your configuration. Zenith then automatically builds your database structures, API endpoints, and admin forms.
 
 ---
 
-## 📝 2. Collection Configuration Standard
+## 🏛️ Schema Synthesis Flow
 
-Every collection is declared as a `CollectionConfig` object. Below is a high-fidelity reference implementation for a `products` collection featuring nested properties, dynamic validation hooks, and localized layouts:
+When you define a collection in `cms.config.ts`, Zenith handles the heavy lifting:
+
+1.  **Database Sync**: Creates or updates tables (PostgreSQL) or collections (MongoDB).
+2.  **API Gating**: Generates Zod validation rules at runtime.
+3.  **Admin UI**: Dynamically builds forms and inputs for editors.
+4.  **Types**: Generates TypeScript interfaces so your frontend stays type-safe.
+
+```
+                      +-----------------------------+
+                      |        cms.config.ts        |
+                      +--------------+--------------+
+                                     |
+                                     v
+                           [ Schema Synthesizer ]
+                                     |
+               +---------------------+---------------------+
+               |                     |                     |
+               v                     v                     v
+      +-----------------+   +-----------------+   +-----------------+
+      | Database Tables |   |  Zod Validation |   | Admin Dashboard |
+      |  & Collections  |   |    API Rules    |   |   Form Inputs   |
+      +-----------------+   +-----------------+   +-----------------+
+```
+
+---
+
+## 📝 Collection Configuration Example
+
+Collections are defined using the `CollectionConfig` type. Here is an example configuration for a `products` collection with validation, relationships, and lifecycle hooks:
 
 ```typescript
-import { CollectionConfig } from '@zenithcms/types'
+import { CollectionConfig } from '@zenithcms/types';
 
 export const ProductsCollection: CollectionConfig = {
   slug: 'products',
@@ -51,7 +53,7 @@ export const ProductsCollection: CollectionConfig = {
       type: 'text',
       label: 'Product Title',
       required: true,
-      placeholder: 'e.g., Zenith Mechanical Keyboard',
+      placeholder: 'e.g., Mechanical Keyboard',
     },
     {
       name: 'slug',
@@ -73,13 +75,13 @@ export const ProductsCollection: CollectionConfig = {
       name: 'category',
       type: 'relationship',
       label: 'Product Category',
-      relationTo: 'categories', // Dynamic picker binding
+      relationTo: 'categories',
       required: true,
     },
     {
       name: 'description',
       type: 'rich-text',
-      label: 'Product Specification',
+      label: 'Product Description',
       required: false,
     },
     {
@@ -93,69 +95,68 @@ export const ProductsCollection: CollectionConfig = {
   hooks: {
     beforeChange: [
       async ({ data }) => {
-        // Enforce URL slugs if missing
+        // Automatically generate a slug from the title if missing
         if (!data.slug && data.title) {
           data.slug = data.title
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)+/g, '')
+            .replace(/(^-|-$)+/g, '');
         }
-        return data
+        return data;
       },
     ],
   },
-}
+};
 ```
 
 ---
 
-## 🛠️ 3. Supported Field Schema Matrix
+## 🛠️ Supported Field Types
 
-Zenith features robust built-in field types, each compiled dynamically into responsive Tailwind/Lucide-powered admin inputs:
+Zenith provides a robust set of field types that map to database columns and render as custom React components in the admin panel:
 
-| Field Type     | Database Representation       | Core Admin Input Component                       | Validation Parameters                      |
-| :------------- | :---------------------------- | :----------------------------------------------- | :----------------------------------------- |
-| `text`         | `String` / `VARCHAR`          | `TextInput.tsx` with character counting          | `required`, `charLimit`, `unique`, `regex` |
-| `number`       | `Double` / `DECIMAL`          | `NumberInput.tsx` with boundary controls         | `required`, `min`, `max`                   |
-| `relationship` | `ObjectId` / `FOREIGN KEY`    | `RelationPicker.tsx` (real-time dropdown Search) | `required`, `hasMany`, `relationTo`        |
-| `rich-text`    | `JSON` / `TEXT` (Block-based) | `RichTextEditor.tsx` (Tip-tap inline commands)   | `required`                                 |
+*   **`text`**: Standard text input. Map to strings/VARCHARs. Supports character limits and custom regex.
+*   **`number`**: Numeric input for integers or decimals. Supports min/max values.
+*   **`relationship`**: Picker component to link documents (one-to-one or one-to-many) across collections. Renders as a searchable dropdown.
+*   **`rich-text`**: Custom editor built on Tiptap. Supports inline formatting, lists, and embedded blocks.
 
 ---
 
-## ⚡ 4. Real-time Zod & Database Synthesis
+## ⚡ How Run-Time Validation Works
 
-When a content update request reaches the core server, Zenith's **Type Synthesizer** compiles the config schema into a strict Zod rule structure at runtime:
+When a request reaches the API, Zenith parses the field config and compiles it into a Zod schema to validate the payload:
 
 ```typescript
-import { z } from 'zod'
-import { FieldSchema } from '@zenithcms/types'
+import { z } from 'zod';
+import { FieldSchema } from '@zenithcms/types';
 
 export function compileFieldValidation(field: FieldSchema) {
-  let schema: z.ZodTypeAny = z.any()
+  let schema: z.ZodTypeAny = z.any();
 
   if (field.type === 'text') {
-    schema = z.string()
-    if (field.required)
-      schema = (schema as z.ZodString).min(1, `${field.label || field.name} is required.`)
+    schema = z.string();
+    if (field.required) {
+      schema = (schema as z.ZodString).min(1, `${field.label || field.name} is required.`);
+    }
   } else if (field.type === 'number') {
-    schema = z.number()
-    if (field.min !== undefined) schema = (schema as z.ZodNumber).min(field.min)
+    schema = z.number();
+    if (field.min !== undefined) {
+      schema = (schema as z.ZodNumber).min(field.min);
+    }
   } else if (field.type === 'relationship') {
-    schema = field.hasMany ? z.array(z.string()) : z.string()
+    schema = field.hasMany ? z.array(z.string()) : z.string();
   }
 
-  return schema
+  return schema;
 }
 ```
 
-This dynamic compilation ensures that **invalid data payloads (422) never infect database tables**, yielding robust air-tight protocol guarantees.
+This validation ensures that only correct data gets written to your database, preventing layout breaks and API issues down the line.
 
 ---
 
-## 🧠 5. AI Guidance for Custom Schema Expansions
+## 🧠 Best Practices for Writing Custom Schemas
 
-When creating a new collection schema via prompt requests:
-
-1. **Never hardcode dynamic relational strings**: Re-use imported constants and check relationTo configurations against the global registry layout.
-2. **Define Default Fallbacks**: Always provide clean default values (`defaultValue: false` or `defaultValue: 0`) to prevent frontend React hook rendering crashes.
-3. **Leverage Hook Middleware**: Execute text transformations (e.g. autolinking slugs or content sanitization) inside `beforeChange` or `beforeValidate` hooks on the server.
+*   **Set Clear Defaults**: Always provide safe default values (e.g. `defaultValue: 0` or `defaultValue: false`) to avoid null pointer issues on your frontend.
+*   **Use Server Hooks for Sanitization**: Don't rely solely on the frontend to format inputs. Clean up data (like trimming whitespace or checking values) inside `beforeChange` hooks.
+*   **Define Relational Slugs**: When referencing other collections, make sure the `relationTo` slug matches the destination collection's slug exactly.

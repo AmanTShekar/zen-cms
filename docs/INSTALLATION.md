@@ -1,95 +1,138 @@
-# Zenith Installation Guide
+# Zenith Installation & Deployment Guide
 
-Zenith can be deployed as a monolithic server or as a decoupled headless engine. This guide covers the standard setup for both local development and production.
+Zenith CMS can be deployed as a unified monolithic system or as a decoupled headless engine. This guide details setup commands for local development, production configuration, and hosting strategies.
 
 ---
 
-## Local Development
+## 🛠️ Local Development
 
-### 1. Environment Setup
+### 1. Environment Configuration
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the root folder of the project. Set database connection details and secret keys:
 
 ```env
-# SERVER
+# SERVER CONFIGURATION
 PORT=3000
 NODE_ENV=development
 
-# DATABASE (Choose one)
+# DATABASE ADAPTERS (Uncomment the driver you are using)
+# MongoDB Adapter
 DATABASE_URI=mongodb://localhost:27017/zenith
-# DATABASE_TYPE=postgres
-# DATABASE_URL=postgres://user:pass@localhost:5432/zenith
 
-# SECRETS
-ZENITH_SECRET=your-super-secret-key
+# PostgreSQL Adapter
+# DATABASE_TYPE=postgres
+# DATABASE_URL=postgres://postgres:password@localhost:5432/zenith
+
+# JWT & ACCESS SECURITY KEYS
+ZENITH_SECRET=your-super-secret-cryptographic-hash
 ADMIN_API_KEY=zenith_dev_key_123
 
-# CLOUDINARY (Optional for Media)
+# EXTERNAL MEDIA PROVIDERS (Optional)
 CLOUDINARY_CLOUD_NAME=your_name
 CLOUDINARY_API_KEY=your_key
 CLOUDINARY_API_SECRET=your_secret
 ```
 
-### 2. Dependency Management
+### 2. Install Workspace Dependencies
 
-Zenith uses a monorepo structure. Install all packages from the root:
-
-```bash
-npm install
-```
-
-### 3. Seeding Initial Data
-
-To populate the database with a default admin user and sample collections:
+Zenith is structured as a `pnpm` monorepo. Install all package dependencies from the root directory:
 
 ```bash
-npm run seed
+pnpm install
 ```
 
-### 4. Running the Platform
+### 3. Run the Development Server
+
+Start the core backend API and the Vite React Admin Dashboard simultaneously:
 
 ```bash
-# Start all packages in dev mode
-npm run dev
+pnpm run dev
 ```
 
-- **Admin UI**: `http://localhost:5173`
-- **API Engine**: `http://localhost:3000`
+*   **Vite Admin Console**: `http://localhost:5173`
+*   **Express API Server**: `http://localhost:3000` (Endpoints mounted under `/api/v1`)
 
 ---
 
-## Production Deployment
+## 🚀 Production Deployment Options
 
-### 1. Build the Monorepo
+Zenith CMS compiles to native JavaScript. Below are the primary deployment strategies used in production:
 
-```bash
-npm run build
-```
+### Option A: Docker Deployment (Recommended)
 
-### 2. Service Management (PM2)
+Zenith features a multi-stage, optimized `Dockerfile` in the root of the repository. It compiles TypeScript packages and runs the core engine inside a lightweight Alpine Node environment using PM2 process clustering.
 
-We recommend using PM2 to manage the Zenith Nucleus in production:
+1.  **Build the Docker Image**:
+    ```bash
+    docker build -t zenith-cms .
+    ```
+2.  **Run the Container**:
+    Make sure to pass your production environment variables:
+    ```bash
+    docker run -d \
+      -p 3000:3000 \
+      --env-file .env \
+      --name zenith-instance \
+      zenith-cms
+    ```
 
-```bash
-pm2 start dist/server.js --name zenith-nucleus
-```
+### Option B: Self-Hosted PM2 (VPS / Linux VM)
 
-### 3. Reverse Proxy (Nginx)
+If deploying to a virtual private server (like DigitalOcean, AWS EC2, or Linode):
 
-Configure Nginx to forward traffic to the Zenith port (default 3000). Ensure that `client_max_body_size` is increased for media uploads.
+1.  **Install Global Process Managers**:
+    ```bash
+    npm install -g pm2
+    ```
+2.  **Build the Project Assets**:
+    ```bash
+    pnpm run build
+    ```
+3.  **Launch Backend with PM2**:
+    Start the Express server using the compiled distribution path:
+    ```bash
+    pm2 start packages/core/dist/packages/core/src/server.js --name zenith-cms
+    ```
+4.  **Configure Nginx Reverse Proxy**:
+    Point Nginx incoming traffic to port `3000`. Ensure file upload sizes are adjusted in your virtual host server block:
+    ```nginx
+    server {
+        listen 80;
+        server_name cms.yourdomain.com;
 
----
+        # Allow large file uploads for media libraries
+        client_max_body_size 50M;
 
-## Database Specifics
+        location / {
+            proxy_pass http://localhost:3000;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+        }
+    }
+    ```
 
-### MongoDB (Default)
+### Option C: PaaS Deployments (Railway, Render, Fly.io)
 
-Ensure your MongoDB instance is running as a **Replica Set** if you wish to use transactions (highly recommended for data integrity).
+You can host Zenith CMS on cloud platforms that support Docker or Node.js runtimes:
 
-### PostgreSQL (Beta)
+*   **Docker Builder**: Connect your GitHub repository to Railway or Render. The platform will automatically detect the root `Dockerfile` and boot the service on port `3000`.
+*   **Node.js Build Settings**:
+    *   **Build Command**: `pnpm run build`
+    *   **Start Command**: `node packages/core/dist/packages/core/src/server.js`
+    *   **Environment Variables**: Input `DATABASE_URI` (or `DATABASE_URL`), `ZENITH_SECRET`, and `NODE_ENV=production`.
 
-Zenith uses **Drizzle ORM** for SQL. When switching to PostgreSQL, ensure you run the migration script:
+### Option D: Decoupled Frontend Deployment (Vercel, Netlify, Cloudflare Pages)
 
-```bash
-npm run db:push
-```
+Because the Vite Admin UI (`packages/admin`) compile step outputs static HTML, CSS, and JS assets, you can host the dashboard on static CDNs while pointing to your self-hosted core API:
+
+1.  **Configure static building in `packages/admin`**:
+    *   Ensure the React app environment variable points to your public core server: `VITE_API_URL=https://api.yourdomain.com`
+2.  **Compile the Admin app**:
+    ```bash
+    pnpm --filter admin build
+    ```
+3.  **Host the Assets**:
+    Deploy the static files located in `packages/admin/dist` directly to Vercel, Netlify, or Cloudflare Pages.

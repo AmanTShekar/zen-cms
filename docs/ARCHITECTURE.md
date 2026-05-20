@@ -1,115 +1,95 @@
-# Zenith Architecture: Enterprise-Grade Nucleus
+# Architecture Guide
 
-Zenith is engineered as a decoupled, multi-tenant headless CMS that prioritizes extreme performance, relational rigidity, and real-time collaboration. This document details the inner workings of the Zenith Core and how its underlying sub-systems interact.
+This document explains how Zenith CMS is structured, how the monorepo packages communicate, and how requests flow through the server to the database.
 
 ---
 
-## 🏛️ Monorepo Package Topology
+## 🏛️ Monorepo Package Structure
 
-Zenith is organized as a high-performance monorepo containing isolated, specialized workspaces:
+Zenith is organized as a monorepo using `pnpm` to keep packages decoupled yet easily linkable:
 
 ```
                           ┌──────────────────────────┐
-                          │      @zenithcms/types       │ (Core API & Schema Interfaces)
+                          │     @zenithcms/types     │ (Shared TypeScript types)
                           └────────────┬─────────────┘
                                        │
-                ┌──────────────────────┴──────────────────────┐
-                ▼                                             ▼
-┌──────────────────────────────┐              ┌──────────────────────────────┐
-│        @zenithcms/core          │              │        @zenithcms/admin         │
-│  - Express REST & GraphQL    │              │  - Vite + React SPA          │
-│  - Dynamic schema push       │              │  - Tailwind CSS              │
-│  - Collaborative Presence    │              │  - Zustand State Engine      │
-│  - SQL/NoSQL ORM Adapters    │              │  - DnD Responsive Grid       │
-└──────────────────────────────┘              └──────────────────────────────┘
+                 ┌─────────────────────┴─────────────────────┐
+                 ▼                                           ▼
+┌──────────────────────────────┐            ┌──────────────────────────────┐
+│       @zenithcms/core        │            │       @zenithcms/admin       │
+│  - Express server backend    │            │  - React admin dashboard     │
+│  - Database adapters         │            │  - Tailwind CSS              │
+│  - Real-time presence        │            │  - Zustand stores            │
+│  - Lifecycle sandbox hooks   │            │  - Drag-and-drop builder     │
+└──────────────────────────────┘            └──────────────────────────────┘
 ```
 
 ---
 
-## 🔑 1. Multi-Site Tenant Isolation Scoping (`X-Zenith-Site-Id`)
+## 👥 1. Request Lifecycle & Pipeline
 
-Zenith provides air-tight multi-tenant isolation. A single instance of the Zenith Kernel can host hundreds of independent storefronts and websites.
-
-### Ingress Header Matching Flow:
-
-1. Every client or administrator request must present the **`X-API-KEY`** or session credentials along with an **`X-Zenith-Site-Id`** header.
-2. The core router maps the incoming `X-Zenith-Site-Id` to its registered workspace and site configuration:
+Every incoming request to the server runs through a series of steps to ensure it is secure, valid, and routed to the correct tenant database:
 
 ```
-Request ──► Middleware Scoping ──► Locate Tenant Connection Pool ──► Dynamic Schema Binding
+  [HTTP Request] ---> Auth Check (Session / JWT)
+                           |
+                           v
+                     Tenant Filter (X-Zenith-Site-Id)
+                           |
+                           v
+                     Zod Schema Input Validation
+                           |
+                           v
+                     Sandboxed Hooks (beforeChange / etc.)
+                           |
+                           v
+                     Database Adapter Operation
+                           |
+                           v
+                     Async Webhooks (signed with HMAC)
+                           |
+                           v
+  [HTTP Response] <--------+
 ```
 
-3. Queries executed during that request are strictly scoped at the database adapter level, preventing cross-tenant data leakage.
+1.  **Authentication**: Checks the request for a valid JSON Web Token (JWT) in a secure cookie or a static API key header.
+2.  **Tenant Scoping**: Parses the `X-Zenith-Site-Id` header to restrict data queries to the correct site workspace.
+3.  **Schema Validation**: Validates fields against dynamically compiled Zod validation schemas.
+4.  **Hooks Execution**: Triggers hooks (like resizing images or calculating fields) in sandboxed background worker threads to keep the main event loop fast.
+5.  **Database Persistence**: Writes the data using the selected database adapter.
+6.  **Webhooks**: Dispatches secure, signed webhooks to notify external services or rebuild static storefronts.
 
 ---
 
-## 🛢️ 2. Dynamic Database Adapters & Postgres Connection Swapping
+## 🛢️ 2. Dynamic Database Adapters
 
-Zenith is database agnostic, supporting both high-velocity document storage (MongoDB) and enterprise relational ledgers (PostgreSQL).
+Zenith supports both document databases (MongoDB) and relational databases (PostgreSQL) using a shared interface:
 
 ```
                             ┌─────────────────────────┐
-                            │    DatabaseAdapter      │ (Common Abstract Interface)
+                            │     DatabaseAdapter     │ (Abstract Interface)
                             └────────────┬────────────┘
                                          │
-                 ┌───────────────────────┴───────────────────────┐
-                 ▼                                               ▼
-   ┌───────────────────────────┐                   ┌───────────────────────────┐
-   │      MongooseAdapter      │                   │   PostgresDrizzleAdapter  │
-   │  - Dynamic collection maps│                   │  - Dynamic Pool Manager   │
-   │  - BSON Document model    │                   │  - Cascade Migrations     │
-   │  - High-velocity indexing │                   │  - SQL schema builders    │
-   └───────────────────────────┘                   └───────────────────────────┘
+                  ┌──────────────────────┴──────────────────────┐
+                  ▼                                             ▼
+    ┌───────────────────────────┐                 ┌───────────────────────────┐
+    │      MongooseAdapter      │                 │  PostgresDrizzleAdapter   │
+    │  - Document-based         │                 │  - Drizzle ORM            │
+    │  - BSON models            │                 │  - SQL schema builders    │
+    │  - Flexible nested fields │                 │  - Connection pooling     │
+    └───────────────────────────┘                 └───────────────────────────┘
 ```
 
-### PostgreSQL Drizzle Engine & SchemaSync:
-
-- When using `PostgresDrizzleAdapter`, Zenith maintains a dynamic **Postgres Connection Pool Swapper**.
-- When schemas are modified in the Admin panel, the **SchemaSync CLI & Engine** performs structural diffs of the database tables in real-time, executing dynamic database pushes (`db:push`) under transactions without taking the application offline.
-- Relational tables, junction tables, and multi-tenant indexes are automatically created and updated.
+### PostgreSQL Drizzle Adapter
+When using PostgreSQL, Zenith leverages **Drizzle ORM** for query building and migrations. 
+*   **Database Syncing**: When you modify a schema in the admin panel, Zenith evaluates the differences between your config and the database, generating and running the necessary table migrations automatically.
+*   **Junction Tables**: Handles relationships (like linking articles to authors or categories) using auto-managed junction tables with index optimization.
 
 ---
 
-## 👥 3. Real-Time Collaborative Presence & Collision Guard
+## 🔒 3. Multi-Site Tenant Isolation
 
-To prevent conflicting edits (e.g. "Editor Sarah overwriting Editor Dave's content"), Zenith incorporates a high-frequency **Collaborative Presence Isolation Layer**.
+Zenith is designed to host multiple sites from a single backend instance. 
 
-```
-Client 1 ──(POST /heartbeat)──► [NodeCache stdTTL: 60s] ◄──(GET /presence)── Client 2
-                                         │
-                                         ▼
-                             [Deduplicated Active Users]
-```
-
-- **Keystroke & Collision Sync**: Every 30 seconds, active browsers running the Admin editor post lightweight status heartbeats to `/api/v1/presence/heartbeat`.
-- **Deduplication Engine**: The core presence service compiles and deduplicates active editor metadata, instantly notifying other authors if an overlapping entity is being altered.
-- **Graceful Timeouts**: Presence statuses automatically expire after 60 seconds of client inactivity to prevent stale lockouts.
-
----
-
-## 🚀 4. Request Lifecycle & Schema Synthesis
-
-```
-  [HTTP Ingress] ──► Authorization (API Key / JWT)
-                         │
-                         ▼
-             Tenant Matching Scoping (X-Zenith-Site-Id)
-                         │
-                         ▼
-             Zod Ahead-Of-Time (AOT) Validation
-                         │
-                         ▼
-             Hooks Injection (beforeChange / beforeValidate)
-                         │
-                         ▼
-             Persistence (Dynamic DB Adapter Query)
-                         │
-                         ▼
-             Neural Dispatch (Async Webhooks + HMAC payload sign)
-                         │
-                         ▼
-  [Standardized Egress] ◄┘
-```
-
-1. **Zod AOT Validation**: Schema configs are dynamically parsed into Zod objects at boot-time. Requests with invalid or modified attributes are instantly rejected with detailed validation diagnostics.
-2. **Neural Dispatch (Webhooks)**: On mutations, signing events are executed using HMAC-SHA256 headers, distributing changes securely to edge-cached storefronts.
+*   **Scoping Header**: Requests require an `X-Zenith-Site-Id` header.
+*   **Query Filtering**: The database adapters automatically append the active `siteId` filter to all CRUD operations. This ensures that content from one site can never leak or be modified by requests targeting another site.

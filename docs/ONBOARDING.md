@@ -1,78 +1,68 @@
-# 🚀 Zenith Quickstart & Onboarding Guide (`ONBOARDING.md`)
+# Quickstart & Onboarding Guide
 
-Welcome to Zenith CMS! This onboarding blueprint guides developers and AI systems through launching, seeding, configuring, and integrating the Zenith Headless Engine into high-performance web applications.
+Welcome to Zenith CMS! This guide will help you install, seed, configure, and connect the headless engine to your frontend applications.
 
 ---
 
-## ⏱️ 1. Complete Quickstart in 3 Minutes
+## ⏱️ Quickstart (Under 5 Minutes)
 
-### Step 1: Clone & Bootstrap
-
-Install all packages and dependencies across the monorepo workspace:
+### Step 1: Install Dependencies
+First, install the workspace packages using `pnpm` (ensure you have it installed globally with `npm install -g pnpm`):
 
 ```bash
-# Clean install and link packages
-npm install
+pnpm install
 ```
 
-### Step 2: Configure Environment
-
-Copy the default local system variables template:
+### Step 2: Configure Environment Variables
+Copy the default environment template:
 
 ```bash
 cp .env.example .env
 ```
 
-Ensure your `.env` contains valid credentials:
+Open the newly created `.env` file and verify the settings:
+*   `PORT`: The port the backend server runs on (defaults to `3000`).
+*   `MONGODB_URI` / `DATABASE_URL`: Connection strings for your database of choice.
+*   `JWT_SECRET`: A secure key used to sign session cookies.
 
-```env
-PORT=3000
-MONGODB_URI=mongodb://localhost:27017/zenith
-JWT_SECRET=super-secret-key-change-in-prod
-```
-
-### Step 3: Run the Monorepo Development Environment
-
-Kick off the core backend server, the admin dashboard UI, and the blog storefront simultaneously:
+### Step 3: Run the Development Server
+Start the backend engine, the admin control panel, and the frontend demo simultaneously:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
-Zenith will launch its nodes:
-
-- 🏛️ **Core API Backend**: [http://localhost:3000](http://localhost:3000)
-- 🎨 **Admin Control Panel**: [http://localhost:5173](http://localhost:5173) (Or next active Vite port)
-- 🌐 **Vite Storefront Demo**: [http://localhost:3001](http://localhost:3001)
-
----
-
-## 📊 2. Seeding Content and Schema Modeling
-
-Upon launching the admin dashboard for the first time:
-
-1. **Initialize Admin Account**: Navigate to [http://localhost:5173/register](http://localhost:5173/register) and create your root system administrator.
-2. **Launch a Site Workspace**: Add your first active site (e.g. `Zenith Main Store`).
-3. **Execute Dynamic Seed**:
-   - Navigate to the **Settings** menu on the sidebar.
-   - Click **"Run Seed Engine"** to inject dynamic mock data (fully preloaded blogs, products, tags, and layouts) to immediately see how the dynamic page grids compose!
+Zenith will start the following local servers:
+*   🏛️ **Core API Backend**: `http://localhost:3000`
+*   🎨 **Admin Dashboard**: `http://localhost:5173` (Vite)
+*   🌐 **Demo Storefront**: `http://localhost:3001` (Vite)
 
 ---
 
-## 🌐 3. Integrating the @zenithcms/sdk in Frontend Client
+## 📊 Seeding Mock Content
 
-Zenith provides a robust, lightweight SDK that handles connection states, payload parsing, and JWT caching automatically. Below is the standard integration loop inside a frontend React framework:
+When you log into the admin dashboard for the first time:
+
+1.  **Create an Admin Account**: Navigate to `http://localhost:5173/register` to set up your primary credentials.
+2.  **Add a Site**: Define your first workspace site.
+3.  **Run Seed**: Go to the **Settings** menu and click **"Run Seed Engine"**. This will populate your database with dummy pages, products, categories, and blocks so you can see how the layout builders function immediately.
+
+---
+
+## 🌐 Connecting the SDK
+
+You can use the lightweight `@zenithcms/sdk` package to query content in your frontend app. Here is a simple example in a React/Next.js application:
 
 ```typescript
-import { ZenithClient } from '@zenithcms/sdk'
+import { ZenithClient } from '@zenithcms/sdk';
 
-// 1. Initialize safe headless context
+// Initialize the client
 const cms = new ZenithClient({
   baseUrl: 'http://localhost:3000/api/v1',
   apiKey: process.env.ZENITH_API_KEY, // Server-side or client token
-})
+});
 
-// 2. Fetch structured items
+// Fetch products
 export async function getActiveProducts() {
   try {
     const response = await cms.collection('products').find({
@@ -81,31 +71,30 @@ export async function getActiveProducts() {
       },
       sort: '-price',
       limit: 10,
-    })
+    });
 
-    return response.data // Fully parsed, strongly-typed records
+    return response.data; // Fully typed array of records
   } catch (error) {
-    console.error('Zenith SDK Fetch Error:', error)
-    return []
+    console.error('Failed to fetch products from Zenith:', error);
+    return [];
   }
 }
 ```
 
 ---
 
-## 🏛️ 4. Workspace Build Pipeline Verification
+## 🚦 Commit & Build Verification
 
-When preparing your workspace for builds or CI/CD integrations, execute these validation gates locally to ensure absolute formatting and compiler integrity:
+Before you push any changes to your repository, run these checks to verify everything compiles and adheres to linting standards:
 
 ```bash
-# 1. Run global styling alignment checks
-npx prettier --write .
+# Run linting
+pnpm run lint
 
-# 2. Run lint pipeline
-npm run lint
+# Test compilation
+pnpm run build
 
-# 3. Test compilation output builds
-npm run build
+# Run unit & integration tests
+pnpm test
 ```
-
-Any changes must return **Exit Code `0`** to pass Husky gate protections!
+All pull requests are validated against these commands prior to merge!

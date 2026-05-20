@@ -1,37 +1,36 @@
-# Zenith Documentation Nucleus
+# Zenith CMS Documentation
 
-Welcome to the Zenith documentation hub. This guide is designed to provide you with a comprehensive understanding of the platform, from architectural fundamentals to advanced plugin development.
+Welcome to the Zenith CMS documentation hub. Whether you are setting up the system for the first time, writing a frontend integration, or building a custom plugin, these guides are here to help you get started.
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
-- [Quickstart & Onboarding](./ONBOARDING.md): Bootstrapping, environment variables, seeding, and SDK integration.
-- [Installation & Setup](./INSTALLATION.md): Launching Zenith Core and Admin panels locally and in production.
-- [Issue Triage & Diagnostics](./ISSUE_GUIDE.md): Diagnostic workflows, stuck mutex database lock clearing, and telemetry formatting.
-- [Industrial Blueprints](./EXAMPLES.md): Production-ready code templates and dynamic storefront examples.
+*   **[Quickstart & Onboarding](./ONBOARDING.md)**: A quick guide to installing, configuring environment variables, running the database seed, and integrating the SDK.
+*   **[Installation & Setup](./INSTALLATION.md)**: Setting up Zenith Core and the React Admin Dashboard in local development and production environments.
+*   **[Code Examples](./EXAMPLES.md)**: Real-world frontend examples, code snippets, and integrations.
+*   **[Troubleshooting & Diagnostics](./ISSUE_GUIDE.md)**: How to check server status, diagnose common errors, and clear active presence locks.
 
-## Technical Reference
+---
 
-- [Schema & Collections](./COLLECTIONS.md): Dynamic collection structures, field configuration matrix, validation, and database synthesis.
-- [Live Collaboration & Presence](./COLLABORATION.md): WebSocket heartbeats, document locks, and live editor presence state syncing.
-- [Competitive Audit & Architectural Analysis](./COMPETITIVE_AUDIT.md): High-fidelity feature comparisons against Payload and Directus, gaps audit, and the outplay blueprints.
-- [Architecture Deep-Dive](./ARCHITECTURE.md): Structural overview of the Kernel, Adapters, and Neural Bridge.
-- [API Reference](./API.md): Comprehensive guide for REST API layers and dynamic collection querying.
-- [Plugin Development](./PLUGINS.md): How to extend core behaviors and inject dynamic dashboard tiles.
+## 🛠️ Technical Reference
 
-## AI Engineering & Playbooks
+*   **[Schema & Collections](./COLLECTIONS.md)**: Understanding how schemas translate into database collections and REST endpoints.
+*   **[Real-Time Collaboration](./COLLABORATION.md)**: How field locks and editor presence sync in real time.
+*   **[Architecture Guide](./ARCHITECTURE.md)**: A high-level overview of Zenith's monorepo structure, database adapters, and isolated worker pool.
+*   **[API Reference](./API.md)**: Detailed endpoints for authentication, dynamic collections, real-time presence, and diagnostics.
+*   **[Plugin & Widget Development](./PLUGINS.md)**: Learn how to write server-side plugins and create custom dashboard widgets.
+*   **[Competitive Audit & Parity](./COMPETITIVE_AUDIT.md)**: Analysis of features and capabilities comparing Zenith CMS to other major headless content systems.
 
-- [AI-Driven Development Protocol](./AI_DEVELOPMENT.md): Design constraints, validation gates, and prompt directives for AI pair-programming.
-- [AI & Developer Playbook](../claude.md): Visual workspace architecture mappings, developer workflows, and styling guidelines.
+---
 
-## Security & Compliance
+## 🔒 Security & AI Scopes
 
-- [Security Policy](./SECURITY.md): Documentation of the Air-Tight Protocol, schema sandboxing, and Zod validator generators.
-- [Audit Log Engine](./SECURITY.md#2-audit-log-engine): High-precision ledger tracking for content mutations.
+*   **[Security Policy](./SECURITY.md)**: Details on brute-force protection, HttpOnly cookies, and magic-bytes file validation.
+*   **[AI Integration Guide](./AI_DEVELOPMENT.md)**: Best practices for using the AI Schema Architect and integrating model providers.
 
 ---
 
 ### Core Philosophy
 
-Zenith is built on the principle of **Industrial Precision.** We believe that a CMS should not just manage content; it should orchestrate digital operations with absolute reliability and pro-code control.
+We believe a CMS should be fast, highly customizable, and robust enough to prevent content editor collisions. Zenith achieves this by pairing type-safe TypeScript schemas with active concurrency locking and sandboxed custom hooks.

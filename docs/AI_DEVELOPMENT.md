@@ -1,72 +1,55 @@
-# 🤖 AI-Driven Development & Prompt Engineering Protocol (`AI_DEVELOPMENT.md`)
+# AI Schema Architect & Development Guide
 
-This guide outlines the unified engineering protocol for **AI Assistants (e.g. Claude, Cursor, ChatGPT, Gemini)** to build, modify, scale, and refactor code inside the Zenith CMS monorepo without triggering performance degradations, database mismatches, or styling regressions.
-
----
-
-## 🏛️ 1. Zenith Core Architectural Constraints
-
-Every AI system operating on the Zenith workspace must respect these physical rules:
-
-1. **State Isolation**: Shared data models must originate in `@zenithcms/types`. Never write isolated, package-local interfaces for collections or sites.
-2. **Dynamic Casting Rule**: Because Zenith handles highly dynamic custom JSON schemas, strategically utilize `any` casting in data parsing middleware to prevent compiler blockages. Always verify compiles via `npm run build` after doing so.
-3. **No Direct DOM Style Overwrites**: Tailwind/CSS transitions are defined globally in `index.css`. Never introduce arbitrary inline style attributes inside React rendering blocks; utilize semantic layout classes and custom utility helpers instead.
+This guide helps you understand how to write code, configure schemas, and develop features within Zenith CMS, whether you are using AI tools (like Claude, Cursor, or ChatGPT) or developing manually.
 
 ---
 
-## 📝 2. Schema Injection & Synthesis Flow
+## 🏛️ Monorepo Rules & Boundaries
 
-When asked to "create a new core feature or database schema":
+To keep the monorepo clean and prevent circular dependency issues, adhere to these guidelines:
 
-```
- ┌────────────────────────────────────────────────────────┐
- │ 1. Define configuration slug in packages/types         │
- └──────────────────────────┬─────────────────────────────┘
-                            ▼
- ┌────────────────────────────────────────────────────────┐
- │ 2. Compile Zod request validation inside packages/core  │
- └──────────────────────────┬─────────────────────────────┘
-                            ▼
- ┌────────────────────────────────────────────────────────┐
- │ 3. Register layout components in packages/admin        │
- └────────────────────────────────────────────────────────┘
-```
-
-Never skip step 2. Adding validation schemas ensures that all headless ingestion payloads conform to the **Air-Tight Schema Synthesis Protocol** before SQL/NoSQL writing takes place.
+1.  **Shared Types**: All shared database interfaces and schema definitions must reside in `@zenithcms/types`. Never create local versions of these types within individual packages.
+2.  **Decoupled Server & Client**: 
+    *   `packages/core` contains only Node.js server logic. Do not import React components or client-side assets here.
+    *   `packages/admin` communicates with the backend exclusively via the custom API client in `packages/admin/src/lib/api.ts`.
+3.  **UI Styling Standards**: Do not write inline styles. Use global CSS classes or Tailwind utility classes to match the dashboard's glassmorphism style (using translucent layers like `border-white/5 bg-white/[0.02] backdrop-blur-xl`).
 
 ---
 
-## 🎯 3. High-Performance UI Coding Standards
+## 📝 Creating New Database Schemas
 
-To maintain Zenith's visual excellence and fluid user experience:
+To create a new content collection, follow these three steps:
 
-- **Lazy Loading**: Register heavy dashboard elements or charts using `React.lazy()` with Suspense frames to optimize initial JS bundle payloads.
-- **Micro-Animations**: Wrap status changes, workspace transitions, and drawer panels in Framer Motion `<AnimatePresence>` wrappers to give a premium responsive look.
-- **Dark Glassmorphism**: Utilize dark mode borders using translucent layers (`border-white/5 bg-white/[0.02] backdrop-blur-xl`) to achieve visual alignment with the premium Zenith brand identity.
+1.  **Define the config**: Define the schema structure in `@zenithcms/types` or your custom collection configuration file.
+2.  **Generate Validation**: Create the corresponding Zod validation schema inside `packages/core`. This gates client input before any write operation is performed.
+3.  **Register components**: Set up the fields in `packages/admin` so that editors can manage the data from the dashboard.
 
 ---
 
-## 📡 4. REST API Dynamic Testing Commands
+## 🏎️ Performance & UX Standards
 
-When verifying backend modifications, AI systems should run local checks using `curl` or automated testing scripts to check endpoint integrity:
+*   **Lazy Loading**: Split code for large components (like charts, layout grids, or complex widgets) using `React.lazy()` to optimize the application's bundle size.
+*   **Smooth Animations**: Keep the UI feeling responsive and fluid by wrapping transitions, drawers, and modal states in Framer Motion wrappers.
+*   **Error Boundaries**: Wrap custom components in error boundaries so that an error in one widget doesn't crash the entire dashboard.
 
-### Retrieve API Status:
+---
 
+## 📡 API Testing Helpers
+
+You can check server status and endpoint responses using simple curl commands:
+
+### Server Health Check:
 ```bash
 curl -X GET http://localhost:3000/api/v1/system/health
 ```
 
-### Ping Workspace Active Presence:
-
+### Active Editor Presence:
 ```bash
 curl -X GET http://localhost:3000/api/v1/presence
 ```
 
 ---
 
-## 🔒 5. Access Control Warning
+## 🔒 Access Control Warning
 
-When writing custom API controllers:
-
-> [!IMPORTANT]
-> Always verify user auth states. Avoid querying collections without `overrideAccess: false` parameters on the database ORM layer to prevent exposing secure site structures.
+When creating custom controllers or writing database queries, always verify user permission levels. Never query collections without scoping the request by the current user's organization or using the `X-Zenith-Site-Id` header filter.

@@ -1,68 +1,60 @@
-# 📋 Zenith Issue & Triage Guide (`ISSUE_GUIDE.md`)
+# Troubleshooting & Triage Guide
 
-This guide helps contributors and automated AI triage systems troubleshoot local Zenith environment anomalies, query limits, and database locks before filing formal GitHub Issues.
+This guide helps you resolve common environment issues, database connection errors, and collaborative editing locks before creating a GitHub issue.
 
 ---
 
-## 🛠️ 1. Environmental Triaging
+## 🛠️ Common Environment Issues
 
-When experiencing launch or execution crashes:
-
-### Step 1: Verify Node & Dependency Alignment
-
-Ensure your local environment matches the workspace version requirements:
+### 1. Verification of Node Version
+Ensure your local Node version satisfies the project's requirements:
 
 ```bash
-# Verify active runtime
 node --version # Must be >= 20.x
-
-# Verify lockfile matches node_modules tree
-npm ci
 ```
 
-### Step 2: Test MongoDB DB Core Connections
-
-If the core Express API crashes on launch, verify your Mongo daemon is active and responsive:
+### 2. Lockfile and Dependency Setup
+If you experience compile issues, try cleanly re-installing dependencies:
 
 ```bash
-# Verify port binding
+pnpm install --frozen-lockfile
+```
+
+### 3. Database Connectivity
+If the server crashes on launch, check that your PostgreSQL or MongoDB server is running:
+
+```bash
+# For MongoDB default port:
 curl -I http://localhost:27017
 
-# Validate MongoDB URI inside your local .env
-# Example: MONGODB_URI=mongodb://localhost:27017/zenith
+# For PostgreSQL default port:
+curl -I http://localhost:5432
 ```
+Make sure the connection URI in your `.env` matches your database configuration.
 
 ---
 
-## 🔒 2. Resolving Document Locks
+## 🔒 Resolving Active Document Locks
 
-In collaborative multi-tenant environments, you may encounter lock warnings:
+Because Zenith CMS prevents editors from overwriting each other's changes, you might occasionally see a lock message:
 
-> ⚠️ **Document locked by [User] (Viewing)**
+> ⚠️ **Document locked by [User]**
 
-### Clear Stuck Mutexes
-
-If a user session terminates abruptly without triggering socket cleanup:
-
-1. Focus hooks release locks automatically after a **15-second TTL**.
-2. Alternatively, run an admin reset command:
-   ```bash
-   # Clear database lock documents
-   npm run db:clear-locks
-   ```
+### How locks are cleared:
+1.  **Automatic Expiration**: Locks release automatically after a **60-second** inactivity period.
+2.  **Manual Database Clear**: If a lock gets stuck due to an abrupt disconnection, you can clear the presence ledger directly:
+    ```bash
+    pnpm run db:clear-locks
+    ```
 
 ---
 
-## 🐞 3. Formatting an Actionable Ticket
+## 🐞 Creating a GitHub Issue
 
-Before submitting a GitHub Issue, compile telemetry details to expedite triaging:
+If you find a bug that needs fixing, please open a GitHub issue with the following details:
 
-1. **Clean Trace**: Capture and paste the complete Node/Express console stack trace, or the React runtime compiler error.
-2. **Steps to Reproduce**: Provide a minimal, reproducible code snippet (such as a dynamic schema configuration or relationship mapping that triggered the bug).
-3. **Specify the Monorepo Workspace**: Scope the issue to the corresponding package (e.g. `core`, `admin`, `sdk`).
+1.  **Console Logs**: Paste the stack trace from the server console or the browser DevTools.
+2.  **Reproduction Steps**: Describe exactly what you clicked or what API call you made to trigger the error.
+3.  **Monorepo Package**: Note which package the bug resides in (e.g. `core`, `admin`, `sdk`).
 
----
-
-<div align="center">
-  <p><strong>Thanks for helping us keep the Zenith CMS core framework bulletproof! 🛡️</strong></p>
-</div>
+Thank you for helping keep Zenith CMS clean and stable! 🛡️
