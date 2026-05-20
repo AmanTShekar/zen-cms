@@ -81,27 +81,6 @@ Zenith CMS is an open-source, visual-first headless CMS engineered to maximize d
 
 ---
 
-## 3. Why Zenith CMS? (Honest Competitive Matrix)
-
-We maintain realistic parity mappings with industry-standard headless CMS frameworks. Below is a code-verified breakdown of where we stand:
-
-| Architectural Feature | Payload CMS (v3.0) | Directus (v10.x) | Strapi | Zenith CMS (Current) |
-| :--- | :--- | :--- | :--- | :--- |
-| **Concurrency Control** | Stateful collection checks | WebSocket visual indicators only | None (Last write wins) | **Active database-backed mutex locking** via `PresenceService` |
-| **Lifecycle Hooks Security** | In-process main thread execution | In-process main thread execution | In-process main thread execution | **Isolated worker threads** via `sandboxPool` |
-| **Media Safety Check** | Mime header check only | Mime header check only | Mime header check only | **Magic Bytes file header verification** |
-| **Member Ecosystem** | None (Custom schemas required) | None (Custom schemas required) | None (Custom schemas required) | **Built-in portal subscriber & login pathways** (`z_members`) |
-| **Localization Model** | Nested field maps (`localized: true`) | Row/field junction tables | Row-level locales | **Dictionary schema** with side-by-side UI layout |
-| **Polymorphic Page Blocks** | ✅ Supported | ✅ Supported | ✅ Supported | ❌ Not Yet (Pointers only; planned Q3 2026) |
-| **Granular SQL RLS** | ✅ Dynamic query filtering | ✅ Row-level filter arrays | ❌ Basic RBAC | ❌ Basic Role Scoping (Admin/Editor/Viewer) |
-| **Database Migrations** | ✅ Versioned Drizzle SQL scripts | ✅ Introspection & Reflection | ✅ Knex synchronizations | ⚠️ Declarative sync on boot (Migration CLI planned) |
-
-### Gaps & Limitations (Honest Disclosures)
-1.  **No Polymorphic Page Blocks**: You cannot stack arbitrary content structures (e.g. `HeroBlock`, then `SliderBlock`) in a single list field yet. Pointers are restricted to a single model.
-2.  **Declarative DB Boot-Sync**: Table migrations are executed automatically during initialization. For large databases, this runs the risk of schema locking during startup.
-3.  **Basic Row-Level Security**: Zenith limits operations to static RBAC roles (`admin`, `editor`, `viewer`). You cannot yet bind a specific user to view only their authored items dynamically via arbitrary queries.
-
----
 
 ## 4. Key Features
 
