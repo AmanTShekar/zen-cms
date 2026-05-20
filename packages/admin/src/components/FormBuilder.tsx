@@ -8,6 +8,7 @@ import MediaPicker from './MediaPicker'
 import BlocksBuilder from './BlocksBuilder'
 import SimpleArrayBuilder from './SimpleArrayBuilder'
 import RelationPicker from './RelationPicker'
+import { cn } from '../lib/utils'
 
 interface FormBuilderProps {
   fields: FieldConfig[]
@@ -259,7 +260,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
     return (
       <div className="relative w-full">
         <input
-          type={field.type === 'date' ? 'date' : 'text'}
+          type={['date', 'password', 'color', 'email'].includes(field.type) ? field.type : 'text'}
           value={value || ''}
           onChange={(e) => {
             let val = e.target.value
@@ -272,7 +273,11 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
           maxLength={field.maxLength}
           style={casingStyle}
           disabled={disabled}
-          className="w-full bg-app-subtle border border-border rounded-none px-3 py-2 text-sm focus:border-accent outline-none disabled:opacity-60 disabled:cursor-not-allowed"
+          className={cn(
+            "w-full bg-app-subtle border border-border rounded-none px-3 py-2 text-sm focus:border-accent outline-none disabled:opacity-60 disabled:cursor-not-allowed",
+            field.type === 'color' && "h-10 p-1 cursor-pointer",
+            field.type === 'uid' && "font-mono text-accent"
+          )}
           placeholder={`Enter ${field.name}...`}
         />
         {field.maxLength && field.type !== 'date' && (

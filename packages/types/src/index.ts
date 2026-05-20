@@ -66,7 +66,7 @@ export interface BaseFieldConfig {
 // ── Specific Field Interfaces ────────────────────────────────────────────────
 
 export interface TextFieldConfig extends BaseFieldConfig {
-  type: 'text' | 'email' | 'textarea'
+  type: 'text' | 'email' | 'textarea' | 'password' | 'uid' | 'color'
   minLength?: number
   maxLength?: number
 }
