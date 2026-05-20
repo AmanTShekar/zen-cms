@@ -229,6 +229,8 @@ export class MongooseAdapter implements DatabaseAdapter {
     if (collection === 'z_migrations') resolvedCollection = 'z_migrations'
     if (collection === 'z_collections') resolvedCollection = 'z_collections'
     if (collection === 'z_presence') resolvedCollection = 'z_presence'
+    if (collection === 'audit_logs' || collection === 'z_audit_logs') resolvedCollection = 'AuditLog'
+    if (collection === 'versions' || collection === 'z_versions') resolvedCollection = 'Version'
 
     const model = this.models[resolvedCollection] || mongoose.models[resolvedCollection]
     if (!model) throw new Error(`Collection "${collection}" not registered`)

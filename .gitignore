@@ -69,12 +69,10 @@ packages/sdk/index.d.ts
 # 🛠️ Scratch Files & Directories
 scratch-*.*
 scratch/
-.claude/
-.claude-plugin/
-.cursor/
 
 # 📦 Compiled TypeScript output in types package
 packages/types/src/**/*.js
 packages/types/src/**/*.js.map
 packages/types/src/**/*.d.ts
+docs/col
 

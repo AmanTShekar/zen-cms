@@ -31,6 +31,7 @@ export interface BlockDefinition {
     description?: string
     icon?: string
     imageURL?: string
+    category?: string
   }
 }
 

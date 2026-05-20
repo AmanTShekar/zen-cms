@@ -793,6 +793,8 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     if (collection === 'z_settings') return this.systemTables.settings
     if (collection === 'z_collections') return this.systemTables.collections
     if (collection === 'z_presence') return this.systemTables.presence
+    if (collection === 'audit_logs' || collection === 'z_audit_logs') return this.systemTables.auditLog
+    if (collection === 'versions' || collection === 'z_versions') return this.systemTables.version
     const table = this.tables[collection]
     if (!table) throw new Error(`Collection "${collection}" not registered in PostgreSQL`)
     return table
