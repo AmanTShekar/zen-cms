@@ -65,12 +65,32 @@ export class ContentService<T = unknown> {
         }
       }
 
-      // 1. Handle Localization (Zero-Copy Flattening)
-      // Strapi duplicates rows; Zenith keeps the tree in DB but flattens on the edge
+      // 1. Handle Localization
+      // afterRead: flatten the locale map to the requested locale before returning
       if (field.localized && action === 'afterRead' && options.locale) {
         const val = cleanData[field.name]
         if (val && typeof val === 'object' && !Array.isArray(val)) {
           cleanData[field.name] = i18n.getLocalizedValue(val, options.locale)
+        }
+      }
+
+      // beforeChange: merge the incoming value into the existing locale map so other
+      // translations are preserved (e.g. POST ?locale=fr only updates the 'fr' key)
+      if (field.localized && action === 'beforeChange' && options.locale) {
+        const incomingVal = cleanData[field.name]
+        if (incomingVal !== undefined && incomingVal !== null) {
+          // Only wrap if the incoming value is not already a locale map
+          const isAlreadyMap =
+            typeof incomingVal === 'object' &&
+            !Array.isArray(incomingVal) &&
+            Object.keys(incomingVal).some((k) => /^[a-z]{2}(-[A-Z]{2})?$/.test(k))
+          if (!isAlreadyMap) {
+            cleanData[field.name] = i18n.setLocaleValue(
+              undefined, // no existing map available at field-processing time
+              options.locale,
+              incomingVal
+            )
+          }
         }
       }
 
@@ -261,10 +281,12 @@ export class ContentService<T = unknown> {
       }
 
       // Apply RLS (Row Level Security) for updates
+      // access.update() may return a boolean (allow/deny) OR an object (query constraints)
+      // that restricts which documents the user may write to — same pattern as read RLS.
       if (options.user && typeof this.config.access?.update === 'function') {
-        const access = this.config.access.update(options.user)
+        const access = this.config.access.update(options.user, { req: (options as any).req })
         if (access === false) throw new ForbiddenError()
-        if (typeof access === 'object') {
+        if (typeof access === 'object' && access !== null) {
           Object.assign(query, access)
         }
       }
@@ -338,10 +360,12 @@ export class ContentService<T = unknown> {
       if (options.siteId) query.siteId = options.siteId
 
       // Apply RLS (Row Level Security) for deletes
+      // access.delete() may return a boolean OR an object of query constraints
+      // so users can only delete their own documents (e.g. { createdBy: user.id }).
       if (options.user && typeof this.config.access?.delete === 'function') {
-        const access = this.config.access.delete(options.user)
+        const access = this.config.access.delete(options.user, { req: (options as any).req })
         if (access === false) throw new ForbiddenError()
-        if (typeof access === 'object') {
+        if (typeof access === 'object' && access !== null) {
           Object.assign(query, access)
         }
       }

@@ -256,6 +256,7 @@ export function createCollectionRouter(
       const { schema, contentService } = getContext()
       const user = (req as any).user
       const siteId = req.headers['x-zenith-site-id'] as string
+      const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       await verifyAccess(user, 'create')
 
       const validation = schema.safeParse(req.body)
@@ -268,7 +269,7 @@ export function createCollectionRouter(
         )
       }
 
-      const doc = await contentService.create(validation.data, { user, siteId })
+      const doc = await contentService.create(validation.data, { user, siteId, locale })
 
       CacheService.invalidateTag(config.slug)
 
@@ -284,6 +285,7 @@ export function createCollectionRouter(
       const { schema, contentService } = getContext()
       const user = (req as any).user
       const siteId = req.headers['x-zenith-site-id'] as string
+      const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       await verifyAccess(user, 'update')
 
       const validation = schema.partial().safeParse(req.body)
@@ -296,9 +298,10 @@ export function createCollectionRouter(
         )
       }
 
-      const { doc, delta } = await contentService.update('singleton', validation.data, {
+      const { doc } = await contentService.update('singleton', validation.data, {
         user,
         siteId,
+        locale,
       })
 
       CacheService.invalidateTag(config.slug)
@@ -314,6 +317,7 @@ export function createCollectionRouter(
       const { schema, contentService } = getContext()
       const user = (req as any).user
       const siteId = req.headers['x-zenith-site-id'] as string
+      const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       await verifyAccess(user, 'update')
 
       const validation = schema.partial().safeParse(req.body)
@@ -326,9 +330,10 @@ export function createCollectionRouter(
         )
       }
 
-      const { doc, delta } = await contentService.update(req.params.id, validation.data, {
+      const { doc } = await contentService.update(req.params.id, validation.data, {
         user,
         siteId,
+        locale,
       })
 
       CacheService.invalidateTag(config.slug)

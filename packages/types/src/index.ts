@@ -150,10 +150,14 @@ export interface CollectionConfig {
     afterError?: (error: Error, data: any, user: any) => void | Promise<void>
   }
   access?: {
-    read?: (user: any) => boolean | object
-    create?: (user: any) => boolean
-    update?: (user: any) => boolean
-    delete?: (user: any) => boolean
+    /** Return false to deny, or an object to merge as query constraints (Row-Level Security). */
+    read?: (user: any, context?: { req?: any }) => boolean | object
+    /** Return false to deny, or an object to constrain which documents the user may create. */
+    create?: (user: any, context?: { req?: any }) => boolean
+    /** Return false to deny, or an object to constrain which documents the user may update. */
+    update?: (user: any, context?: { req?: any }) => boolean | object
+    /** Return false to deny, or an object to constrain which documents the user may delete. */
+    delete?: (user: any, context?: { req?: any }) => boolean | object
   }
   admin?: {
     group?: string
