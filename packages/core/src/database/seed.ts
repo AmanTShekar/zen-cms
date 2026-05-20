@@ -7,6 +7,8 @@ import { DatabaseAdapter } from './adapters/BaseAdapter'
  * Zenith Seeding Engine
  * ─────────────────────
  * Automates initial setup of the CMS (Admin creation, default settings).
+ * 
+ * Run with: pnpm run seed
  */
 export async function seedInitialData() {
   try {

@@ -1,12 +1,12 @@
-# Zenith Production Blueprints
+# Zenith Examples & Recipes
 
-Production-ready code structures to connect, consume, and secure Zenith CMS inside scalable client architectures.
+Here are some real-world examples of how to connect to Zenith, secure your webhooks, and use lifecycle hooks.
 
 ---
 
-## 🔌 1. Decoupled Dynamic Client Scoping (Node SDK / Edge Services)
+## 🔌 1. Fetching Data (Node SDK / Edge Services)
 
-When consuming Zenith CMS dynamically, configure your client to pass API credentials and target the specific tenant site workspace.
+When consuming Zenith from an edge function or Node server, you can pass your API credentials and target a specific site workspace.
 
 ```typescript
 import { createZenithClient } from '@zenithcms/sdk'
@@ -45,9 +45,9 @@ export async function getStorefrontPage(slug: string) {
 
 ---
 
-## 🔒 2. HMAC Webhook Payload Verification
+## 🔒 2. Securing Webhooks with HMAC
 
-Zenith signs webhook payloads using a private secret key via SHA256 signatures to secure your public integration hooks.
+Zenith signs webhook payloads using a private secret key via SHA256 signatures, so you can be sure the request actually came from your CMS.
 
 ```typescript
 import crypto from 'crypto'
@@ -91,9 +91,9 @@ export async function handleZenithWebhook(req: Request, res: Response) {
 
 ---
 
-## ⚙️ 3. Dynamic API Request Lifecycle Hooks
+## ⚙️ 3. Lifecycle Hooks
 
-Register custom database lifecycle hooks directly within collections to compute values, trigger events, or validate states.
+You can register custom lifecycle hooks directly on your collections to calculate values, trigger external services, or validate data before it saves.
 
 ```typescript
 import { CollectionConfig } from '@zenithcms/types'

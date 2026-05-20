@@ -1,12 +1,12 @@
-# Zenith Plugin & Widget Development Blueprint
+# Zenith Plugins & Widgets
 
-Zenith features a flexible plugin architecture. Engineers can dynamically extend core behaviors, inject collection configurations, listen to database mutation lifecycles, and author interactive dashboard widgets.
+Zenith has a simple but powerful plugin system. You can extend core features, inject collections, listen to database lifecycles, and even build custom widgets for the admin dashboard.
 
 ---
 
-## 🔌 1. Core Server Plugins
+## 🔌 1. Server Plugins
 
-A Zenith server-side plugin is a modular config synthesizer that receives the global configuration and injects schemas, routers, hooks, and express middlewares.
+A server plugin is just a function that receives the global configuration and returns a new configuration. You can use this to inject schemas, add express routes, or register hooks.
 
 ### Complete Boilerplate Template:
 
@@ -48,9 +48,9 @@ export const MySmsNotificationPlugin = (options: {
 
 ---
 
-## 🎨 2. Dynamic Admin Dashboard Widgets
+## 🎨 2. Dashboard Widgets
 
-Zenith hosts a dynamic dashboard canvas builder. Third-party packages can register custom drag-and-drop tiles.
+Zenith's admin dashboard is fully customizable. You can register your own React components as drag-and-drop widgets.
 
 ### Step 1: Register in the Admin Widget Registry
 
@@ -123,9 +123,9 @@ export default function TelemetryChartWidget({ theme, title, config }: WidgetPro
 
 ---
 
-## 🚦 3. Custom Schema Field Types & Dynamic Form Controls
+## 🚦 3. Custom Field Properties
 
-Zenith allows developers to map structural parameters on fields for rich, localized inputs:
+When defining fields, you can pass custom attributes to control how the admin UI renders them:
 
 ```typescript
 export interface FieldSchema {
