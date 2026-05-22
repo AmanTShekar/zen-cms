@@ -1,5 +1,7 @@
 import React from 'react'
 import type { FieldConfig } from '@zenithcms/types'
+import { useTheme } from '../../context/ThemeContext'
+import { cn } from '../../lib/utils'
 
 interface Props {
   field: FieldConfig
@@ -9,6 +11,7 @@ interface Props {
 }
 
 const SelectField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
+  const { theme } = useTheme()
   const f = field as any
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = f.hasMany
@@ -27,7 +30,15 @@ const SelectField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
       onChange={handleChange}
       multiple={f.hasMany}
       disabled={disabled}
-      className="w-full bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-none px-3 py-2 text-sm focus:border-purple-500/50 outline-none disabled:opacity-60 disabled:cursor-not-allowed text-white"
+      className={cn(
+        "w-full px-3 py-2 text-sm focus:outline-none transition-all duration-350",
+        "backdrop-blur-[12px] shadow-[0_4px_30px_rgba(0,0,0,0.05)]",
+        theme === 'dark'
+          ? "bg-[#111827]/65 text-white border border-white/[0.08] focus:border-indigo-500/50"
+          : "bg-white/65 text-gray-900 border border-black/[0.08] focus:border-indigo-500/30",
+        f.hasMany ? "rounded-lg min-h-[120px]" : "rounded-lg",
+        "disabled:opacity-60 disabled:cursor-not-allowed"
+      )}
     >
       {!f.required && !f.hasMany && <option value="">Select...</option>}
       {(f.options || []).map((opt: string | { value?: string; label?: string }) => {
