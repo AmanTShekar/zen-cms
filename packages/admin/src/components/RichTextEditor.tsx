@@ -273,13 +273,13 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   })
 
   useEffect(() => {
-    if (editor) {
+    if (editor && !editor.isDestroyed) {
       editor.setEditable(!disabled)
     }
   }, [editor, disabled])
 
   useEffect(() => {
-    if (!editor) return
+    if (!editor || editor.isDestroyed) return
 
     let currentContent: any
     if (format === 'json') {
@@ -297,8 +297,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   }, [value, editor, format, parsedContent])
 
   const insertImage = (url: string, alt: string) => {
+    if (!editor || editor.isDestroyed) return
     const fullUrl = url.startsWith('http') ? url : `http://localhost:3000${url}`
-    ;(editor?.chain().focus() as any).setImage({ src: fullUrl, alt }).run()
+    ;(editor.chain().focus() as any).setImage({ src: fullUrl, alt }).run()
     setIsMediaOpen(false)
   }
 
@@ -317,7 +318,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
   }, [isMediaOpen])
 
-  if (!editor) return null
+  if (!editor || editor.isDestroyed) return null
 
   const isFull = mode === 'full'
   const isHeading = mode === 'heading'
