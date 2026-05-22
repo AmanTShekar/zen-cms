@@ -188,44 +188,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
         </div>
 
         {/* Active Site Workspace Indicator / Switcher */}
-          <SiteSelector />
-        <div
-          className={cn(
-            'px-6 py-4 border-b flex items-center justify-between transition-all duration-300',
-            theme === 'dark' ? 'bg-[#0a0a0a] border-white/5' : 'bg-gray-50/50 border-gray-100'
-          )}
-        >
-          {isSidebarOpen ? (
-            <div className="flex flex-col min-w-0">
-              <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest leading-none mb-1.5">
-                Workspace
-              </span>
-              <span className="text-[11px] font-black uppercase tracking-wider truncate leading-none">
-                {localStorage.getItem('activeSiteName') || 'Zenith Site'}
-              </span>
-            </div>
-          ) : (
-            <span
-              className="text-[12px] filter saturate-50 hover:saturate-100 transition-all cursor-help"
-              title={localStorage.getItem('activeSiteName') || 'Zenith Site'}
-            >
-              🌐
-            </span>
-          )}
-          {isSidebarOpen && (
-            <Link
-              to="/sites"
-              className={cn(
-                'px-2.5 py-1.5 border hover:bg-white/[0.04] text-[8px] font-black uppercase tracking-widest font-mono transition-all',
-                theme === 'dark'
-                  ? 'border-white/10 bg-white/[0.02] text-gray-400 hover:text-white'
-                  : 'border-gray-200 bg-white text-gray-600 hover:text-black'
-              )}
-            >
-              Switch
-            </Link>
-          )}
-        </div>
+        <SiteSelector isSidebarOpen={isSidebarOpen} />
 
         {/* Navigation Core */}
         <div className="flex-1 overflow-y-auto no-scrollbar py-8 px-4 space-y-10">
