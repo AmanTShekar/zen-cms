@@ -1,0 +1,38 @@
+// Zenith CMS — .cursor/rules.json
+// This file gives Cursor AI deep context about this project.
+{
+  "rules": [
+    {
+      "name": "Project Overview",
+      "description": "Zenith CMS is a TypeScript-first headless CMS built on Express + MongoDB. It uses pnpm workspaces. The API is in packages/core, the admin UI is in packages/admin, and shared types are in packages/types."
+    },
+    {
+      "name": "Error Handling",
+      "description": "All errors must extend ZenithError from packages/core/src/errors/index.ts. Never throw plain Error objects in route handlers. Always call next(err) to propagate to the global error handler in middleware/error-handler.ts."
+    },
+    {
+      "name": "API Response Shape",
+      "description": "All API responses must use createResponse() or createErrorResponse() from packages/core/src/api/utils.ts for consistency."
+    },
+    {
+      "name": "Database Models",
+      "description": "Internal/system collections (audit, versions, api keys, etc.) must use the 'z_' prefix (e.g. z_versions, z_audit_logs). User content collections use the slug defined in cms.config.ts."
+    },
+    {
+      "name": "Service Pattern",
+      "description": "Business logic lives in packages/core/src/services. Routes delegate to services. Controllers (in api/controllers/) are thin wrappers that parse req/res and call services."
+    },
+    {
+      "name": "Adding New Collections",
+      "description": "Edit cms.config.ts in the root. No other files need changing. The engine auto-generates REST and GraphQL endpoints, Swagger docs, and Zod validation from the schema."
+    },
+    {
+      "name": "AI Safety & Protected Zones",
+      "description": "NEVER modify .cursor/, .antigravity/, or packages/types/ without explicit user consent. Follow the guidelines in AI_CUSTOMIZATION.md. Always prioritize clean, maintainable code and remove unused segments."
+    },
+    {
+      "name": "Git Policy",
+      "description": "NEVER run 'git push' or push changes to a remote repository unless the user specifically requests it."
+    }
+  ]
+}

@@ -33,6 +33,9 @@ import './database/settings-model'
 import './database/site-model'
 import './database/version-model'
 import './database/webhook-model'
+import './database/release-model'
+import './database/role-model'
+import './database/template-model'
 
 // ── Middleware ───────────────────────────────────────────────────────────────
 import { rateLimitMiddleware } from './middleware/rate-limit'
@@ -42,6 +45,7 @@ import { csrfProtection } from './middleware/csrf'
 import { maintenanceMiddleware } from './middleware/maintenance'
 import { metricsMiddleware, getPrometheusMetrics } from './middleware/metrics'
 import { tracerMiddleware } from './middleware/tracer'
+import { siteVaryMiddleware } from './middleware/siteVary'
 
 // ── Routers ──────────────────────────────────────────────────────────────────
 import { createCollectionRouter } from './api/factory'
@@ -50,6 +54,7 @@ import systemRouter from './api/system'
 import authRouter from './api/auth'
 import uploadRouter from './api/upload'
 import _mediaRouter from './api/media'
+import importExportRouter from './api/import-export'
 import preferencesRouter from './api/preferences'
 import versionsRouter from './api/versions'
 import presenceRouter from './api/presence'
@@ -60,6 +65,9 @@ import flowsRouter from './api/flows'
 import dashboardRouter from './api/dashboard'
 import sitesRouter from './api/sites'
 import promotionRouter from './api/promotion'
+import releasesRouter from './api/releases'
+import rolesRouter, { seedSystemRoles } from './api/roles'
+import templatesRouter from './api/templates'
 
 // ── GraphQL / Swagger (optional) ─────────────────────────────────────────────
 import { setupSwagger } from './api/swagger'
@@ -171,7 +179,7 @@ export class ZenithEngine {
     // Enable trust proxy for secure rate-limiting and cookie transport behind reverse proxies
     const trustProxy = process.env.TRUST_PROXY
     if (trustProxy) {
-      this.app.set('trust proxy', trustProxy === 'true' ? true : Number(trustProxy) || trustProxy)
+      this.app.set('trust proxy', trustProxy === 'true' ? true : trustProxy === 'false' ? false : Number(trustProxy) || trustProxy)
     } else {
       this.app.set('trust proxy', true) // Default secure trust for standard cloud load balancers
     }
@@ -190,6 +198,7 @@ export class ZenithEngine {
 
   private _initMiddleware() {
     this.app.use(tracerMiddleware)
+    this.app.use(siteVaryMiddleware)
     this.app.use(metricsMiddleware)
     this.app.use(
       helmet({
@@ -264,6 +273,7 @@ export class ZenithEngine {
     // ── Media ────────────────────────────────────────────────────────────────
     this.app.use('/api/v1/upload', uploadRouter)
     this.app.use('/media', _mediaRouter)
+    this.app.use('/api/v1/import-export', importExportRouter)
     this.app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')))
 
     // ── Content Management Tools (non-collection) ─────────────────────────────
@@ -276,6 +286,9 @@ export class ZenithEngine {
     this.app.use('/api/v1/dashboard', dashboardRouter)
     this.app.use('/api/v1/sites', sitesRouter)
     this.app.use('/api/v1/promotion', promotionRouter)
+    this.app.use('/api/v1/releases', releasesRouter)
+    this.app.use('/api/v1/roles', rolesRouter)
+    this.app.use('/api/v1/templates', templatesRouter)
 
     // ── Dynamic Collection Routers ────────────────────────────────────────────
     const webhooks = this.config.webhooks || []
@@ -442,6 +455,7 @@ export class ZenithEngine {
       }
 
       await seedInitialData()
+      await seedSystemRoles()
 
       // Optional high-fidelity dummy seeding for demos
       if (process.env.ZENITH_SEED === 'true') {
@@ -576,8 +590,8 @@ export class ZenithEngine {
       process.on('SIGINT', () => shutdown('SIGINT'))
 
       return server
-    } catch (error) {
-      logger.error({ error }, 'Startup failed')
+    } catch (error: any) {
+      logger.error({ err: error.message, stack: error.stack }, 'Startup failed')
       process.exit(1)
     }
   }

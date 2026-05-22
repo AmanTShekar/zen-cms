@@ -507,7 +507,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     }
   }
 
-  private mapFieldToDrizzleColumn(field: FieldConfig): PgColumnBuilderBase<any> {
+  private mapFieldToDrizzleColumn(field: any): PgColumnBuilderBase<any> {
     if (field.localized) {
       return jsonb(field.name)
     }
@@ -524,6 +524,9 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       case 'date':
         col = timestamp(field.name)
         break
+      case 'richtext':
+        col = (field as any).format === 'json' ? jsonb(field.name) : text(field.name)
+        break
       case 'json':
       case 'array':
       case 'group':
@@ -537,6 +540,22 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
           col = text(field.name)
         }
         break
+      case 'media':
+        col = jsonb(field.name)
+        break
+      case 'code':
+      case 'radio':
+        col = text(field.name)
+        break
+      case 'collapsible':
+      case 'join':
+      case 'point':
+        col = jsonb(field.name)
+        break
+      case 'row':
+      case 'ui':
+        // Layout/presentational fields — no DB column
+        return undefined as any
       default:
         col = text(field.name)
     }
@@ -546,7 +565,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     return col
   }
 
-  private mapFieldToSqlType(field: FieldConfig): string {
+  private mapFieldToSqlType(field: any): string {
     if (field.localized) return 'JSONB'
 
     switch (field.type) {
@@ -557,6 +576,8 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         return 'BOOLEAN'
       case 'date':
         return 'TIMESTAMP'
+      case 'richtext':
+        return (field as any).format === 'json' ? 'JSONB' : 'TEXT'
       case 'json':
       case 'array':
       case 'group':
@@ -564,6 +585,18 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         return 'JSONB'
       case 'relation':
         return (field as any).hasMany ? 'JSONB' : 'TEXT'
+      case 'media':
+        return 'JSONB'
+      case 'code':
+      case 'radio':
+        return 'TEXT'
+      case 'collapsible':
+      case 'join':
+      case 'point':
+        return 'JSONB'
+      case 'row':
+      case 'ui':
+        return 'SKIP'
       default:
         return 'TEXT'
     }
@@ -588,6 +621,10 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
 
     for (const field of config.fields) {
       if (field.type === 'relation' && (field as any).junctionTable) {
+        continue
+      }
+      // Layout/presentational fields (row, ui) have no DB column
+      if (field.type === 'row' || field.type === 'ui') {
         continue
       }
       columns[field.name] = this.mapFieldToDrizzleColumn(field)
@@ -656,8 +693,8 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         }
         const sqlType = this.mapFieldToSqlType(field)
         createSql += `,\n  "${field.name}" ${sqlType}`
-        if (field.unique) createSql += ' UNIQUE'
-        if (field.required) createSql += ' NOT NULL'
+        if ((field as any).unique) createSql += ' UNIQUE'
+        if ((field as any).required) createSql += ' NOT NULL'
       }
       createSql += `\n);`
 
@@ -680,7 +717,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
           )
           const sqlType = this.mapFieldToSqlType(field)
           let alterSql = `ALTER TABLE "${config.slug}" ADD COLUMN "${field.name}" ${sqlType}`
-          if (field.unique) alterSql += ' UNIQUE'
+          if ((field as any).unique) alterSql += ' UNIQUE'
           await db.execute(sql.raw(alterSql))
         }
       }
@@ -690,7 +727,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
           continue
         }
         if (
-          field.unique ||
+          (field as any).unique ||
           (field as any).index ||
           (field as any).searchable ||
           (field as any).indexed
@@ -702,7 +739,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
 
           let indexSql: string
           if (
-            field.localized ||
+            (field as any).localized ||
             field.type === 'json' ||
             field.type === 'array' ||
             field.type === 'group' ||
@@ -735,8 +772,10 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
           let createJunctionSql = `CREATE TABLE IF NOT EXISTS "${junctionTable}" (
             "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
             "source_id" TEXT NOT NULL,
-            "target_id" TEXT NOT NULL`
-          
+            "target_id" TEXT NOT NULL,
+            "position" INTEGER NOT NULL DEFAULT 0,
+            "relation_to" TEXT`
+
           const pivotFields = (field as any).pivotFields || []
           for (const pf of pivotFields) {
             if (!isValidIdentifier(pf.name)) {
@@ -753,15 +792,25 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
           
           const sourceIdxName = `idx_${junctionTable}_source_id`
           const targetIdxName = `idx_${junctionTable}_target_id`
+          const posIdxName = `idx_${junctionTable}_position`
           await db.execute(sql.raw(`CREATE INDEX IF NOT EXISTS "${sourceIdxName}" ON "${junctionTable}" ("source_id");`))
           await db.execute(sql.raw(`CREATE INDEX IF NOT EXISTS "${targetIdxName}" ON "${junctionTable}" ("target_id");`))
+          await db.execute(sql.raw(`CREATE INDEX IF NOT EXISTS "${posIdxName}" ON "${junctionTable}" ("source_id", "position");`))
           
           const jResult = await db.execute(sql`
-            SELECT column_name FROM information_schema.columns 
+            SELECT column_name FROM information_schema.columns
             WHERE table_name = ${junctionTable};
           `)
           const existingJCols = (jResult.rows || []).map((r: any) => r.column_name)
-          
+
+          // Always ensure position + relation_to columns exist
+          for (const [col, type] of [['position', 'INTEGER NOT NULL DEFAULT 0'], ['relation_to', 'TEXT']] as const) {
+            if (!existingJCols.includes(col)) {
+              logger.info(`PostgresDrizzleAdapter: Auto-migrating ADD COLUMN "${col}" to junction table "${junctionTable}"`)
+              await db.execute(sql.raw(`ALTER TABLE "${junctionTable}" ADD COLUMN "${col}" ${type}`))
+            }
+          }
+
           for (const pf of pivotFields) {
             if (!existingJCols.includes(pf.name)) {
               logger.info(`PostgresDrizzleAdapter: Auto-migrating ADD COLUMN "${pf.name}" to junction table "${junctionTable}"`)
@@ -893,7 +942,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         return mappedRecord
       })
       const loaded = await this._loadJunctionIds(collection, mapped)
-      const populated = await this._populateRelations(collection, loaded, options)
+      const populated = await this._populateRelations(collection, loaded, options, [collection])
       this.cache.set(cacheKey, populated)
       return populated as T[]
     }
@@ -929,7 +978,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     })
 
     const loaded = await this._loadJunctionIds(collection, mapped)
-    const populated = await this._populateRelations(collection, loaded, options)
+    const populated = await this._populateRelations(collection, loaded, options, [collection])
     this.cache.set(cacheKey, populated)
     return populated as T[]
   }
@@ -941,14 +990,11 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
   ): Promise<T | null> {
     const table = this.getTable(collection)
     const client = this.getDbClient(options)
-    let dbQuery = client.select().from(table).$dynamic()
+    const dbQuery = this._selectWithColumns(client, table, collection, options)
 
     const where = this.buildWhereClause(table, query)
-    if (where) {
-      dbQuery = dbQuery.where(where)
-    }
 
-    const result = await dbQuery.limit(1)
+    const result = await dbQuery.where(where ?? sql`1=1`).limit(1)
     if (result.length === 0) return null
 
     const r = result[0] as any
@@ -957,16 +1003,78 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       mappedRecord._status = mappedRecord.status
     }
     const loaded = await this._loadJunctionIds(collection, [mappedRecord])
-    const populated = await this._populateRelations(collection, loaded, options)
+    const populated = await this._populateRelations(collection, loaded, options, [collection])
     return populated[0] as T
   }
+
+  /**
+   * Builds a Drizzle select query, optionally scoped to a subset of columns.
+   * When options.select is populated, only those columns are fetched (plus
+   * always-loaded metadata: id, createdAt, updatedAt, status).
+   */
+  private _selectWithColumns(
+    client: NodePgDatabase,
+    table: any,
+    collection: string,
+    options: FindOptions
+  ): any {
+    // When populate is enabled, we need all columns to resolve relation lookups
+    const needsAll =
+      !options.select ||
+      (options.populate &&
+        (Array.isArray(options.populate) ? options.populate.length > 0 : !!options.populate))
+
+    if (needsAll) {
+      return client.select().from(table).$dynamic()
+    }
+
+    // Column selection: extract safe column names from config
+    const config = this.configs[collection]
+    const safeCols = new Set(['id', 'created_at', 'updated_at', 'status'])
+    if (config?.fields) {
+      for (const f of config.fields) {
+        safeCols.add(f.name)
+      }
+    }
+
+    // Always include meta columns for the result mapper
+    const requested: string[] = Array.isArray(options.select) ? options.select : []
+    const toSelect = requested
+      .filter((col: string) => safeCols.has(col))
+      .map((col: string) => {
+        const mapped = col === 'id' ? (table as any).id
+          : col === 'created_at' ? (table as any).createdAt
+          : col === 'updated_at' ? (table as any).updatedAt
+          : col === 'status' ? (table as any).status
+          : (table as any)[col]
+        return mapped
+      })
+      .filter(Boolean)
+
+    if (toSelect.length === 0) {
+      return client.select().from(table).$dynamic()
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (client as any).select(...toSelect).from(table).$dynamic()
+  }
+
+  /** Maximum depth for nested relation population to prevent query explosion */
+  private static readonly MAX_POPULATE_DEPTH = 5
 
   private async _populateRelations(
     collection: string,
     records: any[],
-    options: FindOptions
+    options: FindOptions,
+    populationPath: string[] = [collection],
+    _depth: number = PostgresDrizzleAdapter.MAX_POPULATE_DEPTH
   ): Promise<any[]> {
     if (!records || records.length === 0 || !options.populate) {
+      return records
+    }
+    // Task 07: Depth guard — stop recursing beyond MAX_POPULATE_DEPTH
+    if (_depth <= 0) {
+      logger.debug({ collection, depth: _depth }, 'PostgresDrizzleAdapter: _populateRelations depth limit reached, skipping')
       return records
     }
 
@@ -975,142 +1083,177 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       return records
     }
 
-    const populateFields = Array.isArray(options.populate)
-      ? options.populate
-      : [options.populate]
+    const populateFields = (Array.isArray(options.populate) ? options.populate : [options.populate]).filter(Boolean)
 
-    for (const popKey of populateFields) {
-      const field = config.fields.find((f) => f.name === popKey)
-      if (!field || field.type !== 'relation') {
-        continue
+    // --- Deep nested field walker: find relation fields inside group/array/blocks containers ---
+    const allRelationFields: Array<{ containerPath: string; field: any }> = []
+
+    const walkFields = (fields: any[], path = ''): void => {
+      if (!fields) return
+      for (const f of fields) {
+        if (f.type === 'relation') {
+          const fullPath = path ? `${path}.${f.name}` : f.name
+          // Check top-level population whitelist; if empty (fetch-all), include all
+          const inWhitelist = populateFields.length === 0 || populateFields.some(p => p === fullPath || p === f.name || (path && p.startsWith(`${path}.`)))
+          if (inWhitelist) allRelationFields.push({ containerPath: path, field: f })
+        } else if ((f.type === 'group' || f.type === 'array' || f.type === 'blocks') && f.fields) {
+          const blocks = f.type === 'blocks' && f.blocks ? f.blocks : [f]
+          for (const block of blocks) {
+            walkFields(block.fields, path ? `${path}.${f.name}` : f.name)
+          }
+        }
+      }
+    }
+    walkFields(config.fields)
+
+    // Process each discovered relation field
+    for (const { containerPath, field: relField } of allRelationFields) {
+      const relationTo = relField.relationTo
+      const hasMany = relField.hasMany ?? true
+
+      // Polymorphic relationTo[] — flatten all IDs from { relationTo, value } pairs or bare IDs
+      const resolveIds = (val: any): Set<string> => {
+        const ids = new Set<string>()
+        if (!val) return ids
+        if (Array.isArray(val)) {
+          for (const item of val) {
+            // Polymorphic format: { relationTo: "posts", value: "abc123" }
+            if (item && typeof item === 'object' && 'value' in item && 'relationTo' in item) {
+              if (item.value) ids.add(String(item.value))
+            } else if (item) {
+              ids.add(String(item))
+            }
+          }
+        } else if (val && typeof val === 'object' && 'value' in val && 'relationTo' in val) {
+          // Single polymorphic
+          if (val.value) ids.add(String(val.value))
+        } else if (typeof val === 'string') {
+          const trimmed = val.trim()
+          if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+            try { resolveIds(JSON.parse(trimmed)).forEach(id => ids.add(id)) } catch { /* ignore */ }
+          } else {
+            ids.add(val)
+          }
+        }
+        return ids
       }
 
-      const relationField = field as any
-      const relationTo = relationField.relationTo
-      const hasMany = relationField.hasMany
-
-      // Gather all IDs to fetch in a single batched query
       const idsToFetch = new Set<string>()
       for (const record of records) {
-        let val = record[popKey]
-        if (val) {
-          if (typeof val === 'string') {
-            const trimmed = val.trim()
-            if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
-              try {
-                val = JSON.parse(trimmed)
-              } catch {
-                // Ignore parsing errors
-              }
-            }
-          }
-          if (Array.isArray(val)) {
-            val.forEach((id: any) => {
-              if (id) idsToFetch.add(String(id))
-            })
-          } else if (typeof val === 'string') {
-            idsToFetch.add(val)
-          }
+        if (containerPath) {
+          // Navigate into nested container
+          const parts = containerPath.split('.')
+          let current: any = record
+          for (const p of parts) { current = current?.[p]; }
+          const nestedVal = current?.[relField.name]
+          resolveIds(nestedVal).forEach(id => idsToFetch.add(id))
+        } else {
+          resolveIds(record[relField.name]).forEach(id => idsToFetch.add(id))
         }
       }
 
+      // Initialize default values when no IDs present
       if (idsToFetch.size === 0) {
-        // Initialize relation field to default values if empty
         for (const record of records) {
-          if (record[popKey] === undefined || record[popKey] === null) {
-            record[popKey] = hasMany ? [] : null
+          const setter = (obj: any) => {
+            if (obj[relField.name] === undefined || obj[relField.name] === null) {
+              obj[relField.name] = hasMany ? [] : null
+            }
+          }
+          if (containerPath) {
+            const parts = containerPath.split('.')
+            let current: any = record
+            for (const p of parts.slice(0, -1)) { current = current?.[p]; }
+            setter(current)
+          } else {
+            setter(record)
           }
         }
         continue
       }
 
-      // Fetch related records in batch
-      const relatedDocs = await this.find<any>(
-        relationTo,
-        { id: { $in: Array.from(idsToFetch) } },
-        { session: options.session, siteId: options.siteId }
-      )
-
-      // Create a map for fast lookup
-      const docMap = new Map<string, any>()
-      for (const doc of relatedDocs) {
-        docMap.set(doc.id, doc)
-      }
-
-      // If it uses junctionTable, let's load all links containing pivot metadata
-      const linkMap = new Map<string, any>()
-      if (relationField.junctionTable) {
-        const sourceIds = records.map((r) => r.id)
-        const pivotFields = relationField.pivotFields || []
-        const selectCols = ['source_id', 'target_id', ...pivotFields.map((f: any) => `"${f.name}"`)]
-        try {
-          const linksResult = await this.db.execute(
-            sql.raw(`SELECT ${selectCols.join(', ')} FROM "${relationField.junctionTable}" WHERE source_id = ANY(ARRAY[${sourceIds.map((id: any) => `'${id}'`).join(', ')}])`)
-          )
-          const links = linksResult.rows || []
-          for (const link of links as any[]) {
-            linkMap.set(`${link.source_id}_${link.target_id}`, link)
-          }
-        } catch (err: any) {
-          logger.warn({ err: err.message }, 'Failed to fetch pivot fields for populated relation')
+      // --- Circular reference protection ---
+      const targetCollections = Array.isArray(relationTo) ? relationTo : [relationTo]
+      for (const target of targetCollections) {
+        if (populationPath.includes(target)) {
+          logger.debug(`[Population] Circular protection: skipping ${collection} → ${target}`)
+          continue
         }
-      }
+        if (!this.configs[target]) {
+          logger.debug(`[Population] Unknown collection "${target}" — skipping`)
+          continue
+        }
 
-      // Merge populated documents back into results
-      for (const record of records) {
-        let val = record[popKey]
-        if (val) {
-          if (typeof val === 'string') {
-            const trimmed = val.trim()
-            if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
-              try {
-                val = JSON.parse(trimmed)
-              } catch {
-                // Ignore parsing errors
-              }
+        // Recursively populate nested relations (passes path for depth tracking)
+        const nestedPath = [...populationPath, target]
+        const relatedDocs = await this.find<any>(
+          target,
+          { id: { $in: Array.from(idsToFetch) } },
+          { session: options.session, siteId: options.siteId }
+        )
+        // Recurse into the related docs to populate their own nested relations
+        await this._populateRelations(target, relatedDocs, options, nestedPath, _depth - 1)
+
+        const docMap = new Map<string, any>()
+        for (const doc of relatedDocs) { docMap.set(doc.id, doc) }
+
+        const linkMap = new Map<string, any>()
+        if (relField.junctionTable) {
+          const sourceIds = records.map(r => r.id)
+          const pivotFields = relField.pivotFields || []
+          const selectCols = ['source_id', 'target_id', 'position', ...pivotFields.map((f: any) => `"${f.name}"`)]
+          try {
+            const linksResult = await this.db.execute(
+              sql.raw(`SELECT ${selectCols.join(', ')} FROM "${relField.junctionTable}" WHERE source_id = ANY(ARRAY[${sourceIds.map((id: any) => `'${id}'`).join(', ')}]) ORDER BY "position" ASC NULLS LAST`)
+            )
+            for (const link of linksResult.rows || [] as any[]) {
+              linkMap.set(`${link.source_id}_${link.target_id}`, link)
             }
+          } catch (err: any) {
+            logger.warn({ err: err.message }, 'Failed to fetch pivot fields for populated relation')
           }
-          if (Array.isArray(val)) {
-            record[popKey] = val
-              .map((id: any) => {
-                const doc = docMap.get(String(id))
+        }
+
+        for (const record of records) {
+          let rec = record
+          if (containerPath) {
+            const parts = containerPath.split('.')
+            for (const p of parts.slice(0, -1)) { rec = rec?.[p]; }
+          }
+
+          let val = containerPath ? rec?.[relField.name] : record[relField.name]
+          const isPolymorphic = Array.isArray(relationTo)
+
+          if (!val) val = hasMany ? [] : null
+
+          if (hasMany && Array.isArray(val)) {
+            rec[relField.name] = val
+              .map((idOrObj: any) => {
+                // Extract ID from polymorphic or bare
+                const id = isPolymorphic && idOrObj && typeof idOrObj === 'object' ? idOrObj.value : String(idOrObj)
+                const doc = docMap.get(id)
                 if (!doc) return null
-                if (relationField.junctionTable) {
-                  const clonedDoc = { ...doc }
-                  const link = linkMap.get(`${record.id}_${doc.id}`)
+                if (relField.junctionTable) {
+                  const cloned = { ...doc }
+                  const link = linkMap.get(`${record.id}_${id}`)
                   if (link) {
-                    clonedDoc._pivot = { ...link }
-                    delete clonedDoc._pivot.source_id
-                    delete clonedDoc._pivot.target_id
-                    delete clonedDoc._pivot.id
+                    cloned._pivot = { ...link }
+                    delete cloned._pivot.source_id; delete cloned._pivot.target_id; delete cloned._pivot.id
                   }
-                  return clonedDoc
+                  return cloned
+                }
+                if (isPolymorphic) {
+                  const rt = idOrObj?.relationTo || relationTo
+                  return { relationTo: rt, value: doc }
                 }
                 return doc
               })
-              .filter((doc) => doc !== null)
-          } else if (typeof val === 'string') {
-            const doc = docMap.get(val)
-            if (doc) {
-              if (relationField.junctionTable) {
-                const clonedDoc = { ...doc }
-                const link = linkMap.get(`${record.id}_${doc.id}`)
-                if (link) {
-                  clonedDoc._pivot = { ...link }
-                  delete clonedDoc._pivot.source_id
-                  delete clonedDoc._pivot.target_id
-                  delete clonedDoc._pivot.id
-                }
-                record[popKey] = clonedDoc
-              } else {
-                record[popKey] = doc
-              }
-            } else {
-              record[popKey] = null
-            }
+              .filter(Boolean)
+          } else if (!hasMany) {
+            const id = isPolymorphic && val && typeof val === 'object' ? val.value : String(val)
+            const doc = docMap.get(id)
+            rec[relField.name] = doc ? (isPolymorphic ? { relationTo: relationTo, value: doc } : doc) : null
           }
-        } else {
-          record[popKey] = hasMany ? [] : null
         }
       }
     }
@@ -1129,19 +1272,27 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     for (const field of config.fields) {
       if (field.type === 'relation' && (field as any).junctionTable) {
         const jTable = (field as any).junctionTable
+        const relationTo = (field as any).relationTo
+        const isPolymorphic = Array.isArray(relationTo)
         try {
+          // Load junction rows ordered by position (for M2M ordering)
           const rowsResult = await this.db.execute(sql.raw(`
-            SELECT source_id, target_id FROM "${jTable}"
+            SELECT source_id, target_id, relation_to, "position"
+            FROM "${jTable}"
             WHERE source_id = ANY(ARRAY[${recordIds.map(id => `'${id}'`).join(', ')}])
+            ORDER BY "position" ASC NULLS LAST
           `))
           const rows = rowsResult.rows || []
 
-          const sourceToTargets: Record<string, string[]> = {}
+          // Build source → sorted entries map (preserving position order)
+          const sourceToTargets: Record<string, any[]> = {}
           for (const row of rows as any[]) {
-            if (!sourceToTargets[row.source_id]) {
-              sourceToTargets[row.source_id] = []
-            }
-            sourceToTargets[row.source_id].push(row.target_id)
+            if (!sourceToTargets[row.source_id]) sourceToTargets[row.source_id] = []
+            // Polymorphic format: store { value, relationTo } or bare ID
+            const entry = isPolymorphic
+              ? { value: row.target_id, relationTo: row.relation_to || relationTo[0] }
+              : row.target_id
+            sourceToTargets[row.source_id].push(entry)
           }
 
           for (const r of records) {
@@ -1170,11 +1321,15 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       if (field.type === 'relation' && (field as any).junctionTable) {
         const jTable = (field as any).junctionTable
         const relationVal = data[field.name]
+        const relationTo = (field as any).relationTo
+        const isPolymorphic = Array.isArray(relationTo)
 
         await executor.execute(sql.raw(`DELETE FROM "${jTable}" WHERE source_id = '${id}'`))
 
         if (Array.isArray(relationVal)) {
           const pivotFields = (field as any).pivotFields || []
+          let positionCounter = 0
+
           for (const item of relationVal) {
             let targetId: string
             let pivotData: Record<string, any> = {}
@@ -1182,18 +1337,30 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
             if (typeof item === 'string') {
               targetId = item
             } else if (item && typeof item === 'object') {
-              targetId = item.id || item.target_id || ''
+              // Polymorphic: { value, relationTo } or { id, ...pivot }
+              if ('value' in item && 'relationTo' in item) {
+                targetId = item.value
+              } else {
+                targetId = item.id || item.target_id || ''
+              }
               pivotData = { ...item }
-              delete pivotData.id
-              delete pivotData.target_id
+              delete pivotData.id; delete pivotData.target_id; delete pivotData.value; delete pivotData.relationTo
             } else {
               continue
             }
 
             if (!targetId) continue
 
-            const cols = ['source_id', 'target_id']
-            const vals = [`'${id}'`, `'${targetId}'`]
+            const cols = ['source_id', 'target_id', '"position"']
+            const vals = [`'${id}'`, `'${targetId}'`, String(positionCounter++)]
+
+            if (isPolymorphic && relationTo.length > 0) {
+              const rt = typeof item === 'object' && 'relationTo' in item
+                ? item.relationTo
+                : (Array.isArray(relationTo) ? relationTo[0] : relationTo)
+              cols.push('"relation_to"')
+              vals.push(`'${String(rt).replace(/'/g, "''")}'`)
+            }
 
             for (const pf of pivotFields) {
               const val = pivotData[pf.name]

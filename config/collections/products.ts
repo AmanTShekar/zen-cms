@@ -5,9 +5,11 @@ export const Product: CollectionConfig = {
   slug: 'products',
   drafts: true,
   timestamps: true,
+  versions: true,
   labels: { singular: 'Product', plural: 'Products' },
   publicRead: true,
   fields: [
+    { name: 'siteId', type: 'text', required: true },
     { name: 'title', type: 'text', required: true },
     { name: 'price', type: 'number', required: true },
     { name: 'description', type: 'richtext' },
@@ -41,14 +43,27 @@ export const Product: CollectionConfig = {
         {
           slug: 'features',
           labels: { singular: 'Features', plural: 'Features' },
-          fields: [{ name: 'items', type: 'array', fields: [{ name: 'title', type: 'text' }] }],
+          fields: [
+            {
+              name: 'items',
+              type: 'array',
+              fields: [{ name: 'title', type: 'text' }],
+            },
+          ],
         },
         {
           slug: 'stats',
           labels: { singular: 'Stats', plural: 'Stats' },
-          fields: [{ name: 'items', type: 'array', fields: [{ name: 'value', type: 'text' }] }],
+          fields: [
+            {
+              name: 'items',
+              type: 'array',
+              fields: [{ name: 'value', type: 'text' }],
+            },
+          ],
         },
       ],
     },
   ],
 }
+

@@ -12,25 +12,26 @@ export interface ZenithDocument {
 }
 
 export interface Posts extends ZenithDocument {
+  siteId: string;
   title: string;
   slug: string;
-  content?: any;
-  coverImage?: any;
-  tags?: any;
+  content?: string;
+  coverImage?: { url: string; alt?: string };
+  tags?: ('tech' | 'design' | 'business' | 'lifestyle')[];
   publishedAt?: string | Date;
   sections?: ({
     blockType: 'hero';
     headline?: string;
     subheadline?: string;
     callToAction?: string;
-    backgroundImage?: any;
+    backgroundImage?: { url: string; alt?: string };
   } | {
     blockType: 'features';
     heading?: string;
     featureList?: {
     title?: string;
     description?: string;
-    icon?: any;
+    icon?: { url: string; alt?: string };
   }[];
   } | {
     blockType: 'testimonials';
@@ -39,7 +40,7 @@ export interface Posts extends ZenithDocument {
     quote?: string;
     author?: string;
     role?: string;
-    avatar?: any;
+    avatar?: { url: string; alt?: string };
   }[];
   } | {
     blockType: 'pricing';
@@ -72,29 +73,31 @@ export interface Posts extends ZenithDocument {
   }[];
   } | {
     blockType: 'richTextSection';
-    content?: any;
+    content?: string;
   })[];
 }
 
 export interface Authors extends ZenithDocument {
+  siteId: string;
   name: string;
   email: string;
   bio?: string;
-  avatar?: any;
+  avatar?: { url: string; alt?: string };
 }
 
 export interface Products extends ZenithDocument {
+  siteId: string;
   title: string;
   price: number;
-  description?: any;
-  gallery?: any;
+  description?: string;
+  gallery?: { url: string; alt?: string }[];
   inStock?: boolean;
   specs?: {
     weight?: number;
     color?: string;
     sku?: string;
   };
-  category: any;
+  category: ('electronics' | 'clothing' | 'home' | 'sports');
   layout?: ({
     blockType: 'hero';
     headline?: string;
@@ -112,7 +115,8 @@ export interface Products extends ZenithDocument {
 }
 
 export interface Pages extends ZenithDocument {
-  meta?: any;
+  siteId: string;
+  meta?: Record<string, unknown>;
   title: string;
   slug: string;
   sections?: ({
@@ -120,14 +124,14 @@ export interface Pages extends ZenithDocument {
     headline?: string;
     subheadline?: string;
     callToAction?: string;
-    backgroundImage?: any;
+    backgroundImage?: { url: string; alt?: string };
   } | {
     blockType: 'features';
     heading?: string;
     featureList?: {
     title?: string;
     description?: string;
-    icon?: any;
+    icon?: { url: string; alt?: string };
   }[];
   } | {
     blockType: 'testimonials';
@@ -136,7 +140,7 @@ export interface Pages extends ZenithDocument {
     quote?: string;
     author?: string;
     role?: string;
-    avatar?: any;
+    avatar?: { url: string; alt?: string };
   }[];
   } | {
     blockType: 'pricing';
@@ -169,17 +173,18 @@ export interface Pages extends ZenithDocument {
   }[];
   } | {
     blockType: 'richTextSection';
-    content?: any;
+    content?: string;
   })[];
 }
 
 export interface Members extends ZenithDocument {
+  siteId: string;
   email: string;
   name?: string;
-  subscriptionStatus?: any;
+  subscriptionStatus?: ('standard' | 'architect' | 'nexus' | 'none');
   isSubscribed?: boolean;
-  activity?: any;
-  avatar?: any;
+  activity?: ('Low' | 'Medium' | 'High' | 'Critical');
+  avatar?: { url: string; alt?: string };
   bio?: string;
 }
 
@@ -194,20 +199,20 @@ export interface Media extends ZenithDocument {
 
 export interface LandingPage extends ZenithDocument {
   title: string;
-  heroDescription?: any;
+  heroDescription?: string;
   sections?: ({
     blockType: 'hero';
     headline?: string;
     subheadline?: string;
     callToAction?: string;
-    backgroundImage?: any;
+    backgroundImage?: { url: string; alt?: string };
   } | {
     blockType: 'features';
     heading?: string;
     featureList?: {
     title?: string;
     description?: string;
-    icon?: any;
+    icon?: { url: string; alt?: string };
   }[];
   } | {
     blockType: 'testimonials';
@@ -216,7 +221,7 @@ export interface LandingPage extends ZenithDocument {
     quote?: string;
     author?: string;
     role?: string;
-    avatar?: any;
+    avatar?: { url: string; alt?: string };
   }[];
   } | {
     blockType: 'pricing';
@@ -249,7 +254,7 @@ export interface LandingPage extends ZenithDocument {
   }[];
   } | {
     blockType: 'richTextSection';
-    content?: any;
+    content?: string;
   })[];
 }
 

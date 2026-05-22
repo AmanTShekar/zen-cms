@@ -11,6 +11,26 @@ import { DatabaseAdapter } from './adapters/BaseAdapter'
  * Run with: pnpm run seed
  */
 export async function seedInitialData() {
+  // Seed default sites and cleanup excess sites
+  const adapter = AdapterFactory.getActiveAdapter();
+  // Ensure Site collection exists and create a default if none
+  const existingSites = await adapter.find<any>('z_sites', {});
+  if (existingSites.length === 0) {
+    await adapter.create<any>('z_sites', {
+      name: 'Default Site',
+      slug: 'default',
+      domain: process.env.DEFAULT_SITE_DOMAIN || 'localhost',
+      tenantId: 'default',
+    });
+  }
+  // Keep only up to 4 sites, remove extras
+  if (existingSites.length > 4) {
+    const toRemove = existingSites.slice(4);
+    for (const site of toRemove) {
+      await adapter.delete('z_sites', site._id.toString());
+    }
+  }
+
   try {
     const adapter = AdapterFactory.getActiveAdapter()
     if (!adapter) {
@@ -257,6 +277,35 @@ export async function seedInitialData() {
         logger.warn({ err: err.message }, 'Failed to seed products collection')
       }
     }
+
+    // Seed media library records so images appear in the media picker
+    let mediaCount = 0
+    try {
+      mediaCount = await adapter.count('media', {})
+    } catch {
+      // media collection may not exist yet
+    }
+    if (mediaCount === 0) {
+      try {
+        const mediaAssets = [
+          { name: 'zenith-architecture', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200', alt: 'Zenith CMS Architecture', mimetype: 'image/jpeg', size: 0 },
+          { name: 'glassmorphism-design', url: 'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=1200', alt: 'Glassmorphism Design', mimetype: 'image/jpeg', size: 0 },
+          { name: 'ai-copilot', url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800', alt: 'AI Technology', mimetype: 'image/jpeg', size: 0 },
+          { name: 'modular-design', url: 'https://images.unsplash.com/photo-1635332305373-c60368149806?auto=format&fit=crop&q=80&w=800', alt: 'Modular Design', mimetype: 'image/jpeg', size: 0 },
+          { name: 'sarah-chen-avatar', url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400', alt: 'Sarah Chen', mimetype: 'image/jpeg', size: 0 },
+          { name: 'marcus-aurelius-avatar', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400', alt: 'Marcus Aurelius', mimetype: 'image/jpeg', size: 0 },
+          { name: 'sony-headphones', url: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&q=80&w=800', alt: 'Sony WH-1000XM5', mimetype: 'image/jpeg', size: 0 },
+          { name: 'macbook-pro', url: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800', alt: 'MacBook Pro M3', mimetype: 'image/jpeg', size: 0 },
+          { name: 'minimalist-chair', url: 'https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?auto=format&fit=crop&q=80&w=800', alt: 'Minimalist Chair', mimetype: 'image/jpeg', size: 0 },
+        ]
+        for (const asset of mediaAssets) {
+          await adapter.create('media', asset)
+        }
+        logger.info(`Seeded ${mediaAssets.length} media library assets`)
+      } catch (err: any) {
+        logger.warn({ err: err.message }, 'Failed to seed media library')
+      }
+    }
   } catch (error) {
     logger.error({ error }, 'Seeding failed')
   }
@@ -265,9 +314,13 @@ export async function seedInitialData() {
 /**
  * Seeds high-fidelity domain-specific template data tailored to user intent
  */
-export async function seedTailoredData(projectType: string, adapter: DatabaseAdapter) {
-  logger.info({ projectType }, '[SeedEngine] Seeding tailored vertical template')
+export async function seedTailoredData(projectType: string, adapter: DatabaseAdapter, siteId?: string) {
+  logger.info({ projectType, siteId }, '[SeedEngine] Seeding tailored vertical template')
   try {
+    const withSite = <T extends Record<string, any>>(data: T): T & { siteId?: string } => {
+      return siteId ? { ...data, siteId } : data
+    }
+
     if (projectType === 'blog') {
       // Seed Categories
       const categories = [
@@ -276,7 +329,7 @@ export async function seedTailoredData(projectType: string, adapter: DatabaseAda
         { name: 'Productivity', slug: 'productivity', description: 'Workflows, developer velocity, and automation strategies.', _status: 'published' }
       ]
       for (const cat of categories) {
-        await adapter.create('categories', cat)
+        await adapter.create('categories', withSite(cat))
       }
 
       // Seed Authors
@@ -285,7 +338,7 @@ export async function seedTailoredData(projectType: string, adapter: DatabaseAda
         { name: 'Marcus Aurelius', email: 'marcus@zenith.ai', bio: 'Content strategist focused on high-performance APIs.', role: 'Editor', _status: 'published' }
       ]
       for (const aut of authors) {
-        await adapter.create('authors', aut)
+        await adapter.create('authors', withSite(aut))
       }
 
       // Seed Posts
@@ -295,6 +348,9 @@ export async function seedTailoredData(projectType: string, adapter: DatabaseAda
           slug: 'architecture-of-zenith-cms',
           description: 'A deep dive into zero-dependency data structures, dynamic schemas, and high-performance caching.',
           content: '<h1>Decoupled & Fast</h1><p>Zenith CMS is designed from the ground up to be database-agnostic. By utilizing a clean DatabaseAdapter interface, it supports both MongoDB and SQL-based Backends with zero runtime translation overhead.</p>',
+          coverImage: { url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200&h=630', alt: 'Zenith CMS Architecture' },
+          tags: ['tech', 'design'],
+          publishedAt: '2025-12-01',
           _status: 'published'
         },
         {
@@ -302,13 +358,30 @@ export async function seedTailoredData(projectType: string, adapter: DatabaseAda
           slug: 'building-interfaces-with-glassmorphism',
           description: 'How to implement glassmorphic containers using HSL tailwind colors and hardware-accelerated filters.',
           content: '<h1>Premium UI Aesthetics</h1><p>Aesthetics drive user engagement. Modern interfaces leverage translucency, subtle borders, and smooth spring-scaling keyframes to establish depth and focus.</p>',
+          coverImage: { url: 'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=1200&h=630', alt: 'Glassmorphism Design' },
+          tags: ['design'],
+          publishedAt: '2025-11-15',
           _status: 'published'
         }
       ]
       for (const post of posts) {
-        await adapter.create('posts', post)
+        await adapter.create('posts', withSite(post))
       }
       logger.info('[SeedEngine] Successfully seeded High-Fidelity Blog Template')
+
+      // Seed media records for blog template
+      try {
+        const blogMedia = [
+          { name: 'zenith-architecture-blog', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200&h=630', alt: 'Zenith CMS Architecture', mimetype: 'image/jpeg', size: 0, ...withSite({}) },
+          { name: 'glassmorphism-design-blog', url: 'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=1200&h=630', alt: 'Glassmorphism Design', mimetype: 'image/jpeg', size: 0, ...withSite({}) },
+        ]
+        for (const asset of blogMedia) {
+          await adapter.create('media', asset)
+        }
+        logger.info('[SeedEngine] Seeded blog media assets')
+      } catch (err: any) {
+        logger.warn({ err: err.message }, '[SeedEngine] Failed to seed blog media')
+      }
     } else if (projectType === 'ecommerce') {
       // Seed categories
       const categories = [
@@ -316,7 +389,7 @@ export async function seedTailoredData(projectType: string, adapter: DatabaseAda
         { name: 'Office Gear', slug: 'office-gear', description: 'Ergonomic tools for maximum flow state.', _status: 'published' }
       ]
       for (const cat of categories) {
-        await adapter.create('categories', cat)
+        await adapter.create('categories', withSite(cat))
       }
 
       // Seed products
@@ -339,7 +412,7 @@ export async function seedTailoredData(projectType: string, adapter: DatabaseAda
         }
       ]
       for (const p of products) {
-        await adapter.create('products', p)
+        await adapter.create('products', withSite(p))
       }
       logger.info('[SeedEngine] Successfully seeded High-Fidelity E-Commerce Template')
     } else if (projectType === 'portfolio') {
@@ -361,7 +434,7 @@ export async function seedTailoredData(projectType: string, adapter: DatabaseAda
         }
       ]
       for (const p of projects) {
-        await adapter.create('projects', p)
+        await adapter.create('projects', withSite(p))
       }
 
       // Seed skills
@@ -371,7 +444,7 @@ export async function seedTailoredData(projectType: string, adapter: DatabaseAda
         { name: 'GraphQL / REST APIs', proficiency: 'Expert', _status: 'published' }
       ]
       for (const s of skills) {
-        await adapter.create('skills', s)
+        await adapter.create('skills', withSite(s))
       }
       logger.info('[SeedEngine] Successfully seeded High-Fidelity Portfolio Template')
     } else if (projectType === 'saas') {
@@ -381,7 +454,7 @@ export async function seedTailoredData(projectType: string, adapter: DatabaseAda
         { title: 'Pricing', slug: 'pricing', content: '<p>Transparent plans for developers and enterprises alike.</p>', _status: 'published' }
       ]
       for (const p of pages) {
-        await adapter.create('pages', p)
+        await adapter.create('pages', withSite(p))
       }
 
       // Seed team members
@@ -390,7 +463,7 @@ export async function seedTailoredData(projectType: string, adapter: DatabaseAda
         { name: 'Alex Developer', role: 'CTO', email: 'alex@company.com', _status: 'published' }
       ]
       for (const t of team) {
-        await adapter.create('team', t)
+        await adapter.create('team', withSite(t))
       }
       logger.info('[SeedEngine] Successfully seeded High-Fidelity SaaS Template')
     }

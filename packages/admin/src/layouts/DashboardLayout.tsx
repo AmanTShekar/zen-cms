@@ -15,12 +15,14 @@ import {
   Sparkles,
   ShieldCheck,
   Workflow,
+  Layout,
 } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import { useTheme } from '../context/ThemeContext'
 import { cn } from '../lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import api from '../lib/api'
+import { SiteSelector } from '../components/SiteSelector'
 
 import Logo from '../components/Logo'
 import GlobalSearch from '../components/GlobalSearch'
@@ -46,11 +48,28 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
   const { logout, user } = useAuthStore()
   const { theme, toggleTheme } = useTheme()
   const [isSidebarOpen, setSidebarOpen] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
   const [, setCommandPaletteOpen] = useState(false)
   const [collections, setCollections] = useState<RegistryItem[]>([])
   const [globals, setGlobals] = useState<RegistryItem[]>([])
   const [health, setHealth] = useState<HealthData | null>(null)
   const location = useLocation()
+
+  // RESPONSIVE SCREEN ADJUSTMENTS & AUTO-COLLAPSE
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768
+      setIsMobile(mobile)
+      if (window.innerWidth < 1024) {
+        setSidebarOpen(false)
+      } else {
+        setSidebarOpen(true)
+      }
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     // SYSTEM HANDSHAKE
@@ -86,6 +105,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
 
   const navItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+    { name: 'Templates', path: '/templates', icon: Layout },
     { name: 'AI Content Hub', path: '/ai-architect', icon: Sparkles },
     { name: 'Automations', path: '/automations', icon: Workflow },
     { name: 'Plugins', path: '/plugins', icon: Puzzle },
@@ -99,14 +119,32 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
         theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
       )}
     >
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {isMobile && isSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSidebarOpen(false)}
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+          />
+        )}
+      </AnimatePresence>
+
       {/* 🛡️ Compact Tactical Sidebar */}
       <motion.aside
         initial={false}
-        animate={{ width: isSidebarOpen ? 260 : 90 }}
+        animate={{ 
+          width: isMobile ? 260 : (isSidebarOpen ? 260 : 90),
+          x: isMobile ? (isSidebarOpen ? 0 : -260) : 0
+        }}
+        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
         className={cn(
-          'h-full flex-shrink-0 flex flex-col border-r z-50 transition-colors duration-500 relative',
+          'h-full flex-shrink-0 flex flex-col border-r z-50 transition-colors duration-500',
+          isMobile ? 'fixed inset-y-0 left-0 shadow-2xl' : 'relative',
           theme === 'dark'
-            ? 'bg-[#080808] border-white/5 shadow-2xl'
+            ? 'bg-[#080808] border-white/5'
             : 'bg-white border-gray-100 shadow-sm'
         )}
       >
@@ -150,6 +188,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
         </div>
 
         {/* Active Site Workspace Indicator / Switcher */}
+          <SiteSelector />
         <div
           className={cn(
             'px-6 py-4 border-b flex items-center justify-between transition-all duration-300',
@@ -476,7 +515,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
         <div className="flex-1 flex flex-col overflow-auto">
           <header
             className={cn(
-              'h-20 flex items-center justify-between px-8 border-b z-40 transition-colors duration-500 backdrop-blur-xl shrink-0',
+              'h-20 flex items-center justify-between px-4 md:px-8 border-b z-40 transition-colors duration-500 backdrop-blur-xl shrink-0',
               theme === 'dark' ? 'bg-black/60 border-white/5' : 'bg-white/60 border-gray-100'
             )}
           >
@@ -590,7 +629,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
             </div>
           </header>
 
-          <div className="flex-1 overflow-y-auto no-scrollbar scroll-smooth p-6">
+          <div className="flex-1 overflow-y-auto no-scrollbar scroll-smooth p-4 md:p-6">
             <AnimatePresence>
               {health?.maintenanceMode && (
                 <motion.div

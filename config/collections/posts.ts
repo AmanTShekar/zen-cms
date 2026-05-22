@@ -5,10 +5,12 @@ export const Post: CollectionConfig = {
   slug: 'posts',
   publicRead: true,
   drafts: true,
+  versions: true,
   seo: true,
   timestamps: true,
   labels: { singular: 'Post', plural: 'Posts' },
   fields: [
+    { name: 'siteId', type: 'text', required: true },
     { name: 'title', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true, unique: true },
     { name: 'content', type: 'richtext' },

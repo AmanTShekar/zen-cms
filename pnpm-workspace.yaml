@@ -1,5 +1,7 @@
 packages:
   - 'packages/*'
+  - 'templates/blog-demo'
+  - 'templates/storefront-glass'
 allowBuilds:
   bcrypt: true
   core-js: true

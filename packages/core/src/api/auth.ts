@@ -1,10 +1,23 @@
-import { Router, Request, Response } from 'express'
+import { Router, Request, Response, NextFunction } from 'express'
+
+// Middleware to attach site identifier from header for multi‑tenant scoping
+export function siteMiddleware(req: Request, res: Response, next: NextFunction) {
+  const siteId = req.headers['x-zenith-site-id'];
+  if (typeof siteId === 'string') {
+    (req as any).siteId = siteId;
+    next();
+  } else {
+    res.status(400).json({ error: 'Missing X-Zenith-Site-Id header' });
+  }
+}
+
 import crypto from 'crypto'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { AuthService } from '../services/auth'
 import { EmailService } from '../services/email'
 import { requireAuth } from '../middleware/auth'
 import { createResponse } from './utils'
+import { createOAuthRouter } from '../auth/strategies/oauth'
 import {
   AuthenticationError,
   InvalidPayloadError,
@@ -15,6 +28,8 @@ import {
 import rateLimit from 'express-rate-limit'
 
 const router: Router = Router()
+// Apply site middleware to all auth routes
+router.use(siteMiddleware)
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -24,14 +39,14 @@ const authLimiter = rateLimit({
 })
 
 // ── POST /api/v1/auth/login ──────────────────────────────────────────────────
+// Accepts email OR username + password
 router.post('/login', authLimiter, async (req: Request, res: Response, next) => {
   try {
-    const { email, password } = req.body
-    if (!email || !password) throw new InvalidPayloadError('Email and password are required')
+    const { email, username, password } = req.body
+    const login = (email || username || '').trim()
+    if (!login || !password) throw new InvalidPayloadError('Email or username and password are required')
 
-    const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<any>('users', { email: email.toLowerCase() })
-    const user = users[0] || null
+    const user = await AuthService.resolveUser(login)
 
     let isLocked = false
     if (user && user.lockUntil) {
@@ -54,12 +69,12 @@ router.post('/login', authLimiter, async (req: Request, res: Response, next) => 
     }
 
     if (!valid) {
-      await AuthService.trackFailedAttempt(email)
+      await AuthService.trackFailedAttempt(login)
       throw new AuthenticationError()
     }
 
     // Successful login — reset lockout state
-    await AuthService.resetFailedAttempts(email)
+    await AuthService.resetFailedAttempts(login)
 
     const userId = (user.id || user._id).toString()
     const payload = { id: userId, email: user.email, role: user.role }
@@ -355,5 +370,8 @@ router.post('/setup', authLimiter, async (req: Request, res: Response, next) => 
     next(err)
   }
 })
+
+// ── OAuth routes ─────────────────────────────────────────────────────────────
+router.use('/oauth', createOAuthRouter())
 
 export default router

@@ -116,9 +116,11 @@ const SettingsPage = () => {
   const [healthData, setHealthData] = useState<any>(null)
 
   interface Role {
-    id?: string
-    _id?: string
+    _id: string
     roleName: string
+    roleType: 'admin' | 'editor' | 'viewer' | 'custom'
+    description: string
+    isSystem: boolean
     permissions: Array<{
       resource: string
       actions: string[]
@@ -127,6 +129,7 @@ const SettingsPage = () => {
 
   const [roles, setRoles] = useState<Role[]>([])
   const [editingRole, setEditingRole] = useState<Role | null>(null)
+  const [roleFilter, setRoleFilter] = useState<'all' | 'system' | 'custom'>('all')
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -137,7 +140,7 @@ const SettingsPage = () => {
         api.get('/system/users'),
         api.get('/system/api-keys'),
         api.get('/system/health'),
-        api.get('/system/roles').catch(() => ({ data: { data: [] } })),
+        api.get('/roles').catch(() => ({ data: { data: [] } })),
       ])
       setSettings(settingsRes.data.data)
       setDbStats(dbRes.data.data)
@@ -1353,209 +1356,338 @@ const SettingsPage = () => {
                       <div className="flex items-center justify-between border-b border-white/5 pb-4">
                         <div className="flex flex-col">
                           <h3 className="text-sm font-black uppercase italic tracking-wider">
-                            Dynamic Roles & Custom Permissions
+                            Roles & Permissions
                           </h3>
                           <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1">
-                            Configure granular resource-level capabilities for custom team roles
+                            Manage team access levels and granular resource permissions
                           </span>
                         </div>
                         <button
                           type="button"
-                          onClick={() => {
-                            const namePrompt = window.prompt('Enter custom role name (e.g. content_creator):')
-                            if (!namePrompt) return
-                            const normalized = namePrompt.trim().toLowerCase().replace(/\s+/g, '_')
-                            if (roles.some(r => r.roleName === normalized)) {
-                              toast.error('Role already exists')
-                              return
+                          onClick={async () => {
+                            const name = window.prompt('Custom role name:')
+                            if (!name?.trim()) return
+                            try {
+                              const res = await api.post('/roles', {
+                                roleName: name.trim(),
+                                description: '',
+                                permissions: [{ resource: '*', actions: ['read'] }],
+                              })
+                              setRoles(prev => [...prev, res.data.data])
+                              setEditingRole(res.data.data)
+                              toast.success('Role created')
+                            } catch (err: any) {
+                              toast.error(err.response?.data?.error?.message || 'Failed to create role')
                             }
-                            const newRole: Role = {
-                              roleName: normalized,
-                              permissions: [
-                                { resource: '*', actions: ['read'] }
-                              ]
-                            }
-                            setRoles([...roles, newRole])
-                            setEditingRole(newRole)
                           }}
                           className="flex items-center gap-2 px-4 py-2 border border-indigo-500/30 hover:border-indigo-500 hover:bg-indigo-500/10 text-[10px] font-black uppercase italic transition-all text-indigo-400 hover:text-white"
                         >
                           <PlusCircle size={12} />
-                          Create Custom Role
+                          New Custom Role
                         </button>
                       </div>
 
+                      {/* Role type filter tabs */}
+                      <div className="flex items-center gap-1 border-b border-white/5 pb-0">
+                        {(['all', 'system', 'custom'] as const).map((filter) => (
+                          <button
+                            key={filter}
+                            type="button"
+                            onClick={() => setRoleFilter(filter)}
+                            className={cn(
+                              'px-4 py-2 text-[9px] font-black uppercase italic tracking-widest border-b-2 transition-all',
+                              roleFilter === filter
+                                ? 'border-indigo-500 text-white'
+                                : 'border-transparent text-gray-500 hover:text-white'
+                            )}
+                          >
+                            {filter === 'all' ? `All (${roles.length})` : filter === 'system' ? `System (${roles.filter(r => r.isSystem).length})` : `Custom (${roles.filter(r => !r.isSystem).length})`}
+                          </button>
+                        ))}
+                      </div>
+
                       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                        {/* Role list */}
                         <div className="xl:col-span-1 space-y-3">
-                          {roles.map((role) => (
+                          {(roleFilter === 'all'
+                            ? roles
+                            : roleFilter === 'system'
+                            ? roles.filter(r => r.isSystem)
+                            : roles.filter(r => !r.isSystem)
+                          ).map((role) => (
                             <div
-                              key={role.roleName}
+                              key={role._id}
                               onClick={() => setEditingRole(role)}
                               className={cn(
-                                "p-4 border rounded-none flex items-center justify-between cursor-pointer transition-all",
-                                editingRole?.roleName === role.roleName
-                                  ? "bg-indigo-500/10 border-indigo-500/40"
-                                  : "bg-white/[0.01] border-white/5 hover:border-white/10"
+                                'p-4 border rounded-none flex items-center justify-between cursor-pointer transition-all',
+                                editingRole?._id === role._id
+                                  ? 'bg-indigo-500/10 border-indigo-500/40'
+                                  : 'bg-white/[0.01] border-white/5 hover:border-white/10'
                               )}
                             >
-                              <div className="flex flex-col leading-none">
-                                <span className="text-[12px] font-black uppercase tracking-tight italic text-white">
-                                  {role.roleName}
-                                </span>
-                                <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">
-                                  {role.permissions?.length || 0} Resource Rules
+                              <div className="flex flex-col leading-none gap-1.5">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[12px] font-black uppercase tracking-tight italic text-white">
+                                    {role.roleName}
+                                  </span>
+                                  {role.isSystem && (
+                                    <span className="text-[7px] font-black uppercase px-1.5 py-0.5 border border-amber-500/30 text-amber-500 tracking-widest">
+                                      SYSTEM
+                                    </span>
+                                  )}
+                                  <span className={cn(
+                                    'text-[7px] font-black uppercase px-1.5 py-0.5 tracking-widest border',
+                                    role.roleType === 'admin' ? 'border-red-500/30 text-red-400' :
+                                    role.roleType === 'editor' ? 'border-indigo-500/30 text-indigo-400' :
+                                    'border-white/10 text-gray-500'
+                                  )}>
+                                    {role.roleType}
+                                  </span>
+                                </div>
+                                <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">
+                                  {role.permissions?.length || 0} rule{role.permissions?.length !== 1 ? 's' : ''}
+                                  {role.description && ` · ${role.description.slice(0, 40)}`}
                                 </span>
                               </div>
-                              <button
-                                type="button"
-                                onClick={async (e) => {
-                                  e.stopPropagation()
-                                  if (!window.confirm(`Delete custom role "${role.roleName}"?`)) return
-                                  try {
-                                    await api.delete(`/system/roles/${role.roleName}`)
-                                    toast.success('Role deleted successfully')
-                                    if (editingRole?.roleName === role.roleName) setEditingRole(null)
-                                    setRoles(roles.filter(r => r.roleName !== role.roleName))
-                                  } catch {
-                                    toast.error('Failed to delete role')
-                                  }
-                                }}
-                                className="text-gray-500 hover:text-red-400 transition-colors"
-                              >
-                                <Trash2 size={14} />
-                              </button>
+                              {!role.isSystem && (
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    title="Clone role"
+                                    onClick={async (e) => {
+                                      e.stopPropagation()
+                                      try {
+                                        const res = await api.post(`/roles/clone/${role._id}`)
+                                        setRoles(prev => [...prev, res.data.data])
+                                        toast.success(`Cloned as "${res.data.data.roleName}"`)
+                                      } catch {
+                                        toast.error('Failed to clone role')
+                                      }
+                                    }}
+                                    className="text-gray-500 hover:text-indigo-400 transition-colors"
+                                  >
+                                    <Copy size={14} />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    title="Delete role"
+                                    onClick={async (e) => {
+                                      e.stopPropagation()
+                                      if (!window.confirm(`Delete "${role.roleName}"?`)) return
+                                      try {
+                                        await api.delete(`/roles/${role._id}`)
+                                        setRoles(prev => prev.filter(r => r._id !== role._id))
+                                        if (editingRole?._id === role._id) setEditingRole(null)
+                                        toast.success('Role deleted')
+                                      } catch (err: any) {
+                                        toast.error(err.response?.data?.error?.message || 'Failed to delete role')
+                                      }
+                                    }}
+                                    className="text-gray-500 hover:text-red-400 transition-colors"
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           ))}
-                          {roles.length === 0 && (
+                          {roles.filter(r => roleFilter === 'all' ? true : roleFilter === 'system' ? r.isSystem : !r.isSystem).length === 0 && (
                             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic py-4">
-                              No custom roles created. Standard roles (admin, editor, viewer) are active by default.
+                              No {roleFilter} roles found.
                             </p>
                           )}
                         </div>
 
+                        {/* Permission editor */}
                         <div className="xl:col-span-2">
                           {editingRole ? (
                             <div className="space-y-6 p-6 border border-white/5 bg-white/[0.01] backdrop-blur-3xl">
                               <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                                <h4 className="text-xs font-black uppercase italic tracking-widest text-indigo-400">
-                                  Permissions for "{editingRole.roleName}"
-                                </h4>
-                                <button
-                                  type="button"
-                                  onClick={async () => {
-                                    try {
-                                      await api.post('/system/roles', editingRole)
-                                      toast.success('Role permissions saved')
-                                      setRoles(roles.map(r => r.roleName === editingRole.roleName ? editingRole : r))
-                                    } catch {
-                                      toast.error('Failed to save role permissions')
-                                    }
-                                  }}
-                                  className="flex items-center gap-2 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white text-[10px] font-black uppercase italic tracking-wider transition-all"
-                                >
-                                  <Save size={12} />
-                                  Save Role
-                                </button>
+                                <div className="flex flex-col">
+                                  <h4 className="text-xs font-black uppercase italic tracking-widest text-indigo-400">
+                                    {editingRole.roleName}
+                                  </h4>
+                                  {editingRole.description && (
+                                    <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">
+                                      {editingRole.description}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {!editingRole.isSystem && (
+                                    <button
+                                      type="button"
+                                      onClick={async () => {
+                                        try {
+                                          const res = await api.patch(`/roles/${editingRole._id}`, {
+                                            roleName: editingRole.roleName,
+                                            description: editingRole.description,
+                                            permissions: editingRole.permissions,
+                                          })
+                                          setRoles(prev => prev.map(r => r._id === editingRole._id ? res.data.data : r))
+                                          setEditingRole(res.data.data)
+                                          toast.success('Permissions saved')
+                                        } catch (err: any) {
+                                          toast.error(err.response?.data?.error?.message || 'Failed to save')
+                                        }
+                                      }}
+                                      className="flex items-center gap-2 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white text-[10px] font-black uppercase italic tracking-wider transition-all"
+                                    >
+                                      <Save size={12} />
+                                      Save
+                                    </button>
+                                  )}
+                                </div>
                               </div>
+
+                              {editingRole.isSystem && (
+                                <div className="p-3 border border-amber-500/20 bg-amber-500/5 text-[9.5px] font-bold italic text-amber-400 uppercase tracking-wider">
+                                  System roles cannot be modified. Clone the role to customize its permissions.
+                                </div>
+                              )}
 
                               <div className="space-y-4">
                                 <div className="flex items-center justify-between">
                                   <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">
-                                    Resource / Collection Rules
+                                    Resource Permission Rules
                                   </span>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const newPerm = { resource: '*', actions: ['read'] }
-                                      setEditingRole({
-                                        ...editingRole,
-                                        permissions: [...(editingRole.permissions || []), newPerm]
-                                      })
-                                    }}
-                                    className="text-[9px] font-black text-indigo-400 hover:text-indigo-300 uppercase tracking-widest italic flex items-center gap-1"
-                                  >
-                                    <PlusCircle size={10} />
-                                    Add Rule
-                                  </button>
+                                  {!editingRole.isSystem && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setEditingRole({
+                                          ...editingRole,
+                                          permissions: [...(editingRole.permissions || []), { resource: '*', actions: ['read'] }]
+                                        })
+                                      }}
+                                      className="text-[9px] font-black text-indigo-400 hover:text-indigo-300 uppercase tracking-widest italic flex items-center gap-1"
+                                    >
+                                      <PlusCircle size={10} />
+                                      Add Rule
+                                    </button>
+                                  )}
                                 </div>
 
                                 <div className="space-y-3">
-                                  {(editingRole.permissions || []).map((perm, permIdx) => (
-                                    <div
-                                      key={permIdx}
-                                      className="p-4 border border-white/5 bg-black/40 flex flex-col md:flex-row md:items-center justify-between gap-4"
-                                    >
-                                      <div className="flex items-center gap-4 flex-1">
-                                        <select
-                                          value={perm.resource}
-                                          onChange={(e) => {
-                                            const updated = [...editingRole.permissions]
-                                            updated[permIdx] = { ...perm, resource: e.target.value }
-                                            setEditingRole({ ...editingRole, permissions: updated })
-                                          }}
-                                          className="bg-black border border-white/10 text-white text-[11px] font-black uppercase italic outline-none py-1.5 px-3 rounded-none focus:border-indigo-500"
-                                        >
-                                          <option value="*">All Resources (*)</option>
-                                          <option value="media">Media / Uploads</option>
-                                          {(healthData?.registry?.collections || []).map((col: any) => (
-                                            <option key={col.slug} value={col.slug}>
-                                              {col.label || col.slug}
-                                            </option>
-                                          ))}
-                                        </select>
-
-                                        <div className="flex items-center gap-3">
-                                          {['create', 'read', 'update', 'delete', '*'].map((act) => {
-                                            const checked = perm.actions.includes(act)
-                                            return (
-                                              <label key={act} className="flex items-center gap-1.5 cursor-pointer">
-                                                <input
-                                                  type="checkbox"
-                                                  checked={checked}
-                                                  onChange={(e) => {
-                                                    let nextActions = [...perm.actions]
-                                                    if (e.target.checked) {
-                                                      nextActions.push(act)
-                                                    } else {
-                                                      nextActions = nextActions.filter(a => a !== act)
-                                                    }
-                                                    const updated = [...editingRole.permissions]
-                                                    updated[permIdx] = { ...perm, actions: nextActions }
-                                                    setEditingRole({ ...editingRole, permissions: updated })
-                                                  }}
-                                                  className="rounded-none border-white/10 text-indigo-600 focus:ring-0 focus:ring-offset-0 bg-black cursor-pointer"
-                                                />
-                                                <span className={cn(
-                                                  "text-[9px] font-black uppercase italic tracking-wider",
-                                                  checked ? "text-indigo-400" : "text-gray-500"
-                                                )}>
-                                                  {act}
-                                                </span>
-                                              </label>
-                                            )
-                                          })}
-                                        </div>
-                                      </div>
-
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          const updated = editingRole.permissions.filter((_, idx) => idx !== permIdx)
-                                          setEditingRole({ ...editingRole, permissions: updated })
-                                        }}
-                                        className="text-gray-500 hover:text-red-400 transition-colors shrink-0 md:self-center"
+                                  {(editingRole.permissions || []).map((perm, permIdx) => {
+                                    const availableCollections = [
+                                      { slug: '*', label: 'All Resources' },
+                                      ...(healthData?.registry?.collections || []).map((c: any) => ({
+                                        slug: c.slug,
+                                        label: c.label || c.slug,
+                                      })),
+                                    ]
+                                    return (
+                                      <div
+                                        key={permIdx}
+                                        className="p-4 border border-white/5 bg-black/40 flex flex-col gap-4"
                                       >
-                                        <Trash size={14} />
-                                      </button>
-                                    </div>
-                                  ))}
+                                        <div className="flex items-center gap-3 flex-wrap">
+                                          <select
+                                            disabled={editingRole.isSystem}
+                                            value={perm.resource}
+                                            onChange={(e) => {
+                                              if (editingRole.isSystem) return
+                                              const updated = [...editingRole.permissions]
+                                              updated[permIdx] = { ...perm, resource: e.target.value }
+                                              setEditingRole({ ...editingRole, permissions: updated })
+                                            }}
+                                            className="bg-black border border-white/10 text-white text-[11px] font-black uppercase italic outline-none py-1.5 px-3 rounded-none focus:border-indigo-500 disabled:opacity-50"
+                                          >
+                                            {availableCollections.map(c => (
+                                              <option key={c.slug} value={c.slug}>{c.label}</option>
+                                            ))}
+                                          </select>
+
+                                          <div className="flex items-center gap-3 flex-wrap">
+                                            {['create', 'read', 'update', 'delete'].map((act) => {
+                                              const checked = perm.actions.includes(act)
+                                              return (
+                                                <label key={act} className="flex items-center gap-1.5 cursor-pointer">
+                                                  <input
+                                                    type="checkbox"
+                                                    disabled={editingRole.isSystem}
+                                                    checked={checked}
+                                                    onChange={(e) => {
+                                                      if (editingRole.isSystem) return
+                                                      let next = [...perm.actions]
+                                                      if (e.target.checked) next.push(act)
+                                                      else next = next.filter(a => a !== act)
+                                                      const updated = [...editingRole.permissions]
+                                                      updated[permIdx] = { ...perm, actions: next }
+                                                      setEditingRole({ ...editingRole, permissions: updated })
+                                                    }}
+                                                    className="rounded-none border-white/10 text-indigo-600 focus:ring-0 bg-black cursor-pointer"
+                                                  />
+                                                  <span className={cn(
+                                                    'text-[8px] font-black uppercase italic tracking-wider',
+                                                    checked ? 'text-indigo-400' : 'text-gray-500'
+                                                  )}>
+                                                    {act}
+                                                  </span>
+                                                </label>
+                                              )
+                                            })}
+                                          </div>
+                                        </div>
+
+                                        {!editingRole.isSystem && (
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const updated = editingRole.permissions.filter((_, idx) => idx !== permIdx)
+                                              setEditingRole({ ...editingRole, permissions: updated })
+                                            }}
+                                            className="text-gray-500 hover:text-red-400 transition-colors self-start"
+                                          >
+                                            <Trash size={14} />
+                                          </button>
+                                        )}
+                                      </div>
+                                    )
+                                  })}
+
+                                  {editingRole.permissions?.length === 0 && (
+                                    <p className="text-[9px] text-gray-600 font-bold italic uppercase tracking-widest text-center py-4">
+                                      No permission rules defined. Add a rule above.
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* User assignment section */}
+                              <div className="border-t border-white/5 pt-5 space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+                                    Assigned Users ({users.filter(u => u.role === editingRole.roleName).length})
+                                  </span>
+                                </div>
+                                <div className="space-y-2">
+                                  {users
+                                    .filter(u => u.role === editingRole.roleName || u.role === editingRole.roleType)
+                                    .map(u => (
+                                      <div key={u._id} className="flex items-center justify-between p-3 border border-white/5 bg-black/40">
+                                        <div className="flex flex-col">
+                                          <span className="text-[11px] font-black text-white">{u.email}</span>
+                                          <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">{u._id}</span>
+                                        </div>
+                                        <span className="text-[7px] font-black uppercase text-indigo-400 border border-indigo-500/20 px-2 py-1">
+                                          {u.role}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  {users.filter(u => u.role === editingRole.roleName || u.role === editingRole.roleType).length === 0 && (
+                                    <p className="text-[9px] text-gray-600 font-bold italic uppercase text-center py-2">
+                                      No users assigned to this role.
+                                    </p>
+                                  )}
                                 </div>
                               </div>
                             </div>
                           ) : (
-                            <div className="h-full min-h-[300px] border border-dashed border-white/10 flex items-center justify-center text-center p-8">
+                            <div className="min-h-[300px] border border-dashed border-white/10 flex items-center justify-center text-center p-8">
                               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest max-w-xs">
-                                Select a custom role on the left or create a new one to design its capabilities matrix.
+                                Select a role on the left to view and edit its permission rules.
                               </p>
                             </div>
                           )}

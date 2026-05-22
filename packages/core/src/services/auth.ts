@@ -100,13 +100,25 @@ export const AuthService = {
   // ── Account Lockout ────────────────────────────────────────────────────────
 
   /**
+   * Resolves a user by email or username.
+   * Returns null if not found.
+   */
+  async resolveUser(login: string): Promise<any | null> {
+    const adapter = AdapterFactory.getActiveAdapter()
+    const lower = login.toLowerCase()
+    // Try email first, then username
+    const byEmail = await adapter.find<any>('users', { email: lower })
+    if (byEmail[0]) return byEmail[0]
+    const byUsername = await adapter.find<any>('users', { username: lower })
+    return byUsername[0] || null
+  },
+
+  /**
    * Returns true if the account is currently locked out.
    * Checks lockUntil — if expired, the lock is considered lifted (will be cleared on next success).
    */
-  async isAccountLocked(email: string): Promise<boolean> {
-    const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<any>('users', { email: email.toLowerCase() })
-    const user = users[0] || null
+  async isAccountLocked(login: string): Promise<boolean> {
+    const user = await this.resolveUser(login)
     if (!user || !user.lockUntil) return false
     return new Date(user.lockUntil) > new Date()
   },
@@ -114,10 +126,8 @@ export const AuthService = {
   /**
    * Increments failed login counter. Locks the account after MAX_FAILED_ATTEMPTS.
    */
-  async trackFailedAttempt(email: string): Promise<{ locked: boolean; attemptsLeft: number }> {
-    const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<any>('users', { email: email.toLowerCase() })
-    const user = users[0] || null
+  async trackFailedAttempt(login: string): Promise<{ locked: boolean; attemptsLeft: number }> {
+    const user = await this.resolveUser(login)
     if (!user) return { locked: false, attemptsLeft: MAX_FAILED_ATTEMPTS }
 
     const newCount = (user.failedLoginAttempts || 0) + 1
@@ -127,6 +137,7 @@ export const AuthService = {
       update.lockUntil = new Date(Date.now() + LOCKOUT_DURATION_MS)
     }
     const id = (user.id || user._id).toString()
+    const adapter = AdapterFactory.getActiveAdapter()
     await adapter.update('users', id, update)
     return { locked, attemptsLeft: Math.max(0, MAX_FAILED_ATTEMPTS - newCount) }
   },
@@ -134,12 +145,11 @@ export const AuthService = {
   /**
    * Resets failed counter and clears lock after a successful login.
    */
-  async resetFailedAttempts(email: string): Promise<void> {
-    const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<any>('users', { email: email.toLowerCase() })
-    const user = users[0] || null
+  async resetFailedAttempts(login: string): Promise<void> {
+    const user = await this.resolveUser(login)
     if (user) {
       const id = (user.id || user._id).toString()
+      const adapter = AdapterFactory.getActiveAdapter()
       await adapter.update('users', id, { failedLoginAttempts: 0, lockUntil: null })
     }
   },

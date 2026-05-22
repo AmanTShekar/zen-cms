@@ -79,7 +79,16 @@ export class WorkerSandboxPool {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true })
     }
-    fs.writeFileSync(workerScript, fallbackScript, 'utf-8')
+    let shouldWrite = true
+    if (fs.existsSync(workerScript)) {
+      const existing = fs.readFileSync(workerScript, 'utf-8')
+      if (existing === fallbackScript) {
+        shouldWrite = false
+      }
+    }
+    if (shouldWrite) {
+      fs.writeFileSync(workerScript, fallbackScript, 'utf-8')
+    }
 
     for (let i = 0; i < this.poolSize; i++) {
       const worker = new Worker(workerScript)

@@ -95,31 +95,31 @@ const LoginPage: React.FC = () => {
 
   const fillCredentials = () => {
     setValue('email', 'admin@zenith.com')
-    setValue('password', 'password123')
+    setValue('password', 'Zenith2024!')
   }
 
   return (
     <div
       className={cn(
-        'min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-sans antialiased selection:bg-indigo-600 selection:text-white transition-colors duration-500',
+        'min-h-screen flex items-center justify-center p-4 md:p-6 relative overflow-auto font-sans antialiased selection:bg-indigo-600 selection:text-white transition-colors duration-500',
         theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-[#111827]'
       )}
     >
-      {/* 🏛️ Professional Minimalist Background */}
+      {/* Background elements */}
       <div
         className={cn(
-          'absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500',
+          'fixed top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500 z-0',
           theme === 'dark' ? 'bg-indigo-500/10' : 'bg-indigo-500/[0.03]'
         )}
-      ></div>
+      />
       <div
         className={cn(
-          'absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500',
+          'fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500 z-0',
           theme === 'dark' ? 'bg-indigo-500/10' : 'bg-indigo-500/[0.02]'
         )}
-      ></div>
+      />
 
-      <div className="w-full max-w-[400px] relative z-10 flex flex-col gap-8">
+      <div className="w-full max-w-[400px] relative z-10 flex flex-col gap-6 md:gap-8 py-4">
         {/* Branding Module */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -256,6 +256,7 @@ const LoginPage: React.FC = () => {
                   />
                   <input
                     {...register('email')}
+                    autoComplete="email"
                     type="email"
                     placeholder="admin@zenith.com"
                     className={cn(
@@ -304,6 +305,7 @@ const LoginPage: React.FC = () => {
                   />
                   <input
                     {...register('password')}
+                    autoComplete="current-password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     className={cn(
@@ -470,7 +472,7 @@ const LoginPage: React.FC = () => {
                       theme === 'dark' ? 'text-white/60' : 'text-indigo-900'
                     )}
                   >
-                    password123
+                    Zenith2024!
                   </code>
                 </div>
               </div>

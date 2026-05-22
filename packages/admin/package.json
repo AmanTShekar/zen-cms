@@ -42,7 +42,8 @@
     "@zenithcms/sdk": "workspace:*",
     "@zenithcms/types": "workspace:*",
     "uuid": "^11.1.0",
-    "zustand": "^5.0.13"
+    "zustand": "^5.0.13",
+    "immer": "^11.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

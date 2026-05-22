@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── Base ─────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0B0F19;
+  font-family: 'Outfit', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Custom Scrollbar ─────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0B0F19;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.6);
+}
+
+/* ── Selection ───────────────────────────────── */
+::selection {
+  background: rgba(99, 102, 241, 0.3);
+  color: #fff;
+}
+
+/* ── Focus States ────────────────────────────── */
+:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.6);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Line Clamp Utility ──────────────────────── */
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* ── Glass Utility ────────────────────────────── */
+@layer components {
+  .glass-card {
+    @apply rounded-xl bg-glass-gradient border border-white/[0.06] shadow-glass backdrop-blur-md;
+  }
+
+  .zenith-btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl
+      bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm font-bold
+      shadow-glow-sm hover:shadow-glow transition-all duration-200
+      hover:scale-[1.02] active:scale-[0.98];
+  }
+}
+
+/* ── Prose Styles ─────────────────────────────── */
+.prose-zenith h2 {
+  scroll-margin-top: 5rem;
+}
+.prose-zenith img {
+  @apply rounded-xl shadow-glass my-8;
+}

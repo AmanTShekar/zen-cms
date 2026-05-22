@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useAuthStore } from './store/authStore'
@@ -8,23 +8,38 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import SitePicker from './pages/SitePicker'
 import CollectionList from './pages/CollectionList'
-import CollectionsPage from './pages/CollectionsPage'
-import CollectionDetail from './pages/CollectionDetail'
-import AuditLogPage from './pages/AuditLogPage'
-import MediaLibrary from './pages/MediaLibrary'
-import DemoFeatures from './pages/DemoFeatures'
-import SpatialEditor from './pages/SpatialEditor'
-import FlowBuilderPage from './pages/FlowBuilderPage'
-import SettingsPage from './pages/SettingsPage'
-import SystemHealthPage from './pages/SystemHealthPage'
-import AIWriterPage from './pages/AIWriterPage'
-import PluginsPage from './pages/PluginsPage'
-import DashboardBuilder from './pages/DashboardBuilder'
-import SetupWizard from './pages/SetupWizard'
 import { Cpu } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import api from './lib/api'
 import { ThemeProvider } from './context/ThemeContext'
+
+// ── Code-split page bundles ────────────────────────────────────────────────────
+const CollectionsPage = lazy(() => import('./pages/CollectionsPage'))
+const CollectionDetail = lazy(() => import('./pages/CollectionDetail'))
+const AuditLogPage = lazy(() => import('./pages/AuditLogPage'))
+const MediaLibrary = lazy(() => import('./pages/MediaLibrary'))
+const DemoFeatures = lazy(() => import('./pages/DemoFeatures'))
+const SpatialEditor = lazy(() => import('./pages/SpatialEditor'))
+const FlowBuilderPage = lazy(() => import('./pages/FlowBuilderPage'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const SystemHealthPage = lazy(() => import('./pages/SystemHealthPage'))
+const AIWriterPage = lazy(() => import('./pages/AIWriterPage'))
+const PluginsPage = lazy(() => import('./pages/PluginsPage'))
+const DashboardBuilder = lazy(() => import('./pages/DashboardBuilder'))
+const TemplatesPage = lazy(() => import('./pages/TemplatesPage'))
+const SetupWizard = lazy(() => import('./pages/SetupWizard'))
+
+const PageLoader = () => (
+  <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-8">
+    <div className="relative">
+      <Cpu size={64} className="text-white animate-pulse" strokeWidth={0.5} />
+      <div className="absolute inset-0 blur-3xl bg-white/10 animate-pulse" />
+    </div>
+    <p className="text-[12px] font-black uppercase tracking-[0.6em] text-white/20 italic animate-pulse">
+      Loading Module...
+    </p>
+  </div>
+)
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -118,7 +133,9 @@ const App: React.FC = () => {
               path="/setup"
               element={
                 <ProtectedRoute>
-                  <SetupWizard />
+                  <Suspense fallback={<PageLoader />}>
+                    <SetupWizard />
+                  </Suspense>
                 </ProtectedRoute>
               }
             />
@@ -126,7 +143,9 @@ const App: React.FC = () => {
               path="/sites"
               element={
                 <ProtectedRoute>
-                  <SitePicker />
+                  <Suspense fallback={<PageLoader />}>
+                    <SitePicker />
+                  </Suspense>
                 </ProtectedRoute>
               }
             />
@@ -136,7 +155,9 @@ const App: React.FC = () => {
               path="/collections/pages/:id"
               element={
                 <ProtectedRoute>
-                  <SpatialEditor />
+                  <Suspense fallback={<PageLoader />}>
+                    <SpatialEditor />
+                  </Suspense>
                 </ProtectedRoute>
               }
             />
@@ -144,7 +165,9 @@ const App: React.FC = () => {
               path="/collections/pages/new"
               element={
                 <ProtectedRoute>
-                  <SpatialEditor />
+                  <Suspense fallback={<PageLoader />}>
+                    <SpatialEditor />
+                  </Suspense>
                 </ProtectedRoute>
               }
             />
@@ -152,7 +175,9 @@ const App: React.FC = () => {
               path="/globals/landing-page"
               element={
                 <ProtectedRoute>
-                  <SpatialEditor isGlobal />
+                  <Suspense fallback={<PageLoader />}>
+                    <SpatialEditor isGlobal />
+                  </Suspense>
                 </ProtectedRoute>
               }
             />
@@ -163,27 +188,30 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <DashboardLayout>
-                    <Routes>
-                      <Route path="/" element={<DashboardBuilder />} />
-                      <Route path="/collections" element={<CollectionsPage />} />
-                      <Route path="/collections/:slug" element={<CollectionList />} />
-                      <Route path="/collections/:slug/:id" element={<CollectionDetail />} />
-                      <Route path="/globals/:slug" element={<CollectionDetail isGlobal />} />
-                      <Route path="/globals/:slug/:id" element={<CollectionDetail isGlobal />} />
-                      <Route path="/audit-log" element={<AuditLogPage />} />
-                      <Route path="/media" element={<MediaLibrary />} />
-                      <Route path="/playground" element={<DemoFeatures />} />
-                      <Route
-                        path="/members"
-                        element={<Navigate to="/collections/members" replace />}
-                      />
-                      <Route path="/automations" element={<FlowBuilderPage />} />
-                      <Route path="/plugins" element={<PluginsPage />} />
-                      <Route path="/settings" element={<SettingsPage />} />
-                      <Route path="/ai-architect" element={<AIWriterPage />} />
-                      <Route path="/system" element={<SystemHealthPage />} />
-                      <Route path="*" element={<Navigate to="/" replace />} />
-                    </Routes>
+                    <Suspense fallback={<PageLoader />}>
+                      <Routes>
+                        <Route path="/" element={<DashboardBuilder />} />
+                        <Route path="/collections" element={<CollectionsPage />} />
+                        <Route path="/collections/:slug" element={<CollectionList />} />
+                        <Route path="/collections/:slug/:id" element={<CollectionDetail />} />
+                        <Route path="/globals/:slug" element={<CollectionDetail isGlobal />} />
+                        <Route path="/globals/:slug/:id" element={<CollectionDetail isGlobal />} />
+                        <Route path="/audit-log" element={<AuditLogPage />} />
+                        <Route path="/media" element={<MediaLibrary />} />
+                        <Route path="/playground" element={<DemoFeatures />} />
+                        <Route
+                          path="/members"
+                          element={<Navigate to="/collections/members" replace />}
+                        />
+                        <Route path="/automations" element={<FlowBuilderPage />} />
+                        <Route path="/templates" element={<TemplatesPage />} />
+                        <Route path="/plugins" element={<PluginsPage />} />
+                        <Route path="/settings" element={<SettingsPage />} />
+                        <Route path="/ai-architect" element={<AIWriterPage />} />
+                        <Route path="/system" element={<SystemHealthPage />} />
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                      </Routes>
+                    </Suspense>
                   </DashboardLayout>
                 </ProtectedRoute>
               }

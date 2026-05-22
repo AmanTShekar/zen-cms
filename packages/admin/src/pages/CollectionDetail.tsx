@@ -19,18 +19,23 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../lib/utils'
 import toast from 'react-hot-toast'
 import { useTheme } from '../context/ThemeContext'
+import type { FieldConfig } from '@zenithcms/types'
+
+interface ActiveUser { id?: string; email?: string }
+interface VersionDoc { _id: string; createdAt: string; snapshot: Record<string, unknown> }
+interface PresenceState { isLocked: boolean; activeUsers: ActiveUser[]; message: string | null }
 
 const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialIsGlobal }) => {
   const { slug: routeSlug, id: routeId } = useParams<{ slug: string; id: string }>()
   const navigate = useNavigate()
   const { theme } = useTheme()
-  const [data, setData] = useState<any>(null)
-  const [fields, setFields] = useState<any[]>([])
-  const [config, setConfig] = useState<any>(null)
+  const [data, setData] = useState<Record<string, unknown> | null>(null)
+  const [fields, setFields] = useState<FieldConfig[]>([])
+  const [config, setConfig] = useState<Record<string, unknown> | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [isZenMode, setIsZenMode] = useState(false)
-  const [versions, setVersions] = useState<any[]>([])
+  const [versions, setVersions] = useState<VersionDoc[]>([])
   const [isGlobal, setIsGlobal] = useState(initialIsGlobal)
   const [resolvedSlug, setResolvedSlug] = useState(routeSlug)
   const [resolvedId, setResolvedId] = useState(routeId?.split(':')[0] || 'singleton')
@@ -40,16 +45,12 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
   const [sourceLocale, setSourceLocale] = useState('en')
   const [targetLocale, setTargetLocale] = useState('es')
 
-  const [presence, setPresence] = useState<{
-    isLocked: boolean
-    activeUsers: any[]
-    message: string | null
-  }>({
+  const [presence, setPresence] = useState<PresenceState>({
     isLocked: false,
     activeUsers: [],
     message: null,
   })
-  const [selectedVersion, setSelectedVersion] = useState<any | null>(null)
+  const [selectedVersion, setSelectedVersion] = useState<VersionDoc | null>(null)
   const [restoring, setRestoring] = useState(false)
   const [selectedFieldsToRollback, setSelectedFieldsToRollback] = useState<string[]>([])
 
@@ -145,7 +146,7 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
     }
   }, [resolvedSlug, resolvedId, isGlobal])
 
-  const handleVersionClick = (version: any) => {
+  const handleVersionClick = (version: VersionDoc) => {
     setSelectedVersion(version)
     setSelectedFieldsToRollback([])
   }
@@ -287,7 +288,7 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
                 <h1 className="text-7xl font-black tracking-tighter uppercase italic leading-[0.9] truncate max-w-3xl">
                   {id === 'new'
                     ? 'New_Record_Init'
-                    : data?.name || data?.title || config?.labels?.singular || 'Manifest_Update'}
+                    : data?.name || data?.title || (config as any)?.labels?.singular || 'Manifest_Update'}
                 </h1>
               </div>
             </div>
@@ -419,7 +420,7 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
                       value={activeLocale}
                       onChange={(e) => setActiveLocale(e.target.value)}
                       className={cn(
-                        'bg-app-subtle border border-border px-3 py-1.5 text-xs font-bold focus:border-accent outline-none',
+                        'bg-black border border-white/10 px-3 py-1.5 text-xs font-bold focus:border-purple-500 outline-none',
                         theme === 'dark' ? 'bg-black text-white border-white/10' : 'bg-gray-50 border-gray-200'
                       )}
                     >
@@ -444,7 +445,7 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
                         value={sourceLocale}
                         onChange={(e) => setSourceLocale(e.target.value)}
                         className={cn(
-                          'bg-app-subtle border border-border px-3 py-1.5 text-xs font-bold focus:border-accent outline-none',
+                          'bg-black border border-white/10 px-3 py-1.5 text-xs font-bold focus:border-purple-500 outline-none',
                           theme === 'dark' ? 'bg-black text-white border-white/10' : 'bg-gray-50 border-gray-200'
                         )}
                       >
@@ -470,7 +471,7 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
                         value={targetLocale}
                         onChange={(e) => setTargetLocale(e.target.value)}
                         className={cn(
-                          'bg-app-subtle border border-border px-3 py-1.5 text-xs font-bold focus:border-accent outline-none',
+                          'bg-black border border-white/10 px-3 py-1.5 text-xs font-bold focus:border-purple-500 outline-none',
                           theme === 'dark' ? 'bg-black text-white border-white/10' : 'bg-gray-50 border-gray-200'
                         )}
                       >

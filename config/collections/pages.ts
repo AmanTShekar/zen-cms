@@ -11,7 +11,8 @@ export const Page: CollectionConfig = {
   versions: true,
   seo: true,
   fields: [
-    {
+      { name: 'siteId', type: 'text', required: true },
+      {
       name: 'meta',
       type: 'object',
       label: 'SEO Metadata',

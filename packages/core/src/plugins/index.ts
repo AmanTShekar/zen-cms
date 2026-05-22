@@ -2,10 +2,12 @@
  * Zenith CMS — Plugin System
  * ──────────────────────────
  * Inspired by Payload's plugin and Strapi's provider patterns.
- * Plugins can extend collections, inject middleware, and add hooks.
+ * Plugins can extend collections, inject middleware, register hooks,
+ * and inject admin UI components.
  */
 import { CMSConfig, ZenithPlugin } from '@zenithcms/types'
 export { CMSConfig, ZenithPlugin }
+export { hookRegistry, adminComponentRegistry, type AdminComponentRegistration } from './hooks'
 
 export type PluginFactory<TOptions = Record<string, unknown>> = (options: TOptions) => ZenithPlugin
 

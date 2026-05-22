@@ -9,16 +9,22 @@ import { ZenithEngine } from './index'
 
 // Import your config file (adjust path as needed)
 let config: any
+/* eslint-disable @typescript-eslint/no-require-imports */
 try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   config = require('../../../cms.config').default || require('../../../cms.config')
 } catch {
-  // Fallback: minimal config so the engine boots even without a config file
-  config = { collections: [], webhooks: [] }
-  console.warn(
-    '[Zenith] No cms.config.ts found — starting with empty config. Create cms.config.ts in project root.'
-  )
+  try {
+    const path = require('path')
+    config = require(path.join(process.cwd(), 'cms.config')).default || require(path.join(process.cwd(), 'cms.config'))
+  } catch {
+    // Fallback: minimal config so the engine boots even without a config file
+    config = { collections: [], webhooks: [] }
+    console.warn(
+      '[Zenith] No cms.config.ts found — starting with empty config. Create cms.config.ts in project root.'
+    )
+  }
 }
+/* eslint-enable @typescript-eslint/no-require-imports */
 
 const engine = new ZenithEngine({ config })
 engine.start()

@@ -7,6 +7,7 @@ import { sanitizeHtml } from '../utils'
 import { WorkerSandboxPool } from '../sandbox/worker-pool'
 import { i18n } from '../i18n'
 import { PresenceService } from './presence'
+import { canTransition, roleFromString } from './workflow-engine'
 
 export const sandboxPool = new WorkerSandboxPool()
 
@@ -39,7 +40,8 @@ export class ContentService<T = unknown> {
     data: any,
     options: ContentOperationOptions,
     action: 'afterRead' | 'beforeChange',
-    fields: FieldConfig[] = this.config.fields
+    fields: FieldConfig[] = this.config.fields,
+    existingDoc?: any
   ): Promise<any> {
     if (!data) return data
 
@@ -47,7 +49,7 @@ export class ContentService<T = unknown> {
     const cleanData = { ...data }
 
     for (const field of fields) {
-      if (field.virtual && action === 'beforeChange') continue
+      if (((field as any).virtual || field.type === 'ui' || field.type === 'row') && action === 'beforeChange') continue
 
       // ── Stored XSS Protection: Sanitize rich text inputs before saving ─────
       if (field.type === 'richtext' && action === 'beforeChange') {
@@ -67,7 +69,7 @@ export class ContentService<T = unknown> {
 
       // 1. Handle Localization
       // afterRead: flatten the locale map to the requested locale before returning
-      if (field.localized && action === 'afterRead' && options.locale) {
+      if ((field as any).localized && action === 'afterRead' && options.locale) {
         const val = cleanData[field.name]
         if (val && typeof val === 'object' && !Array.isArray(val)) {
           cleanData[field.name] = i18n.getLocalizedValue(val, options.locale)
@@ -76,17 +78,20 @@ export class ContentService<T = unknown> {
 
       // beforeChange: merge the incoming value into the existing locale map so other
       // translations are preserved (e.g. POST ?locale=fr only updates the 'fr' key)
-      if (field.localized && action === 'beforeChange' && options.locale) {
+      if ((field as any).localized && action === 'beforeChange' && options.locale) {
         const incomingVal = cleanData[field.name]
         if (incomingVal !== undefined && incomingVal !== null) {
           // Only wrap if the incoming value is not already a locale map
           const isAlreadyMap =
             typeof incomingVal === 'object' &&
             !Array.isArray(incomingVal) &&
-            Object.keys(incomingVal).some((k) => /^[a-z]{2}(-[A-Z]{2})?$/.test(k))
+            Object.keys(incomingVal).some((k) => /^[a-z]{2,3}(-[A-Z]{2,}|-[a-zA-Z]{2,})?$/.test(k))
           if (!isAlreadyMap) {
+            // Read the existing locale map from the stored document so we don't
+            // destroy translations for other locales when saving a single one.
+            const existingLocaleMap = existingDoc?.[field.name]
             cleanData[field.name] = i18n.setLocaleValue(
-              undefined, // no existing map available at field-processing time
+              existingLocaleMap,
               options.locale,
               incomingVal
             )
@@ -94,31 +99,34 @@ export class ContentService<T = unknown> {
         }
       }
 
-      // 2. Handle nested structures
-      if (field.type === 'group' && cleanData[field.name]) {
+      // 2. Handle nested structures (thread existing sub-doc for locale merging)
+      if ((field.type === 'group' || field.type === 'collapsible') && cleanData[field.name]) {
         cleanData[field.name] = await this.processFields(
           cleanData[field.name],
           options,
           action,
-          field.fields
+          field.fields,
+          existingDoc?.[field.name]
         )
       } else if (field.type === 'array' && Array.isArray(cleanData[field.name])) {
+        const existingArr = Array.isArray(existingDoc?.[field.name]) ? existingDoc[field.name] : []
         cleanData[field.name] = await Promise.all(
-          cleanData[field.name].map((item: any) =>
-            this.processFields(item, options, action, field.fields)
+          cleanData[field.name].map((item: any, idx: number) =>
+            this.processFields(item, options, action, field.fields, existingArr[idx])
           )
         )
       } else if (field.type === 'blocks' && Array.isArray(cleanData[field.name])) {
+        const existingBlocks = Array.isArray(existingDoc?.[field.name]) ? existingDoc[field.name] : []
         cleanData[field.name] = await Promise.all(
-          cleanData[field.name].map((block: any) => {
+          cleanData[field.name].map((block: any, idx: number) => {
             const blockDef = field.blocks.find((b) => b.slug === block.blockType)
-            return blockDef ? this.processFields(block, options, action, blockDef.fields) : block
+            return blockDef ? this.processFields(block, options, action, blockDef.fields, existingBlocks[idx]) : block
           })
         )
       }
 
       // 3. Apply field-level hook
-      const hookFn = field.hooks?.[action]
+      const hookFn = (field as any).hooks?.[action]
       if (hookFn && cleanData[field.name] !== undefined) {
         try {
           cleanData[field.name] = await hookFn(cleanData[field.name])
@@ -304,12 +312,27 @@ export class ContentService<T = unknown> {
       const oldDoc = await this.adapter.findOne(this.config.slug, query, opts)
       if (!oldDoc) throw new NotFoundError(this.config.name, id)
 
+      // Task 05: Auto-validate workflow transitions when workflowStatus changes
+      const incomingWorkflowStatus = (data as any)?.workflowStatus
+      const currentWorkflowStatus = (oldDoc as any)?.workflowStatus || 'draft'
+      if (incomingWorkflowStatus && incomingWorkflowStatus !== currentWorkflowStatus) {
+        const userRole = roleFromString((options.user as any)?.role)
+        const result = canTransition(currentWorkflowStatus, incomingWorkflowStatus, userRole)
+        if (!result.valid) {
+          throw new Error(`[Zenith] Workflow transition rejected: ${result.reason}`)
+        }
+        logger.info(
+          { from: currentWorkflowStatus, to: incomingWorkflowStatus, user: (options.user as any)?.email },
+          'Workflow transition validated'
+        )
+      }
+
       let updateData = { ...data }
 
       if (!options.skipHooks) {
         if (this.config.hooks?.beforeValidate)
           updateData = await this.executeHook('beforeValidate', this.config.hooks.beforeValidate, updateData, options.user)
-        updateData = await this.processFields(updateData, options, 'beforeChange')
+        updateData = await this.processFields(updateData, options, 'beforeChange', this.config.fields, oldDoc)
         if (this.config.hooks?.beforeUpdate)
           updateData = await this.executeHook('beforeUpdate', this.config.hooks.beforeUpdate, updateData, options.user)
       }
@@ -414,17 +437,44 @@ export class ContentService<T = unknown> {
   private async _createVersion(doc: any, options: any, delta?: any) {
     try {
       const isGlobal = this.config.singleton || !doc._id
+      const documentId = isGlobal ? this.config.slug : doc._id?.toString() || 'singleton'
       await this.adapter.createVersion({
         collectionName: isGlobal ? 'globals' : this.config.name || this.config.slug,
         collectionSlug: isGlobal ? 'globals' : this.config.slug,
-        documentId: isGlobal ? this.config.slug : doc._id?.toString() || 'singleton',
+        documentId,
         snapshot: doc,
         delta,
         createdBy: options.user?.id || 'system',
         timestamp: new Date(),
       }, { session: options?.session })
+
+      // Prune old versions beyond the max limit (default 50)
+      const maxVersions = this.config.maxVersions ?? 50
+      await this._enforceMaxVersions(documentId, maxVersions)
     } catch (err) {
       logger.error({ err }, 'Versioning failed')
+    }
+  }
+
+  /**
+   * Prunes oldest versions beyond `maxVersions` for a given document.
+   * Keeps the most recent N versions and deletes the rest.
+   */
+  private async _enforceMaxVersions(documentId: string, maxVersions: number): Promise<void> {
+    try {
+      const allVersions = await this.adapter.getVersions(this.config.slug, documentId)
+      if (allVersions.length <= maxVersions) return
+
+      const toDelete = allVersions
+        .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(maxVersions)
+
+      for (const version of toDelete) {
+        const vid = (version as any)._id?.toString() || (version as any).id
+        if (vid) await this.adapter.delete('versions', vid)
+      }
+    } catch (err) {
+      logger.warn({ err, collection: this.config.slug, documentId }, 'Version pruning failed')
     }
   }
 }

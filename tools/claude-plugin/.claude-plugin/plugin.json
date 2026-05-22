@@ -1,0 +1,14 @@
+{
+  "name": "zenith",
+  "version": "0.1.0",
+  "description": "Zenith CMS Development plugin - covers collections, database adapters, dynamic schema compilation, auth lockout, and glassmorphic frontend styling.",
+  "author": {
+    "name": "Zenith",
+    "email": "info@zenithcms.com",
+    "url": "https://zenithcms.com"
+  },
+  "homepage": "https://github.com/AmanTShekar/Zenith-CMS",
+  "repository": "https://github.com/AmanTShekar/Zenith-CMS",
+  "license": "MIT",
+  "keywords": ["zenith", "cms", "zenith-cms", "vite", "typescript", "headless-cms", "glassmorphism"]
+}

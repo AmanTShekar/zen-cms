@@ -76,24 +76,50 @@ router.post('/', requireAuth, upload.single('file'), async (req: any, res, next)
       fileId = result.id
     }
 
-    // 2. Auto-generate Alt Text if AI is enabled
-    if (process.env.ANTHROPIC_API_KEY) {
+    // 2. Auto-generate Alt Text & Smart Tags if AI is enabled
+    let tags: string[] = []
+    if (process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY) {
       try {
         altText = await AIService.generateAltText(url, 'uploaded media')
       } catch (e) {
-        // Soft fail alt text generation
         console.error('Failed to generate alt text', e)
+      }
+      try {
+        const tagResult = await AIService.generateImageTags(url)
+        tags = tagResult.tags
+        // Use AI description as alt text if none generated
+        if (!altText && tagResult.description) {
+          altText = tagResult.description
+        }
+      } catch (e) {
+        console.error('Failed to generate image tags', e)
       }
     }
 
-    // 3. Persist media meta details to database adapter
+    // 3. Extract focal point from body (sent by MediaPicker FocalPointCropper)
+    // When using multer, nested objects arrive as JSON strings — parse them
+    let parsedBody: Record<string, unknown> = {}
+    if (req.body.focalPoint && typeof req.body.focalPoint === 'string') {
+      try { parsedBody = JSON.parse(req.body.focalPoint) } catch { /* ignore */ }
+    } else if (req.body.focalPoint && typeof req.body.focalPoint === 'object') {
+      parsedBody = req.body.focalPoint as Record<string, unknown>
+    }
+    const focalPoint = (parsedBody.x !== undefined && parsedBody.y !== undefined)
+      ? {
+            x: Math.max(0, Math.min(100, Number(parsedBody.x) || 50)),
+            y: Math.max(0, Math.min(100, Number(parsedBody.y) || 50)),
+          }
+      : null
+
+    // 4. Persist media meta details to database adapter
     const doc = await req.__zenithAdapter.create('media', {
       url,
       id: fileId,
       mimetype: req.file.mimetype,
       size: req.file.size,
       alt: altText,
-      focalPointAuto: true, // Mark as focal point optimized
+      tags,
+      focalPoint,
     })
 
     res.json(createResponse(doc))

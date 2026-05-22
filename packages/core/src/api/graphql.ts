@@ -425,7 +425,11 @@ ${typeFields}
       ),
     ].join('\n')
 
-    schemaSdl += `\ntype Query {\n${queryFields}\n}\n`
+    if (!queryFields) {
+      resolvers['_dummy'] = () => 'Zenith'
+    }
+
+    schemaSdl += `\ntype Query {\n${queryFields || '  _dummy: String'}\n}\n`
 
     let mutationFields = ''
     config.collections.forEach((col) => {

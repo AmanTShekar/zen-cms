@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
   Plus,
@@ -14,6 +14,11 @@ import {
   Fingerprint,
   Activity as ActivityIcon,
   ShieldCheck,
+  CheckSquare,
+  Square,
+  Send,
+  Archive,
+  X,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../lib/utils'
@@ -32,6 +37,10 @@ const CollectionList: React.FC = () => {
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
+  const filteredData = data.filter((item) => {
+    const searchStr = searchQuery.toLowerCase()
+    return Object.values(item).some((val) => String(val).toLowerCase().includes(searchStr))
+  })
   const [visibleColumns, setVisibleColumns] = useState<string[]>([
     'name',
     'title',
@@ -42,6 +51,8 @@ const CollectionList: React.FC = () => {
   ])
   const [availableColumns, setAvailableColumns] = useState<string[]>([])
   const [columnMenuOpen, setColumnMenuOpen] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkProcessing, setBulkProcessing] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,6 +106,69 @@ const CollectionList: React.FC = () => {
     }
   }
 
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }, [])
+
+  const toggleSelectAll = useCallback(() => {
+    setSelectedIds((prev) => {
+      if (prev.size === filteredData.length) return new Set()
+      return new Set(filteredData.map((item: any) => item._id))
+    })
+  }, [filteredData])
+
+  const clearSelection = useCallback(() => {
+    setSelectedIds(new Set())
+  }, [])
+
+  const handleBulkAction = async (action: 'delete' | 'publish' | 'unpublish') => {
+    const ids = Array.from(selectedIds)
+    if (ids.length === 0) return
+
+    const confirmMsg: Record<string, string> = {
+      delete: `Delete ${ids.length} selected record(s)? This cannot be undone.`,
+      publish: `Publish ${ids.length} selected record(s)?`,
+      unpublish: `Unpublish ${ids.length} selected record(s)?`,
+    }
+    if (!window.confirm(confirmMsg[action])) return
+
+    setBulkProcessing(true)
+    try {
+      if (action === 'delete') {
+        await api.post(`/${slug}/bulk/delete`, { ids })
+        toast.success(`${ids.length} records deleted`)
+        setData((prev) => prev.filter((item) => !selectedIds.has(item._id)))
+        setTotal((prev) => prev - ids.length)
+      } else if (action === 'publish') {
+        await api.post(`/${slug}/bulk/publish`, { ids })
+        toast.success(`${ids.length} records published`)
+        setData((prev) =>
+          prev.map((item) =>
+            selectedIds.has(item._id) ? { ...item, _status: 'published' } : item
+          )
+        )
+      } else if (action === 'unpublish') {
+        await api.post(`/${slug}/bulk/unpublish`, { ids })
+        toast.success(`${ids.length} records unpublished`)
+        setData((prev) =>
+          prev.map((item) =>
+            selectedIds.has(item._id) ? { ...item, _status: 'draft' } : item
+          )
+        )
+      }
+      setSelectedIds(new Set())
+    } catch {
+      toast.error(`Bulk ${action} failed`)
+    } finally {
+      setBulkProcessing(false)
+    }
+  }
+
   const exportCSV = () => {
     if (data.length === 0) return
     const headers = Object.keys(data[0])
@@ -119,10 +193,6 @@ const CollectionList: React.FC = () => {
     toast.success('CSV_EXPORT_COMPLETE')
   }
 
-  const filteredData = data.filter((item) => {
-    const searchStr = searchQuery.toLowerCase()
-    return Object.values(item).some((val) => String(val).toLowerCase().includes(searchStr))
-  })
 
   return (
     <div
@@ -203,6 +273,82 @@ const CollectionList: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {/* ⚡ Bulk Action Toolbar */}
+      <AnimatePresence>
+        {selectedIds.size > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, y: -10, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className={cn(
+              'border rounded-none px-6 py-3 flex items-center justify-between gap-4 shadow-lg',
+              theme === 'dark'
+                ? 'bg-indigo-500/10 border-indigo-500/20'
+                : 'bg-indigo-50 border-indigo-200'
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 italic">
+                {selectedIds.size} Selected
+              </span>
+              <button
+                onClick={clearSelection}
+                className="p-1 text-gray-500 hover:text-white transition-colors"
+                title="Clear selection"
+              >
+                <X size={12} />
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleBulkAction('publish')}
+                disabled={bulkProcessing}
+                className={cn(
+                  'px-4 py-2 rounded-none font-black text-[9px] uppercase tracking-widest transition-all italic flex items-center gap-2 border',
+                  theme === 'dark'
+                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
+                    : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100'
+                )}
+              >
+                <Send size={11} />
+                Publish
+              </button>
+              <button
+                onClick={() => handleBulkAction('unpublish')}
+                disabled={bulkProcessing}
+                className={cn(
+                  'px-4 py-2 rounded-none font-black text-[9px] uppercase tracking-widest transition-all italic flex items-center gap-2 border',
+                  theme === 'dark'
+                    ? 'bg-amber-500/10 border-amber-500/20 text-amber-400 hover:bg-amber-500/20'
+                    : 'bg-amber-50 border-amber-200 text-amber-600 hover:bg-amber-100'
+                )}
+              >
+                <Archive size={11} />
+                Unpublish
+              </button>
+              <button
+                onClick={() => handleBulkAction('delete')}
+                disabled={bulkProcessing}
+                className={cn(
+                  'px-4 py-2 rounded-none font-black text-[9px] uppercase tracking-widest transition-all italic flex items-center gap-2 border',
+                  theme === 'dark'
+                    ? 'bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20'
+                    : 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100'
+                )}
+              >
+                {bulkProcessing ? (
+                  <Loader2 size={11} className="animate-spin" />
+                ) : (
+                  <Trash2 size={11} />
+                )}
+                Delete
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 📋 Data Registry */}
       <div
@@ -306,6 +452,22 @@ const CollectionList: React.FC = () => {
                   theme === 'dark' ? 'border-white/5' : 'border-gray-50'
                 )}
               >
+                <th className="px-4 py-4 w-10">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); toggleSelectAll(); }}
+                    className="flex items-center justify-center"
+                    title={selectedIds.size === filteredData.length && filteredData.length > 0 ? 'Deselect all' : 'Select all'}
+                  >
+                    {selectedIds.size === filteredData.length && filteredData.length > 0 ? (
+                      <CheckSquare size={14} className="text-indigo-500" />
+                    ) : (
+                      <Square size={14} className={cn(
+                        'text-gray-500',
+                        selectedIds.size > 0 && 'text-indigo-400'
+                      )} />
+                    )}
+                  </button>
+                </th>
                 <th className="px-6 py-4">Node_ID</th>
                 {availableColumns
                   .filter((c) => visibleColumns.includes(c))
@@ -322,7 +484,7 @@ const CollectionList: React.FC = () => {
             >
               {loading ? (
                 <tr>
-                  <td colSpan={visibleColumns.length + 2} className="py-20 text-center">
+                  <td colSpan={visibleColumns.length + 3} className="py-20 text-center">
                     <Loader2
                       size={24}
                       className="animate-spin mx-auto text-indigo-500 opacity-20"
@@ -332,22 +494,39 @@ const CollectionList: React.FC = () => {
               ) : filteredData.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={visibleColumns.length + 2}
+                    colSpan={visibleColumns.length + 3}
                     className="py-20 text-center opacity-20 text-[9px] font-black uppercase italic tracking-[0.4em]"
                   >
                     No_Records_Found
                   </td>
                 </tr>
               ) : (
-                filteredData.map((item: any) => (
+                filteredData.map((item: any) => {
+                  const isSelected = selectedIds.has(item._id)
+                  return (
                   <tr
                     key={item._id}
-                    className="hover:bg-indigo-500/[0.02] transition-colors group cursor-pointer border-b border-white/[0.02]"
+                    className={cn(
+                      "hover:bg-indigo-500/[0.02] transition-colors group cursor-pointer border-b border-white/[0.02]",
+                      isSelected && 'bg-indigo-500/[0.06]'
+                    )}
                     onClick={() => navigate(`/collections/${slug}/${item._id}`)}
                   >
+                    <td className="px-4 py-4">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); toggleSelect(item._id); }}
+                        className="flex items-center justify-center"
+                      >
+                        {isSelected ? (
+                          <CheckSquare size={14} className="text-indigo-500" />
+                        ) : (
+                          <Square size={14} className="text-gray-600 group-hover:text-gray-400" />
+                        )}
+                      </button>
+                    </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-none bg-indigo-500" />
+                        <div className={cn("w-1.5 h-1.5 rounded-none", isSelected ? 'bg-indigo-400' : 'bg-indigo-500')} />
                         <span className="text-[9px] font-black text-indigo-500 uppercase italic">
                           #{item._id.slice(-6)}
                         </span>
@@ -375,7 +554,10 @@ const CollectionList: React.FC = () => {
                       ))}
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                        <button className="p-2 rounded-none border hover:text-indigo-500">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); }}
+                          className="p-2 rounded-none border hover:text-indigo-500"
+                        >
                           <Edit size={12} />
                         </button>
                         <button
@@ -390,7 +572,8 @@ const CollectionList: React.FC = () => {
                       </div>
                     </td>
                   </tr>
-                ))
+                  )
+                })
               )}
             </tbody>
           </table>

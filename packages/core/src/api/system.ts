@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import os from 'os'
 import path from 'path'
 import fs from 'fs/promises'
+import fsSync from 'fs'
 import { z } from 'zod'
 import rateLimit from 'express-rate-limit'
 import { requireAuth, requireRole } from '../middleware/auth'
@@ -12,6 +13,8 @@ import { SearchService } from '../services/search'
 import { InvalidPayloadError, ValidationError } from '../errors'
 import { CacheService } from '../services/cache'
 import { AIService } from '../services/ai'
+import { VectorSearchService } from '../services/vector-search'
+import { adminComponentRegistry } from '../plugins/hooks'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { AuthService } from '../services/auth'
@@ -66,6 +69,26 @@ const AICollectionSchema = z.object({
 const router: Router = Router()
 
 // ── 1. SYSTEM CRITICAL (Top Priority) ────────────────────────────────────────
+
+// ── Admin Component Registry (for plugin-injected UI) ────────────────────────
+
+router.get('/admin-components', requireAuth, (_req: Request, res: Response) => {
+  res.json(createResponse(adminComponentRegistry.getAll()))
+})
+
+router.post(
+  '/admin-components/register',
+  requireAuth,
+  requireRole('admin'),
+  (req: Request, res: Response) => {
+    const { pluginName, slot, component, label, icon } = req.body
+    if (!pluginName || !slot || !component || !label) {
+      return res.status(400).json(createErrorResponse(400, 'pluginName, slot, component, and label are required'))
+    }
+    adminComponentRegistry.register({ pluginName, slot, component, label, icon })
+    res.status(201).json(createResponse({ success: true }))
+  }
+)
 
 router.get('/plugins', requireAuth, (req: Request, res: Response) => {
   const engine = req.app.get('zenith_engine')
@@ -309,6 +332,53 @@ router.post('/ai/generate', requireAuth, async (req: Request, res: Response, nex
   }
 })
 
+router.post('/ai/tag-image', aiLimiter, requireAuth, async (req: Request, res: Response, next) => {
+  try {
+    const { imageUrl } = req.body
+    if (!imageUrl) throw new InvalidPayloadError('imageUrl is required')
+    const result = await AIService.generateImageTags(imageUrl)
+    res.json(createResponse(result))
+  } catch (err) {
+    next(err)
+  }
+})
+
+// ── Semantic Vector Search ───────────────────────────────────────────────────
+
+router.get('/search/semantic', searchLimiter, requireAuth, async (req: Request, res: Response, next) => {
+  try {
+    const q = req.query.q as string
+    if (!q) throw new InvalidPayloadError('Query required')
+    if (!VectorSearchService.isAvailable()) {
+      return res.status(503).json(createErrorResponse(503, 'Semantic search requires OPENAI_API_KEY or OPENROUTER_API_KEY'))
+    }
+    const config = (req as any).zenith?.config
+    const siteId = req.headers['x-zenith-site-id'] as string
+    const collections = (config?.collections || []).map((c: any) => c.slug)
+    const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 10))
+    const results = await VectorSearchService.search(q.trim(), collections, limit, siteId)
+    res.json(createResponse({ results, count: results.length }))
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.post('/search/index-document', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
+  try {
+    const { collection, documentId, field, text, siteId } = req.body
+    if (!collection || !documentId || !field || !text) {
+      throw new InvalidPayloadError('collection, documentId, field, and text are required')
+    }
+    if (!VectorSearchService.isAvailable()) {
+      return res.status(503).json(createErrorResponse(503, 'Semantic search requires OPENAI_API_KEY or OPENROUTER_API_KEY'))
+    }
+    await VectorSearchService.indexDocument(collection, documentId, field, text, siteId)
+    res.json(createResponse({ success: true }))
+  } catch (err) {
+    next(err)
+  }
+})
+
 router.post(
   '/ai-architect',
   aiLimiter,
@@ -506,15 +576,13 @@ router.post(
       }
 
       try {
-        const fsSync = require('fs')
-        const pathModule = require('path')
         const possiblePaths = [
-          pathModule.resolve(process.cwd(), '.env'),
-          pathModule.resolve(process.cwd(), '../../.env'),
-          pathModule.resolve(__dirname, '../../../.env'),
-          pathModule.resolve(__dirname, '../../../../.env'),
+          path.resolve(process.cwd(), '.env'),
+          path.resolve(process.cwd(), '../../.env'),
+          path.resolve(__dirname, '../../../.env'),
+          path.resolve(__dirname, '../../../../.env'),
         ]
-        let envPath = possiblePaths.find(p => fsSync.existsSync(p)) || possiblePaths[0]
+        const envPath = possiblePaths.find(p => fsSync.existsSync(p)) || possiblePaths[0]
         
         let content = ''
         if (fsSync.existsSync(envPath)) {
@@ -859,7 +927,9 @@ router.post(
       // Dynamic custom schema seeding based on vertical onboarding selection
       const projectType = state?.answers?.projectType || 'custom'
       if (projectType && projectType !== 'custom') {
-        await seedTailoredData(projectType, adapter)
+        const site = await adapter.findOne<any>('z_sites', {})
+        const siteId = site ? (site.id || site._id).toString() : undefined
+        await seedTailoredData(projectType, adapter, siteId)
       }
       
       res.json(

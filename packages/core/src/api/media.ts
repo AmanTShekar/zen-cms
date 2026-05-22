@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, Request, Response } from 'express'
 import path from 'path'
 import fs from 'fs'
 import sharp from 'sharp'
@@ -8,13 +8,36 @@ const router: Router = Router()
 /**
  * Zenith Media Router & Image Processing Engine
  * ─────────────────────────────────────────────
- * Serves media uploads and performs high-fidelity image transformations 
- * (resizing, format conversion, compression) on-the-fly.
+ * Serves media uploads and performs high-fidelity image transformations
+ * (resizing, format conversion, smart crop with focal point) on-the-fly.
  */
 const mediaDir = path.resolve(process.cwd(), 'media')
 if (!fs.existsSync(mediaDir)) fs.mkdirSync(mediaDir, { recursive: true })
 
-router.get('/:filename', async (req, res, next) => {
+/**
+ * Convert a focal point percentage (0-100) to sharp gravity value.
+ * Focal point smart crop: uses sharp's `position` to anchor the crop
+ * around the user-defined focal coordinates.
+ */
+function focalPointToGravity(x: number, y: number): any {
+  // Map X: 0=left, 50=center, 100=right
+  // Map Y: 0=top, 50=center, 100=bottom
+  if (x < 33) {
+    if (y < 33) return 'northwest'
+    if (y > 66) return 'southwest'
+    return 'west'
+  }
+  if (x > 66) {
+    if (y < 33) return 'northeast'
+    if (y > 66) return 'southeast'
+    return 'east'
+  }
+  if (y < 33) return 'north'
+  if (y > 66) return 'south'
+  return 'center'
+}
+
+router.get('/:filename', async (req: Request, res: Response, next) => {
   try {
     // Guard Rail: Prevent directory traversal attack
     const filename = path.basename(req.params.filename)
@@ -24,7 +47,7 @@ router.get('/:filename', async (req, res, next) => {
       return res.status(404).json({ error: 'Media file not found' })
     }
 
-    const { width, height, format } = req.query
+    const { width, height, format, fpX, fpY } = req.query
 
     const w = width ? Number(width) : undefined
     const h = height ? Number(height) : undefined
@@ -39,6 +62,11 @@ router.get('/:filename', async (req, res, next) => {
       return res.status(400).json({ error: 'Unsupported image format' })
     }
 
+    // Parse focal point from query params (e.g., ?fpX=75&fpY=25)
+    const focalX = fpX !== undefined ? Number(fpX) : undefined
+    const focalY = fpY !== undefined ? Number(fpY) : undefined
+    const hasFocal = focalX !== undefined && focalY !== undefined && !isNaN(focalX) && !isNaN(focalY)
+
     // Check if the file is an image that we can transform
     const ext = path.extname(filename).toLowerCase()
     const isImage = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif'].includes(ext)
@@ -47,18 +75,25 @@ router.get('/:filename', async (req, res, next) => {
       let transform = sharp(filePath)
 
       if (w || h) {
-        transform = transform.resize({
+        const resizeOpts: sharp.ResizeOptions = {
           width: w,
           height: h,
           fit: 'cover',
-        })
+        }
+        // Apply focal point as crop position when both dimensions are specified
+        if (hasFocal && w && h) {
+          resizeOpts.position = focalPointToGravity(
+            Math.max(0, Math.min(100, focalX)),
+            Math.max(0, Math.min(100, focalY))
+          )
+        }
+        transform = transform.resize(resizeOpts)
       }
 
       if (format) {
         transform = transform.toFormat(format as any)
         res.type(`image/${format}`)
       } else {
-        // Map common extensions to standardized types
         const typeMap: Record<string, string> = {
           '.jpg': 'image/jpeg',
           '.jpeg': 'image/jpeg',

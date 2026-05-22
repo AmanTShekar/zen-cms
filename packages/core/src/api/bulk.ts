@@ -14,9 +14,10 @@ router.use(requireAuth)
  * Enables efficient batch operations on collection documents.
  * Inspired by Directus's bulk update/delete endpoints.
  *
- * POST /api/v1/:collection/bulk/delete   — delete many by IDs
- * POST /api/v1/:collection/bulk/update   — update many by IDs
- * POST /api/v1/:collection/bulk/publish  — publish many by IDs
+ * POST /api/v1/:collection/bulk/delete    — delete many by IDs
+ * POST /api/v1/:collection/bulk/update    — update many by IDs
+ * POST /api/v1/:collection/bulk/publish   — publish many by IDs
+ * POST /api/v1/:collection/bulk/unpublish — unpublish many by IDs
  */
 
 router.post('/:collection/bulk/delete', async (req: Request, res: Response, next) => {
@@ -138,6 +139,47 @@ router.post('/:collection/bulk/publish', async (req: Request, res: Response, nex
     CacheService.invalidateTag(collection)
 
     res.json(createResponse({ published: ids.length }))
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.post('/:collection/bulk/unpublish', async (req: Request, res: Response, next) => {
+  try {
+    const { ids } = req.body
+    const { collection } = req.params
+    const config = (req as any).zenith?.config
+    const user = (req as any).user
+    const siteId = req.headers['x-zenith-site-id'] as string
+    const adapter = (req as any).__zenithAdapter
+
+    if (!adapter) {
+      throw new Error('Database adapter not initialized on request context')
+    }
+
+    if (!Array.isArray(ids) || ids.length === 0)
+      throw new InvalidPayloadError('"ids" array is required')
+
+    if (user.role === 'viewer') throw new ForbiddenError('Viewer role is read-only')
+
+    const colConfig = config?.collections?.find((c: any) => c.slug === collection)
+    if (!colConfig) throw new NotFoundError('Collection', collection)
+
+    const contentService = new ContentService(colConfig, adapter)
+
+    const BATCH_SIZE = 20
+    for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+      const batch = ids.slice(i, i + BATCH_SIZE)
+      await Promise.all(
+        batch.map((id) =>
+          contentService.update(id, { _status: 'draft' } as any, { user, siteId })
+        )
+      )
+    }
+
+    CacheService.invalidateTag(collection)
+
+    res.json(createResponse({ unpublished: ids.length }))
   } catch (err) {
     next(err)
   }

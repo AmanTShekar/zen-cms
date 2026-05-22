@@ -24,8 +24,14 @@ router.get('/:collection/:id', async (req: Request, res: Response, next) => {
   try {
     const user = (req as any).user
     const engine = req.app.get('zenith_engine')
-    const collection = req.params.collection
-    const documentId = req.params.id
+    let collection = req.params.collection
+    let documentId = req.params.id
+
+    // Resolve globals: /versions/globals/:globalSlug points to the global collection
+    if (collection === 'globals') {
+      collection = documentId // the global slug is the second segment
+      documentId = 'singleton'
+    }
 
     // Enforce read access checks (including RLS constraints)
     await engine.local.findById(collection, documentId, { user })
@@ -50,8 +56,14 @@ router.get('/:collection/:id/:versionId', async (req: Request, res: Response, ne
   try {
     const user = (req as any).user
     const engine = req.app.get('zenith_engine')
-    const collection = req.params.collection
-    const documentId = req.params.id
+    let collection = req.params.collection
+    let documentId = req.params.id
+
+    // Resolve globals: /versions/globals/:globalSlug points to the global collection
+    if (collection === 'globals') {
+      collection = documentId
+      documentId = 'singleton'
+    }
 
     // Enforce read access checks (including RLS constraints)
     await engine.local.findById(collection, documentId, { user })
@@ -70,8 +82,14 @@ router.get('/:collection/:id/:versionId/diff', async (req: Request, res: Respons
   try {
     const user = (req as any).user
     const engine = req.app.get('zenith_engine')
-    const collection = req.params.collection
-    const documentId = req.params.id
+    let collection = req.params.collection
+    let documentId = req.params.id
+
+    // Resolve globals: /versions/globals/:globalSlug points to the global collection
+    if (collection === 'globals') {
+      collection = documentId
+      documentId = 'singleton'
+    }
 
     // Enforce read access checks (including RLS constraints)
     await engine.local.findById(collection, documentId, { user })
@@ -99,8 +117,14 @@ router.post('/:collection/:id/:versionId/restore', async (req: Request, res: Res
   try {
     const user = (req as any).user
     const engine = req.app.get('zenith_engine')
-    const collection = req.params.collection
-    const documentId = req.params.id
+    let collection = req.params.collection
+    let documentId = req.params.id
+
+    // Resolve globals: /versions/globals/:globalSlug points to the global collection
+    if (collection === 'globals') {
+      collection = documentId
+      documentId = 'singleton'
+    }
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const version = await adapter.findOne<any>('versions', { _id: req.params.versionId })
@@ -125,8 +149,14 @@ router.post('/:collection/:id/:versionId/rollback-fields', async (req: Request, 
   try {
     const user = (req as any).user
     const engine = req.app.get('zenith_engine')
-    const collection = req.params.collection
-    const documentId = req.params.id
+    let collection = req.params.collection
+    let documentId = req.params.id
+
+    // Resolve globals: /versions/globals/:globalSlug points to the global collection
+    if (collection === 'globals') {
+      collection = documentId
+      documentId = 'singleton'
+    }
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const version = await adapter.findOne<any>('versions', { _id: req.params.versionId })

@@ -108,7 +108,7 @@ export function createCollectionRouter(
     if (!doc) return doc
     const sanitized = { ...doc }
     config.fields.forEach((field) => {
-      if (field.access?.[action] && !field.access[action]!(user)) {
+      if ((field as any).access?.[action] && !(field as any).access[action]!(user)) {
         delete sanitized[field.name]
       }
     })
@@ -480,6 +480,49 @@ export function createCollectionRouter(
     }
   })
 
+
+  // ── Count ───────────────────────────────────────────────────────────────────
+
+  router.get('/count', async (req, res, next) => {
+    try {
+      const { contentService } = getContext()
+      const user = (req as any).user
+      const siteId = req.headers['x-zenith-site-id'] as string
+      await verifyAccess(user, 'read')
+
+      const filter: Record<string, any> = {}
+      if (siteId) filter.siteId = siteId
+      // Parse where params from query string
+      for (const [key, value] of Object.entries(req.query)) {
+        if (key.startsWith('where[') && key.endsWith(']')) {
+          const fieldName = key.slice(6, -1)
+          filter[fieldName] = value
+        }
+      }
+
+      const count = await adapter.count(config.slug, filter)
+      res.json(createResponse({ count }))
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  // ── Aggregate ────────────────────────────────────────────────────────────────
+
+  router.post('/aggregate', async (req, res, next) => {
+    try {
+      const user = (req as any).user
+      await verifyAccess(user, 'read')
+      const { pipeline } = req.body
+      if (!Array.isArray(pipeline)) {
+        return res.status(400).json({ error: { message: 'pipeline must be an array' } })
+      }
+      const results = await adapter.aggregate(config.slug, pipeline)
+      res.json(createResponse({ results }))
+    } catch (err) {
+      next(err)
+    }
+  })
 
   // ── Versioning & History ────────────────────────────────────────────────────
 

@@ -1,14 +1,32 @@
 import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { Loader2 } from 'lucide-react'
-// FieldConfig removed from @zenithcms/types as it is missing in build environment
 type FieldConfig = any
 import RichTextEditor from './RichTextEditor'
 import MediaPicker from './MediaPicker'
+import RelationPicker from './RelationPicker'
+import {
+  evaluateCondition,
+  getFieldError,
+  deepMerge,
+  getFieldName,
+} from '../lib/form-utils'
+import TextField from './fields/TextField'
+import TextareaField from './fields/TextareaField'
+import SelectField from './fields/SelectField'
+import BooleanField from './fields/BooleanField'
+import NumberField from './fields/NumberField'
+import CodeField from './fields/CodeField'
+import CollapsibleField from './fields/CollapsibleField'
+import {
+  PointField,
+  RowField,
+  JoinField,
+  RadioField,
+} from './fields/SpecialFields'
+
 import BlocksBuilder from './BlocksBuilder'
 import SimpleArrayBuilder from './SimpleArrayBuilder'
-import RelationPicker from './RelationPicker'
-import { cn } from '../lib/utils'
 
 interface FormBuilderProps {
   fields: FieldConfig[]
@@ -42,52 +60,6 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
 
   const formValues = watch()
 
-  const getFieldName = (field: FieldConfig) => {
-    return field.localized ? `${field.name}.${currentLocale}` : field.name
-  }
-
-  const getFieldError = (name: string) => {
-    if (!name.includes('.')) return errors[name]
-    const parts = name.split('.')
-    let current: any = errors
-    for (const part of parts) {
-      if (!current) break
-      current = current[part]
-    }
-    return current
-  }
-
-  const evaluateCondition = (condition: any): boolean => {
-    if (!condition) return true
-
-    if (typeof condition === 'function') {
-      try {
-        return condition(formValues)
-      } catch {
-        return true
-      }
-    }
-
-    if (typeof condition === 'object') {
-      const targetField = condition.field
-      if (!targetField) return true
-
-      const targetValue = formValues[targetField]
-
-      if (condition.equals !== undefined) {
-        return targetValue === condition.equals
-      }
-      if (condition.notEquals !== undefined) {
-        return targetValue !== condition.notEquals
-      }
-      if (condition.contains !== undefined) {
-        return Array.isArray(targetValue) && targetValue.includes(condition.contains)
-      }
-    }
-
-    return true
-  }
-
   React.useEffect(() => {
     if (initialData) {
       reset(initialData)
@@ -100,56 +72,41 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
     onChange: (val: any) => void,
     disabled = false
   ) => {
-    if (field.type === 'select') {
-      return (
-        <select
-          value={value || (field.hasMany ? [] : '')}
-          onChange={(e) => {
-            const val = field.hasMany
-              ? Array.from(e.target.selectedOptions, (option) => option.value)
-              : e.target.value
-            onChange(val)
-          }}
-          multiple={field.hasMany}
-          disabled={disabled}
-          className="w-full bg-app-subtle border border-border rounded-none px-3 py-2 text-sm focus:border-accent outline-none disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {!field.required && !field.hasMany && <option value="">Select...</option>}
-          {field.options?.map((opt: any) => (
-            <option key={opt.value || opt} value={opt.value || opt}>
-              {opt.label || opt}
-            </option>
-          ))}
-        </select>
-      )
+    // ── UI slot — render custom field component if registered ────────────────
+    if (field.type === 'ui') {
+      const CustomComponent = field.admin?.components?.Field
+      if (CustomComponent) {
+        return <CustomComponent field={field} value={value} onChange={onChange} disabled={disabled} />
+      }
+      return null
     }
 
-    if (field.type === 'boolean' || field.type === 'checkbox') {
+    // ── Structural fields — pass renderField for nesting ─────────────────────
+    if (field.type === 'collapsible') {
       return (
-        <div className="flex items-center h-9">
-          <input
-            type="checkbox"
-            checked={!!value}
-            onChange={(e) => onChange(e.target.checked)}
-            disabled={disabled}
-            className="w-4 h-4 rounded-none border-border text-accent focus:ring-accent disabled:opacity-60 disabled:cursor-not-allowed"
-          />
-        </div>
-      )
-    }
-
-    if (field.type === 'number') {
-      return (
-        <input
-          type="number"
-          value={value ?? ''}
-          onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
+        <CollapsibleField
+          field={field}
+          value={value}
+          onChange={onChange}
           disabled={disabled}
-          className="w-full bg-app-subtle border border-border rounded-none px-3 py-2 text-sm focus:border-accent outline-none disabled:opacity-60 disabled:cursor-not-allowed"
+          renderField={renderField}
         />
       )
     }
 
+    if (field.type === 'row') {
+      return (
+        <RowField
+          field={field}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+          renderField={renderField}
+        />
+      )
+    }
+
+    // ── Complex fields with their own internal state ────────────────────────
     if (field.type === 'richtext') {
       return (
         <RichTextEditor
@@ -202,91 +159,56 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
           value={value}
           onChange={onChange}
           fields={field.fields || []}
-          label={field.label || (field as any).name}
+          label={field.label || field.name}
           renderField={(f: any, val: any, change: any) => renderField(f, val, change, disabled)}
           disabled={disabled}
         />
       )
     }
 
-    if (field.type === 'textarea') {
-      const casingStyle =
-        field.casing === 'uppercase'
-          ? { textTransform: 'uppercase' as const }
-          : field.casing === 'lowercase'
-            ? { textTransform: 'lowercase' as const }
-            : field.casing === 'capitalize'
-              ? { textTransform: 'capitalize' as const }
-              : undefined
-
-      return (
-        <div className="relative w-full">
-          <textarea
-            value={value || ''}
-            onChange={(e) => {
-              let val = e.target.value
-              if (field.casing === 'uppercase') val = val.toUpperCase()
-              else if (field.casing === 'lowercase') val = val.toLowerCase()
-              else if (field.casing === 'capitalize')
-                val = val.replace(/\b\w/g, (c) => c.toUpperCase())
-              onChange(val)
-            }}
-            maxLength={field.maxLength}
-            rows={8}
-            style={casingStyle}
-            disabled={disabled}
-            className="w-full bg-app-subtle border border-border rounded-none px-4 py-3 text-sm focus:border-accent outline-none min-h-[150px] transition-all focus:ring-2 focus:ring-accent/10 disabled:opacity-60 disabled:cursor-not-allowed"
-            placeholder={`Enter ${field.name}...`}
-          />
-          {field.maxLength && (
-            <span className="absolute bottom-2 right-3 text-[9px] font-bold text-text-muted font-mono uppercase">
-              {(value || '').length} / {field.maxLength}
-            </span>
-          )}
-        </div>
-      )
+    // ── Read-only informational fields ───────────────────────────────────────
+    if (field.type === 'join') {
+      return <JoinField field={field} />
     }
 
-    // Default: text, email, password, date, etc.
-    const casingStyle =
-      field.casing === 'uppercase'
-        ? { textTransform: 'uppercase' as const }
-        : field.casing === 'lowercase'
-          ? { textTransform: 'lowercase' as const }
-          : field.casing === 'capitalize'
-            ? { textTransform: 'capitalize' as const }
-            : undefined
+    if (field.type === 'point') {
+      return <PointField field={field} value={value} onChange={onChange} disabled={disabled} />
+    }
 
-    return (
-      <div className="relative w-full">
-        <input
-          type={['date', 'password', 'color', 'email'].includes(field.type) ? field.type : 'text'}
-          value={value || ''}
-          onChange={(e) => {
-            let val = e.target.value
-            if (field.casing === 'uppercase') val = val.toUpperCase()
-            else if (field.casing === 'lowercase') val = val.toLowerCase()
-            else if (field.casing === 'capitalize')
-              val = val.replace(/\b\w/g, (c) => c.toUpperCase())
-            onChange(val)
-          }}
-          maxLength={field.maxLength}
-          style={casingStyle}
-          disabled={disabled}
-          className={cn(
-            "w-full bg-app-subtle border border-border rounded-none px-3 py-2 text-sm focus:border-accent outline-none disabled:opacity-60 disabled:cursor-not-allowed",
-            field.type === 'color' && "h-10 p-1 cursor-pointer",
-            field.type === 'uid' && "font-mono text-accent"
-          )}
-          placeholder={`Enter ${field.name}...`}
-        />
-        {field.maxLength && field.type !== 'date' && (
-          <span className="absolute right-3 top-2.5 text-[9px] font-bold text-text-muted font-mono uppercase pointer-events-none">
-            {(value || '').length} / {field.maxLength}
-          </span>
-        )}
-      </div>
-    )
+    // ── Basic input fields ───────────────────────────────────────────────────
+    if (field.type === 'select') {
+      return <SelectField field={field} value={value} onChange={onChange} disabled={disabled} />
+    }
+
+    if (field.type === 'boolean' || field.type === 'checkbox') {
+      return <BooleanField field={field} value={value} onChange={onChange} disabled={disabled} />
+    }
+
+    if (field.type === 'number') {
+      return <NumberField field={field} value={value} onChange={onChange} disabled={disabled} />
+    }
+
+    if (field.type === 'textarea') {
+      return <TextareaField field={field} value={value} onChange={onChange} disabled={disabled} />
+    }
+
+    if (field.type === 'code') {
+      return <CodeField field={field} value={value} onChange={onChange} disabled={disabled} />
+    }
+
+    if (field.type === 'radio') {
+      return <RadioField field={field} value={value} onChange={onChange} disabled={disabled} />
+    }
+
+    // Default: text, email, password, date, color, uid
+    return <TextField field={field} value={value} onChange={onChange} disabled={disabled} />
+  }
+
+  const handleFormSubmit = async (formData: any) => {
+    if (onSubmit) {
+      const merged = deepMerge(initialData || {}, formData)
+      await onSubmit(merged)
+    }
   }
 
   const renderFormContent = () => (
@@ -294,16 +216,16 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
       {fields.map((field: FieldConfig) => {
         if (field.name === '_status' || field.name === 'id') return null
 
-        // ── Conditional field visibility check ─────────────────────────────────
         const condition = field.condition || field.admin?.condition
-        if (condition && !evaluateCondition(condition)) return null
+        if (condition && !evaluateCondition(condition, formValues)) return null
 
-        const isFullWidth = ['richtext', 'blocks', 'array'].includes(field.type)
+        const isFullWidth = ['richtext', 'blocks', 'array', 'code', 'collapsible'].includes(field.type)
+        const fieldName = getFieldName(field, currentLocale)
 
         return (
           <div key={field.name} className={`space-y-2 ${isFullWidth ? 'col-span-2' : ''}`}>
             <div className="flex items-center justify-between">
-              <label className="text-sm font-semibold text-text-primary capitalize flex items-center gap-2">
+              <label className="text-sm font-semibold text-white capitalize flex items-center gap-2">
                 {field.label || field.name.replace(/([A-Z])/g, ' $1')}
                 {field.required && <span className="text-danger">*</span>}
                 {field.localized && (
@@ -312,10 +234,8 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
                   </span>
                 )}
               </label>
-              {(field.admin as any)?.description && (
-                <span className="text-[10px] text-text-muted">
-                  {(field.admin as any).description}
-                </span>
+              {field.admin?.description && (
+                <span className="text-[10px] text-gray-400">{field.admin.description}</span>
               )}
             </div>
 
@@ -328,15 +248,15 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
               })()
             ) : (
               <Controller
-                name={getFieldName(field)}
+                name={fieldName}
                 control={control}
                 render={({ field: { onChange, value } }) => renderField(field, value, onChange)}
               />
             )}
 
-            {!isReadOnly && getFieldError(getFieldName(field)) && (
+            {!isReadOnly && getFieldError(errors, fieldName) && (
               <p className="text-xs text-danger mt-1 font-medium">
-                {getFieldError(getFieldName(field))?.message || 'Required field'}
+                {(getFieldError(errors, fieldName) as any)?.message || 'Required field'}
               </p>
             )}
           </div>
@@ -344,35 +264,6 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
       })}
     </div>
   )
-
-  const isObject = (item: any) => {
-    return item && typeof item === 'object' && !Array.isArray(item)
-  }
-
-  const deepMerge = (target: any, source: any): any => {
-    const output = { ...target }
-    if (isObject(target) && isObject(source)) {
-      Object.keys(source).forEach((key) => {
-        if (isObject(source[key])) {
-          if (!(key in target)) {
-            Object.assign(output, { [key]: source[key] })
-          } else {
-            output[key] = deepMerge(target[key], source[key])
-          }
-        } else {
-          Object.assign(output, { [key]: source[key] })
-        }
-      })
-    }
-    return output
-  }
-
-  const handleFormSubmit = async (formData: any) => {
-    if (onSubmit) {
-      const merged = deepMerge(initialData || {}, formData)
-      await onSubmit(merged)
-    }
-  }
 
   if (isReadOnly) {
     return <div className="space-y-8">{renderFormContent()}</div>
@@ -383,7 +274,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
       {renderFormContent()}
 
       <div className="pt-8 border-t border-border flex items-center justify-between">
-        <p className="text-xs text-text-muted">
+        <p className="text-xs text-gray-400">
           Fields marked with <span className="text-danger">*</span> are required.
         </p>
         <div className="flex gap-3">

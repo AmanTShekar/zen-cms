@@ -22,6 +22,13 @@ export type FieldType =
   | 'relation'
   | 'blocks'
   | 'boolean'
+  | 'code'
+  | 'collapsible'
+  | 'join'
+  | 'point'
+  | 'radio'
+  | 'row'
+  | 'ui'
 
 export interface BlockDefinition {
   slug: string
@@ -88,13 +95,21 @@ export interface SelectFieldConfig extends BaseFieldConfig {
 export interface MediaFieldConfig extends BaseFieldConfig {
   type: 'media'
   hasMany?: boolean
+  options?: {
+    focalPoint?: boolean
+    blurhash?: boolean
+    responsive?: boolean
+  }
 }
+export type OnDeletePolicy = 'SET_NULL' | 'CASCADE' | 'RESTRICT' | 'NO_ACTION'
+
 export interface RelationFieldConfig extends BaseFieldConfig {
   type: 'relation'
-  relationTo: string
+  relationTo: string | string[]
   hasMany?: boolean
   junctionTable?: string
   pivotFields?: FieldConfig[]
+  onDelete?: OnDeletePolicy
 }
 export interface ArrayFieldConfig extends BaseFieldConfig {
   type: 'array'
@@ -110,8 +125,56 @@ export interface BlocksFieldConfig extends BaseFieldConfig {
   type: 'blocks'
   blocks: BlockDefinition[]
 }
+export interface RichTextFieldConfig extends BaseFieldConfig {
+  type: 'richtext'
+  format?: 'html' | 'json'
+}
 export interface BasicFieldConfig extends BaseFieldConfig {
-  type: 'date' | 'richtext' | 'json'
+  type: 'date' | 'json'
+}
+export interface CodeFieldConfig extends BaseFieldConfig {
+  type: 'code'
+  language?: string
+  minLength?: number
+  maxLength?: number
+}
+export interface CollapsibleFieldConfig extends BaseFieldConfig {
+  type: 'collapsible'
+  fields: FieldConfig[]
+  initCollapsed?: boolean
+}
+export interface JoinFieldConfig extends Omit<BaseFieldConfig, 'required'> {
+  type: 'join'
+  collection: string | string[]
+  on: string
+  maxDepth?: number
+  where?: Record<string, any>
+  defaultLimit?: number
+  defaultSort?: string
+}
+export interface PointFieldConfig extends BaseFieldConfig {
+  type: 'point'
+}
+export interface RadioFieldConfig extends BaseFieldConfig {
+  type: 'radio'
+  options: (string | { label: string; value: string })[]
+  layout?: 'horizontal' | 'vertical'
+}
+export interface RowFieldConfig extends Omit<BaseFieldConfig, 'required' | 'unique' | 'localized' | 'virtual' | 'defaultValue' | 'admin' | 'hooks' | 'access'> {
+  type: 'row'
+  fields: FieldConfig[]
+  admin?: {
+    className?: string
+  }
+}
+export interface UIFieldConfig extends Omit<BaseFieldConfig, 'required' | 'unique' | 'localized' | 'virtual' | 'defaultValue' | 'hooks' | 'access'> {
+  type: 'ui'
+  admin?: {
+    components?: {
+      Field?: React.ComponentType<any>
+    }
+    condition?: (data: any, siblingData: any) => boolean
+  }
 }
 
 export type FieldConfig =
@@ -124,7 +187,15 @@ export type FieldConfig =
   | ArrayFieldConfig
   | GroupFieldConfig
   | BlocksFieldConfig
+  | RichTextFieldConfig
   | BasicFieldConfig
+  | CodeFieldConfig
+  | CollapsibleFieldConfig
+  | JoinFieldConfig
+  | PointFieldConfig
+  | RadioFieldConfig
+  | RowFieldConfig
+  | UIFieldConfig
 
 // ── Collection & Global Config ───────────────────────────────────────────────
 
@@ -138,6 +209,7 @@ export interface CollectionConfig {
   timestamps?: boolean
   singleton?: boolean
   versions?: boolean
+  maxVersions?: number
   scheduling?: boolean
   publicRead?: boolean
   hooks?: {

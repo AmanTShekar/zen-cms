@@ -10,9 +10,11 @@ function mapFieldToMongoose(field: any): unknown {
     case 'text':
     case 'email':
     case 'textarea':
-    case 'richtext':
     case 'select':
       type = String
+      break
+    case 'richtext':
+      type = field.format === 'json' ? Schema.Types.Mixed : String
       break
     case 'number':
       type = Number
@@ -72,6 +74,29 @@ function mapFieldToMongoose(field: any): unknown {
         type = [Schema.Types.Mixed]
       }
       break
+    case 'code':
+    case 'radio':
+      type = String
+      break
+    case 'collapsible':
+      if (field.fields) {
+        type = new Schema(generateSchemaFields(field.fields), { _id: false })
+      } else {
+        type = Schema.Types.Mixed
+      }
+      break
+    case 'join':
+      // Virtual read-only field — stored as array of Mixed
+      type = [Schema.Types.Mixed]
+      break
+    case 'point':
+      // Stored as [lng, lat] tuple
+      type = [Number]
+      break
+    case 'row':
+    case 'ui':
+      // Layout/presentational fields — no data stored
+      return undefined as any
     default:
       type = Schema.Types.Mixed
   }
@@ -101,6 +126,8 @@ function mapFieldToMongoose(field: any): unknown {
 function generateSchemaFields(fields: FieldConfig[]) {
   const schemaFields: Record<string, unknown> = {}
   fields.forEach((field) => {
+    // Skip layout/presentational fields that produce no schema mapping
+    if (field.type === 'row' || field.type === 'ui') return
     schemaFields[field.name] = mapFieldToMongoose(field)
   })
   return schemaFields

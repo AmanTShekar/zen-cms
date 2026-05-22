@@ -19,7 +19,6 @@ import {
   ChevronDown,
   Palette,
   Check,
-  Sparkles,
   LetterText,
   Eraser,
 } from 'lucide-react'
@@ -70,12 +69,13 @@ const FontSize = Extension.create({
 export type EditorMode = 'full' | 'inline' | 'heading' | 'micro'
 
 interface RichTextEditorProps {
-  value: string
-  onChange: (value: string) => void
+  value: any
+  onChange: (value: any) => void
   placeholder?: string
   mode?: EditorMode
   className?: string
   disabled?: boolean
+  format?: 'html' | 'json'
 }
 
 interface ToolBtnProps {
@@ -170,6 +170,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   mode = 'full',
   className,
   disabled = false,
+  format = 'html',
 }) => {
   const { theme } = useTheme()
   const [isMediaOpen, setIsMediaOpen] = useState(false)
@@ -211,6 +212,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       StarterKit.configure({
         heading: { levels: [1, 2, 3] },
         dropcursor: {},
+        link: false,
+        underline: false,
       }),
       TextStyle,
       Color,
@@ -224,9 +227,24 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     []
   )
 
+  const parsedContent = useMemo(() => {
+    if (!value) return ''
+    if (format === 'json') {
+      if (typeof value === 'string') {
+        try {
+          return JSON.parse(value)
+        } catch {
+          return value
+        }
+      }
+      return value
+    }
+    return value
+  }, [value, format])
+
   const editor = useEditor({
     extensions,
-    content: value || '',
+    content: parsedContent || '',
     editable: !disabled,
     editorProps: {
       attributes: {
@@ -249,7 +267,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         return false
       },
     },
-    onUpdate: ({ editor }) => onChange(editor.getHTML()),
+    onUpdate: ({ editor }) => {
+      onChange(format === 'json' ? editor.getJSON() : editor.getHTML())
+    },
   })
 
   useEffect(() => {
@@ -259,8 +279,22 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   }, [editor, disabled])
 
   useEffect(() => {
-    if (editor && value !== editor.getHTML()) editor.commands.setContent(value || '')
-  }, [value, editor])
+    if (!editor) return
+
+    let currentContent: any
+    if (format === 'json') {
+      currentContent = JSON.stringify(editor.getJSON())
+      const incomingString = typeof value === 'object' ? JSON.stringify(value) : value
+      if (incomingString !== currentContent) {
+        editor.commands.setContent(parsedContent || '')
+      }
+    } else {
+      currentContent = editor.getHTML()
+      if (value !== currentContent) {
+        editor.commands.setContent(value || '')
+      }
+    }
+  }, [value, editor, format, parsedContent])
 
   const insertImage = (url: string, alt: string) => {
     const fullUrl = url.startsWith('http') ? url : `http://localhost:3000${url}`
@@ -595,18 +629,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
               </>
             )}
 
-            <div className="ml-auto flex items-center gap-2">
-              <button
-                className={cn(
-                  'flex items-center gap-2 px-4 py-2 rounded-none text-[10px] font-black uppercase italic transition-all group/ai',
-                  theme === 'dark'
-                    ? 'text-indigo-400 hover:bg-indigo-500/10'
-                    : 'text-indigo-600 hover:bg-indigo-50'
-                )}
-              >
-                <Sparkles size={14} className="group-hover/ai:animate-pulse" /> AI Enhance
-              </button>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>

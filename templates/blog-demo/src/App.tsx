@@ -4,12 +4,49 @@ import { BookOpen, Calendar, User, ArrowRight } from 'lucide-react'
 
 // Connect to Zenith CMS v2
 const zenith = new ZenithClient({
-  baseURL: 'http://localhost:3000',
+  url: import.meta.env.VITE_CMS_URL || 'http://localhost:3000',
+  apiKey: import.meta.env.VITE_CMS_API_KEY || '',
+  siteId: import.meta.env.VITE_CMS_SITE_ID || '',
 })
 
 const BlogDemo = () => {
   const [posts, setPosts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'SET_THEME') {
+        const theme = event.data.theme
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark')
+        } else {
+          document.documentElement.classList.remove('dark')
+        }
+      } else if (event.data?.type === 'ZENITH_DATA_UPDATE') {
+        const payload = event.data.data
+        if (payload) {
+          if (Array.isArray(payload)) {
+            setPosts(payload)
+          } else if (payload.docs && Array.isArray(payload.docs)) {
+            setPosts(payload.docs)
+          } else if (payload.data && Array.isArray(payload.data)) {
+            setPosts(payload.data)
+          } else {
+            const updatedPost = payload
+            if (updatedPost.id || updatedPost._id) {
+              setPosts((prevPosts) =>
+                prevPosts.map((p) =>
+                  (p.id === updatedPost.id || p._id === updatedPost._id) ? { ...p, ...updatedPost } : p
+                )
+              )
+            }
+          }
+        }
+      }
+    }
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [])
 
   useEffect(() => {
     const loadContent = async () => {

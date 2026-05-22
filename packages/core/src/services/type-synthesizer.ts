@@ -39,7 +39,12 @@ export class TypeSynthesizer {
       case 'json':
         return 'Record<string, any>'
       case 'relation': {
-        const target = field.relationTo ? this.capitalize(field.relationTo) : 'any'
+        if (Array.isArray(field.relationTo)) {
+          // Polymorphic: relationTo: ['posts', 'tags']
+          const targets = field.relationTo.map((t: string) => this.capitalize(t)).join(' | ')
+          return field.required ? `(${targets})` : `(${targets}) | null`
+        }
+        const target = field.relationTo ? this.capitalize(field.relationTo) : 'string'
         return field.required ? target : `${target} | null`
       }
       case 'group':
@@ -66,8 +71,42 @@ export class TypeSynthesizer {
         })
         return `(${blockUnions.join(' | ')})[]`
       }
+      case 'media':
+        return field.hasMany ? '{ url: string; alt?: string }[]' : '{ url: string; alt?: string }'
+      case 'select': {
+        if (!field.options || field.options.length === 0) return 'string'
+        const options = field.options
+          .map((o: any) => (typeof o === 'string' ? `'${o}'` : `'${o.value}'`))
+          .join(' | ')
+        return field.hasMany ? `(${options})[]` : `(${options})`
+      }
+      case 'code':
+        return 'string'
+      case 'collapsible':
+        if (!field.fields) return 'Record<string, any>'
+        return `{\n${field.fields
+          .map((f: any) => `    ${f.name}${f.required ? '' : '?'}: ${this.mapFieldToType(f)};`)
+          .join('\n')}\n  }`
+      case 'join':
+        return 'any[]'
+      case 'point':
+        return '[number, number]'
+      case 'radio': {
+        if (!field.options || field.options.length === 0) return 'string'
+        const radioOptions = field.options
+          .map((o: any) => (typeof o === 'string' ? `'${o}'` : `'${o.value}'`))
+          .join(' | ')
+        return `(${radioOptions})`
+      }
+      case 'row':
+        return 'undefined'
+      case 'ui':
+        return 'undefined'
+      case 'richtext':
+        return 'string'
       default:
-        return 'any'
+        logger.warn({ fieldType: field.type }, 'TypeSynthesizer: unknown field type encountered, falling back to Record<string, unknown>')
+        return 'Record<string, unknown>'
     }
   }
 
@@ -97,7 +136,7 @@ export class TypeSynthesizer {
 
         for (const field of col.fields) {
           const typeStr = this.mapFieldToType(field)
-          const isOptional = !field.required
+          const isOptional = !(field as any).required
           code += `  ${field.name}${isOptional ? '?' : ''}: ${typeStr};\n`
         }
 

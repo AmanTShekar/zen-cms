@@ -12,12 +12,27 @@ export function createZodSchema(fields: FieldConfig[], config?: any) {
 
     switch (field.type as string) {
       // --- String-based types ---
-      case 'text':
-      case 'richtext': {
+      case 'text': {
         let s = z.string()
         if (typeof field.minLength === 'number') s = s.min(field.minLength, { message: `${field.label || field.name} must be at least ${field.minLength} characters` })
         if (typeof field.maxLength === 'number') s = s.max(field.maxLength, { message: `${field.label || field.name} must be at most ${field.maxLength} characters` })
         schema = s
+        break
+      }
+
+      case 'richtext': {
+        if (field.format === 'json') {
+          schema = z.union([
+            z.string(),
+            z.record(z.any()),
+            z.array(z.any())
+          ])
+        } else {
+          let s = z.string()
+          if (typeof field.minLength === 'number') s = s.min(field.minLength, { message: `${field.label || field.name} must be at least ${field.minLength} characters` })
+          if (typeof field.maxLength === 'number') s = s.max(field.maxLength, { message: `${field.label || field.name} must be at most ${field.maxLength} characters` })
+          schema = s
+        }
         break
       }
 
@@ -169,6 +184,57 @@ export function createZodSchema(fields: FieldConfig[], config?: any) {
         }
         break
 
+      // --- Code (string with language hint) ---
+      case 'code': {
+        let s = z.string()
+        if (typeof field.minLength === 'number') s = s.min(field.minLength, { message: `${field.label || field.name} must be at least ${field.minLength} characters` })
+        if (typeof field.maxLength === 'number') s = s.max(field.maxLength, { message: `${field.label || field.name} must be at most ${field.maxLength} characters` })
+        schema = s
+        break
+      }
+
+      // --- Collapsible (nested object, same as group) ---
+      case 'collapsible':
+        if (field.fields && field.fields.length > 0) {
+          schema = createZodSchema(field.fields)
+        } else {
+          schema = z.record(z.any())
+        }
+        break
+
+      // --- Join (virtual read-only field) ---
+      case 'join':
+        schema = z.array(z.any()).optional()
+        break
+
+      // --- Point (geolocation tuple [lng, lat]) ---
+      case 'point':
+        schema = z.tuple([z.number(), z.number()]).optional().nullable()
+        break
+
+      // --- Radio (single-select, same validation as select) ---
+      case 'radio': {
+        const rawOptions = (field.options || []).map((o: any) =>
+          typeof o === 'string' ? o : o.value
+        )
+        if (rawOptions.length > 0) {
+          schema = z.enum(rawOptions as [string, ...string[]])
+        } else {
+          schema = z.string()
+        }
+        break
+      }
+
+      // --- Row (layout-only, no data stored) ---
+      case 'row':
+        schema = z.any().optional()
+        break
+
+      // --- UI (presentational-only, no data stored) ---
+      case 'ui':
+        schema = z.any().optional()
+        break
+
       // --- Relation (ID reference) ---
       // --- Blocks (Discriminated Union) ---
       case 'blocks':
@@ -239,7 +305,7 @@ const schemaCache = new Map<string, z.ZodObject<any>>()
  */
 export function getCompiledZodSchema(fields: FieldConfig[], config?: any): z.ZodObject<any> {
   const cacheKey = config?.slug
-    ? `${config.slug}:${JSON.stringify(config.drafts || false)}:${JSON.stringify(config.scheduling || false)}:${fields.map((f) => `${f.name}-${f.type}-${f.required}`).join(',')}`
+    ? `${config.slug}:${JSON.stringify(config.drafts || false)}:${JSON.stringify(config.scheduling || false)}:${fields.map((f) => `${f.name}-${f.type}-${(f as any).required}`).join(',')}`
     : ''
 
   if (cacheKey && schemaCache.has(cacheKey)) {

@@ -224,6 +224,7 @@ export class MongooseAdapter implements DatabaseAdapter {
     
     let resolvedCollection = collection
     if (collection === 'users') resolvedCollection = 'User'
+    if (collection === 'z_sites' || collection === 'sites') resolvedCollection = 'Site'
     if (collection === 'z_password_resets') resolvedCollection = 'z_password_resets'
     if (collection === 'z_api_keys') resolvedCollection = 'z_api_keys'
     if (collection === 'z_migrations') resolvedCollection = 'z_migrations'

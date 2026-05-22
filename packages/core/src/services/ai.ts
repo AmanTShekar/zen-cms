@@ -22,6 +22,14 @@ export interface SeoAnalysis {
   passed: string[]
 }
 
+export interface SmartTagResult {
+  tags: string[]
+  categories: string[]
+  colors: string[]
+  mood: string
+  description: string
+}
+
 /**
  * Zenith AI Service
  * ─────────────────────────────────────────────────
@@ -169,6 +177,113 @@ export class AIService {
     }
   }
 
+  // ── Smart Image Tagging ────────────────────────────────────────────────────
+
+  /**
+   * Analyze an image and return smart tags, categories, dominant colors, and mood.
+   * Works from URL only (AI vision models can analyze from filename/context).
+   * For base64 image analysis, the ANTHROPIC_API_KEY provider supports vision input.
+   */
+  static async generateImageTags(imageUrl: string): Promise<SmartTagResult> {
+    const filename = imageUrl.split('/').pop()?.split('?')[0] || 'image'
+    const cleanName = filename.replace(/[-_]/g, ' ').replace(/\.[^.]+$/, '')
+
+    // Try Anthropic vision API first (supports image input directly)
+    const anthropicKey = process.env.ANTHROPIC_API_KEY
+    if (anthropicKey) {
+      try {
+        const anthropic = new Anthropic({ apiKey: anthropicKey })
+
+        // Fetch the image and convert to base64
+        const imageRes = await fetch(imageUrl)
+        const contentType = imageRes.headers.get('content-type') || 'image/jpeg'
+        const buffer = Buffer.from(await imageRes.arrayBuffer())
+        const base64 = buffer.toString('base64')
+
+        const msg = await anthropic.messages.create({
+          model: 'claude-3-5-haiku-20241022',
+          max_tokens: 512,
+          messages: [{
+            role: 'user',
+            content: [
+              {
+                type: 'image',
+                source: {
+                  type: 'base64',
+                  media_type: contentType as 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif',
+                  data: base64,
+                },
+              },
+              {
+                type: 'text',
+                text: `Analyze this image and return ONLY valid JSON (no markdown, no explanation):
+{
+  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+  "categories": ["primary_category"],
+  "colors": ["dominant_color1", "dominant_color2"],
+  "mood": "one_word_mood",
+  "description": "A concise 1-sentence description"
+}`
+              },
+            ],
+          }],
+        })
+
+        const text = (msg.content[0] as any)?.text || ''
+        const jsonStart = text.indexOf('{')
+        const jsonEnd = text.lastIndexOf('}')
+        if (jsonStart !== -1 && jsonEnd !== -1) {
+          const parsed = JSON.parse(text.substring(jsonStart, jsonEnd + 1))
+          return {
+            tags: parsed.tags || [],
+            categories: parsed.categories || [],
+            colors: parsed.colors || [],
+            mood: parsed.mood || 'neutral',
+            description: parsed.description || '',
+          }
+        }
+      } catch (err) {
+        logger.warn({ err }, 'Anthropic vision tagging failed, falling back to text-based')
+      }
+    }
+
+    // Fallback: text-based AI analysis using filename
+    try {
+      const prompt = `Analyze an image with filename "${cleanName}" found at URL "${imageUrl}". Return ONLY valid JSON (no markdown):
+{
+  "tags": ["5 descriptive tags"],
+  "categories": ["primary category"],
+  "colors": ["2 dominant colors"],
+  "mood": "one word mood",
+  "description": "1 sentence description"
+}`
+      const res = await this.callAI(prompt, 300)
+      const jsonStart = res.indexOf('{')
+      const jsonEnd = res.lastIndexOf('}')
+      if (jsonStart !== -1 && jsonEnd !== -1) {
+        const parsed = JSON.parse(res.substring(jsonStart, jsonEnd + 1))
+        return {
+          tags: parsed.tags || [],
+          categories: parsed.categories || [],
+          colors: parsed.colors || [],
+          mood: parsed.mood || 'neutral',
+          description: parsed.description || '',
+        }
+      }
+    } catch (err) {
+      logger.warn({ err }, 'Text-based image tagging failed')
+    }
+
+    // Ultimate fallback: derive tags from filename
+    return {
+      tags: cleanName.split(' ').filter(Boolean).slice(0, 5),
+      categories: ['uncategorized'],
+      colors: [],
+      mood: 'neutral',
+      description: cleanName,
+    }
+  }
+
   // ── Content Quality Scoring ───────────────────────────────────────────────
   // No AI needed — pure algorithmic. Instant feedback for editors.
 
@@ -201,12 +316,13 @@ export class AIService {
 
     // Score out of 100
     let score = 50
+    if (wordCount < 100) score -= 30
     if (wordCount >= 300) score += 15
     if (wordCount >= 600) score += 10
     if (avgWordsPerSentence <= 20) score += 15
     if (readabilityScore >= 60) score += 10
     if (issues.length === 0) score += 10
-    score = Math.min(100, score)
+    score = Math.max(0, Math.min(100, score))
 
     const grade =
       score >= 90 ? 'A' : score >= 75 ? 'B' : score >= 60 ? 'C' : score >= 40 ? 'D' : 'F'
