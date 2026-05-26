@@ -60,6 +60,7 @@ export const FlowEngine = {
 
   async executeFlow(flow: any, context: any) {
     if (!flow.steps || flow.steps.length === 0) return
+    const adapter = AdapterFactory.getActiveAdapter()
 
     // Locate starter step
     let currentStep = flow.steps.find(
@@ -113,11 +114,65 @@ export const FlowEngine = {
             'Flow Log Action Executed'
           )
         } else if (currentStep.type === 'update_content') {
-          // Relational action or field update automation
-          logger.info(
-            { flowId: flow._id, stepId: currentStep.id },
-            'Relational/Content update step execution completed'
-          )
+          const cfg = currentStep.config as any
+          if (cfg?.collection) {
+            const targetCollection = cfg.collection as string
+            const targetId = cfg.documentId
+              ? (typeof cfg.documentId === 'string' && cfg.documentId.startsWith('$.')
+                ? cfg.documentId.split('.').reduce((obj: any, key: any) => obj?.[key], context)
+                : cfg.documentId)
+              : context._id
+
+            // Build update payload: static values + context references
+            const updatePayload: Record<string, any> = {}
+            if (cfg.fields && typeof cfg.fields === 'object') {
+              for (const [fieldKey, fieldVal] of Object.entries(cfg.fields)) {
+                if (typeof fieldVal === 'string' && fieldVal.startsWith('$.')) {
+                  // Resolve value from context document, e.g. "$.status"
+                  const path = fieldVal.slice(2).split('.')
+                  let resolved: any = context
+                  for (const segment of path) {
+                    resolved = resolved?.[segment]
+                  }
+                  updatePayload[fieldKey] = resolved
+                } else {
+                  updatePayload[fieldKey] = fieldVal
+                }
+              }
+            }
+
+            if (cfg.operation === 'create') {
+              // Create a new document in the target collection
+              const created = await adapter.create(targetCollection, {
+                ...updatePayload,
+                ...(cfg.relatedField && targetId
+                  ? { [cfg.relatedField]: targetId }
+                  : {}),
+              }) as any
+              logger.info(
+                { flowId: flow._id, stepId: currentStep.id, targetCollection, createdId: created._id },
+                'Flow update_content: created document'
+              )
+            } else if (cfg.operation === 'delete') {
+              // Delete matching documents
+              if (targetId) {
+                await adapter.delete(targetCollection, String(targetId))
+                logger.info(
+                  { flowId: flow._id, stepId: currentStep.id, targetCollection, targetId },
+                  'Flow update_content: deleted document'
+                )
+              }
+            } else {
+              // Default: update existing document
+              if (targetId) {
+                const updated = await adapter.update(targetCollection, String(targetId), updatePayload)
+                logger.info(
+                  { flowId: flow._id, stepId: currentStep.id, targetCollection, targetId },
+                  'Flow update_content: updated document'
+                )
+              }
+            }
+          }
         }
       } catch (err) {
         logger.error({ flowId: flow._id, stepId: currentStep.id, err }, 'Flow step failed')

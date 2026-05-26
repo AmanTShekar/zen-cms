@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useNavigate, Link } from 'react-router-dom'
 import {
   Mail,
@@ -17,13 +16,8 @@ import { useTheme } from '../context/ThemeContext'
 import { motion } from 'framer-motion'
 import Logo from '../components/Logo'
 import { cn } from '../lib/utils'
+import { forgotPasswordSchema, type ForgotPasswordFormValues } from '../lib/validators'
 import api from '../lib/api'
-
-const forgotSchema = z.object({
-  email: z.string().email('Invalid email address'),
-})
-
-type ForgotFormValues = z.infer<typeof forgotSchema>
 
 const ForgotPasswordPage: React.FC = () => {
   const navigate = useNavigate()
@@ -36,11 +30,11 @@ const ForgotPasswordPage: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ForgotFormValues>({
-    resolver: zodResolver(forgotSchema),
+  } = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(forgotPasswordSchema),
   })
 
-  const onSubmit = async (data: ForgotFormValues) => {
+  const onSubmit = async (data: ForgotPasswordFormValues) => {
     setIsSubmitting(true)
     setError(null)
     setSuccess(null)

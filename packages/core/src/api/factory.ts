@@ -1,5 +1,5 @@
-import { Router, Request, Response, NextFunction } from 'express'
-import { CollectionConfig, WebhookTarget } from '@zenithcms/types'
+import { Router } from 'express'
+import { CollectionConfig, WebhookTarget, FieldConfig } from '@zenithcms/types'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { getCompiledZodSchema } from '../schema/engine'
 import { createResponse } from './utils'
@@ -8,9 +8,10 @@ import { WebhookService } from '../services/webhook'
 import { CacheService } from '../services/cache'
 import { ContentService } from '../services/content'
 import { parseQueryParams } from './query-parser'
-import { NotFoundError, ForbiddenError, ValidationError } from '../errors'
+import { NotFoundError, ForbiddenError, ValidationError, InvalidPayloadError } from '../errors'
 import { eventHub } from '../services/event-hub'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { PreviewService } from '../services/preview'
 
 /**
  * Helper to dynamically query and verify granular role permissions in the database.
@@ -49,6 +50,264 @@ async function verifyGranularAccess(
   }
 }
 
+async function resolveRelations(
+  docs: any[],
+  fields: FieldConfig[],
+  populate: string[],
+  depth: number,
+  adapter: DatabaseAdapter,
+  currentDepth = 0,
+  configRegistry?: any
+) {
+  if (currentDepth >= depth || !docs || docs.length === 0) return
+
+  const popByFirstSegment: Record<string, string[]> = {}
+  for (const path of populate) {
+    const parts = path.split('.')
+    const first = parts[0]
+    const rest = parts.slice(1).join('.')
+    if (!popByFirstSegment[first]) {
+      popByFirstSegment[first] = []
+    }
+    if (rest) {
+      popByFirstSegment[first].push(rest)
+    }
+  }
+
+  for (const field of fields) {
+    const fieldName = field.name
+    const isExplicitlyPopulated = fieldName in popByFirstSegment
+    const shouldResolveRelation =
+      isExplicitlyPopulated ||
+      (depth > 0 &&
+        ((field.type as string) === 'relation' || (field.type as string) === 'relationship' || field.type === 'media'))
+
+    if (
+      shouldResolveRelation &&
+      ((field.type as string) === 'relation' || (field.type as string) === 'relationship' || field.type === 'media')
+    ) {
+      const relationTo = field.type === 'media' ? 'media' : (field as any).relationTo
+      if (!relationTo) continue
+
+      const idsToFetch = new Set<string>()
+      for (const doc of docs) {
+        if (!doc) continue
+        const val = doc[fieldName]
+        if (Array.isArray(val)) {
+          val.forEach((id: any) => {
+            if (id && typeof id === 'string') idsToFetch.add(id)
+            else if (id && typeof id === 'object' && id._id) idsToFetch.add(id._id.toString())
+            else if (id && typeof id === 'object' && id.id) idsToFetch.add(id.id.toString())
+          })
+        } else if (val) {
+          if (typeof val === 'string') idsToFetch.add(val)
+          else if (typeof val === 'object' && val._id) idsToFetch.add(val._id.toString())
+          else if (typeof val === 'object' && val.id) idsToFetch.add(val.id.toString())
+        }
+      }
+
+      if (idsToFetch.size > 0) {
+        const idsArray = Array.from(idsToFetch)
+        let relatedDocs: any[] = []
+        try {
+          relatedDocs = await adapter.find(relationTo, { _id: { $in: idsArray } })
+        } catch (err) {
+          console.error(`Failed to fetch relations from ${relationTo}`, err)
+        }
+
+        const relatedMap = new Map<string, any>()
+        for (const rDoc of relatedDocs) {
+          const idStr = rDoc._id?.toString() || rDoc.id?.toString()
+          if (idStr) relatedMap.set(idStr, rDoc)
+        }
+
+        const nestedPopulate = popByFirstSegment[fieldName] || []
+        const targetCol =
+          configRegistry?.collections?.find((c: any) => c.slug === relationTo) ||
+          (relationTo === 'media'
+            ? {
+                slug: 'media',
+                fields: [
+                  { name: 'name', type: 'text' },
+                  { name: 'url', type: 'text' },
+                  { name: 'alt', type: 'text' },
+                  { name: 'folder', type: 'text' },
+                  { name: 'mimetype', type: 'text' },
+                  { name: 'size', type: 'number' },
+                ],
+              }
+            : null)
+
+        if (targetCol && relatedDocs.length > 0) {
+          await resolveRelations(
+            relatedDocs,
+            targetCol.fields,
+            nestedPopulate,
+            depth,
+            adapter,
+            currentDepth + 1,
+            configRegistry
+          )
+        }
+
+        for (const doc of docs) {
+          if (!doc) continue
+          const val = doc[fieldName]
+          if (Array.isArray(val)) {
+            doc[fieldName] = val
+              .map((id: any) => {
+                const idStr = typeof id === 'string' ? id : (id?._id?.toString() || id?.id?.toString())
+                return relatedMap.get(idStr) || id
+              })
+              .filter(Boolean)
+          } else if (val) {
+            const idStr = typeof val === 'string' ? val : (val?._id?.toString() || val?.id?.toString())
+            doc[fieldName] = relatedMap.get(idStr) || val
+          }
+        }
+      }
+    }
+
+    if ((field.type === 'group' || field.type === 'collapsible') && docs) {
+      const nestedDocs: any[] = []
+      for (const doc of docs) {
+        if (doc && doc[fieldName] && typeof doc[fieldName] === 'object') {
+          nestedDocs.push(doc[fieldName])
+        }
+      }
+      const nestedPopulate =
+        popByFirstSegment[fieldName] ||
+        populate.filter((p) => p.startsWith(fieldName + '.')).map((p) => p.slice(fieldName.length + 1))
+      await resolveRelations(
+        nestedDocs,
+        (field as any).fields || [],
+        nestedPopulate,
+        depth,
+        adapter,
+        currentDepth,
+        configRegistry
+      )
+    } else if (field.type === 'array' && docs) {
+      const nestedDocs: any[] = []
+      for (const doc of docs) {
+        if (doc && Array.isArray(doc[fieldName])) {
+          nestedDocs.push(...doc[fieldName])
+        }
+      }
+      const nestedPopulate =
+        popByFirstSegment[fieldName] ||
+        populate.filter((p) => p.startsWith(fieldName + '.')).map((p) => p.slice(fieldName.length + 1))
+      await resolveRelations(
+        nestedDocs,
+        (field as any).fields || [],
+        nestedPopulate,
+        depth,
+        adapter,
+        currentDepth,
+        configRegistry
+      )
+    } else if (field.type === 'blocks' && docs) {
+      const nestedPopulate =
+        popByFirstSegment[fieldName] ||
+        populate.filter((p) => p.startsWith(fieldName + '.')).map((p) => p.slice(fieldName.length + 1))
+      const blocksList = (field as any).blocks || []
+      for (const blockDef of blocksList) {
+        const nestedDocsForBlock: any[] = []
+        for (const doc of docs) {
+          if (doc && Array.isArray(doc[fieldName])) {
+            for (const item of doc[fieldName]) {
+              if (item && item.blockType === blockDef.slug) {
+                nestedDocsForBlock.push(item)
+              }
+            }
+          }
+        }
+        if (nestedDocsForBlock.length > 0) {
+          await resolveRelations(
+            nestedDocsForBlock,
+            blockDef.fields || [],
+            nestedPopulate,
+            depth,
+            adapter,
+            currentDepth,
+            configRegistry
+          )
+        }
+      }
+    }
+  }
+}
+
+function applySelect(doc: any, selectStr: string) {
+  if (!doc || !selectStr) return doc
+  const selectedFields = selectStr
+    .split(' ')
+    .map((s) => s.trim())
+    .filter(Boolean)
+  if (selectedFields.length === 0) return doc
+
+  const keysToKeep = new Set([
+    ...selectedFields,
+    'id',
+    '_id',
+    '_status',
+    'createdAt',
+    'updatedAt',
+    'siteId',
+  ])
+  const cleaned: any = {}
+  for (const key of Object.keys(doc)) {
+    if (keysToKeep.has(key)) {
+      cleaned[key] = doc[key]
+    }
+  }
+  return cleaned
+}
+
+function applySelectToDocs(docs: any | any[], selectStr: string) {
+  if (!selectStr) return docs
+  if (Array.isArray(docs)) {
+    return docs.map((doc) => applySelect(doc, selectStr))
+  }
+  return applySelect(docs, selectStr)
+}
+
+
+function serializeBlocks(doc: any, fields: FieldConfig[]) {
+  if (!doc || typeof doc !== 'object') return
+  for (const field of fields) {
+    const val = doc[field.name]
+    if (val === undefined || val === null) continue
+
+    if ((field.type as string) === 'blocks' || (field.type as string) === 'dz') {
+      if (Array.isArray(val)) {
+        doc[field.name] = val.map((block: any) => {
+          if (block && typeof block === 'object') {
+            const blockType = block.blockType || (block.__component ? block.__component.split('.').pop() : undefined)
+            const __component = block.__component || (block.blockType ? `sections.${block.blockType}` : undefined)
+            return {
+              ...block,
+              blockType,
+              __component,
+            }
+          }
+          return block
+        })
+      }
+    } else if (field.type === 'array' || field.type === 'group' || field.type === 'collapsible') {
+      if (Array.isArray(val)) {
+        val.forEach((item: any) => {
+          if (item && typeof item === 'object') {
+            serializeBlocks(item, (field as any).fields || [])
+          }
+        })
+      } else if (typeof val === 'object') {
+        serializeBlocks(val, (field as any).fields || [])
+      }
+    }
+  }
+}
+
 /**
  * ZENITH ROUTER FACTORY: DYNAMIC ENDPOINT GENERATOR
  * ────────────────────────────────────────────────
@@ -56,6 +315,8 @@ async function verifyGranularAccess(
  * endpoints. This is the primary bridge between the Schema Engine and
  * the HTTP pipeline.
  */
+export { resolveRelations, applySelect, applySelectToDocs, serializeBlocks }
+
 export function createCollectionRouter(
   config: CollectionConfig,
   adapter: DatabaseAdapter,
@@ -112,6 +373,9 @@ export function createCollectionRouter(
         delete sanitized[field.name]
       }
     })
+    if (action === 'read') {
+      serializeBlocks(sanitized, config.fields)
+    }
     return sanitized
   }
 
@@ -126,6 +390,11 @@ export function createCollectionRouter(
   // Role enforcement per verb — delegates to schema access functions first,
   // then falls back to safe defaults so the framework never hardcodes role names.
   router.use(async (req, res, next) => {
+    // Skip general CRUD verb checks for non-CRUD sub-routes like /preview-token or /aggregate
+    if (req.path.endsWith('/preview-token') || req.path === '/aggregate') {
+      return next()
+    }
+
     if (req.method === 'GET') return next() // read handled per-route via verifyAccess
 
     const user = (req as any).user
@@ -140,46 +409,43 @@ export function createCollectionRouter(
       const granularAccess = await verifyGranularAccess(user, config.slug, action, adapter)
       if (granularAccess === true) return next()
       if (granularAccess === false) {
-        return res.status(403).json({ error: { message: `Access Denied: Role permissions deny "${action}" on resource "${config.slug}".` } })
+        throw new ForbiddenError(`Role permissions deny "${action}" on resource "${config.slug}".`)
       }
 
       if (req.method === 'DELETE') {
-        // If the schema defines an explicit delete access function, use it.
         if (config.access?.delete) {
           if ((await config.access.delete(user)) === false) {
-            return res.status(403).json({ error: { message: 'Access denied: delete not permitted.' } })
+            throw new ForbiddenError('Access denied: delete not permitted.')
           }
         } else {
-          // Safe default: only admin-role users may delete when no access fn is provided.
           if (user.role !== 'admin') {
-            return res.status(403).json({ error: { message: 'Only administrators can delete documents.' } })
+            throw new ForbiddenError('Only administrators can delete documents.')
           }
         }
       } else if (req.method === 'POST') {
         if (config.access?.create) {
           if ((await config.access.create(user)) === false) {
-            return res.status(403).json({ error: { message: 'Access denied: create not permitted.' } })
+            throw new ForbiddenError('Access denied: create not permitted.')
           }
         } else {
-          // Safe default: viewers cannot create.
           if (user.role === 'viewer') {
-            return res.status(403).json({ error: { message: 'Read-only access: viewers cannot create content.' } })
+            throw new ForbiddenError('Read-only access: viewers cannot create content.')
           }
         }
       } else if (req.method === 'PATCH' || req.method === 'PUT') {
         if (config.access?.update) {
           if ((await config.access.update(user)) === false) {
-            return res.status(403).json({ error: { message: 'Access denied: update not permitted.' } })
+            throw new ForbiddenError('Access denied: update not permitted.')
           }
         } else {
-          // Safe default: viewers cannot update.
           if (user.role === 'viewer') {
-            return res.status(403).json({ error: { message: 'Read-only access: viewers cannot modify content.' } })
+            throw new ForbiddenError('Read-only access: viewers cannot modify content.')
           }
         }
       }
-    } catch (err: any) {
-      return res.status(403).json({ error: { message: 'Access control evaluation failed.' } })
+    } catch (err) {
+      next(err)
+      return
     }
 
     next()
@@ -197,10 +463,23 @@ export function createCollectionRouter(
 
       if (config.singleton) {
         const doc = await contentService.findById('singleton', { user, locale, siteId })
-        return res.json(createResponse(sanitizeFields(doc, user, 'read')))
+        const { select, populate, depth } = parseQueryParams(req.query, config, req.body)
+        if (doc) {
+          const configRegistry = (req as any).zenith?.config
+          const effectiveDepth = depth !== undefined ? depth : (populate.length > 0 ? 5 : 0)
+          if (effectiveDepth > 0 || populate.length > 0) {
+            await resolveRelations([doc], config.fields, populate, effectiveDepth, adapter, 0, configRegistry)
+          }
+          let sanitizedDoc = sanitizeFields(doc, user, 'read')
+          if (select) {
+            sanitizedDoc = applySelect(sanitizedDoc, select)
+          }
+          return res.json(createResponse(sanitizedDoc))
+        }
+        return res.json(createResponse(null))
       }
 
-      const { filter, sort, pagination, select, populate } = parseQueryParams(req.query, config)
+      const { filter, sort, pagination, select, populate, depth } = parseQueryParams(req.query, config, req.body)
       const cacheKey = `${cachePrefix}:list:${JSON.stringify(req.query)}:loc:${locale || 'en'}:site:${siteId || ''}`
 
       const cached = CacheService.get(cacheKey)
@@ -222,8 +501,19 @@ export function createCollectionRouter(
         adapter.count(config.slug, findFilter),
       ])
 
+      const configRegistry = (req as any).zenith?.config
+      const effectiveDepth = depth !== undefined ? depth : (populate.length > 0 ? 5 : 0)
+      if (effectiveDepth > 0 || populate.length > 0) {
+        await resolveRelations(docs, config.fields, populate, effectiveDepth, adapter, 0, configRegistry)
+      }
+
+      let sanitizedDocs = docs.map((d) => sanitizeFields(d, user, 'read'))
+      if (select) {
+        sanitizedDocs = applySelectToDocs(sanitizedDocs, select)
+      }
+
       const response = createResponse(
-        docs.map((d) => sanitizeFields(d, user, 'read')),
+        sanitizedDocs,
         { pagination: { ...pagination, total, totalPages: Math.ceil(total / pagination.pageSize) } }
       )
 
@@ -242,10 +532,38 @@ export function createCollectionRouter(
       const siteId = req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'read')
 
-      const doc = await contentService.findById(req.params.id, { user, locale, siteId })
-      if (!doc) throw new NotFoundError(config.name, req.params.id)
+      const { select, populate, depth } = parseQueryParams(req.query, config, req.body)
+      // For singletons, always use 'singleton' as the id so the content service
+      // looks up the document without requiring a specific _id match.
+      const docId = config.singleton ? 'singleton' : req.params.id
+      const doc = await contentService.findById(docId, { user, locale, siteId })
+      if (!doc) throw new NotFoundError(config.name, docId)
 
-      res.json(createResponse(sanitizeFields(doc, user, 'read')))
+      const configRegistry = (req as any).zenith?.config
+      const effectiveDepth = depth !== undefined ? depth : (populate.length > 0 ? 5 : 0)
+      if (effectiveDepth > 0 || populate.length > 0) {
+        await resolveRelations([doc], config.fields, populate, effectiveDepth, adapter, 0, configRegistry)
+      }
+
+      let sanitizedDoc = sanitizeFields(doc, user, 'read')
+      if (select) {
+        sanitizedDoc = applySelect(sanitizedDoc, select)
+      }
+
+      res.json(createResponse(sanitizedDoc))
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  // ── Preview Token ──────────────────────────────────────────────────────────
+  router.post('/:id/preview-token', async (req, res, next) => {
+    try {
+      const user = (req as any).user
+      await verifyAccess(user, 'read')
+      const previewId = config.singleton ? 'singleton' : req.params.id
+      const token = PreviewService.generatePreviewToken(config.slug, previewId)
+      res.json(createResponse({ token, collection: config.slug, id: previewId }))
     } catch (err) {
       next(err)
     }
@@ -302,6 +620,7 @@ export function createCollectionRouter(
         user,
         siteId,
         locale,
+        expectedVersion: req.body._version,
       })
 
       CacheService.invalidateTag(config.slug)
@@ -330,10 +649,15 @@ export function createCollectionRouter(
         )
       }
 
-      const { doc } = await contentService.update(req.params.id, validation.data, {
+      // For singletons, always use 'singleton' as the id so the content service
+      // looks up the document without requiring a specific _id match.
+      const docId = config.singleton ? 'singleton' : req.params.id
+
+      const { doc } = await contentService.update(docId, validation.data, {
         user,
         siteId,
         locale,
+        expectedVersion: req.body._version,
       })
 
       CacheService.invalidateTag(config.slug)
@@ -370,17 +694,12 @@ export function createCollectionRouter(
 
       const records = req.body
       if (!Array.isArray(records)) {
-        return res
-          .status(400)
-          .json({ error: { message: 'Import payload must be an array of records.' } })
+        throw new InvalidPayloadError('Import payload must be an array of records.')
       }
 
-      // Hard cap: prevent accidental multi-GB uploads from hanging the server.
       const MAX_IMPORT = 5000
       if (records.length > MAX_IMPORT) {
-        return res.status(400).json({
-          error: { message: `Import is capped at ${MAX_IMPORT} records per request. Split your data into smaller batches.` },
-        })
+        throw new InvalidPayloadError(`Import is capped at ${MAX_IMPORT} records per request. Split your data into smaller batches.`)
       }
 
       const importedDocs: any[] = []
@@ -515,7 +834,7 @@ export function createCollectionRouter(
       await verifyAccess(user, 'read')
       const { pipeline } = req.body
       if (!Array.isArray(pipeline)) {
-        return res.status(400).json({ error: { message: 'pipeline must be an array' } })
+        throw new InvalidPayloadError('pipeline must be an array')
       }
       const results = await adapter.aggregate(config.slug, pipeline)
       res.json(createResponse({ results }))

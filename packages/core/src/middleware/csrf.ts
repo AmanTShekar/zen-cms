@@ -8,6 +8,21 @@ import crypto from 'crypto'
  * Required for the Admin UI to prevent cross-site request forgery.
  */
 export function csrfProtection(req: Request, res: Response, next: NextFunction) {
+  // Skip CSRF for auth endpoints — they establish the session, not protect it
+  if (req.path.startsWith('/api/v1/auth/')) {
+    // Still set the XSRF-TOKEN cookie for subsequent requests
+    if (!req.cookies?.['XSRF-TOKEN']) {
+      const token = crypto.randomBytes(24).toString('hex')
+      res.cookie('XSRF-TOKEN', token, {
+        httpOnly: false,
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
+        path: '/',
+      })
+    }
+    return next()
+  }
+
   // 1. Ensure XSRF-TOKEN cookie is set for the client to read
   let csrfToken = req.cookies?.['XSRF-TOKEN']
   if (!csrfToken) {

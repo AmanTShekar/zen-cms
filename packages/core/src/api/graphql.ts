@@ -5,6 +5,8 @@ import { AuthService } from '../services/auth'
 import { ContentService } from '../services/content'
 import { CacheService } from '../services/cache'
 import { eventHub } from '../services/event-hub'
+import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { resolveRelations } from './factory'
 
 /**
  * Zenith GraphQL — Neural Schema Orchestrator
@@ -315,34 +317,55 @@ ${typeFields}
       resolvers[`get${typeName}`] = async (first: any, second: any, third: any) => {
         const { args, context } = parseResolverParams(first, second, third)
         if (!context.user) throw new Error('Unauthorized')
-        const { id } = args
+        const { id, populate, depth } = args
         const adapter = context.adapter
-        
+
         const contentService = new ContentService(col, adapter)
         const doc = await contentService.findById(id, { user: context.user, siteId: context.siteId })
-        return doc ? decorators[slug](doc, context) : null
+        if (!doc) return null
+
+        // Resolve relations via populate/depth (mirrors REST ?populate=&depth=)
+        const popArr = populate
+          ? Array.isArray(populate) ? populate : [populate]
+          : []
+        const effectiveDepth = depth !== undefined ? depth : (popArr.length > 0 ? 5 : 0)
+        if (effectiveDepth > 0 || popArr.length > 0) {
+          await resolveRelations([doc], col.fields, popArr, effectiveDepth, adapter, 0, config)
+        }
+
+        return decorators[slug](doc, context)
       }
 
       resolvers[`list${typeName}`] = async (first: any, second: any, third: any) => {
         const { args, context } = parseResolverParams(first, second, third)
         if (!context.user) throw new Error('Unauthorized')
-        const { page = 1, pageSize = 25, status } = args || {}
+        const { page = 1, pageSize = 25, status, populate, depth } = args || {}
         const adapter = context.adapter
         const filter: Record<string, unknown> = {}
         if (col.drafts && status) filter._status = status
 
         const skip = (page - 1) * Math.min(pageSize, 100)
         const contentService = new ContentService(col, adapter)
-        
+
         const [docs, total] = await Promise.all([
-          contentService.find(filter, { 
-            user: context.user, 
-            siteId: context.siteId, 
-            skip, 
-            limit: Math.min(pageSize, 100) 
+          contentService.find(filter, {
+            user: context.user,
+            siteId: context.siteId,
+            skip,
+            limit: Math.min(pageSize, 100)
           } as any),
           adapter.count(slug, context.siteId ? { ...filter, siteId: context.siteId } : filter),
         ])
+
+        // Resolve relations via populate/depth (mirrors REST ?populate=&depth=)
+        const popArr = populate
+          ? Array.isArray(populate) ? populate : [populate]
+          : []
+        const effectiveDepth = depth !== undefined ? depth : (popArr.length > 0 ? 5 : 0)
+        if (effectiveDepth > 0 || popArr.length > 0) {
+          await resolveRelations(docs, col.fields, popArr, effectiveDepth, adapter, 0, config)
+        }
+
         return {
           data: docs.map((d: any) => decorators[slug](d, context)),
           pageInfo: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
@@ -418,10 +441,10 @@ ${typeFields}
     const queryFields = [
       ...config.collections.map((c) => {
         const n = c.name.replace(/[^a-zA-Z0-9]/g, '')
-        return `  get${n}(id: ID!): ${n}\n  list${n}(page: Int, pageSize: Int, status: String): ${n}List`
+        return `  get${n}(id: ID!, populate: [String], depth: Int): ${n}\n  list${n}(page: Int, pageSize: Int, status: String, populate: [String], depth: Int): ${n}List`
       }),
       ...(config.globals || []).map(
-        (g) => `  get${g.name.replace(/[^a-zA-Z0-9]/g, '')}: ${g.name.replace(/[^a-zA-Z0-9]/g, '')}`
+        (g) => `  get${g.name.replace(/[^a-zA-Z0-9]/g, '')}(populate: [String], depth: Int): ${g.name.replace(/[^a-zA-Z0-9]/g, '')}`
       ),
     ].join('\n')
 
@@ -477,7 +500,7 @@ ${typeFields}
           const user = token ? AuthService.verifyToken(token) : null
 
           // Adapter is injected by the engine on setup — falls back gracefully
-          const adapter = (req.raw as any).__zenithAdapter || null
+          const adapter = (req.raw as any).__zenithAdapter || AdapterFactory.getActiveAdapter()
           const siteId = req.raw.headers['x-zenith-site-id'] || req.raw.headers['X-Zenith-Site-Id']
 
           // Isolated DataLoaders mapping per request scope

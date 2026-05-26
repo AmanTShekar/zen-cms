@@ -68,6 +68,7 @@ export interface DatabaseAdapter {
   createVersion(data: VersionData, options?: BaseOptions): Promise<void>
   getVersions(collection: string, documentId: string): Promise<VersionData[]>
   createWebhookDelivery(data: WebhookDeliveryData): Promise<void>
+  getWebhookDeliveries(webhookId: string, limit?: number): Promise<WebhookDeliveryRecord[]>
 
   /**
    * Full-text / pattern search across specified fields in a collection.
@@ -100,6 +101,7 @@ export interface FindOptions extends BaseOptions {
 export interface AuditLogData {
   userId: string
   userEmail: string
+  userName?: string
   action: string
   collectionName: string
   documentId?: string
@@ -107,6 +109,11 @@ export interface AuditLogData {
   ip?: string
   userAgent?: string
   timestamp?: Date
+  status?: 'success' | 'failed'
+  resource?: string
+  siteId?: string
+  hash?: string
+  previousHash?: string
 }
 
 export interface VersionData {
@@ -120,6 +127,7 @@ export interface VersionData {
 }
 
 export interface WebhookDeliveryData {
+  webhookId?: string
   collectionSlug?: string
   event: string
   url: string
@@ -127,5 +135,17 @@ export interface WebhookDeliveryData {
   success: boolean
   responseStatus?: number
   timestamp?: Date
+}
+
+export interface WebhookDeliveryRecord {
+  id: string
+  webhookId?: string
+  collectionSlug?: string
+  event: string
+  url: string
+  payload?: unknown
+  success: boolean
+  responseStatus?: number
+  timestamp: Date | string
 }
 

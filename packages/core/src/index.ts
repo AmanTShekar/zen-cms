@@ -1,5 +1,4 @@
 import express, { Express } from 'express'
-import _mongoose from 'mongoose'
 import cors from 'cors'
 import helmet from 'helmet'
 import compression from 'compression'
@@ -9,7 +8,7 @@ import path from 'path'
 import fs from 'fs/promises'
 
 import { CMSConfig } from '@zenithcms/types'
-import { applyPlugins, ZenithPlugin } from './plugins'
+import { applyPlugins, createPluginContext, ZenithPlugin } from './plugins'
 import { logger } from './services/logger'
 import { SchedulerService } from './services/scheduler'
 import { seedInitialData } from './database/seed'
@@ -31,11 +30,16 @@ import './database/password-reset-model'
 import './database/preference-model'
 import './database/settings-model'
 import './database/site-model'
+import './database/workspace-model'
 import './database/version-model'
 import './database/webhook-model'
+import './database/webhook-config-model'
+import './database/plugin-model'
 import './database/release-model'
 import './database/role-model'
 import './database/template-model'
+import './database/comment-model'
+import './database/lock-model'
 
 // ── Middleware ───────────────────────────────────────────────────────────────
 import { rateLimitMiddleware } from './middleware/rate-limit'
@@ -57,6 +61,8 @@ import _mediaRouter from './api/media'
 import importExportRouter from './api/import-export'
 import preferencesRouter from './api/preferences'
 import versionsRouter from './api/versions'
+import locksRouter from './api/locks'
+import commentsRouter from './api/comments'
 import presenceRouter from './api/presence'
 import { DeploymentService } from './services/deployment'
 import contentToolsRouter from './api/content-tools'
@@ -64,10 +70,14 @@ import membersRouter from './api/members'
 import flowsRouter from './api/flows'
 import dashboardRouter from './api/dashboard'
 import sitesRouter from './api/sites'
+import workspacesRouter from './api/workspaces'
 import promotionRouter from './api/promotion'
 import releasesRouter from './api/releases'
 import rolesRouter, { seedSystemRoles } from './api/roles'
 import templatesRouter from './api/templates'
+import webhooksRouter from './api/webhooks'
+import pluginsRouter from './api/plugins'
+import blocksRouter from './api/blocks'
 
 // ── GraphQL / Swagger (optional) ─────────────────────────────────────────────
 import { setupSwagger } from './api/swagger'
@@ -164,7 +174,11 @@ export class ZenithEngine {
    * Phase 3: Neural Bridge & Route Generation
    */
   constructor(options: ZenithOptions) {
-    this.config = applyPlugins(options.config, options.plugins || [])
+    const pluginResult = applyPlugins(options.config, options.plugins || [])
+    this.config = pluginResult.config
+    if (pluginResult.errors.length > 0) {
+      pluginResult.errors.forEach((e: string) => logger.error({ err: e }, 'Plugin error during bootstrap'))
+    }
     this.plugins = options.plugins || []
     this.port = options.port
     this.corsOptions = options.cors
@@ -189,9 +203,15 @@ export class ZenithEngine {
   }
 
   private async _initPlugins() {
+    const ctx = createPluginContext(this.app, this.config)
     for (const plugin of this.plugins) {
+      if (plugin.enabled === false) continue
       if (plugin.onInit) {
-        await plugin.onInit(this.app)
+        try {
+          await plugin.onInit(ctx)
+        } catch (err: any) {
+          logger.error({ plugin: plugin.id || plugin.name, err: err.message }, 'Plugin onInit failed')
+        }
       }
     }
   }
@@ -269,6 +289,8 @@ export class ZenithEngine {
     // ── Public ───────────────────────────────────────────────────────────────
     this.app.use('/api/v1/auth', authRouter)
     this.app.use('/api/v1/system', systemRouter)
+    this.app.use('/api/v1/system/webhooks', webhooksRouter)
+    this.app.use('/api/v1/system/plugins', pluginsRouter)
 
     // ── Media ────────────────────────────────────────────────────────────────
     this.app.use('/api/v1/upload', uploadRouter)
@@ -279,16 +301,20 @@ export class ZenithEngine {
     // ── Content Management Tools (non-collection) ─────────────────────────────
     this.app.use('/api/v1/preferences', preferencesRouter)
     this.app.use('/api/v1/versions', versionsRouter)
+    this.app.use('/api/v1/locks', locksRouter)
+    this.app.use('/api/v1/comments', commentsRouter)
     this.app.use('/api/v1/presence', presenceRouter)
     this.app.use('/api/v1/content-tools', contentToolsRouter)
     this.app.use('/api/v1/members', membersRouter)
     this.app.use('/api/v1/flows', flowsRouter)
     this.app.use('/api/v1/dashboard', dashboardRouter)
     this.app.use('/api/v1/sites', sitesRouter)
+    this.app.use('/api/v1/workspaces', workspacesRouter)
     this.app.use('/api/v1/promotion', promotionRouter)
     this.app.use('/api/v1/releases', releasesRouter)
     this.app.use('/api/v1/roles', rolesRouter)
     this.app.use('/api/v1/templates', templatesRouter)
+    this.app.use('/api/v1/blocks', blocksRouter)
 
     // ── Dynamic Collection Routers ────────────────────────────────────────────
     const webhooks = this.config.webhooks || []
@@ -332,11 +358,19 @@ export class ZenithEngine {
     // GraphQL is initialized async after DB connects
 
     // ── Root Health/Config Endpoint ───────────────────────────────────────────
-    this.app.get('/api/v1/health', (req, res) => {
+    this.app.get('/api/v1/health', (_req, res) => {
       res.json({
         data: {
           collections: this.config.collections,
           globals: this.config.globals || [],
+          plugins: (this.plugins || []).map((p) => ({
+            id: p.id || p.name,
+            name: p.name,
+            version: p.version,
+            enabled: p.enabled !== false,
+            author: p.author,
+            description: p.description,
+          })),
         },
       })
     })
@@ -357,6 +391,18 @@ export class ZenithEngine {
       await this._initPlugins() // Phase 2: Call onInit hooks
       await this.adapter.connect()
       logger.info(`Database connected (${this.adapter.name})`)
+
+      // Load persisted webhook configs into engine config
+      try {
+        const whDocs = await this.adapter.find<any>('z_webhook_configs', {})
+        this.config.webhooks = whDocs.map((d: any) => ({
+          id: String(d._id ?? d.id), url: d.url, secret: d.secret, events: d.events,
+          enabled: d.enabled, createdAt: d.createdAt?.toISOString?.() || d.createdAt,
+        }))
+        logger.info(`[Zenith Engine] Loaded ${whDocs.length} webhook configs from database`)
+      } catch (err: any) {
+        logger.info({ err: err.message }, '[Zenith Engine] No webhook configs found or z_webhook_configs not yet initialized')
+      }
 
       // Load collections from the dynamic database schema registry
       let dbCollections: any[] = []
@@ -468,6 +514,16 @@ export class ZenithEngine {
       FlowEngine.init()
       PresenceService.init(this.adapter)
 
+      // Start audit log rotation (daily check at 3am)
+      if (process.env.AUDIT_ROTATION_DISABLE !== 'true') {
+        const { rotateAuditLogs } = await import('./services/audit-rotation')
+        const rotationInterval = 24 * 60 * 60 * 1000 // once per day
+        setTimeout(async () => {
+          await rotateAuditLogs()
+          setInterval(rotateAuditLogs, rotationInterval)
+        }, 3 * 60 * 60 * 1000) // first run in 3 hours (≈3am if server started at midnight)
+      }
+
       // Inject adapter into every request so GraphQL resolvers and plugins can access it
       this.app.use((req: any, _res: any, next: any) => {
         req.__zenithAdapter = this.adapter
@@ -487,6 +543,16 @@ export class ZenithEngine {
 ║  Swagger     →  http://localhost:${port}/api-docs
 ║  Health      →  http://localhost:${port}/api/v1/system/health
 ╚════════════════════════════════════════════════╝`)
+      })
+
+      // Handle port-in-use errors (common with tsx watch restarts on Windows)
+      server.on('error', (err: NodeJS.ErrnoException) => {
+        if (err.code === 'EADDRINUSE') {
+          logger.warn({ port }, 'Port already in use — another instance is running. Server will not start.')
+          // Don't process.exit(1) — let tsx watch or orchestrator handle the lifecycle
+          return
+        }
+        throw err
       })
 
       // ── Real-Time Collaborative WebSockets & Presence ───────────────────────
@@ -556,20 +622,48 @@ export class ZenithEngine {
       // Called after DB connect, collection registration, and routes are all live.
       // This is the correct point for plugins to register their own Express routes
       // or perform DB-dependent setup.
+      const pluginCtx = createPluginContext(this.app, this.config)
       for (const plugin of this.plugins || []) {
+        if (plugin.enabled === false) continue
         try {
           if (typeof plugin.onReady === 'function') {
-            await plugin.onReady(this.app)
+            await plugin.onReady(pluginCtx)
           }
         } catch (pluginErr: any) {
-          logger.warn({ plugin: plugin.name, err: pluginErr.message }, 'Plugin onReady failed')
+          logger.warn({ plugin: plugin.id || plugin.name, err: pluginErr.message }, 'Plugin onReady failed')
         }
       }
 
       // Graceful shutdown
       const shutdown = async (signal: string) => {
         logger.info({ signal }, 'Graceful shutdown started')
+
+        // ── Plugin onDestroy lifecycle ──────────────────────────────────────
+        const pluginCtx = createPluginContext(this.app, this.config)
+        for (const plugin of this.plugins || []) {
+          if (plugin.enabled === false) continue
+          if (typeof plugin.onDestroy === 'function') {
+            try {
+              await Promise.race([
+                plugin.onDestroy(pluginCtx),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('onDestroy timeout')), 5000)),
+              ])
+              logger.info({ plugin: plugin.id || plugin.name }, 'Plugin onDestroy completed')
+            } catch (err: any) {
+              logger.warn({ plugin: plugin.id || plugin.name, err: err.message }, 'Plugin onDestroy failed')
+            }
+          }
+        }
+
         SchedulerService.stop()
+
+        // Shutdown webhook service
+        try {
+          await WebhookService.shutdown()
+        } catch {
+          // ignored
+        }
+
         try {
           /* eslint-disable-next-line @typescript-eslint/no-require-imports */
           const { sandboxPool } = require('./services/content')

@@ -1,7 +1,6 @@
 import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { Loader2 } from 'lucide-react'
-type FieldConfig = any
 import RichTextEditor from './RichTextEditor'
 import MediaPicker from './MediaPicker'
 import RelationPicker from './RelationPicker'
@@ -18,6 +17,12 @@ import BooleanField from './fields/BooleanField'
 import NumberField from './fields/NumberField'
 import CodeField from './fields/CodeField'
 import CollapsibleField from './fields/CollapsibleField'
+import GroupField from './fields/GroupField'
+import JSONField from './fields/JSONField'
+import DateField from './fields/DateField'
+import SlugField from './fields/SlugField'
+import UIDField from './fields/UIDField'
+import TabField from './fields/TabField'
 import {
   PointField,
   RowField,
@@ -27,6 +32,11 @@ import {
 
 import BlocksBuilder from './BlocksBuilder'
 import SimpleArrayBuilder from './SimpleArrayBuilder'
+
+/** Field config used by the form builder — keeps a flexible shape since runtime
+ *  field configs can have additional properties not in the base discriminated union. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type FieldConfig = any
 
 interface FormBuilderProps {
   fields: FieldConfig[]
@@ -59,9 +69,11 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
   })
 
   const formValues = watch()
+  const initialDataRef = React.useRef(initialData)
 
   React.useEffect(() => {
-    if (initialData) {
+    if (initialData && initialData !== initialDataRef.current) {
+      initialDataRef.current = initialData
       reset(initialData)
     }
   }, [initialData, reset])
@@ -94,6 +106,30 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
       )
     }
 
+    if (field.type === 'group') {
+      return (
+        <GroupField
+          field={field}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+          renderField={renderField}
+        />
+      )
+    }
+
+    if (field.type === 'tabs') {
+      return (
+        <TabField
+          field={field}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+          renderField={renderField}
+        />
+      )
+    }
+
     if (field.type === 'row') {
       return (
         <RowField
@@ -107,9 +143,10 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
     }
 
     // ── Complex fields with their own internal state ────────────────────────
-    if (field.type === 'richtext') {
+    if (field.type === 'richtext' || field.type === 'lexical') {
       return (
         <RichTextEditor
+          mode={field.type === 'lexical' ? 'full' : undefined}
           value={value}
           onChange={onChange}
           placeholder={`Enter ${field.name}...`}
@@ -141,7 +178,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
       )
     }
 
-    if (field.type === 'blocks') {
+    if (field.type === 'blocks' || field.type === 'dz') {
       return (
         <BlocksBuilder
           value={value}
@@ -200,7 +237,31 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
       return <RadioField field={field} value={value} onChange={onChange} disabled={disabled} />
     }
 
-    // Default: text, email, password, date, color, uid
+    if (field.type === 'json') {
+      return <JSONField value={value} onChange={onChange} disabled={disabled} />
+    }
+
+    if (field.type === 'date') {
+      return <DateField value={value} onChange={onChange} disabled={disabled} format={field.dateFormat || 'date'} />
+    }
+
+    if (field.type === 'slug') {
+      return (
+        <SlugField
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+          sourceField={field.sourceField || 'title'}
+          formValues={formValues}
+        />
+      )
+    }
+
+    if (field.type === 'uid') {
+      return <UIDField value={value} onChange={onChange} disabled={disabled} />
+    }
+
+    // Default: text, email, password, color
     return <TextField field={field} value={value} onChange={onChange} disabled={disabled} />
   }
 
@@ -219,7 +280,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
         const condition = field.condition || field.admin?.condition
         if (condition && !evaluateCondition(condition, formValues)) return null
 
-        const isFullWidth = ['richtext', 'blocks', 'array', 'code', 'collapsible'].includes(field.type)
+        const isFullWidth = ['richtext', 'blocks', 'array', 'code', 'collapsible', 'group', 'tabs', 'json'].includes(field.type)
         const fieldName = getFieldName(field, currentLocale)
 
         return (
@@ -250,11 +311,11 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
               <Controller
                 name={fieldName}
                 control={control}
-                render={({ field: { onChange, value } }) => renderField(field, value, onChange)}
+                render={({ field: { onChange, value } }) => <>{renderField(field, value, onChange)}</>}
               />
             )}
 
-            {!isReadOnly && getFieldError(errors, fieldName) && (
+            {!isReadOnly && !!getFieldError(errors, fieldName) && (
               <p className="text-xs text-danger mt-1 font-medium">
                 {(getFieldError(errors, fieldName) as any)?.message || 'Required field'}
               </p>

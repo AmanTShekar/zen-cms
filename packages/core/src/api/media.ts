@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express'
 import path from 'path'
 import fs from 'fs'
 import sharp from 'sharp'
+import { InvalidPayloadError, NotFoundError } from '../errors'
 
 const router: Router = Router()
 
@@ -44,7 +45,7 @@ router.get('/:filename', async (req: Request, res: Response, next) => {
     const filePath = path.join(mediaDir, filename)
 
     if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: 'Media file not found' })
+      throw new NotFoundError('Media', filename)
     }
 
     const { width, height, format, fpX, fpY } = req.query
@@ -54,12 +55,12 @@ router.get('/:filename', async (req: Request, res: Response, next) => {
 
     if ((w !== undefined && (isNaN(w) || w <= 0 || w > 2000)) ||
         (h !== undefined && (isNaN(h) || h <= 0 || h > 2000))) {
-      return res.status(400).json({ error: 'Invalid or excessive image dimensions (max 2000px)' })
+      throw new InvalidPayloadError('Invalid or excessive image dimensions (max 2000px)')
     }
 
     const allowedFormats = ['jpeg', 'jpg', 'png', 'webp', 'gif', 'avif']
     if (format && !allowedFormats.includes(format as string)) {
-      return res.status(400).json({ error: 'Unsupported image format' })
+      throw new InvalidPayloadError('Unsupported image format')
     }
 
     // Parse focal point from query params (e.g., ?fpX=75&fpY=25)

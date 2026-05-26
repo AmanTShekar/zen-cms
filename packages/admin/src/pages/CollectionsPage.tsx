@@ -11,6 +11,7 @@ import {
   Plus,
   Trash2,
   Check,
+  Code2,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -58,6 +59,7 @@ const CollectionsPage: React.FC = () => {
         setStats(countsRes?.data?.data || {})
       } catch (error) {
         console.error('Critical Registry Synchronization Failure', error)
+        toast.error('Failed to load collections')
       } finally {
         setLoading(false)
       }
@@ -287,7 +289,7 @@ const CollectionsPage: React.FC = () => {
             </span>
             <div className="flex items-baseline gap-3">
               <span className="text-4xl font-black italic tracking-tighter">
-                {item.value as any}
+                {item.value}
               </span>
               <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-widest">
                 {item.sub}
@@ -346,9 +348,14 @@ const CollectionsPage: React.FC = () => {
               </div>
 
               <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                <span className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] italic">
-                  Optimal_Link
-                </span>
+                <Link
+                  to={`/collections/${col.slug}/hooks`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-1.5 text-[8px] font-black text-gray-500 hover:text-indigo-400 uppercase tracking-[0.2em] italic transition-colors"
+                >
+                  <Code2 size={10} />
+                  Hooks
+                </Link>
                 <ArrowRight
                   size={14}
                   className="text-indigo-500 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all"

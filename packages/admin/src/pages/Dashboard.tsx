@@ -71,17 +71,17 @@ const Dashboard: React.FC = () => {
       const fetchCounts = api
         .get('/system/counts')
         .then((r) => setStats(r.data.data))
-        .catch((err) => console.error('Registry Count Harvest Failed', err))
+        .catch(() => toast.error('Failed to load system counts'))
 
       const fetchHealth = api
         .get('/system/health')
         .then((r) => setHealthData(r.data.data))
-        .catch((err) => console.error('Infrastructure Heartbeat Failed', err))
+        .catch(() => toast.error('Failed to load system health'))
 
       const fetchLogs = api
         .get('/system/audit-logs?limit=5')
         .then((r) => setAuditLogs(r.data.data))
-        .catch((err) => console.error('Audit Log Retrieval Failed', err))
+        .catch(() => toast.error('Failed to load audit logs'))
 
       // Wait for all active streams to resolve
       await Promise.all([fetchCounts, fetchHealth, fetchLogs])

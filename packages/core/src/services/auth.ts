@@ -15,9 +15,11 @@ if (process.env.NODE_ENV === 'production') {
   }
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_only_fallback_secret_never_use_in_prod'
+// In dev, these fallbacks are acceptable because the production guard above
+// throws if either secret is missing when NODE_ENV=production.
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_fallback_secret_change_in_prod'
 const JWT_REFRESH_SECRET =
-  process.env.JWT_REFRESH_SECRET || 'dev_only_fallback_refresh_never_use_in_prod'
+  process.env.JWT_REFRESH_SECRET || 'dev_fallback_refresh_change_in_prod'
 const SALT_ROUNDS = 12
 const MAX_FAILED_ATTEMPTS = 5
 const LOCKOUT_DURATION_MS = 15 * 60 * 1000 // 15 minutes

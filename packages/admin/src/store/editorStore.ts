@@ -10,10 +10,13 @@ export interface Section {
   title: string
   content: Record<string, unknown>
   align?: 'left' | 'center' | 'right'
+  blockName?: string
+  collapsed?: boolean
 }
 
 export interface PageData {
   _status?: 'draft' | 'published'
+  _version?: number
   title?: string
   heroDescription?: string
   sections: Section[]
@@ -22,6 +25,7 @@ export interface PageData {
   publishedAt?: string | null
   createdAt?: string
   updatedAt?: string
+  siteId?: string
 }
 
 export interface MediaAsset {
@@ -62,11 +66,12 @@ interface EditorState {
   loading: boolean
   saving: boolean
   hasUnsavedChanges: boolean
+  lastSavedAt: string | null
   undoStack: PageData[]
   redoStack: PageData[]
 
   // Active Selections
-  activeSection: string
+  activeSection: string | null
   selectedField: { blockId: string; fieldKey: string } | null
 
   // Schema and Configuration
@@ -76,28 +81,26 @@ interface EditorState {
   history: Version[]
   templates: any[]
 
-  // Relations Dialog State
+  // Relations Dialog Data
   relationsField: { sectionId: string; fieldKey: string } | null
   relationsSearch: string
   relationResults: RelationResult[]
   selectedRelations: Set<string>
   availableCollections: AvailableCollection[]
-  relationsModalOpen: boolean
 
-  // Media Library State
+  // Media Library Data
   mediaAssets: MediaAsset[]
   mediaSearch: string
   mediaTypeFilter: string
   mediaLoading: boolean
-  mediaLibraryOpen: boolean
-  blockPickerOpen: boolean
 
   // Setters
   setData: (data: PageData | null) => void
   setLoading: (loading: boolean) => void
   setSaving: (saving: boolean) => void
   setHasUnsavedChanges: (val: boolean) => void
-  setActiveSection: (section: string) => void
+  setLastSavedAt: (val: string | null) => void
+  setActiveSection: (section: string | null) => void
   setSelectedField: (field: { blockId: string; fieldKey: string } | null) => void
   setSchemaFields: (fields: any[]) => void
   setFieldSettings: (settings: Record<string, any>) => void
@@ -110,33 +113,72 @@ interface EditorState {
   setRelationResults: (results: RelationResult[]) => void
   setSelectedRelations: (relations: Set<string>) => void
   setAvailableCollections: (collections: AvailableCollection[]) => void
-  setRelationsModalOpen: (open: boolean) => void
 
   setMediaAssets: (assets: MediaAsset[]) => void
   setMediaSearch: (search: string) => void
   setMediaTypeFilter: (filter: string) => void
   setMediaLoading: (loading: boolean) => void
-  setMediaLibraryOpen: (open: boolean) => void
 
-  setBlockPickerOpen: (open: boolean) => void
-  updateData: (updater: (prev: PageData) => PageData) => void
+  updateData: (updater: (prev: PageData) => PageData | void) => void
+  /** Fast path: update a single field without immer/clone overhead. */
+  setField: (sectionId: string, fieldKey: string, value: any) => void
   undo: () => void
   redo: () => void
   load: (id: string, isGlobal: boolean) => Promise<PageData>
   save: (id: string, isGlobal: boolean, getPayload: (data: PageData) => Record<string, unknown>) => Promise<void>
+  /** Reset transient editor state when navigating between documents */
+  reset: () => void
 }
 
+const STORAGE_KEY = 'zenith_editor_state'
 const MAX_UNDO_STACK = 50
+const PERSIST_DEBOUNCE_MS = 2000
+const UNDO_DEBOUNCE_MS = 1200
 
-const deepClone = <T>(obj: T): T => produce(obj, (draft: T) => { void draft })
+let persistTimer: ReturnType<typeof setTimeout> | null = null
+let lastUndoTime = 0
+
+const loadPersisted = () => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    if (parsed && typeof parsed === 'object') {
+      const d = parsed.data || parsed
+      const undoStack = Array.isArray(parsed.undoStack) ? parsed.undoStack : []
+      const redoStack = Array.isArray(parsed.redoStack) ? parsed.redoStack : []
+      return { data: d as PageData, undoStack: undoStack as PageData[], redoStack: redoStack as PageData[] }
+    }
+  } catch { /* ignore corrupt storage */ }
+  return null
+}
+
+/** Debounced persist — saves data, undoStack, and redoStack to localStorage after a pause in updates */
+const persist = (get: () => EditorState) => {
+  if (persistTimer) clearTimeout(persistTimer)
+  persistTimer = setTimeout(() => {
+    try {
+      const { data, undoStack, redoStack } = get()
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ data, undoStack, redoStack }))
+    } catch { /* storage full or disabled */ }
+  }, PERSIST_DEBOUNCE_MS)
+}
+
+const deepClone = <T,>(obj: T): T =>
+  typeof structuredClone === 'function'
+    ? structuredClone(obj)
+    : JSON.parse(JSON.stringify(obj))
+
+const restored = loadPersisted()
 
 export const useEditorStore = create<EditorState>((set, get) => ({
-  data: null,
+  data: restored ? (restored.data as PageData) : null,
   loading: false,
   saving: false,
   hasUnsavedChanges: false,
-  undoStack: [],
-  redoStack: [],
+  lastSavedAt: null,
+  undoStack: restored ? restored.undoStack : [],
+  redoStack: restored ? restored.redoStack : [],
 
   activeSection: 'root',
   selectedField: null,
@@ -157,14 +199,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   mediaSearch: '',
   mediaTypeFilter: 'all',
   mediaLoading: false,
-  blockPickerOpen: false,
-  relationsModalOpen: false,
-  mediaLibraryOpen: false,
 
   setData: (data) => set({ data }),
   setLoading: (loading) => set({ loading }),
   setSaving: (saving) => set({ saving }),
   setHasUnsavedChanges: (hasUnsavedChanges) => set({ hasUnsavedChanges }),
+  setLastSavedAt: (lastSavedAt) => set({ lastSavedAt }),
   setActiveSection: (activeSection) => set({ activeSection }),
   setSelectedField: (selectedField) => set({ selectedField }),
   setSchemaFields: (schemaFields) => set({ schemaFields }),
@@ -178,29 +218,63 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   setRelationResults: (relationResults) => set({ relationResults }),
   setSelectedRelations: (selectedRelations) => set({ selectedRelations }),
   setAvailableCollections: (availableCollections) => set({ availableCollections }),
-  setRelationsModalOpen: (open) => set({ relationsModalOpen: open }),
 
   setMediaAssets: (mediaAssets) => set({ mediaAssets }),
   setMediaSearch: (mediaSearch) => set({ mediaSearch }),
   setMediaTypeFilter: (mediaTypeFilter) => set({ mediaTypeFilter }),
   setMediaLoading: (mediaLoading) => set({ mediaLoading }),
-  setMediaLibraryOpen: (open) => set({ mediaLibraryOpen: open }),
-  setBlockPickerOpen: (open) => set({ blockPickerOpen: open }),
 
   updateData: (updater) => {
     const current = get().data
     if (!current) return
-    const previousState = deepClone(current)
     const newData = produce(current, (draft) => {
-      const updated = updater(draft as PageData)
-      Object.assign(draft, updated)
+      const result = updater(draft as PageData)
+      if (result !== undefined) Object.assign(draft, result)
     })
-    set((state) => ({
+    set((state) => {
+      const now = Date.now()
+      const shouldPushUndo = (now - lastUndoTime) > UNDO_DEBOUNCE_MS
+      const nextUndoStack = shouldPushUndo
+        ? [...state.undoStack.slice(-MAX_UNDO_STACK + 1), current]
+        : state.undoStack
+      if (shouldPushUndo) lastUndoTime = now
+      return ({
+        data: newData,
+        hasUnsavedChanges: true,
+        undoStack: nextUndoStack,
+        redoStack: [],
+      })
+    })
+  },
+
+  setField: (sectionId, fieldKey, value) => {
+    let current: PageData | null
+    try {
+      current = get().data
+    } catch {
+      return
+    }
+    if (!current) return
+    const now = Date.now()
+    const shouldPushUndo = (now - lastUndoTime) > UNDO_DEBOUNCE_MS
+    const nextUndoStack = shouldPushUndo
+      ? [...get().undoStack.slice(-MAX_UNDO_STACK + 1), deepClone(current)]
+      : get().undoStack
+    if (shouldPushUndo) lastUndoTime = now
+
+    // Direct mutation-free update: shallow-copy only the changed section
+    const newSections = current.sections.map((s) => {
+      if (s.id !== sectionId) return s
+      if (s.content[fieldKey] === value) return s
+      return { ...s, content: { ...s.content, [fieldKey]: value } }
+    })
+    const newData = { ...current, sections: newSections }
+    set({
       data: newData,
       hasUnsavedChanges: true,
-      undoStack: [...state.undoStack.slice(-MAX_UNDO_STACK + 1), previousState],
+      undoStack: nextUndoStack,
       redoStack: [],
-    }))
+    })
   },
 
   undo: () => {
@@ -209,10 +283,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     const previous = undoStack[undoStack.length - 1]
     const newUndoStack = undoStack.slice(0, -1)
     const redoState = deepClone(data)
+    const nextRedo = [...redoStack.slice(-MAX_UNDO_STACK + 1), redoState]
+    persist(get)
     set({
       data: previous,
       undoStack: newUndoStack,
-      redoStack: [...redoStack.slice(-MAX_UNDO_STACK + 1), redoState],
+      redoStack: nextRedo,
       hasUnsavedChanges: true,
     })
   },
@@ -223,9 +299,11 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     const next = redoStack[redoStack.length - 1]
     const newRedoStack = redoStack.slice(0, -1)
     const currentState = deepClone(data)
+    const nextUndo = [...undoStack.slice(-MAX_UNDO_STACK + 1), currentState]
+    persist(get)
     set({
       data: next,
-      undoStack: [...undoStack.slice(-MAX_UNDO_STACK + 1), currentState],
+      undoStack: nextUndo,
       redoStack: newRedoStack,
       hasUnsavedChanges: true,
     })
@@ -235,7 +313,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     set({ loading: true, undoStack: [], redoStack: [], hasUnsavedChanges: false })
     try {
       const res = isGlobal
-        ? await api.get(`/globals/landing-page`)
+        ? await api.get(`/globals/${id}`)
         : await api.get(`/pages/${id}`)
 
       const normalizedSections = (res.data.data.sections || []).map(
@@ -260,14 +338,43 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     set({ saving: true })
     try {
       const payload = getPayload(data)
-      if (isGlobal) {
-        await api.patch(`/globals/landing-page`, payload)
+      const res = isGlobal
+        ? await api.patch(`/globals/${id}`, payload)
+        : await api.patch(`/pages/${id}`, payload)
+      // Sync version from server response for optimistic locking
+      const serverVersion = res.data?.data?._version
+      if (serverVersion !== undefined) {
+        set({ data: { ...data, _version: serverVersion }, hasUnsavedChanges: false })
       } else {
-        await api.patch(`/pages/${id}`, payload)
+        set({ hasUnsavedChanges: false })
       }
-      set({ hasUnsavedChanges: false })
     } finally {
       set({ saving: false })
     }
+  },
+
+  reset: () => {
+    // Clear persisted state for previous document
+    try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
+    set({
+      data: null,
+      loading: false,
+      saving: false,
+      hasUnsavedChanges: false,
+      lastSavedAt: null,
+      undoStack: [],
+      redoStack: [],
+      activeSection: 'root',
+      selectedField: null,
+      fieldErrors: {},
+      relationsField: null,
+      relationsSearch: '',
+      relationResults: [],
+      selectedRelations: new Set<string>(),
+      mediaAssets: [],
+      mediaSearch: '',
+      mediaTypeFilter: 'all',
+      mediaLoading: false,
+    })
   },
 }))

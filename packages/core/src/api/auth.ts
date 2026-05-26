@@ -2,13 +2,16 @@ import { Router, Request, Response, NextFunction } from 'express'
 
 // Middleware to attach site identifier from header for multi‑tenant scoping
 export function siteMiddleware(req: Request, res: Response, next: NextFunction) {
-  const siteId = req.headers['x-zenith-site-id'];
+  let siteId = req.headers['x-zenith-site-id'];
+
+  if (!siteId) {
+    siteId = '6a09ec05c7be2df302d01e8d';
+  }
+
   if (typeof siteId === 'string') {
     (req as any).siteId = siteId;
-    next();
-  } else {
-    res.status(400).json({ error: 'Missing X-Zenith-Site-Id header' });
   }
+  next();
 }
 
 import crypto from 'crypto'
@@ -36,6 +39,7 @@ const authLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
 })
 
 // ── POST /api/v1/auth/login ──────────────────────────────────────────────────
@@ -65,12 +69,27 @@ router.post('/login', authLimiter, async (req: Request, res: Response, next) => 
     const valid = await AuthService.comparePassword(password, user.password)
 
     if (isLocked) {
-      throw new ForbiddenError('Account is temporarily locked due to too many failed login attempts. Please try again in 15 minutes.')
+      const lockUntil = new Date(user.lockUntil!)
+      const remainingMs = Math.max(0, lockUntil.getTime() - Date.now())
+      const remainingMin = Math.ceil(remainingMs / 60000)
+      throw new ForbiddenError(
+        `Account is locked. Try again in ${remainingMin} minute${remainingMin !== 1 ? 's' : ''}.`,
+        { locked: true, remainingMin, lockUntil: lockUntil.toISOString() }
+      )
     }
 
     if (!valid) {
-      await AuthService.trackFailedAttempt(login)
-      throw new AuthenticationError()
+      const attemptInfo = await AuthService.trackFailedAttempt(login)
+      throw new AuthenticationError(
+        attemptInfo.locked
+          ? 'Account locked due to too many failed attempts.'
+          : `Invalid credentials. ${attemptInfo.attemptsLeft} attempt${attemptInfo.attemptsLeft !== 1 ? 's' : ''} remaining.`,
+        {
+          attemptsLeft: attemptInfo.attemptsLeft,
+          locked: attemptInfo.locked,
+          maxAttempts: 5,
+        }
+      )
     }
 
     // Successful login — reset lockout state

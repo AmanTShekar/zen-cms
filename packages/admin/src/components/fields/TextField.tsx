@@ -1,7 +1,11 @@
 import React from 'react'
 import { cn } from '../../lib/utils'
 import { textCasingStyle } from '../../lib/form-utils'
-import type { FieldConfig } from '@zenithcms/types'
+import type { FieldConfig, TextFieldConfig } from '@zenithcms/types'
+
+type TextFieldWithExtras = TextFieldConfig & {
+  casing?: 'uppercase' | 'lowercase' | 'capitalize'
+}
 
 interface Props {
   field: FieldConfig
@@ -11,7 +15,7 @@ interface Props {
 }
 
 const TextField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
-  const cf = field as any
+  const cf = field as TextFieldWithExtras
   const casingStyle = textCasingStyle(cf.casing)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

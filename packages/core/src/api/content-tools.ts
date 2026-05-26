@@ -118,6 +118,7 @@ router.post('/auto-link', async (req: Request, res: Response, next) => {
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const config = (req as any).zenith.config
+    const siteId = req.headers['x-zenith-site-id'] as string
     const suggestions: Array<{ text: string; url: string; collection: string }> = []
 
     for (const col of config.collections) {
@@ -134,7 +135,9 @@ router.post('/auto-link', async (req: Request, res: Response, next) => {
       let docs: any[] = []
       try {
         // Production Hardening: Limit to 100 docs per collection to prevent OOM crashes
-        docs = await adapter.find<any>(col.slug, {}, { limit: 100 })
+        const filter: Record<string, any> = {}
+        if (siteId) filter.siteId = siteId
+        docs = await adapter.find<any>(col.slug, filter, { limit: 100 })
       } catch (e) {
         continue
       }

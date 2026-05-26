@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   Loader2,
@@ -12,9 +12,12 @@ import {
   Terminal,
   RefreshCw,
   ArrowRight,
+  Clock,
+  Eye,
 } from 'lucide-react'
 import api from '../lib/api'
 import FormBuilder from '../components/FormBuilder'
+import SpatialEditor from './SpatialEditor'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../lib/utils'
 import toast from 'react-hot-toast'
@@ -29,6 +32,9 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
   const { slug: routeSlug, id: routeId } = useParams<{ slug: string; id: string }>()
   const navigate = useNavigate()
   const { theme } = useTheme()
+  const isPagesPath = window.location.pathname.includes('/collections/pages/') || window.location.pathname.startsWith('/globals/')
+  const [showVisualEditor, setShowVisualEditor] = useState(isPagesPath)
+  const [focusedSectionId, setFocusedSectionId] = useState<string | undefined>()
   const [data, setData] = useState<Record<string, unknown> | null>(null)
   const [fields, setFields] = useState<FieldConfig[]>([])
   const [config, setConfig] = useState<Record<string, unknown> | null>(null)
@@ -36,8 +42,22 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
   const [saving, setSaving] = useState(false)
   const [isZenMode, setIsZenMode] = useState(false)
   const [versions, setVersions] = useState<VersionDoc[]>([])
+  const getSlugFromPath = useCallback(() => {
+    if (routeSlug) return routeSlug
+    const path = window.location.pathname
+    if (path.includes('/collections/pages/')) return 'pages'
+    if (path.includes('/globals/')) {
+      const parts = path.split('/')
+      const globalsIndex = parts.indexOf('globals')
+      if (globalsIndex !== -1 && parts[globalsIndex + 1]) {
+        return parts[globalsIndex + 1]
+      }
+    }
+    return ''
+  }, [routeSlug])
+
   const [isGlobal, setIsGlobal] = useState(initialIsGlobal)
-  const [resolvedSlug, setResolvedSlug] = useState(routeSlug)
+  const [resolvedSlug, setResolvedSlug] = useState(() => getSlugFromPath())
   const [resolvedId, setResolvedId] = useState(routeId?.split(':')[0] || 'singleton')
 
   const [activeLocale, setActiveLocale] = useState('en')
@@ -53,62 +73,86 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
   const [selectedVersion, setSelectedVersion] = useState<VersionDoc | null>(null)
   const [restoring, setRestoring] = useState(false)
   const [selectedFieldsToRollback, setSelectedFieldsToRollback] = useState<string[]>([])
+  const [scheduledDate, setScheduledDate] = useState('')
+  const [showSchedulePicker, setShowSchedulePicker] = useState(false)
+  const [versionPreviewMode, setVersionPreviewMode] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
+  const [previewToken, setPreviewToken] = useState<string | null>(null)
+  const [previewLoading, setPreviewLoading] = useState(false)
 
+  // Generate preview token when data is available
   useEffect(() => {
-    const fetchSchemaAndData = async () => {
-      setLoading(true)
+    if (!data || !resolvedId || resolvedId === 'new') return
+    const generateToken = async () => {
       try {
-        const healthRes = await api.get('/health')
-        const collections = healthRes.data.data?.collections || []
-        const globals = healthRes.data.data?.globals || []
-
-        const globalMatch = globals.find((g: Record<string, unknown>) => g.slug === routeSlug)
-        const collectionMatch = collections.find(
-          (c: Record<string, unknown>) => c.slug === routeSlug
-        )
-
-        const effectiveIsGlobal = !!globalMatch || initialIsGlobal
-        const effectiveSlug = effectiveIsGlobal ? `globals/${routeSlug}` : routeSlug
-        const effectiveId = effectiveIsGlobal ? 'singleton' : routeId?.split(':')[0] || 'singleton'
-
-        setIsGlobal(effectiveIsGlobal)
-        setResolvedSlug(effectiveSlug)
-        setResolvedId(effectiveId)
-
-        const schema = globalMatch || collectionMatch
-        if (schema) {
-          setFields(schema.fields || [])
-          setConfig(schema)
-        }
-
-        if (effectiveId !== 'new') {
-          try {
-            const dataRes = await api.get(`/${effectiveSlug}/${effectiveId}`)
-            setData(dataRes.data.data)
-
-            if (!effectiveIsGlobal) {
-              try {
-                const versionsRes = await api.get(`/${effectiveSlug}/${effectiveId}/versions`)
-                setVersions(versionsRes.data.data || [])
-              } catch {
-                setVersions([])
-              }
-            }
-          } catch {
-            console.error('Failed to fetch data')
-          }
-        } else {
-          setData({})
-        }
+        const res = await api.post(`/${resolvedSlug}/${resolvedId}/preview-token`)
+        setPreviewToken(res.data.data?.token || null)
       } catch {
-        console.error('Failed to fetch schema')
-      } finally {
-        setTimeout(() => setLoading(false), 300)
+        setPreviewToken(null)
       }
     }
+    generateToken()
+  }, [data, resolvedId, resolvedSlug])
 
+  const fetchSchemaAndData = useCallback(async () => {
+    setLoading(true)
+    try {
+      const healthRes = await api.get('/health')
+      const collections = healthRes.data.data?.collections || []
+      const globals = healthRes.data.data?.globals || []
+
+      const baseSlug = getSlugFromPath()
+
+      const globalMatch = globals.find((g: Record<string, unknown>) => g.slug === baseSlug)
+      const collectionMatch = collections.find(
+        (c: Record<string, unknown>) => c.slug === baseSlug
+      )
+
+      const effectiveIsGlobal = !!globalMatch || initialIsGlobal
+      const effectiveSlug = effectiveIsGlobal ? `globals/${baseSlug}` : baseSlug
+      const effectiveId = effectiveIsGlobal ? 'singleton' : routeId?.split(':')[0] || 'singleton'
+
+      setIsGlobal(effectiveIsGlobal)
+      setResolvedSlug(effectiveSlug)
+      setResolvedId(effectiveId)
+
+      const schema = globalMatch || collectionMatch
+      if (schema) {
+        setFields(schema.fields || [])
+        setConfig(schema)
+      }
+
+      if (effectiveId !== 'new') {
+        try {
+          const dataRes = await api.get(`/${effectiveSlug}/${effectiveId}`)
+          setData(dataRes.data.data)
+
+          if (!effectiveIsGlobal) {
+            try {
+              const versionsRes = await api.get(`/${effectiveSlug}/${effectiveId}/versions`)
+              setVersions(versionsRes.data.data || [])
+            } catch {
+              setVersions([])
+            }
+          }
+        } catch {
+          console.error('Failed to fetch data')
+          toast.error('Failed to load content data')
+        }
+      } else {
+        setData({})
+      }
+    } catch {
+      console.error('Failed to fetch schema')
+      toast.error('Failed to load collection schema')
+    } finally {
+      setTimeout(() => setLoading(false), 300)
+    }
+  }, [getSlugFromPath, routeId, initialIsGlobal])
+
+  useEffect(() => {
     fetchSchemaAndData()
-  }, [routeSlug, routeId, initialIsGlobal])
+  }, [fetchSchemaAndData])
 
   useEffect(() => {
     if (resolvedId === 'new' || isGlobal) return
@@ -121,6 +165,7 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
         })
       } catch (err) {
         console.error('Presence heartbeat failed', err)
+        toast.error('Presence sync failed')
       }
     }
 
@@ -130,6 +175,7 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
         setPresence(res.data.data)
       } catch (err) {
         console.error('Failed to fetch presence data', err)
+        toast.error('Failed to fetch presence data')
       }
     }
 
@@ -232,7 +278,7 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
   return (
     <div
       className={cn(
-        'p-12 space-y-14 animate-fade-in min-h-screen transition-colors duration-500',
+        'pt-2 px-8 pb-12 space-y-8 animate-fade-in min-h-screen transition-colors duration-500',
         theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900',
         isZenMode && 'p-0'
       )}
@@ -257,43 +303,38 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
                 <ArrowLeft size={18} />
               </button>
               <div className="flex flex-col">
-                <div className="flex flex-wrap items-center gap-4 mb-3">
-                  <span className="text-[11px] font-black text-indigo-500 uppercase tracking-[0.4em] italic">
-                    Record_Entry_Module
-                  </span>
-                  {presence.activeUsers.length > 0 && (
-                    <div className="flex items-center -space-x-1.5 ml-4">
-                      {presence.activeUsers.map((user, i) => {
-                        const initials = user.email ? user.email.slice(0, 2).toUpperCase() : '??'
-                        return (
-                          <div
-                            key={user.id || i}
-                            title={user.email}
-                            className="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[9px] font-black border-2 border-black shadow-[0_0_8px_rgba(79,70,229,0.3)] relative group cursor-help"
-                          >
-                            {initials}
-                            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-0.5 bg-gray-950 border border-white/10 text-white text-[8px] font-black uppercase tracking-widest rounded-none shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-[60]">
-                              {user.email}
-                            </span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  )}
-                  <div className="w-2.5 h-2.5 rounded-none bg-emerald-500 shadow-[0_0_15px_#10b981]" />
-                  <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest italic">
-                    {id === 'new' ? 'Initialize_Protocol_V6' : 'Active_Session_Established'}
-                  </span>
-                </div>
                 <h1 className="text-7xl font-black tracking-tighter uppercase italic leading-[0.9] truncate max-w-3xl">
                   {id === 'new'
                     ? 'New_Record_Init'
-                    : data?.name || data?.title || (config as any)?.labels?.singular || 'Manifest_Update'}
+                    : data?.name || data?.title || (config as { labels?: { singular?: string } } | null)?.labels?.singular || 'Manifest_Update'}
                 </h1>
               </div>
             </div>
 
             <div className="flex items-center gap-4 shrink-0">
+              {(() => {
+                const hasBlocksField = fields.some((f) => f.type === 'blocks') || resolvedSlug?.includes('pages')
+                if (!hasBlocksField) return null
+                // Extract the first block/section ID for pre-selection when opening visual editor
+                  const firstSectionId = (data as { sections?: { id?: string }[] } | null)?.sections?.[0]?.id
+                  return (
+                  <button
+                    onClick={() => {
+                      setFocusedSectionId(firstSectionId)
+                      setShowVisualEditor(true)
+                    }}
+                    className={cn(
+                      'px-6 py-4 rounded-none font-black text-[10px] uppercase tracking-widest transition-all italic leading-none flex items-center gap-3',
+                      theme === 'dark'
+                        ? 'bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-600/20'
+                        : 'bg-indigo-50 border border-indigo-100 text-indigo-600 hover:bg-indigo-100'
+                    )}
+                  >
+                    <Eye size={16} />
+                    <span>Visual Editor</span>
+                  </button>
+                )
+              })()}
               <button
                 onClick={() => setIsZenMode(true)}
                 className={cn(
@@ -343,7 +384,163 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
                   <Globe size={16} strokeWidth={3} />
                   <span>Publish</span>
                 </button>
+                <div className="relative">
+                  <button
+                    onClick={() => setShowSchedulePicker(!showSchedulePicker)}
+                    disabled={saving}
+                    className={cn(
+                      'px-4 py-4 rounded-none font-black text-[10px] uppercase tracking-widest transition-all italic leading-none flex items-center gap-3 border-l border-white/5',
+                      theme === 'dark'
+                        ? 'bg-white/5 text-gray-400 hover:text-amber-400'
+                        : 'bg-white border-gray-100 text-gray-400 hover:text-amber-600'
+                    )}
+                    title="Schedule publish"
+                  >
+                    <Clock size={16} />
+                  </button>
+                  {showSchedulePicker && (
+                    <div className={cn(
+                      'absolute right-0 top-full mt-2 p-6 border shadow-2xl z-50 min-w-[320px]',
+                      theme === 'dark' ? 'bg-[#080808] border-white/10' : 'bg-white border-gray-100'
+                    )}>
+                      <div className="space-y-4">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-gray-400 italic">
+                          Schedule Publication
+                        </span>
+                        <input
+                          type="datetime-local"
+                          value={scheduledDate}
+                          onChange={(e) => setScheduledDate(e.target.value)}
+                          className={cn(
+                            'w-full border rounded-none py-3 px-4 text-xs font-mono italic outline-none',
+                            theme === 'dark'
+                              ? 'bg-black border-white/10 text-white focus:border-indigo-500'
+                              : 'bg-gray-50 border-gray-200 text-black focus:border-indigo-500'
+                          )}
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => { setShowSchedulePicker(false); setScheduledDate('') }}
+                            className="flex-1 py-3 text-[9px] font-black uppercase tracking-widest border rounded-none transition-all italic"
+                          >
+                            Clear
+                          </button>
+                          <button
+                            onClick={async () => {
+                              if (!scheduledDate) return
+                              const form = document.querySelector('form')
+                              if (form) {
+                                const si = document.createElement('input')
+                                si.type = 'hidden'; si.name = 'scheduledAt'; si.value = new Date(scheduledDate).toISOString()
+                                const si2 = document.createElement('input')
+                                si2.type = 'hidden'; si2.name = 'status'; si2.value = 'scheduled'
+                                form.appendChild(si); form.appendChild(si2)
+                                document.getElementById('record-form-submit')?.click()
+                                setShowSchedulePicker(false)
+                                toast.success(`Scheduled for ${new Date(scheduledDate).toLocaleString()}`)
+                              }
+                            }}
+                            disabled={!scheduledDate}
+                            className={cn(
+                              'flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-none transition-all italic',
+                              theme === 'dark'
+                                ? 'bg-amber-600 text-white hover:bg-amber-700'
+                                : 'bg-amber-500 text-white hover:bg-amber-600'
+                            )}
+                          >
+                            Schedule
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {previewToken && (
+                  <button
+                    onClick={() => setShowPreview(!showPreview)}
+                    className={cn(
+                      'px-4 py-4 rounded-none font-black text-[10px] uppercase tracking-widest transition-all italic leading-none flex items-center gap-3 border-l',
+                      showPreview
+                        ? theme === 'dark'
+                          ? 'bg-indigo-600 text-white border-indigo-500'
+                          : 'bg-indigo-600 text-white border-indigo-500'
+                        : theme === 'dark'
+                          ? 'bg-white/5 text-gray-400 hover:text-indigo-400 border-white/5'
+                          : 'bg-white border-gray-100 text-gray-400 hover:text-indigo-600'
+                    )}
+                    title="Toggle preview"
+                  >
+                    <Eye size={16} />
+                  </button>
+                )}
               </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Preview Panel ─────────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {showPreview && previewToken && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className={cn(
+              'border rounded-none overflow-hidden',
+              theme === 'dark' ? 'border-white/10 bg-[#0a0a0a]' : 'border-gray-200 bg-white'
+            )}
+          >
+            <div className={cn(
+              'flex items-center justify-between px-6 py-3 border-b',
+              theme === 'dark' ? 'border-white/10 bg-white/[0.02]' : 'border-gray-100 bg-gray-50'
+            )}>
+              <div className="flex items-center gap-3">
+                <Eye size={14} className="text-indigo-500" />
+                <span className="text-[9px] font-black uppercase tracking-widest text-gray-400 italic">
+                  Live Preview
+                </span>
+                <span className="text-[8px] font-bold text-emerald-500 uppercase tracking-widest flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Active
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={async () => {
+                    setPreviewLoading(true)
+                    try {
+                      const res = await api.post(`/${resolvedSlug}/${resolvedId}/preview-token`)
+                      setPreviewToken(res.data.data?.token || null)
+                    } catch { /* ignore */ }
+                    setPreviewLoading(false)
+                  }}
+                  className={cn(
+                    'p-2 rounded-none transition-all',
+                    theme === 'dark' ? 'hover:bg-white/5 text-gray-500' : 'hover:bg-gray-100 text-gray-400'
+                  )}
+                  title="Refresh preview token"
+                >
+                  <RefreshCw size={12} className={previewLoading ? 'animate-spin' : ''} />
+                </button>
+                <button
+                  onClick={() => setShowPreview(false)}
+                  className={cn(
+                    'p-2 rounded-none transition-all',
+                    theme === 'dark' ? 'hover:bg-white/5 text-gray-500' : 'hover:bg-gray-100 text-gray-400'
+                  )}
+                >
+                  <Minimize2 size={12} />
+                </button>
+              </div>
+            </div>
+            <div className="relative" style={{ height: '600px' }}>
+              <iframe
+                src={`${import.meta.env.VITE_STOREFRONT_URL || 'http://localhost:5173'}?preview=true&token=${previewToken}&collection=${resolvedSlug}&id=${resolvedId}`}
+                className="w-full h-full border-0"
+                title="Content Preview"
+                sandbox="allow-same-origin allow-scripts allow-forms"
+              />
             </div>
           </motion.div>
         )}
@@ -414,28 +611,67 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
                 </div>
 
                 {!isTranslationMode ? (
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold text-gray-400">Active Language:</span>
-                    <select
-                      value={activeLocale}
-                      onChange={(e) => setActiveLocale(e.target.value)}
-                      className={cn(
-                        'bg-black border border-white/10 px-3 py-1.5 text-xs font-bold focus:border-purple-500 outline-none',
-                        theme === 'dark' ? 'bg-black text-white border-white/10' : 'bg-gray-50 border-gray-200'
-                      )}
-                    >
-                      {[
-                        { code: 'en', label: 'English (US)' },
-                        { code: 'es', label: 'Spanish (ES)' },
-                        { code: 'fr', label: 'French (FR)' },
-                        { code: 'de', label: 'German (DE)' },
-                        { code: 'ja', label: 'Japanese (JP)' },
-                      ].map((loc) => (
-                        <option key={loc.code} value={loc.code}>
-                          {loc.label}
-                        </option>
-                      ))}
-                    </select>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-bold text-gray-400">Active Language:</span>
+                      <select
+                        value={activeLocale}
+                        onChange={(e) => setActiveLocale(e.target.value)}
+                        className={cn(
+                          'bg-black border border-white/10 px-3 py-1.5 text-xs font-bold focus:border-purple-500 outline-none',
+                          theme === 'dark' ? 'bg-black text-white border-white/10' : 'bg-gray-50 border-gray-200'
+                        )}
+                      >
+                        {[
+                          { code: 'en', label: 'English (US)' },
+                          { code: 'es', label: 'Spanish (ES)' },
+                          { code: 'fr', label: 'French (FR)' },
+                          { code: 'de', label: 'German (DE)' },
+                          { code: 'ja', label: 'Japanese (JP)' },
+                        ].map((loc) => (
+                          <option key={loc.code} value={loc.code}>
+                            {loc.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {/* i18n Translation Progress */}
+                    {activeLocale !== 'en' && data && (
+                      <div className="flex items-center gap-2">
+                        {(() => {
+                          const localizedFields = fields.filter((f: any) => f.localized)
+                          const i18nData = (data as { i18n?: Record<string, unknown> } | null)?.i18n?.[activeLocale] || {}
+                          const translatedCount = localizedFields.filter(
+                            (f: any) => i18nData[f.name] !== undefined && i18nData[f.name] !== null && i18nData[f.name] !== ''
+                          ).length
+                          const pct = localizedFields.length > 0
+                            ? Math.round((translatedCount / localizedFields.length) * 100)
+                            : 0
+                          return (
+                            <>
+                              <div className="w-20 h-1.5 bg-white/5 border border-white/5 rounded-none overflow-hidden">
+                                <div
+                                  className={cn(
+                                    'h-full transition-all duration-500',
+                                    pct === 100 ? 'bg-emerald-500' : pct > 50 ? 'bg-indigo-500' : 'bg-amber-500'
+                                  )}
+                                  style={{ width: `${pct}%` }}
+                                />
+                              </div>
+                              <span className={cn(
+                                'text-[8px] font-black tracking-widest italic',
+                                pct === 100 ? 'text-emerald-400' : 'text-gray-500'
+                              )}>
+                                {pct}%
+                              </span>
+                              <span className="text-[8px] text-gray-600 uppercase tracking-widest">
+                                {translatedCount}/{localizedFields.length}
+                              </span>
+                            </>
+                          )
+                        })()}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="flex flex-wrap items-center gap-4">
@@ -720,23 +956,36 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={() => setSelectedVersion(null)}
-                  className="w-8 h-8 flex items-center justify-center bg-gray-50 hover:bg-gray-100 dark:bg-white/5 dark:hover:bg-white/10 rounded-none transition-colors"
-                >
-                  <Minimize2 size={14} className="text-gray-400" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setVersionPreviewMode(!versionPreviewMode)}
+                    className={cn(
+                      'px-3 py-1.5 text-[8px] font-black uppercase tracking-widest italic border rounded-none transition-all',
+                      versionPreviewMode
+                        ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-400'
+                        : 'bg-white/5 border-white/10 text-gray-500 hover:text-white'
+                    )}
+                  >
+                    {versionPreviewMode ? 'JSON View' : 'Preview'}
+                  </button>
+                  <button
+                    onClick={() => setSelectedVersion(null)}
+                    className="w-8 h-8 flex items-center justify-center bg-gray-50 hover:bg-gray-100 dark:bg-white/5 dark:hover:bg-white/10 rounded-none transition-colors"
+                  >
+                    <Minimize2 size={14} className="text-gray-400" />
+                  </button>
+                </div>
               </div>
 
               <div className="p-8 overflow-y-auto space-y-6 custom-scrollbar flex-1">
-                <div className="flex flex-col gap-2">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                    Review and compare revision values against the current draft.
-                  </p>
-                  <p className="text-[8px] font-bold uppercase text-amber-500 tracking-widest leading-relaxed">
-                    Check the fields you wish to selectively roll back. Unchecked fields will remain untouched.
-                  </p>
-                </div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                  Review and compare revision values against the current draft.
+                </p>
+                <p className="text-[8px] font-bold uppercase text-amber-500 tracking-widest leading-relaxed">
+                  {versionPreviewMode
+                    ? 'Field values shown in preview mode. Switch to JSON view for raw data.'
+                    : 'Check the fields you wish to selectively roll back. Unchecked fields will remain untouched.'}
+                </p>
 
                 <div className="space-y-4">
                   {fields.map((field) => {
@@ -744,6 +993,46 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
                     const revisionVal = selectedVersion.snapshot?.[field.name]
                     const isDifferent = JSON.stringify(currentVal) !== JSON.stringify(revisionVal)
                     const isChecked = selectedFieldsToRollback.includes(field.name)
+
+                    const renderFieldValue = (val: any, side: 'current' | 'revision') => {
+                      const colorClass = side === 'current' ? 'text-red-300 border-red-500/20 bg-red-500/5' : 'text-emerald-300 border-emerald-500/20 bg-emerald-500/5'
+                      if (versionPreviewMode) {
+                        if (field.type === 'media' || (field.type as string) === 'image') {
+                          const url = typeof val === 'object' ? val?.url : val
+                          return url ? (
+                            <div className="p-2">
+                              <img src={url} alt="" className="max-h-24 object-contain border border-white/10 rounded-none" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
+                            </div>
+                          ) : <span className="text-gray-500 italic">—</span>
+                        }
+                        if (field.type === 'richtext') {
+                          return (
+                            <div className="p-3 text-[11px] leading-relaxed [&>h1]:text-lg [&>h2]:text-base [&>h3]:text-sm [&>p]:mb-2 [&>ul]:list-disc [&>ul]:pl-4" dangerouslySetInnerHTML={{ __html: val || '—' }} />
+                          )
+                        }
+                        if (field.type === 'boolean' || field.type === 'checkbox') {
+                          return <span className={val ? 'text-emerald-400' : 'text-red-400'}>{val ? '✓ True' : '✗ False'}</span>
+                        }
+                        if (field.type === 'date') {
+                          return <span>{val ? new Date(val).toLocaleString() : '—'}</span>
+                        }
+                        if (field.type === 'number') {
+                          return <span className="text-[14px] font-black tabular-nums">{val ?? '—'}</span>
+                        }
+                        if (typeof val === 'string' && val.length > 0) {
+                          return <span className="break-words">{val}</span>
+                        }
+                        if (val === null || val === undefined) {
+                          return <span className="text-gray-500 italic">—</span>
+                        }
+                      }
+                      // Default JSON view for both preview mode complex types and non-preview mode
+                      return (
+                        <pre className="whitespace-pre-wrap break-all text-[10px] font-mono leading-relaxed">
+                          {typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val ?? '—')}
+                        </pre>
+                      )
+                    }
 
                     return (
                       <div
@@ -761,7 +1050,7 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
                       >
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-3">
-                            {isDifferent && (
+                            {isDifferent && !versionPreviewMode && (
                               <input
                                 type="checkbox"
                                 checked={isChecked}
@@ -793,22 +1082,18 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
                         {isDifferent ? (
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[10px] font-mono">
                             <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-none space-y-1">
-                              <span className="text-[7px] font-black uppercase tracking-wider text-red-400 block">Current Draft Value:</span>
-                              <pre className="whitespace-pre-wrap break-all text-red-300">
-                                {typeof currentVal === 'object' ? JSON.stringify(currentVal, null, 2) : String(currentVal ?? '—')}
-                              </pre>
+                              <span className="text-[7px] font-black uppercase tracking-wider text-red-400 block">Current:</span>
+                              {renderFieldValue(currentVal, 'current')}
                             </div>
                             <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-none space-y-1">
-                              <span className="text-[7px] font-black uppercase tracking-wider text-emerald-400 block">Revision Value:</span>
-                              <pre className="whitespace-pre-wrap break-all text-emerald-300">
-                                {typeof revisionVal === 'object' ? JSON.stringify(revisionVal, null, 2) : String(revisionVal ?? '—')}
-                              </pre>
+                              <span className="text-[7px] font-black uppercase tracking-wider text-emerald-400 block">Revision:</span>
+                              {renderFieldValue(revisionVal, 'revision')}
                             </div>
                           </div>
                         ) : (
-                          <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest block pl-7">
-                            Value: {typeof revisionVal === 'object' ? '[Object]' : String(revisionVal ?? '—')}
-                          </span>
+                          <div className="p-3 border border-white/5 rounded-none">
+                            {renderFieldValue(revisionVal, 'revision')}
+                          </div>
                         )}
                       </div>
                     )
@@ -880,6 +1165,23 @@ const CollectionDetail: React.FC<{ isGlobal?: boolean }> = ({ isGlobal: initialI
           </div>
         )}
       </AnimatePresence>
+      {showVisualEditor && (
+        <div className="fixed inset-0 z-[1000] bg-black">
+          <SpatialEditor
+            id={isGlobal ? (resolvedSlug.split('/').pop() || '') : resolvedId}
+            isGlobal={isGlobal}
+            focusedSectionId={focusedSectionId}
+            onClose={() => {
+              if (isPagesPath) {
+                navigate(-1)
+              } else {
+                setShowVisualEditor(false)
+                fetchSchemaAndData()
+              }
+            }}
+          />
+        </div>
+      )}
     </div>
   )
 }

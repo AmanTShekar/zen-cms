@@ -1,4 +1,4 @@
-import { CollectionConfig, FieldConfig, DatabaseAdapter, FindOptions, BaseOptions, AuditLogData, VersionData, WebhookDeliveryData } from '@zenithcms/types'
+import { CollectionConfig, FieldConfig, DatabaseAdapter, FindOptions, BaseOptions, AuditLogData, VersionData, WebhookDeliveryData, WebhookDeliveryRecord } from '@zenithcms/types'
 import NodeCache from 'node-cache'
 import pino from 'pino'
 
@@ -51,10 +51,16 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       documentId: text('document_id'),
       userId: text('user_id'),
       userEmail: text('user_email'),
+      userName: text('user_name'),
       action: text('action').notNull(),
       changes: jsonb('changes'),
       ip: text('ip'),
       userAgent: text('user_agent'),
+      status: text('status'),
+      resource: text('resource'),
+      siteId: text('site_id'),
+      hash: text('hash'),
+      previousHash: text('previous_hash'),
     }),
     version: pgTable('versions', {
       id: uuid('id').defaultRandom().primaryKey(),
@@ -112,6 +118,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     }),
     webhookDelivery: pgTable('z_webhook_deliveries', {
       id: uuid('id').defaultRandom().primaryKey(),
+      webhookId: text('webhook_id'),
       timestamp: timestamp('timestamp').defaultNow().notNull(),
       collectionSlug: text('collection_slug'),
       event: text('event').notNull(),
@@ -152,6 +159,68 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       collectionName: text('collection_name').notNull(),
       documentId: text('document_id').notNull(),
       lastActive: bigint('last_active', { mode: 'number' }).notNull(),
+    }),
+    sites: pgTable('z_sites', {
+      id: uuid('id').defaultRandom().primaryKey(),
+      name: text('name').notNull(),
+      slug: text('slug').unique().notNull(),
+      icon: text('icon').default('🌐'),
+      description: text('description'),
+      ownerId: text('owner_id').notNull(),
+      workspaceId: text('workspace_id'),
+      members: jsonb('members').default([]),
+      collections: jsonb('collections').default([]),
+      globals: jsonb('globals').default([]),
+      billingEnabled: boolean('billing_enabled').default(false),
+      stripePublicKey: text('stripe_public_key'),
+      stripeSecretKey: text('stripe_secret_key'),
+      stripeWebhookSecret: text('stripe_webhook_secret'),
+      currency: text('currency').default('USD'),
+      pricingPlans: jsonb('pricing_plans').default([]),
+      createdAt: timestamp('created_at').defaultNow().notNull(),
+      updatedAt: timestamp('updated_at').defaultNow().notNull(),
+    }),
+    workspaces: pgTable('z_workspaces', {
+      id: uuid('id').defaultRandom().primaryKey(),
+      name: text('name').notNull(),
+      slug: text('slug').unique().notNull(),
+      ownerId: text('owner_id').notNull(),
+      members: jsonb('members').default([]),
+      createdAt: timestamp('created_at').defaultNow().notNull(),
+      updatedAt: timestamp('updated_at').defaultNow().notNull(),
+    }),
+    locks: pgTable('z_locks', {
+      id: uuid('id').defaultRandom().primaryKey(),
+      collectionName: text('collection_name').notNull(),
+      documentId: text('document_id').notNull(),
+      siteId: text('site_id'),
+      lockedBy: text('locked_by').notNull(),
+      lockedByEmail: text('locked_by_email').notNull(),
+      lockedAt: timestamp('locked_at').defaultNow().notNull(),
+      lockExpiresAt: timestamp('lock_expires_at').notNull(),
+    }),
+    webhookConfigs: pgTable('z_webhook_configs', {
+      id: uuid('id').defaultRandom().primaryKey(),
+      url: text('url').notNull(),
+      secret: text('secret'),
+      events: jsonb('events').notNull().default([]),
+      enabled: boolean('enabled').default(true).notNull(),
+      createdAt: timestamp('created_at').defaultNow().notNull(),
+      updatedAt: timestamp('updated_at').defaultNow().notNull(),
+    }),
+    plugins: pgTable('z_plugins', {
+      id: text('id').primaryKey(),
+      name: text('name').notNull(),
+      version: text('version').default('1.0.0'),
+      description: text('description').default(''),
+      author: text('author').default(''),
+      homepage: text('homepage').default(''),
+      packageName: text('package_name').default(''),
+      configSchema: jsonb('config_schema').default({}),
+      config: jsonb('config').default({}),
+      enabled: boolean('enabled').default(true).notNull(),
+      installedAt: timestamp('installed_at').defaultNow().notNull(),
+      updatedAt: timestamp('updated_at').defaultNow().notNull(),
     }),
   }
 
@@ -259,12 +328,21 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
           document_id TEXT,
           user_id TEXT,
           user_email TEXT,
+          user_name TEXT,
           action TEXT NOT NULL,
           changes JSONB,
           ip TEXT,
-          user_agent TEXT
+          user_agent TEXT,
+          status TEXT,
+          resource TEXT,
+          site_id TEXT,
+          hash TEXT,
+          previous_hash TEXT
         );
         CREATE INDEX IF NOT EXISTS idx_audit_collection ON audit_logs(collection_name);
+        CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_logs(timestamp);
+        CREATE INDEX IF NOT EXISTS idx_audit_site ON audit_logs(site_id);
+        CREATE INDEX IF NOT EXISTS idx_audit_action ON audit_logs(action);
       `
 
       const createVersionTable = sql`
@@ -359,6 +437,36 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_event ON z_webhook_deliveries(event);
       `
 
+      const createWebhookConfigsTable = sql`
+        CREATE TABLE IF NOT EXISTS z_webhook_configs (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          url TEXT NOT NULL,
+          secret TEXT,
+          events JSONB NOT NULL DEFAULT '[]',
+          enabled BOOLEAN DEFAULT true NOT NULL,
+          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_webhook_configs_url ON z_webhook_configs(url);
+      `
+
+      const createPluginsTable = sql`
+        CREATE TABLE IF NOT EXISTS z_plugins (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          version TEXT DEFAULT '1.0.0',
+          description TEXT DEFAULT '',
+          author TEXT DEFAULT '',
+          homepage TEXT DEFAULT '',
+          package_name TEXT DEFAULT '',
+          config_schema JSONB DEFAULT '{}'::jsonb,
+          config JSONB DEFAULT '{}'::jsonb,
+          enabled BOOLEAN DEFAULT true NOT NULL,
+          installed_at TIMESTAMP DEFAULT NOW() NOT NULL,
+          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+        );
+      `
+
       const createSettingsTable = sql`
         CREATE TABLE IF NOT EXISTS z_settings (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -384,6 +492,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
           icon TEXT DEFAULT '🌐',
           description TEXT,
           owner_id TEXT NOT NULL,
+          workspace_id TEXT,
           members JSONB DEFAULT '[]'::jsonb,
           collections JSONB DEFAULT '[]'::jsonb,
           globals JSONB DEFAULT '[]'::jsonb,
@@ -397,6 +506,25 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
           updated_at TIMESTAMP DEFAULT NOW() NOT NULL
         );
         CREATE INDEX IF NOT EXISTS idx_sites_slug ON z_sites(slug);
+        CREATE INDEX IF NOT EXISTS idx_sites_workspace ON z_sites(workspace_id);
+      `
+
+      const createWorkspacesTable = sql`
+        CREATE TABLE IF NOT EXISTS z_workspaces (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          name TEXT NOT NULL,
+          slug TEXT UNIQUE NOT NULL,
+          owner_id TEXT NOT NULL,
+          members JSONB DEFAULT '[]'::jsonb,
+          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_workspaces_slug ON z_workspaces(slug);
+      `
+
+      const migrateSitesWorkspaceId = sql`
+        ALTER TABLE z_sites ADD COLUMN IF NOT EXISTS workspace_id TEXT;
+        CREATE INDEX IF NOT EXISTS idx_sites_workspace ON z_sites(workspace_id);
       `
 
       const createUserPreferencesTable = sql`
@@ -480,6 +608,20 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         );
       `
 
+      const createLocksTable = sql`
+        CREATE TABLE IF NOT EXISTS z_locks (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          collection_name TEXT NOT NULL,
+          document_id TEXT NOT NULL,
+          site_id TEXT,
+          locked_by TEXT NOT NULL,
+          locked_by_email TEXT NOT NULL,
+          locked_at TIMESTAMP DEFAULT NOW() NOT NULL,
+          lock_expires_at TIMESTAMP NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_locks_doc ON z_locks(collection_name, document_id);
+      `
+
       await db.execute(createAuditLogTable)
       await db.execute(createVersionTable)
       await db.execute(createFlowsTable)
@@ -488,14 +630,19 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       await db.execute(createApiKeysTable)
       await db.execute(createMigrationsTable)
       await db.execute(createWebhookDeliveriesTable)
+      await db.execute(createWebhookConfigsTable)
+      await db.execute(createPluginsTable)
       await db.execute(createSettingsTable)
       await db.execute(createSitesTable)
+      await db.execute(createWorkspacesTable)
+      await db.execute(migrateSitesWorkspaceId)
       await db.execute(createUserPreferencesTable)
       await db.execute(createMembersTable)
       await db.execute(createDashboardLayoutsTable)
       await db.execute(createOnboardingStateTable)
       await db.execute(createCollectionsTable)
       await db.execute(createPresenceTable)
+      await db.execute(createLocksTable)
     } finally {
       if (acquired) {
         try {
@@ -623,8 +770,8 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       if (field.type === 'relation' && (field as any).junctionTable) {
         continue
       }
-      // Layout/presentational fields (row, ui) have no DB column
-      if (field.type === 'row' || field.type === 'ui') {
+      // Layout/presentational fields (row, ui) and virtual fields have no DB column
+      if (field.type === 'row' || field.type === 'ui' || (field as any).virtual) {
         continue
       }
       columns[field.name] = this.mapFieldToDrizzleColumn(field)
@@ -691,6 +838,10 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         if (field.type === 'relation' && (field as any).junctionTable) {
           continue
         }
+        // Layout/presentational and virtual fields have no DB column
+        if (field.type === 'row' || field.type === 'ui' || (field as any).virtual) {
+          continue
+        }
         const sqlType = this.mapFieldToSqlType(field)
         createSql += `,\n  "${field.name}" ${sqlType}`
         if ((field as any).unique) createSql += ' UNIQUE'
@@ -701,7 +852,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       await db.execute(sql.raw(createSql))
 
       const result = await db.execute(sql`
-        SELECT column_name FROM information_schema.columns 
+        SELECT column_name FROM information_schema.columns
         WHERE table_name = ${config.slug};
       `)
 
@@ -709,6 +860,9 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
 
       for (const field of config.fields) {
         if (field.type === 'relation' && (field as any).junctionTable) {
+          continue
+        }
+        if (field.type === 'row' || field.type === 'ui' || (field as any).virtual) {
           continue
         }
         if (!existingCols.includes(field.name)) {
@@ -724,6 +878,9 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
 
       for (const field of config.fields) {
         if (field.type === 'relation' && (field as any).junctionTable) {
+          continue
+        }
+        if (field.type === 'row' || field.type === 'ui' || (field as any).virtual) {
           continue
         }
         if (
@@ -844,6 +1001,11 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     if (collection === 'z_presence') return this.systemTables.presence
     if (collection === 'audit_logs' || collection === 'z_audit_logs') return this.systemTables.auditLog
     if (collection === 'versions' || collection === 'z_versions') return this.systemTables.version
+    if (collection === 'z_sites' || collection === 'sites') return this.systemTables.sites
+    if (collection === 'z_workspaces' || collection === 'workspaces') return this.systemTables.workspaces
+    if (collection === 'z_locks') return this.systemTables.locks
+    if (collection === 'z_webhook_configs') return this.systemTables.webhookConfigs
+    if (collection === 'z_plugins') return this.systemTables.plugins
     const table = this.tables[collection]
     if (!table) throw new Error(`Collection "${collection}" not registered in PostgreSQL`)
     return table
@@ -862,6 +1024,16 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
   private buildWhereClause(table: any, query: Record<string, any>) {
     const ast = QueryASTParser.parse(query)
     return this.mapAstToDrizzle(table, ast)
+  }
+
+  /** Inject tenant scoping into the WHERE clause to prevent cross-tenant data access */
+  private tenantScope(table: any, where: any, options?: BaseOptions): any {
+    const siteId = options?.siteId || options?.tenantId
+    if (siteId && table.siteId) {
+      const siteClause = eq(table.siteId, siteId)
+      return where ? and(siteClause, where) : siteClause
+    }
+    return where
   }
 
   private mapAstToDrizzle(table: any, node: QueryNode): any {
@@ -1204,7 +1376,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
           const selectCols = ['source_id', 'target_id', 'position', ...pivotFields.map((f: any) => `"${f.name}"`)]
           try {
             const linksResult = await this.db.execute(
-              sql.raw(`SELECT ${selectCols.join(', ')} FROM "${relField.junctionTable}" WHERE source_id = ANY(ARRAY[${sourceIds.map((id: any) => `'${id}'`).join(', ')}]) ORDER BY "position" ASC NULLS LAST`)
+              sql`SELECT ${sql.raw(selectCols.join(', '))} FROM ${sql.raw(`"${relField.junctionTable}"`)} WHERE source_id = ANY(${sourceIds}) ORDER BY "position" ASC NULLS LAST`
             )
             for (const link of linksResult.rows || [] as any[]) {
               linkMap.set(`${link.source_id}_${link.target_id}`, link)
@@ -1276,12 +1448,12 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         const isPolymorphic = Array.isArray(relationTo)
         try {
           // Load junction rows ordered by position (for M2M ordering)
-          const rowsResult = await this.db.execute(sql.raw(`
+          const rowsResult = await this.db.execute(sql`
             SELECT source_id, target_id, relation_to, "position"
-            FROM "${jTable}"
-            WHERE source_id = ANY(ARRAY[${recordIds.map(id => `'${id}'`).join(', ')}])
+            FROM ${sql.raw(`"${jTable}"`)}
+            WHERE source_id = ANY(${recordIds})
             ORDER BY "position" ASC NULLS LAST
-          `))
+          `)
           const rows = rowsResult.rows || []
 
           // Build source → sorted entries map (preserving position order)
@@ -1324,7 +1496,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         const relationTo = (field as any).relationTo
         const isPolymorphic = Array.isArray(relationTo)
 
-        await executor.execute(sql.raw(`DELETE FROM "${jTable}" WHERE source_id = '${id}'`))
+        await executor.execute(sql`DELETE FROM ${sql.raw(`"${jTable}"`)} WHERE source_id = ${id}`)
 
         if (Array.isArray(relationVal)) {
           const pivotFields = (field as any).pivotFields || []
@@ -1352,32 +1524,31 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
             if (!targetId) continue
 
             const cols = ['source_id', 'target_id', '"position"']
-            const vals = [`'${id}'`, `'${targetId}'`, String(positionCounter++)]
+            const vals: any[] = [id, targetId, positionCounter++]
 
             if (isPolymorphic && relationTo.length > 0) {
               const rt = typeof item === 'object' && 'relationTo' in item
                 ? item.relationTo
                 : (Array.isArray(relationTo) ? relationTo[0] : relationTo)
               cols.push('"relation_to"')
-              vals.push(`'${String(rt).replace(/'/g, "''")}'`)
+              vals.push(rt)
             }
 
             for (const pf of pivotFields) {
               const val = pivotData[pf.name]
               if (val !== undefined) {
                 cols.push(`"${pf.name}"`)
-                if (pf.type === 'number' || pf.type === 'boolean') {
-                  vals.push(String(val))
-                } else {
-                  vals.push(`'${String(val).replace(/'/g, "''")}'`)
-                }
+                vals.push(val)
               }
             }
 
-            await executor.execute(sql.raw(`
-              INSERT INTO "${jTable}" (${cols.join(', ')})
-              VALUES (${vals.join(', ')})
-            `))
+            const fragments: any[] = [sql`INSERT INTO ${sql.raw(`"${jTable}"`)} (${sql.raw(cols.join(', '))}) VALUES (`]
+            vals.forEach((val, i) => {
+              if (i > 0) fragments.push(sql`, `)
+              fragments.push(sql`${val}`)
+            })
+            fragments.push(sql`)`)
+            await executor.execute(sql`${fragments}`)
           }
         }
       }
@@ -1547,7 +1718,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     if (config) {
       for (const field of config.fields) {
         if (field.type === 'relation' && (field as any).junctionTable) {
-          await executor.execute(sql.raw(`DELETE FROM "${(field as any).junctionTable}" WHERE source_id = '${id}'`))
+          await executor.execute(sql`DELETE FROM ${sql.raw(`"${(field as any).junctionTable}"`)} WHERE source_id = ${id}`)
         }
       }
     }
@@ -1588,7 +1759,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       if (config) {
         for (const field of config.fields) {
           if (field.type === 'relation' && (field as any).junctionTable) {
-            await executor.execute(sql.raw(`DELETE FROM "${(field as any).junctionTable}" WHERE source_id = ANY(ARRAY[${ids.map(i => `'${i}'`).join(', ')}])`))
+            await executor.execute(sql`DELETE FROM ${sql.raw(`"${(field as any).junctionTable}"`)} WHERE source_id = ANY(${ids})`)
           }
         }
       }
@@ -1637,10 +1808,16 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       documentId: data.documentId,
       userId: data.userId,
       userEmail: data.userEmail,
+      userName: data.userName,
       action: data.action,
       changes: data.changes,
       ip: data.ip,
       userAgent: data.userAgent,
+      status: data.status,
+      resource: data.resource,
+      siteId: data.siteId,
+      hash: data.hash,
+      previousHash: data.previousHash,
     })
   }
 
@@ -1677,6 +1854,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
   async createWebhookDelivery(data: WebhookDeliveryData, options?: BaseOptions): Promise<void> {
     const client = this.getDbClient(options)
     await client.insert(this.systemTables.webhookDelivery).values({
+      webhookId: data.webhookId,
       collectionSlug: data.collectionSlug,
       event: data.event,
       url: data.url,
@@ -1684,6 +1862,28 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       success: data.success,
       responseStatus: data.responseStatus,
     })
+  }
+
+  async getWebhookDeliveries(webhookId: string, limit = 50): Promise<WebhookDeliveryRecord[]> {
+    const client = this.getDbClient()
+    const table = this.systemTables.webhookDelivery
+    const docs = await client
+      .select()
+      .from(table)
+      .where(eq(table.webhookId, webhookId))
+      .orderBy(desc(table.timestamp))
+      .limit(limit)
+    return docs.map((d: any) => ({
+      id: d.id,
+      webhookId: d.webhookId,
+      collectionSlug: d.collectionSlug,
+      event: d.event,
+      url: d.url,
+      payload: d.payload,
+      success: d.success,
+      responseStatus: d.responseStatus,
+      timestamp: d.timestamp,
+    }))
   }
 
   async search<T = unknown>(

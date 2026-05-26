@@ -1,4 +1,43 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react'
+import type { ReactNode } from 'react'
+
+// ── Global error boundary — prevents white-screen crashes ─────────────────────
+class ErrorBoundary extends React.Component<
+  { children: ReactNode; fallback?: ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: ReactNode; fallback?: ReactNode }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback ?? (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-6 p-8">
+          <div className="text-[80px] leading-none select-none text-white/5 font-black italic font-mono">
+            500
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.5em] text-red-500/60 italic">
+            Unexpected Error
+          </p>
+          <p className="text-[9px] text-gray-600 uppercase tracking-widest font-bold">
+            An unexpected error occurred. Please refresh the page or contact support.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-6 py-2 border border-white/10 text-[9px] font-black uppercase tracking-widest italic hover:border-red-500/30 hover:text-red-400 transition-all"
+          >
+            Reload
+          </button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useAuthStore } from './store/authStore'
@@ -16,6 +55,7 @@ import { ThemeProvider } from './context/ThemeContext'
 // ── Code-split page bundles ────────────────────────────────────────────────────
 const CollectionsPage = lazy(() => import('./pages/CollectionsPage'))
 const CollectionDetail = lazy(() => import('./pages/CollectionDetail'))
+const CollectionHooksPage = lazy(() => import('./pages/CollectionHooksPage'))
 const AuditLogPage = lazy(() => import('./pages/AuditLogPage'))
 const MediaLibrary = lazy(() => import('./pages/MediaLibrary'))
 const DemoFeatures = lazy(() => import('./pages/DemoFeatures'))
@@ -90,10 +130,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   // Ensure active site workspace is selected if onboarding is done
+  const activeWorkspaceId = localStorage.getItem('activeWorkspaceId')
   const activeSiteId = localStorage.getItem('activeSiteId')
   if (
     onboardingDone &&
-    !activeSiteId &&
+    (!activeWorkspaceId || !activeSiteId) &&
     location.pathname !== '/sites' &&
     location.pathname !== '/setup'
   ) {
@@ -155,9 +196,11 @@ const App: React.FC = () => {
               path="/collections/pages/:id"
               element={
                 <ProtectedRoute>
-                  <Suspense fallback={<PageLoader />}>
-                    <SpatialEditor />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<PageLoader />}>
+                      <SpatialEditor />
+                    </Suspense>
+                  </ErrorBoundary>
                 </ProtectedRoute>
               }
             />
@@ -166,18 +209,20 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <Suspense fallback={<PageLoader />}>
-                    <SpatialEditor />
+                    <CollectionDetail />
                   </Suspense>
                 </ProtectedRoute>
               }
             />
             <Route
-              path="/globals/landing-page"
+              path="/globals/:slug"
               element={
                 <ProtectedRoute>
-                  <Suspense fallback={<PageLoader />}>
-                    <SpatialEditor isGlobal />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<PageLoader />}>
+                      <SpatialEditor isGlobal />
+                    </Suspense>
+                  </ErrorBoundary>
                 </ProtectedRoute>
               }
             />
@@ -187,32 +232,35 @@ const App: React.FC = () => {
               path="/*"
               element={
                 <ProtectedRoute>
-                  <DashboardLayout>
-                    <Suspense fallback={<PageLoader />}>
-                      <Routes>
-                        <Route path="/" element={<DashboardBuilder />} />
-                        <Route path="/collections" element={<CollectionsPage />} />
-                        <Route path="/collections/:slug" element={<CollectionList />} />
-                        <Route path="/collections/:slug/:id" element={<CollectionDetail />} />
-                        <Route path="/globals/:slug" element={<CollectionDetail isGlobal />} />
-                        <Route path="/globals/:slug/:id" element={<CollectionDetail isGlobal />} />
-                        <Route path="/audit-log" element={<AuditLogPage />} />
-                        <Route path="/media" element={<MediaLibrary />} />
-                        <Route path="/playground" element={<DemoFeatures />} />
-                        <Route
-                          path="/members"
-                          element={<Navigate to="/collections/members" replace />}
-                        />
-                        <Route path="/automations" element={<FlowBuilderPage />} />
-                        <Route path="/templates" element={<TemplatesPage />} />
-                        <Route path="/plugins" element={<PluginsPage />} />
-                        <Route path="/settings" element={<SettingsPage />} />
-                        <Route path="/ai-architect" element={<AIWriterPage />} />
-                        <Route path="/system" element={<SystemHealthPage />} />
-                        <Route path="*" element={<Navigate to="/" replace />} />
-                      </Routes>
-                    </Suspense>
-                  </DashboardLayout>
+                  <ErrorBoundary>
+                    <DashboardLayout>
+                      <Suspense fallback={<PageLoader />}>
+                        <Routes>
+                          <Route path="/" element={<DashboardBuilder />} />
+                          <Route path="/collections" element={<CollectionsPage />} />
+                          <Route path="/collections/:slug" element={<CollectionList />} />
+                          <Route path="/collections/:slug/hooks" element={<CollectionHooksPage />} />
+                          <Route path="/collections/:slug/:id" element={<CollectionDetail />} />
+                          <Route path="/globals/:slug" element={<CollectionDetail isGlobal />} />
+                          <Route path="/globals/:slug/:id" element={<CollectionDetail isGlobal />} />
+                          <Route path="/audit-log" element={<AuditLogPage />} />
+                          <Route path="/media" element={<MediaLibrary />} />
+                          <Route path="/playground" element={<DemoFeatures />} />
+                          <Route
+                            path="/members"
+                            element={<Navigate to="/collections/members" replace />}
+                          />
+                          <Route path="/automations" element={<FlowBuilderPage />} />
+                          <Route path="/templates" element={<TemplatesPage />} />
+                          <Route path="/plugins" element={<PluginsPage />} />
+                          <Route path="/settings" element={<SettingsPage />} />
+                          <Route path="/ai-architect" element={<AIWriterPage />} />
+                          <Route path="/system" element={<SystemHealthPage />} />
+                          <Route path="*" element={<Navigate to="/" replace />} />
+                        </Routes>
+                      </Suspense>
+                    </DashboardLayout>
+                  </ErrorBoundary>
                 </ProtectedRoute>
               }
             />

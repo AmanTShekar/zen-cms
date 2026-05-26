@@ -1,6 +1,6 @@
 import React from 'react'
 import { cn } from '../../lib/utils'
-import type { FieldConfig } from '@zenithcms/types'
+import type { FieldConfig, CodeFieldConfig } from '@zenithcms/types'
 
 interface Props {
   field: FieldConfig
@@ -10,12 +10,13 @@ interface Props {
 }
 
 const CodeField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
+  const cf = field as CodeFieldConfig
   return (
     <div className="relative w-full">
       <textarea
         value={(value as string) || ''}
         onChange={(e) => onChange(e.target.value)}
-        maxLength={(field as any).maxLength}
+        maxLength={cf.maxLength}
         rows={10}
         disabled={disabled}
         spellCheck={false}
@@ -24,17 +25,17 @@ const CodeField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
           'focus:border-purple-500/50 outline-none disabled:opacity-60 disabled:cursor-not-allowed',
           'text-[#e6edf3] placeholder:text-gray-600'
         )}
-        placeholder={`Enter ${(field as any).language || 'code'}...`}
+        placeholder={`Enter ${cf.language || 'code'}...`}
       />
       <div className="absolute top-2 right-3 flex items-center gap-2">
-        {(field as any).language && (
+        {cf.language && (
           <span className="text-[9px] font-bold text-purple-400/60 font-mono uppercase">
-            {(field as any).language}
+            {cf.language}
           </span>
         )}
-        {(field as any).maxLength && (
+        {cf.maxLength && (
           <span className="text-[9px] font-bold text-gray-500 font-mono">
-            {((value as string) || '').length}/{(field as any).maxLength}
+            {((value as string) || '').length}/{cf.maxLength}
           </span>
         )}
       </div>

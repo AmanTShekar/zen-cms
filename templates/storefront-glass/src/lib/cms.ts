@@ -13,7 +13,7 @@ import { createClient, type ZenithClient as ZenithClientType } from '@zenithcms/
  *   VITE_CMS_SITE_ID — Site ID from Zenith Admin → Settings → Sites
  */
 
-const CMS_URL = import.meta.env.VITE_CMS_URL as string || 'http://localhost:3000'
+const CMS_URL = import.meta.env.VITE_CMS_URL as string || ''
 const CMS_API_KEY = import.meta.env.VITE_CMS_API_KEY as string || ''
 const CMS_SITE_ID = import.meta.env.VITE_CMS_SITE_ID as string || ''
 

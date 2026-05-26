@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import {
@@ -22,20 +21,18 @@ import { useTheme } from '../context/ThemeContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import Logo from '../components/Logo'
 import { cn } from '../lib/utils'
+import { loginSchema, type LoginFormValues } from '../lib/validators'
 import api from '../lib/api'
-
-const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-})
-
-type LoginFormValues = z.infer<typeof loginSchema>
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate()
   const { login, setUser } = useAuthStore()
   const { theme, toggleTheme } = useTheme()
-  const [error, setError] = useState<{ message: string; type: 'auth' | 'network' } | null>(null)
+  const [error, setError] = useState<{
+    message: string
+    type: 'auth' | 'network'
+    data?: { attemptsLeft?: number; locked?: boolean; remainingMin?: number; maxAttempts?: number }
+  } | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [needsSetup, setNeedsSetup] = useState(false)
@@ -82,10 +79,12 @@ const LoginPage: React.FC = () => {
       if (err.code === 'ERR_NETWORK' || !err.response) {
         setError({ message: 'Kernel Offline: Connection Refused', type: 'network' })
       } else {
+        const errData = err.response?.data?.data as { attemptsLeft?: number; locked?: boolean; remainingMin?: number; maxAttempts?: number } | undefined
         setError({
           message:
-            err.response?.data?.error?.message || 'Access Denied: Invalid Username or Password',
+            err.response?.data?.message || 'Access Denied: Invalid Username or Password',
           type: 'auth',
+          data: errData,
         })
       }
     } finally {
@@ -211,24 +210,72 @@ const LoginPage: React.FC = () => {
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
                   className={cn(
-                    'border rounded-none p-4 flex items-center gap-3 mb-6 overflow-hidden transition-colors',
+                    'border rounded-none p-4 mb-6 overflow-hidden transition-colors',
                     error.type === 'network'
                       ? theme === 'dark'
                         ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
                         : 'bg-amber-50 border-amber-100 text-amber-600'
-                      : theme === 'dark'
-                        ? 'bg-red-500/10 border-red-500/20 text-red-400'
-                        : 'bg-red-50 border-red-100 text-red-600'
+                      : error.data?.locked
+                        ? theme === 'dark'
+                          ? 'bg-red-500/10 border-red-500/20 text-red-400'
+                          : 'bg-red-50 border-red-100 text-red-600'
+                        : theme === 'dark'
+                          ? 'bg-red-500/10 border-red-500/20 text-red-400'
+                          : 'bg-red-50 border-red-100 text-red-600'
                   )}
                 >
-                  {error.type === 'network' ? (
-                    <WifiOff size={14} className="shrink-0" />
-                  ) : (
-                    <AlertCircle size={14} className="shrink-0" />
+                  <div className="flex items-center gap-3">
+                    {error.type === 'network' ? (
+                      <WifiOff size={14} className="shrink-0" />
+                    ) : error.data?.locked ? (
+                      <Lock size={14} className="shrink-0" />
+                    ) : (
+                      <AlertCircle size={14} className="shrink-0" />
+                    )}
+                    <span className="text-[10px] font-bold uppercase tracking-wide">
+                      {error.message}
+                    </span>
+                  </div>
+                  {error.data?.locked && error.data.remainingMin && (
+                    <div className="mt-3 space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 h-1.5 bg-white/10 rounded-none overflow-hidden">
+                          <motion.div
+                            initial={{ width: '100%' }}
+                            animate={{ width: `${Math.max(5, (error.data.remainingMin / 15) * 100)}%` }}
+                            transition={{ duration: 1 }}
+                            className="h-full bg-current rounded-none"
+                          />
+                        </div>
+                        <span className="text-[9px] font-black tabular-nums">
+                          {error.data.remainingMin}m
+                        </span>
+                      </div>
+                      <p className="text-[8px] font-bold opacity-70 uppercase tracking-wider">
+                        Cooldown remaining
+                      </p>
+                    </div>
                   )}
-                  <span className="text-[10px] font-bold uppercase tracking-wide">
-                    {error.message}
-                  </span>
+                  {error.type === 'auth' && !error.data?.locked && error.data?.attemptsLeft !== undefined && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <div className="flex gap-1">
+                        {Array.from({ length: error.data.maxAttempts || 5 }).map((_, i) => (
+                          <div
+                            key={i}
+                            className={cn(
+                              'w-2 h-2 rounded-none transition-colors',
+                              i < (error.data?.attemptsLeft || 0)
+                                ? 'bg-current/30'
+                                : 'bg-current'
+                            )}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-[8px] font-bold opacity-70 uppercase tracking-wider">
+                        {error.data.attemptsLeft} of {error.data.maxAttempts || 5} remaining
+                      </span>
+                    </div>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>

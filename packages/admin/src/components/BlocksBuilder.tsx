@@ -8,25 +8,29 @@ import {
   Box,
   CreditCard,
   Layout,
-  Sparkles,
   Puzzle,
   Copy,
   ArrowUp,
   ArrowDown,
   Search,
   X,
-  Quote,
-  BarChart3,
+  BarChart4,
   MessageSquare,
   Zap,
-  Image as ImageIcon,
-  AlignLeft,
   Star,
+  Mail,
+  FileText,
+  Users,
+  AlertCircle,
+  Code,
+  Table,
 } from 'lucide-react'
 import { motion, AnimatePresence, Reorder } from 'framer-motion'
 import { cn } from '../lib/utils'
 
 import type { FieldConfig } from '@zenithcms/types'
+import { useBlockLibrary } from '../hooks/useBlockLibrary'
+import { UNIFIED_BLOCK_LIBRARY } from '../pages/editor/unifiedBlocks'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Block {
@@ -65,23 +69,38 @@ interface BlocksBuilderProps {
   disabled?: boolean
 }
 
-// ── Icon Map ──────────────────────────────────────────────────────────────────
-const BLOCK_ICONS: Record<string, React.ReactNode> = {
-  hero: <Sparkles size={16} />,
-  features: <Layout size={16} />,
-  pricing: <CreditCard size={16} />,
-  testimonials: <Quote size={16} />,
-  'plugin-node': <Puzzle size={16} />,
-  stats: <BarChart3 size={16} />,
-  cta: <Zap size={16} />,
-  faq: <MessageSquare size={16} />,
-  gallery: <ImageIcon size={16} />,
-  richtext: <AlignLeft size={16} />,
-  reviews: <Star size={16} />,
+// Helper to humanize names if label is missing
+const humanize = (str: string) => {
+  return str
+    .replace(/^root:/, '')
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, (s) => s.toUpperCase())
 }
 
-const getBlockIcon = (slug: string): React.ReactNode =>
-  BLOCK_ICONS[slug] ?? <Box size={16} />
+const IconMap: Record<string, React.ComponentType<any>> = {
+  Star,
+  Grid: Layout,
+  BarChart4,
+  MessageSquare,
+  Mail,
+  CreditCard,
+  Zap,
+  FileText,
+  Layout,
+  Users,
+  AlertCircle,
+  Code,
+  Table,
+  Puzzle,
+}
+
+const getBlockIcon = (slug: string): React.ReactNode => {
+  const blockDef = UNIFIED_BLOCK_LIBRARY.find((b) => b.type === slug)
+  const IconComp = blockDef ? IconMap[blockDef.iconName] : null
+  if (IconComp) return React.createElement(IconComp, { size: 16 })
+  if (slug === 'plugin-node') return <Puzzle size={16} />
+  return <Box size={16} />
+}
 
 // ── Gradient Map ──────────────────────────────────────────────────────────────
 const CATEGORY_GRADIENTS: Record<string, string> = {
@@ -93,110 +112,22 @@ const CATEGORY_GRADIENTS: Record<string, string> = {
   General: 'from-[#1a1a2e]/80 to-[#16213e]/60',
 }
 
-// ── Default Blocks ────────────────────────────────────────────────────────────
-const DEFAULT_BLOCKS: BlockDefinition[] = [
-  {
-    slug: 'hero',
-    labels: { singular: 'Hero Banner', plural: 'Hero Banners' },
-    fields: [
-      { name: 'headline', label: 'Headline', type: 'text' },
-      { name: 'subheadline', label: 'Subheadline', type: 'text' },
-      { name: 'content', label: 'Body Text', type: 'textarea' },
-      { name: 'ctaLabel', label: 'CTA Label', type: 'text' },
-      { name: 'ctaUrl', label: 'CTA URL', type: 'text' },
-    ],
-    admin: {
-      description: 'High-impact entry section with headline, subtext and CTA.',
-      category: 'Layout',
-      imageURL: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400&h=200&auto=format&fit=crop',
-    },
-  },
-  {
-    slug: 'features',
-    labels: { singular: 'Feature Grid', plural: 'Feature Grids' },
-    fields: [
-      { name: 'headline', label: 'Headline', type: 'text' },
-      { name: 'subheadline', label: 'Subheadline', type: 'text' },
-    ],
-    admin: {
-      description: 'Grid layout showcasing product features or service highlights.',
-      category: 'Layout',
-      imageURL: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=400&h=200&auto=format&fit=crop',
-    },
-  },
-  {
-    slug: 'pricing',
-    labels: { singular: 'Pricing Table', plural: 'Pricing Tables' },
-    fields: [
-      { name: 'headline', label: 'Headline', type: 'text' },
-      { name: 'subheadline', label: 'Subheadline', type: 'text' },
-    ],
-    admin: {
-      description: 'Tiered pricing plans with feature comparison and CTAs.',
-      category: 'Commerce',
-      imageURL: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=400&h=200&auto=format&fit=crop',
-    },
-  },
-  {
-    slug: 'testimonials',
-    labels: { singular: 'Testimonials', plural: 'Testimonials' },
-    fields: [
-      { name: 'headline', label: 'Headline', type: 'text' },
-    ],
-    admin: {
-      description: 'Customer testimonials and social proof cards.',
-      category: 'Social',
-      imageURL: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=400&h=200&auto=format&fit=crop',
-    },
-  },
-  {
-    slug: 'stats',
-    labels: { singular: 'Stats Counter', plural: 'Stats Counters' },
-    fields: [
-      { name: 'headline', label: 'Headline', type: 'text' },
-    ],
-    admin: {
-      description: 'Animated counters for key metrics and achievements.',
-      category: 'Content',
-    },
-  },
-  {
-    slug: 'cta',
-    labels: { singular: 'Call To Action', plural: 'Calls To Action' },
-    fields: [
-      { name: 'headline', label: 'Headline', type: 'text' },
-      { name: 'subheadline', label: 'Subheadline', type: 'text' },
-      { name: 'buttonLabel', label: 'Button Label', type: 'text' },
-      { name: 'buttonUrl', label: 'Button URL', type: 'text' },
-    ],
-    admin: {
-      description: 'Conversion-focused section with bold headline and action button.',
-      category: 'Content',
-    },
-  },
-  {
-    slug: 'faq',
-    labels: { singular: 'FAQ', plural: 'FAQs' },
-    fields: [
-      { name: 'headline', label: 'Headline', type: 'text' },
-    ],
-    admin: {
-      description: 'Accordion-style frequently asked questions section.',
-      category: 'Content',
-    },
-  },
-  {
-    slug: 'gallery',
-    labels: { singular: 'Media Gallery', plural: 'Media Galleries' },
-    fields: [
-      { name: 'headline', label: 'Headline', type: 'text' },
-    ],
-    admin: {
-      description: 'Image or video gallery with multiple layout options.',
-      category: 'Media',
-    },
-  },
-]
+const DEFAULT_BLOCKS: BlockDefinition[] = UNIFIED_BLOCK_LIBRARY.map((b) => ({
+  slug: b.type,
+  labels: { singular: b.title, plural: b.title + 's' },
+  fields: b.fields.map((f) => ({
+    name: f.name,
+    label: f.label || humanize(f.name),
+    type: f.type,
+    required: f.required,
+    defaultValue: b.defaultContent[f.name],
+    options: f.options,
+  })),
+  admin: {
+    description: b.description,
+    category: b.category,
+  }
+}))
 
 // ── Block Row ─────────────────────────────────────────────────────────────────
 function BlockRow({
@@ -308,7 +239,7 @@ function BlockRow({
                           {f.required && <span className="text-danger">*</span>}
                         </label>
                         {renderField
-                          ? renderField(f as any, block[f.name], (val: any) => onUpdate({ [f.name]: val }))
+                          ? renderField(f as unknown as FieldConfig, block[f.name], (val: any) => onUpdate({ [f.name]: val }))
                           : <input type="text" value={(block[f.name] as string) || ''} onChange={(e) => onUpdate({ [f.name]: e.target.value })} placeholder={`Enter ${f.label || f.name}...`} className="w-full bg-app border border-border px-3 py-2 text-sm focus:border-accent focus:ring-2 focus:ring-accent/10 outline-none transition-all rounded-none" />
                         }
                       </div>
@@ -479,34 +410,46 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
 const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
   value, onChange, availableBlocks, renderField, disabled = false,
 }) => {
+  const apiBlocks = useBlockLibrary()
   const [isPickerOpen, setIsPickerOpen] = useState(false)
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
+  const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({})
 
   const rawBlocks = (availableBlocks as BlockDefinition[]) || []
-  const blocksList = rawBlocks.length > 0 ? rawBlocks : DEFAULT_BLOCKS
+  const blocksList: BlockDefinition[] = rawBlocks.length > 0 ? rawBlocks : (apiBlocks.length > 0 ? apiBlocks : DEFAULT_BLOCKS)
   const blocks = value || []
+
+  const toggleBlock = useCallback((key: string) => {
+    setExpandedIds((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }))
+  }, [])
 
   const addBlock = useCallback((slug: string) => {
     const def = blocksList.find((b) => b.slug === slug)
-    const newBlock: Block = { blockType: slug }
+    const newId = 'block_' + crypto.randomUUID()
+    const newBlock: Block = { 
+      blockType: slug,
+      _id: newId
+    }
     def?.fields.forEach((f) => { if (f.defaultValue !== undefined) newBlock[f.name] = f.defaultValue })
     onChange([...blocks, newBlock])
     setIsPickerOpen(false)
-    setExpandedIndex(blocks.length)
+    setExpandedIds((prev) => ({ ...prev, [newId]: true }))
   }, [blocks, blocksList, onChange])
 
   const removeBlock = useCallback((i: number) => {
     const next = blocks.filter((_, idx) => idx !== i)
     onChange(next)
-    if (expandedIndex === i) setExpandedIndex(null)
-    else if (expandedIndex !== null && expandedIndex > i) setExpandedIndex(expandedIndex - 1)
-  }, [blocks, onChange, expandedIndex])
+  }, [blocks, onChange])
 
   const duplicateBlock = useCallback((i: number) => {
     const next = [...blocks]
-    next.splice(i + 1, 0, { ...blocks[i] })
+    const newId = 'block_' + crypto.randomUUID()
+    const dupBlock = { ...blocks[i], _id: newId }
+    next.splice(i + 1, 0, dupBlock)
     onChange(next)
-    setExpandedIndex(i + 1)
+    setExpandedIds((prev) => ({ ...prev, [newId]: true }))
   }, [blocks, onChange])
 
   const moveBlock = useCallback((i: number, dir: 'up' | 'down') => {
@@ -515,7 +458,6 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
     if (t < 0 || t >= next.length) return
     ;[next[i], next[t]] = [next[t], next[i]]
     onChange(next)
-    setExpandedIndex(t)
   }, [blocks, onChange])
 
   const updateBlock = useCallback((i: number, updates: Partial<Block>) => {
@@ -523,6 +465,19 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
     next[i] = { ...next[i], ...updates }
     onChange(next)
   }, [blocks, onChange])
+
+  const expandAll = useCallback(() => {
+    const next: Record<string, boolean> = {}
+    blocks.forEach((b, idx) => {
+      const key = b._id || String(idx)
+      next[key] = true
+    })
+    setExpandedIds(next)
+  }, [blocks])
+
+  const collapseAll = useCallback(() => {
+    setExpandedIds({})
+  }, [])
 
   return (
     <div className="flex flex-col gap-4 pl-5 select-none">
@@ -537,11 +492,32 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
             </span>
           )}
         </div>
-        {!disabled && (
-          <button type="button" onClick={() => setIsPickerOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white text-[10px] font-black uppercase tracking-wider hover:bg-accent/90 transition-all shadow-sm shadow-accent/20 rounded-none">
-            <Plus size={11} /> Add Component
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {blocks.length > 0 && (
+            <div className="flex items-center gap-1.5 border border-white/5 bg-white/[0.02] p-0.5 rounded-none mr-2">
+              <button
+                type="button"
+                onClick={expandAll}
+                className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-white transition-all hover:bg-white/[0.05]"
+              >
+                Expand All
+              </button>
+              <div className="w-px h-3 bg-white/10" />
+              <button
+                type="button"
+                onClick={collapseAll}
+                className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-white transition-all hover:bg-white/[0.05]"
+              >
+                Collapse All
+              </button>
+            </div>
+          )}
+          {!disabled && (
+            <button type="button" onClick={() => setIsPickerOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white text-[10px] font-black uppercase tracking-wider hover:bg-accent/90 transition-all shadow-sm shadow-accent/20 rounded-none">
+              <Plus size={11} /> Add Component
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Empty State */}
@@ -567,9 +543,10 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
         <AnimatePresence initial={false}>
           {blocks.map((block, index) => {
             const blockDef = blocksList.find((b) => b.slug === block.blockType)
+            const blockKey = block._id || String(index)
             return (
               <motion.div
-                key={`block-${index}`}
+                key={`block-${blockKey}`}
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -8, height: 0, marginTop: 0 }}
@@ -577,8 +554,8 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
               >
                 <BlockRow
                   block={block} index={index} total={blocks.length} blockDef={blockDef}
-                  isExpanded={expandedIndex === index} disabled={disabled}
-                  onToggle={() => setExpandedIndex(expandedIndex === index ? null : index)}
+                  isExpanded={!!expandedIds[blockKey]} disabled={disabled}
+                  onToggle={() => toggleBlock(blockKey)}
                   onRemove={() => removeBlock(index)}
                   onDuplicate={() => duplicateBlock(index)}
                   onMoveUp={() => moveBlock(index, 'up')}

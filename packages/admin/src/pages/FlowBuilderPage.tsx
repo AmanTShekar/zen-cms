@@ -538,7 +538,14 @@ const FlowBuilderPage: React.FC = () => {
                     initial={{ x: 400 }}
                     animate={{ x: 0 }}
                     exit={{ x: 400 }}
-                    className="w-96 border-l border-white/5 bg-black/60 backdrop-blur-2xl flex flex-col z-20"
+                    style={{
+                      backgroundColor: 'rgba(17, 24, 39, 0.65)',
+                      backdropFilter: 'blur(12px)',
+                      WebkitBackdropFilter: 'blur(12px)',
+                      borderLeft: '1px solid rgba(255, 255, 255, 0.08)',
+                      boxShadow: '0 4px 30px rgba(0, 0, 0, 0.15)',
+                    }}
+                    className="w-96 flex flex-col z-20 rounded-l-2xl"
                   >
                     <div className="p-6 border-b border-white/5 flex items-center justify-between">
                       <div className="flex items-center gap-3">

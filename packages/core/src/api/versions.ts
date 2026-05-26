@@ -33,8 +33,10 @@ router.get('/:collection/:id', async (req: Request, res: Response, next) => {
       documentId = 'singleton'
     }
 
-    // Enforce read access checks (including RLS constraints)
-    await engine.local.findById(collection, documentId, { user })
+    const siteId = req.headers['x-zenith-site-id'] as string
+
+    // Enforce read access checks (including RLS constraints + site scoping)
+    await engine.local.findById(collection, documentId, { user, siteId })
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const versions = await adapter.find<any>('versions', {
@@ -65,8 +67,10 @@ router.get('/:collection/:id/:versionId', async (req: Request, res: Response, ne
       documentId = 'singleton'
     }
 
-    // Enforce read access checks (including RLS constraints)
-    await engine.local.findById(collection, documentId, { user })
+    const siteId = req.headers['x-zenith-site-id'] as string
+
+    // Enforce read access checks (including RLS constraints + site scoping)
+    await engine.local.findById(collection, documentId, { user, siteId })
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const version = await adapter.findOne<any>('versions', { _id: req.params.versionId })
@@ -91,8 +95,10 @@ router.get('/:collection/:id/:versionId/diff', async (req: Request, res: Respons
       documentId = 'singleton'
     }
 
-    // Enforce read access checks (including RLS constraints)
-    await engine.local.findById(collection, documentId, { user })
+    const siteId = req.headers['x-zenith-site-id'] as string
+
+    // Enforce read access checks (including RLS constraints + site scoping)
+    await engine.local.findById(collection, documentId, { user, siteId })
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const version = await adapter.findOne<any>('versions', { _id: req.params.versionId })
@@ -126,6 +132,7 @@ router.post('/:collection/:id/:versionId/restore', async (req: Request, res: Res
       documentId = 'singleton'
     }
 
+    const siteId = req.headers['x-zenith-site-id'] as string
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const version = await adapter.findOne<any>('versions', { _id: req.params.versionId })
     if (!version) throw new NotFoundError('Version', req.params.versionId)
@@ -135,8 +142,8 @@ router.post('/:collection/:id/:versionId/restore', async (req: Request, res: Res
     // Strip system fields from snapshot before restoring to avoid conflicts
     const { _id, id, createdAt, updatedAt, ...restorable } = snapshot as any
 
-    // Use local API to run update - this automatically validates RLS, runs hooks, and triggers webhooks
-    const { doc: restored } = await engine.local.update(collection, documentId, restorable, { user })
+    // Use local API to run update - this automatically validates RLS, runs hooks, site-scoping, and triggers webhooks
+    const { doc: restored } = await engine.local.update(collection, documentId, restorable, { user, siteId })
 
     res.json(createResponse({ message: 'Version restored successfully', document: restored }))
   } catch (err) {
@@ -158,6 +165,7 @@ router.post('/:collection/:id/:versionId/rollback-fields', async (req: Request, 
       documentId = 'singleton'
     }
 
+    const siteId = req.headers['x-zenith-site-id'] as string
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const version = await adapter.findOne<any>('versions', { _id: req.params.versionId })
     if (!version) throw new NotFoundError('Version', req.params.versionId)
@@ -180,8 +188,8 @@ router.post('/:collection/:id/:versionId/rollback-fields', async (req: Request, 
       return res.status(400).json({ error: { message: 'None of the requested fields exist in the version snapshot.' } })
     }
 
-    // Use local API to run update - this automatically validates RLS, runs hooks, and triggers webhooks
-    const { doc: restored } = await engine.local.update(collection, documentId, rollbackData, { user })
+    // Use local API to run update - this automatically validates RLS, runs hooks, site-scoping, and triggers webhooks
+    const { doc: restored } = await engine.local.update(collection, documentId, rollbackData, { user, siteId })
 
     res.json(createResponse({ message: `Successfully rolled back fields: ${Object.keys(rollbackData).join(', ')}`, document: restored }))
   } catch (err) {

@@ -1,3 +1,8 @@
+import type { ZenithCollections } from '@zenithcms/types'
+
+/** Resolve a collection name string to its document type, falling back to any for unknown collections. */
+type DocType<C extends string> = C extends keyof ZenithCollections ? ZenithCollections[C] : any
+
 export interface ZenithClientOptions {
   url: string
   apiKey?: string
@@ -10,6 +15,8 @@ export interface FetchOptions extends RequestInit {
   locale?: string
   depth?: number
   drafts?: boolean
+  populate?: string[] | string
+  select?: string[] | string
   /** Override the global cache TTL for this request. 0 = bypass cache. */
   cacheTtl?: number
   /** Tag-based cache invalidation key for this request */
@@ -64,43 +71,6 @@ class SWRCache {
     this.store.set(key, { data, timestamp: Date.now(), etag })
   }
 
-  getOrSet<T>(key: string, fetchFn: () => Promise<T>, ttl?: number): Promise<T> {
-    const entry = this.get<T>(key)
-    if (entry) {
-      // Return stale immediately, revalidate in background (if not pending)
-      if (!this.pending.has(key)) {
-        const ctrl = new AbortController()
-        const fetchPromise = fetchFn().then((fresh) => {
-          this.set(key, fresh)
-          this.pending.delete(key)
-          return fresh
-        }).catch((err) => {
-          this.pending.delete(key)
-          throw err
-        }) as Promise<unknown>
-        this.pending.set(key, { promise: fetchPromise, controllers: [ctrl] })
-      }
-      return Promise.resolve(entry.data)
-    }
-
-    // No cache entry — use pending request to avoid duplicate fetches
-    if (this.pending.has(key)) {
-      return this.pending.get(key)!.promise as Promise<T>
-    }
-
-    const ctrl = new AbortController()
-    const fetchPromise = fetchFn().then((data) => {
-      this.set(key, data)
-      this.pending.delete(key)
-      return data
-    }).catch((err) => {
-      this.pending.delete(key)
-      throw err
-    }) as Promise<unknown>
-    this.pending.set(key, { promise: fetchPromise, controllers: [ctrl] })
-    return fetchPromise as Promise<T>
-  }
-
   invalidate(key: string): void {
     this.store.delete(key)
   }
@@ -118,6 +88,31 @@ class SWRCache {
       controllers.forEach((c) => c.abort())
     }
     this.pending.clear()
+  }
+}
+
+// ── Error Handling ────────────────────────────────────────────────────────────
+
+/** Structured error thrown by all ZenithClient methods. */
+export class ZenithAPIError extends Error {
+  readonly status: number
+  readonly code?: string
+  readonly isNetworkError: boolean
+  readonly isParseError: boolean
+
+  constructor(opts: {
+    message: string
+    status: number
+    code?: string
+    isNetworkError?: boolean
+    isParseError?: boolean
+  }) {
+    super(opts.message)
+    this.name = 'ZenithAPIError'
+    this.status = opts.status
+    this.code = opts.code
+    this.isNetworkError = opts.isNetworkError ?? false
+    this.isParseError = opts.isParseError ?? false
   }
 }
 
@@ -156,6 +151,12 @@ export class ZenithClient {
     this.cache.flush()
   }
 
+  /** Set or update the active site ID. Also flushes the cache to prevent cross-tenant cached content leaks. */
+  setSiteId(siteId?: string): void {
+    this.siteId = siteId
+    this.flushCache()
+  }
+
   /** Invalidate cache entries matching a tag. */
   invalidateCache(tag: string): void {
     this.cache.invalidateTag(tag)
@@ -170,6 +171,14 @@ export class ZenithClient {
     if (options.sort) params.append('sort', options.sort)
     if (options.limit !== undefined) params.append('limit', String(options.limit))
     if (options.page !== undefined) params.append('page', String(options.page))
+    if (options.populate) {
+      const popStr = Array.isArray(options.populate) ? options.populate.join(',') : options.populate
+      params.append('populate', popStr)
+    }
+    if (options.select) {
+      const selStr = Array.isArray(options.select) ? options.select.join(',') : options.select
+      params.append('select', selStr)
+    }
 
     if (options.where) {
       this.flattenWhereParams(options.where, 'where').forEach((value, key) => {
@@ -214,42 +223,71 @@ export class ZenithClient {
     const entry = useCache ? this.cache.get<unknown>(cacheKey) : null
 
     if (entry && useCache) {
-      // Bypass cache if explicitly requested with cacheTtl: 0
       const revalidate = entry.stale && options.cacheTtl !== 0
 
       if (revalidate) {
-        // Do not await — fire and forget SWR revalidation
-        const ctrl = new AbortController()
-        fetch(`${this.url}${path}`, {
-          ...options,
-          headers,
-          signal: ctrl.signal,
-        })
-          .then((res) => {
-            if (res.ok) return res.json()
-            throw new Error(`HTTP ${res.status}`)
+        // Deduplicate: if a revalidation for this key is already in-flight, skip
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const pending = (this.cache as any)['pending'] as Map<string, { promise: Promise<unknown>; controllers: AbortController[] }> | undefined
+        if (pending?.has(cacheKey!)) {
+          // revalidation already running for this key — don't spawn another
+        } else {
+          const ctrl = new AbortController()
+          const revalidatePromise = fetch(`${this.url}${path}`, {
+            ...options,
+            headers,
+            signal: ctrl.signal,
           })
-          .then((data) => {
-            this.cache.set(cacheKey!, data)
-          })
-          .catch(() => {
-            // SWR revalidation failures are silent — stale data is acceptable
-          })
+            .then((res) => {
+              if (res.ok) return res.json()
+              throw new ZenithAPIError({ message: `HTTP ${res.status}`, status: res.status })
+            })
+            .then((data) => {
+              this.cache.set(cacheKey!, data)
+              pending?.delete(cacheKey!)
+            })
+            .catch(() => {
+              // SWR revalidation failures are silent — stale data is acceptable
+              pending?.delete(cacheKey!)
+            })
+
+          if (pending) {
+            pending.set(cacheKey!, { promise: revalidatePromise as Promise<unknown>, controllers: [ctrl] })
+          }
+        }
       }
 
       return entry.data as any
     }
 
     // No cache or cache disabled — fetch normally
-    const response = await fetch(`${this.url}${path}`, {
-      ...options,
-      headers,
-    })
+    let response: Response
+    try {
+      response = await fetch(`${this.url}${path}`, { ...options, headers })
+    } catch (networkErr) {
+      throw new ZenithAPIError({
+        message: networkErr instanceof Error ? networkErr.message : 'Network error',
+        status: 0,
+        isNetworkError: true,
+      })
+    }
 
-    const data = await response.json().catch(() => null)
+    let data: any
+    try {
+      data = await response.json()
+    } catch {
+      throw new ZenithAPIError({
+        message: `Invalid JSON response from server (HTTP ${response.status})`,
+        status: response.status,
+        isParseError: true,
+      })
+    }
 
     if (!response.ok) {
-      throw new Error(data?.message || `Zenith API error: ${response.status} ${response.statusText}`)
+      throw new ZenithAPIError({
+        message: data?.message || `Zenith API error: ${response.status} ${response.statusText}`,
+        status: response.status,
+      })
     }
 
     if (useCache) {
@@ -269,19 +307,21 @@ export class ZenithClient {
    * Find multiple documents in a collection.
    * Uses SWR cache by default (30s TTL). Bypass with `cacheTtl: 0`.
    */
-  async find<T = any>(
-    collection: string,
+  async find<C extends string>(
+    collection: C,
     options: FindOptions = {}
-  ): Promise<{ docs: T[]; totalDocs: number; totalPages: number; page: number }> {
+  ): Promise<{ docs: DocType<C>[]; totalDocs: number; totalPages: number; page: number }> {
     const qs = this.buildQueryString(options)
-    const ck = options.cacheTag
-      ? this.cacheKey(collection, `/api/v1/${collection}${qs}`)
+    const cacheKey = (options.cacheTtl !== 0)
+      ? (options.cacheTag
+          ? this.cacheKey(collection, `/api/v1/${collection}${qs}`)
+          : `/api/v1/${collection}${qs}`)
       : undefined
 
     const data = await this.fetchAPI(
       `/api/v1/${collection}${qs}`,
       { method: 'GET', ...options },
-      options.cacheTtl !== 0 ? `/api/v1/${collection}${qs}` : undefined
+      cacheKey
     )
 
     const docs = Array.isArray(data.docs)
@@ -301,7 +341,7 @@ export class ZenithClient {
    * Find a single document by ID.
    * Uses SWR cache by default.
    */
-  async findById<T = any>(collection: string, id: string, options: FetchOptions = {}): Promise<T> {
+  async findById<C extends string>(collection: C, id: string, options: FetchOptions = {}): Promise<DocType<C>> {
     const qs = this.buildQueryString(options)
     const data = await this.fetchAPI(
       `/api/v1/${collection}/${id}${qs}`,
@@ -328,7 +368,7 @@ export class ZenithClient {
    * Create a new document in a collection.
    * Invalidates cache for the target collection.
    */
-  async create<T = any>(collection: string, payload: any, options: FetchOptions = {}): Promise<T> {
+  async create<C extends string>(collection: C, payload: Partial<DocType<C>>, options: FetchOptions = {}): Promise<DocType<C>> {
     const qs = this.buildQueryString(options)
     const data = await this.fetchAPI(`/api/v1/${collection}${qs}`, {
       method: 'POST',
@@ -344,12 +384,12 @@ export class ZenithClient {
    * Update an existing document.
    * Invalidates cache for the target collection.
    */
-  async update<T = any>(
-    collection: string,
+  async update<C extends string>(
+    collection: C,
     id: string,
-    payload: any,
+    payload: Partial<DocType<C>>,
     options: FetchOptions = {}
-  ): Promise<T> {
+  ): Promise<DocType<C>> {
     const qs = this.buildQueryString(options)
     const data = await this.fetchAPI(`/api/v1/${collection}/${id}${qs}`, {
       method: 'PATCH',
@@ -365,7 +405,7 @@ export class ZenithClient {
    * Delete a document.
    * Invalidates cache for the target collection.
    */
-  async delete<T = any>(collection: string, id: string, options: FetchOptions = {}): Promise<T> {
+  async delete<C extends string>(collection: C, id: string, options: FetchOptions = {}): Promise<DocType<C>> {
     const qs = this.buildQueryString(options)
     const data = await this.fetchAPI(`/api/v1/${collection}/${id}${qs}`, {
       method: 'DELETE',
@@ -382,7 +422,7 @@ export class ZenithClient {
    * Count documents matching a filter.
    * Uses SWR cache.
    */
-  async count(collection: string, filter?: Record<string, any>): Promise<number> {
+  async count<C extends string>(collection: C, filter?: Record<string, any>): Promise<number> {
     const params = new URLSearchParams()
     if (filter) {
       Object.entries(filter).forEach(([k, v]) => {
@@ -402,10 +442,10 @@ export class ZenithClient {
    * Run an aggregation pipeline on a collection.
    * Sends the pipeline to a dedicated endpoint.
    */
-  async aggregate<T = any>(
-    collection: string,
+  async aggregate<C extends string>(
+    collection: C,
     pipeline: Record<string, unknown>[]
-  ): Promise<T[]> {
+  ): Promise<unknown[]> {
     const data = await this.fetchAPI(`/api/v1/${collection}/aggregate`, {
       method: 'POST',
       body: JSON.stringify({ pipeline }),

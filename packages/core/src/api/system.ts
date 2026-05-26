@@ -29,6 +29,7 @@ const searchLimiter = rateLimit({
   max: 30,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
 })
 
 const aiLimiter = rateLimit({
@@ -36,6 +37,7 @@ const aiLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
 })
 
 // ── AI Architect Schema Validator ─────────────────────────────────────────────
@@ -83,7 +85,7 @@ router.post(
   (req: Request, res: Response) => {
     const { pluginName, slot, component, label, icon } = req.body
     if (!pluginName || !slot || !component || !label) {
-      return res.status(400).json(createErrorResponse(400, 'pluginName, slot, component, and label are required'))
+      throw new InvalidPayloadError('pluginName, slot, component, and label are required')
     }
     adminComponentRegistry.register({ pluginName, slot, component, label, icon })
     res.status(201).json(createResponse({ success: true }))
@@ -110,7 +112,7 @@ router.post(
   '/plugins/inject',
   requireAuth,
   requireRole('admin'),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: any) => {
     try {
       const { name, version, author, description } = req.body
       if (!name) throw new InvalidPayloadError('Plugin name is required')
@@ -118,7 +120,6 @@ router.post(
       const engine = req.app.get('zenith_engine')
       if (!engine) throw new Error('Zenith Engine is not running')
 
-      // Check if plugin already exists
       const exists = engine.plugins.some((p: any) => p.name.toLowerCase() === name.toLowerCase())
       if (exists) throw new InvalidPayloadError(`Plugin "${name}" is already injected`)
 
@@ -145,8 +146,8 @@ router.post(
           verified: false,
         })
       )
-    } catch (err: any) {
-      res.status(400).json(createResponse(null, { error: err.message }))
+    } catch (err) {
+      next(err)
     }
   }
 )
@@ -155,7 +156,7 @@ router.post(
   '/plugins/:id/enable',
   requireAuth,
   requireRole('admin'),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: any) => {
     try {
       const engine = req.app.get('zenith_engine')
       if (!engine) throw new Error('Zenith Engine is not running')
@@ -166,8 +167,8 @@ router.post(
       if (!plugin) throw new InvalidPayloadError(`Plugin "${req.params.id}" not found`)
       ;(plugin as any).disabled = false
       res.json(createResponse({ success: true }))
-    } catch (err: any) {
-      res.status(400).json(createResponse(null, { error: err.message }))
+    } catch (err) {
+      next(err)
     }
   }
 )
@@ -176,7 +177,7 @@ router.post(
   '/plugins/:id/disable',
   requireAuth,
   requireRole('admin'),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: any) => {
     try {
       const engine = req.app.get('zenith_engine')
       if (!engine) throw new Error('Zenith Engine is not running')
@@ -187,17 +188,91 @@ router.post(
       if (!plugin) throw new InvalidPayloadError(`Plugin "${req.params.id}" not found`)
       ;(plugin as any).disabled = true
       res.json(createResponse({ success: true }))
-    } catch (err: any) {
-      res.status(400).json(createResponse(null, { error: err.message }))
+    } catch (err) {
+      next(err)
     }
   }
 )
+
+/**
+ * Summarize a field config into a clean discovery-safe shape.
+ * Strips hooks, access functions, and other non-serializable/internal props.
+ */
+function summarizeField(field: any): Record<string, unknown> {
+  const summary: Record<string, unknown> = {
+    name: field.name,
+    type: field.type,
+  }
+  if (field.label) summary.label = field.label
+  if (field.required) summary.required = true
+  if (field.hasMany) summary.hasMany = true
+  if (field.localized) summary.localized = true
+  if (field.unique) summary.unique = true
+  if (field.index) summary.index = true
+  if (field.defaultValue !== undefined) summary.defaultValue = field.defaultValue
+  if (field.relationTo) summary.relationTo = field.relationTo
+  if (field.options) summary.options = field.options
+  if (field.type === 'blocks' && Array.isArray(field.blocks)) {
+    summary.blocks = field.blocks.map((b: any) => b.slug)
+  }
+  if (Array.isArray(field.fields)) {
+    summary.fields = field.fields.map(summarizeField)
+  }
+  if (Array.isArray(field.tabs)) {
+    summary.tabs = field.tabs.map((tab: any) => ({
+      name: tab.name,
+      label: tab.label,
+      fields: (tab.fields || []).map(summarizeField),
+    }))
+  }
+  if (field.admin) {
+    const admin: Record<string, unknown> = {}
+    if (field.admin.description) admin.description = field.admin.description
+    if (field.admin.placeholder) admin.placeholder = field.admin.placeholder
+    if (field.admin.width) admin.width = field.admin.width
+    if (field.admin.className) admin.className = field.admin.className
+    if (field.admin.readOnly !== undefined) admin.readOnly = field.admin.readOnly
+    if (field.admin.hidden !== undefined) admin.hidden = field.admin.hidden
+    if (Object.keys(admin).length > 0) summary.admin = admin
+  }
+  return summary
+}
+
+function summarizeCollection(c: any): Record<string, unknown> {
+  const summary: Record<string, unknown> = { slug: c.slug }
+  if (c.label) summary.label = c.label
+  if (c.description) summary.description = c.description
+  if (c.singleton) summary.singleton = true
+  if (c.versions) summary.versions = true
+  if (c.drafts) summary.drafts = true
+  if (c.publicRead) summary.publicRead = true
+  if (typeof c.admin?.group === 'string') summary.group = c.admin.group
+  if (typeof c.admin?.icon === 'string') summary.icon = c.admin.icon
+  if (c.defaultSort) summary.defaultSort = c.defaultSort
+  if (Array.isArray(c.fields)) {
+    summary.fields = c.fields.map(summarizeField)
+  }
+  summary.endpoints = {
+    base: `/api/v1/${c.slug}`,
+    find: { method: 'GET', path: `/api/v1/${c.slug}` },
+    findById: { method: 'GET', path: `/api/v1/${c.slug}/:id` },
+    create: { method: 'POST', path: `/api/v1/${c.slug}` },
+    update: { method: c.singleton ? 'PATCH' : 'PUT', path: c.singleton ? `/api/v1/${c.slug}` : `/api/v1/${c.slug}/:id` },
+    delete: { method: 'DELETE', path: `/api/v1/${c.slug}/:id` },
+    count: { method: 'GET', path: `/api/v1/${c.slug}/count` },
+    preview: { method: 'POST', path: `/api/v1/${c.slug}/:id/preview-token` },
+  }
+  return summary
+}
 
 router.get('/health', async (req: Request, res: Response) => {
   const adapter = (req as any).zenith?.adapter
   const dbHealth = adapter ? adapter.getHealth() : 'disconnected'
   const healthy = dbHealth === 'ok'
   const config = (req as any).zenith?.config
+
+  const collections = (config?.collections || []).map(summarizeCollection)
+  const globals = (config?.globals || []).map(summarizeCollection)
 
   const data = {
     status: healthy ? 'ok' : 'degraded',
@@ -216,8 +291,8 @@ router.get('/health', async (req: Request, res: Response) => {
       usage: `${Math.round((os.loadavg()[0] * 100) / os.cpus().length)}%`,
     },
     registry: {
-      collections: config?.collections?.map((c: any) => ({ slug: c.slug, label: c.label })) || [],
-      globals: config?.globals?.map((g: any) => ({ slug: g.slug, label: g.label })) || [],
+      collections,
+      globals,
     },
     services: {
       database: dbHealth,
@@ -238,12 +313,14 @@ router.get('/counts', requireAuth, async (req: Request, res: Response, next) => 
   try {
     const config = (req as any).zenith?.config
     const adapter = (req as any).zenith?.adapter
+    const siteId = req.headers['x-zenith-site-id'] as string
     if (!config || !adapter) return res.json(createResponse({}))
     const counts: Record<string, number> = {}
     await Promise.all(
       config.collections.map(async (col: any) => {
         try {
-          counts[col.slug] = await adapter.count(col.slug, {})
+          const filter = siteId ? { siteId } : {}
+          counts[col.slug] = await adapter.count(col.slug, filter)
         } catch (e) {
           counts[col.slug] = 0
         }
@@ -262,10 +339,203 @@ router.get(
   async (req: Request, res: Response, next) => {
     try {
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const limitQuery = parseInt(req.query.limit as string)
-      const limitVal = isNaN(limitQuery) || limitQuery <= 0 ? 100 : Math.min(limitQuery, 100)
-      const logs = await adapter.find<any>('audit_logs', {}, { sort: { timestamp: -1 }, limit: limitVal })
-      res.json(createResponse(logs))
+      const page = Math.max(1, parseInt(req.query.page as string) || 1)
+      const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 25))
+      const search = (req.query.search as string) || ''
+      const filterAction = (req.query.action as string) || ''
+      const filterStatus = (req.query.status as string) || ''
+      const filterCollection = (req.query.collection as string) || ''
+      const siteId = req.headers['x-zenith-site-id'] as string
+
+      // Build query with filters
+      const query: Record<string, unknown> = {}
+      if (search) {
+        query.$or = [
+          { userEmail: { $regex: search, $options: 'i' } },
+          { userName: { $regex: search, $options: 'i' } },
+          { collectionName: { $regex: search, $options: 'i' } },
+          { action: { $regex: search, $options: 'i' } },
+        ]
+      }
+      if (filterAction) query.action = { $regex: filterAction, $options: 'i' }
+      if (filterStatus) query.status = filterStatus
+      if (filterCollection) query.collectionName = { $regex: filterCollection, $options: 'i' }
+      if (siteId) query.siteId = siteId
+
+      // Handle Mongoose vs Postgres query format
+      let logs: any[]
+      let total = 0
+      if (adapter.name === 'mongoose') {
+        const { default: mongoose } = await import('mongoose')
+        const model = mongoose.models['AuditLog']
+        if (!model) return res.json(createResponse([]))
+        total = await model.countDocuments(query)
+        logs = await model.find(query)
+          .sort({ timestamp: -1 })
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .lean()
+          .exec()
+        logs = logs.map((l: any) => ({ ...l, id: l._id?.toString?.() || l._id }))
+      } else {
+        // Postgres fallback — use adapter.find with limited filtering
+        const pgQuery: Record<string, unknown> = {}
+        if (filterAction) pgQuery.action = filterAction
+        if (filterStatus) pgQuery.status = filterStatus
+        if (filterCollection) pgQuery.collectionName = filterCollection
+        if (siteId) pgQuery.siteId = siteId
+        logs = await adapter.find<any>('audit_logs', pgQuery, { sort: { timestamp: -1 }, skip: (page - 1) * limit, limit })
+        try {
+          const countResult = await adapter.find<any>('audit_logs', pgQuery, { limit: 10000 })
+          total = countResult.length
+        } catch {
+          total = logs.length
+        }
+      }
+
+      res.json(
+        createResponse(logs, {
+          pagination: { page, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
+        })
+      )
+    } catch (err) {
+      next(err)
+    }
+  }
+)
+
+router.get(
+  '/audit-logs/stats',
+  requireAuth,
+  requireRole('admin'),
+  async (req: Request, res: Response, next) => {
+    try {
+      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const siteId = req.headers['x-zenith-site-id'] as string
+      const query: Record<string, unknown> = {}
+      if (siteId) query.siteId = siteId
+
+      let total = 0
+      let failedCount = 0
+      let successCount = 0
+      let actionCounts: Record<string, number> = {}
+
+      if (adapter.name === 'mongoose') {
+        const { default: mongoose } = await import('mongoose')
+        const model = mongoose.models['AuditLog']
+        if (model) {
+          total = await model.countDocuments(query)
+          const failedQuery = { ...query, status: 'failed' }
+          failedCount = await model.countDocuments(failedQuery)
+          successCount = total - failedCount
+          const agg = await model.aggregate([
+            { $match: query },
+            { $group: { _id: '$action', count: { $sum: 1 } } },
+          ]).exec()
+          actionCounts = Object.fromEntries(agg.map((a: any) => [a._id, a.count]))
+        }
+      } else {
+        try {
+          const all = await adapter.find<any>('audit_logs', {}, { limit: 10000 })
+          total = all.length
+          failedCount = all.filter((l: any) => l.status === 'failed').length
+          successCount = total - failedCount
+          actionCounts = all.reduce((acc: Record<string, number>, l: any) => {
+            acc[l.action] = (acc[l.action] || 0) + 1
+            return acc
+          }, {})
+        } catch {
+          // stats unavailable
+        }
+      }
+
+      res.json(createResponse({
+        total,
+        failed: failedCount,
+        success: successCount,
+        byAction: actionCounts,
+      }))
+    } catch (err) {
+      next(err)
+    }
+  }
+)
+
+router.get(
+  '/audit-logs/:id',
+  requireAuth,
+  requireRole('admin'),
+  async (req: Request, res: Response, next) => {
+    try {
+      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const { id } = req.params
+
+      let log: any = null
+      if (adapter.name === 'mongoose') {
+        const { default: mongoose } = await import('mongoose')
+        const model = mongoose.models['AuditLog']
+        if (model) {
+          log = await model.findById(id).lean().exec()
+          if (log) log = { ...log, id: log._id?.toString?.() || log._id }
+        }
+      } else {
+        log = await adapter.findOne<any>('audit_logs', { id })
+      }
+
+      if (!log) return res.status(404).json(createErrorResponse(404, 'Audit log not found'))
+      res.json(createResponse(log))
+    } catch (err) {
+      next(err)
+    }
+  }
+)
+
+router.post(
+  '/audit-logs/purge',
+  requireAuth,
+  requireRole('admin'),
+  async (req: Request, res: Response, next) => {
+    try {
+      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const { before, action, status: filterStatus, siteId: filterSiteId } = req.body
+      const siteId = req.headers['x-zenith-site-id'] as string
+
+      const query: Record<string, unknown> = {}
+      if (before) query.timestamp = { $lt: new Date(before) }
+      if (action) query.action = action
+      if (filterStatus) query.status = filterStatus
+      if (siteId) query.siteId = siteId
+      if (filterSiteId) query.siteId = filterSiteId
+
+      let deleted = 0
+      if (adapter.name === 'mongoose') {
+        const { default: mongoose } = await import('mongoose')
+        const model = mongoose.models['AuditLog']
+        if (model) {
+          const result = await model.deleteMany(query).exec()
+          deleted = result.deletedCount
+        }
+      } else {
+        deleted = await adapter.deleteMany('audit_logs', query)
+      }
+
+      res.json(createResponse({ deleted, message: `Purged ${deleted} audit log entries` }))
+    } catch (err) {
+      next(err)
+    }
+  }
+)
+
+// ── Audit Log Retention Info ────────────────────────────────────────────────
+router.get(
+  '/audit-logs/retention',
+  requireAuth,
+  requireRole('admin'),
+  async (_req: Request, res: Response, next) => {
+    try {
+      const { getAuditRetentionInfo } = await import('../services/audit-rotation')
+      const info = await getAuditRetentionInfo()
+      res.json(createResponse(info))
     } catch (err) {
       next(err)
     }
@@ -544,10 +814,8 @@ router.post(
       await testAdapter.disconnect()
       
       res.json(createResponse({ success: true, message: 'Database connection successful' }))
-    } catch (err: any) {
-      res.status(400).json(
-        createErrorResponse(400, `Database connection failed: ${err.message || err}`, null, 'DB_CONNECTION_FAILED')
-      )
+    } catch (err) {
+      next(err)
     }
   }
 )
@@ -583,12 +851,12 @@ router.post(
           path.resolve(__dirname, '../../../../.env'),
         ]
         const envPath = possiblePaths.find(p => fsSync.existsSync(p)) || possiblePaths[0]
-        
+
         let content = ''
         if (fsSync.existsSync(envPath)) {
           content = fsSync.readFileSync(envPath, 'utf8')
         }
-        
+
         const lines = content.split('\n')
         for (const [key, val] of Object.entries(envUpdates)) {
           let found = false
@@ -609,10 +877,8 @@ router.post(
       }
 
       res.json(createResponse({ success: true, message: 'Database connection configuration saved' }))
-    } catch (err: any) {
-      res.status(400).json(
-        createErrorResponse(400, `Database connection test failed, configuration not saved: ${err.message || err}`, null, 'DB_SAVE_FAILED')
-      )
+    } catch (err) {
+      next(err)
     }
   }
 )
@@ -790,6 +1056,46 @@ router.post(
           message: `Collection ${name} created and registered successfully in the database`,
         })
       )
+    } catch (err) {
+      next(err)
+    }
+  }
+)
+
+// ── Update collection config (hooks, endpoints, access) ───────────────────────
+router.patch(
+  '/collections/:slug',
+  requireAuth,
+  requireRole('admin'),
+  async (req: Request, res: Response, next) => {
+    try {
+      const { slug } = req.params
+      const { hooks, endpoints, access, publicRead } = req.body
+
+      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const engine = req.app.get('zenith_engine')
+
+      // Update in database
+      const update: Record<string, unknown> = {}
+      if (hooks !== undefined) update.hooks = hooks
+      if (endpoints !== undefined) update.endpoints = endpoints
+      if (access !== undefined) update.access = access
+      if (publicRead !== undefined) update.publicRead = publicRead
+
+      await adapter.update('z_collections', slug, update)
+
+      // Update in engine config
+      if (engine) {
+        const colIdx = engine.config.collections.findIndex((c: any) => c.slug === slug)
+        if (colIdx !== -1) {
+          if (hooks !== undefined) engine.config.collections[colIdx].hooks = hooks
+          if (endpoints !== undefined) engine.config.collections[colIdx].endpoints = endpoints
+          if (access !== undefined) engine.config.collections[colIdx].access = access
+          if (publicRead !== undefined) engine.config.collections[colIdx].publicRead = publicRead
+        }
+      }
+
+      res.json(createResponse({ success: true, message: `Collection "${slug}" configuration updated` }))
     } catch (err) {
       next(err)
     }

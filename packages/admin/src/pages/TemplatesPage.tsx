@@ -82,10 +82,53 @@ const TEMPLATES: Template[] = [
     category: 'Editorial / Blog',
     slug: 'storefront-editorial',
   },
+  {
+    id: 'blog-demo',
+    name: 'Zenith Blog Demo',
+    version: '1.2.0',
+    description:
+      'A high-performance developer blog and content hub. Features dynamic SWR-based native API integration, automated content caching, and clean modern layout optimized for text readability and coding snippets.',
+    gitUrl: 'https://github.com/AmanTShekar/zenith-blog-demo',
+    tags: ['React 19', 'Vite', 'Tailwind CSS', 'SWR'],
+    stars: 128,
+    performanceScore: 100,
+    primaryColor: 'from-amber-600 to-orange-600',
+    accentColor: '#F59E0B',
+    features: [
+      'Pre-integrated SWR data synchronization',
+      'Perfect lighthouse readability & layout scores',
+      'Support for syntax highlighting & markdown',
+      'Optimized asset loading & lazy fetching',
+    ],
+    category: 'Editorial / Blog',
+    slug: 'blog-demo',
+  },
+  {
+    id: 'demo',
+    name: 'Zenith Demo Storefront',
+    version: '1.5.0',
+    description:
+      'A sleek storefront showcasing standard components, product catalogs, and interactive features. Includes cart systems, localized product grids, and instant page builder sync.',
+    gitUrl: 'https://github.com/AmanTShekar/zenith-demo',
+    tags: ['React 19', 'Vite', 'Tailwind CSS', 'Axios'],
+    stars: 145,
+    performanceScore: 97,
+    primaryColor: 'from-blue-600 to-cyan-600',
+    accentColor: '#3B82F6',
+    features: [
+      'Interactive shopping shopping cart system',
+      'Real-time bi-directional layout synchronization',
+      'Pre-populated product catalog grid feeds',
+      'Dynamic multi-locale theme switching',
+    ],
+    category: 'E-Commerce / Portfolio',
+    slug: 'demo',
+  },
 ]
 
 const TemplatesPage: React.FC = () => {
   const { theme } = useTheme()
+  const activeSiteSlug = localStorage.getItem('activeSiteSlug') || ''
   const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState<string>('All')
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null)
@@ -337,10 +380,10 @@ const TemplatesPage: React.FC = () => {
                       <span className="text-[8px] font-mono font-black text-indigo-400">
                         v{template.version}
                       </span>
-                      {template.id === 'storefront-glass' && (
+                      {template.slug === activeSiteSlug && (
                         <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[7px] font-black uppercase tracking-wider italic leading-none">
                           <Activity size={8} />
-                          Active Workspace
+                          Active Workspace / Site
                         </div>
                       )}
                     </div>

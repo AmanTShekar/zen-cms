@@ -2,6 +2,7 @@ import mongoose, { Schema } from 'mongoose'
 
 const webhookDeliverySchema = new Schema(
   {
+    webhookId: { type: String, index: true },
     collectionSlug: { type: String, index: true },
     event: { type: String, required: true },
     url: { type: String, required: true },

@@ -47,8 +47,8 @@ export class InvalidPayloadError extends ZenithError {
 
 // ── 401 Unauthorized ─────────────────────────────────────────────────────────
 export class AuthenticationError extends ZenithError {
-  constructor(message = 'Invalid credentials') {
-    super(message, 401, 'INVALID_CREDENTIALS', true)
+  constructor(message = 'Invalid credentials', data?: unknown) {
+    super(message, 401, 'INVALID_CREDENTIALS', true, data)
   }
 }
 
@@ -66,8 +66,8 @@ export class InvalidTokenError extends ZenithError {
 
 // ── 403 Forbidden ────────────────────────────────────────────────────────────
 export class ForbiddenError extends ZenithError {
-  constructor(message = 'You do not have permission to perform this action') {
-    super(message, 403, 'FORBIDDEN', true)
+  constructor(message = 'You do not have permission to perform this action', data?: unknown) {
+    super(message, 403, 'FORBIDDEN', true, data)
   }
 }
 
@@ -80,6 +80,12 @@ export class NotFoundError extends ZenithError {
 }
 
 // ── 409 Conflict ─────────────────────────────────────────────────────────────
+export class ConflictError extends ZenithError {
+  constructor(reason?: string) {
+    super(reason || 'Conflict: Document was modified by another editor', 409, 'DOCUMENT_CONFLICT', true)
+  }
+}
+
 export class DuplicateError extends ZenithError {
   constructor(field?: string) {
     const msg = field ? `A record with this "${field}" already exists` : 'Duplicate record'

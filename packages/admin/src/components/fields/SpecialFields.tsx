@@ -65,7 +65,7 @@ const RowField: React.FC<RowFieldProps> = ({ field, value, onChange, renderField
         <div key={f.name} className="flex-1 space-y-1.5">
           <label className="text-xs font-semibold text-gray-300 capitalize">
             {f.label || f.name}
-            {(f as any).required && <span className="text-danger ml-1">*</span>}
+            {f.required && <span className="text-danger ml-1">*</span>}
           </label>
           {renderField(
             f,

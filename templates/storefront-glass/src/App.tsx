@@ -18,7 +18,7 @@ import ArticleCard from './components/ArticleCard'
 import PostDetail from './components/PostDetail'
 import NotFound from './components/NotFound'
 import { GridSkeleton, ArticleDetailSkeleton } from './components/Skeleton'
-import { getPosts, getPost, Post } from './lib/cms'
+import { getPosts, getPost, getGlobals, Post, cms } from './lib/cms'
 
 
 // ── Shared Page Wrapper ─────────────────────────
@@ -456,34 +456,37 @@ function SectionsRenderer({ sections }: { sections: any[] }) {
 
   return (
     <div className="space-y-8 pb-16">
-      {sections.map((section) => {
+      {sections.map((section, index) => {
         const type = section.blockType
+        const data = section.content || section.blockData || section
+        const id = section.id || section._id
+        const key = id ? `${id}-${index}` : `section-${index}`
         switch (type) {
           case 'hero':
-            return <HeroSection key={section.id} id={section.id} content={section.content} />
+            return <HeroSection key={key} id={section.id || key} content={data} />
           case 'features':
-            return <FeaturesSection key={section.id} id={section.id} content={section.content} />
+            return <FeaturesSection key={key} id={section.id || key} content={data} />
           case 'stats':
-            return <StatsSection key={section.id} id={section.id} content={section.content} />
+            return <StatsSection key={key} id={section.id || key} content={data} />
           case 'testimonials':
-            return <TestimonialsSection key={section.id} id={section.id} content={section.content} />
+            return <TestimonialsSection key={key} id={section.id || key} content={data} />
           case 'newsletter':
-            return <NewsletterSection key={section.id} id={section.id} content={section.content} />
+            return <NewsletterSection key={key} id={section.id || key} content={data} />
           case 'pricing':
-            return <PricingSection key={section.id} id={section.id} content={section.content} />
+            return <PricingSection key={key} id={section.id || key} content={data} />
           case 'cta':
-            return <CtaSection key={section.id} id={section.id} content={section.content} />
+            return <CtaSection key={key} id={section.id || key} content={data} />
           case 'richTextSection':
-            return <RichTextSection key={section.id} id={section.id} content={section.content} />
+            return <RichTextSection key={key} id={section.id || key} content={data} />
           case 'gallery':
-            return <GallerySection key={section.id} id={section.id} content={section.content} />
+            return <GallerySection key={key} id={section.id || key} content={data} />
           case 'team':
-            return <TeamSection key={section.id} id={section.id} content={section.content} />
+            return <TeamSection key={key} id={section.id || key} content={data} />
           case 'faq':
-            return <FAQSection key={section.id} id={section.id} content={section.content} />
+            return <FAQSection key={key} id={section.id || key} content={data} />
           default:
             return (
-              <div key={section.id} className="max-w-xl mx-auto p-4 glass-card text-center text-xs text-red-400">
+              <div key={key} className="max-w-xl mx-auto p-4 glass-card text-center text-xs text-red-400">
                 Unknown section block type: {type}
               </div>
             )
@@ -503,6 +506,7 @@ function HomePage() {
   const params = new URLSearchParams(window.location.search)
   const isPreview = params.get('preview') === 'true'
   const pageId = params.get('pageId')
+  const urlSiteId = params.get('siteId')
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -534,6 +538,9 @@ function HomePage() {
   useEffect(() => {
     const loadContent = async () => {
       try {
+        if (isPreview && urlSiteId) {
+          cms.setSiteId(urlSiteId)
+        }
         if (isPreview && pageId && pageId !== 'landing-page') {
           // In page preview mode, fetch the specific page content initially
           const page = await getPost(pageId, 'id') // Using SDK findById / getPost equivalent
@@ -545,7 +552,7 @@ function HomePage() {
 
           // Also try loading landing-page sections if present
           try {
-            const landingPage = await getPost('landing-page', 'slug')
+            const landingPage = await getGlobals('landing-page')
             if (landingPage) setPageData(landingPage)
           } catch {
             // No landing-page found, standard blog list layout fallback
@@ -562,7 +569,7 @@ function HomePage() {
       }
     }
     loadContent()
-  }, [isPreview, pageId])
+  }, [isPreview, pageId, urlSiteId])
 
   if (loading && isPreview) {
     return (
@@ -862,6 +869,14 @@ function AboutPage() {
 // ── App Shell ───────────────────────────────────
 export default function App() {
   const [themeState, setThemeState] = useState<'dark' | 'light'>('dark')
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const urlSiteId = params.get('siteId')
+    if (urlSiteId) {
+      cms.setSiteId(urlSiteId)
+    }
+  }, [])
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {

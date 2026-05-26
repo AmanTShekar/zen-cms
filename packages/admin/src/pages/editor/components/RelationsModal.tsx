@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { Link2, X, Search, GitBranch, Check } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '../../../context/ThemeContext'
 import { useEditorStore } from '../../../store/editorStore'
+import { useModalStore } from '../../../store/modalStore'
 import { cn } from '../../../lib/utils'
+import { useFocusTrap } from '../../../hooks/useFocusTrap'
 import api from '../../../lib/api'
 import toast from 'react-hot-toast'
 
@@ -11,8 +13,6 @@ export const RelationsModal: React.FC = () => {
   const { theme } = useTheme()
 
   const {
-    relationsModalOpen,
-    setRelationsModalOpen,
     selectedRelations,
     setSelectedRelations,
     availableCollections,
@@ -25,13 +25,54 @@ export const RelationsModal: React.FC = () => {
     updateData: editorUpdateData,
   } = useEditorStore()
 
-  const fetchRelationResults = async (collection: string, search?: string) => {
+  const { relationsModalOpen, setRelationsModalOpen } = useModalStore()
+
+  // Track the currently selected collection for visual feedback
+  const [activeCollection, setActiveCollection] = useState<string | null>(null)
+  // Debounced search to avoid API spam on every keystroke
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const fetchRelationResults = useCallback(async (collection: string, search?: string) => {
     try {
       const params: any = { limit: 20 }
       if (search) params.search = search
       const res = await api.get(`/${collection}`, { params })
       setRelationResults(res.data.data || [])
-    } catch { /* ignore */ }
+    } catch {
+      toast.error('Failed to load relation entries')
+    }
+  }, [setRelationResults])
+
+  // Initialize active collection from field settings
+  useEffect(() => {
+    if (!relationsModalOpen) return
+    const relatedField = Object.values(fieldSettings).find(
+      (f: any) => f.relation?.collection
+    )
+    if (relatedField?.relation?.collection) {
+      const col = relatedField.relation.collection
+      setActiveCollection(col)
+      fetchRelationResults(col, debouncedSearch)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [relationsModalOpen])
+
+  // Debounce search input — wait 300ms after last keystroke before hitting API
+  useEffect(() => {
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
+    debounceTimerRef.current = setTimeout(() => {
+      setDebouncedSearch(relationsSearch)
+      if (activeCollection) fetchRelationResults(activeCollection, relationsSearch)
+    }, 300)
+    return () => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
+    }
+  }, [relationsSearch, activeCollection, fetchRelationResults])
+
+  const handleCollectionSelect = (col: any) => {
+    setActiveCollection(col.slug)
+    fetchRelationResults(col.slug, debouncedSearch)
   }
 
   const toggleRelation = (itemId: string) => {
@@ -58,6 +99,14 @@ export const RelationsModal: React.FC = () => {
     toast.success(`${selectedRelations.size} items linked`)
   }
 
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const modalTitleId = 'relations-modal-title'
+
+  useFocusTrap(relationsModalOpen, {
+    onEscape: () => setRelationsModalOpen(false),
+    containerRef: dialogRef
+  })
+
   return (
     <AnimatePresence>
       {relationsModalOpen && (
@@ -70,6 +119,10 @@ export const RelationsModal: React.FC = () => {
             className="absolute inset-0 bg-black/70 backdrop-blur-md"
           />
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={modalTitleId}
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
@@ -88,20 +141,24 @@ export const RelationsModal: React.FC = () => {
                   <Link2 size={18} className="text-indigo-400" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-black uppercase italic text-indigo-400">
+                  <h2
+                    id={modalTitleId}
+                    className="text-lg font-black uppercase italic text-indigo-400"
+                  >
                     Content Relations
                   </h2>
-                  <p className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">
+                  <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">
                     Connect entries from other collections
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[8px] text-gray-500 font-mono">
+                <span className="text-xs text-gray-500 font-mono">
                   {selectedRelations.size} selected
                 </span>
                 <button
                   onClick={() => setRelationsModalOpen(false)}
+                  aria-label="Close"
                   className={cn(
                     'p-2 rounded-none border transition-all',
                     theme === 'dark'
@@ -119,20 +176,27 @@ export const RelationsModal: React.FC = () => {
               'p-4 border-b flex gap-2 overflow-x-auto',
               theme === 'dark' ? 'border-white/5 bg-white/[0.01]' : 'border-gray-100 bg-gray-55'
             )}>
-              {availableCollections.map((col) => (
-                <button
-                  key={col.slug}
-                  onClick={() => fetchRelationResults(col.slug)}
-                  className={cn(
-                    'px-3 py-1.5 text-[8px] font-black uppercase italic rounded-none border shrink-0 transition-all',
-                    theme === 'dark'
-                      ? 'border-white/10 text-gray-400 hover:border-indigo-500/30 hover:text-indigo-400'
-                      : 'border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-indigo-600'
-                  )}
-                >
-                  {col.label || col.slug}
-                </button>
-              ))}
+              {availableCollections.map((col) => {
+                const isActive = activeCollection === col.slug
+                return (
+                  <button
+                    key={col.slug}
+                    onClick={() => handleCollectionSelect(col)}
+                    className={cn(
+                      'px-3 py-1.5 text-xs font-black uppercase italic rounded-none border shrink-0 transition-all',
+                      isActive
+                        ? theme === 'dark'
+                          ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400'
+                          : 'bg-indigo-50 border-indigo-300 text-indigo-600'
+                        : theme === 'dark'
+                          ? 'border-white/10 text-gray-400 hover:border-indigo-500/30 hover:text-indigo-400'
+                          : 'border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-indigo-600'
+                    )}
+                  >
+                    {col.label || col.slug}
+                  </button>
+                )
+              })}
             </div>
 
             {/* Search */}
@@ -141,20 +205,15 @@ export const RelationsModal: React.FC = () => {
                 <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
                 <input
                   type="text"
+                  aria-label="Search relation entries"
                   placeholder="Search entries to link..."
                   value={relationsSearch}
-                  onChange={(e) => {
-                    setRelationsSearch(e.target.value)
-                    const selectedCol = Object.values(fieldSettings).find(
-                      (f: any) => f.relation?.collection
-                    )?.relation?.collection
-                    if (selectedCol) fetchRelationResults(selectedCol, e.target.value)
-                  }}
+                  onChange={(e) => setRelationsSearch(e.target.value)}
                   className={cn(
-                    'w-full rounded-none py-3 pl-12 pr-4 text-[10px] font-bold italic outline-none border',
+                    'w-full rounded-none py-3 pl-12 pr-4 text-xs font-bold italic  border',
                     theme === 'dark'
-                      ? 'bg-white/5 border-white/10 text-white focus:border-indigo-500/50'
-                      : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-indigo-600/50'
+                      ? 'bg-white/5 border-white/10 text-white focus-visible:border-indigo-500/50'
+                      : 'bg-gray-50 border-gray-200 text-gray-900 focus-visible:border-indigo-600/50'
                   )}
                 />
               </div>
@@ -162,11 +221,18 @@ export const RelationsModal: React.FC = () => {
 
             {/* Results */}
             <div className="flex-1 overflow-y-auto p-4 custom-editor-scrollbar">
-              {relationResults.length === 0 ? (
+              {!activeCollection ? (
                 <div className="flex flex-col items-center justify-center h-full gap-4">
                   <GitBranch size={40} className="text-gray-600 opacity-30" />
-                  <p className="text-[10px] text-gray-500 font-black uppercase italic tracking-widest text-center">
+                  <p className="text-xs text-gray-500 font-black uppercase italic tracking-widest text-center">
                     Select a collection above to view entries
+                  </p>
+                </div>
+              ) : relationResults.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full gap-4">
+                  <Search size={32} className="text-gray-600 opacity-30" />
+                  <p className="text-xs text-gray-500 font-black uppercase italic tracking-widest text-center">
+                    {debouncedSearch ? 'No entries match your search' : 'No entries found in this collection'}
                   </p>
                 </div>
               ) : (
@@ -197,7 +263,7 @@ export const RelationsModal: React.FC = () => {
                         {selectedRelations.has(item.id || item._id) && <Check size={12} className="text-white" />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[9px] font-black uppercase italic truncate">
+                        <p className="text-xs font-black uppercase italic truncate">
                           {item.title || item.name || item.headline || item.id}
                         </p>
                         <p className="text-[7px] text-gray-500 font-mono truncate">
@@ -218,14 +284,14 @@ export const RelationsModal: React.FC = () => {
               'p-4 border-t flex items-center justify-between',
               theme === 'dark' ? 'border-white/5 bg-white/[0.02]' : 'border-gray-100 bg-gray-50'
             )}>
-              <span className="text-[8px] text-gray-500 font-bold italic">
+              <span className="text-xs text-gray-500 font-bold italic">
                 Click entries to select/deselect for relation
               </span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setRelationsModalOpen(false)}
                   className={cn(
-                    'px-4 py-2 text-[8px] font-black uppercase italic rounded-none border transition-all',
+                    'px-4 py-2 text-xs font-black uppercase italic rounded-none border transition-all',
                     theme === 'dark'
                       ? 'border-white/10 text-gray-400 hover:border-white/20 hover:text-white'
                       : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:text-black'
@@ -236,7 +302,7 @@ export const RelationsModal: React.FC = () => {
                 <button
                   onClick={applyRelations}
                   disabled={selectedRelations.size === 0}
-                  className="px-4 py-2 bg-indigo-600 text-white text-[8px] font-black uppercase italic rounded-none hover:bg-indigo-500 transition-all disabled:opacity-50"
+                  className="px-4 py-2 bg-indigo-600 text-white text-xs font-black uppercase italic rounded-none hover:bg-indigo-500 transition-all disabled:opacity-50"
                 >
                   Link {selectedRelations.size} items
                 </button>

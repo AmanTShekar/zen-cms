@@ -56,11 +56,16 @@ class HookRegistry {
   /**
    * Execute all handlers for a hook sequentially.
    * Each handler receives the return value of the previous one (pipeline pattern).
+   * Supports wildcard matching: a handler registered on 'content:*:afterCreate'
+   * will match 'content:posts:afterCreate', 'content:products:afterCreate', etc.
    */
   async apply<T = unknown>(hook: string, payload: T): Promise<T> {
-    const handlers = this.hooks.get(hook) || []
     let result = payload
-    for (const reg of handlers) {
+    // Collect exact-match and wildcard handlers, sorted by priority
+    const exact = this.hooks.get(hook) || []
+    const wildcard = this.getWildcardHandlers(hook)
+    const all = [...exact, ...wildcard].sort((a, b) => a.priority - b.priority)
+    for (const reg of all) {
       try {
         const out = await reg.handler(result)
         if (out !== undefined) result = out as T
@@ -73,11 +78,15 @@ class HookRegistry {
 
   /**
    * Execute all handlers for a hook in parallel (for side-effects that don't mutate).
+   * Supports wildcard matching: a handler registered on 'content:*:afterCreate'
+   * will match 'content:posts:afterCreate', 'content:products:afterCreate', etc.
    */
   async emit(hook: string, payload: unknown): Promise<void> {
-    const handlers = this.hooks.get(hook) || []
+    const exact = this.hooks.get(hook) || []
+    const wildcard = this.getWildcardHandlers(hook)
+    const all = [...exact, ...wildcard].sort((a, b) => a.priority - b.priority)
     await Promise.all(
-      handlers.map(async (reg) => {
+      all.map(async (reg) => {
         try {
           await reg.handler(payload)
         } catch (err: any) {
@@ -85,6 +94,27 @@ class HookRegistry {
         }
       })
     )
+  }
+
+  /**
+   * Find wildcard handlers that match a concrete hook name.
+   * E.g. 'content:*:afterCreate' matches 'content:posts:afterCreate'.
+   */
+  private getWildcardHandlers(hook: string): HookRegistration[] {
+    const parts = hook.split(':')
+    const results: HookRegistration[] = []
+    for (const [registeredHook, regs] of this.hooks) {
+      if (registeredHook === hook) continue // exact matches handled separately
+      const regParts = registeredHook.split(':')
+      if (regParts.length !== parts.length) continue
+      let matches = true
+      for (let i = 0; i < parts.length; i++) {
+        if (regParts[i] === '*') continue // wildcard segment
+        if (regParts[i] !== parts[i]) { matches = false; break }
+      }
+      if (matches) results.push(...regs)
+    }
+    return results
   }
 
   /**

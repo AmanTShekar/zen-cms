@@ -29,6 +29,7 @@ export type FieldType =
   | 'radio'
   | 'row'
   | 'ui'
+  | 'dz'
 
 export interface BlockDefinition {
   slug: string
@@ -177,6 +178,12 @@ export interface UIFieldConfig extends Omit<BaseFieldConfig, 'required' | 'uniqu
   }
 }
 
+export interface DZFieldConfig extends BaseFieldConfig {
+  type: 'dz'
+  /** List of available component types (block slugs) for this dynamic zone */
+  components?: string[]
+}
+
 export type FieldConfig =
   | TextFieldConfig
   | NumberFieldConfig
@@ -196,6 +203,7 @@ export type FieldConfig =
   | RadioFieldConfig
   | RowFieldConfig
   | UIFieldConfig
+  | DZFieldConfig
 
 // ── Collection & Global Config ───────────────────────────────────────────────
 
@@ -254,14 +262,74 @@ export type GlobalConfig = CollectionConfig // Globals are singletons
 // ── Plugin & System Config ───────────────────────────────────────────────────
 
 export interface ZenithPlugin {
+  /** Unique identifier (slug). Use reverse-domain notation: `zenith-seo`, `acme-analytics` */
+  id: string
+  /** Display name shown in admin UI */
   name: string
   version?: string
   description?: string
   author?: string
+  /** Plugin home page / documentation URL */
+  homepage?: string
+  /** NPM package name if installable via package manager */
+  packageName?: string
   downloads?: number
-  apply: (config: CMSConfig) => CMSConfig | void
-  onInit?: (app: any) => void | Promise<void>
-  onReady?: (app: any) => void | Promise<void>
+  /** Minimum Zenith engine version required */
+  minEngineVersion?: string
+  /** Other plugin IDs this plugin depends on */
+  dependencies?: string[]
+  /** Whether the plugin is active. Disabled plugins are not applied. */
+  enabled?: boolean
+  /**
+   * JSON Schema for plugin configuration options.
+   * Used by the admin UI to render a settings form.
+   */
+  configSchema?: Record<string, {
+    type: 'string' | 'number' | 'boolean' | 'select' | 'multiselect' | 'url' | 'secret'
+    label: string
+    description?: string
+    default?: any
+    options?: Array<{ label: string; value: string }>
+    required?: boolean
+  }>
+  /** Runtime config values (set by admin UI) */
+  config?: Record<string, any>
+  /**
+   * Transform the CMS config (add collections, fields, hooks, etc.).
+   * Called at engine bootstrap for each enabled plugin.
+   */
+  apply: (config: CMSConfig, pluginConfig?: Record<string, any>) => CMSConfig | void
+  /** Called after all plugins are applied, before routes are mounted */
+  onInit?: (ctx: PluginContext) => void | Promise<void>
+  /** Called after the engine is fully started and listening */
+  onReady?: (ctx: PluginContext) => void | Promise<void>
+  /** Called when the engine is shutting down */
+  onDestroy?: (ctx: PluginContext) => void | Promise<void>
+}
+
+export interface PluginContext {
+  /** Express application instance */
+  app: any
+  /** Active database adapter */
+  adapter: any
+  /** Current CMS config (after all plugins applied) */
+  config: CMSConfig
+  /** Hook registry — use to register lifecycle hooks */
+  hooks: {
+    on: <T = unknown>(hook: string, handler: (payload: T) => T | Promise<T> | void, priority?: number) => () => void
+    emit: (hook: string, payload: unknown) => Promise<void>
+  }
+  /** Register admin UI components */
+  admin: {
+    registerComponent: (slot: string, component: { id: string; label: string; icon?: string }) => void
+  }
+  /** Logger instance */
+  logger: {
+    info: (msg: string, meta?: Record<string, unknown>) => void
+    warn: (msg: string, meta?: Record<string, unknown>) => void
+    error: (msg: string, meta?: Record<string, unknown>) => void
+    debug: (msg: string, meta?: Record<string, unknown>) => void
+  }
 }
 
 export type DeploymentProvider = 'cloudflare' | 'netlify' | 'vercel' | 'custom'

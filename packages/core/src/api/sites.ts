@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express'
 import { createResponse } from './utils'
 import { requireAuth } from '../middleware/auth'
-import { InvalidPayloadError, NotFoundError } from '../errors'
+import { InvalidPayloadError, NotFoundError, ForbiddenError } from '../errors'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 
@@ -16,9 +16,15 @@ router.get('/', async (req: Request, res: Response, next) => {
   try {
     const user = (req as any).user
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const sites = await adapter.find<any>('z_sites', {
+    
+    const query: any = {
       $or: [{ ownerId: user.id }, { 'members.userId': user.id }],
-    }, { sort: { updatedAt: -1 } })
+    }
+    if (req.query.workspaceId) {
+      query.workspaceId = req.query.workspaceId
+    }
+
+    const sites = await adapter.find<any>('z_sites', query, { sort: { updatedAt: -1 } })
 
     res.json(createResponse(sites))
   } catch (err) {
@@ -30,9 +36,12 @@ router.get('/', async (req: Request, res: Response, next) => {
 // Creates a new site workspace
 router.post('/', async (req: Request, res: Response, next) => {
   try {
-    const { name, slug, icon, description, collections, globals } = req.body
+    const { name, slug, icon, description, collections, globals, workspaceId } = req.body
     if (!name || !slug) {
       throw new InvalidPayloadError('Name and slug are required fields.')
+    }
+    if (!workspaceId) {
+      throw new InvalidPayloadError('workspaceId is a required field.')
     }
 
     const user = (req as any).user
@@ -50,6 +59,7 @@ router.post('/', async (req: Request, res: Response, next) => {
       icon: icon || '🌐',
       description,
       ownerId: user.id,
+      workspaceId,
       members: [
         {
           userId: user.id,
@@ -106,11 +116,7 @@ router.patch('/:id', async (req: Request, res: Response, next) => {
     const isAdmin = member?.role === 'admin' || site.ownerId === user.id
 
     if (!isAdmin) {
-      return res.status(403).json({
-        error: {
-          message: 'You do not have administrative privileges to update this site workspace.',
-        },
-      })
+      throw new ForbiddenError('You do not have administrative privileges to update this site workspace.')
     }
 
     const updates = req.body
@@ -139,9 +145,7 @@ router.delete('/:id', async (req: Request, res: Response, next) => {
     }
 
     if (site.ownerId !== user.id) {
-      return res.status(403).json({
-        error: { message: 'Only the site owner can permanently delete this site workspace.' },
-      })
+      throw new ForbiddenError('Only the site owner can permanently delete this site workspace.')
     }
 
     await adapter.delete('z_sites', id)
@@ -174,9 +178,7 @@ router.post('/:id/members', async (req: Request, res: Response, next) => {
     const isAdmin = member?.role === 'admin' || site.ownerId === user.id
 
     if (!isAdmin) {
-      return res
-        .status(403)
-        .json({ error: { message: 'Only site administrators can manage workspace membership.' } })
+      throw new ForbiddenError('Only site administrators can manage workspace membership.')
     }
 
     // Check if user is already a member
@@ -213,9 +215,7 @@ router.delete('/:id/members/:userId', async (req: Request, res: Response, next) 
     const isSelf = user.id === userId
 
     if (!isAdmin && !isSelf) {
-      return res.status(403).json({
-        error: { message: 'You do not have permissions to remove members from this workspace.' },
-      })
+      throw new ForbiddenError('You do not have permissions to remove members from this workspace.')
     }
 
     // Cannot remove the owner of the site

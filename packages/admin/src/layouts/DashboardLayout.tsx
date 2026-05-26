@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Link, useLocation, Outlet } from 'react-router-dom'
 import {
   LayoutDashboard,
@@ -16,12 +16,16 @@ import {
   ShieldCheck,
   Workflow,
   Layout,
+  Eye,
+  EyeOff,
+  GripVertical,
 } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import { useTheme } from '../context/ThemeContext'
 import { cn } from '../lib/utils'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, Reorder } from 'framer-motion'
 import api from '../lib/api'
+import { toast } from 'react-hot-toast'
 import { SiteSelector } from '../components/SiteSelector'
 
 import Logo from '../components/Logo'
@@ -53,7 +57,59 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
   const [collections, setCollections] = useState<RegistryItem[]>([])
   const [globals, setGlobals] = useState<RegistryItem[]>([])
   const [health, setHealth] = useState<HealthData | null>(null)
+  const [isCustomizing, setIsCustomizing] = useState(false)
+  const [sidebarConfig, setSidebarConfig] = useState<{ name: string; path: string; visible: boolean }[]>(() => {
+    try {
+      const saved = localStorage.getItem('zenith_sidebar_config')
+      return saved ? JSON.parse(saved) : []
+    } catch { return [] }
+  })
   const location = useLocation()
+
+  const defaultNavItems = [
+    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+    { name: 'Templates', path: '/templates', icon: Layout },
+    { name: 'AI Content Hub', path: '/ai-architect', icon: Sparkles },
+    { name: 'Automations', path: '/automations', icon: Workflow },
+    { name: 'Plugins', path: '/plugins', icon: Puzzle },
+    { name: 'Media Library', path: '/media', icon: Box },
+  ]
+
+  const saveSidebarConfig = useCallback((items: { name: string; path: string; visible: boolean }[]) => {
+    setSidebarConfig(items)
+    localStorage.setItem('zenith_sidebar_config', JSON.stringify(items))
+  }, [])
+
+  const toggleItemVisibility = useCallback((name: string) => {
+    saveSidebarConfig(
+      sidebarConfig.map((item) =>
+        item.name === name ? { ...item, visible: !item.visible } : item
+      )
+    )
+  }, [sidebarConfig, saveSidebarConfig])
+
+  const reorderSidebar = useCallback((reordered: { name: string; path: string; visible: boolean }[]) => {
+    saveSidebarConfig(reordered)
+  }, [saveSidebarConfig])
+
+  // Initialize sidebar config from defaults if not yet saved
+  useEffect(() => {
+    if (sidebarConfig.length === 0) {
+      saveSidebarConfig(defaultNavItems.map(({ name, path }) => ({ name, path, visible: true })))
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Merge saved config with default nav items (preserving order and visibility)
+  const navItems = sidebarConfig.length > 0
+    ? sidebarConfig
+        .filter((c) => defaultNavItems.some((d) => d.name === c.name))
+        .map((c) => ({ ...c, icon: defaultNavItems.find((d) => d.name === c.name)!.icon }))
+        .concat(
+          defaultNavItems
+            .filter((d) => !sidebarConfig.some((c) => c.name === d.name))
+            .map((d) => ({ name: d.name, path: d.path, visible: true, icon: d.icon }))
+        )
+    : defaultNavItems.map((d) => ({ ...d, visible: true }))
 
   // RESPONSIVE SCREEN ADJUSTMENTS & AUTO-COLLAPSE
   useEffect(() => {
@@ -82,6 +138,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
         setHealth(data)
       } catch {
         console.error('System Handshake Failed')
+        toast.error('Failed to connect to server')
       }
     }
 
@@ -102,15 +159,6 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
       clearInterval(interval)
     }
   }, [])
-
-  const navItems = [
-    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
-    { name: 'Templates', path: '/templates', icon: Layout },
-    { name: 'AI Content Hub', path: '/ai-architect', icon: Sparkles },
-    { name: 'Automations', path: '/automations', icon: Workflow },
-    { name: 'Plugins', path: '/plugins', icon: Puzzle },
-    { name: 'Media Library', path: '/media', icon: Box },
-  ]
 
   return (
     <div
@@ -193,53 +241,114 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
         {/* Navigation Core */}
         <div className="flex-1 overflow-y-auto no-scrollbar py-8 px-4 space-y-10">
           <nav className="space-y-1.5">
-            <div className="px-3 mb-4 flex items-center justify-between">
-              {isSidebarOpen && (
-                <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] italic leading-none">
-                  Command Center
-                </span>
-              )}
-              <Command size={10} className="text-gray-500" />
-            </div>
-            {navItems.map((item) => {
-              const isActive = location.pathname === item.path
+            {(() => {
+              const visibleItems = isCustomizing ? navItems : navItems.filter((n) => n.visible)
               return (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className={cn(
-                    'flex items-center gap-4 px-4 py-3 rounded-none transition-all group relative border',
-                    isActive
-                      ? theme === 'dark'
-                        ? 'bg-white border-white text-black shadow-lg shadow-white/5'
-                        : 'bg-gray-900 border-gray-800 text-white shadow-xl'
-                      : theme === 'dark'
-                        ? 'text-gray-500 border-transparent hover:bg-white/[0.03] hover:text-gray-300'
-                        : 'text-gray-500 border-transparent hover:bg-gray-100 hover:text-gray-900'
-                  )}
-                >
-                  <item.icon
-                    size={16}
-                    strokeWidth={isActive ? 3 : 1.5}
-                    className={cn(
-                      'transition-transform relative z-10',
-                      isActive ? 'scale-110' : 'group-hover:scale-110'
+                <div>
+                  <div className="px-3 mb-4 flex items-center justify-between">
+                    {isSidebarOpen && (
+                      <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] italic leading-none">
+                        Command Center
+                      </span>
                     )}
-                  />
-                  {isSidebarOpen && (
-                    <span className="text-[12px] font-black uppercase tracking-[0.1em] relative z-10 italic leading-none truncate">
-                      {item.name}
-                    </span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => setIsCustomizing(!isCustomizing)}
+                        className={cn(
+                          'p-1 border rounded-none transition-all',
+                          isCustomizing
+                            ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-400'
+                            : 'border-transparent text-gray-500 hover:text-gray-300'
+                        )}
+                        title={isCustomizing ? 'Done' : 'Customize'}
+                      >
+                        <Settings size={10} />
+                      </button>
+                      <Command size={10} className="text-gray-500" />
+                    </div>
+                  </div>
+
+                  {isCustomizing ? (
+                    <Reorder.Group axis="y" values={visibleItems} onReorder={reorderSidebar} className="space-y-0.5">
+                      {visibleItems.map((item) => {
+                        const Icon = item.icon
+                        return (
+                          <Reorder.Item
+                            key={item.name}
+                            value={item}
+                            as="div"
+                            className={cn(
+                              'flex items-center gap-4 px-4 py-3 rounded-none border group cursor-grab active:cursor-grabbing',
+                              theme === 'dark'
+                                ? 'border-white/5 text-gray-400 hover:bg-white/[0.03]'
+                                : 'border-gray-100 text-gray-500 hover:bg-gray-50'
+                            )}
+                          >
+                            <GripVertical size={12} className="text-gray-500 shrink-0" />
+                            <Icon size={16} strokeWidth={1.5} className="shrink-0" />
+                            {isSidebarOpen && (
+                              <span className="flex-1 text-[12px] font-black uppercase tracking-[0.1em] italic leading-none truncate">
+                                {item.name}
+                              </span>
+                            )}
+                            <button
+                              onClick={(e) => { e.stopPropagation(); toggleItemVisibility(item.name) }}
+                              className="p-1 hover:text-white transition-colors shrink-0"
+                              title={item.visible ? 'Hide' : 'Show'}
+                            >
+                              {item.visible ? <Eye size={10} /> : <EyeOff size={10} className="text-gray-600" />}
+                            </button>
+                          </Reorder.Item>
+                        )
+                      })}
+                    </Reorder.Group>
+                  ) : (
+                    <div className="space-y-0.5">
+                      {visibleItems.map((item) => {
+                        const isActive = location.pathname === item.path
+                        const Icon = item.icon
+                        return (
+                          <Link
+                            key={item.name}
+                            to={item.path}
+                            className={cn(
+                              'flex items-center gap-4 px-4 py-3 rounded-none transition-all group relative border',
+                              isActive
+                                ? theme === 'dark'
+                                  ? 'bg-white border-white text-black shadow-lg shadow-white/5'
+                                  : 'bg-gray-900 border-gray-800 text-white shadow-xl'
+                                : theme === 'dark'
+                                  ? 'text-gray-500 border-transparent hover:bg-white/[0.03] hover:text-gray-300'
+                                  : 'text-gray-500 border-transparent hover:bg-gray-100 hover:text-gray-900'
+                            )}
+                          >
+                            <Icon
+                              size={16}
+                              strokeWidth={isActive ? 3 : 1.5}
+                              className={cn(
+                                'transition-transform relative z-10',
+                                isActive ? 'scale-110' : 'group-hover:scale-110'
+                              )}
+                            />
+                            {isSidebarOpen && (
+                              <span className="text-[12px] font-black uppercase tracking-[0.1em] relative z-10 italic leading-none truncate">
+                                {item.name}
+                              </span>
+                            )}
+                            {isActive && !isSidebarOpen && (
+                              <motion.div
+                                layoutId="nav-glow-mini"
+                                className="absolute left-0 w-1 h-4 bg-indigo-500 rounded-none"
+                              />
+                            )}
+                          </Link>
+                        )
+                      })}
+                    </div>
                   )}
-                  {isActive && !isSidebarOpen && (
-                    <motion.div
-                      layoutId="nav-glow-mini"
-                      className="absolute left-0 w-1 h-4 bg-indigo-500 rounded-none"
-                    />
-                  )}
-                </Link>
+                </div>
               )
-            })}
+            })()}
           </nav>
 
           <nav className="space-y-1.5 pt-4 border-t border-white/[0.03]">
@@ -514,35 +623,11 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/5 rounded-none border border-emerald-500/10 group cursor-help">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/5 rounded-none border border-emerald-500/10">
                 <div className="w-1 h-1 bg-emerald-500 rounded-none animate-pulse shadow-[0_0_8px_#10b981]" />
                 <span className="text-[8px] font-black uppercase tracking-widest text-emerald-500 italic">
                   Core_Stable
                 </span>
-                {/* Status Tooltip Mock */}
-                <div className="absolute top-full mt-2 right-0 hidden group-hover:block z-50">
-                  <div
-                    className={cn(
-                      'p-3 border rounded-none shadow-2xl min-w-[200px]',
-                      theme === 'dark' ? 'bg-[#0a0a0a] border-white/10' : 'bg-white border-gray-200'
-                    )}
-                  >
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[8px] font-black text-gray-500 uppercase">
-                          Latency
-                        </span>
-                        <span className="text-[8px] font-black text-emerald-500">14ms</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-[8px] font-black text-gray-500 uppercase">
-                          Uptime
-                        </span>
-                        <span className="text-[8px] font-black text-emerald-500">99.9%</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
 
               <Link

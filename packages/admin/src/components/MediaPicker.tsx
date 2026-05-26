@@ -3,6 +3,7 @@ import { Image as ImageIcon, X, Plus, Search, Check, Loader2, UploadCloud } from
 import api from '../lib/api'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../lib/utils'
+import { toast } from 'react-hot-toast'
 import { FocalPointCropper } from './FocalPointCropper'
 
 interface MediaPickerProps {
@@ -31,6 +32,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
       setFiles(res.data.data || [])
     } catch {
       console.error('Failed to fetch media')
+      toast.error('Failed to load media library')
     } finally {
       setLoading(false)
     }
@@ -71,6 +73,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
       }
     } catch {
       console.error('Failed to save focal point')
+      toast.error('Failed to save focal point')
     }
     onChange(updated)
     setFocalPending(null)
@@ -102,13 +105,14 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
       }
     } catch {
       console.error('Upload failed')
+      toast.error('Upload failed')
     }
   }
 
   const getMediaUrl = (url: string) => {
     if (!url) return ''
     if (url.startsWith('http')) return url
-    const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3000').replace('/api/v1', '')
+    const baseUrl = (import.meta.env.VITE_API_URL || '').replace('/api/v1', '')
     return `${baseUrl}${url}`
   }
 
@@ -240,7 +244,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                             placeholder="Filter assets by sequence or ID..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full bg-white/[0.02] border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-xs font-bold text-white placeholder:text-gray-500 outline-none transition-all focus:bg-white/[0.04] focus:border-purple-500/40"
+                            className="w-full bg-white/[0.02] border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-xs font-bold text-white placeholder:text-gray-500 transition-all focus:bg-white/[0.04] focus:border-purple-500/40 focus-visible:ring-2 focus-visible:ring-indigo-500"
                           />
                         </div>
                         <label className="flex items-center gap-3 px-8 py-3.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-all text-[11px] font-black uppercase tracking-widest shadow-xl shadow-purple-900/20 cursor-pointer hover:scale-[1.02] active:scale-95 italic leading-none shrink-0 border border-purple-500/30">

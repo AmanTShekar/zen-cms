@@ -1,6 +1,10 @@
 import React from 'react'
 import { textCasingStyle } from '../../lib/form-utils'
-import type { FieldConfig } from '@zenithcms/types'
+import type { FieldConfig, TextFieldConfig } from '@zenithcms/types'
+
+type TextareaFieldWithExtras = TextFieldConfig & {
+  casing?: 'uppercase' | 'lowercase' | 'capitalize'
+}
 
 interface Props {
   field: FieldConfig
@@ -10,7 +14,7 @@ interface Props {
 }
 
 const TextareaField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
-  const cf = field as any
+  const cf = field as TextareaFieldWithExtras
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     let val: string = e.target.value
     if (cf.casing === 'uppercase') val = val.toUpperCase()

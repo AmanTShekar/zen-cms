@@ -113,7 +113,7 @@ export function parseQueryParams(
     },
     select: '',
     populate: [],
-    depth: src.depth as number | undefined,
+    depth: src.depth !== undefined ? (src.depth as number) : (query.depth ? parseInt(query.depth as string) : undefined),
     locale: src.locale as string | undefined,
   }
 
@@ -121,7 +121,7 @@ export function parseQueryParams(
   if (src.sort) parsed.sort = src.sort as string
 
   // select / fields
-  const rawFields = (src.select as string) || (query.fields as string) || ''
+  const rawFields = (src.select as string) || (query.fields as string) || (query.select as string) || ''
   parsed.select = rawFields.split(',').map((s) => s.trim()).filter(Boolean).join(' ')
 
   // populate — split, expand dot-notation, cap at depth limit
@@ -138,7 +138,7 @@ export function parseQueryParams(
   }
 
   // normalize filter operators
-  const filterObj = (body as any)?.filter ?? query.filter ?? {}
+  const filterObj = (body as any)?.filter ?? (body as any)?.filters ?? query.filter ?? query.filters ?? {}
   parsed.filter = normalizeFilters(filterObj)
 
   // Search shorthand — adapter-safe: uses `ilike` operator that both Mongo and Postgres adapters handle

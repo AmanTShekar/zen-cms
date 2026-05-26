@@ -46,7 +46,7 @@ const PluginsPage = () => {
   const [installingId, setInstallingId] = useState<string | null>(null)
 
   // Curated list of high-fidelity marketplace plugins
-  const MARKETPLACE_PLUGINS = [
+  const MARKETPLACE_PLUGINS: PluginData[] = [
     {
       id: 'cloudinary-asset-storage',
       name: 'Cloudinary Asset Storage',
@@ -158,7 +158,7 @@ const PluginsPage = () => {
   }
 
   const installMarketplacePlugin = async (mpPlugin: (typeof MARKETPLACE_PLUGINS)[0]) => {
-    setInstallingId(mpPlugin.id)
+    setInstallingId(mpPlugin.id || null)
     try {
       await api.post('/system/plugins/inject', {
         name: mpPlugin.name,
@@ -191,7 +191,7 @@ const PluginsPage = () => {
     return MARKETPLACE_PLUGINS.filter(
       (p) =>
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.description.toLowerCase().includes(searchQuery.toLowerCase())
+        p.description?.toLowerCase().includes(searchQuery.toLowerCase())
     )
   }
 
@@ -214,7 +214,7 @@ const PluginsPage = () => {
       </div>
     )
 
-  const displayList = activeTab === 'installed' ? getFilteredInstalled() : getFilteredMarketplace()
+  const displayList = (activeTab === 'installed' ? getFilteredInstalled() : getFilteredMarketplace()) as PluginData[]
 
   return (
     <div

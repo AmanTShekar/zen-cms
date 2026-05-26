@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Search,
@@ -43,10 +43,11 @@ const GlobalSearch: React.FC = () => {
       if (query.length >= 2) {
         setIsSearching(true)
         try {
-          const res = await api.get(`/system/search?q=${query}`)
+          const res = await api.get(`/system/search?q=${encodeURIComponent(query)}`)
           setResults(res.data.data)
         } catch {
           console.error('Search failed')
+          setResults([])
         } finally {
           setIsSearching(false)
         }
@@ -82,6 +83,30 @@ const GlobalSearch: React.FC = () => {
     setQuery('')
   }
 
+  const commands = useMemo(() => [
+    { label: 'Dashboard', path: '/', icon: Layout, sub: 'System Overview' },
+    { label: 'General Settings', path: '/settings?tab=general', icon: Settings, sub: 'Site Name, URL, Maintenance' },
+    { label: 'Maintenance Mode', path: '/settings?tab=general', icon: Zap, sub: 'Protocol Override' },
+    { label: 'Security Protocols', path: '/settings?tab=security', icon: Shield, sub: 'Session Lifespan & Auth' },
+    { label: 'SMTP Relay', path: '/settings?tab=notifications', icon: Mail, sub: 'Email Configuration' },
+    { label: 'Operator Registry', path: '/settings?tab=users', icon: Users, sub: 'User Management' },
+    { label: 'API Credentials', path: '/settings?tab=keys', icon: Key, sub: 'Access Tokens' },
+    { label: 'Infrastructure Stats', path: '/settings?tab=database', icon: Database, sub: 'DB Health & Cache' },
+    { label: 'AI Intelligence', path: '/settings?tab=ai', icon: Sparkles, sub: 'Neural Bridge Config' },
+    { label: 'Custom Styles', path: '/settings?tab=appearance', icon: Palette, sub: 'CSS Overrides' },
+    { label: 'Audit Logs', path: '/audit-logs', icon: Clock, sub: 'Security Events' },
+    { label: 'Plugin Marketplace', path: '/plugins', icon: Zap, sub: 'Modular Extensions' },
+  ], [])
+
+  const filteredCommands = useMemo(
+    () => commands.filter(
+      (cmd) =>
+        cmd.label.toLowerCase().includes(query.toLowerCase()) ||
+        cmd.sub.toLowerCase().includes(query.toLowerCase())
+    ),
+    [commands, query]
+  )
+
   return (
     <div ref={containerRef} className="relative z-[100]">
       <motion.div
@@ -103,7 +128,7 @@ const GlobalSearch: React.FC = () => {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
           placeholder="Search collections & commands..."
-          className="bg-transparent border-none outline-none text-[13px] font-black uppercase tracking-widest italic flex-1 placeholder:text-gray-700"
+          className="bg-transparent border-none text-[13px] font-black uppercase tracking-widest italic flex-1 placeholder:text-gray-700 focus-visible:ring-2 focus-visible:ring-indigo-500 rounded px-1"
         />
         {query && (
           <button onClick={() => setQuery('')} className="p-1 hover:bg-black/5 rounded-none">
@@ -160,83 +185,9 @@ const GlobalSearch: React.FC = () => {
                   System Protocols
                 </div>
                 {(() => {
-                  const commands = [
-                    { label: 'Dashboard', path: '/', icon: Layout, sub: 'System Overview' },
-                    {
-                      label: 'General Settings',
-                      path: '/settings?tab=general',
-                      icon: Settings,
-                      sub: 'Site Name, URL, Maintenance',
-                    },
-                    {
-                      label: 'Maintenance Mode',
-                      path: '/settings?tab=general',
-                      icon: Zap,
-                      sub: 'Protocol Override',
-                    },
-                    {
-                      label: 'Security Protocols',
-                      path: '/settings?tab=security',
-                      icon: Shield,
-                      sub: 'Session Lifespan & Auth',
-                    },
-                    {
-                      label: 'SMTP Relay',
-                      path: '/settings?tab=notifications',
-                      icon: Mail,
-                      sub: 'Email Configuration',
-                    },
-                    {
-                      label: 'Operator Registry',
-                      path: '/settings?tab=users',
-                      icon: Users,
-                      sub: 'User Management',
-                    },
-                    {
-                      label: 'API Credentials',
-                      path: '/settings?tab=keys',
-                      icon: Key,
-                      sub: 'Access Tokens',
-                    },
-                    {
-                      label: 'Infrastructure Stats',
-                      path: '/settings?tab=database',
-                      icon: Database,
-                      sub: 'DB Health & Cache',
-                    },
-                    {
-                      label: 'AI Intelligence',
-                      path: '/settings?tab=ai',
-                      icon: Sparkles,
-                      sub: 'Neural Bridge Config',
-                    },
-                    {
-                      label: 'Custom Styles',
-                      path: '/settings?tab=appearance',
-                      icon: Palette,
-                      sub: 'CSS Overrides',
-                    },
-                    {
-                      label: 'Audit Logs',
-                      path: '/audit-logs',
-                      icon: Clock,
-                      sub: 'Security Events',
-                    },
-                    {
-                      label: 'Plugin Marketplace',
-                      path: '/plugins',
-                      icon: Zap,
-                      sub: 'Modular Extensions',
-                    },
-                  ].filter(
-                    (cmd) =>
-                      cmd.label.toLowerCase().includes(query.toLowerCase()) ||
-                      cmd.sub.toLowerCase().includes(query.toLowerCase())
-                  )
-
                   if (
                     results.length === 0 &&
-                    commands.length === 0 &&
+                    filteredCommands.length === 0 &&
                     query.length >= 2 &&
                     !isSearching
                   ) {
@@ -249,7 +200,7 @@ const GlobalSearch: React.FC = () => {
                     )
                   }
 
-                  return commands.map((cmd) => (
+                  return filteredCommands.map((cmd) => (
                     <button
                       key={cmd.label}
                       onClick={() => handleSelect(cmd.path)}

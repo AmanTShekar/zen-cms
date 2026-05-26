@@ -1,5 +1,6 @@
 import * as path from 'path'
 import * as fs from 'fs'
+import { pathToFileURL } from 'url'
 import { logger } from '../../services/logger'
 
 /**
@@ -31,7 +32,9 @@ export class AotBridge {
     }
 
     try {
-      this.compiledModule = await import(fileToLoad)
+      // Convert absolute Windows paths to file:// URLs for ESM import() compatibility
+      const fileUrl = pathToFileURL(fileToLoad).href
+      this.compiledModule = await import(fileUrl)
       ;(globalThis as any).zenithAotBridge = AotBridge
       logger.info({ path: fileToLoad }, 'AotBridge: Loaded compiled AOT query adapter successfully.')
     } catch (err: any) {

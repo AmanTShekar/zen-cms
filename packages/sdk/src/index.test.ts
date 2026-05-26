@@ -82,3 +82,36 @@ describe('ZenithClient — upload', () => {
     expect(options.method).toBe('POST')
   })
 })
+
+describe('ZenithClient — site switching', () => {
+  it('updates siteId and flushes cache when setSiteId is called', async () => {
+    const client = makeClient()
+    const mockData1 = { data: { docs: [{ _id: '1', title: 'Post Site A' }] } }
+    const mockData2 = { data: { docs: [{ _id: '2', title: 'Post Site B' }] } }
+
+    ;(fetch as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockData1),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockData2),
+      })
+
+    // Fetch on default site ID (empty)
+    const res1 = await client.find('posts', { limit: 5 })
+    expect(res1.docs[0].title).toBe('Post Site A')
+
+    // Change site ID using setSiteId
+    client.setSiteId('site-b')
+
+    // Fetch again — cache should be flushed, performing a new fetch with headers
+    const res2 = await client.find('posts', { limit: 5 })
+    expect(res2.docs[0].title).toBe('Post Site B')
+
+    // Verify correct header was sent in the second request
+    const lastCall = (fetch as ReturnType<typeof vi.fn>).mock.calls[1]
+    expect(lastCall[1].headers.get('X-Zenith-Site-Id')).toBe('site-b')
+  })
+})

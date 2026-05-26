@@ -2,17 +2,17 @@ import { Request, Response } from 'express'
 import { AuthService } from '../../services/auth'
 import { AdapterFactory } from '../../database/adapters/AdapterFactory'
 import { DatabaseAdapter } from '../../database/adapters/BaseAdapter'
-import { createResponse, createErrorResponse } from '../utils'
-import { logger } from '../../services/logger'
+import { createResponse } from '../utils'
+import { AuthenticationError } from '../../errors'
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response, next: any) => {
   try {
     const { email, password } = req.body
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const userDoc = await adapter.findOne<any>('users', { email: email.toLowerCase() })
 
     if (!userDoc || !(await AuthService.comparePassword(password, userDoc.password))) {
-      return res.status(401).json(createErrorResponse(401, 'Invalid credentials'))
+      throw new AuthenticationError()
     }
 
     const userPayload = { id: userDoc._id.toString(), email: userDoc.email, role: userDoc.role }
@@ -26,8 +26,8 @@ export const login = async (req: Request, res: Response) => {
     })
 
     res.json(createResponse({ user: userPayload, accessToken }))
-  } catch (_error: unknown) {
-    res.status(500).json(createErrorResponse(500, 'Login failed'))
+  } catch (err) {
+    next(err)
   }
 }
 
@@ -36,11 +36,15 @@ export const logout = (req: Request, res: Response) => {
   res.json(createResponse({ success: true }))
 }
 
-export const getMe = async (req: Request, res: Response) => {
-  const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-  const user = await adapter.findOne<any>('users', { _id: (req as any).user.id })
-  if (user) {
-    delete user.password
+export const getMe = async (req: Request, res: Response, next: any) => {
+  try {
+    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const user = await adapter.findOne<any>('users', { _id: (req as any).user.id })
+    if (user) {
+      delete user.password
+    }
+    res.json(createResponse(user))
+  } catch (err) {
+    next(err)
   }
-  res.json(createResponse(user))
 }

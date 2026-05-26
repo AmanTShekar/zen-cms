@@ -1,13 +1,14 @@
 import { CollectionConfig, FieldConfig } from '@zenithcms/types'
 import { logger } from './logger'
 import { DatabaseAdapter, BaseOptions } from '../database/adapters/BaseAdapter'
-import { NotFoundError, ForbiddenError } from '../errors'
+import { NotFoundError, ForbiddenError, ConflictError } from '../errors'
 import { eventHub } from './event-hub'
 import { sanitizeHtml } from '../utils'
 import { WorkerSandboxPool } from '../sandbox/worker-pool'
 import { i18n } from '../i18n'
 import { PresenceService } from './presence'
 import { canTransition, roleFromString } from './workflow-engine'
+import { hookRegistry } from '../plugins/hooks'
 
 export const sandboxPool = new WorkerSandboxPool()
 
@@ -19,6 +20,8 @@ export interface ContentOperationOptions extends BaseOptions {
   siteId?: string
   preview?: boolean
   overrideLock?: boolean
+  /** For optimistic locking: if provided, update fails with ConflictError when stale */
+  expectedVersion?: number
 }
 
 /**
@@ -49,7 +52,7 @@ export class ContentService<T = unknown> {
     const cleanData = { ...data }
 
     for (const field of fields) {
-      if (((field as any).virtual || field.type === 'ui' || field.type === 'row') && action === 'beforeChange') continue
+      if (((field as any).virtual || field.type === 'ui' || field.type === 'row' || field.type === 'join') && action === 'beforeChange') continue
 
       // ── Stored XSS Protection: Sanitize rich text inputs before saving ─────
       if (field.type === 'richtext' && action === 'beforeChange') {
@@ -194,6 +197,8 @@ export class ContentService<T = unknown> {
         )
       }
       docs = await Promise.all(docs.map((doc) => this.processFields(doc, options, 'afterRead')))
+      // Plugin side-effect hooks (indexing, search, notifications, etc.)
+      await hookRegistry.emit(`content:${this.config.slug}:afterRead`, docs)
     }
 
     return docs
@@ -228,6 +233,8 @@ export class ContentService<T = unknown> {
         doc = await this.executeHook('afterRead', this.config.hooks.afterRead, doc, options.user)
       }
       doc = await this.processFields(doc, options, 'afterRead')
+      // Plugin side-effect hooks
+      await hookRegistry.emit(`content:${this.config.slug}:afterRead`, doc)
     }
 
     return doc
@@ -241,20 +248,28 @@ export class ContentService<T = unknown> {
       if (!options.skipHooks) {
         if (this.config.hooks?.beforeValidate)
           docData = await this.executeHook('beforeValidate', this.config.hooks.beforeValidate, docData, options.user)
+        // Plugin pipeline hooks — let plugins transform data before validation
+        docData = await hookRegistry.apply(`content:${this.config.slug}:beforeValidate`, docData)
         docData = await this.processFields(docData, options, 'beforeChange')
         if (this.config.hooks?.beforeCreate)
           docData = await this.executeHook('beforeCreate', this.config.hooks.beforeCreate, docData, options.user)
+        // Plugin pipeline hooks — let plugins transform data before creation
+        docData = await hookRegistry.apply(`content:${this.config.slug}:beforeCreate`, docData)
       }
 
       if (options.siteId) {
         ;(docData as any).siteId = options.siteId
       }
+      // Initialize _version for optimistic locking
+      ;(docData as any)._version = 1
 
       const createdDoc = await this.adapter.create<T>(this.config.slug, docData, opts)
 
       if (!options.skipHooks && this.config.hooks?.afterCreate) {
         await this.executeHook('afterCreate', this.config.hooks.afterCreate, createdDoc, options.user)
       }
+      // Plugin side-effect hooks (indexing, search, webhooks, etc.)
+      await hookRegistry.emit(`content:${this.config.slug}:afterCreate`, createdDoc)
 
       if (this.config.versions) {
         await this._createVersion(createdDoc, opts)
@@ -312,6 +327,16 @@ export class ContentService<T = unknown> {
       const oldDoc = await this.adapter.findOne(this.config.slug, query, opts)
       if (!oldDoc) throw new NotFoundError(this.config.name, id)
 
+      // Optimistic locking: reject stale saves
+      if (options.expectedVersion !== undefined) {
+        const currentVersion = (oldDoc as any)._version
+        if (currentVersion !== undefined && currentVersion !== options.expectedVersion) {
+          throw new ConflictError(
+            `Document was modified by another user (expected version ${options.expectedVersion}, current ${currentVersion}). Please reload and try again.`
+          )
+        }
+      }
+
       // Task 05: Auto-validate workflow transitions when workflowStatus changes
       const incomingWorkflowStatus = (data as any)?.workflowStatus
       const currentWorkflowStatus = (oldDoc as any)?.workflowStatus || 'draft'
@@ -332,13 +357,19 @@ export class ContentService<T = unknown> {
       if (!options.skipHooks) {
         if (this.config.hooks?.beforeValidate)
           updateData = await this.executeHook('beforeValidate', this.config.hooks.beforeValidate, updateData, options.user)
+        // Plugin pipeline hooks — let plugins transform data before validation
+        updateData = await hookRegistry.apply(`content:${this.config.slug}:beforeValidate`, updateData)
         updateData = await this.processFields(updateData, options, 'beforeChange', this.config.fields, oldDoc)
         if (this.config.hooks?.beforeUpdate)
           updateData = await this.executeHook('beforeUpdate', this.config.hooks.beforeUpdate, updateData, options.user)
+        // Plugin pipeline hooks — let plugins transform data before update
+        updateData = await hookRegistry.apply(`content:${this.config.slug}:beforeUpdate`, updateData)
       }
 
       const targetId = this.config.singleton && id === 'singleton' ? (oldDoc as any)._id : id
-      const doc = await this.adapter.update<T>(this.config.slug, targetId, updateData, opts)
+      // Increment _version on every save (optimistic locking document version tracker)
+      const newVersion = ((oldDoc as any)._version || 0) + 1
+      const doc = await this.adapter.update<T>(this.config.slug, targetId, { ...updateData, _version: newVersion }, opts)
       if (!doc) throw new NotFoundError(this.config.name, id)
 
       const delta = this._calculateDelta(oldDoc, updateData)
@@ -346,6 +377,8 @@ export class ContentService<T = unknown> {
       if (!options.skipHooks && this.config.hooks?.afterUpdate) {
         await this.executeHook('afterUpdate', this.config.hooks.afterUpdate, doc, options.user)
       }
+      // Plugin side-effect hooks (indexing, search, webhooks, etc.)
+      await hookRegistry.emit(`content:${this.config.slug}:afterUpdate`, { doc, delta, collection: this.config.slug })
 
       if (this.config.versions && !options.skipVersioning) {
         await this._createVersion(doc, opts, delta)
@@ -370,6 +403,10 @@ export class ContentService<T = unknown> {
   async delete(id: string, options: ContentOperationOptions): Promise<boolean> {
     if (!options.skipHooks && this.config.hooks?.beforeDelete) {
       await this.executeHook('beforeDelete', this.config.hooks.beforeDelete, id, options.user)
+    }
+    // Plugin pipeline hooks — let plugins inspect/modify the delete target
+    if (!options.skipHooks) {
+      await hookRegistry.emit(`content:${this.config.slug}:beforeDelete`, { id, collection: this.config.slug, user: options.user })
     }
 
     let targetId = id
@@ -413,6 +450,10 @@ export class ContentService<T = unknown> {
 
     if (!options.skipHooks && this.config.hooks?.afterDelete) {
       await this.executeHook('afterDelete', this.config.hooks.afterDelete, id, options.user)
+    }
+    // Plugin side-effect hooks (cleanup, search deindex, etc.)
+    if (!options.skipHooks) {
+      await hookRegistry.emit(`content:${this.config.slug}:afterDelete`, { id, collection: this.config.slug })
     }
 
     eventHub

@@ -1,6 +1,6 @@
 # Zenith CMS — Complete Codebase Analysis & Summary
 
-> **Date:** 2026-05-22
+> **Date:** 2026-05-24
 > **Version:** 0.2.0
 > **Repository Root:** `C:\Users\Asus\Desktop\cms`
 
@@ -367,7 +367,7 @@ Based on references in `internal/references/` and feature analysis:
 | Drag-and-Drop Builder | ✅ D&D Canvas | ❌ | ❌ | ❌ |
 | Sandboxed Hooks | ✅ VM isolation | ❌ | ❌ | ❌ |
 | Zero-dep JS SDK | ✅ | ❌ (requires fetch polyfill) | ❌ | ❌ |
-| Auto Type Generation | ✅ | Partial | ✅ (via CLI) | ❌ |
+| Auto Type Generation | ✅ | Partial | ✅ (via CLI) | ❠ |
 | Glassmorphic Admin | ✅ Custom | ❌ Default | ❌ Default | ❌ Default |
 | Multi-tenancy | ✅ Header-based | Plugin (paid) | Enterprise | ✅ |
 
@@ -418,7 +418,49 @@ Recent commits indicate heavy investment in:
 1. **Test Coverage** — Only 2 test files found (`auth.test.ts`, `engine.test.ts`); needs comprehensive testing
 2. **Documentation** — API docs exist but component-level docs are sparse
 3. **CLI Tool** — `packages/cli/src/index.ts` appears minimal; scaffolding could be expanded
-4. **Demo Package** — `packages/demo/` entries are basic storefront stubs
+4. **Demo Package** — `templates/demo/` entries are basic storefront stubs
 5. **TypeScript Strictness** — Heavy use of `any` types throughout (especially in GraphQL, sandbox, webhook services)
 6. **Pagination Max** — Hard cap of 100 items per page on REST, 100 on GraphQL
 7. **Admin Bundle** — No code splitting visible in Vite config; large single bundle
+
+---
+
+## 13. Recent Fixes from Comprehensive Audit (May 24, 2026)
+
+Recent fixes were implemented to address schema alignment issues identified in a comprehensive codebase audit:
+
+### 1. TypeSynthesizer `media` type `hasMany` array handling - **FIXED**
+- **File**: `packages/core/src/services/type-synthesizer.ts:74-75`
+- **Issue**: `media` fields with `hasMany: true` were incorrectly generating non-array TypeScript types
+- **Fix**: Added `hasMany` check to return proper array type
+- **Before**: `return '{ url: string; alt?: string }'`
+- **After**: `return field.hasMany ? '{ url: string; alt?: string }[]' : '{ url: string; alt?: string }'`
+- **Result**: Gallery fields with `hasMany: true` now correctly generate `{ url: string; alt?: string }[]` types
+
+### 2. PostgresDrizzleAdapter missing `media` case in `mapFieldToDrizzleColumn` - **FIXED**
+- **File**: `packages/db-postgres/src/PostgresDrizzleAdapter.ts:627-628`
+- **Issue**: `media` type fell through to `default: text()` instead of using `jsonb()`
+- **Fix**: Added explicit `media` case before default
+- **Added**: `case 'media': col = jsonb(field.name); break;`
+- **Result**: Media fields now properly stored as JSONB columns in PostgreSQL (matching MongoDB behavior)
+
+### 3. PostgresDrizzleAdapter missing `media` case in `mapFieldToSqlType` - **FIXED**
+- **File**: `packages/db-postgres/src/PostgresDrizzleAdapter.ts:672-673`
+- **Issue**: `media` type fell through to `default: TEXT` instead of returning `JSONB`
+- **Fix**: Added explicit `media` case before default
+- **Added**: `case 'media': return 'JSONB';`
+- **Result**: Media fields correctly report SQL type as JSONB for migrations
+
+### 4. query-parser.ts `normalizeFilters` nested object bug - **FIXED**
+- **File**: `packages/core/src/api/query-parser.ts:68-69`
+- **Issue**: When processing nested filter objects, the return value from recursive calls was discarded
+- **Fix**: Properly use return value from recursive call
+- **Before**: `normalizeFilters(ops as Record<string, unknown>, out) // result discarded!`
+- **After**: 
+  ```ts
+  const nested = normalizeFilters(ops as Record<string, unknown>, {})
+  Object.assign(out, nested)
+  ```
+- **Result**: Nested filter objects are now properly processed and merged in query parsing
+
+These fixes close critical schema alignment gaps between MongoDB and PostgreSQL adapters and ensure proper TypeScript type generation for media fields with `hasMany: true`.

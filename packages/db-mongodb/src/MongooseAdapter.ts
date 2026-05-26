@@ -1,5 +1,5 @@
 import mongoose, { Model } from 'mongoose'
-import { CollectionConfig, DatabaseAdapter, FindOptions, BaseOptions, AuditLogData, VersionData, WebhookDeliveryData } from '@zenithcms/types'
+import { CollectionConfig, DatabaseAdapter, FindOptions, BaseOptions, AuditLogData, VersionData, WebhookDeliveryData, WebhookDeliveryRecord } from '@zenithcms/types'
 import { getModelForCollection } from './model-factory'
 import NodeCache from 'node-cache'
 import Redis from 'ioredis'
@@ -138,9 +138,22 @@ export class MongooseAdapter implements DatabaseAdapter {
           collectionName: { type: String, index: true },
           documentId: { type: String, index: true },
           userId: { type: String, index: true },
+          userEmail: { type: String },
+          userName: { type: String },
+          action: { type: String, index: true },
+          changes: { type: mongoose.Schema.Types.Mixed },
+          ip: { type: String },
+          userAgent: { type: String },
+          status: { type: String, index: true },
+          resource: { type: String },
+          siteId: { type: String, index: true },
+          hash: { type: String },
+          previousHash: { type: String },
         },
         { strict: false }
       )
+      schema.index({ siteId: 1, timestamp: -1 })
+      schema.index({ action: 1, timestamp: -1 })
       mongoose.model('AuditLog', schema)
     }
     if (!mongoose.models['Version']) {
@@ -205,6 +218,22 @@ export class MongooseAdapter implements DatabaseAdapter {
       )
       mongoose.model('z_presence', schema)
     }
+    if (!mongoose.models['Lock']) {
+      const schema = new mongoose.Schema(
+        {
+          collectionName: { type: String, required: true, index: true },
+          documentId: { type: String, required: true, index: true },
+          siteId: { type: String, index: true },
+          lockedBy: { type: String, required: true },
+          lockedByEmail: { type: String, required: true },
+          lockedAt: { type: Date, default: Date.now },
+          lockExpiresAt: { type: Date, required: true },
+        },
+        { collection: 'z_locks', timestamps: false }
+      )
+      schema.index({ collectionName: 1, documentId: 1, siteId: 1 }, { unique: true })
+      mongoose.model('Lock', schema)
+    }
   }
 
   async registerCollection(config: CollectionConfig): Promise<void> {
@@ -225,11 +254,15 @@ export class MongooseAdapter implements DatabaseAdapter {
     let resolvedCollection = collection
     if (collection === 'users') resolvedCollection = 'User'
     if (collection === 'z_sites' || collection === 'sites') resolvedCollection = 'Site'
+    if (collection === 'z_workspaces' || collection === 'workspaces') resolvedCollection = 'Workspace'
     if (collection === 'z_password_resets') resolvedCollection = 'z_password_resets'
     if (collection === 'z_api_keys') resolvedCollection = 'z_api_keys'
     if (collection === 'z_migrations') resolvedCollection = 'z_migrations'
     if (collection === 'z_collections') resolvedCollection = 'z_collections'
     if (collection === 'z_presence') resolvedCollection = 'z_presence'
+    if (collection === 'z_locks' || collection === 'locks') resolvedCollection = 'Lock'
+    if (collection === 'z_webhook_configs') resolvedCollection = 'WebhookConfig'
+    if (collection === 'z_plugins') resolvedCollection = 'Plugin'
     if (collection === 'audit_logs' || collection === 'z_audit_logs') resolvedCollection = 'AuditLog'
     if (collection === 'versions' || collection === 'z_versions') resolvedCollection = 'Version'
 
@@ -262,13 +295,13 @@ export class MongooseAdapter implements DatabaseAdapter {
     const globalAot = (globalThis as any).zenithAotBridge
     if (globalAot && globalAot.hasQuery(collection, 'find')) {
       const model = this.getModel(collection)
-      const docs = await globalAot.executeQuery(collection, 'find', mongoose.connection.db, model, this._normalizeQuery(query), options)
+      const docs = await globalAot.executeQuery(collection, 'find', mongoose.connection.db, model, this._normalizeQuery(query, options), options)
       await this.cache.set(cacheKey, docs, collection)
       return docs
     }
 
     const model = this.getModel(collection)
-    const q = model.find(this._normalizeQuery(query))
+    const q = model.find(this._normalizeQuery(query, options))
 
     if (options.select) q.select(options.select)
     if (options.populate) {
@@ -298,7 +331,7 @@ export class MongooseAdapter implements DatabaseAdapter {
     if (cached) return cached
 
     const model = this.getModel(collection)
-    const q = model.findOne(this._normalizeQuery(query))
+    const q = model.findOne(this._normalizeQuery(query, options))
 
     if (options.select) q.select(options.select)
     if (options.populate) {
@@ -323,16 +356,22 @@ export class MongooseAdapter implements DatabaseAdapter {
     data: Partial<T>,
     options: BaseOptions = {}
   ): Promise<T> {
+    // Inject tenant scoping into created documents
+    const siteId = options?.siteId || options?.tenantId
+    const enrichedData = siteId && !(data as any).siteId
+      ? { ...data, siteId }
+      : data
+
     const globalAot = (globalThis as any).zenithAotBridge
     if (globalAot && globalAot.hasQuery(collection, 'create')) {
       const model = this.getModel(collection)
-      const doc = await globalAot.executeQuery(collection, 'create', mongoose.connection.db, model, data, options)
+      const doc = await globalAot.executeQuery(collection, 'create', mongoose.connection.db, model, enrichedData, options)
       await this._invalidateCache(collection)
       return doc as T
     }
 
     const model = this.getModel(collection)
-    const [doc] = await model.create([data] as any, { session: options.session as any })
+    const [doc] = await model.create([enrichedData] as any, { session: options.session as any })
     await this._invalidateCache(collection)
     return doc.toObject() as T
   }
@@ -344,9 +383,12 @@ export class MongooseAdapter implements DatabaseAdapter {
     options: BaseOptions = {}
   ): Promise<T | null> {
     const model = this.getModel(collection)
+    const siteId = options?.siteId || options?.tenantId
+    const filter: Record<string, unknown> = { _id: id }
+    if (siteId) filter.siteId = siteId
     const doc = await model
-      .findByIdAndUpdate(
-        id,
+      .findOneAndUpdate(
+        filter,
         { $set: data },
         {
           new: true,
@@ -360,11 +402,16 @@ export class MongooseAdapter implements DatabaseAdapter {
     return doc as T | null
   }
 
-  private _normalizeQuery(query: Record<string, unknown>): Record<string, unknown> {
+  private _normalizeQuery(query: Record<string, unknown>, options?: BaseOptions): Record<string, unknown> {
     const normalized = { ...query }
     if ('id' in normalized) {
       normalized._id = normalized.id
       delete normalized.id
+    }
+    // Inject tenant scoping from options to prevent cross-tenant data access
+    const siteId = options?.siteId || options?.tenantId
+    if (siteId && !normalized.siteId) {
+      normalized.siteId = siteId
     }
     return normalized
   }
@@ -376,7 +423,7 @@ export class MongooseAdapter implements DatabaseAdapter {
     options: BaseOptions = {}
   ): Promise<number> {
     const model = this.getModel(collection)
-    const result = await model.updateMany(this._normalizeQuery(query), { $set: data } as any, {
+    const result = await model.updateMany(this._normalizeQuery(query, options), { $set: data } as any, {
       session: options.session as any,
     })
     await this._invalidateCache(collection)
@@ -385,7 +432,10 @@ export class MongooseAdapter implements DatabaseAdapter {
 
   async delete(collection: string, id: string, options: BaseOptions = {}): Promise<boolean> {
     const model = this.getModel(collection)
-    const result = await model.findByIdAndDelete(id, { session: options.session as any })
+    const siteId = options?.siteId || options?.tenantId
+    const filter: Record<string, unknown> = { _id: id }
+    if (siteId) filter.siteId = siteId
+    const result = await model.findOneAndDelete(filter, { session: options.session as any })
     await this._invalidateCache(collection)
     return !!result
   }
@@ -396,14 +446,14 @@ export class MongooseAdapter implements DatabaseAdapter {
     options: BaseOptions = {}
   ): Promise<number> {
     const model = this.getModel(collection)
-    const result = await model.deleteMany(this._normalizeQuery(query), { session: options.session as any })
+    const result = await model.deleteMany(this._normalizeQuery(query, options), { session: options.session as any })
     await this._invalidateCache(collection)
     return result.deletedCount
   }
 
-  async count(collection: string, query: Record<string, unknown>): Promise<number> {
+  async count(collection: string, query: Record<string, unknown>, options?: BaseOptions): Promise<number> {
     const model = this.getModel(collection)
-    return model.countDocuments(this._normalizeQuery(query))
+    return model.countDocuments(this._normalizeQuery(query, options))
   }
 
   async aggregate<T = unknown>(collection: string, pipeline: unknown[]): Promise<T[]> {
@@ -476,6 +526,26 @@ export class MongooseAdapter implements DatabaseAdapter {
   async createWebhookDelivery(data: WebhookDeliveryData): Promise<void> {
     const WebhookModel = mongoose.models['WebhookDelivery']
     if (WebhookModel) await WebhookModel.create(data)
+  }
+
+  async getWebhookDeliveries(webhookId: string, limit = 50): Promise<WebhookDeliveryRecord[]> {
+    const WebhookModel = mongoose.models['WebhookDelivery']
+    if (!WebhookModel) return []
+    const docs = await WebhookModel.find({ webhookId })
+      .sort({ timestamp: -1 })
+      .limit(limit)
+      .lean()
+    return docs.map((d: any) => ({
+      id: d._id?.toString() || d.id,
+      webhookId: d.webhookId,
+      collectionSlug: d.collectionSlug,
+      event: d.event,
+      url: d.url,
+      payload: d.payload,
+      success: d.success,
+      responseStatus: d.responseStatus,
+      timestamp: d.timestamp,
+    }))
   }
 
   async search<T = unknown>(

@@ -9,6 +9,7 @@ import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import Redis from 'ioredis'
 
 export interface WebhookTarget {
+  id?: string
   url: string
   secret?: string
   events: string[]
@@ -240,6 +241,7 @@ export const WebhookService = {
           logger.info({ url: target.url, event, attempt: attempt + 1 }, 'Webhook delivered')
 
           await AdapterFactory.getActiveAdapter().createWebhookDelivery({
+            webhookId: target.id,
             collectionSlug: collection,
             event,
             url: target.url,
@@ -269,6 +271,7 @@ export const WebhookService = {
 
     try {
       await AdapterFactory.getActiveAdapter().createWebhookDelivery({
+        webhookId: target.id,
         collectionSlug: collection,
         event,
         url: target.url,
@@ -377,6 +380,7 @@ export const WebhookService = {
       logger.error({ url: target.url, error: ssrfErr.message }, 'Webhook SSRF blocked in queue worker')
       try {
         await AdapterFactory.getActiveAdapter().createWebhookDelivery({
+          webhookId: target.id,
           collectionSlug: collection,
           event,
           url: target.url,
@@ -417,6 +421,7 @@ export const WebhookService = {
         logger.info({ url: target.url, event, attempt: attempt + 1 }, 'Webhook delivered successfully via Redis queue')
 
         await AdapterFactory.getActiveAdapter().createWebhookDelivery({
+          webhookId: target.id,
           collectionSlug: collection,
           event,
           url: target.url,
@@ -472,6 +477,7 @@ export const WebhookService = {
     logger.error({ url: job.target.url, event: job.event }, 'Webhook failed after all queue retries')
     try {
       await AdapterFactory.getActiveAdapter().createWebhookDelivery({
+        webhookId: job.target.id,
         collectionSlug: job.collection,
         event: job.event,
         url: job.target.url,

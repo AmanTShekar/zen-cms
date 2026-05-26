@@ -10,6 +10,7 @@ export interface IRole extends Document {
   permissions: Array<{
     resource: string   // collection slug or '*' for all
     actions: string[]  // 'create' | 'read' | 'update' | 'delete' | '*'
+    fieldPermissions?: Record<string, { read?: boolean; write?: boolean }>
   }>
   createdAt: Date
   updatedAt: Date
@@ -31,6 +32,17 @@ const RoleSchema = new Schema<IRole>(
           {
             resource: { type: String, required: true },
             actions: { type: [String], default: [] },
+            fieldPermissions: {
+              type: Map,
+              of: new Schema(
+                {
+                  read: { type: Boolean },
+                  write: { type: Boolean },
+                },
+                { _id: false }
+              ),
+              default: {},
+            },
           },
           { _id: false }
         ),

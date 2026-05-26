@@ -4,7 +4,7 @@ import { requireAuth } from '../middleware/auth'
 import { createResponse } from './utils'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
-import { ValidationError } from '../errors'
+import { ValidationError, ConflictError } from '../errors'
 import fs from 'fs'
 
 const router: Router = Router()
@@ -205,10 +205,7 @@ router.put('/layout', async (req: Request, res: Response, next) => {
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
       const existing = await adapter.findOne<any>('z_dashboard_layouts', { user_id: user.id, site_id: siteId || null })
       if (existing && new Date(clientUpdatedAt) < new Date(existing.updated_at)) {
-        return res.status(409).json({
-          success: false,
-          error: 'Layout was modified in another tab. Refresh to get the latest version.',
-        })
+        throw new ConflictError('Layout was modified in another tab. Refresh to get the latest version.')
       }
     }
 

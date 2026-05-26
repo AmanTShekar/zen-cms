@@ -89,6 +89,7 @@ export const rateLimitMiddleware = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   store: rateLimitStore,
+  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
 })
 
 // Alias for clarity
@@ -102,4 +103,5 @@ export const authRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   store: rateLimitStore,
+  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
 })

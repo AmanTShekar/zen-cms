@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { Layout, X, Trash2, Download } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '../../../context/ThemeContext'
 import { useEditorStore } from '../../../store/editorStore'
-import { usePanelStore } from '../../../store/panelStore'
+import { useModalStore } from '../../../store/modalStore'
 import { cn } from '../../../lib/utils'
+import { useFocusTrap } from '../../../hooks/useFocusTrap'
 
 interface TemplatesModalProps {
   selectedSections: Set<string>
@@ -23,13 +24,25 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
 }) => {
   const { theme } = useTheme()
   const { templates } = useEditorStore()
-  const { templatesOpen, setTemplatesOpen } = usePanelStore()
+  const { templatesOpen, setTemplatesOpen } = useModalStore()
+
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const modalTitleId = 'templates-modal-title'
+
+  useFocusTrap(templatesOpen, {
+    onEscape: () => setTemplatesOpen(false),
+    containerRef: dialogRef
+  })
 
   return (
     <AnimatePresence>
       {templatesOpen && (
         <div className="fixed inset-0 z-[600] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
           <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={modalTitleId}
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0 }}
@@ -49,17 +62,21 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
                   <Layout size={16} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black uppercase italic leading-none text-indigo-505">
+                  <h3
+                    id={modalTitleId}
+                    className="text-lg font-black uppercase italic leading-none text-indigo-500"
+                  >
                     Block Templates
                   </h3>
-                  <p className="text-[8px] text-gray-500 uppercase tracking-widest">
+                  <p className="text-xs text-gray-500 uppercase tracking-widest">
                     Save & reuse component combinations
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setTemplatesOpen(false)}
-                className="p-1 hover:text-indigo-505 transition-colors"
+                aria-label="Close"
+                className="p-1 hover:text-indigo-500 transition-colors"
                 style={{ color: theme === 'dark' ? '#fff' : '#000' }}
               >
                 <X size={18} />
@@ -70,10 +87,10 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
               {templates.length === 0 ? (
                 <div className="py-12 text-center">
                   <Layout size={40} className="mx-auto mb-4 text-gray-600" />
-                  <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest italic">
+                  <p className="text-xs text-gray-500 font-black uppercase tracking-widest italic">
                     No saved templates yet
                   </p>
-                  <p className="text-[8px] text-gray-600 mt-2">
+                  <p className="text-xs text-gray-600 mt-2">
                     Select blocks, then save as template from the context menu
                   </p>
                 </div>
@@ -90,27 +107,28 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
                       )}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase italic text-indigo-400">
+                        <span className="text-xs font-black uppercase italic text-indigo-400">
                           {template.name}
                         </span>
-                        <span className="text-[7px] text-gray-555">
+                        <span className="text-xs text-gray-500">
                           {template.content?.sections?.length || template.sections?.length || 0} blocks
                         </span>
                       </div>
                       <div className="flex gap-2">
                         <button
                           onClick={() => applyTemplate(template)}
-                          className="flex-1 py-2 bg-indigo-600 text-white text-[8px] font-black uppercase italic rounded-none hover:bg-indigo-555 transition-colors"
+                          className="flex-1 py-2 bg-indigo-600 text-white text-xs font-black uppercase italic rounded-none hover:bg-indigo-500 transition-colors"
                         >
                           Apply
                         </button>
                         <button
                           onClick={() => {
+                            if (!window.confirm(`Delete template "${template.name}"? This cannot be undone.`)) return
                             deleteTemplate(template.id || template._id)
-                            // Force re-render
                             setTemplatesOpen(false)
                             setTimeout(() => setTemplatesOpen(true), 50)
                           }}
+                          aria-label={`Delete template ${template.name}`}
                           className={cn(
                             'p-2 border rounded-none transition-colors',
                             theme === 'dark'
@@ -132,7 +150,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
                 'p-4 border-t flex items-center justify-between',
                 theme === 'dark' ? 'border-white/5 bg-white/[0.02]' : 'border-gray-100 bg-gray-50/50'
               )}>
-                <span className="text-[9px] text-gray-500 font-black uppercase tracking-widest italic">
+                <span className="text-xs text-gray-500 font-black uppercase tracking-widest italic">
                   {selectedSections.size} block{selectedSections.size > 1 ? 's' : ''} selected
                 </span>
                 <button
@@ -140,9 +158,10 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
                     saveAsTemplate(Array.from(selectedSections))
                     setSelectedSections(new Set())
                   }}
-                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-[8px] font-black uppercase italic rounded-none hover:bg-indigo-500 transition-colors"
+                  aria-label="Save selection as template"
+                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-xs font-black uppercase italic rounded-none hover:bg-indigo-500 transition-colors"
                 >
-                  <Download size={12} />
+                  <Download size={12} aria-hidden="true" />
                   Save as Template
                 </button>
               </div>

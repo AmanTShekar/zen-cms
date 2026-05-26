@@ -1,12 +1,14 @@
-import React, { useEffect, useState, useMemo } from 'react'
-import { useEditor, EditorContent, Extension } from '@tiptap/react'
-// BubbleMenu and FloatingMenu removed as they were unused
+/* eslint-disable react-hooks/preserve-manual-memoization */
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react'
+import { useEditor, EditorContent, type Editor, Extension } from '@tiptap/react'
+import { BubbleMenu } from '@tiptap/react/menus'
 import { StarterKit } from '@tiptap/starter-kit'
 import { Underline } from '@tiptap/extension-underline'
 import { TextStyle } from '@tiptap/extension-text-style'
 import { Color } from '@tiptap/extension-color'
 import { FontFamily } from '@tiptap/extension-font-family'
 import { Link as TiptapLink } from '@tiptap/extension-link'
+import Image from '@tiptap/extension-image'
 import {
   Bold,
   Italic,
@@ -21,13 +23,18 @@ import {
   Check,
   LetterText,
   Eraser,
+  Heading1,
+  Heading2,
+  Heading3,
+  Text,
+  ListOrdered,
+  Quote,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../lib/utils'
 import api from '../lib/api'
 import { useTheme } from '../context/ThemeContext'
-
-// Custom_FontSize_Extension
+import { SlashMenu, type SlashMenuItem } from '../pages/editor/components/SlashMenu'
 const FontSize = Extension.create({
   name: 'fontSize',
   addOptions() {
@@ -182,6 +189,12 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const [showHeadings, setShowHeadings] = useState(false)
   const [selectedFont, setSelectedFont] = useState('Inter')
 
+  // Slash Command Menu States
+  const [slashMenuOpen, setSlashMenuOpen] = useState(false)
+  const [slashMenuPosition, setSlashMenuPosition] = useState({ top: 0, left: 0 })
+  const [slashSelectedIndex, setSlashSelectedIndex] = useState(0)
+  const [slashQuery, setSlashQuery] = useState('')
+
   const fonts = [
     { name: 'Inter', family: 'Inter, sans-serif' },
     { name: 'Roboto', family: 'Roboto, sans-serif' },
@@ -223,9 +236,24 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       TiptapLink.configure({
         openOnClick: false,
       }),
+      Image.configure({
+        inline: false,
+        allowBase64: true,
+      }),
     ],
     []
   )
+
+  // ── Paste handler: detect URL → auto-embed ──────────────────────────────────
+  const isImageUrl = (url: string) =>
+    /\.(jpe?g|png|gif|webp|avif|svg|bmp)(\?.*)?$/i.test(url)
+
+  const isVideoUrl = (url: string) =>
+    /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be|vimeo\.com|mux\.com)/i.test(url)
+
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  const editorRef = useRef<Editor | null>(null)
 
   const parsedContent = useMemo(() => {
     if (!value) return ''
@@ -241,6 +269,76 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
     return value
   }, [value, format])
+
+  // Define slashItems before useEditor to avoid temporal dead zone in handleKeyDown.
+  // Action callbacks use editorRef so they work once the editor is mounted.
+  const slashItems = useMemo<SlashMenuItem[]>(() => {
+    const rawItems: SlashMenuItem[] = [
+      {
+        id: 'text',
+        label: 'Paragraph',
+        description: 'Start writing plain text block',
+        icon: Text,
+        action: () => editorRef.current?.chain().focus().setParagraph().run(),
+      },
+      {
+        id: 'h1',
+        label: 'Heading 1',
+        description: 'Primary large headline structure',
+        icon: Heading1,
+        action: () => editorRef.current?.chain().focus().toggleHeading({ level: 1 }).run(),
+      },
+      {
+        id: 'h2',
+        label: 'Heading 2',
+        description: 'Secondary section head structure',
+        icon: Heading2,
+        action: () => editorRef.current?.chain().focus().toggleHeading({ level: 2 }).run(),
+      },
+      {
+        id: 'h3',
+        label: 'Heading 3',
+        description: 'Sub-section tertiary header block',
+        icon: Heading3,
+        action: () => editorRef.current?.chain().focus().toggleHeading({ level: 3 }).run(),
+      },
+      {
+        id: 'bullet',
+        label: 'Bullet List',
+        description: 'Create a simple bulleted list',
+        icon: List,
+        action: () => editorRef.current?.chain().focus().toggleBulletList().run(),
+      },
+      {
+        id: 'ordered',
+        label: 'Ordered List',
+        description: 'Create a sequential numbered list',
+        icon: ListOrdered,
+        action: () => editorRef.current?.chain().focus().toggleOrderedList().run(),
+      },
+      {
+        id: 'quote',
+        label: 'Blockquote',
+        description: 'Insert a highlighted pull-quote',
+        icon: Quote,
+        action: () => editorRef.current?.chain().focus().toggleBlockquote().run(),
+      },
+      {
+        id: 'clear',
+        label: 'Clear Formatting',
+        description: 'Erase all style marks & resets block',
+        icon: Eraser,
+        action: () => editorRef.current?.chain().focus().unsetAllMarks().run(),
+      },
+    ]
+
+    if (!slashQuery) return rawItems
+    return rawItems.filter(
+      (item) =>
+        item.label.toLowerCase().includes(slashQuery.toLowerCase()) ||
+        item.description.toLowerCase().includes(slashQuery.toLowerCase())
+    )
+  }, [slashQuery])
 
   const editor = useEditor({
     extensions,
@@ -261,16 +359,155 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         ),
         style: `font-family: ${selectedFont}, sans-serif;`,
       },
-      handleKeyDown: (_, event) => {
-        if ((mode === 'heading' || mode === 'inline' || mode === 'micro') && event.key === 'Enter')
-          return true
+      handlePaste: (_view, event) => {
+        const pastedText = event.clipboardData?.getData('text/plain') || ''
+        const trimmed = pastedText.trim()
+
+        // Only try to auto-embed standalone URLs that look like media
+        if (
+          trimmed &&
+          !trimmed.includes(' ') &&
+          !trimmed.includes('\n') &&
+          /^https?:\/\//.test(trimmed)
+        ) {
+          const normalizedUrl = trimmed.startsWith('https:') || trimmed.startsWith('http:')
+            ? trimmed
+            : `https:${trimmed}`
+
+          if (isImageUrl(normalizedUrl) && !editor?.isDestroyed) {
+            editor?.chain().focus().setImage({ src: normalizedUrl, alt: '' }).run()
+            return true
+          }
+          if (isVideoUrl(normalizedUrl) && !editor?.isDestroyed) {
+            const isYT = /youtube\.com|youtu\.be/i.test(normalizedUrl)
+            const videoId = isYT
+              ? (normalizedUrl.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/)?.[1] || '')
+              : ''
+            // Determine the embed URL for display
+            const embedLabel = isYT && videoId
+              ? `▶ YouTube — youtube.com/watch?v=${videoId}`
+              : `▶ Video — ${normalizedUrl}`
+            editor?.chain().focus().insertContent({
+              type: 'text',
+              marks: [{
+                type: 'link',
+                attrs: { href: normalizedUrl, target: '_blank', rel: 'noopener noreferrer' },
+              }],
+              text: embedLabel,
+            }).run()
+            return true
+          }
+        }
         return false
       },
     },
     onUpdate: ({ editor }) => {
       onChange(format === 'json' ? editor.getJSON() : editor.getHTML())
+
+      const { state } = editor
+      const { selection } = state
+      const { $from } = selection
+      const textBefore = $from.parent.textBetween(
+        Math.max(0, $from.parentOffset - 20),
+        $from.parentOffset,
+        null,
+        '\n'
+      )
+      const match = textBefore.match(/\/(\w*)$/)
+      if (match) {
+        setSlashQuery(match[1])
+        setSlashMenuOpen(true)
+        try {
+          const coords = editor.view.coordsAtPos(selection.from)
+          setSlashMenuPosition({
+            top: coords.bottom + window.scrollY,
+            left: coords.left + window.scrollX,
+          })
+        } catch (e) {
+          // fallback
+        }
+      } else {
+        setSlashMenuOpen(false)
+      }
+    },
+    onSelectionUpdate: ({ editor }) => {
+      const { state } = editor
+      const { selection } = state
+      const { $from } = selection
+      const textBefore = $from.parent.textBetween(
+        Math.max(0, $from.parentOffset - 20),
+        $from.parentOffset,
+        null,
+        '\n'
+      )
+      if (!textBefore.match(/\/(\w*)$/)) {
+        setSlashMenuOpen(false)
+      }
     },
   })
+
+  // Sync editorRef so slashItems actions always use the current editor instance
+  useEffect(() => {
+    editorRef.current = editor
+  }, [editor])
+
+  // Inject handleKeyDown separately to properly close over slashItems (avoid TDZ)
+  const executeSlashCommand = useCallback((item: SlashMenuItem) => {
+    if (!editor || editor.isDestroyed) return
+
+    const { state } = editor
+    const { selection } = state
+    const { $from } = selection
+    const textBefore = $from.parent.textBetween(
+      Math.max(0, $from.parentOffset - 20),
+      $from.parentOffset,
+      null,
+      '\n'
+    )
+    const match = textBefore.match(/\/(\w*)$/)
+    if (match) {
+      const startPos = selection.from - match[0].length
+      editor.chain().focus().deleteRange({ from: startPos, to: selection.from }).run()
+    }
+
+    item.action()
+    setSlashMenuOpen(false)
+    setSlashSelectedIndex(0)
+  }, [editor, setSlashMenuOpen, setSlashSelectedIndex])
+
+  useEffect(() => {
+    if (!editor || editor.isDestroyed) return
+    const handler: any = (_: unknown, event: KeyboardEvent) => {
+      if (slashMenuOpen) {
+        if (event.key === 'ArrowDown') {
+          event.preventDefault()
+          setSlashSelectedIndex((prev) => (prev + 1) % slashItems.length)
+          return true
+        }
+        if (event.key === 'ArrowUp') {
+          event.preventDefault()
+          setSlashSelectedIndex((prev) => (prev - 1 + slashItems.length) % slashItems.length)
+          return true
+        }
+        if (event.key === 'Enter') {
+          event.preventDefault()
+          if (slashItems[slashSelectedIndex]) {
+            executeSlashCommand(slashItems[slashSelectedIndex])
+          }
+          return true
+        }
+        if (event.key === 'Escape') {
+          event.preventDefault()
+          setSlashMenuOpen(false)
+          return true
+        }
+      }
+      if ((mode === 'heading' || mode === 'inline' || mode === 'micro') && event.key === 'Enter')
+        return true
+      return false
+    }
+    editor.setOptions({ editorProps: { handleKeyDown: handler } } as any)
+  }, [editor, slashItems, slashMenuOpen, slashSelectedIndex, executeSlashCommand, mode])
 
   useEffect(() => {
     if (editor && !editor.isDestroyed) {
@@ -281,16 +518,21 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   useEffect(() => {
     if (!editor || editor.isDestroyed) return
 
-    let currentContent: any
     if (format === 'json') {
-      currentContent = JSON.stringify(editor.getJSON())
-      const incomingString = typeof value === 'object' ? JSON.stringify(value) : value
-      if (incomingString !== currentContent) {
+      try {
+        const currentJSON = editor.getJSON()
+        // Cheap length check to avoid expensive JSON.stringify on every keystroke
+        const currentLen = JSON.stringify(currentJSON).length
+        const incomingStr = typeof value === 'object' ? JSON.stringify(value) : (value || '')
+        if (incomingStr.length !== currentLen || incomingStr !== JSON.stringify(currentJSON)) {
+          editor.commands.setContent(parsedContent || '')
+        }
+      } catch {
         editor.commands.setContent(parsedContent || '')
       }
     } else {
-      currentContent = editor.getHTML()
-      if (value !== currentContent) {
+      const currentHTML = editor.getHTML()
+      if ((value || '').length !== currentHTML.length || value !== currentHTML) {
         editor.commands.setContent(value || '')
       }
     }
@@ -298,7 +540,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
   const insertImage = (url: string, alt: string) => {
     if (!editor || editor.isDestroyed) return
-    const fullUrl = url.startsWith('http') ? url : `http://localhost:3000${url}`
+    const fullUrl = url.startsWith('http') ? url : `${window.location.origin}${url}`
     ;(editor.chain().focus() as any).setImage({ src: fullUrl, alt }).run()
     setIsMediaOpen(false)
   }
@@ -646,6 +888,107 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
             isFull ? 'max-w-[1000px] mx-auto py-4 px-4' : 'max-w-none p-0'
           )}
         >
+          {editor && (
+            <BubbleMenu
+              editor={editor}
+              shouldShow={({ from, to }: { from: number; to: number }) => {
+                return from !== to && !slashMenuOpen
+              }}
+            >
+              <div
+                className={cn(
+                  'flex items-center h-10 border px-1 gap-0.5 backdrop-blur-xl shadow-xl z-[1500] rounded-none',
+                  theme === 'dark'
+                    ? 'bg-black/90 border-white/10 text-white'
+                    : 'bg-white border-gray-200 text-black'
+                )}
+              >
+                <button
+                  type="button"
+                  onClick={() => editor.chain().focus().toggleBold().run()}
+                  className={cn(
+                    'w-8 h-8 rounded-none transition-colors flex items-center justify-center hover:bg-white/5',
+                    editor.isActive('bold')
+                      ? theme === 'dark'
+                        ? 'text-indigo-400 bg-white/5'
+                        : 'text-indigo-600 bg-gray-100'
+                      : 'text-gray-400'
+                  )}
+                >
+                  <Bold size={14} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => editor.chain().focus().toggleItalic().run()}
+                  className={cn(
+                    'w-8 h-8 rounded-none transition-colors flex items-center justify-center hover:bg-white/5',
+                    editor.isActive('italic')
+                      ? theme === 'dark'
+                        ? 'text-indigo-400 bg-white/5'
+                        : 'text-indigo-600 bg-gray-100'
+                      : 'text-gray-400'
+                  )}
+                >
+                  <Italic size={14} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => editor.chain().focus().toggleUnderline().run()}
+                  className={cn(
+                    'w-8 h-8 rounded-none transition-colors flex items-center justify-center hover:bg-white/5',
+                    editor.isActive('underline')
+                      ? theme === 'dark'
+                        ? 'text-indigo-400 bg-white/5'
+                        : 'text-indigo-600 bg-gray-100'
+                      : 'text-gray-400'
+                  )}
+                >
+                  <UnderlineIcon size={14} />
+                </button>
+                <div className="w-px h-4 bg-white/10 mx-1" />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const url = window.prompt('URL')
+                    if (url) editor.chain().focus().setLink({ href: url }).run()
+                  }}
+                  className={cn(
+                    'w-8 h-8 rounded-none transition-colors flex items-center justify-center hover:bg-white/5',
+                    editor.isActive('link')
+                      ? theme === 'dark'
+                        ? 'text-indigo-400 bg-white/5'
+                        : 'text-indigo-600 bg-gray-100'
+                      : 'text-gray-400'
+                  )}
+                >
+                  <LinkIcon size={14} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => editor.chain().focus().unsetAllMarks().run()}
+                  className="w-8 h-8 rounded-none text-gray-400 hover:text-white transition-colors flex items-center justify-center hover:bg-white/5"
+                  title="Clear Formatting"
+                >
+                  <Eraser size={14} />
+                </button>
+              </div>
+            </BubbleMenu>
+          )}
+
+          {slashMenuOpen && (
+            <SlashMenu
+              position={slashMenuPosition}
+              selectedIndex={slashSelectedIndex}
+              items={slashItems}
+              onSelectItem={(idx) => {
+                if (slashItems[idx]) {
+                  executeSlashCommand(slashItems[idx])
+                }
+              }}
+              theme={theme}
+            />
+          )}
+
           <EditorContent
             editor={editor}
             className={cn('relative z-10', isHeading && 'leading-[0.85]')}

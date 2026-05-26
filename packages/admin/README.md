@@ -1,73 +1,100 @@
-# React + TypeScript + Vite
+# Zenith CMS — Admin Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Premium glassmorphic admin dashboard for Zenith CMS. Built with React 19, TypeScript, Vite, Zustand, Tailwind CSS, and Lexical.
 
-Currently, two official plugins are available:
+## Architecture
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+packages/admin/
+├── src/
+│   ├── components/
+│   │   ├── lexical/          # Lexical rich-text editor (nodes, plugins, toolbar)
+│   │   │   ├── nodes/        # Custom nodes: Image, Media, HorizontalRule, Relationship
+│   │   │   ├── plugins/      # SlashCommand, MarkdownShortcut
+│   │   │   ├── Toolbar.tsx   # Glassmorphic formatting toolbar
+│   │   │   └── LexicalRichTextEditor.tsx
+│   │   ├── RichTextEditor.tsx # TipTap-based editor (legacy fields)
+│   │   ├── GlassDropdown.tsx # Reusable glassmorphic dropdown
+│   │   ├── MediaPicker.tsx   # Media library integration
+│   │   └── fields/           # Custom field renderers (Date, JSON, Slug, UID, etc.)
+│   ├── pages/
+│   │   ├── editor/           # Content editor with dynamic zones, blocks, SEO
+│   │   ├── settings/         # Site settings, user management, invites
+│   │   ├── AuditLogPage.tsx  # Tamper-evident audit trail viewer
+│   │   └── ...
+│   ├── store/                # Zustand stores (editor, modal, comments)
+│   ├── lib/
+│   │   ├── api.ts            # Fetch-based API client (replaces axios)
+│   │   └── utils.ts          # Tailwind merge utility
+│   └── context/              # ThemeContext (dark/light mode)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Design System
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Theme**: Premium glassmorphism with deep dark mode (`#0B0F19`)
+- **Typography**: Inter / Outfit / Space Grotesk with deliberate weight mapping
+- **Animations**: Framer Motion micro-animations on all interactive elements
+- **Styling**: Tailwind CSS with `cn()` merge utility — no inline styles
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Development
+
+```bash
+# From monorepo root
+pnpm --filter @zenithcms/admin dev      # Start dev server on port 5175
+pnpm --filter @zenithcms/admin build    # Production build
+pnpm run build                          # Build entire monorepo
 ```
+
+The admin proxies `/api`, `/media`, and `/uploads` to the core engine at `http://localhost:3000`.
+
+## Key Features
+
+| Feature | Implementation |
+|---------|---------------|
+| **Rich Text** | Lexical editor (primary) + TipTap editor (legacy) |
+| **Dynamic Zones** | Strapi-style block picker with visual component selection |
+| **Media Library** | Multi-select, bulk delete, crop/rotate, focal point |
+| **Version Control** | Visual preview diff, restore, max-version pruning |
+| **Scheduled Publishing** | DateTime picker → backend cron scheduler |
+| **i18n** | Locale switcher with translation completion progress |
+| **Audit Log** | Tamper-evinent hash chain, export, purge with auth |
+| **User Invite** | Secure token-based invite flow via email |
+| **Plugin System** | Hook-based collection lifecycle + component injection |
+
+## State Management
+
+- **Zustand** for all client state (editor, modals, comments, panels)
+- ** localStorage** persistence for sidebar config and editor undo stack
+- **React Query** (@tanstack/react-query) for server state
+
+## API Client
+
+All requests use the native `fetch` API via `src/lib/api.ts` — no axios dependency. The client includes:
+- Automatic `X-Zenith-Site-Id` header for multi-tenancy
+- CSRF token propagation
+- Token refresh on 401 with request queuing
+- SWR-style cache-aware responses
+
+## Lexical Editor
+
+Custom Lexical nodes:
+- **ImageNode** — Inline images with alt text, width/height
+- **MediaNode** — Rich media (image/video/file) with captions
+- **HorizontalRuleNode** — Divider separator
+- **RelationshipNode** — Cross-collection document references
+
+Plugins:
+- **SlashCommandPlugin** — `/` command palette for block insertion
+- **MarkdownShortcutPlugin** — Type `# `, `> `, `---`, etc.
+
+## TypeScript
+
+- `tsconfig.app.json`: `strict: true`, targets ES2023
+- Excludes `src/components/lexical` from strict checking (Lexical 0.44.0 types are strict)
+- `tsconfig.node.json`: Vite config only
+
+## Build Output
+
+- Source maps: Hidden (for Sentry/debugging without exposing to users)
+- Code splitting: Vendor chunks for React, Query, Editor, Animation, Forms
+- Base path: `./` (supports sub-path deployment behind reverse proxy)

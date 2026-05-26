@@ -14,9 +14,15 @@ router.use(requireRole('admin'))
 
 // ── Schemas ─────────────────────────────────────────────────────────────────
 
+const FieldPermissionEntrySchema = z.object({
+  read: z.boolean().optional(),
+  write: z.boolean().optional(),
+}).optional()
+
 const PermissionSchema = z.object({
   resource: z.string().min(1),
   actions: z.array(z.string()),
+  fieldPermissions: z.record(z.string(), FieldPermissionEntrySchema).optional(),
 })
 
 const CreateRoleSchema = z.object({

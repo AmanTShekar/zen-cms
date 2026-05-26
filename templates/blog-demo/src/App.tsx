@@ -4,7 +4,7 @@ import { BookOpen, Calendar, User, ArrowRight } from 'lucide-react'
 
 // Connect to Zenith CMS v2
 const zenith = new ZenithClient({
-  url: import.meta.env.VITE_CMS_URL || 'http://localhost:3000',
+  url: import.meta.env.VITE_CMS_URL || '',
   apiKey: import.meta.env.VITE_CMS_API_KEY || '',
   siteId: import.meta.env.VITE_CMS_SITE_ID || '',
 })
@@ -51,6 +51,11 @@ const BlogDemo = () => {
   useEffect(() => {
     const loadContent = async () => {
       try {
+        const params = new URLSearchParams(window.location.search)
+        const urlSiteId = params.get('siteId')
+        if (urlSiteId) {
+          zenith.setSiteId(urlSiteId)
+        }
         const { data } = await zenith.find('posts')
         setPosts(data)
       } catch (err) {

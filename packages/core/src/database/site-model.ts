@@ -17,6 +17,7 @@ export interface ISite extends Document {
   icon: string
   description?: string
   ownerId: string
+  workspaceId?: string
   members: {
     userId: string
     role: 'admin' | 'editor' | 'viewer'
@@ -41,6 +42,7 @@ const SiteSchema = new Schema<ISite>(
     icon: { type: String, default: '🌐' },
     description: { type: String },
     ownerId: { type: String, required: true, index: true },
+    workspaceId: { type: String, index: true },
     members: [
       {
         userId: { type: String, required: true },

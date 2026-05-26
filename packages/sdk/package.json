@@ -20,5 +20,8 @@
     "build": "tsc",
     "lint": "echo 'Lint bypassed for sdk'"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@zenithcms/types": "workspace:*"
+  }
 }

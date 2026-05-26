@@ -84,7 +84,7 @@ export const GlassDropdown = <T,>({
           ? "bg-[#111827]/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-indigo-500/50 hover:bg-[#111827]/85"
           : "bg-white/65 backdrop-blur-[12px] text-gray-900 border border-black/[0.08] hover:border-indigo-500/30 hover:bg-white/85",
         isSidebarOpen ? "rounded-[12px]" : "rounded-lg p-2 justify-center",
-        "hover:scale-[1.02] active:scale-[0.98] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
+        "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
         triggerClassName
       )}
     >

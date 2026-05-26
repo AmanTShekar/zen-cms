@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import {
   Search,
   Trash2,
@@ -17,6 +17,15 @@ import {
   Clock,
   Fingerprint,
   Cpu,
+  CheckSquare,
+  Square,
+  RotateCw,
+  RotateCcw,
+  FlipHorizontal,
+  FlipVertical,
+  Crop,
+  Save,
+  Undo2,
 } from 'lucide-react'
 import api from '../lib/api'
 import { cn } from '../lib/utils'
@@ -34,6 +43,57 @@ const MediaLibrary = () => {
   const [selectedFile, setSelectedFile] = useState<any>(null)
 
   const [previewWidth, setPreviewWidth] = useState(1200)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [rotation, setRotation] = useState(0)
+  const [flipX, setFlipX] = useState(false)
+  const [flipY, setFlipY] = useState(false)
+  const [isCropMode, setIsCropMode] = useState(false)
+  const [cropRect, setCropRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null)
+  const [cropStart, setCropStart] = useState<{ x: number; y: number } | null>(null)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [saveName, setSaveName] = useState('')
+
+  const filteredFiles = useMemo(() => {
+    return files.filter((f: any) => {
+      const matchesSearch = (f.name || f.alt || f.id || '')
+        .toLowerCase()
+        .includes(search.toLowerCase())
+      const matchesFolder = activeFolder ? f.folder === activeFolder : true
+      return matchesSearch && matchesFolder
+    })
+  }, [files, search, activeFolder])
+
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next
+    })
+  }, [])
+
+  const toggleSelectAll = useCallback(() => {
+    setSelectedIds((prev) => {
+      if (prev.size === filteredFiles.length) return new Set()
+      return new Set(filteredFiles.map((f) => f._id))
+    })
+  }, [filteredFiles])
+
+  const bulkDelete = useCallback(async () => {
+    if (selectedIds.size === 0) return
+    if (!confirm(`Purge ${selectedIds.size} selected assets?`)) return
+    try {
+      await Promise.all(Array.from(selectedIds).map((id) => api.delete(`/media/${id}`)))
+      toast.success(`${selectedIds.size} ASSETS_PURGED`)
+      setSelectedIds(new Set())
+      fetchFiles()
+    } catch {
+      toast.error('BULK_PURGE_FAILED')
+    }
+  }, [selectedIds])
 
   const fetchFiles = async () => {
     setLoading(true)
@@ -89,20 +149,113 @@ const MediaLibrary = () => {
     }
   }
 
-  const filteredFiles = useMemo(() => {
-    return files.filter((f: any) => {
-      const matchesSearch = (f.name || f.alt || f.id || '')
-        .toLowerCase()
-        .includes(search.toLowerCase())
-      const matchesFolder = activeFolder ? f.folder === activeFolder : true
-      return matchesSearch && matchesFolder
-    })
-  }, [files, search, activeFolder])
 
   const getFullUrl = (url: string) => {
     if (!url) return ''
     if (url.startsWith('http')) return url
-    return `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${url}`
+    return `${import.meta.env.VITE_API_URL || ''}${url}`
+  }
+
+  const resetTransform = () => {
+    setRotation(0)
+    setFlipX(false)
+    setFlipY(false)
+    setCropRect(null)
+    setCropStart(null)
+    setIsCropMode(false)
+  }
+
+  const handleSaveTransformed = async () => {
+    if (!selectedFile || !selectedFile.mimetype?.startsWith('image')) return
+    setIsProcessing(true)
+    try {
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve()
+        img.onerror = () => reject(new Error('Image load failed'))
+        img.src = getFullUrl(selectedFile.url)
+      })
+
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')!
+
+      let w = img.naturalWidth
+      let h = img.naturalHeight
+
+      // Apply crop first
+      if (cropRect) {
+        const scaleX = img.naturalWidth / previewWidth
+        const scaleY = img.naturalHeight / (previewWidth * (img.naturalHeight / img.naturalWidth))
+        w = cropRect.w * scaleX
+        h = cropRect.h * scaleY
+      }
+
+      // Swap for 90/270 rotation
+      if (rotation === 90 || rotation === 270) {
+        canvas.width = h
+        canvas.height = w
+      } else {
+        canvas.width = w
+        canvas.height = h
+      }
+
+      ctx.save()
+      ctx.translate(canvas.width / 2, canvas.height / 2)
+      ctx.rotate((rotation * Math.PI) / 180)
+      ctx.scale(flipX ? -1 : 1, flipY ? -1 : 1)
+
+      if (cropRect) {
+        const sx = cropRect.x * (img.naturalWidth / previewWidth)
+        const sy = cropRect.y * (img.naturalHeight / (previewWidth * (img.naturalHeight / img.naturalWidth)))
+        const sw = cropRect.w * (img.naturalWidth / previewWidth)
+        const sh = cropRect.h * (img.naturalHeight / (previewWidth * (img.naturalHeight / img.naturalWidth)))
+        ctx.drawImage(img, sx, sy, sw, sh, -w / 2, -h / 2, w, h)
+      } else {
+        ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2)
+      }
+
+      ctx.restore()
+
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((b) => b ? resolve(b) : reject(new Error('Canvas toBlob failed')), selectedFile.mimetype || 'image/png')
+      })
+
+      const formData = new FormData()
+      formData.append('file', blob, saveName || `transformed_${selectedFile.name || 'image'}`)
+
+      await api.post('/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      toast.success('TRANSFORMED_ASSET_SAVED')
+      resetTransform()
+      fetchFiles()
+    } catch {
+      toast.error('TRANSFORM_FAILED')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const handleMouseDownOnImage = (e: React.MouseEvent) => {
+    if (!isCropMode) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    setCropStart({ x: e.clientX - rect.left, y: e.clientY - rect.top })
+    setCropRect(null)
+  }
+
+  const handleMouseMoveOnImage = (e: React.MouseEvent) => {
+    if (!isCropMode || !cropStart) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = Math.min(cropStart.x, Math.max(0, e.clientX - rect.left))
+    const y = Math.min(cropStart.y, Math.max(0, e.clientY - rect.top))
+    const w = Math.abs(e.clientX - rect.left - cropStart.x)
+    const h = Math.abs(e.clientY - rect.top - cropStart.y)
+    setCropRect({ x: Math.min(cropStart.x, e.clientX - rect.left), y: Math.min(cropStart.y, e.clientY - rect.top), w, h })
+  }
+
+  const handleMouseUpOnImage = () => {
+    setCropStart(null)
   }
 
   if (loading && files.length === 0) {
@@ -279,6 +432,13 @@ const MediaLibrary = () => {
               theme === 'dark' ? 'bg-[#080808]/80 border-white/10' : 'bg-white border-gray-100'
             )}
           >
+            <button
+              onClick={toggleSelectAll}
+              className="p-1 text-gray-500 hover:text-indigo-400 transition-colors shrink-0"
+              title={selectedIds.size === filteredFiles.length ? 'Deselect all' : 'Select all visible'}
+            >
+              {selectedIds.size > 0 ? <CheckSquare size={18} /> : <Square size={18} />}
+            </button>
             <Search
               className="text-gray-500 group-focus-within:text-indigo-500 transition-colors"
               size={20}
@@ -307,6 +467,41 @@ const MediaLibrary = () => {
             </button>
           </div>
 
+          {/* Bulk action toolbar */}
+          <AnimatePresence>
+            {selectedIds.size > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className={cn(
+                  'flex items-center justify-between px-6 py-4 border shadow-lg backdrop-blur-md',
+                  theme === 'dark' ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-indigo-50 border-indigo-100'
+                )}
+              >
+                <span className="text-[10px] font-black uppercase tracking-widest italic flex items-center gap-3">
+                  <CheckSquare size={14} className="text-indigo-500" />
+                  {selectedIds.size} asset{selectedIds.size !== 1 ? 's' : ''} selected
+                </span>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setSelectedIds(new Set())}
+                    className="px-4 py-2 text-[9px] font-black uppercase tracking-widest border rounded-none transition-all italic"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    onClick={bulkDelete}
+                    className="px-4 py-2 text-[9px] font-black uppercase tracking-widest bg-red-600 text-white rounded-none hover:bg-red-700 transition-all italic flex items-center gap-2"
+                  >
+                    <Trash2 size={12} />
+                    Delete Selected
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6">
             <AnimatePresence mode="popLayout">
               {filteredFiles.map((file) => (
@@ -321,9 +516,23 @@ const MediaLibrary = () => {
                     'group relative border rounded-none overflow-hidden cursor-pointer transition-all duration-300 shadow-sm hover:shadow-2xl hover:scale-[1.03]',
                     theme === 'dark'
                       ? 'bg-[#080808] border-white/5 hover:border-indigo-500/40'
-                      : 'bg-white border-gray-100 hover:border-indigo-200'
+                      : 'bg-white border-gray-100 hover:border-indigo-200',
+                    selectedIds.has(file._id) && (theme === 'dark' ? 'border-indigo-500/60 ring-1 ring-indigo-500/30' : 'border-indigo-400 ring-1 ring-indigo-400/40')
                   )}
                 >
+                  {/* Selection checkbox */}
+                  <div
+                    onClick={(e) => { e.stopPropagation(); toggleSelect(file._id) }}
+                    className={cn(
+                      'absolute top-2 left-2 z-20 w-6 h-6 flex items-center justify-center border transition-all',
+                      selectedIds.has(file._id)
+                        ? 'bg-indigo-500 border-indigo-500 text-white'
+                        : 'bg-black/40 border-white/20 text-white opacity-0 group-hover:opacity-100'
+                    )}
+                  >
+                    {selectedIds.has(file._id) ? <CheckSquare size={14} /> : <Square size={14} />}
+                  </div>
+
                   <div className="aspect-square flex items-center justify-center bg-black/[0.03] overflow-hidden relative">
                     {file.mimetype?.startsWith('image') ? (
                       <img
@@ -415,11 +624,34 @@ const MediaLibrary = () => {
                   />
 
                   {selectedFile.mimetype?.startsWith('image') ? (
-                    <img
-                      src={getFullUrl(selectedFile.url)}
-                      alt="Synthesis"
-                      className="max-w-full max-h-full object-contain shadow-[0_40px_100px_rgba(0,0,0,0.5)] relative z-10 rounded-none border border-white/10"
-                    />
+                    <div className="relative z-10 w-full h-full flex items-center justify-center"
+                      onMouseDown={handleMouseDownOnImage}
+                      onMouseMove={handleMouseMoveOnImage}
+                      onMouseUp={handleMouseUpOnImage}
+                      onMouseLeave={handleMouseUpOnImage}
+                    >
+                      <img
+                        src={getFullUrl(selectedFile.url)}
+                        alt="Synthesis"
+                        style={{
+                          maxWidth: `${previewWidth}px`,
+                          transform: `rotate(${rotation}deg) scaleX(${flipX ? -1 : 1}) scaleY(${flipY ? -1 : 1})`,
+                        }}
+                        className="max-h-full object-contain shadow-[0_40px_100px_rgba(0,0,0,0.5)] relative rounded-none border border-white/10 transition-transform duration-300 select-none"
+                        draggable={false}
+                      />
+                      {isCropMode && cropRect && (
+                        <div
+                          className="absolute border-2 border-indigo-500 bg-indigo-500/10 pointer-events-none z-30"
+                          style={{
+                            left: cropRect.x,
+                            top: cropRect.y,
+                            width: cropRect.w,
+                            height: cropRect.h,
+                          }}
+                        />
+                      )}
+                    </div>
                   ) : (
                     <div className="relative z-10 flex flex-col items-center gap-6">
                       <div className="p-12 rounded-none bg-indigo-500/5 border border-indigo-500/10 shadow-2xl">
@@ -513,6 +745,114 @@ const MediaLibrary = () => {
                         className="w-full appearance-none bg-indigo-500/10 h-1 rounded-none outline-none cursor-pointer accent-indigo-500"
                       />
                     </div>
+
+                    {/* Transformation Matrix */}
+                    {selectedFile.mimetype?.startsWith('image') && (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3 text-gray-500 px-1">
+                          <Crop size={12} />
+                          <span className="text-[9px] font-black uppercase tracking-widest italic">
+                            Transformation_Matrix
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-4 gap-2">
+                          <button
+                            onClick={() => setRotation((r) => (r + 270) % 360)}
+                            className={cn(
+                              'p-3 rounded-none border flex items-center justify-center transition-all',
+                              theme === 'dark' ? 'border-white/10 hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
+                            )}
+                            title="Rotate 90° CCW"
+                          >
+                            <RotateCcw size={16} />
+                          </button>
+                          <button
+                            onClick={() => setRotation((r) => (r + 90) % 360)}
+                            className={cn(
+                              'p-3 rounded-none border flex items-center justify-center transition-all',
+                              theme === 'dark' ? 'border-white/10 hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
+                            )}
+                            title="Rotate 90° CW"
+                          >
+                            <RotateCw size={16} />
+                          </button>
+                          <button
+                            onClick={() => setFlipX((f) => !f)}
+                            className={cn(
+                              'p-3 rounded-none border flex items-center justify-center transition-all',
+                              flipX
+                                ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-500'
+                                : theme === 'dark' ? 'border-white/10 hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
+                            )}
+                            title="Flip horizontal"
+                          >
+                            <FlipHorizontal size={16} />
+                          </button>
+                          <button
+                            onClick={() => setFlipY((f) => !f)}
+                            className={cn(
+                              'p-3 rounded-none border flex items-center justify-center transition-all',
+                              flipY
+                                ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-500'
+                                : theme === 'dark' ? 'border-white/10 hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
+                            )}
+                            title="Flip vertical"
+                          >
+                            <FlipVertical size={16} />
+                          </button>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setIsCropMode((c) => !c)}
+                            className={cn(
+                              'flex-1 py-3 rounded-none text-[9px] font-black uppercase tracking-widest transition-all italic leading-none flex items-center justify-center gap-2 border',
+                              isCropMode
+                                ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-500'
+                                : theme === 'dark' ? 'border-white/10 text-gray-400 hover:border-white/30' : 'border-gray-100 hover:border-gray-300'
+                            )}
+                          >
+                            <Crop size={12} /> {isCropMode ? 'CROP_ACTIVE' : 'CROP'}
+                          </button>
+                          {rotation !== 0 || flipX || flipY || cropRect ? (
+                            <button
+                              onClick={resetTransform}
+                              className={cn(
+                                'py-3 px-4 rounded-none text-[9px] font-black uppercase tracking-widest transition-all italic leading-none flex items-center justify-center gap-2 border',
+                                theme === 'dark' ? 'border-white/10 text-gray-400 hover:text-red-400 hover:border-red-400/30' : 'border-gray-100 hover:text-red-500 hover:border-red-300'
+                              )}
+                            >
+                              <Undo2 size={12} /> RESET
+                            </button>
+                          ) : null}
+                        </div>
+                        {(rotation !== 0 || flipX || flipY || cropRect) && (
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={saveName}
+                              onChange={(e) => setSaveName(e.target.value)}
+                              placeholder="transformed_filename.ext"
+                              className={cn(
+                                'flex-1 px-3 py-3 text-[9px] font-mono border rounded-none outline-none bg-transparent',
+                                theme === 'dark' ? 'border-white/10 text-white' : 'border-gray-100'
+                              )}
+                            />
+                            <button
+                              onClick={handleSaveTransformed}
+                              disabled={isProcessing}
+                              className={cn(
+                                'px-6 py-3 rounded-none text-[9px] font-black uppercase tracking-widest transition-all italic leading-none flex items-center justify-center gap-2',
+                                isProcessing
+                                  ? 'bg-gray-500 text-gray-300'
+                                  : 'bg-indigo-500 text-white hover:bg-indigo-600 shadow-lg'
+                              )}
+                            >
+                              <Save size={12} /> {isProcessing ? 'SAVING...' : 'SAVE'}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     {/* Data Points Grid */}
                     <div className="grid grid-cols-1 gap-3">

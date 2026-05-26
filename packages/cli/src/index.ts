@@ -4,8 +4,23 @@ import chalk from 'chalk'
 import path from 'path'
 import { execSync } from 'child_process'
 import fs from 'fs'
+import readline from 'readline'
+
+const question = (query: string): Promise<string> => {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  })
+  return new Promise((resolve) =>
+    rl.question(query, (answer) => {
+      rl.close()
+      resolve(answer)
+    })
+  )
+}
 
 const program = new Command()
+
 
 /**
  * Zenith CMS CLI
@@ -74,6 +89,8 @@ program
             return 'string | Date'
           case 'json':
             return 'Record<string, any>'
+          case 'media':
+            return field.hasMany ? '{ url: string; alt?: string }[]' : '{ url: string; alt?: string }'
           case 'relation': {
             const target = field.relationTo ? capitalize(field.relationTo) : 'any'
             return field.required ? target : `${target} | null`
@@ -695,6 +712,183 @@ run().catch(err => {
     } catch (err: any) {
       console.error(chalk.red(`Error displaying migration status: ${err.message}`))
     }
+  })
+
+program
+  .command('create-plugin')
+  .description('Scaffold a new Zenith CMS plugin')
+  .argument('[name]', 'Plugin name (e.g. acme-analytics)')
+  .option('-d, --dir <path>', 'Output directory', '.')
+  .action(async (nameArg, options) => {
+    console.log(chalk.bold.hex('#8B5CF6')('\n🔌 Zenith CMS Plugin Scaffold\n'))
+
+    let pluginName = nameArg
+    if (!pluginName) {
+      pluginName = await question(chalk.white('? ') + chalk.bold('Plugin name (slug): ') + chalk.gray('(my-plugin) '))
+      if (!pluginName) pluginName = 'my-plugin'
+    }
+
+    // Normalize: lowercase, hyphens only
+    const slug = pluginName.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+    const packageName = `zenith-plugin-${slug}`
+    const className = slug.split('-').map((s: string) => s.charAt(0).toUpperCase() + s.slice(1)).join('')
+
+    const targetDir = path.resolve(options.dir, packageName)
+    if (fs.existsSync(targetDir)) {
+      console.error(chalk.red(`\n❌ Error: Directory "${packageName}" already exists.\n`))
+      process.exit(1)
+    }
+
+    fs.mkdirSync(targetDir, { recursive: true })
+
+    // package.json
+    fs.writeFileSync(path.join(targetDir, 'package.json'), JSON.stringify({
+      name: packageName,
+      version: '0.1.0',
+      description: `${className} plugin for Zenith CMS`,
+      type: 'module',
+      main: 'dist/index.js',
+      types: 'dist/index.d.ts',
+      scripts: { build: 'tsc' },
+      peerDependencies: { '@zenithcms/core': '^0.2.0', '@zenithcms/types': '^0.2.0' },
+      keywords: ['zenithcms', 'zenith', 'plugin', slug],
+    }, null, 2))
+
+    // tsconfig.json
+    fs.writeFileSync(path.join(targetDir, 'tsconfig.json'), JSON.stringify({
+      compilerOptions: {
+        target: 'ES2022', module: 'NodeNext', moduleResolution: 'NodeNext',
+        declaration: true, strict: true, outDir: './dist', rootDir: './src',
+        esModuleInterop: true, skipLibCheck: true,
+      },
+      include: ['src'],
+    }, null, 2))
+
+    // src/index.ts — plugin source
+    fs.mkdirSync(path.join(targetDir, 'src'), { recursive: true })
+    fs.writeFileSync(path.join(targetDir, 'src/index.ts'), `import type { ZenithPlugin, PluginContext } from '@zenithcms/types'
+
+export interface ${className}Options {
+  /** Enable verbose logging */
+  debug?: boolean
+}
+
+/**
+ * ${className} Plugin for Zenith CMS
+ *
+ * Hooks into content lifecycle events to extend CMS behavior.
+ * See: https://zenithcms.com/docs/plugins
+ */
+export function ${slug.replace(/-/g, '')}Plugin(options: ${className}Options = {}): ZenithPlugin {
+  return {
+    id: '${slug}',
+    name: '${className}',
+    version: '0.1.0',
+    description: '${className} plugin for Zenith CMS',
+    enabled: true,
+
+    configSchema: {
+      debug: {
+        type: 'boolean',
+        label: 'Debug Mode',
+        description: 'Enable verbose logging for this plugin',
+        default: false,
+      },
+    },
+
+    config: options,
+
+    // ── Config Phase: Modify CMS config before engine starts ───────
+    apply(config, pluginConfig) {
+      if (pluginConfig?.debug) {
+        console.log('[${className}] Plugin applied with config:', pluginConfig)
+      }
+      return config
+    },
+
+    // ── Init Phase: Register hooks after engine boots ──────────────
+    onInit(ctx: PluginContext) {
+      ctx.logger.info('${className} plugin initialized')
+
+      // Example: Hook into content creation across all collections
+      ctx.hooks.on('content:*:afterCreate', (doc: any) => {
+        if (options.debug) {
+          ctx.logger.debug({ collection: doc?.collection }, 'Content created')
+        }
+      })
+
+      // Example: Hook into content updates for a specific collection
+      // ctx.hooks.on('content:posts:afterUpdate', (payload: any) => {
+      //   ctx.logger.info({ docId: payload?.doc?._id }, 'Post updated')
+      // })
+    },
+
+    // ── Ready Phase: DB is connected, routes are live ──────────────
+    async onReady(ctx: PluginContext) {
+      // Register custom Express routes, set up DB-dependent resources, etc.
+      ctx.logger.info('${className} plugin ready')
+    },
+
+    // ── Destroy Phase: Clean up on shutdown ────────────────────────
+    async onDestroy(ctx: PluginContext) {
+      ctx.logger.info('${className} plugin shutting down')
+    },
+  }
+}
+
+export default ${slug.replace(/-/g, '')}Plugin
+`)
+
+    // README.md
+    fs.writeFileSync(path.join(targetDir, 'README.md'), `# ${packageName}
+
+${className} plugin for Zenith CMS.
+
+## Installation
+
+\`\`\`bash
+npm install ${packageName}
+\`\`\`
+
+## Usage
+
+In your \`zenith.config.ts\`:
+
+\`\`\`ts
+import { ${slug.replace(/-/g, '')}Plugin } from '${packageName}'
+
+export default {
+  // ... your config
+  plugins: [
+    ${slug.replace(/-/g, '')}Plugin({ debug: true }),
+  ],
+}
+\`\`\`
+
+## Hooks
+
+This plugin hooks into the following lifecycle events:
+
+- \`content:*:afterCreate\` — Fires after any document is created
+- \`content:*:afterUpdate\` — Fires after any document is updated
+- \`content:*:afterDelete\` — Fires after any document is deleted
+- \`content:*:afterRead\` — Fires after any document is read
+
+## License
+
+MIT
+`)
+
+    console.log(chalk.green(`✓ Plugin scaffolded: ${packageName}/`))
+    console.log(chalk.gray(`  src/index.ts    — Plugin source`))
+    console.log(chalk.gray(`  package.json    — npm package config`))
+    console.log(chalk.gray(`  tsconfig.json   — TypeScript config`))
+    console.log(chalk.gray(`  README.md       — Documentation`))
+    console.log(chalk.cyan(`\nNext steps:`))
+    console.log(chalk.white(`  cd ${packageName}`))
+    console.log(chalk.white(`  npm install`))
+    console.log(chalk.white(`  npm run build`))
+    console.log('')
   })
 
 program.parse()

@@ -32,24 +32,32 @@ export class PresenceService {
   ): Promise<void> {
     if (!this.adapter) return
 
-    const query = { userId, collectionName: collection, documentId }
-    
-    // Simulating upsert by deleting and recreating to avoid adapter-specific upsert gaps
-    await this.adapter.deleteMany('z_presence', query).catch(() => {})
-    
-    await this.adapter.create('z_presence', {
-      userId,
-      email,
-      collectionName: collection,
-      documentId,
-      lastActive: Date.now(),
-    })
+    try {
+      const query = { userId, collectionName: collection, documentId }
+
+      // Simulating upsert by deleting and recreating to avoid adapter-specific upsert gaps
+      await this.adapter.deleteMany('z_presence', query).catch(() => {})
+
+      await this.adapter.create('z_presence', {
+        userId,
+        email,
+        collectionName: collection,
+        documentId,
+        lastActive: Date.now(),
+      })
+    } catch {
+      // Presence is non-critical — don't let heartbeat failures crash requests
+    }
   }
 
   static async leave(userId: string, collection: string, documentId: string): Promise<void> {
     if (!this.adapter) return
-    const query = { userId, collectionName: collection, documentId }
-    await this.adapter.deleteMany('z_presence', query).catch(() => {})
+    try {
+      const query = { userId, collectionName: collection, documentId }
+      await this.adapter.deleteMany('z_presence', query).catch(() => {})
+    } catch {
+      // ignore
+    }
   }
 
   static async getActiveUsers(
@@ -58,41 +66,49 @@ export class PresenceService {
   ): Promise<{ id: string; email: string }[]> {
     if (!this.adapter) return []
 
-    const minLastActive = Date.now() - this.TTL
-    const query = {
-      collectionName: collection,
-      documentId,
-      lastActive: { $gt: minLastActive }
-    }
+    try {
+      const minLastActive = Date.now() - this.TTL
+      const query = {
+        collectionName: collection,
+        documentId,
+        lastActive: { $gt: minLastActive }
+      }
 
-    const records = await this.adapter.find<ActiveUser>('z_presence', query)
-    
-    return records.map((r) => ({
-      id: r.userId,
-      email: r.email
-    }))
+      const records = await this.adapter.find<ActiveUser>('z_presence', query)
+
+      return records.map((r) => ({
+        id: r.userId,
+        email: r.email
+      }))
+    } catch {
+      return []
+    }
   }
 
   static async getAllActiveUsers(): Promise<{ id: string; email: string }[]> {
     if (!this.adapter) return []
 
-    const minLastActive = Date.now() - this.TTL
-    const query = {
-      lastActive: { $gt: minLastActive }
-    }
-
-    const records = await this.adapter.find<ActiveUser>('z_presence', query)
-    
-    // Deduplicate by user ID
-    const users: { id: string; email: string }[] = []
-    const seenIds = new Set<string>()
-
-    for (const r of records) {
-      if (!seenIds.has(r.userId)) {
-        seenIds.add(r.userId)
-        users.push({ id: r.userId, email: r.email })
+    try {
+      const minLastActive = Date.now() - this.TTL
+      const query = {
+        lastActive: { $gt: minLastActive }
       }
+
+      const records = await this.adapter.find<ActiveUser>('z_presence', query)
+
+      // Deduplicate by user ID
+      const users: { id: string; email: string }[] = []
+      const seenIds = new Set<string>()
+
+      for (const r of records) {
+        if (!seenIds.has(r.userId)) {
+          seenIds.add(r.userId)
+          users.push({ id: r.userId, email: r.email })
+        }
+      }
+      return users
+    } catch {
+      return []
     }
-    return users
   }
 }

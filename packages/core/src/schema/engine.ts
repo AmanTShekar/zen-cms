@@ -120,17 +120,22 @@ export function createZodSchema(fields: FieldConfig[], config?: any) {
         schema = z.union([z.date(), z.string().transform((v) => new Date(v))])
         break
 
-      // --- Media ---
-      case 'media':
-        schema = z.object({
-          url: z.string(),
-          id: z.string(),
+      // --- Media (MediaPicker asset objects, stored as JSONB) ---
+      case 'media': {
+        const asset = z.object({
+          _id: z.string().optional(),
+          id: z.string().optional(),
+          url: z.string().url({ message: 'Invalid URL' }),
           alt: z.string().optional(),
           width: z.number().optional(),
           height: z.number().optional(),
-        })
-        if (field.hasMany) schema = z.array(schema)
+          mimetype: z.string().optional(),
+          size: z.number().optional(),
+          focalPoint: z.object({ x: z.number(), y: z.number() }).optional(),
+        }).passthrough()
+        schema = field.hasMany ? z.array(asset) : asset
         break
+      }
 
       // --- Select ---
       case 'select': {

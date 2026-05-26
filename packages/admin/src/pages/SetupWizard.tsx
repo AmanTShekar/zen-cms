@@ -678,7 +678,7 @@ export default function SetupWizard() {
       content: (
         <ConnectSnippet
           apiKey={state.generatedKey}
-          publicUrl={(import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1').replace(
+          publicUrl={(import.meta.env.VITE_API_URL || '').replace(
             /\/api\/v1\/?$/,
             ''
           )}

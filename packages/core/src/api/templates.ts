@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { Template } from '../database/template-model'
 import { logger } from '../services/logger'
 import { z } from 'zod'
+import { InvalidPayloadError, NotFoundError, DuplicateError, AuthenticationError, isZenithError } from '../errors'
 
 const router = Router()
 
@@ -18,16 +19,16 @@ const CreateTemplateSchema = z.object({
 const UpdateTemplateSchema = CreateTemplateSchema.partial()
 
 const requireAuth = (req: any, res: any, next: any) => {
-  if (!req.user) return res.status(401).json({ error: 'Unauthorized' })
+  if (!req.user) throw new AuthenticationError()
   next()
 }
 
 // GET /api/v1/templates?blockType=hero
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const { blockType, page = '1', limit = '50' } = req.query
     const siteId = req.headers['x-zenith-site-id'] as string
-    if (!siteId) return res.status(400).json({ error: 'Missing X-Zenith-Site-Id' })
+    if (!siteId) throw new InvalidPayloadError('Missing X-Zenith-Site-Id')
 
     const filter: Record<string, any> = { siteId }
     if (blockType) filter.blockType = blockType
@@ -48,41 +49,39 @@ router.get('/', async (req, res) => {
       data: templates,
       meta: { total, page: pageNum, pageSize: limitNum, pageCount: Math.ceil(total / limitNum) },
     })
-  } catch (err: any) {
-    logger.error({ err: err.message }, '[Templates] GET list failed')
-    res.status(500).json({ error: 'Failed to fetch templates' })
+  } catch (err) {
+    next(err)
   }
 })
 
 // GET /api/v1/templates/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res, next) => {
   try {
     const siteId = req.headers['x-zenith-site-id'] as string
-    if (!siteId) return res.status(400).json({ error: 'Missing X-Zenith-Site-Id' })
+    if (!siteId) throw new InvalidPayloadError('Missing X-Zenith-Site-Id')
 
     const template = await Template.findOne({ _id: req.params.id, siteId }).lean()
-    if (!template) return res.status(404).json({ error: 'Template not found' })
+    if (!template) throw new NotFoundError('Template', req.params.id)
 
     res.json({ data: template })
-  } catch (err: any) {
-    logger.error({ err: err.message }, '[Templates] GET one failed')
-    res.status(500).json({ error: 'Failed to fetch template' })
+  } catch (err) {
+    next(err)
   }
 })
 
 // POST /api/v1/templates
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', requireAuth, async (req, res, next) => {
   try {
     const siteId = req.headers['x-zenith-site-id'] as string
-    if (!siteId) return res.status(400).json({ error: 'Missing X-Zenith-Site-Id' })
+    if (!siteId) throw new InvalidPayloadError('Missing X-Zenith-Site-Id')
 
     const parsed = CreateTemplateSchema.safeParse(req.body)
     if (!parsed.success) {
-      return res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() })
+      throw new InvalidPayloadError('Validation failed', parsed.error.flatten())
     }
 
     const existing = await Template.findOne({ slug: parsed.data.slug, siteId })
-    if (existing) return res.status(409).json({ error: 'Template with this slug already exists' })
+    if (existing) throw new DuplicateError('slug')
 
     const template = await Template.create({
       ...parsed.data,
@@ -92,21 +91,20 @@ router.post('/', requireAuth, async (req, res) => {
 
     logger.info(`[Templates] Created template "${parsed.data.name}" (${template._id})`)
     res.status(201).json({ data: template })
-  } catch (err: any) {
-    logger.error({ err: err.message }, '[Templates] POST failed')
-    res.status(500).json({ error: 'Failed to create template' })
+  } catch (err) {
+    next(err)
   }
 })
 
 // PUT /api/v1/templates/:id
-router.put('/:id', requireAuth, async (req, res) => {
+router.put('/:id', requireAuth, async (req, res, next) => {
   try {
     const siteId = req.headers['x-zenith-site-id'] as string
-    if (!siteId) return res.status(400).json({ error: 'Missing X-Zenith-Site-Id' })
+    if (!siteId) throw new InvalidPayloadError('Missing X-Zenith-Site-Id')
 
     const parsed = UpdateTemplateSchema.safeParse(req.body)
     if (!parsed.success) {
-      return res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() })
+      throw new InvalidPayloadError('Validation failed', parsed.error.flatten())
     }
 
     const template = await Template.findOneAndUpdate(
@@ -115,39 +113,37 @@ router.put('/:id', requireAuth, async (req, res) => {
       { new: true, lean: true }
     )
 
-    if (!template) return res.status(404).json({ error: 'Template not found' })
+    if (!template) throw new NotFoundError('Template', req.params.id)
     res.json({ data: template })
-  } catch (err: any) {
-    logger.error({ err: err.message }, '[Templates] PUT failed')
-    res.status(500).json({ error: 'Failed to update template' })
+  } catch (err) {
+    next(err)
   }
 })
 
 // DELETE /api/v1/templates/:id
-router.delete('/:id', requireAuth, async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res, next) => {
   try {
     const siteId = req.headers['x-zenith-site-id'] as string
-    if (!siteId) return res.status(400).json({ error: 'Missing X-Zenith-Site-Id' })
+    if (!siteId) throw new InvalidPayloadError('Missing X-Zenith-Site-Id')
 
     const result = await Template.deleteOne({ _id: req.params.id, siteId })
-    if (result.deletedCount === 0) return res.status(404).json({ error: 'Template not found' })
+    if (result.deletedCount === 0) throw new NotFoundError('Template', req.params.id)
 
     logger.info({ templateId: req.params.id }, '[Templates] Deleted')
     res.json({ data: { deleted: true } })
-  } catch (err: any) {
-    logger.error({ err: err.message }, '[Templates] DELETE failed')
-    res.status(500).json({ error: 'Failed to delete template' })
+  } catch (err) {
+    next(err)
   }
 })
 
 // POST /api/v1/templates/:id/clone — duplicate a template
-router.post('/:id/clone', requireAuth, async (req, res) => {
+router.post('/:id/clone', requireAuth, async (req, res, next) => {
   try {
     const siteId = req.headers['x-zenith-site-id'] as string
-    if (!siteId) return res.status(400).json({ error: 'Missing X-Zenith-Site-Id' })
+    if (!siteId) throw new InvalidPayloadError('Missing X-Zenith-Site-Id')
 
     const original = await Template.findOne({ _id: req.params.id, siteId }).lean()
-    if (!original) return res.status(404).json({ error: 'Template not found' })
+    if (!original) throw new NotFoundError('Template', req.params.id)
 
     const slugSuffix = Date.now()
     const clone = await Template.create({
@@ -163,29 +159,27 @@ router.post('/:id/clone', requireAuth, async (req, res) => {
     })
 
     res.status(201).json({ data: clone })
-  } catch (err: any) {
-    logger.error({ err: err.message }, '[Templates] Clone failed')
-    res.status(500).json({ error: 'Failed to clone template' })
+  } catch (err) {
+    next(err)
   }
 })
 
 // POST /api/v1/templates/:id/use — increment usage counter
-router.post('/:id/use', async (req, res) => {
+router.post('/:id/use', async (req, res, next) => {
   try {
     const siteId = req.headers['x-zenith-site-id'] as string
-    if (!siteId) return res.status(400).json({ error: 'Missing X-Zenith-Site-Id' })
+    if (!siteId) throw new InvalidPayloadError('Missing X-Zenith-Site-Id')
 
     const template = await Template.findOneAndUpdate(
       { _id: req.params.id, siteId },
       { $inc: { usageCount: 1 } },
       { new: true, lean: true }
     )
-    if (!template) return res.status(404).json({ error: 'Template not found' })
+    if (!template) throw new NotFoundError('Template', req.params.id)
 
     res.json({ data: { usageCount: template.usageCount } })
-  } catch (err: any) {
-    logger.error({ err: err.message }, '[Templates] Use (increment) failed')
-    res.status(500).json({ error: 'Failed to track template usage' })
+  } catch (err) {
+    next(err)
   }
 })
 

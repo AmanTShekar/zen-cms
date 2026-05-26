@@ -3,6 +3,27 @@ import { AuthService } from '../services/auth'
 import { logger } from '../services/logger'
 import { DatabaseAdapter } from './adapters/BaseAdapter'
 
+// Register Mongoose models
+import './user-model'
+import './api-key-model'
+import './audit-model'
+import './dashboard-layout-model'
+import './flow-model'
+import './member-model'
+import './onboarding-state-model'
+import './password-reset-model'
+import './preference-model'
+import './settings-model'
+import './site-model'
+import './workspace-model'
+import './version-model'
+import './webhook-model'
+import './webhook-config-model'
+import './release-model'
+import './role-model'
+import './template-model'
+
+
 /**
  * Zenith Seeding Engine
  * ─────────────────────
@@ -11,26 +32,6 @@ import { DatabaseAdapter } from './adapters/BaseAdapter'
  * Run with: pnpm run seed
  */
 export async function seedInitialData() {
-  // Seed default sites and cleanup excess sites
-  const adapter = AdapterFactory.getActiveAdapter();
-  // Ensure Site collection exists and create a default if none
-  const existingSites = await adapter.find<any>('z_sites', {});
-  if (existingSites.length === 0) {
-    await adapter.create<any>('z_sites', {
-      name: 'Default Site',
-      slug: 'default',
-      domain: process.env.DEFAULT_SITE_DOMAIN || 'localhost',
-      tenantId: 'default',
-    });
-  }
-  // Keep only up to 4 sites, remove extras
-  if (existingSites.length > 4) {
-    const toRemove = existingSites.slice(4);
-    for (const site of toRemove) {
-      await adapter.delete('z_sites', site._id.toString());
-    }
-  }
-
   try {
     const adapter = AdapterFactory.getActiveAdapter()
     if (!adapter) {
@@ -38,7 +39,7 @@ export async function seedInitialData() {
       return
     }
 
-    const admins = await adapter.find<any>('users', { role: 'admin' })
+    let admins = await adapter.find<any>('users', { role: 'admin' })
 
     if (admins.length === 0) {
       const email = process.env.INITIAL_ADMIN_EMAIL || 'admin@zenith.com'
@@ -46,171 +47,301 @@ export async function seedInitialData() {
 
       const hashedPassword = await AuthService.hashPassword(password)
 
-      await adapter.create('users', {
+      const newAdmin = await adapter.create<any>('users', {
         email,
         password: hashedPassword,
         role: 'admin',
       })
+      admins = [newAdmin]
 
       logger.info({ email }, 'Initial Admin user created automatically')
     }
 
-    // Seed Real Data for Demo Site
-    let landingCount = 0
-    try {
-      landingCount = await adapter.count('landing-page', {})
-    } catch {
-      // If collection doesn't exist yet, we'll try to create it anyway
+    const adminUser = admins[0]
+    const adminId = adminUser.id || adminUser._id
+
+    // Seed default workspace if none exist
+    const workspaces = await adapter.find<any>('z_workspaces', {})
+    let defaultWorkspace: any
+    if (workspaces.length === 0) {
+      defaultWorkspace = await adapter.create<any>('z_workspaces', {
+        name: 'My Workspace',
+        slug: 'my-workspace',
+        ownerId: adminId.toString(),
+        members: [{ userId: adminId.toString(), role: 'admin', addedAt: new Date() }]
+      })
+      logger.info('Default workspace created')
+    } else {
+      defaultWorkspace = workspaces[0]
     }
 
-    if (landingCount === 0) {
-      try {
-        await adapter.create('landing-page', {
-          title: 'Welcome to Zenith Next-Gen Commerce',
-          heroDescription:
-            'Experience the fastest headless commerce backend designed for the modern web.',
-          sections: [
-            {
-              blockType: 'hero',
-              blockData: {
-                headline: 'The Future of Headless Commerce is Here',
-                subheadline:
-                  'Zenith CMS gives you the tools to build, manage, and scale your content with zero friction.',
-                callToAction: 'Get Started Now',
-                backgroundImage: {
-                  url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2000',
-                },
-              },
-            },
-            {
-              blockType: 'stats',
-              blockData: {
-                items: [
-                  { value: '100ms', label: 'API Response Time' },
-                  { value: '99.9%', label: 'System Uptime' },
-                  { value: '24/7', label: 'AI Assistance' },
-                  { value: '∞', label: 'Scalability' },
-                ],
-              },
-            },
-            {
-              blockType: 'features',
-              heading: 'Why Developers Love Zenith',
-              featureList: [
-                {
-                  title: 'Lightning Fast API',
-                  description:
-                    'Optimized MongoDB queries and intelligent caching ensure sub-100ms response times.',
-                  icon: {
-                    url: 'https://images.unsplash.com/photo-1635332305373-c60368149806?auto=format&fit=crop&q=80&w=200',
-                  },
-                },
-                {
-                  title: 'AI Co-pilot',
-                  description:
-                    'Auto-generate SEO meta, alt text, and even entire blog posts using integrated AI tools.',
-                  icon: {
-                    url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=200',
-                  },
-                },
-                {
-                  title: 'Modular Design',
-                  description:
-                    'Use our Dynamic Blocks to build pages visually without touching a single line of code.',
-                  icon: {
-                    url: 'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=200',
-                  },
-                },
-              ],
-            },
-            {
-              blockType: 'testimonials',
-              blockData: {
-                heading: 'Loved by Teams Worldwide',
-                items: [
-                  {
-                    quote:
-                      'Zenith has completely transformed how we manage our global content pipeline. The UI is stunning and the API is incredibly fast.',
-                    author: 'Sarah Chen',
-                    role: 'CTO at TechFlow',
-                    avatar: {
-                      url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200',
-                    },
-                  },
-                  {
-                    quote:
-                      'The block-based page builder is a game changer. Our marketing team can now launch pages in minutes instead of days.',
-                    author: 'Marcus Aurelius',
-                    role: 'Head of Marketing at Nexus',
-                    avatar: {
-                      url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
-                    },
-                  },
-                ],
-              },
-            },
-            {
-              blockType: 'pricing',
-              blockData: {
-                heading: 'Plans that Scale with You',
-                plans: [
-                  {
-                    name: 'Developer',
-                    price: '$0',
-                    features: 'Up to 3 users\n100GB Bandwidth\nCommunity Support',
-                    buttonText: 'Get Started',
-                  },
-                  {
-                    name: 'Pro',
-                    price: '$49/mo',
-                    features:
-                      'Unlimited users\n1TB Bandwidth\nPriority Email Support\nAI Assistant',
-                    buttonText: 'Upgrade Now',
-                    isPopular: true,
-                  },
-                  {
-                    name: 'Enterprise',
-                    price: 'Custom',
-                    features: 'White-labeling\nCustom Storage\n24/7 Dedicated Support',
-                    buttonText: 'Contact Sales',
-                  },
-                ],
-              },
-            },
-            {
-              blockType: 'faq',
-              blockData: {
-                heading: 'Frequently Asked Questions',
-                questions: [
-                  {
-                    question: 'Is Zenith really headless?',
-                    answer:
-                      'Yes, Zenith is a fully headless CMS that provides a rich REST and GraphQL API to consume your content on any platform.',
-                  },
-                  {
-                    question: 'Can I host it myself?',
-                    answer:
-                      'Absolutely. Zenith is open-core and designed to be easily deployed on any cloud provider or on-premise server.',
-                  },
-                ],
-              },
-            },
-            {
-              blockType: 'cta',
-              blockData: {
-                title: 'Ready to build the future?',
-                description:
-                  'Join the Zenith community today and experience the power of modern headless content management.',
-                buttonText: 'Start Your Project',
-                link: '/admin',
-              },
-            },
-          ],
-          _status: 'published',
+    // Ensure Site collection exists and create standard sites if none
+    const sitesToSeed = [
+      {
+        _id: '6a09ec05c7be2df302d01e8d',
+        name: 'Default Site',
+        slug: 'default',
+        domain: process.env.DEFAULT_SITE_DOMAIN || 'localhost',
+        tenantId: 'default',
+        icon: '🌐',
+        description: 'The default storefront platform instance of Zenith CMS.',
+      },
+      {
+        _id: '6a09ec05c7be2df302d01e8e',
+        name: 'Zenith Glassmorphism Storefront',
+        slug: 'storefront-glass',
+        domain: 'localhost:5173',
+        tenantId: 'storefront-glass',
+        icon: '💎',
+        description: 'A luxury, dark-obsidian glassmorphic storefront template featuring fluid spring physics.',
+      },
+      {
+        _id: '6a09ec05c7be2df302d01e8f',
+        name: 'Zenith Editorial Storefront',
+        slug: 'storefront-editorial',
+        domain: 'localhost:5173',
+        tenantId: 'storefront-editorial',
+        icon: '📰',
+        description: 'A typography-centric editorial magazine theme featuring asymmetrical masonry content grids.',
+      },
+      {
+        _id: '6a09ec05c7be2df302d01e90',
+        name: 'Zenith Blog Demo',
+        slug: 'blog-demo',
+        domain: 'localhost:5173',
+        tenantId: 'blog-demo',
+        icon: '📝',
+        description: 'A clean developer blog layout demonstrating static SWR content ingestion and caching.',
+      },
+      {
+        _id: '6a09ec05c7be2df302d01e91',
+        name: 'Zenith Demo',
+        slug: 'demo',
+        domain: 'localhost:5173',
+        tenantId: 'demo',
+        icon: '🛒',
+        description: 'The standard product storefront demonstrating cart flow, catalog filtering, and spatial live updates.',
+      }
+    ]
+
+    for (const siteData of sitesToSeed) {
+      const existingById = await adapter.findOne<any>('z_sites', { _id: siteData._id })
+      if (existingById) {
+        await adapter.update('z_sites', (existingById.id || existingById._id).toString(), {
+          name: siteData.name,
+          slug: siteData.slug,
+          domain: siteData.domain,
+          tenantId: siteData.tenantId,
+          icon: siteData.icon,
+          description: siteData.description,
+          workspaceId: (defaultWorkspace.id || defaultWorkspace._id).toString(),
         })
-        logger.info('Seeded Landing Page with Dynamic Blocks')
-      } catch (err: any) {
-        logger.warn({ err: err.message }, 'Failed to seed landing-page collection')
+        logger.info(`Site ${siteData.name} updated by ID`)
+      } else {
+        const existingBySlug = await adapter.findOne<any>('z_sites', { slug: siteData.slug })
+        if (existingBySlug) {
+          await adapter.update('z_sites', (existingBySlug.id || existingBySlug._id).toString(), {
+            name: siteData.name,
+            domain: siteData.domain,
+            tenantId: siteData.tenantId,
+            icon: siteData.icon,
+            description: siteData.description,
+            workspaceId: (defaultWorkspace.id || defaultWorkspace._id).toString(),
+          })
+          logger.info(`Site ${siteData.name} updated by slug`)
+        } else {
+          await adapter.create<any>('z_sites', {
+            ...siteData,
+            workspaceId: (defaultWorkspace.id || defaultWorkspace._id).toString(),
+            ownerId: adminId.toString(),
+            members: [{ userId: adminId.toString(), role: 'admin', addedAt: new Date() }]
+          })
+          logger.info(`Site ${siteData.name} created and linked to default workspace`)
+        }
+      }
+    }
+
+    // Keep only up to 10 sites, remove extras
+    const currentSites = await adapter.find<any>('z_sites', {})
+    if (currentSites.length > 10) {
+      const toRemove = currentSites.slice(10)
+      for (const site of toRemove) {
+        await adapter.delete('z_sites', (site.id || site._id).toString())
+      }
+    }
+
+    // Seed Real Data for each Site
+    for (const siteData of sitesToSeed) {
+      const siteId = siteData._id
+      let landingCount = 0
+      try {
+        landingCount = await adapter.count('landing-page', { siteId })
+      } catch {
+        // If collection doesn't exist yet, we'll try to create it anyway
+      }
+
+      if (landingCount === 0) {
+        try {
+          await adapter.create('landing-page', {
+            title: `Welcome to ${siteData.name}`,
+            heroDescription:
+              siteData.slug === 'storefront-glass'
+                ? 'Experience sleek glassmorphism aesthetic built on Zenith CMS.'
+                : siteData.slug === 'storefront-editorial'
+                ? 'High-impact typography and visual grid layouts for digital publications.'
+                : siteData.slug === 'blog-demo'
+                ? 'A lightning fast developer blog showcasing Zenith content synchronization.'
+                : 'Experience the fastest headless commerce backend designed for the modern web.',
+            siteId,
+            sections: [
+              {
+                blockType: 'hero',
+                blockData: {
+                  headline: siteData.slug === 'storefront-glass'
+                    ? 'Translucent Aesthetics. Hardened Performance.'
+                    : siteData.slug === 'storefront-editorial'
+                    ? 'The Voice of Modern Digital Media'
+                    : siteData.slug === 'blog-demo'
+                    ? 'Developer Chronicles & Tech Manifests'
+                    : 'The Future of Headless Commerce is Here',
+                  subheadline:
+                    'Zenith CMS gives you the tools to build, manage, and scale your content with zero friction.',
+                  callToAction: 'Get Started Now',
+                  backgroundImage: {
+                    url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2000',
+                  },
+                },
+              },
+              {
+                blockType: 'stats',
+                blockData: {
+                  items: [
+                    { value: '100ms', label: 'API Response Time' },
+                    { value: '99.9%', label: 'System Uptime' },
+                    { value: '24/7', label: 'AI Assistance' },
+                    { value: '∞', label: 'Scalability' },
+                  ],
+                },
+              },
+              {
+                blockType: 'features',
+                heading: 'Why Developers Love Zenith',
+                featureList: [
+                  {
+                    title: 'Lightning Fast API',
+                    description:
+                      'Optimized MongoDB queries and intelligent caching ensure sub-100ms response times.',
+                    icon: {
+                      url: 'https://images.unsplash.com/photo-1635332305373-c60368149806?auto=format&fit=crop&q=80&w=200',
+                    },
+                  },
+                  {
+                    title: 'AI Co-pilot',
+                    description:
+                      'Auto-generate SEO meta, alt text, and even entire blog posts using integrated AI tools.',
+                    icon: {
+                      url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=200',
+                    },
+                  },
+                  {
+                    title: 'Modular Design',
+                    description:
+                      'Use our Dynamic Blocks to build pages visually without touching a single line of code.',
+                    icon: {
+                      url: 'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=200',
+                    },
+                  },
+                ],
+              },
+              {
+                blockType: 'testimonials',
+                blockData: {
+                  heading: 'Loved by Teams Worldwide',
+                  items: [
+                    {
+                      quote:
+                        'Zenith has completely transformed how we manage our global content pipeline. The UI is stunning and the API is incredibly fast.',
+                      author: 'Sarah Chen',
+                      role: 'CTO at TechFlow',
+                      avatar: {
+                        url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200',
+                      },
+                    },
+                    {
+                      quote:
+                        'The block-based page builder is a game changer. Our marketing team can now launch pages in minutes instead of days.',
+                      author: 'Marcus Aurelius',
+                      role: 'Head of Marketing at Nexus',
+                      avatar: {
+                        url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+                      },
+                    },
+                  ],
+                },
+              },
+              {
+                blockType: 'pricing',
+                blockData: {
+                  heading: 'Plans that Scale with You',
+                  plans: [
+                    {
+                      name: 'Developer',
+                      price: '$0',
+                      features: 'Up to 3 users\n100GB Bandwidth\nCommunity Support',
+                      buttonText: 'Get Started',
+                    },
+                    {
+                      name: 'Pro',
+                      price: '$49/mo',
+                      features:
+                        'Unlimited users\n1TB Bandwidth\nPriority Email Support\nAI Assistant',
+                      buttonText: 'Upgrade Now',
+                      isPopular: true,
+                    },
+                    {
+                      name: 'Enterprise',
+                      price: 'Custom',
+                      features: 'White-labeling\nCustom Storage\n24/7 Dedicated Support',
+                      buttonText: 'Contact Sales',
+                    },
+                  ],
+                },
+              },
+              {
+                blockType: 'faq',
+                blockData: {
+                  heading: 'Frequently Asked Questions',
+                  questions: [
+                    {
+                      question: 'Is Zenith really headless?',
+                      answer:
+                        'Yes, Zenith is a fully headless CMS that provides a rich REST and GraphQL API to consume your content on any platform.',
+                    },
+                    {
+                      question: 'Can I host it myself?',
+                      answer:
+                        'Absolutely. Zenith is open-core and designed to be easily deployed on any cloud provider or on-premise server.',
+                    },
+                  ],
+                },
+              },
+              {
+                blockType: 'cta',
+                blockData: {
+                  title: 'Ready to build the future?',
+                  description:
+                    'Join the Zenith community today and experience the power of modern headless content management.',
+                  buttonText: 'Start Your Project',
+                  link: '/admin',
+                },
+              },
+            ],
+            _status: 'published',
+          })
+          logger.info(`Seeded Landing Page with Dynamic Blocks for site: ${siteData.slug}`)
+        } catch (err: any) {
+          logger.warn({ err: err.message }, `Failed to seed landing-page collection for site: ${siteData.slug}`)
+        }
       }
     }
 
@@ -306,8 +437,8 @@ export async function seedInitialData() {
         logger.warn({ err: err.message }, 'Failed to seed media library')
       }
     }
-  } catch (error) {
-    logger.error({ error }, 'Seeding failed')
+  } catch (error: any) {
+    logger.error({ err: error.message, stack: error.stack }, 'Seeding failed')
   }
 }
 
@@ -470,5 +601,69 @@ export async function seedTailoredData(projectType: string, adapter: DatabaseAda
   } catch (err: any) {
     logger.warn({ err: err.message }, '[SeedEngine] Failed to seed tailored template data')
   }
+}
+
+async function registerConfigCollections(adapter: DatabaseAdapter) {
+  let config: any
+  /* eslint-disable @typescript-eslint/no-require-imports */
+  try {
+    const path = require('path')
+    config = require(path.join(process.cwd(), 'cms.config')).default || require(path.join(process.cwd(), 'cms.config'))
+  } catch (err: any) {
+  /* eslint-enable @typescript-eslint/no-require-imports */
+    console.warn('Could not load cms.config.ts for seeding:', err.message)
+    return
+  }
+
+  const collections = [...(config.collections || [])]
+  const globals = [...(config.globals || [])]
+
+  // Add system collections if missing
+  if (!collections.find((c) => c.slug === 'media')) {
+    collections.push({
+      slug: 'media',
+      name: 'Media',
+      fields: [
+        { name: 'name', type: 'text' },
+        { name: 'url', type: 'text' },
+        { name: 'alt', type: 'text' },
+        { name: 'folder', type: 'text' },
+        { name: 'mimetype', type: 'text' },
+        { name: 'size', type: 'number' },
+      ],
+    } as any)
+  }
+
+  // Register dynamic collections
+  for (const col of collections) {
+    await adapter.registerCollection(col)
+  }
+
+  // Register globals
+  for (const glob of globals) {
+    await adapter.registerCollection(glob)
+  }
+}
+
+if (typeof require !== 'undefined' && require.main === module) {
+  const adapter = AdapterFactory.getActiveAdapter()
+  adapter.connect().then(async () => {
+    await registerConfigCollections(adapter)
+    await seedInitialData()
+    process.exit(0)
+  }).catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+} else if (typeof process !== 'undefined' && process.argv[1] && (process.argv[1].endsWith('seed.ts') || process.argv[1].endsWith('seed.js'))) {
+  const adapter = AdapterFactory.getActiveAdapter()
+  adapter.connect().then(async () => {
+    await registerConfigCollections(adapter)
+    await seedInitialData()
+    process.exit(0)
+  }).catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
 }
 

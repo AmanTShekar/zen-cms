@@ -1,0 +1,177 @@
+import React, { useState } from 'react'
+import { X, Key, Loader2 } from 'lucide-react'
+import { cn } from '../../lib/utils'
+import api from '../../lib/api'
+
+interface GenerateKeyModalProps {
+  onClose: () => void
+  onGenerated: (key: any) => void
+  onOpenKeyModal: (k: any) => void
+  theme: 'light' | 'dark'
+}
+
+const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerated, onOpenKeyModal, theme }) => {
+  const [name, setName] = useState('')
+  const [role, setRole] = useState<'admin' | 'editor' | 'viewer'>('editor')
+  const [expiresDays, setExpiresDays] = useState(30)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleGenerate = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!name.trim()) return
+    setError('')
+    setLoading(true)
+    try {
+      const res = await api.post<any>('/system/api-keys', {
+        name: name.trim(),
+        role,
+        expiresInDays: expiresDays,
+      })
+      const keyData = res.data.data
+      // Show full key in a separate "done that" modal
+      onOpenKeyModal({ name: keyData.name, key: keyData.key })
+      onGenerated(keyData)
+      onClose()
+    } catch (err: any) {
+      setError(err?.response?.data?.error || 'Failed to generate key')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div
+        className={cn(
+          'w-full max-w-md border rounded-none shadow-2xl',
+          theme === 'dark' ? 'bg-[#080808] border-white/10' : 'bg-white border-gray-100'
+        )}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-8 py-6 border-b border-white/5">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-none bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+              <Key size={18} className="text-indigo-500" />
+            </div>
+            <span className="text-[12px] font-black uppercase italic tracking-wide">
+              Generate Access Token
+            </span>
+          </div>
+          <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors">
+            <X size={18} />
+          </button>
+        </div>
+
+        <form onSubmit={handleGenerate} className="px-8 py-6 space-y-6">
+          {/* Name */}
+          <div className="space-y-2">
+            <label className="text-[9px] font-black uppercase italic tracking-[0.3em] text-gray-500">
+              Token Name
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              autoFocus
+              placeholder="e.g. Production Relay"
+              className={cn(
+                'w-full border rounded-none py-4 px-5 text-[13px] font-black italic transition-all outline-none',
+                theme === 'dark'
+                  ? 'bg-white/5 border-white/10 text-white focus:border-indigo-500/50'
+                  : 'bg-gray-50 border-gray-200 focus:border-indigo-500'
+              )}
+            />
+          </div>
+
+          {/* Role */}
+          <div className="space-y-2">
+            <label className="text-[9px] font-black uppercase italic tracking-[0.3em] text-gray-500">
+              Permissions Tier
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {(['admin', 'editor', 'viewer'] as const).map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setRole(r)}
+                  className={cn(
+                    'py-3 text-[9px] font-black uppercase italic tracking-wider border rounded-none transition-all',
+                    role === r
+                      ? 'border-indigo-500/40 bg-indigo-500/10 text-indigo-400'
+                      : theme === 'dark'
+                      ? 'border-white/10 text-gray-500 hover:border-white/20'
+                      : 'border-gray-200 text-gray-400 hover:border-gray-300'
+                  )}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Expiry */}
+          <div className="space-y-2">
+            <label className="text-[9px] font-black uppercase italic tracking-[0.3em] text-gray-500">
+              Expires After (days)
+            </label>
+            <div className="grid grid-cols-4 gap-2">
+              {[7, 30, 90, 365].map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setExpiresDays(d)}
+                  className={cn(
+                    'py-3 text-[9px] font-black italic border rounded-none transition-all',
+                    expiresDays === d
+                      ? 'border-indigo-500/40 bg-indigo-500/10 text-indigo-400'
+                      : theme === 'dark'
+                      ? 'border-white/10 text-gray-500 hover:border-white/20'
+                      : 'border-gray-200 text-gray-400 hover:border-gray-300'
+                  )}
+                >
+                  {d}d
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {error && (
+            <p className="text-[9px] text-red-500 font-black uppercase italic tracking-widest">
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading || !name.trim()}
+            className={cn(
+              'w-full py-4 rounded-none text-[10px] font-black uppercase italic tracking-widest shadow-lg transition-all active:scale-95 disabled:opacity-40',
+              theme === 'dark'
+                ? 'bg-indigo-500 hover:bg-indigo-600 text-white'
+                : 'bg-gray-900 hover:bg-gray-800 text-white'
+            )}
+          >
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 size={14} className="animate-spin" />
+                Generating...
+              </span>
+            ) : (
+              'Generate Token'
+            )}
+          </button>
+        </form>
+
+        <div className="px-8 pb-6">
+          <p className="text-[8px] text-gray-600 uppercase tracking-widest text-center italic">
+            Keys are shown only once · store securely
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default GenerateKeyModal
