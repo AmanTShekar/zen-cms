@@ -1,7 +1,6 @@
 import { CollectionConfig } from '@zenithcms/types'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { logger } from './logger'
-import { ReleaseModel } from '../database/release-model'
 import { publishReleaseContent } from '../api/releases'
 import { AuditLogModel } from '../database/audit-model'
 import { AUDIT_RETENTION_POLICIES, getAuditCutoffDate } from './audit-rotation'
@@ -101,18 +100,18 @@ export class SchedulerService {
       // 3. Process Scheduled Releases
       try {
         const now = new Date()
-        const pendingReleases = await ReleaseModel.find({
+        const pendingReleases = await this.adapter.find('z_releases', {
           status: 'pending',
           scheduledAt: { $lte: now.toISOString() },
         })
 
         for (const release of pendingReleases) {
-          logger.info(`[Scheduler] Processing scheduled release: ${release.name}`)
-          
+          logger.info(`[Scheduler] Processing scheduled release: ${(release as any).name}`)
+
           // Execute publish
           // We provide a system user mock and the release's siteId
           const mockUser = { role: 'admin', email: 'system@zenithcms.local' }
-          const siteId = release.siteId || 'default'
+          const siteId = (release as any).siteId || 'default'
 
           const result = await publishReleaseContent(
             release,
@@ -123,13 +122,11 @@ export class SchedulerService {
           )
 
           if (result.success) {
-            release.status = 'published'
-            await release.save()
-            logger.info(`[Scheduler] Successfully published release: ${release.name}`)
+            await this.adapter.update('z_releases', (release as any)._id, { status: 'published' })
+            logger.info(`[Scheduler] Successfully published release: ${(release as any).name}`)
           } else {
-            release.status = 'failed'
-            await release.save()
-            logger.error({ error: result.error }, `[Scheduler] Failed to publish release: ${release.name}`)
+            await this.adapter.update('z_releases', (release as any)._id, { status: 'failed', failureReason: result.error })
+            logger.error({ error: result.error }, `[Scheduler] Failed to publish release: ${(release as any).name}`)
           }
         }
       } catch (err) {

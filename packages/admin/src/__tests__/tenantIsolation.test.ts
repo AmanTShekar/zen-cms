@@ -10,7 +10,7 @@
 
 import { describe, it, expect, beforeEach, beforeAll, afterAll } from 'vitest'
 import { setupServer } from 'msw/node'
-import { rest } from 'msw'
+import { http, HttpResponse } from 'msw'
 
 import apiInstance from '../lib/api'
 import { useTenantStore } from '../lib/tenantStore'
@@ -19,9 +19,9 @@ import { ApiError } from '../lib/ApiError'
 let lastRequest: Request | undefined
 
 const server = setupServer(
-  rest.all('http://localhost:5173/api/*', (req, res, ctx) => {
-    lastRequest = req
-    return res(ctx.status(200), ctx.json({ ok: true }))
+  http.all('http://localhost:5173/api/*', ({ request }) => {
+    lastRequest = request
+    return HttpResponse.json({ ok: true })
   })
 )
 
@@ -31,9 +31,9 @@ beforeEach(() => {
   lastRequest = undefined
   server.resetHandlers()
   server.use(
-    rest.all('http://localhost:5173/api/*', (req, res, ctx) => {
-      lastRequest = req
-      return res(ctx.status(200), ctx.json({ ok: true }))
+    http.all('http://localhost:5173/api/*', ({ request }) => {
+      lastRequest = request
+      return HttpResponse.json({ ok: true })
     })
   )
 })
@@ -66,9 +66,9 @@ describe('Tenant isolation', () => {
   it('allows tenant-exempt paths (/auth) without a siteId', async () => {
     useTenantStore.getState().setToken(null); useTenantStore.getState().setActiveSiteId(null)
     server.use(
-      rest.post('http://localhost:5173/api/v1/auth/login', (req, res, ctx) => {
-        lastRequest = req
-        return res(ctx.status(200), ctx.json({ token: 'fake' }))
+      http.post('http://localhost:5173/api/v1/auth/login', ({ request }) => {
+        lastRequest = request
+        return HttpResponse.json({ token: 'fake' })
       })
     )
     const res = await apiInstance.post('/auth/login', { email: 'a@b.co', password: 'x' })

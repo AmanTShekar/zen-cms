@@ -3,8 +3,7 @@ import { z } from 'zod'
 import { requireAuth, requireRole } from '../middleware/auth'
 import { createResponse } from './utils'
 import { ValidationError, NotFoundError, ForbiddenError } from '../errors'
-import { RoleModel } from '../database/role-model'
-import { UserModel } from '../database/user-model'
+import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { logger } from '../services/logger'
 
 const router = Router()
@@ -45,6 +44,7 @@ const ASSIGN_ROLE_SCHEMA = z.object({
 // ── Lifecycle: seed system roles on first boot ──────────────────────────────
 
 export async function seedSystemRoles() {
+  const adapter = AdapterFactory.getActiveAdapter()
   const systemRoles = [
     {
       roleName: 'Admin',
@@ -73,11 +73,10 @@ export async function seedSystemRoles() {
   ]
 
   for (const role of systemRoles) {
-    await RoleModel.findOneAndUpdate(
-      { roleName: role.roleName },
-      { $setOnInsert: role },
-      { upsert: true, new: true }
-    )
+    const existing = await adapter.findOne('z_roles', { roleName: role.roleName })
+    if (!existing) {
+      await adapter.create('z_roles', role)
+    }
   }
 
   logger.info('[Roles] System roles seeded')
@@ -88,7 +87,8 @@ export async function seedSystemRoles() {
 // GET /api/v1/roles — list all roles
 router.get('/', async (req, res, next) => {
   try {
-    const roles = await RoleModel.find().sort({ isSystem: -1, roleName: 1 }).lean()
+    const adapter = AdapterFactory.getActiveAdapter()
+    const roles = await adapter.find('z_roles', {}, { sort: { isSystem: -1, roleName: 1 } })
     res.json(createResponse(roles))
   } catch (err) {
     next(err)
@@ -98,7 +98,8 @@ router.get('/', async (req, res, next) => {
 // GET /api/v1/roles/:id — get single role
 router.get('/:id', async (req, res, next) => {
   try {
-    const role = await RoleModel.findById(req.params.id).lean()
+    const adapter = AdapterFactory.getActiveAdapter()
+    const role = await adapter.findOne('z_roles', { _id: req.params.id })
     if (!role) throw new NotFoundError('Role', req.params.id)
     res.json(createResponse(role))
   } catch (err) {
@@ -119,12 +120,13 @@ router.post('/', async (req, res, next) => {
       )
     }
 
-    const existing = await RoleModel.findOne({ roleName: validation.data.roleName })
+    const adapter = AdapterFactory.getActiveAdapter()
+    const existing = await adapter.findOne('z_roles', { roleName: validation.data.roleName })
     if (existing) {
       throw new ValidationError([{ field: 'roleName', message: 'A role with this name already exists.' }])
     }
 
-    const role = await RoleModel.create({
+    const role = await adapter.create('z_roles', {
       ...validation.data,
       roleType: 'custom',
       isSystem: false,
@@ -140,9 +142,10 @@ router.post('/', async (req, res, next) => {
 // PATCH /api/v1/roles/:id — update a custom role
 router.patch('/:id', async (req, res, next) => {
   try {
-    const role = await RoleModel.findById(req.params.id)
+    const adapter = AdapterFactory.getActiveAdapter()
+    const role = await adapter.findOne('z_roles', { _id: req.params.id })
     if (!role) throw new NotFoundError('Role', req.params.id)
-    if (role.isSystem) {
+    if ((role as any).isSystem) {
       throw new ForbiddenError('System roles cannot be modified. Clone the role to customize it.')
     }
 
@@ -156,11 +159,9 @@ router.patch('/:id', async (req, res, next) => {
       )
     }
 
-    Object.assign(role, validation.data)
-    await role.save()
-
-    logger.info(`[Roles] Updated role "${role.roleName}"`)
-    res.json(createResponse(role.toObject()))
+    const updated = await adapter.update('z_roles', req.params.id, validation.data)
+    logger.info(`[Roles] Updated role "${(role as any).roleName}"`)
+    res.json(createResponse(updated))
   } catch (err) {
     next(err)
   }
@@ -169,22 +170,24 @@ router.patch('/:id', async (req, res, next) => {
 // DELETE /api/v1/roles/:id
 router.delete('/:id', async (req, res, next) => {
   try {
-    const role = await RoleModel.findById(req.params.id)
+    const adapter = AdapterFactory.getActiveAdapter()
+    const role = await adapter.findOne('z_roles', { _id: req.params.id })
     if (!role) throw new NotFoundError('Role', req.params.id)
-    if (role.isSystem) {
+    if ((role as any).isSystem) {
       throw new ForbiddenError('System roles cannot be deleted. They are protected by Zenith.')
     }
 
     // Check if any users are assigned this role
-    const userCount = await UserModel.countDocuments({ role: role.roleName })
+    const { UserModel } = await import('../database/user-model')
+    const userCount = await UserModel.countDocuments({ role: (role as any).roleName })
     if (userCount > 0) {
       throw new ForbiddenError(
         `Cannot delete this role — ${userCount} user(s) are currently assigned to it. Reassign them first.`
       )
     }
 
-    await RoleModel.findByIdAndDelete(req.params.id)
-    logger.info(`[Roles] Deleted role "${role.roleName}"`)
+    await adapter.delete('z_roles', req.params.id)
+    logger.info(`[Roles] Deleted role "${(role as any).roleName}"`)
 
     res.json(createResponse({ success: true }))
   } catch (err) {
@@ -195,24 +198,25 @@ router.delete('/:id', async (req, res, next) => {
 // POST /api/v1/roles/clone/:id — clone a role as a new custom role
 router.post('/clone/:id', async (req, res, next) => {
   try {
-    const source = await RoleModel.findById(req.params.id).lean()
+    const adapter = AdapterFactory.getActiveAdapter()
+    const source = await adapter.findOne('z_roles', { _id: req.params.id })
     if (!source) throw new NotFoundError('Role', req.params.id)
 
-    const newName = `${source.roleName} (Copy)`
-    const alreadyExists = await RoleModel.findOne({ roleName: newName })
+    const newName = `${(source as any).roleName} (Copy)`
+    const alreadyExists = await adapter.findOne('z_roles', { roleName: newName })
     if (alreadyExists) {
       throw new ValidationError([{ field: 'roleName', message: 'Cloned role name already exists.' }])
     }
 
-    const cloned = await RoleModel.create({
+    const cloned = await adapter.create('z_roles', {
       roleName: newName,
       roleType: 'custom',
-      description: `Cloned from "${source.roleName}"`,
+      description: `Cloned from "${(source as any).roleName}"`,
       isSystem: false,
-      permissions: source.permissions,
+      permissions: (source as any).permissions,
     })
 
-    logger.info(`[Roles] Cloned role "${source.roleName}" → "${newName}"`)
+    logger.info(`[Roles] Cloned role "${(source as any).roleName}" → "${newName}"`)
     res.status(201).json(createResponse(cloned))
   } catch (err) {
     next(err)
@@ -232,6 +236,7 @@ router.post('/assign', async (req, res, next) => {
       )
     }
 
+    const { UserModel } = await import('../database/user-model')
     const user = await UserModel.findById(validation.data.userId)
     if (!user) throw new NotFoundError('User', validation.data.userId)
 
@@ -259,6 +264,7 @@ router.get('/users/list', async (req, res, next) => {
     const pageSize = Math.min(100, Math.max(1, parseInt((req.query.pageSize as string) || '20')))
     const skip = (page - 1) * pageSize
 
+    const { UserModel } = await import('../database/user-model')
     const [users, total] = await Promise.all([
       UserModel.find()
         .select('_id email role createdAt')

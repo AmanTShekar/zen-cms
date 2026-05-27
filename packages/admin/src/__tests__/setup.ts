@@ -1,14 +1,14 @@
 // Test setup for admin package – starts/stops MSW server
 import { setupServer } from 'msw/node'
-import { rest } from 'msw'
+import { http, HttpResponse } from 'msw'
 
 const server = setupServer(
-  rest.get('http://localhost:5173/api/*', (_req, res, ctx) =>
-    res(ctx.status(200), ctx.json({}))
-  ),
-  rest.post('http://localhost:5173/api/*', (_req, res, ctx) =>
-    res(ctx.status(200), ctx.json({}))
-  ),
+  http.get('http://localhost:5173/api/*', () => {
+    return HttpResponse.json({})
+  }),
+  http.post('http://localhost:5173/api/*', () => {
+    return HttpResponse.json({})
+  })
 )
 
 server.listen({ onUnhandledRequest: 'warn' })

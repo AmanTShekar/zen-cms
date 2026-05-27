@@ -229,6 +229,21 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       createdAt: timestamp('created_at').defaultNow().notNull(),
       updatedAt: timestamp('updated_at').defaultNow().notNull(),
     }),
+    releases: pgTable('z_releases', {
+      id: uuid('id').defaultRandom().primaryKey(),
+      name: text('name').notNull(),
+      description: text('description').default(''),
+      documents: jsonb('documents').default([]).notNull(),
+      status: text('status').notNull().default('pending'),
+      scheduledAt: timestamp('scheduled_at'),
+      publishedAt: timestamp('published_at'),
+      publishedBy: text('published_by'),
+      failureReason: text('failure_reason'),
+      siteId: text('site_id'),
+      createdBy: text('created_by'),
+      createdAt: timestamp('created_at').defaultNow().notNull(),
+      updatedAt: timestamp('updated_at').defaultNow().notNull(),
+    }),
     plugins: pgTable('z_plugins', {
       id: text('id').primaryKey(),
       name: text('name').notNull(),
@@ -722,6 +737,27 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         CREATE INDEX IF NOT EXISTS idx_roles_type ON z_roles(role_type);
       `
 
+      const createReleasesTable = sql`
+        CREATE TABLE IF NOT EXISTS z_releases (
+          id UUID PRIMARY KEY,
+          name TEXT NOT NULL,
+          description TEXT DEFAULT '',
+          documents JSONB DEFAULT '[]'::jsonb NOT NULL,
+          status TEXT NOT NULL DEFAULT 'pending',
+          scheduled_at TIMESTAMP,
+          published_at TIMESTAMP,
+          published_by TEXT,
+          failure_reason TEXT,
+          site_id TEXT,
+          created_by TEXT,
+          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_releases_status ON z_releases(status);
+        CREATE INDEX IF NOT EXISTS idx_releases_scheduled ON z_releases(scheduled_at);
+        CREATE INDEX IF NOT EXISTS idx_releases_site ON z_releases(site_id);
+      `
+
       const createPresenceTable = sql`
         CREATE TABLE IF NOT EXISTS z_presence (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -776,6 +812,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       await db.execute(createCollectionsTable)
       await db.execute(createRedirectsTable)
       await db.execute(createRolesTable)
+      await db.execute(createReleasesTable)
       await db.execute(createPresenceTable)
       await db.execute(createLocksTable)
     } finally {
@@ -1156,6 +1193,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     if (collection === 'z_plugins') return this.systemTables.plugins
     if (collection === 'z_redirects') return this.systemTables.redirects
     if (collection === 'z_roles' || collection === 'roles') return this.systemTables.roles
+    if (collection === 'z_releases' || collection === 'releases') return this.systemTables.releases
     const table = this.tables[collection]
     if (!table) throw new Error(`Collection "${collection}" not registered in PostgreSQL`)
     return table
