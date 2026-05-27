@@ -451,21 +451,29 @@ export class ZenithEngine {
     // GraphQL is initialized async after DB connects
 
     // ── Root Health/Config Endpoint ───────────────────────────────────────────
-    this.app.get('/api/v1/health', (_req, res) => {
-      res.json({
-        data: {
-          collections: this.config.collections,
-          globals: this.config.globals || [],
-          plugins: (this.plugins || []).map((p) => ({
-            id: p.id || p.name,
-            name: p.name,
-            version: p.version,
-            enabled: p.enabled !== false,
-            author: p.author,
-            description: p.description,
-          })),
-        },
-      })
+    // Returns full schema details only for admin-authenticated requests.
+    // Unauthenticated callers receive a simple status response.
+    this.app.get('/api/v1/health', (req, res) => {
+      const isAuthenticated = !!(req as any).user
+      const isAdmin = isAuthenticated && (req as any).user?.role === 'admin'
+      if (isAdmin) {
+        res.json({
+          data: {
+            collections: this.config.collections,
+            globals: this.config.globals || [],
+            plugins: (this.plugins || []).map((p) => ({
+              id: p.id || p.name,
+              name: p.name,
+              version: p.version,
+              enabled: p.enabled !== false,
+              author: p.author,
+              description: p.description,
+            })),
+          },
+        })
+      } else {
+        res.json({ status: 'ok', timestamp: new Date().toISOString() })
+      }
     })
 
     // ── Global Error Handler ──────────────────────────────────────────────────

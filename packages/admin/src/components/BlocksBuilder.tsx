@@ -474,7 +474,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
   const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({})
   const [showPreview, setShowPreview] = useState(false)
   
-  const previewUrl = import.meta.env.VITE_PREVIEW_URL || 'http://localhost:5173/preview'
+  const previewUrl = import.meta.env.VITE_PREVIEW_URL || '/preview'
 
   const rawBlocks = (availableBlocks as BlockDefinition[]) || []
   const blocksList: BlockDefinition[] = rawBlocks.length > 0 ? rawBlocks : (apiBlocks.length > 0 ? (apiBlocks as BlockDefinition[]) : DEFAULT_BLOCKS)

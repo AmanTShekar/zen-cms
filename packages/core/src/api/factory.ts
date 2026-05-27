@@ -273,9 +273,72 @@ function applySelectToDocs(docs: any | any[], selectStr: string) {
   if (Array.isArray(docs)) {
     return docs.map((doc) => applySelect(doc, selectStr))
   }
-  return applySelect(docs, selectStr)
 }
 
+function applyFieldLevelReadAccess(doc: any, fields: FieldConfig[], user: any) {
+  if (!doc || typeof doc !== 'object') return doc
+  if (user?.role === 'admin') return doc
+
+  for (const field of fields) {
+    const readAccessRoles = (field.admin as any)?.readAccess
+    if (readAccessRoles && readAccessRoles.length > 0) {
+      if (!user || !user.role || !readAccessRoles.includes(user.role)) {
+        delete doc[field.name]
+      }
+    }
+    if ((field.type === 'group' || field.type === 'collapsible') && doc[field.name]) {
+       applyFieldLevelReadAccess(doc[field.name], (field as any).fields || [], user)
+    } else if ((field.type === 'array' || field.type === 'row') && Array.isArray(doc[field.name])) {
+       for (const item of doc[field.name]) {
+         applyFieldLevelReadAccess(item, (field as any).fields || [], user)
+       }
+    } else if (field.type === 'blocks' && Array.isArray(doc[field.name])) {
+       for (const item of doc[field.name]) {
+         const blockDef = (field as any).blocks?.find((b: any) => b.slug === item.blockType)
+         if (blockDef && blockDef.fields) {
+           applyFieldLevelReadAccess(item, blockDef.fields, user)
+         }
+       }
+    }
+  }
+  return doc
+}
+
+function applyFieldLevelWriteAccess(data: any, fields: FieldConfig[], user: any) {
+  if (!data || typeof data !== 'object') return data
+  if (user?.role === 'admin') return data
+
+  for (const field of fields) {
+    const writeAccessRoles = (field.admin as any)?.writeAccess
+    if (writeAccessRoles && writeAccessRoles.length > 0) {
+      if (!user || !user.role || !writeAccessRoles.includes(user.role)) {
+        delete data[field.name]
+      }
+    }
+    if ((field.type === 'group' || field.type === 'collapsible') && data[field.name]) {
+       applyFieldLevelWriteAccess(data[field.name], (field as any).fields || [], user)
+    } else if ((field.type === 'array' || field.type === 'row') && Array.isArray(data[field.name])) {
+       for (const item of data[field.name]) {
+         applyFieldLevelWriteAccess(item, (field as any).fields || [], user)
+       }
+    } else if (field.type === 'blocks' && Array.isArray(data[field.name])) {
+       for (const item of data[field.name]) {
+         const blockDef = (field as any).blocks?.find((b: any) => b.slug === item.blockType)
+         if (blockDef && blockDef.fields) {
+           applyFieldLevelWriteAccess(item, blockDef.fields, user)
+         }
+       }
+    }
+  }
+  return data
+}
+
+function applyFieldLevelReadAccessToDocs(docs: any | any[], fields: FieldConfig[], user: any) {
+  if (Array.isArray(docs)) {
+    return docs.map(doc => applyFieldLevelReadAccess(doc, fields, user))
+  }
+  return applyFieldLevelReadAccess(docs, fields, user)
+}
 
 function serializeBlocks(doc: any, fields: FieldConfig[]) {
   if (!doc || typeof doc !== 'object') return
@@ -461,16 +524,22 @@ export function createCollectionRouter(
         delete sanitized[field.name]
       }
     })
+    
+    // Apply static role-based Field-Level Security
     if (action === 'read') {
+      applyFieldLevelReadAccess(sanitized, config.fields, user)
       serializeBlocks(sanitized, config.fields)
+    } else {
+      applyFieldLevelWriteAccess(sanitized, config.fields, user)
     }
+    
     return sanitized
   }
 
   /** Strip fields the user is not allowed to set on create/update. */
   const restrictInputFields = (data: any, user: any, action: 'create' | 'update') => {
     if (!data || typeof data !== 'object') return data
-    const restricted = { ...data }
+    let restricted = { ...data }
     for (const field of config.fields) {
       const fieldAccess = (field as any).access
       if (fieldAccess && fieldAccess[action] && !fieldAccess[action]!(user)) {
@@ -482,6 +551,8 @@ export function createCollectionRouter(
         delete restricted[field.name]
       }
     }
+    
+    restricted = applyFieldLevelWriteAccess(restricted, config.fields, user)
     return restricted
   }
 

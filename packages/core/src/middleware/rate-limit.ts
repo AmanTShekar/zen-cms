@@ -1,4 +1,5 @@
 import rateLimit, { Store, ClientRateLimitInfo, Options } from 'express-rate-limit'
+import { logger } from '../services/logger'
 
 /**
  * Custom Redis Rate Limit Store
@@ -70,7 +71,7 @@ if (redisUrl) {
   try {
     rateLimitStore = new RedisRateLimitStore(redisUrl)
   } catch {
-    // Fall back to default in-memory store on connection failures
+    logger.warn({ redisUrl: redisUrl.replace(/:.+@/, '://***@') }, 'Redis unavailable for rate limiting — falling back to in-memory store')
   }
 }
 

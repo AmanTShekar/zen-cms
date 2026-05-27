@@ -75,7 +75,7 @@ const DocumentEditModal: React.FC<DocumentEditModalProps> = ({
           exit={{ opacity: 0, y: 10, scale: 0.98 }}
           className={cn(
             'w-full max-w-4xl border rounded-none overflow-hidden shadow-2xl flex flex-col h-[85vh]',
-            theme === 'dark' ? 'bg-[#0a0a0a] border-white/10' : 'bg-white border-gray-200'
+            theme === 'dark' ? 'bg-[#0B0F19] border-white/10' : 'bg-white border-gray-200'
           )}
         >
           <div

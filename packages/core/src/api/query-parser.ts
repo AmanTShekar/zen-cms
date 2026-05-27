@@ -51,9 +51,19 @@ function mongoToPostgresFilter(value: unknown): unknown {
 
 function normalizeFilters(
   filter: Record<string, unknown>,
-  out: Record<string, unknown> = {}
+  out: Record<string, unknown> = {},
+  prefix = ''
 ): Record<string, unknown> {
   for (const [key, val] of Object.entries(filter)) {
+    if (key === '$or' || key === '$and') {
+       if (Array.isArray(val)) {
+         out[key] = val.map(v => normalizeFilters(v))
+       }
+       continue
+    }
+
+    const outKey = prefix ? `${prefix}.${key}` : key
+    
     if (val && typeof val === 'object' && !Array.isArray(val)) {
       const ops = val as Record<string, unknown>
       const isOperator = !!(
@@ -62,14 +72,13 @@ function normalizeFilters(
         '$like' in ops || '$regex' in ops
       )
       if (isOperator) {
-        if ('$eq' in ops) out[key] = ops.$eq
-        else out[key] = mongoToPostgresFilter(ops)
+        if ('$eq' in ops) out[outKey] = ops.$eq
+        else out[outKey] = mongoToPostgresFilter(ops)
       } else {
-        const nested = normalizeFilters(ops as Record<string, unknown>, {})
-        Object.assign(out, nested)
+        normalizeFilters(ops as Record<string, unknown>, out, outKey)
       }
     } else {
-      out[key] = val
+      out[outKey] = val
     }
   }
   return out

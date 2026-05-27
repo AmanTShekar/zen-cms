@@ -50,6 +50,8 @@ export interface FieldAdminConfig {
   readOnly?: boolean
   width?: string
   condition?: (data: any, siblingData: any) => boolean
+  readAccess?: string[]
+  writeAccess?: string[]
 }
 
 export interface BaseFieldConfig {

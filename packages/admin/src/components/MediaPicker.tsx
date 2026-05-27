@@ -167,7 +167,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                 exit={{ opacity: 0, scale: 0.98, y: 10 }}
                 className={cn(
                   'w-full max-w-6xl border rounded-none overflow-hidden shadow-2xl flex flex-col h-[85vh]',
-                  theme === 'dark' ? 'bg-[#0a0a0a] border-white/10' : 'bg-white border-gray-200'
+                  theme === 'dark' ? 'bg-[#0B0F19] border-white/10' : 'bg-white border-gray-200'
                 )}
               >
                 <div
@@ -198,7 +198,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
   
                 <div className={cn(
                   'flex-1 overflow-hidden flex flex-col p-8 gap-8',
-                  theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-white'
+                  theme === 'dark' ? 'bg-[#0B0F19]' : 'bg-white'
                 )}>
                 <AnimatePresence mode="wait">
                   {focalPending ? (

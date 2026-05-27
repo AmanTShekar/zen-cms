@@ -1,6 +1,7 @@
 import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Lock } from 'lucide-react'
+import { useAuthStore } from '../store/authStore'
 import RichTextEditor from './RichTextEditor'
 import MediaPicker from './MediaPicker'
 import RelationPicker from './RelationPicker'
@@ -59,6 +60,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
   readOnlyLocale,
   hideSubmitButton = false,
 }) => {
+  const { user } = useAuthStore()
   const currentLocale = activeLocale || 'en'
   const isReadOnly = !!readOnlyLocale
 
@@ -297,6 +299,19 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
         const isFullWidth = ['richtext', 'blocks', 'array', 'code', 'collapsible', 'group', 'tabs', 'json'].includes(field.type)
         const fieldName = getFieldName(field, currentLocale)
 
+        // Field Level Security (RBAC)
+        let isFieldDisabled = isReadOnly
+        if (user?.role !== 'admin') {
+          const readAccess = field.admin?.readAccess
+          if (readAccess && readAccess.length > 0 && !readAccess.includes(user!.role)) {
+            return null // Hide field completely
+          }
+          const writeAccess = field.admin?.writeAccess
+          if (writeAccess && writeAccess.length > 0 && !writeAccess.includes(user!.role)) {
+            isFieldDisabled = true
+          }
+        }
+
         return (
           <div key={field.name} className={`space-y-2 ${isFullWidth ? 'col-span-2' : ''}`}>
             <div className="flex items-center justify-between">
@@ -305,8 +320,11 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
                 {field.required && <span className="text-rose-500">*</span>}
                 {field.localized && (
                   <span className="px-1.5 py-0.5 text-[8px] font-black tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-none uppercase">
-                    {isReadOnly ? readOnlyLocale : currentLocale}
+                    {isFieldDisabled ? readOnlyLocale || currentLocale : currentLocale}
                   </span>
+                )}
+                {isFieldDisabled && !isReadOnly && (
+                  <Lock size={10} className="text-gray-500 ml-1" />
                 )}
               </label>
               {field.admin?.description && (
@@ -314,10 +332,10 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
               )}
             </div>
 
-            {isReadOnly ? (
+            {isFieldDisabled ? (
               (() => {
                 const staticValue = field.localized
-                  ? (initialData?.[field.name]?.[readOnlyLocale || 'en'] ?? '')
+                  ? (initialData?.[field.name]?.[readOnlyLocale || currentLocale] ?? '')
                   : (initialData?.[field.name] ?? '')
                 return renderField(field, staticValue, () => {}, true)
               })()
@@ -329,7 +347,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
               />
             )}
 
-            {!isReadOnly && !!getFieldError(errors, fieldName) && (
+            {!isFieldDisabled && !!getFieldError(errors, fieldName) && (
               <p className="text-xs text-danger mt-1 font-medium">
                 {(getFieldError(errors, fieldName) as any)?.message || 'Required field'}
               </p>
