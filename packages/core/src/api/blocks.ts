@@ -1,8 +1,10 @@
 import { Router, Request, Response } from 'express'
+import { requireAuth } from '../middleware/auth'
 import { BlockDefinition } from '@zenithcms/types'
 import { NotFoundError } from '../errors'
 
 const router: Router = Router()
+router.use(requireAuth)
 
 const STANDARD_STYLE_FIELDS: any[] = [
   { name: 'anchorId', type: 'text', label: 'Anchor ID' },

@@ -58,6 +58,7 @@ import { requestTimeout } from './middleware/timeout'
 import { createCollectionRouter } from './api/factory'
 import { auditMiddleware } from './middleware/audit'
 import systemRouter from './api/system'
+import introspectRouter from './api/introspect'
 import authRouter from './api/auth'
 import uploadRouter from './api/upload'
 import _mediaRouter from './api/media'
@@ -376,11 +377,13 @@ export class ZenithEngine {
     this.app.use('/api/v1/system/components', componentsRouter)
     this.app.use('/api/v1/system/campaigns', campaignsRouter)
     this.app.use('/api/v1/system/backup', backupRouter)
+    this.app.use('/api/v1/system/introspect', introspectRouter)
     this.app.use('/api/v1/events', eventsRouter)
 
     // ── Media ────────────────────────────────────────────────────────────────
     this.app.use('/api/v1/upload', uploadRouter)
     this.app.use('/media', _mediaRouter)
+    this.app.use('/api/v1/media', _mediaRouter)
     this.app.use('/api/v1/import-export', importExportRouter)
     this.app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')))
 
@@ -404,7 +407,7 @@ export class ZenithEngine {
     this.app.use('/api/v1/redirects', redirectsRouter)
     this.app.use('/api/v1/trash', trashRouter)
     this.app.use('/api/v1/duplicate', duplicateRouter)
-    this.app.use('/api/v1/bulk', bulkRouter)
+    this.app.use('/api/v1', bulkRouter)
 
     // ── Redirect Handler (intercepts 404s for matching redirect rules) ────────
     this.app.get('/*', redirectHandler)

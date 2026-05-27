@@ -1,11 +1,13 @@
 import { Router, Request, Response } from 'express'
+import { requireAuth } from '../middleware/auth'
 import { eventHub } from '../services/event-hub'
 
 const router = Router()
+router.use(requireAuth)
 
 /**
  * GET /api/v1/events
- * 
+ *
  * Server-Sent Events (SSE) endpoint for frontends to subscribe to real-time
  * content updates. Useful for triggering Next.js ISR revalidation or updating
  * live React state without full WebSockets.

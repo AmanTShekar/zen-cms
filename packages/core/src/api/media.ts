@@ -2,6 +2,8 @@ import { Router, Request, Response } from 'express'
 import path from 'path'
 import fs from 'fs'
 import sharp from 'sharp'
+import { requireAuth } from '../middleware/auth'
+import { createResponse } from './utils'
 import { InvalidPayloadError, NotFoundError } from '../errors'
 
 const router: Router = Router()
@@ -14,6 +16,53 @@ const router: Router = Router()
  */
 const mediaDir = path.resolve(process.cwd(), 'media')
 if (!fs.existsSync(mediaDir)) fs.mkdirSync(mediaDir, { recursive: true })
+
+/**
+ * GET / — List all media records
+ */
+router.get('/', requireAuth, async (_req: Request, res: Response, next) => {
+  try {
+    const adapter = (_req as any).zenith?.adapter
+    if (!adapter) return res.json(createResponse([]))
+    const items = await adapter.find('media', {})
+    res.json(createResponse(items))
+  } catch (err) {
+    next(err)
+  }
+})
+
+/**
+ * PATCH /:id — Update media metadata (focal point, alt text, etc.)
+ */
+router.patch('/:id', requireAuth, async (req: Request, res: Response, next) => {
+  try {
+    const adapter = (req as any).zenith?.adapter
+    if (!adapter) throw new NotFoundError('Media', req.params.id)
+    const updated = await adapter.update('media', req.params.id, req.body)
+    res.json(createResponse(updated))
+  } catch (err) {
+    next(err)
+  }
+})
+
+/**
+ * DELETE /:id — Delete a media record and its file
+ */
+router.delete('/:id', requireAuth, async (req: Request, res: Response, next) => {
+  try {
+    const adapter = (req as any).zenith?.adapter
+    if (!adapter) throw new NotFoundError('Media', req.params.id)
+    const existing = await adapter.findOne('media', { _id: req.params.id })
+    if (existing?.filename) {
+      const filePath = path.join(mediaDir, existing.filename)
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+    }
+    await adapter.delete('media', req.params.id)
+    res.json(createResponse({ success: true }))
+  } catch (err) {
+    next(err)
+  }
+})
 
 /**
  * Convert a focal point percentage (0-100) to sharp gravity value.

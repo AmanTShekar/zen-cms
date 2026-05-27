@@ -76,7 +76,11 @@ async function getLastAuditHash(): Promise<string | null> {
 }
 
 function computeAuditHash(entry: AuditLogData, previousHash: string | null): string {
-  const payload = JSON.stringify({ ...entry, previousHash }) + (process.env.AUDIT_HASH_SECRET || 'zenith-audit-default-secret')
+  const secret = process.env.AUDIT_HASH_SECRET
+  if (!secret) {
+    logger.warn('AUDIT_HASH_SECRET is not set — audit chain integrity is compromised. Set this environment variable in production.')
+  }
+  const payload = JSON.stringify({ ...entry, previousHash }) + (secret || '')
   return crypto.createHash('sha256').update(payload).digest('hex')
 }
 

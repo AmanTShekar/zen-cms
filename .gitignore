@@ -62,6 +62,12 @@ coverage/
 !.claudeprompt
 !.github/
 
+# 📄 TypeScript incremental build info
+*.tsbuildinfo
+
+# 📄 Generated Health Check
+health.json
+
 # 📄 Local SDK Compiled Artifacts
 packages/sdk/index.js
 packages/sdk/index.d.ts

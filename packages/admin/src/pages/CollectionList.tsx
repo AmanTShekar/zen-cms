@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
   Plus, Search, ChevronLeft, ChevronRight, Loader2, Edit, Trash2,
   Database, Download, Layers, Fingerprint, Activity as ActivityIcon,
-  ShieldCheck, CheckSquare, Square, Upload,
+  ShieldCheck, CheckSquare, Square, Upload, LayoutList, LayoutGrid, Kanban
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../lib/utils'
@@ -25,6 +25,7 @@ const CollectionList: React.FC = () => {
   const [total, setTotal] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
   const [viewMode, setViewMode] = useState<'active' | 'trash'>('active')
+  const [layout, setLayout] = useState<'table' | 'cards' | 'kanban'>('table')
   const [config, setConfig] = useState<any>(null)
   const filteredData = data.filter((item) => {
     const searchStr = searchQuery.toLowerCase()
@@ -286,74 +287,193 @@ const CollectionList: React.FC = () => {
             </div>
             <button onClick={exportCSV} className="p-2.5 border rounded-none text-gray-500 hover:text-emerald-500 transition-colors" title="Export"><Download size={14} /></button>
             <button onClick={() => setImportModalOpen(true)} className="p-2.5 border rounded-none text-gray-500 hover:text-emerald-500 transition-colors" title="Import"><Upload size={14} /></button>
+            <div className="w-px h-6 bg-gray-200 dark:bg-white/10 mx-2" />
+            <div className="flex bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-none p-0.5">
+              <button onClick={() => setLayout('table')} className={cn('p-2 transition-all', layout === 'table' ? 'bg-white dark:bg-black shadow-sm text-emerald-500' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white')} title="Table View"><LayoutList size={14} /></button>
+              <button onClick={() => setLayout('cards')} className={cn('p-2 transition-all', layout === 'cards' ? 'bg-white dark:bg-black shadow-sm text-emerald-500' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white')} title="Cards View"><LayoutGrid size={14} /></button>
+              <button onClick={() => setLayout('kanban')} className={cn('p-2 transition-all', layout === 'kanban' ? 'bg-white dark:bg-black shadow-sm text-emerald-500' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white')} title="Kanban View"><Kanban size={14} /></button>
+            </div>
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className={cn('border-b text-left text-[8px] font-black text-gray-500 uppercase tracking-[0.4em] italic', theme === 'dark' ? 'border-white/5' : 'border-gray-50')}>
-                <th className="px-4 py-4 w-10">
-                  <button onClick={(e) => { e.stopPropagation(); toggleSelectAll(); }} className="flex items-center justify-center" title={selectedIds.size === filteredData.length && filteredData.length > 0 ? 'Deselect all' : 'Select all'}>
-                    {selectedIds.size === filteredData.length && filteredData.length > 0 ? <CheckSquare size={14} className="text-emerald-500" /> : <Square size={14} className={cn('text-gray-500', selectedIds.size > 0 && 'text-emerald-400')} />}
-                  </button>
-                </th>
-                <th className="px-6 py-4">Node_ID</th>
-                {availableColumns.filter((c) => visibleColumns.includes(c)).map((col) => (<th key={col} className="px-6 py-4">{col.toUpperCase()}</th>))}
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className={cn('divide-y', theme === 'dark' ? 'divide-white/5' : 'divide-gray-50')}>
-              {loading ? (
-                <tr><td colSpan={visibleColumns.length + 3} className="py-20 text-center"><Loader2 size={24} className="animate-spin mx-auto text-emerald-500 opacity-20" /></td></tr>
-              ) : filteredData.length === 0 ? (
-                <tr><td colSpan={visibleColumns.length + 3} className="py-20 text-center opacity-20 text-[9px] font-black uppercase italic tracking-[0.4em]">No_Records_Found</td></tr>
-              ) : filteredData.map((item: any) => {
-                const itemId = item._id || item.id
-                const isSelected = selectedIds.has(itemId)
-                return (
-                  <tr key={itemId} className={cn("hover:bg-emerald-500/[0.02] transition-colors group cursor-pointer border-b border-white/[0.02]", isSelected && 'bg-emerald-500/[0.06]')}
-                    onClick={() => navigate(`/collections/${slug}/${itemId}`)}
-                  >
-                    <td className="px-4 py-4">
-                      <button onClick={(e) => { e.stopPropagation(); toggleSelect(itemId); }} className="flex items-center justify-center">
-                        {isSelected ? <CheckSquare size={14} className="text-emerald-500" /> : <Square size={14} className="text-gray-600 group-hover:text-gray-400" />}
-                      </button>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <div className={cn("w-1.5 h-1.5 rounded-none", isSelected ? 'bg-emerald-400' : 'bg-emerald-500')} />
-                        <span className="text-[9px] font-black text-emerald-500 uppercase italic">#{String(itemId).slice(-6)}</span>
-                      </div>
-                    </td>
-                    {availableColumns.filter((c) => visibleColumns.includes(c)).map((col) => (
-                      <td key={col} className="px-6 py-4">
-                        <span className={cn('text-[10px] font-black uppercase italic', col === '_status' && item[col] === 'published' ? 'text-emerald-400' : col === '_status' && item[col] === 'draft' ? 'text-amber-400' : '')}>
-                          {typeof item[col] === 'object' ? '[Complex_Object]' : String(item[col] || '—')}
-                        </span>
+        {layout === 'table' && (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className={cn('border-b text-left text-[8px] font-black text-gray-500 uppercase tracking-[0.4em] italic', theme === 'dark' ? 'border-white/5' : 'border-gray-50')}>
+                  <th className="px-4 py-4 w-10">
+                    <button onClick={(e) => { e.stopPropagation(); toggleSelectAll(); }} className="flex items-center justify-center" title={selectedIds.size === filteredData.length && filteredData.length > 0 ? 'Deselect all' : 'Select all'}>
+                      {selectedIds.size === filteredData.length && filteredData.length > 0 ? <CheckSquare size={14} className="text-emerald-500" /> : <Square size={14} className={cn('text-gray-500', selectedIds.size > 0 && 'text-emerald-400')} />}
+                    </button>
+                  </th>
+                  <th className="px-6 py-4">Node_ID</th>
+                  {availableColumns.filter((c) => visibleColumns.includes(c)).map((col) => (<th key={col} className="px-6 py-4">{col.toUpperCase()}</th>))}
+                  <th className="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className={cn('divide-y', theme === 'dark' ? 'divide-white/5' : 'divide-gray-50')}>
+                {loading ? (
+                  <tr><td colSpan={visibleColumns.length + 3} className="py-20 text-center"><Loader2 size={24} className="animate-spin mx-auto text-emerald-500 opacity-20" /></td></tr>
+                ) : filteredData.length === 0 ? (
+                  <tr><td colSpan={visibleColumns.length + 3} className="py-20 text-center opacity-20 text-[9px] font-black uppercase italic tracking-[0.4em]">No_Records_Found</td></tr>
+                ) : filteredData.map((item: any) => {
+                  const itemId = item._id || item.id
+                  const isSelected = selectedIds.has(itemId)
+                  return (
+                    <tr key={itemId} className={cn("hover:bg-emerald-500/[0.02] transition-colors group cursor-pointer border-b border-white/[0.02]", isSelected && 'bg-emerald-500/[0.06]')}
+                      onClick={() => navigate(`/collections/${slug}/${itemId}`)}
+                    >
+                      <td className="px-4 py-4">
+                        <button onClick={(e) => { e.stopPropagation(); toggleSelect(itemId); }} className="flex items-center justify-center">
+                          {isSelected ? <CheckSquare size={14} className="text-emerald-500" /> : <Square size={14} className="text-gray-600 group-hover:text-gray-400" />}
+                        </button>
                       </td>
-                    ))}
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                        {viewMode === 'active' ? (
-                          <>
-                            <button onClick={(e) => { e.stopPropagation(); }} className="p-2 rounded-none border hover:text-emerald-500"><Edit size={12} /></button>
-                            <button onClick={(e) => { e.stopPropagation(); handleDelete(itemId); }} className="p-2 rounded-none border hover:text-red-500"><Trash2 size={12} /></button>
-                          </>
-                        ) : (
-                          <>
-                            <button onClick={(e) => { e.stopPropagation(); handleRestore(itemId); }} className="px-3 py-1 rounded-none border hover:bg-emerald-500 hover:text-white hover:border-emerald-500 text-[9px] uppercase font-bold tracking-widest transition-all">Restore</button>
-                            <button onClick={(e) => { e.stopPropagation(); handleDelete(itemId, true); }} className="px-3 py-1 rounded-none border hover:bg-red-500 hover:text-white hover:border-red-500 text-[9px] uppercase font-bold tracking-widest transition-all">Delete Forever</button>
-                          </>
-                        )}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <div className={cn("w-1.5 h-1.5 rounded-none", isSelected ? 'bg-emerald-400' : 'bg-emerald-500')} />
+                          <span className="text-[9px] font-black text-emerald-500 uppercase italic">#{String(itemId).slice(-6)}</span>
+                        </div>
+                      </td>
+                      {availableColumns.filter((c) => visibleColumns.includes(c)).map((col) => (
+                        <td key={col} className="px-6 py-4">
+                          <span className={cn('text-[10px] font-black uppercase italic', col === '_status' && item[col] === 'published' ? 'text-emerald-400' : col === '_status' && item[col] === 'draft' ? 'text-amber-400' : '')}>
+                            {typeof item[col] === 'object' ? '[Complex_Object]' : String(item[col] || '—')}
+                          </span>
+                        </td>
+                      ))}
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                          {viewMode === 'active' ? (
+                            <>
+                              <button onClick={(e) => { e.stopPropagation(); }} className="p-2 rounded-none border hover:text-emerald-500"><Edit size={12} /></button>
+                              <button onClick={(e) => { e.stopPropagation(); handleDelete(itemId); }} className="p-2 rounded-none border hover:text-red-500"><Trash2 size={12} /></button>
+                            </>
+                          ) : (
+                            <>
+                              <button onClick={(e) => { e.stopPropagation(); handleRestore(itemId); }} className="px-3 py-1 rounded-none border hover:bg-emerald-500 hover:text-white hover:border-emerald-500 text-[9px] uppercase font-bold tracking-widest transition-all">Restore</button>
+                              <button onClick={(e) => { e.stopPropagation(); handleDelete(itemId, true); }} className="px-3 py-1 rounded-none border hover:bg-red-500 hover:text-white hover:border-red-500 text-[9px] uppercase font-bold tracking-widest transition-all">Delete Forever</button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {layout === 'cards' && (
+          <div className="p-6">
+            {loading ? (
+              <div className="py-20 flex justify-center"><Loader2 size={24} className="animate-spin text-emerald-500 opacity-20" /></div>
+            ) : filteredData.length === 0 ? (
+              <div className="py-20 text-center opacity-20 text-[9px] font-black uppercase italic tracking-[0.4em]">No_Records_Found</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredData.map((item: any) => {
+                  const itemId = item._id || item.id
+                  const isSelected = selectedIds.has(itemId)
+                  return (
+                    <div key={itemId} onClick={() => navigate(`/collections/${slug}/${itemId}`)} className={cn("border rounded-none p-5 flex flex-col gap-4 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-xl", theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:border-white/10' : 'bg-white border-gray-100 hover:border-emerald-500/20', isSelected && (theme === 'dark' ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-emerald-500/50 bg-emerald-50'))}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <button onClick={(e) => { e.stopPropagation(); toggleSelect(itemId); }}>
+                            {isSelected ? <CheckSquare size={14} className="text-emerald-500" /> : <Square size={14} className="text-gray-400" />}
+                          </button>
+                          <span className="text-[10px] font-black text-emerald-500 uppercase italic tracking-wider">#{String(itemId).slice(-8)}</span>
+                        </div>
+                        <div className="flex gap-2">
+                          {viewMode === 'active' ? (
+                            <>
+                              <button onClick={(e) => { e.stopPropagation(); }} className="text-gray-400 hover:text-emerald-500"><Edit size={12} /></button>
+                              <button onClick={(e) => { e.stopPropagation(); handleDelete(itemId); }} className="text-gray-400 hover:text-red-500"><Trash2 size={12} /></button>
+                            </>
+                          ) : (
+                            <button onClick={(e) => { e.stopPropagation(); handleRestore(itemId); }} className="text-[9px] uppercase font-bold text-emerald-500">Restore</button>
+                          )}
+                        </div>
                       </div>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+                      <div className="space-y-3">
+                        {availableColumns.filter((c) => visibleColumns.includes(c)).slice(0, 4).map((col) => (
+                          <div key={col} className="flex flex-col">
+                            <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">{col.replace(/_/g, ' ')}</span>
+                            <span className={cn('text-xs font-medium truncate', col === '_status' && item[col] === 'published' ? 'text-emerald-500' : '')}>
+                              {typeof item[col] === 'object' ? '[Object]' : String(item[col] || '—')}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {layout === 'kanban' && (
+          <div className="p-6 overflow-x-auto">
+            {loading ? (
+              <div className="py-20 flex justify-center"><Loader2 size={24} className="animate-spin text-emerald-500 opacity-20" /></div>
+            ) : filteredData.length === 0 ? (
+              <div className="py-20 text-center opacity-20 text-[9px] font-black uppercase italic tracking-[0.4em]">No_Records_Found</div>
+            ) : (
+              <div className="flex gap-6 min-w-max pb-4">
+                {(() => {
+                  const hasStatus = availableColumns.includes('_status') || availableColumns.includes('status')
+                  const statusField = hasStatus ? (availableColumns.includes('_status') ? '_status' : 'status') : null
+                  
+                  let groups: Record<string, any[]> = {}
+                  if (statusField) {
+                    filteredData.forEach(item => {
+                      const st = String(item[statusField] || 'Draft').toLowerCase()
+                      if (!groups[st]) groups[st] = []
+                      groups[st].push(item)
+                    })
+                  } else {
+                    groups['Uncategorized'] = filteredData
+                  }
+
+                  return Object.entries(groups).map(([status, items]) => (
+                    <div key={status} className={cn("w-80 flex flex-col border rounded-none", theme === 'dark' ? 'bg-black/50 border-white/5' : 'bg-gray-50 border-gray-100')}>
+                      <div className="p-4 flex items-center justify-between border-b border-inherit">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] italic flex items-center gap-2">
+                          <div className={cn("w-2 h-2 rounded-none shadow-[0_0_8px_currentColor]", status === 'published' ? 'bg-emerald-500 text-emerald-500' : status === 'draft' ? 'bg-amber-500 text-amber-500' : 'bg-gray-500 text-gray-500')} />
+                          {status}
+                        </span>
+                        <span className="text-[9px] font-bold text-gray-500 bg-white/5 px-2 py-0.5 rounded-none">{items.length}</span>
+                      </div>
+                      <div className="p-4 flex flex-col gap-3 h-full max-h-[60vh] overflow-y-auto no-scrollbar">
+                        {items.map(item => {
+                          const itemId = item._id || item.id
+                          const isSelected = selectedIds.has(itemId)
+                          return (
+                            <div key={itemId} onClick={() => navigate(`/collections/${slug}/${itemId}`)} className={cn("p-4 border rounded-none cursor-pointer transition-all hover:shadow-lg", theme === 'dark' ? 'bg-[#0a0a0a] border-white/10 hover:border-white/20' : 'bg-white border-gray-200 hover:border-emerald-500/30', isSelected && 'ring-1 ring-emerald-500')}>
+                              <div className="flex items-center justify-between mb-3">
+                                <span className="text-[9px] font-black text-gray-500 italic">#{String(itemId).slice(-6)}</span>
+                                <button onClick={(e) => { e.stopPropagation(); toggleSelect(itemId); }}>
+                                  {isSelected ? <CheckSquare size={12} className="text-emerald-500" /> : <Square size={12} className="text-gray-400" />}
+                                </button>
+                              </div>
+                              {availableColumns.filter((c) => visibleColumns.includes(c) && c !== statusField).slice(0, 2).map((col) => (
+                                <div key={col} className="mb-1">
+                                  <div className="text-[8px] font-bold text-gray-500 uppercase">{col}</div>
+                                  <div className="text-xs truncate text-ellipsis">{String(item[col] || '—')}</div>
+                                </div>
+                              ))}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ))
+                })()}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className={cn('p-4 border-t flex items-center justify-between text-[8px] font-black text-gray-500 uppercase italic', theme === 'dark' ? 'border-white/5' : 'border-gray-50')}>
           <div className="flex items-center gap-2"><Fingerprint size={10} /><span>REG_0x{slug?.length}•STABLE</span></div>

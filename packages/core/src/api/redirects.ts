@@ -175,10 +175,10 @@ router.post('/lookup', async (req: Request, res: Response, next) => {
       return res.status(404).json(createResponse(null))
     }
 
-    // Bump hit counter fire-and-forget
+    // Bump hit counter fire-and-forget (direct value — works on both MongoDB and Postgres)
     try {
       await adapter.update('z_redirects', String(doc._id ?? doc.id), {
-        $inc: { hits: 1 },
+        hits: (doc.hits || 0) + 1,
         lastHitAt: new Date().toISOString(),
       })
     } catch { /* non-critical */ }

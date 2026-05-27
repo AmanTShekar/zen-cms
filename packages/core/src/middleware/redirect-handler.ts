@@ -33,11 +33,12 @@ export async function redirectHandler(req: Request, res: Response, next: NextFun
     const target = redirect.to
     const statusCode = parseInt(redirect.type || '301', 10)
 
-    // Bump hit counter fire-and-forget
+    // Update hit counter — works across both MongoDB and Postgres
     try {
       const docId = String(redirect._id ?? redirect.id)
+      const currentHits = typeof redirect.hits === 'number' ? redirect.hits : 0
       adapter.update('z_redirects', docId, {
-        $inc: { hits: 1 },
+        hits: currentHits + 1,
         lastHitAt: new Date().toISOString(),
       }).catch(() => {})
     } catch { /* non-critical */ }

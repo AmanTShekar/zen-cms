@@ -67,6 +67,7 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const SystemHealthPage = lazy(() => import('./pages/SystemHealthPage'))
 const AIWriterPage = lazy(() => import('./pages/AIWriterPage'))
 const PluginsPage = lazy(() => import('./pages/PluginsPage'))
+const SchemaBuilderPage = lazy(() => import('./pages/SchemaBuilderPage'))
 const DashboardBuilder = lazy(() => import('./pages/DashboardBuilder'))
 const TemplatesPage = lazy(() => import('./pages/TemplatesPage'))
 const SetupWizard = lazy(() => import('./pages/SetupWizard'))
@@ -285,12 +286,12 @@ const App: React.FC = () => {
                           <Route path="/automations" element={<FlowBuilderPage />} />
                           <Route path="/templates" element={<TemplatesPage />} />
                           <Route path="/plugins" element={<PluginsPage />} />
+                          <Route path="/schema-builder" element={<SchemaBuilderPage />} />
                           <Route path="/settings" element={<SettingsPage />} />
                           <Route path="/ai-architect" element={<AIWriterPage />} />
                           <Route path="/redirects" element={<RedirectsPage />} />
                           <Route path="/trash" element={<TrashPage />} />
                           <Route path="/system" element={<SystemHealthPage />} />
-                          <Route path="/schema-builder" element={<BuilderPage />} />
                           <Route path="/component-builder" element={<ComponentBuilderPage />} />
                           <Route path="/campaigns" element={<CampaignsPage />} />
                           <Route path="*" element={<Navigate to="/" replace />} />

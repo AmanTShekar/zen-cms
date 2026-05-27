@@ -989,6 +989,40 @@ router.get(
   }
 )
 
+router.delete(
+  '/users/:id',
+  requireAuth,
+  requireRole('admin'),
+  async (req: Request, res: Response, next) => {
+    try {
+      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      await adapter.delete('users', req.params.id)
+      res.json(createResponse({ success: true }))
+    } catch (err) {
+      next(err)
+    }
+  }
+)
+
+router.post(
+  '/smtp/test',
+  requireAuth,
+  requireRole('admin'),
+  async (req: Request, res: Response, next) => {
+    try {
+      const { EmailService } = await import('../services/email')
+      await EmailService.send({
+        to: (req as any).user?.email || req.body.email,
+        subject: 'SMTP Test from Zenith CMS',
+        html: '<p>This is a test email from your Zenith CMS instance. If you received this, your email configuration is working.</p>',
+      })
+      res.json(createResponse({ success: true, message: 'Test email sent' }))
+    } catch (err) {
+      next(err)
+    }
+  }
+)
+
 router.post(
   '/collections',
   requireAuth,

@@ -59,10 +59,9 @@ router.post('/push', async (req: Request, res: Response, next) => {
 
     const adapter = (req as any).zenith?.adapter || (req.app.get('zenith_engine') as any).adapter
     const environments = PromotionService.getEnvironments()
-    const targetNode = environments.find((e) => e.apiUrl === targetUrl) || {
-      name: 'Default Production Node',
-      apiUrl: targetUrl,
-      apiKey: 'SYS-SECRET-PROMO-KEY'
+    const targetNode = environments.find((e) => e.apiUrl === targetUrl)
+    if (!targetNode) {
+      throw new InvalidPayloadError(`No registered deployment node found for URL: ${targetUrl}. Register a node with an API key first.`)
     }
 
     const result = await PromotionService.promoteDocument(
