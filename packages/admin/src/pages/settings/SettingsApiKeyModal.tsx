@@ -69,7 +69,7 @@ const SettingsApiKeyModal: React.FC<SettingsApiKeyModalProps> = ({ newKey, setNe
             Frontend .env Integration:
           </p>
           <div className={cn('p-4 rounded-none border font-mono text-[9px] whitespace-pre transition-colors text-emerald-400', theme === 'dark' ? 'bg-[#0a0a0a] border-white/10' : 'bg-gray-900 border-gray-800')}>
-{`VITE_CMS_URL=http://localhost:5175/api/v1
+{`VITE_CMS_URL=${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/api/v1
 VITE_CMS_API_KEY=${newKey.key}
 VITE_CMS_SITE_ID=your_tenant_id`}
           </div>

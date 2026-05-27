@@ -1,6 +1,10 @@
 import { CollectionConfig } from '@zenithcms/types'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { logger } from './logger'
+import { ReleaseModel } from '../database/release-model'
+import { publishReleaseContent } from '../api/releases'
+import { AuditLogModel } from '../database/audit-model'
+import { AUDIT_RETENTION_POLICIES, getAuditCutoffDate } from './audit-rotation'
 
 let lockClient: any = null
 
@@ -93,6 +97,71 @@ export class SchedulerService {
           logger.error({ err, collection: config.slug }, 'Scheduler failed for collection')
         }
       }
+
+      // 3. Process Scheduled Releases
+      try {
+        const now = new Date()
+        const pendingReleases = await ReleaseModel.find({
+          status: 'pending',
+          scheduledAt: { $lte: now.toISOString() },
+        })
+
+        for (const release of pendingReleases) {
+          logger.info(`[Scheduler] Processing scheduled release: ${release.name}`)
+          
+          // Execute publish
+          // We provide a system user mock and the release's siteId
+          const mockUser = { role: 'admin', email: 'system@zenithcms.local' }
+          const siteId = release.siteId || 'default'
+
+          const result = await publishReleaseContent(
+            release,
+            this.adapter,
+            { collections }, // mock config
+            mockUser,
+            siteId
+          )
+
+          if (result.success) {
+            release.status = 'published'
+            await release.save()
+            logger.info(`[Scheduler] Successfully published release: ${release.name}`)
+          } else {
+            release.status = 'failed'
+            await release.save()
+            logger.error({ error: result.error }, `[Scheduler] Failed to publish release: ${release.name}`)
+          }
+        }
+      } catch (err) {
+        logger.error({ err }, 'Scheduler failed to process releases')
+      }
+
+      // 4. Process Audit Log Retention (Garbage Collection)
+      try {
+        const defaultCutoff = getAuditCutoffDate(AUDIT_RETENTION_POLICIES.DEFAULT_RETENTION_DAYS)
+        
+        // Step 4a. Delete generic logs using default retention
+        await AuditLogModel.deleteMany({
+          collectionName: { $nin: collections.filter(c => (c as any).auditRetentionDays).map(c => c.slug) },
+          timestamp: { $lte: defaultCutoff }
+        })
+
+        // Step 4b. Process collection-specific retention rules
+        for (const config of collections) {
+          const customRetention = (config as any).auditRetentionDays
+          if (typeof customRetention === 'number') {
+            const days = Math.max(customRetention, AUDIT_RETENTION_POLICIES.MINIMUM_RETENTION_DAYS)
+            const cutoff = getAuditCutoffDate(days)
+            await AuditLogModel.deleteMany({
+              collectionName: config.slug,
+              timestamp: { $lte: cutoff }
+            })
+          }
+        }
+      } catch (err) {
+        logger.error({ err }, 'Scheduler failed to clean up audit logs')
+      }
+
     }, 60000) // Check every minute
   }
 

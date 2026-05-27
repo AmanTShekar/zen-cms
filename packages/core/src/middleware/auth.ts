@@ -4,9 +4,10 @@ import { AuthService, AuthUser } from '../services/auth'
 import { createErrorResponse } from '../api/utils'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { sessionStore } from '../services/session-store'
-import NodeCache from 'node-cache'
+import { redisService } from '../services/redis'
 
-const siteAccessCache = new NodeCache({ stdTTL: 300, checkperiod: 60 })
+// Simple in-memory fallback for dev mode without Redis
+const localSiteAccessCache = new Map<string, { value: boolean; expires: number }>()
 
 // Extend Express Request to include user
 declare global {
@@ -20,26 +21,34 @@ declare global {
 }
 
 export async function verifySiteAccess(user: AuthUser, siteId: string): Promise<boolean> {
-  const cacheKey = `${user.id}:${siteId}`
-  const hasAccess = siteAccessCache.get<boolean>(cacheKey)
-
-  if (hasAccess === undefined) {
-    const adapter = AdapterFactory.getActiveAdapter()
-    const sites = await adapter.find<any>('sites', { id: siteId })
-    const site = sites[0] || null
-
-    if (!site) return false
-
-    const isOwner = site.ownerId === user.id
-    const isMember = Array.isArray(site.members) && site.members.some((m: any) => m.userId === user.id)
-
-    const accessGranted = isOwner || isMember
-    siteAccessCache.set(cacheKey, accessGranted)
-
-    return accessGranted
+  const cacheKey = `site_access:${user.id}:${siteId}`
+  
+  if (redisService.client) {
+    const cached = await redisService.client.get(cacheKey)
+    if (cached !== null) return cached === '1'
+  } else {
+    const cached = localSiteAccessCache.get(cacheKey)
+    if (cached && cached.expires > Date.now()) return cached.value
   }
 
-  return hasAccess
+  const adapter = AdapterFactory.getActiveAdapter()
+  const sites = await adapter.find<any>('sites', { id: siteId })
+  const site = sites[0] || null
+
+  if (!site) return false
+
+  const isOwner = site.ownerId === user.id
+  const isMember = Array.isArray(site.members) && site.members.some((m: any) => m.userId === user.id)
+
+  const accessGranted = isOwner || isMember
+  
+  if (redisService.client) {
+    await redisService.client.setex(cacheKey, 300, accessGranted ? '1' : '0')
+  } else {
+    localSiteAccessCache.set(cacheKey, { value: accessGranted, expires: Date.now() + 300 * 1000 })
+  }
+
+  return accessGranted
 }
 
 /**
@@ -94,19 +103,44 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
 /**
  * Role-based access guard. Must be used AFTER requireAuth.
  */
-export function requireRole(...roles: Array<'admin' | 'editor' | 'viewer'>) {
-  return (req: Request, res: Response, next: NextFunction) => {
+export function requireRole(...roles: Array<string>) {
+  return async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       return res
         .status(401)
         .json(createErrorResponse(401, 'Authentication required', undefined, 'AuthenticationError'))
     }
-    if (!roles.includes(req.user.role)) {
-      return res
-        .status(403)
-        .json(createErrorResponse(403, 'Insufficient permissions', undefined, 'ForbiddenError'))
+    
+    // Direct match for built-in or explicitly listed roles
+    if (roles.includes(req.user.role)) {
+      return next()
     }
-    next()
+
+    // Resolve custom roles from database
+    try {
+      const { RoleModel } = await import('../database/role-model')
+      const customRole = await RoleModel.findOne({ roleName: req.user.role })
+      
+      if (customRole) {
+        // If the route requires 'admin', check if custom role has wildcard access
+        const hasWildcard = customRole.permissions.some(p => p.resource === '*' && p.actions.includes('*'))
+        if (roles.includes('admin') && hasWildcard) return next()
+        
+        // If route requires 'editor', check if they have write access to any resource
+        const hasWrite = customRole.permissions.some(p => p.actions.includes('*') || p.actions.includes('create') || p.actions.includes('update'))
+        if (roles.includes('editor') && (hasWildcard || hasWrite)) return next()
+        
+        // If route requires 'viewer', check if they have read access
+        const hasRead = customRole.permissions.some(p => p.actions.includes('*') || p.actions.includes('read'))
+        if (roles.includes('viewer') && (hasWildcard || hasWrite || hasRead)) return next()
+      }
+    } catch (err) {
+      // Ignore DB errors, fallback to 403
+    }
+
+    return res
+      .status(403)
+      .json(createErrorResponse(403, 'Insufficient permissions', undefined, 'ForbiddenError'))
   }
 }
 

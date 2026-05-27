@@ -51,6 +51,11 @@ export interface FieldDefinition {
     components?: {
       Field?: React.ComponentType<any>
     }
+    condition?: {
+      field: string
+      operator: 'equals' | 'not_equals' | 'in' | 'not_in' | 'contains' | 'exists'
+      value?: any
+    }
   }
 }
 

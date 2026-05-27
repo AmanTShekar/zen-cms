@@ -78,6 +78,10 @@ async function getLastAuditHash(): Promise<string | null> {
 function computeAuditHash(entry: AuditLogData, previousHash: string | null): string {
   const secret = process.env.AUDIT_HASH_SECRET
   if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      logger.error('AUDIT_HASH_SECRET is required in production. Audit chain integrity is compromised. Failing fast.')
+      throw new Error('AUDIT_HASH_SECRET must be set in production.')
+    }
     logger.warn('AUDIT_HASH_SECRET is not set — audit chain integrity is compromised. Set this environment variable in production.')
   }
   const payload = JSON.stringify({ ...entry, previousHash }) + (secret || '')

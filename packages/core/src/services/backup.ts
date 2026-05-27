@@ -53,7 +53,16 @@ export const BackupService = {
       await fs.mkdir(outputDir, { recursive: true })
       const filename = `zenith-backup-${Date.now()}.json`
       const filePath = path.join(outputDir, filename)
-      await fs.writeFile(filePath, JSON.stringify(backup, null, 2))
+      // Safe stringify: convert circular references to marker strings instead of crashing
+      const seen = new WeakSet()
+      const json = JSON.stringify(backup, (_, value) => {
+        if (typeof value === 'object' && value !== null) {
+          if (seen.has(value)) return '[Circular]'
+          seen.add(value)
+        }
+        return value
+      }, 2)
+      await fs.writeFile(filePath, json)
       logger.info(`[Backup] Written to ${filePath} (${total} records across ${Object.keys(records).length} collections)`)
     }
 
@@ -65,6 +74,14 @@ export const BackupService = {
    */
   async import(filePath: string, adapter?: DatabaseAdapter): Promise<{ restored: number }> {
     const db = adapter || AdapterFactory.getActiveAdapter()
+
+    // Validate file size before reading (limit: 100MB)
+    const stat = await fs.stat(filePath)
+    const MAX_SIZE = 100 * 1024 * 1024
+    if (stat.size > MAX_SIZE) {
+      throw new Error(`Backup file too large: ${(stat.size / 1024 / 1024).toFixed(1)}MB (max 100MB)`)
+    }
+
     const content = await fs.readFile(filePath, 'utf-8')
     const backup: BackupData = JSON.parse(content)
 
@@ -79,7 +96,9 @@ export const BackupService = {
       if (!Array.isArray(docs) || docs.length === 0) continue
       for (const doc of docs) {
         try {
-          const { _id, id, ...data } = doc as any
+          const { _id, ...data } = doc as any
+          // Preserve id (Postgres) or convert _id → id (MongoDB) so cross-doc references remain valid
+          if (!data.id && _id) data.id = _id
           await db.create(collection, data)
           restored++
         } catch (err: any) {

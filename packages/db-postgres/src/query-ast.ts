@@ -34,7 +34,27 @@ export class QueryASTParser {
 
     for (const key of Object.keys(rawQuery)) {
       const value = rawQuery[key]
-      
+
+      // Handle $or and $and logical operators
+      if ((key === '$or' || key === '$and') && Array.isArray(value)) {
+        const logicalOp = key === '$or' ? 'or' : 'and'
+        const logicalChildren: QueryNode[] = []
+        for (const clause of value) {
+          if (typeof clause === 'object' && clause !== null) {
+            const parsed = this.parse(clause)
+            if (parsed) logicalChildren.push(parsed)
+          }
+        }
+        if (logicalChildren.length > 0) {
+          children.push({
+            type: 'logical',
+            operator: logicalOp,
+            children: logicalChildren,
+          } as LogicalNode)
+        }
+        continue
+      }
+
       // Handle simple key=value as 'equals'
       if (typeof value !== 'object' || value === null) {
         children.push({

@@ -1,26 +1,18 @@
 import rateLimit, { Store, ClientRateLimitInfo, Options } from 'express-rate-limit'
 import { logger } from '../services/logger'
+import { redisService } from '../services/redis'
 
 /**
  * Custom Redis Rate Limit Store
  * ─────────────────────────────
  * Custom implementation to manage rate limits across horizontally scaled clusters.
- * Avoids extra npm dependencies and integrates cleanly using ioredis.
  */
 class RedisRateLimitStore implements Store {
   options!: Options
   private client: any
 
-  constructor(redisUrl: string) {
-    /* eslint-disable-next-line @typescript-eslint/no-require-imports */
-    const Redis = require('ioredis')
-    this.client = new Redis(redisUrl, {
-      maxRetriesPerRequest: 1,
-      enableReadyCheck: true,
-    })
-    this.client.on('error', () => {
-      // Slurp connection errors silently to keep server operating in local fallback
-    })
+  constructor() {
+    this.client = redisService.client
   }
 
   init(options: Options) {
@@ -66,12 +58,11 @@ class RedisRateLimitStore implements Store {
 
 // Resolve the dynamic rate limit store based on environment configuration
 let rateLimitStore: any = undefined
-const redisUrl = process.env.REDIS_URL
-if (redisUrl) {
+if (redisService.client) {
   try {
-    rateLimitStore = new RedisRateLimitStore(redisUrl)
+    rateLimitStore = new RedisRateLimitStore()
   } catch {
-    logger.warn({ redisUrl: redisUrl.replace(/:.+@/, '://***@') }, 'Redis unavailable for rate limiting — falling back to in-memory store')
+    logger.warn('Redis unavailable for rate limiting — falling back to in-memory store')
   }
 }
 

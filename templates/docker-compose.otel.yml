@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "4318:4318"   # OTLP HTTP receiver
+    networks:
+      - otel-net
+
+  zenith:
+    # Example Zenith CMS node container pointing telemetry to Jaeger
+    image: node:20
+    environment:
+      - NODE_ENV=development
+      - PORT=4000
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318/v1/traces
+    # ports:
+    #   - "4000:4000"
+    networks:
+      - otel-net
+
+networks:
+  otel-net:
+    driver: bridge

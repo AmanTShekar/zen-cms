@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  zenith-cms:
+    image: zenithcms/core:latest
+    environment:
+      - NODE_ENV=production
+      - DATABASE_TYPE=postgres
+      - DATABASE_URL=postgres://user:pass@db:5432/zenith
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=supersecret
+      - JWT_REFRESH_SECRET=supersecret
+    ports:
+      - "4001:4001"
+    # Route stdout/stderr logs directly to the Vector sidecar via Fluentd protocol
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "localhost:24224"
+        tag: "zenith.core"
+    depends_on:
+      - vector
+
+  # Vector.dev Sidecar for High-Performance Log Shipping
+  vector:
+    image: timberio/vector:latest-alpine
+    ports:
+      - "24224:24224" # Fluentd ingest port
+    volumes:
+      - ./vector.toml:/etc/vector/vector.toml:ro
+    environment:
+      - DATADOG_API_KEY=${DATADOG_API_KEY}

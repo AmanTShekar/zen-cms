@@ -30,6 +30,10 @@ import {
   ForbiddenError,
 } from '../errors'
 import rateLimit from 'express-rate-limit'
+import { z } from 'zod'
+
+const emailSchema = z.string().email().max(254)
+const passwordSchema = z.string().min(8).max(128)
 
 const router: Router = Router()
 // Apply site middleware to all auth routes
@@ -50,6 +54,10 @@ router.post('/login', authLimiter, async (req: Request, res: Response, next) => 
     const { email, username, password } = req.body
     const login = (email || username || '').trim()
     if (!login || !password) throw new InvalidPayloadError('Email or username and password are required')
+    if (email) {
+      const emailResult = emailSchema.safeParse(email)
+      if (!emailResult.success) throw new InvalidPayloadError('Invalid email format')
+    }
 
     const user = await AuthService.resolveUser(login)
 
@@ -145,10 +153,18 @@ router.post('/login', authLimiter, async (req: Request, res: Response, next) => 
 // ── POST /api/v1/auth/register ───────────────────────────────────────────────
 router.post('/register', authLimiter, async (req: Request, res: Response, next) => {
   try {
+    const adapter = AdapterFactory.getActiveAdapter()
+    const settings = await adapter.findOne<any>('z_settings', {})
+
+    if (!settings?.allowRegistration && process.env.ALLOW_REGISTRATION !== 'true') {
+      throw new ForbiddenError('Open registration is disabled.')
+    }
+
     const { email, password, role } = req.body
     if (!email || !password) throw new InvalidPayloadError('Email and password are required')
+    const emailResult = emailSchema.safeParse(email)
+    if (!emailResult.success) throw new InvalidPayloadError('Invalid email format')
 
-    const adapter = AdapterFactory.getActiveAdapter()
     const existingUsers = await adapter.find<any>('users', { email: email.toLowerCase() })
     if (existingUsers.length > 0) throw new InvalidPayloadError('User already exists')
 
@@ -187,6 +203,10 @@ router.post('/register', authLimiter, async (req: Request, res: Response, next) 
     } catch {
       // Verification email failure is non-fatal — user can request resend
     }
+    
+    // Set req.user so the audit middleware can capture this registration event
+    ;(req as any).user = { id: userId, email: user.email, name: user.email }
+
     res.status(201).json(createResponse({ user: payload, accessToken }))
   } catch (err) {
     next(err)
@@ -396,6 +416,8 @@ router.post('/forgot-password', authLimiter, async (req: Request, res: Response,
   try {
     const { email } = req.body
     if (!email) throw new InvalidPayloadError('Email is required')
+    const emailResult = emailSchema.safeParse(email)
+    if (!emailResult.success) throw new InvalidPayloadError('Invalid email format')
 
     const adapter = AdapterFactory.getActiveAdapter()
     const users = await adapter.find<any>('users', { email: email.toLowerCase() })
@@ -508,6 +530,8 @@ router.post('/setup', authLimiter, async (req: Request, res: Response, next) => 
   try {
     const { email, password } = req.body
     if (!email || !password) throw new InvalidPayloadError('Email and password are required')
+    const emailResult = emailSchema.safeParse(email)
+    if (!emailResult.success) throw new InvalidPayloadError('Invalid email format')
 
     const adapter = AdapterFactory.getActiveAdapter()
     const count = await adapter.count('users', {})

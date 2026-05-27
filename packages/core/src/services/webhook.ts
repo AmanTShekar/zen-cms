@@ -133,8 +133,9 @@ function secureRequest(
   })
 }
 
-const MAX_RETRIES = 3
-const RETRY_DELAYS_MS = [1000, 3000, 10000]
+const MAX_RETRIES = parseInt(process.env.WEBHOOK_MAX_RETRIES || '3', 10)
+const RETRY_DELAYS_MS = process.env.WEBHOOK_RETRY_DELAYS ? process.env.WEBHOOK_RETRY_DELAYS.split(',').map(Number) : [1000, 3000, 10000]
+const WEBHOOK_TIMEOUT_MS = parseInt(process.env.WEBHOOK_TIMEOUT_MS || '5000', 10)
 
 async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -149,30 +150,20 @@ export const WebhookService = {
     this.config = config.webhooks || []
     this.destroyed = false
 
-    const redisUrl = process.env.REDIS_URL
-    if (redisUrl) {
+    const { redisService } = require('./redis')
+    
+    if (redisService.client) {
       try {
-        this.redisClient = new Redis(redisUrl, {
-          maxRetriesPerRequest: 3,
-        })
-
-        this.redisClient.on('error', (err) => {
-          logger.error({ err: err.message }, 'Webhook Redis Client Error')
-        })
-
-        this.redisClient.on('connect', () => {
-          logger.info('Webhook Redis queue client connected')
-        })
-
+        this.redisClient = redisService.client
         this.startRedisWorker()
         this.startDelayedScheduler()
-        logger.info('WebhookService: Redis-backed queue manager initialized successfully.')
+        logger.info('WebhookService: Redis-backed queue manager linked to unified client successfully.')
       } catch (err: any) {
-        logger.error({ err: err.message }, 'WebhookService: Redis initialization failed. Falling back to in-memory dispatch.')
+        logger.error({ err: err.message }, 'WebhookService: Unified Redis attachment failed. Falling back to in-memory dispatch.')
         this.redisClient = null
       }
     } else {
-      logger.info('WebhookService: No REDIS_URL provided. Running in-memory webhook processor.')
+      logger.info('WebhookService: No active Redis client found. Running in-memory webhook processor.')
     }
 
     eventHub.on('content.created', (args: any) => {
@@ -234,7 +225,7 @@ export const WebhookService = {
             'X-Zenith-Event': event,
             'X-Zenith-Delivery': crypto.randomUUID(),
           },
-          timeout: 5000,
+          timeout: WEBHOOK_TIMEOUT_MS,
         }, body)
 
         if (response.ok) {

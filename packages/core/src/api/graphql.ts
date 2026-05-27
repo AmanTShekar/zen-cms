@@ -102,7 +102,8 @@ function fieldTypeToGraphQL(field: CMSField, parentName: string, config?: CMSCon
 export async function setupGraphQL(app: Express, config: CMSConfig) {
   try {
     const { createHandler } = await import('graphql-http/lib/use/express')
-    const { buildSchema } = await import('graphql')
+    const { buildSchema, GraphQLError } = await import('graphql')
+    const { createComplexityRule, simpleEstimator } = await import('graphql-query-complexity')
 
     let schemaSdl = `
       scalar JSON
@@ -493,6 +494,13 @@ ${typeFields}
       createHandler({
         schema: buildSchema(schemaSdl),
         rootValue: resolvers,
+        validationRules: [
+          createComplexityRule({
+            estimators: [simpleEstimator({ defaultComplexity: 1 })],
+            maximumComplexity: 1000,
+            createError: (max: number, actual: number) => new GraphQLError(`Query is too complex: ${actual}. Maximum allowed complexity: ${max}`),
+          }),
+        ],
         context: async (req: any) => {
           // ── Authentication ────────────────────────────────────────────────
           // Check Bearer token OR httpOnly cookie

@@ -39,7 +39,7 @@ const UpdateReleaseSchema = CreateReleaseSchema.partial()
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-async function publishReleaseContent(
+export async function publishReleaseContent(
   release: any,
   adapter: any,
   config: any,

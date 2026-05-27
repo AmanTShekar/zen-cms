@@ -3,7 +3,7 @@ import { CollectionConfig, WebhookTarget, FieldConfig, RelationFieldConfig } fro
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { getCompiledZodSchema } from '../schema/engine'
 import { createResponse } from './utils'
-import { requireAuth } from '../middleware/auth'
+import { requireAuth, requireRole } from '../middleware/auth'
 import { WebhookService } from '../services/webhook'
 import { CacheService } from '../services/cache'
 import { ContentService } from '../services/content'
@@ -284,16 +284,24 @@ function applyFieldLevelReadAccess(doc: any, fields: FieldConfig[], user: any) {
     if (readAccessRoles && readAccessRoles.length > 0) {
       if (!user || !user.role || !readAccessRoles.includes(user.role)) {
         delete doc[field.name]
+        continue
       }
     }
-    if ((field.type === 'group' || field.type === 'collapsible') && doc[field.name]) {
-       applyFieldLevelReadAccess(doc[field.name], (field as any).fields || [], user)
-    } else if ((field.type === 'array' || field.type === 'row') && Array.isArray(doc[field.name])) {
-       for (const item of doc[field.name]) {
+    const val = doc[field.name]
+    if (val == null) continue
+
+    if ((field as any).type === 'tab' && Array.isArray((field as any).tabs)) {
+      for (const tab of (field as any).tabs) {
+        applyFieldLevelReadAccess(val, tab.fields || [], user)
+      }
+    } else if ((field.type === 'group' || field.type === 'collapsible') && typeof val === 'object') {
+       applyFieldLevelReadAccess(val, (field as any).fields || [], user)
+    } else if ((field.type === 'array' || field.type === 'row') && Array.isArray(val)) {
+       for (const item of val) {
          applyFieldLevelReadAccess(item, (field as any).fields || [], user)
        }
-    } else if (field.type === 'blocks' && Array.isArray(doc[field.name])) {
-       for (const item of doc[field.name]) {
+    } else if (field.type === 'blocks' && Array.isArray(val)) {
+       for (const item of val) {
          const blockDef = (field as any).blocks?.find((b: any) => b.slug === item.blockType)
          if (blockDef && blockDef.fields) {
            applyFieldLevelReadAccess(item, blockDef.fields, user)
@@ -313,16 +321,24 @@ function applyFieldLevelWriteAccess(data: any, fields: FieldConfig[], user: any)
     if (writeAccessRoles && writeAccessRoles.length > 0) {
       if (!user || !user.role || !writeAccessRoles.includes(user.role)) {
         delete data[field.name]
+        continue
       }
     }
-    if ((field.type === 'group' || field.type === 'collapsible') && data[field.name]) {
-       applyFieldLevelWriteAccess(data[field.name], (field as any).fields || [], user)
-    } else if ((field.type === 'array' || field.type === 'row') && Array.isArray(data[field.name])) {
-       for (const item of data[field.name]) {
+    const val = data[field.name]
+    if (val == null) continue
+
+    if ((field as any).type === 'tab' && Array.isArray((field as any).tabs)) {
+      for (const tab of (field as any).tabs) {
+        applyFieldLevelWriteAccess(val, tab.fields || [], user)
+      }
+    } else if ((field.type === 'group' || field.type === 'collapsible') && typeof val === 'object') {
+       applyFieldLevelWriteAccess(val, (field as any).fields || [], user)
+    } else if ((field.type === 'array' || field.type === 'row') && Array.isArray(val)) {
+       for (const item of val) {
          applyFieldLevelWriteAccess(item, (field as any).fields || [], user)
        }
-    } else if (field.type === 'blocks' && Array.isArray(data[field.name])) {
-       for (const item of data[field.name]) {
+    } else if (field.type === 'blocks' && Array.isArray(val)) {
+       for (const item of val) {
          const blockDef = (field as any).blocks?.find((b: any) => b.slug === item.blockType)
          if (blockDef && blockDef.fields) {
            applyFieldLevelWriteAccess(item, blockDef.fields, user)
@@ -1092,10 +1108,28 @@ export function createCollectionRouter(
     try {
       const user = (req as any).user
       await verifyAccess(user, 'read')
+      if (!user || user.role !== 'admin') {
+        throw new ForbiddenError('Aggregate operations are strictly reserved for administrators.')
+      }
       const { pipeline } = req.body
       if (!Array.isArray(pipeline)) {
         throw new InvalidPayloadError('pipeline must be an array')
       }
+
+      // Security: Whitelist allowed operators
+      const allowedOperators = new Set(['$match', '$group', '$sort', '$limit', '$skip', '$project', '$count'])
+      for (const stage of pipeline) {
+        if (typeof stage !== 'object' || stage === null) {
+          throw new InvalidPayloadError('Invalid pipeline stage')
+        }
+        const operators = Object.keys(stage)
+        for (const op of operators) {
+          if (!allowedOperators.has(op)) {
+            throw new InvalidPayloadError(`Aggregate operator ${op} is not permitted.`)
+          }
+        }
+      }
+
       const results = await adapter.aggregate(config.slug, pipeline, { siteId: (req as any).siteId })
       res.json(createResponse({ results }))
     } catch (err) {

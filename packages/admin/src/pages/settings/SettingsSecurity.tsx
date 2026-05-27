@@ -9,6 +9,7 @@ interface SettingsSecurityProps {
   settings: {
     jwtExpiresIn: string
     passwordMinLength: number
+    allowRegistration: boolean
   }
   setSettings: (s: any) => void
   theme: 'light' | 'dark'
@@ -57,6 +58,29 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
           theme === 'dark' ? 'bg-white/[0.01] border-white/5' : 'bg-gray-50/50 border-gray-100'
         )}
       >
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-[8px] font-black text-gray-500 uppercase tracking-[0.3em] italic px-1">
+            Open Registration
+          </label>
+          <button
+            onClick={() => setSettings({ ...settings, allowRegistration: !settings.allowRegistration })}
+            className={cn(
+              'w-10 h-5 rounded-full relative transition-colors',
+              settings.allowRegistration ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-white/10'
+            )}
+          >
+            <div
+              className={cn(
+                'absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all',
+                settings.allowRegistration ? 'left-[22px]' : 'left-0.5'
+              )}
+            />
+          </button>
+        </div>
+        <p className="text-[10px] text-gray-500 italic px-1 mb-4">
+          Allow anyone to sign up. When disabled, users must be explicitly invited by an admin.
+        </p>
+
         <label className="text-[8px] font-black text-gray-500 uppercase tracking-[0.3em] italic px-1">
           Token Lifetime
         </label>

@@ -72,21 +72,12 @@ export const RightPanel: React.FC<RightPanelProps> = ({
   const pageSiteId = data?.siteId || tenantSiteId || ''
   const matchingSite = sites.find((s) => (s._id || s.id) === pageSiteId)
 
-  // Resolve dynamic storefront URL based on Zustand/localStorage configurations or fallback port mappings
+  // Resolve dynamic storefront URL based on Zustand/localStorage configurations or current origin
   let resolvedStorefrontUrl = storefrontUrl || ''
   if (!resolvedStorefrontUrl) {
-    const slugToUse = matchingSite ? matchingSite.slug : siteSlug
     const domainToUse = matchingSite ? matchingSite.domain : siteDomain
 
-    if (slugToUse === 'storefront-glass') {
-      resolvedStorefrontUrl = 'http://localhost:5178'
-    } else if (slugToUse === 'demo') {
-      resolvedStorefrontUrl = 'http://localhost:5174'
-    } else if (slugToUse === 'blog-demo') {
-      resolvedStorefrontUrl = 'http://localhost:5176'
-    } else if (slugToUse === 'storefront-editorial') {
-      resolvedStorefrontUrl = 'http://localhost:5177'
-    } else if (domainToUse) {
+    if (domainToUse) {
       resolvedStorefrontUrl = domainToUse.startsWith('http')
         ? domainToUse
         : `http://${domainToUse}`

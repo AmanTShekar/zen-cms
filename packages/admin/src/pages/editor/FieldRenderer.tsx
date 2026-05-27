@@ -73,9 +73,27 @@ export const FieldRenderer = React.memo(({
   error,
   isSelected: isSelectedProp,
 }: FieldRendererProps & { isSelected?: boolean }) => {
-  const { selectedFieldId, setSelectedFieldId, setSelectedField } = useEditorStore()
+  const { selectedFieldId, setSelectedFieldId, setSelectedField, data } = useEditorStore()
   const { openComponentPicker, showFieldIndicators } = useModalStore()
   const isSelected = !!isSelectedProp || selectedFieldId === `${blockId}:${field.name}`
+
+  // Conditional Fields Evaluation
+  if (field.admin?.condition) {
+    const cond = field.admin.condition
+    const targetValue = data?.[cond.field]
+    let isMatch = false
+    
+    switch (cond.operator) {
+      case 'equals': isMatch = targetValue === cond.value; break;
+      case 'not_equals': isMatch = targetValue !== cond.value; break;
+      case 'in': isMatch = Array.isArray(cond.value) && cond.value.includes(targetValue); break;
+      case 'not_in': isMatch = Array.isArray(cond.value) && !cond.value.includes(targetValue); break;
+      case 'contains': isMatch = typeof targetValue === 'string' && targetValue.includes(cond.value); break;
+      case 'exists': isMatch = cond.value ? (targetValue !== undefined && targetValue !== null && targetValue !== '') : (targetValue === undefined || targetValue === null || targetValue === ''); break;
+    }
+    
+    if (!isMatch) return null;
+  }
 
   // Handle Array manipulation
   const handleAddArrayItem = () => {

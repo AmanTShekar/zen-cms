@@ -5,8 +5,10 @@ import sharp from 'sharp'
 import { requireAuth } from '../middleware/auth'
 import { createResponse } from './utils'
 import { InvalidPayloadError, NotFoundError } from '../errors'
+import { ImageCdnService } from '../services/image-cdn'
 
 const router: Router = Router()
+const fsPromises = fs.promises
 
 /**
  * Zenith Media Router & Image Processing Engine
@@ -37,7 +39,9 @@ router.get('/', requireAuth, async (_req: Request, res: Response, next) => {
 router.patch('/:id', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const adapter = (req as any).zenith?.adapter
-    if (!adapter) throw new NotFoundError('Media', req.params.id)
+    if (!adapter) return next(new Error('No database adapter available'))
+    const existing = await adapter.findOne('media', { _id: req.params.id })
+    if (!existing) throw new NotFoundError('Media', req.params.id)
     const updated = await adapter.update('media', req.params.id, req.body)
     res.json(createResponse(updated))
   } catch (err) {
@@ -51,11 +55,12 @@ router.patch('/:id', requireAuth, async (req: Request, res: Response, next) => {
 router.delete('/:id', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const adapter = (req as any).zenith?.adapter
-    if (!adapter) throw new NotFoundError('Media', req.params.id)
+    if (!adapter) return next(new Error('No database adapter available'))
     const existing = await adapter.findOne('media', { _id: req.params.id })
-    if (existing?.filename) {
+    if (!existing) throw new NotFoundError('Media', req.params.id)
+    if (existing.filename) {
       const filePath = path.join(mediaDir, existing.filename)
-      if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+      if (fs.existsSync(filePath)) await fsPromises.unlink(filePath)
     }
     await adapter.delete('media', req.params.id)
     res.json(createResponse({ success: true }))
@@ -86,6 +91,56 @@ function focalPointToGravity(x: number, y: number): any {
   if (y > 66) return 'south'
   return 'center'
 }
+
+/**
+ * GET /:id/transform — Return a direct CDN transform URL or redirect to local fallback
+ */
+router.get('/:id/transform', async (req: Request, res: Response, next) => {
+  try {
+    const adapter = (req as any).zenith?.adapter
+    if (!adapter) return next(new Error('No database adapter available'))
+    
+    const media = await adapter.findOne('media', { _id: req.params.id })
+    if (!media) throw new NotFoundError('Media', req.params.id)
+
+    const { w, h, format, q } = req.query
+    const options = {
+      width: w ? Number(w) : undefined,
+      height: h ? Number(h) : undefined,
+      format: format as string,
+      quality: q ? Number(q) : undefined,
+    }
+
+    // Attempt to generate CDN URL
+    const originalUrl = media.url
+    const cdnUrl = ImageCdnService.generateTransformUrl(originalUrl, options)
+    
+    if (cdnUrl) {
+      // 302 Redirect to external CDN
+      return res.redirect(302, cdnUrl)
+    }
+
+    // Fallback: Use local processing if filename exists
+    if (!media.filename) {
+      return res.redirect(302, originalUrl)
+    }
+
+    // Redirect to local dynamic Sharp endpoint
+    const query = new URLSearchParams()
+    if (w) query.set('width', String(w))
+    if (h) query.set('height', String(h))
+    if (format) query.set('format', String(format))
+    if (media.focalPoint) {
+      query.set('fpX', String(media.focalPoint.x))
+      query.set('fpY', String(media.focalPoint.y))
+    }
+
+    const localUrl = `/api/v1/media/${media.filename}?${query.toString()}`
+    return res.redirect(302, localUrl)
+  } catch (err) {
+    next(err)
+  }
+})
 
 router.get('/:filename', async (req: Request, res: Response, next) => {
   try {

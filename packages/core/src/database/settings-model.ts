@@ -7,6 +7,7 @@ export interface ISystemSettings extends Document {
   enableDrafts: boolean
   defaultLocale: string
   allowedOrigins: string[]
+  allowRegistration: boolean
   // Security
   jwtSecret?: string
   jwtExpiresIn?: string
@@ -40,6 +41,7 @@ const SystemSettingsSchema = new Schema<ISystemSettings>(
     enableDrafts: { type: Boolean, default: true },
     defaultLocale: { type: String, default: 'en' },
     allowedOrigins: { type: [String], default: ['*'] },
+    allowRegistration: { type: Boolean, default: false },
     // AI Keys
     openRouterApiKey: { type: String, default: '' },
     openaiApiKey: { type: String, default: '' },

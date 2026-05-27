@@ -5,18 +5,37 @@
  * Run in production:  node dist/server.js
  */
 import 'dotenv/config'
+import * as Sentry from '@sentry/node'
 import { ZenithEngine } from './index'
 import { logger } from './services/logger'
+
+if (process.env.NODE_ENV === 'production' && !process.env.REDIS_URL) {
+  logger.fatal('REDIS_URL is strictly required in production for horizontal scaling. Failing boot.')
+  process.exit(1)
+}
+
+import { initTelemetry } from './services/telemetry'
+
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+  })
+}
+
+initTelemetry()
 
 // ── Global Process Error Handlers ────────────────────────────────────────────
 // These must be registered before any other code to catch every unhandled error.
 
 process.on('uncaughtException', (err) => {
+  if (process.env.SENTRY_DSN) Sentry.captureException(err)
   logger.error({ err: err.message, stack: err.stack }, 'UNCAUGHT EXCEPTION — shutting down')
   process.exit(1)
 })
 
 process.on('unhandledRejection', (reason) => {
+  if (process.env.SENTRY_DSN) Sentry.captureException(reason)
   const msg = reason instanceof Error ? reason.message : String(reason)
   const stack = reason instanceof Error ? reason.stack : undefined
   logger.error({ err: msg, stack }, 'UNHANDLED REJECTION — shutting down')

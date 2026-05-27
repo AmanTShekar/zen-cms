@@ -75,6 +75,7 @@ const RedirectsPage = lazy(() => import('./pages/RedirectsPage'))
 const TrashPage = lazy(() => import('./pages/TrashPage'))
 const BuilderPage = lazy(() => import('./pages/BuilderPage'))
 const CampaignsPage = lazy(() => import('./pages/CampaignsPage'))
+const VisualGraphPage = lazy(() => import('./pages/VisualGraphPage'))
 
 const PageLoader = () => (
   <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-8">
@@ -294,6 +295,7 @@ const App: React.FC = () => {
                           <Route path="/system" element={<SystemHealthPage />} />
                           <Route path="/component-builder" element={<ComponentBuilderPage />} />
                           <Route path="/campaigns" element={<CampaignsPage />} />
+                          <Route path="/graph" element={<VisualGraphPage />} />
                           <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
                       </Suspense>

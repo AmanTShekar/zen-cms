@@ -10,8 +10,9 @@ import { requireAuth, requireRole } from '../middleware/auth'
 import { createResponse, createErrorResponse } from './utils'
 import { ApiKeyService } from '../services/api-key'
 import { SearchService } from '../services/search'
-import { InvalidPayloadError, ValidationError } from '../errors'
+import { InvalidPayloadError, NotFoundError, ValidationError } from '../errors'
 import { CacheService } from '../services/cache'
+import { getPrometheusMetrics } from '../middleware/metrics'
 import { AIService } from '../services/ai'
 import { VectorSearchService } from '../services/vector-search'
 import { adminComponentRegistry } from '../plugins/hooks'
@@ -91,6 +92,41 @@ router.post(
     res.status(201).json(createResponse({ success: true }))
   }
 )
+
+router.get('/schemas', requireAuth, (_req: Request, res: Response) => {
+  const engine = _req.app.get('zenith_engine')
+  res.json(createResponse({
+    collections: engine.config.collections,
+    globals: engine.config.globals || []
+  }))
+})
+
+// ── 1b. SCHEMA HOT RELOAD ────────────────────────────────────────────────────
+router.post('/schema/reload', requireAuth, requireRole('admin'), async (req: Request, res: Response, next: any) => {
+  try {
+    const engine = req.app.get('zenith_engine')
+    if (!engine || !engine.reloadSchema) {
+      throw new Error('Engine reload is not available')
+    }
+
+    // Pass the currently loaded config or require parsing a fresh one? 
+    // Usually a reload implies reading it fresh. Let's just pass nothing and it will use the current one or we can re-evaluate.
+    // To make it truly dynamic, we can re-require cms.config.js here.
+    let newConfig: any
+    try {
+      const configPath = require('path').join(process.cwd(), 'cms.config')
+      delete require.cache[require.resolve(configPath)]
+      newConfig = require(configPath).default || require(configPath)
+    } catch (e) {
+      // If no config file, we just reload existing config
+    }
+
+    await engine.reloadSchema(newConfig)
+    res.json(createResponse({ success: true, message: 'Schema hot-reloaded successfully without downtime' }))
+  } catch (err) {
+    next(err)
+  }
+})
 
 router.get('/plugins', requireAuth, (req: Request, res: Response) => {
   const engine = req.app.get('zenith_engine')
@@ -265,6 +301,62 @@ function summarizeCollection(c: any): Record<string, unknown> {
   return summary
 }
 
+router.get('/openapi.json', (req: Request, res: Response) => {
+  const config = (req as any).zenith?.config
+  if (!config) return res.status(500).json(createErrorResponse(500, 'Config not loaded'))
+
+  const paths: Record<string, any> = {}
+  config.collections.forEach((c: any) => {
+    const base = `/api/v1/${c.slug}`
+    paths[base] = {
+      get: {
+        summary: `Find ${c.name}`,
+        tags: [c.name],
+        responses: { '200': { description: 'Successful response' } }
+      },
+      post: {
+        summary: `Create ${c.name}`,
+        tags: [c.name],
+        responses: { '201': { description: 'Created successfully' } }
+      }
+    }
+    if (!c.singleton) {
+      paths[`${base}/{id}`] = {
+        get: {
+          summary: `Get ${c.name} by ID`,
+          tags: [c.name],
+          parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+          responses: { '200': { description: 'Successful response' } }
+        },
+        put: {
+          summary: `Update ${c.name}`,
+          tags: [c.name],
+          parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+          responses: { '200': { description: 'Updated successfully' } }
+        },
+        delete: {
+          summary: `Delete ${c.name}`,
+          tags: [c.name],
+          parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+          responses: { '200': { description: 'Deleted successfully' } }
+        }
+      }
+    }
+  })
+
+  const openapi = {
+    openapi: '3.0.0',
+    info: {
+      title: 'Zenith CMS API',
+      version: '1.0.0',
+      description: 'Auto-generated OpenAPI specification for Zenith CMS collections.',
+    },
+    paths,
+  }
+
+  res.json(openapi)
+})
+
 router.get('/health', async (req: Request, res: Response) => {
   const adapter = (req as any).zenith?.adapter
   const dbHealth = adapter ? adapter.getHealth() : 'disconnected'
@@ -366,8 +458,23 @@ router.get(
         if (siteId) pgQuery.siteId = siteId
         logs = await adapter.find<any>('audit_logs', pgQuery, { sort: { timestamp: -1 }, skip: (page - 1) * limit, limit })
         try {
-          const countResult = await adapter.find<any>('audit_logs', pgQuery, { limit: 10000 })
-          total = countResult.length
+          if (adapter.name === 'postgres-drizzle' || adapter.name === 'PostgresDrizzle') {
+            const { count, eq, and } = await import('drizzle-orm')
+            const { auditLog } = (adapter as any).systemTables || {}
+            if (auditLog && (adapter as any).db) {
+              const conditions = []
+              if (filterAction) conditions.push(eq(auditLog.action, filterAction))
+              if (filterStatus) conditions.push(eq(auditLog.status, filterStatus))
+              if (filterCollection) conditions.push(eq(auditLog.collectionName, filterCollection))
+              if (siteId) conditions.push(eq(auditLog.siteId, siteId))
+              const res = await (adapter as any).db.select({ value: count() }).from(auditLog).where(conditions.length ? and(...conditions) : undefined)
+              total = res[0].value
+            } else {
+              total = await adapter.count('audit_logs', pgQuery)
+            }
+          } else {
+            total = await adapter.count('audit_logs', pgQuery)
+          }
         } catch {
           total = logs.length
         }
@@ -449,19 +556,7 @@ router.get(
     try {
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
       const { id } = req.params
-
-      let log: any = null
-      if (adapter.name === 'mongoose') {
-        const { default: mongoose } = await import('mongoose')
-        const model = mongoose.models['AuditLog']
-        if (model) {
-          log = await model.findById(id).lean().exec()
-          if (log) log = { ...log, id: log._id?.toString?.() || log._id }
-        }
-      } else {
-        log = await adapter.findOne<any>('audit_logs', { id })
-      }
-
+      const log = await adapter.findOne<any>('audit_logs', { id })
       if (!log) return res.status(404).json(createErrorResponse(404, 'Audit log not found'))
       res.json(createResponse(log))
     } catch (err) {
@@ -487,18 +582,7 @@ router.post(
       if (siteId) query.siteId = siteId
       if (filterSiteId) query.siteId = filterSiteId
 
-      let deleted = 0
-      if (adapter.name === 'mongoose') {
-        const { default: mongoose } = await import('mongoose')
-        const model = mongoose.models['AuditLog']
-        if (model) {
-          const result = await model.deleteMany(query).exec()
-          deleted = result.deletedCount
-        }
-      } else {
-        deleted = await adapter.deleteMany('audit_logs', query)
-      }
-
+      const deleted = await adapter.deleteMany('audit_logs', query)
       res.json(createResponse({ deleted, message: `Purged ${deleted} audit log entries` }))
     } catch (err) {
       next(err)
@@ -541,13 +625,21 @@ router.get(
   }
 )
 
+const apiKeySchema = z.object({
+  name: z.string().min(1).max(100),
+  role: z.enum(['admin', 'editor', 'viewer']).optional(),
+  expiresInDays: z.number().int().min(1).max(3650).optional(),
+})
+
 router.post(
   '/api-keys',
   requireAuth,
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const { name, role, expiresInDays } = req.body
+      const parsed = apiKeySchema.safeParse(req.body)
+      if (!parsed.success) throw new InvalidPayloadError('Invalid input: ' + parsed.error.errors.map(e => e.message).join(', '))
+      const { name, role, expiresInDays } = parsed.data
       const result = await ApiKeyService.generateKey(name, role, expiresInDays)
       res.status(201).json(createResponse(result))
     } catch (err) {
@@ -755,7 +847,7 @@ router.get(
       if (!settings) {
         settings = await adapter.create<any>('z_settings', {
           siteName: 'Zenith CMS',
-          publicUrl: 'http://localhost:3000',
+          publicUrl: process.env.PUBLIC_URL || 'http://localhost:3000',
           maintenanceMode: false,
           enableDrafts: true,
           defaultLocale: 'en',
@@ -996,6 +1088,8 @@ router.delete(
   async (req: Request, res: Response, next) => {
     try {
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const existing = await adapter.findOne('users', { _id: req.params.id })
+      if (!existing) throw new NotFoundError('User', req.params.id)
       await adapter.delete('users', req.params.id)
       res.json(createResponse({ success: true }))
     } catch (err) {
@@ -1010,7 +1104,6 @@ router.post(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const { EmailService } = await import('../services/email')
       await EmailService.send({
         to: (req as any).user?.email || req.body.email,
         subject: 'SMTP Test from Zenith CMS',
@@ -1131,6 +1224,8 @@ router.patch(
   }
 )
 
+const memberEmailSchema = z.string().email().max(254)
+
 router.post(
   '/members',
   requireAuth,
@@ -1139,6 +1234,8 @@ router.post(
     try {
       const { email, role } = req.body
       if (!email) throw new InvalidPayloadError('Email is required')
+      const emailResult = memberEmailSchema.safeParse(email)
+      if (!emailResult.success) throw new InvalidPayloadError('Invalid email format')
 
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
@@ -1294,5 +1391,11 @@ router.post(
     }
   }
 )
+
+// ── Prometheus Metrics ─────────────────────────────────────────────────────────
+router.get('/metrics', async (_req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  res.send(getPrometheusMetrics())
+})
 
 export default router

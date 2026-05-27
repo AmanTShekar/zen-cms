@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -15,6 +16,11 @@ const proxyErrorHandler = (err: any, _req: any, res: any) => {
 export default defineConfig({
   base: '/',
   plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'node',
+    setupFiles: ['./src/__tests__/setup.ts'],
+  },
   server: {
     port: 5175,
     strictPort: true,

@@ -126,7 +126,13 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
             key={file._id || i}
             className="relative w-20 h-20 rounded-none border border-white/10 overflow-hidden group shadow-sm transition-all hover:scale-105 active:scale-95"
           >
-            <img src={getMediaUrl(file.url)} className="w-full h-full object-cover" alt="" />
+            <img 
+              src={getMediaUrl(file.url)} 
+              srcSet={file.url?.endsWith('.webp') ? `${getMediaUrl(file.url)} 1920w, ${getMediaUrl(file.url).replace('.webp', '-800w.webp')} 800w, ${getMediaUrl(file.url).replace('.webp', '-400w.webp')} 400w` : undefined}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="w-full h-full object-cover" 
+              alt="" 
+            />
             {!disabled && (
               <button
                 type="button"
@@ -294,6 +300,8 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                                 >
                                   <img
                                     src={getMediaUrl(file.url)}
+                                    srcSet={file.url?.endsWith('.webp') ? `${getMediaUrl(file.url)} 1920w, ${getMediaUrl(file.url).replace('.webp', '-800w.webp')} 800w, ${getMediaUrl(file.url).replace('.webp', '-400w.webp')} 400w` : undefined}
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                     alt=""
                                   />

@@ -12,11 +12,26 @@ interface InviteUserModalProps {
 
 const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, theme }) => {
   const [email, setEmail] = useState('')
-  const [role, setRole] = useState<'admin' | 'editor' | 'viewer'>('editor')
+  const [role, setRole] = useState<string>('editor')
+  const [availableRoles, setAvailableRoles] = useState<string[]>(['admin', 'editor', 'viewer'])
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const isMountedRef = useRef(true)
-  useEffect(() => { return () => { isMountedRef.current = false } }, [])
+  useEffect(() => { 
+    const fetchRoles = async () => {
+      try {
+        const res = await api.get('/system/roles')
+        if (res.data?.data) {
+          const roles = res.data.data.map((r: any) => r.roleName)
+          setAvailableRoles((prev) => Array.from(new Set([...prev, ...roles])))
+        }
+      } catch (e) {
+        // use defaults
+      }
+    }
+    fetchRoles()
+    return () => { isMountedRef.current = false } 
+  }, [])
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -102,7 +117,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
                 Auth Tier
               </label>
               <div className="grid grid-cols-3 gap-2">
-                {(['admin', 'editor', 'viewer'] as const).map((r) => (
+                {availableRoles.map((r) => (
                   <button
                     key={r}
                     type="button"

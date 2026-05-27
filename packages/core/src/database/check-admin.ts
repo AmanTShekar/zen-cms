@@ -3,7 +3,6 @@
  * Run: npx tsx packages/core/src/database/check-admin.ts
  */
 import mongoose from 'mongoose'
-import bcrypt from 'bcrypt'
 import '../database/user-model'
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/zenith'
@@ -24,14 +23,8 @@ async function checkAdmin() {
   console.log(`  Role: ${admin.role}`)
   console.log(`  failedLoginAttempts: ${admin.failedLoginAttempts}`)
   console.log(`  lockUntil: ${admin.lockUntil}`)
-  console.log(`  Password hash: ${(admin as any).password ? (admin as any).password.substring(0, 20) + '...' : 'MISSING!'}`)
-
-  // Verify the password matches Zenit2024!
-  const testPasswords = ['Zenith2024!', 'admin123', 'password123']
-  for (const pw of testPasswords) {
-    const valid = await bcrypt.compare(pw, (admin as any).password)
-    console.log(`  Password "${pw}" matches: ${valid}`)
-  }
+  // NOTE: intentionally NOT logging password hash or running plaintext password comparisons
+  // to avoid leaking credentials into console/CI logs
 
   await mongoose.disconnect()
 }

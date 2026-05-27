@@ -58,6 +58,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
   const [expandedWebhook, setExpandedWebhook] = useState<string | null>(null)
   const [deliveries, setDeliveries] = useState<Record<string, DeliveryRecord[]>>({})
   const [loadingDeliveries, setLoadingDeliveries] = useState<string | null>(null)
+  const [replayingId, setReplayingId] = useState<string | null>(null)
   const isMountedRef = useRef(true)
   useEffect(() => { return () => { isMountedRef.current = false } }, [])
 
@@ -175,6 +176,23 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
   const handleRetryDelivery = async (whId: string, whUrl: string) => {
     // Re-send a test event to refresh the delivery log
     await handleTest(whId, whUrl)
+  }
+
+  const handleReplay = async (whId: string, deliveryId: string, url: string) => {
+    setReplayingId(deliveryId)
+    try {
+      const res = await api.post(`/system/webhooks/${whId}/deliveries/${deliveryId}/replay`)
+      if (res.data.data.success) {
+        toast.success(`Replay delivered (status ${res.data.data.status})`)
+      } else {
+        toast.error(`Replay failed: ${res.data.data.error || 'Unknown error'}`)
+      }
+      fetchDeliveries(whId, url)
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Replay failed')
+    } finally {
+      setReplayingId(null)
+    }
   }
 
   const toggleEvent = (value: string) => {
@@ -478,7 +496,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                     <div className="space-y-2 max-h-80 overflow-y-auto">
                       {/* Header */}
                       <div className={cn(
-                        'grid grid-cols-[1fr_1fr_80px_80px_100px] gap-2 px-3 py-2 text-[7px] font-black uppercase tracking-widest border-b',
+                        'grid grid-cols-[1fr_1fr_80px_80px_100px_40px] gap-2 px-3 py-2 text-[7px] font-black uppercase tracking-widest border-b',
                         theme === 'dark' ? 'text-gray-500 border-white/5' : 'text-gray-400 border-gray-200'
                       )}>
                         <span>Event</span>
@@ -486,12 +504,13 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                         <span>Status</span>
                         <span>Code</span>
                         <span>Time</span>
+                        <span className="text-center">Action</span>
                       </div>
                       {deliveries[wh.url].map((d) => (
                         <div
                           key={d.id}
                           className={cn(
-                            'grid grid-cols-[1fr_1fr_80px_80px_100px] gap-2 px-3 py-2.5 text-[9px] font-mono border rounded-none transition-colors',
+                            'grid grid-cols-[1fr_1fr_80px_80px_100px_40px] gap-2 px-3 py-2.5 text-[9px] font-mono border rounded-none transition-colors items-center',
                             d.success
                               ? theme === 'dark' ? 'bg-emerald-500/[0.03] border-emerald-500/10' : 'bg-emerald-50 border-emerald-100'
                               : theme === 'dark' ? 'bg-red-500/[0.03] border-red-500/10' : 'bg-red-50 border-red-100'
@@ -529,6 +548,19 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                           )}>
                             {formatTimestamp(d.timestamp)}
                           </span>
+                          <div className="flex justify-center">
+                            <button
+                              onClick={() => handleReplay(wh.id, d.id, wh.url)}
+                              disabled={replayingId === d.id}
+                              className={cn(
+                                'p-1.5 border rounded-none transition-colors',
+                                theme === 'dark' ? 'border-white/10 text-gray-400 hover:text-emerald-400 hover:border-emerald-500/30' : 'border-gray-200 text-gray-500 hover:text-emerald-600 hover:border-emerald-300'
+                              )}
+                              title="Replay Delivery"
+                            >
+                              {replayingId === d.id ? <Loader2 size={10} className="animate-spin" /> : <RotateCcw size={10} />}
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>

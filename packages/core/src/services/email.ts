@@ -1,5 +1,8 @@
 import { Resend } from 'resend'
+import { z } from 'zod'
 import { logger } from './logger'
+
+const recipientSchema = z.string().email().max(254)
 
 export interface EmailOptions {
   to: string | string[]
@@ -23,9 +26,17 @@ export class EmailService {
     : null
 
   static async send(options: EmailOptions): Promise<void> {
+    const recipients = Array.isArray(options.to) ? options.to : [options.to]
+    for (const addr of recipients) {
+      const result = recipientSchema.safeParse(addr)
+      if (!result.success) {
+        logger.warn({ email: addr }, 'Invalid email recipient — skipping')
+        return
+      }
+    }
     if (this.client) {
       try {
-        const to = Array.isArray(options.to) ? options.to : [options.to]
+        const to = recipients
         await this.client.emails.send({
           from: options.from || FROM_ADDRESS,
           to,

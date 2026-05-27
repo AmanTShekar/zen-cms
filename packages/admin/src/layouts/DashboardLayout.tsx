@@ -19,6 +19,7 @@ import {
   Eye,
   EyeOff,
   GripVertical,
+  Network,
 } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import { useTheme } from '../context/ThemeContext'
@@ -73,6 +74,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
     { name: 'AI Content Hub', path: '/ai-architect', icon: Sparkles },
     { name: 'Automations', path: '/automations', icon: Workflow },
     { name: 'Plugins', path: '/plugins', icon: Puzzle },
+    { name: 'Schema Graph', path: '/graph', icon: Network },
     { name: 'Media Library', path: '/media', icon: Box },
   ]
 

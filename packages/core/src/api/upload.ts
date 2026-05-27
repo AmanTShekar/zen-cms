@@ -2,6 +2,7 @@ import { Router } from 'express'
 import multer from 'multer'
 import fs from 'fs'
 import path from 'path'
+import sharp from 'sharp'
 import { requireAuth } from '../middleware/auth'
 import { createResponse, createErrorResponse } from './utils'
 import { AIService } from '../services/ai'
@@ -60,19 +61,34 @@ router.post('/', requireAuth, upload.single('file'), async (req: any, res, next)
     let fileId = ''
     let altText = ''
 
+    let finalPath = filePath
+    let finalMimetype = req.file.mimetype
+
+    // Image processing pipeline
+    if (['image/jpeg', 'image/png', 'image/webp'].includes(req.file.mimetype)) {
+      const processedPath = filePath + '.webp'
+      await sharp(filePath)
+        .resize(1920, 1920, { fit: 'inside', withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toFile(processedPath)
+      
+      finalPath = processedPath
+      finalMimetype = 'image/webp'
+    }
+
     // 1. Upload to cloud media service or standardized storage provider
     if (process.env.CLOUDINARY_URL || process.env.CLOUDINARY_CLOUD_NAME) {
       // Cloudinary active
-      const result = await MediaService.uploadFile(filePath, {
+      const result = await MediaService.uploadFile(finalPath, {
         filename: req.file.originalname,
-        mimetype: req.file.mimetype,
+        mimetype: finalMimetype,
       })
       url = result.secure_url
       fileId = result.public_id
     } else {
       // Standard active storage provider (dynamic Local or AWS S3 / Cloudflare R2)
-      const result = await StorageService.saveFile(filePath, req.file.originalname, {
-        mimetype: req.file.mimetype,
+      const result = await StorageService.saveFile(finalPath, req.file.originalname, {
+        mimetype: finalMimetype,
       })
       url = result.url
       fileId = result.id

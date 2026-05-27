@@ -1,5 +1,9 @@
 import { AsyncLocalStorage } from 'async_hooks'
 import crypto from 'crypto'
+import { BasicTracerProvider, BatchSpanProcessor, ConsoleSpanExporter } from '@opentelemetry/sdk-trace-base'
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
+import { Resource } from '@opentelemetry/resources'
+import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions'
 
 export interface TraceContext {
   traceId: string
@@ -8,11 +12,49 @@ export interface TraceContext {
 
 export const traceContextStorage = new AsyncLocalStorage<TraceContext>()
 
+// ── OpenTelemetry Initialization ──────────────────────────────────────────────
+const provider = new BasicTracerProvider({
+  resource: new Resource({
+    [ATTR_SERVICE_NAME]: 'zenith-cms',
+  }),
+})
+
+if (process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
+  const exporter = new OTLPTraceExporter({
+    url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT, 
+    // e.g. 'http://localhost:4318/v1/traces'
+  })
+  provider.addSpanProcessor(new BatchSpanProcessor(exporter))
+  console.log(`[Zenith] OTLP Tracing enabled: ${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}`)
+} else {
+  // Optional fallback for debugging if needed, but omitted to prevent console spam
+}
+
+provider.register()
+const tracer = provider.getTracer('zenith-core')
+
 /**
- * Runs a callback within the specified trace context.
+ * Runs a callback within the specified trace context and emits a span.
  */
-export function runWithContext<T>(context: TraceContext, fn: () => T): T {
-  return traceContextStorage.run(context, fn)
+export async function runWithContext<T>(context: TraceContext, name: string, fn: () => Promise<T>): Promise<T> {
+  return new Promise((resolve, reject) => {
+    traceContextStorage.run(context, () => {
+      // In a full implementation, you'd extract parentContext from w3c headers and link it.
+      // Here we create a simple root span or child span based on our custom context.
+      const span = tracer.startSpan(name)
+      span.setAttribute('traceId', context.traceId)
+      span.setAttribute('spanId', context.spanId)
+
+      fn().then((res) => {
+        span.end()
+        resolve(res)
+      }).catch((err) => {
+        span.recordException(err)
+        span.end()
+        reject(err)
+      })
+    })
+  })
 }
 
 /**

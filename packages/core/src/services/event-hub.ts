@@ -59,33 +59,22 @@ class RedisEventBackend implements EventHubBackend {
   private localEmitter = new EventEmitter()
   private channelName = 'zenith_events'
 
-  constructor(redisUrl: string) {
+  constructor() {
     this.localEmitter.setMaxListeners(50)
-    this.init(redisUrl)
+    this.init()
   }
 
-  private async init(redisUrl: string): Promise<void> {
+  private async init(): Promise<void> {
     try {
-      // Dynamic import of 'ioredis' to avoid hard dependency in non-Redis setups
-      /* eslint-disable-next-line @typescript-eslint/no-require-imports */
-      const Redis = require('ioredis')
+      const { redisService } = require('./redis')
+      const { pubClient, subClient } = redisService.getPubSubClients()
       
-      this.pubClient = new Redis(redisUrl, {
-        maxRetriesPerRequest: 3,
-        enableReadyCheck: true,
-      })
-      this.subClient = new Redis(redisUrl, {
-        maxRetriesPerRequest: 3,
-        enableReadyCheck: true,
-      })
-
-      this.pubClient.on('error', (err: any) => {
-        logger.error({ err }, 'RedisEventBackend (Pub): Connection error')
-      })
-
-      this.subClient.on('error', (err: any) => {
-        logger.error({ err }, 'RedisEventBackend (Sub): Connection error')
-      })
+      if (!pubClient || !subClient) {
+        throw new Error('No PubSub clients returned')
+      }
+      
+      this.pubClient = pubClient
+      this.subClient = subClient
 
       this.subClient.on('message', (channel: string, message: string) => {
         if (channel !== this.channelName) return
@@ -152,12 +141,7 @@ class RedisEventBackend implements EventHubBackend {
 
   async destroy(): Promise<void> {
     this.localEmitter.removeAllListeners()
-    if (this.pubClient) {
-      await this.pubClient.quit().catch(() => {})
-    }
-    if (this.subClient) {
-      await this.subClient.quit().catch(() => {})
-    }
+    // We don't quit the clients here because they are managed by the unified RedisService.
   }
 }
 
@@ -170,10 +154,10 @@ class ZenithEventHub {
   private backend: EventHubBackend
 
   constructor() {
-    const redisUrl = process.env.REDIS_URL
-    if (redisUrl) {
+    const { redisService } = require('./redis')
+    if (redisService.client) {
       logger.info('Zenith Event Hub: Initializing pluggable Distributed Redis event bus backend')
-      this.backend = new RedisEventBackend(redisUrl)
+      this.backend = new RedisEventBackend()
     } else {
       logger.info('Zenith Event Hub: Initializing standard In-Memory event bus backend')
       this.backend = new InMemoryEventBackend()

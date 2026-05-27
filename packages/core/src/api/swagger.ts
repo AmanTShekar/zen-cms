@@ -156,5 +156,10 @@ export function setupSwagger(app: Express, config: CMSConfig) {
     }
   })
 
+  // Export JSON spec for openapi-typescript client generation
+  app.get('/api-docs/json', (req, res) => {
+    res.json(specs)
+  })
+
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
 }

@@ -131,4 +131,41 @@ router.post('/:id/test', requireAuth, requireRole('admin'), async (req: Request,
 	  }
 	})
 
+// ── Replay a specific webhook delivery ────────────────────────────────────────
+router.post('/:id/deliveries/:deliveryId/replay', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
+  try {
+    const { id, deliveryId } = req.params
+    const adapter = getAdapter(req)
+
+    const doc = await adapter.findOne<any>(WEBHOOK_COLLECTION, { _id: id })
+    if (!doc) throw new InvalidPayloadError(`Webhook "${id}" not found`)
+
+    // Webhook delivery table is z_webhook_deliveries
+    const delivery = await adapter.findOne<any>('z_webhook_deliveries', { _id: deliveryId })
+    if (!delivery) throw new InvalidPayloadError(`Delivery "${deliveryId}" not found`)
+
+    const webhook = { id: String(doc._id ?? doc.id), url: doc.url, secret: doc.secret, events: doc.events, enabled: doc.enabled }
+    
+    // Attempt replay
+    const { WebhookService } = await import('../services/webhook')
+    
+    // delivery.payload might be wrapped under data, but if it's the raw payload sent out, WebhookService expects `data` which is the actual document.
+    // Wait, sendWebhook expects (target, event, data, collection).
+    // The delivery.payload we stored is the *entire* payload containing { event, collection, data, timestamp }.
+    // So we just pass delivery.payload.data to sendWebhook.
+    const payloadData = delivery.payload?.data || delivery.payload
+    
+    const result = await WebhookService.sendWebhook(
+      webhook,
+      delivery.event,
+      payloadData,
+      delivery.collectionSlug
+    )
+    
+    res.json(createResponse({ success: result.success, status: result.status, error: result.error }))
+  } catch (err) {
+    next(err)
+  }
+})
+
 export default router

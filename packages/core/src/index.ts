@@ -135,6 +135,7 @@ export class ZenithEngine {
   private port?: number
   private corsOptions?: ZenithOptions['cors']
   private servicesMap = new Map<string, ContentService>()
+  private apiRouter: express.Router = express.Router()
 
   /**
    * ZERO-OVERHEAD LOCAL API BYPASS
@@ -362,55 +363,64 @@ export class ZenithEngine {
   }
 
   private _initRoutes() {
+    // ── Hot Swappable Router Proxy ──────────────────────────────────────────
+    this.app.use((req, res, next) => {
+      this.apiRouter(req, res, next)
+    })
+    
+    this._mountRoutes(this.apiRouter)
+  }
+
+  private _mountRoutes(router: express.Router) {
     // ── Public Prometheus Metrics ────────────────────────────────────────────
-    this.app.get('/metrics', (_req, res) => {
+    router.get('/metrics', (_req, res) => {
       res.set('Content-Type', 'text/plain; version=0.0.4; charset=utf-8')
       res.send(getPrometheusMetrics())
     })
 
     // ── Public ───────────────────────────────────────────────────────────────
-    this.app.use('/api/v1/auth', authRouter)
-    this.app.use('/api/v1/system', systemRouter)
-    this.app.use('/api/v1/system/webhooks', webhooksRouter)
-    this.app.use('/api/v1/system/plugins', pluginsRouter)
-    this.app.use('/api/v1/system/schemas', schemasRouter)
-    this.app.use('/api/v1/system/components', componentsRouter)
-    this.app.use('/api/v1/system/campaigns', campaignsRouter)
-    this.app.use('/api/v1/system/backup', backupRouter)
-    this.app.use('/api/v1/system/introspect', introspectRouter)
-    this.app.use('/api/v1/events', eventsRouter)
+    router.use('/api/v1/auth', authRouter)
+    router.use('/api/v1/system', systemRouter)
+    router.use('/api/v1/system/webhooks', webhooksRouter)
+    router.use('/api/v1/system/plugins', pluginsRouter)
+    router.use('/api/v1/system/schemas', schemasRouter)
+    router.use('/api/v1/system/components', componentsRouter)
+    router.use('/api/v1/system/campaigns', campaignsRouter)
+    router.use('/api/v1/system/backup', backupRouter)
+    router.use('/api/v1/system/introspect', introspectRouter)
+    router.use('/api/v1/events', eventsRouter)
 
     // ── Media ────────────────────────────────────────────────────────────────
-    this.app.use('/api/v1/upload', uploadRouter)
-    this.app.use('/media', _mediaRouter)
-    this.app.use('/api/v1/media', _mediaRouter)
-    this.app.use('/api/v1/import-export', importExportRouter)
-    this.app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')))
+    router.use('/api/v1/upload', uploadRouter)
+    router.use('/media', _mediaRouter)
+    router.use('/api/v1/media', _mediaRouter)
+    router.use('/api/v1/import-export', importExportRouter)
+    router.use('/uploads', express.static(path.join(process.cwd(), 'uploads')))
 
     // ── Content Management Tools (non-collection) ─────────────────────────────
-    this.app.use('/api/v1/preferences', preferencesRouter)
-    this.app.use('/api/v1/versions', versionsRouter)
-    this.app.use('/api/v1/locks', locksRouter)
-    this.app.use('/api/v1/comments', commentsRouter)
-    this.app.use('/api/v1/presence', presenceRouter)
-    this.app.use('/api/v1/content-tools', contentToolsRouter)
-    this.app.use('/api/v1/members', membersRouter)
-    this.app.use('/api/v1/flows', flowsRouter)
-    this.app.use('/api/v1/dashboard', dashboardRouter)
-    this.app.use('/api/v1/sites', sitesRouter)
-    this.app.use('/api/v1/workspaces', workspacesRouter)
-    this.app.use('/api/v1/promotion', promotionRouter)
-    this.app.use('/api/v1/releases', releasesRouter)
-    this.app.use('/api/v1/roles', rolesRouter)
-    this.app.use('/api/v1/templates', templatesRouter)
-    this.app.use('/api/v1/blocks', blocksRouter)
-    this.app.use('/api/v1/redirects', redirectsRouter)
-    this.app.use('/api/v1/trash', trashRouter)
-    this.app.use('/api/v1/duplicate', duplicateRouter)
-    this.app.use('/api/v1', bulkRouter)
+    router.use('/api/v1/preferences', preferencesRouter)
+    router.use('/api/v1/versions', versionsRouter)
+    router.use('/api/v1/locks', locksRouter)
+    router.use('/api/v1/comments', commentsRouter)
+    router.use('/api/v1/presence', presenceRouter)
+    router.use('/api/v1/content-tools', contentToolsRouter)
+    router.use('/api/v1/members', membersRouter)
+    router.use('/api/v1/flows', flowsRouter)
+    router.use('/api/v1/dashboard', dashboardRouter)
+    router.use('/api/v1/sites', sitesRouter)
+    router.use('/api/v1/workspaces', workspacesRouter)
+    router.use('/api/v1/promotion', promotionRouter)
+    router.use('/api/v1/releases', releasesRouter)
+    router.use('/api/v1/roles', rolesRouter)
+    router.use('/api/v1/templates', templatesRouter)
+    router.use('/api/v1/blocks', blocksRouter)
+    router.use('/api/v1/redirects', redirectsRouter)
+    router.use('/api/v1/trash', trashRouter)
+    router.use('/api/v1/duplicate', duplicateRouter)
+    router.use('/api/v1', bulkRouter)
 
     // ── Redirect Handler (intercepts 404s for matching redirect rules) ────────
-    this.app.get('/*', redirectHandler)
+    router.get('/*', redirectHandler)
 
     // ── Dynamic Collection Routers ────────────────────────────────────────────
     const webhooks = this.config.webhooks || []
@@ -434,17 +444,17 @@ export class ZenithEngine {
     }
 
     collections.forEach((col) => {
-      this.app.use(`/api/v1/${col.slug}`, createCollectionRouter(col, this.adapter, webhooks))
+      router.use(`/api/v1/${col.slug}`, createCollectionRouter(col, this.adapter, webhooks))
       logger.info(`  → /api/v1/${col.slug} (${col.fields.length} fields)`)
     })
 
     // ── Global/Singleton Routes ───────────────────────────────────────────────
     ;(this.config.globals || []).forEach((global) => {
-      const router = createCollectionRouter(global, this.adapter, webhooks)
+      const globalRouter = createCollectionRouter(global, this.adapter, webhooks)
       // Primary mount
-      this.app.use(`/api/v1/globals/${global.slug}`, router)
+      router.use(`/api/v1/globals/${global.slug}`, globalRouter)
       // Compatibility mount (intuitive flat structure)
-      this.app.use(`/api/v1/${global.slug}`, router)
+      router.use(`/api/v1/${global.slug}`, globalRouter)
 
       logger.info(`  → /api/v1/${global.slug} (singleton)`)
     })
@@ -456,7 +466,7 @@ export class ZenithEngine {
     // ── Root Health/Config Endpoint ───────────────────────────────────────────
     // Returns full schema details only for admin-authenticated requests.
     // Unauthenticated callers receive a simple status response.
-    this.app.get('/api/v1/health', (req, res) => {
+    router.get('/api/v1/health', (req, res) => {
       const isAuthenticated = !!(req as any).user
       const isAdmin = isAuthenticated && (req as any).user?.role === 'admin'
       if (isAdmin) {
@@ -480,7 +490,30 @@ export class ZenithEngine {
     })
 
     // ── Global Error Handler ──────────────────────────────────────────────────
-    this.app.use(globalErrorHandler)
+    router.use(globalErrorHandler)
+  }
+  
+  /**
+   * HOT-RELOAD ENGINE
+   * Rebuilds the schema router dynamically.
+   */
+  public async reloadSchema(newConfig?: CMSConfig) {
+    logger.info('ZenithEngine: Triggering zero-downtime schema reload...')
+    if (newConfig) {
+      this.config = newConfig
+    }
+    const newRouter = express.Router()
+    this._mountRoutes(newRouter)
+    
+    // Attempt schema migrations if necessary
+    try {
+      await this.adapter.init(this.config)
+    } catch (err: any) {
+      logger.error({ err: err.message }, 'Schema hot-reload migration failed')
+    }
+
+    this.apiRouter = newRouter
+    logger.info('ZenithEngine: Schema reloaded successfully.')
   }
 
   /** Export the full resolved config as JSON (for CI/CD or frontend code-gen) */

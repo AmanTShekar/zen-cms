@@ -208,6 +208,27 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       createdAt: timestamp('created_at').defaultNow().notNull(),
       updatedAt: timestamp('updated_at').defaultNow().notNull(),
     }),
+    redirects: pgTable('z_redirects', {
+      id: uuid('id').defaultRandom().primaryKey(),
+      from: text('from').notNull(),
+      to: text('to').notNull(),
+      type: text('type').default('301').notNull(),
+      siteId: text('site_id'),
+      hits: integer('hits').default(0).notNull(),
+      lastHitAt: timestamp('last_hit_at'),
+      createdBy: text('created_by'),
+      createdAt: timestamp('created_at').defaultNow().notNull(),
+    }),
+    roles: pgTable('z_roles', {
+      id: uuid('id').defaultRandom().primaryKey(),
+      roleName: text('role_name').notNull().unique(),
+      roleType: text('role_type').notNull().default('custom'),
+      description: text('description').default(''),
+      isSystem: boolean('is_system').default(false).notNull(),
+      permissions: jsonb('permissions').default([]).notNull(),
+      createdAt: timestamp('created_at').defaultNow().notNull(),
+      updatedAt: timestamp('updated_at').defaultNow().notNull(),
+    }),
     plugins: pgTable('z_plugins', {
       id: text('id').primaryKey(),
       name: text('name').notNull(),
@@ -253,6 +274,26 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
 
     this.db = drizzle(this.pool)
     logger.info('PostgresDrizzleAdapter: Initialized successfully with connection pooling')
+  }
+
+  /**
+   * Executes a database operation within a tenant-isolated RLS context.
+   * If siteId is provided, it begins a transaction, sets the local config parameter,
+   * and yields the transaction object.
+   */
+  public async runWithTenantContext<T>(
+    siteId: string | undefined,
+    operation: (tx: any) => Promise<T>
+  ): Promise<T> {
+    if (!siteId) {
+      return operation(this.db)
+    }
+
+    return await this.db.transaction(async (tx) => {
+      // Inject hardware-level tenant isolation for this transaction
+      await tx.execute(sql`SET LOCAL app.site_id = ${siteId}`)
+      return await operation(tx)
+    })
   }
 
   async registerTenant(tenantId: string, tenantConnectionString: string): Promise<void> {
@@ -356,6 +397,18 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         CREATE INDEX IF NOT EXISTS idx_audit_collection ON audit_logs(collection_name);
         CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_logs(timestamp);
         CREATE INDEX IF NOT EXISTS idx_audit_site ON audit_logs(site_id);
+        
+        -- Enable RLS for Audit Logs
+        ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
+        DROP POLICY IF EXISTS tenant_isolation_policy ON audit_logs;
+        CREATE POLICY tenant_isolation_policy ON audit_logs 
+          FOR ALL 
+          USING (
+            site_id = current_setting('app.site_id', true) 
+            OR current_setting('app.site_id', true) = ''
+            OR current_setting('app.site_id', true) IS NULL
+            OR site_id IS NULL
+          );
         CREATE INDEX IF NOT EXISTS idx_audit_action ON audit_logs(action);
       `
 
@@ -640,6 +693,35 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         CREATE INDEX IF NOT EXISTS idx_collections_slug ON z_collections(slug);
       `
 
+      const createRedirectsTable = sql`
+        CREATE TABLE IF NOT EXISTS z_redirects (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          from_path TEXT NOT NULL,
+          to_path TEXT NOT NULL,
+          redirect_type TEXT DEFAULT '301' NOT NULL,
+          site_id TEXT,
+          hits INTEGER DEFAULT 0 NOT NULL,
+          last_hit_at TIMESTAMP,
+          created_by TEXT,
+          created_at TIMESTAMP DEFAULT NOW() NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_redirects_from ON z_redirects(from_path);
+      `
+
+      const createRolesTable = sql`
+        CREATE TABLE IF NOT EXISTS z_roles (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          role_name TEXT NOT NULL UNIQUE,
+          role_type TEXT NOT NULL DEFAULT 'custom',
+          description TEXT DEFAULT '',
+          is_system BOOLEAN DEFAULT false NOT NULL,
+          permissions JSONB DEFAULT '[]'::jsonb NOT NULL,
+          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_roles_type ON z_roles(role_type);
+      `
+
       const createPresenceTable = sql`
         CREATE TABLE IF NOT EXISTS z_presence (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -692,6 +774,8 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       await db.execute(createDashboardLayoutsTable)
       await db.execute(createOnboardingStateTable)
       await db.execute(createCollectionsTable)
+      await db.execute(createRedirectsTable)
+      await db.execute(createRolesTable)
       await db.execute(createPresenceTable)
       await db.execute(createLocksTable)
     } finally {
@@ -1070,6 +1154,8 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     if (collection === 'z_locks') return this.systemTables.locks
     if (collection === 'z_webhook_configs') return this.systemTables.webhookConfigs
     if (collection === 'z_plugins') return this.systemTables.plugins
+    if (collection === 'z_redirects') return this.systemTables.redirects
+    if (collection === 'z_roles' || collection === 'roles') return this.systemTables.roles
     const table = this.tables[collection]
     if (!table) throw new Error(`Collection "${collection}" not registered in PostgreSQL`)
     return table
