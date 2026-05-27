@@ -7,6 +7,7 @@ import { CacheService } from '../services/cache'
 import { eventHub } from '../services/event-hub'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { resolveRelations } from './factory'
+import { verifySiteAccess } from '../middleware/auth'
 
 /**
  * Zenith GraphQL — Neural Schema Orchestrator
@@ -492,7 +493,7 @@ ${typeFields}
       createHandler({
         schema: buildSchema(schemaSdl),
         rootValue: resolvers,
-        context: (req: any) => {
+        context: async (req: any) => {
           // ── Authentication ────────────────────────────────────────────────
           // Check Bearer token OR httpOnly cookie
           const authHeader = req.raw.headers['authorization'] || ''
@@ -502,6 +503,14 @@ ${typeFields}
           // Adapter is injected by the engine on setup — falls back gracefully
           const adapter = (req.raw as any).__zenithAdapter || AdapterFactory.getActiveAdapter()
           const siteId = req.raw.headers['x-zenith-site-id'] || req.raw.headers['X-Zenith-Site-Id']
+
+          // ── Secure Tenant Resolution (IDOR Protection) ──
+          if (siteId && user) {
+            const hasAccess = await verifySiteAccess(user as any, siteId)
+            if (!hasAccess) {
+              throw new Error('Forbidden: Access denied to this site')
+            }
+          }
 
           // Isolated DataLoaders mapping per request scope
           const loaders = new Map<string, SimpleDataLoader<string, any>>()

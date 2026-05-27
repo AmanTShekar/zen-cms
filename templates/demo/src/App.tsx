@@ -111,7 +111,16 @@ const ZenithDemo = () => {
 
       if (event.data.type === 'ZENITH_DATA_UPDATE') {
         console.log('Zenith Live Preview: Updating state...')
-        setLandingPage(event.data.data)
+        const params = new URLSearchParams(window.location.search)
+        const collection = params.get('collection')
+        
+        if (collection === 'products') {
+          const updatedProduct = event.data.data
+          setProducts((prev) => prev.map((p) => (p._id === updatedProduct._id ? updatedProduct : p)))
+          setFeaturedProducts((prev) => prev.map((p) => (p._id === updatedProduct._id ? updatedProduct : p)))
+        } else {
+          setLandingPage(event.data.data)
+        }
       }
     }
 

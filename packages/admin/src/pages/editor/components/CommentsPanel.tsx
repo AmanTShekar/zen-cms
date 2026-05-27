@@ -59,9 +59,9 @@ const CommentItem: React.FC<{
       <div className="px-3 py-2.5 flex items-start gap-2.5">
         <div className={cn(
           'w-7 h-7 rounded-none flex items-center justify-center shrink-0 mt-0.5',
-          theme === 'dark' ? 'bg-indigo-500/10 border border-indigo-500/20' : 'bg-indigo-50 border border-indigo-100'
+          theme === 'dark' ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-emerald-50 border border-emerald-100'
         )}>
-          <span className="text-xs font-black italic text-indigo-400 uppercase">
+          <span className="text-xs font-black italic text-emerald-400 uppercase">
             {comment.author?.[0] || '?'}
           </span>
         </div>
@@ -130,7 +130,7 @@ const CommentItem: React.FC<{
                   {comment.replies.map((reply, idx) => (
                     <div key={idx} className={cn(
                       'flex gap-2 pl-3 border-l-2',
-                      theme === 'dark' ? 'border-indigo-500/20' : 'border-indigo-100'
+                      theme === 'dark' ? 'border-emerald-500/20' : 'border-emerald-100'
                     )}>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
@@ -215,8 +215,8 @@ const CommentItem: React.FC<{
                 className={cn(
                   'flex-1 px-2.5 py-1.5 text-xs rounded-none border transition-all',
                   theme === 'dark'
-                    ? 'bg-white/5 border-white/8 text-white placeholder-gray-600 focus:border-indigo-500/50'
-                    : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-indigo-300'
+                    ? 'bg-white/5 border-white/8 text-white placeholder-gray-600 focus:border-emerald-500/50'
+                    : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-emerald-300'
                 )}
               />
               <button
@@ -226,8 +226,8 @@ const CommentItem: React.FC<{
                 className={cn(
                   'px-2.5 py-1.5 text-xs font-black uppercase italic tracking-wider border transition-all rounded-none disabled:opacity-50',
                   theme === 'dark'
-                    ? 'bg-indigo-500/20 border-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30'
-                    : 'bg-indigo-50 border-indigo-200 text-indigo-600 hover:bg-indigo-100'
+                    ? 'bg-emerald-500/20 border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
+                    : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100'
                 )}
               >
                 <Send size={10} aria-hidden="true" />
@@ -278,8 +278,8 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
       {/* Panel header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <MessageSquare size={11} className="text-indigo-400" />
-          <span className="text-xs font-black uppercase italic tracking-widest text-indigo-400">
+          <MessageSquare size={11} className="text-emerald-400" />
+          <span className="text-xs font-black uppercase italic tracking-widest text-emerald-400">
             Review
           </span>
           <span className={cn(
@@ -326,8 +326,8 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
             className={cn(
               'flex items-center gap-1.5 px-3 py-1.5 text-xs font-black uppercase italic tracking-wider border rounded-none transition-all disabled:opacity-50',
               theme === 'dark'
-                ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/30 hover:border-indigo-500/50'
-                : 'bg-indigo-50 border-indigo-200 text-indigo-600 hover:bg-indigo-100 hover:border-indigo-300'
+                ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/30 hover:border-emerald-500/50'
+                : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100 hover:border-emerald-300'
             )}
           >
             <MessageSquare size={9} />
@@ -340,7 +340,7 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
       {loading ? (
         <div className="text-center py-4">
           <div className={cn(
-            'w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-2'
+            'w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-2'
           )} />
           <p className="text-xs text-gray-500 italic font-bold">Loading comments...</p>
         </div>

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { CollectionConfig, WebhookTarget, FieldConfig } from '@zenithcms/types'
+import { CollectionConfig, WebhookTarget, FieldConfig, RelationFieldConfig } from '@zenithcms/types'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { getCompiledZodSchema } from '../schema/engine'
 import { createResponse } from './utils'
@@ -76,7 +76,8 @@ async function resolveRelations(
 
   for (const field of fields) {
     const fieldName = field.name
-    const isExplicitlyPopulated = fieldName in popByFirstSegment
+    const hasWildcard = populate.includes('*') || popByFirstSegment['*'] !== undefined
+    const isExplicitlyPopulated = fieldName in popByFirstSegment || hasWildcard
     const shouldResolveRelation =
       isExplicitlyPopulated ||
       (depth > 0 &&
@@ -121,7 +122,7 @@ async function resolveRelations(
           if (idStr) relatedMap.set(idStr, rDoc)
         }
 
-        const nestedPopulate = popByFirstSegment[fieldName] || []
+        const nestedPopulate = hasWildcard ? ['*'] : (popByFirstSegment[fieldName] || [])
         const targetCol =
           configRegistry?.collections?.find((c: any) => c.slug === relationTo) ||
           (relationTo === 'media'
@@ -175,9 +176,10 @@ async function resolveRelations(
           nestedDocs.push(doc[fieldName])
         }
       }
-      const nestedPopulate =
-        popByFirstSegment[fieldName] ||
-        populate.filter((p) => p.startsWith(fieldName + '.')).map((p) => p.slice(fieldName.length + 1))
+      const nestedPopulate = hasWildcard
+        ? ['*']
+        : popByFirstSegment[fieldName] ||
+          populate.filter((p) => p.startsWith(fieldName + '.')).map((p) => p.slice(fieldName.length + 1))
       await resolveRelations(
         nestedDocs,
         (field as any).fields || [],
@@ -194,9 +196,10 @@ async function resolveRelations(
           nestedDocs.push(...doc[fieldName])
         }
       }
-      const nestedPopulate =
-        popByFirstSegment[fieldName] ||
-        populate.filter((p) => p.startsWith(fieldName + '.')).map((p) => p.slice(fieldName.length + 1))
+      const nestedPopulate = hasWildcard
+        ? ['*']
+        : popByFirstSegment[fieldName] ||
+          populate.filter((p) => p.startsWith(fieldName + '.')).map((p) => p.slice(fieldName.length + 1))
       await resolveRelations(
         nestedDocs,
         (field as any).fields || [],
@@ -207,9 +210,10 @@ async function resolveRelations(
         configRegistry
       )
     } else if (field.type === 'blocks' && docs) {
-      const nestedPopulate =
-        popByFirstSegment[fieldName] ||
-        populate.filter((p) => p.startsWith(fieldName + '.')).map((p) => p.slice(fieldName.length + 1))
+      const nestedPopulate = hasWildcard
+        ? ['*']
+        : popByFirstSegment[fieldName] ||
+          populate.filter((p) => p.startsWith(fieldName + '.')).map((p) => p.slice(fieldName.length + 1))
       const blocksList = (field as any).blocks || []
       for (const blockDef of blocksList) {
         const nestedDocsForBlock: any[] = []
@@ -317,6 +321,90 @@ function serializeBlocks(doc: any, fields: FieldConfig[]) {
  */
 export { resolveRelations, applySelect, applySelectToDocs, serializeBlocks }
 
+/**
+ * Cascade Delete Handler
+ * ──────────────────────
+ * After a document is deleted, scans all other collections for relation fields
+ * that reference the deleted collection and takes action per the `onDelete` policy:
+ *   - SET_NULL (default): Nullify the reference on related documents
+ *   - CASCADE: Delete related documents
+ *   - RESTRICT: Throw if related documents exist (should be called before delete)
+ *   - NO_ACTION: Leave references as-is
+ */
+async function handleCascadeDeletes(
+  adapter: DatabaseAdapter,
+  collectionSlug: string,
+  deletedDocId: string,
+  collections: CollectionConfig[]
+): Promise<void> {
+  for (const col of collections) {
+    if (col.slug === collectionSlug) continue
+    if (!col.fields) continue
+
+    for (const field of col.fields) {
+      if (field.type !== 'relation') continue
+      const relField = field as RelationFieldConfig
+      const targets = Array.isArray(relField.relationTo) ? relField.relationTo : [relField.relationTo]
+
+      if (!targets.includes(collectionSlug)) continue
+
+      const onDelete = relField.onDelete || 'SET_NULL'
+
+      if (relField.hasMany) {
+        // Find docs whose array field contains the deleted ID
+        const relatedDocs = await adapter.find(col.slug, { [field.name]: deletedDocId })
+        for (const doc of relatedDocs) {
+          const docId = (doc as any)._id?.toString() || (doc as any).id?.toString()
+          if (!docId) continue
+
+          switch (onDelete) {
+            case 'CASCADE':
+              await adapter.delete(col.slug, docId, {})
+              break
+            case 'SET_NULL': {
+              const current = Array.isArray((doc as any)[field.name]) ? (doc as any)[field.name] : []
+              await adapter.update(col.slug, docId, {
+                [field.name]: current.filter((id: any) => {
+                  const idStr = typeof id === 'object' ? id?.id || id?._id : id
+                  return idStr?.toString() !== deletedDocId
+                }),
+              })
+              break
+            }
+            case 'RESTRICT':
+              throw new Error(
+                `Cannot delete: "${col.name}" has a "${field.name}" reference to this document (RESTRICT policy)`
+              )
+            case 'NO_ACTION':
+              break
+          }
+        }
+      } else {
+        // Single relation — find docs pointing to the deleted ID
+        const relatedDoc = await adapter.findOne(col.slug, { [field.name]: deletedDocId })
+        if (!relatedDoc) continue
+        const docId = (relatedDoc as any)._id?.toString() || (relatedDoc as any).id?.toString()
+        if (!docId) continue
+
+        switch (onDelete) {
+          case 'CASCADE':
+            await adapter.delete(col.slug, docId, {})
+            break
+          case 'SET_NULL':
+            await adapter.update(col.slug, docId, { [field.name]: null })
+            break
+          case 'RESTRICT':
+            throw new Error(
+              `Cannot delete: "${col.name}" has a "${field.name}" reference to this document (RESTRICT policy)`
+            )
+          case 'NO_ACTION':
+            break
+        }
+      }
+    }
+  }
+}
+
 export function createCollectionRouter(
   config: CollectionConfig,
   adapter: DatabaseAdapter,
@@ -377,6 +465,24 @@ export function createCollectionRouter(
       serializeBlocks(sanitized, config.fields)
     }
     return sanitized
+  }
+
+  /** Strip fields the user is not allowed to set on create/update. */
+  const restrictInputFields = (data: any, user: any, action: 'create' | 'update') => {
+    if (!data || typeof data !== 'object') return data
+    const restricted = { ...data }
+    for (const field of config.fields) {
+      const fieldAccess = (field as any).access
+      if (fieldAccess && fieldAccess[action] && !fieldAccess[action]!(user)) {
+        delete restricted[field.name]
+      }
+      // Also strip read-only fields (access.update === false) on create to prevent
+      // privilege escalation — a user could set fields they shouldn't have write access to.
+      if (action === 'create' && fieldAccess?.update && !fieldAccess.update(user)) {
+        delete restricted[field.name]
+      }
+    }
+    return restricted
   }
 
   // ── Authentication & Role Middleware ──────────────────────────────────────────
@@ -577,7 +683,8 @@ export function createCollectionRouter(
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       await verifyAccess(user, 'create')
 
-      const validation = schema.safeParse(req.body)
+      const body = restrictInputFields(req.body, user, 'create')
+      const validation = schema.safeParse(body)
       if (!validation.success) {
         throw new ValidationError(
           Object.entries(validation.error.flatten().fieldErrors).map(([f, m]) => ({
@@ -606,7 +713,8 @@ export function createCollectionRouter(
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       await verifyAccess(user, 'update')
 
-      const validation = schema.partial().safeParse(req.body)
+      const body = restrictInputFields(req.body, user, 'update')
+      const validation = schema.partial().safeParse(body)
       if (!validation.success) {
         throw new ValidationError(
           Object.entries(validation.error.flatten().fieldErrors).map(([f, m]) => ({
@@ -639,7 +747,8 @@ export function createCollectionRouter(
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       await verifyAccess(user, 'update')
 
-      const validation = schema.partial().safeParse(req.body)
+      const body = restrictInputFields(req.body, user, 'update')
+      const validation = schema.partial().safeParse(body)
       if (!validation.success) {
         throw new ValidationError(
           Object.entries(validation.error.flatten().fieldErrors).map(([f, m]) => ({
@@ -677,6 +786,86 @@ export function createCollectionRouter(
 
       await contentService.delete(req.params.id, { user, siteId })
       CacheService.invalidateTag(config.slug)
+
+      // Cascade delete: clean up relation references in other collections
+      const allCollections = (req as any).zenith?.config?.collections || []
+      await handleCascadeDeletes(adapter, config.slug, req.params.id, allCollections)
+
+      res.json(createResponse({ success: true }))
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  // ── Soft Delete Endpoints ──────────────────────────────────────────────────
+  router.get('/trash', async (req, res, next) => {
+    try {
+      if (!config.softDelete) throw new NotFoundError('Trash not enabled for this collection', 'trash')
+      const { contentService, cachePrefix } = getContext()
+      const user = (req as any).user
+      const siteId = req.headers['x-zenith-site-id'] as string
+      const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
+      await verifyAccess(user, 'read')
+
+      const { filter, sort, pagination, select, populate, depth } = parseQueryParams(req.query, config, req.body)
+      const skip = (pagination.page - 1) * pagination.pageSize
+      const findFilter = siteId ? { ...filter, siteId } : filter
+      
+      // Override to explicitly fetch only deleted items
+      const trashFilter = { ...findFilter, deletedAt: { $ne: null } }
+
+      const [docs, total] = await Promise.all([
+        contentService.find(trashFilter, {
+          user, locale, sort, skip, limit: pagination.pageSize, select, populate, siteId, includeDeleted: true
+        } as any),
+        adapter.count(config.slug, trashFilter),
+      ])
+
+      const configRegistry = (req as any).zenith?.config
+      const effectiveDepth = depth !== undefined ? depth : (populate.length > 0 ? 5 : 0)
+      if (effectiveDepth > 0 || populate.length > 0) {
+        await resolveRelations(docs, config.fields, populate, effectiveDepth, adapter, 0, configRegistry)
+      }
+
+      let sanitizedDocs = docs.map((d) => sanitizeFields(d, user, 'read'))
+      if (select) sanitizedDocs = applySelectToDocs(sanitizedDocs, select)
+
+      res.json(createResponse(sanitizedDocs, { pagination: { ...pagination, total, totalPages: Math.ceil(total / pagination.pageSize) } }))
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  router.post('/:id/restore', async (req, res, next) => {
+    try {
+      if (!config.softDelete) throw new NotFoundError('Trash not enabled for this collection', req.params.id)
+      const { contentService } = getContext()
+      const user = (req as any).user
+      const siteId = req.headers['x-zenith-site-id'] as string
+      await verifyAccess(user, 'update')
+
+      const { doc } = await contentService.update(req.params.id, { deletedAt: null }, { user, siteId, includeDeleted: true })
+      CacheService.invalidateTag(config.slug)
+      res.json(createResponse(sanitizeFields(doc, user, 'read')))
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  router.delete('/:id/hard', async (req, res, next) => {
+    try {
+      const { contentService } = getContext()
+      const user = (req as any).user
+      const siteId = req.headers['x-zenith-site-id'] as string
+      await verifyAccess(user, 'delete')
+
+      await contentService.delete(req.params.id, { user, siteId, includeDeleted: true })
+      CacheService.invalidateTag(config.slug)
+
+      // Cascade delete: clean up relation references in other collections
+      const allCollections = (req as any).zenith?.config?.collections || []
+      await handleCascadeDeletes(adapter, config.slug, req.params.id, allCollections)
+
       res.json(createResponse({ success: true }))
     } catch (err) {
       next(err)
@@ -836,7 +1025,7 @@ export function createCollectionRouter(
       if (!Array.isArray(pipeline)) {
         throw new InvalidPayloadError('pipeline must be an array')
       }
-      const results = await adapter.aggregate(config.slug, pipeline)
+      const results = await adapter.aggregate(config.slug, pipeline, { siteId: (req as any).siteId })
       res.json(createResponse({ results }))
     } catch (err) {
       next(err)

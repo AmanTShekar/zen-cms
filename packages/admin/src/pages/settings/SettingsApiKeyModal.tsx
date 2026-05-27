@@ -25,7 +25,7 @@ const SettingsApiKeyModal: React.FC<SettingsApiKeyModalProps> = ({ newKey, setNe
           theme === 'dark' ? 'bg-[#0a0a0a] border-white/10' : 'bg-white border-gray-100'
         )}
       >
-        <div className="absolute top-0 right-0 p-6 text-indigo-500/10 pointer-events-none">
+        <div className="absolute top-0 right-0 p-6 text-emerald-500/10 pointer-events-none">
           <Key size={120} strokeWidth={0.5} />
         </div>
 
@@ -57,10 +57,21 @@ const SettingsApiKeyModal: React.FC<SettingsApiKeyModalProps> = ({ newKey, setNe
                 navigator.clipboard.writeText(newKey.key)
                 toast.success('KEY_COPIED_TO_CLIPBOARD')
               }}
-              className="p-2.5 rounded-none bg-indigo-500 text-white shrink-0 shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95 transition-all"
+              className="p-2.5 rounded-none bg-emerald-500 text-white shrink-0 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all"
             >
               <Copy size={14} />
             </button>
+          </div>
+        </div>
+
+        <div className="space-y-2 mb-8">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+            Frontend .env Integration:
+          </p>
+          <div className={cn('p-4 rounded-none border font-mono text-[9px] whitespace-pre transition-colors text-emerald-400', theme === 'dark' ? 'bg-[#0a0a0a] border-white/10' : 'bg-gray-900 border-gray-800')}>
+{`VITE_CMS_URL=http://localhost:5175/api/v1
+VITE_CMS_API_KEY=${newKey.key}
+VITE_CMS_SITE_ID=your_tenant_id`}
           </div>
         </div>
 

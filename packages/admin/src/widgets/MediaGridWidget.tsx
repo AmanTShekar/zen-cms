@@ -29,7 +29,7 @@ export default function MediaGridWidget({ theme, title }: WidgetProps) {
     return (
       <div
         className={cn(
-          'h-full flex flex-col items-center justify-center gap-3 border rounded-none cursor-pointer hover:border-indigo-500/30 transition-all',
+          'h-full flex flex-col items-center justify-center gap-3 border rounded-none cursor-pointer hover:border-emerald-500/30 transition-all',
           theme === 'dark' ? 'border-white/5 border-dashed' : 'border-gray-200 border-dashed'
         )}
         onClick={() => navigate('/media')}
@@ -44,12 +44,12 @@ export default function MediaGridWidget({ theme, title }: WidgetProps) {
   return (
     <div className="h-full flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <p className="text-[9px] font-black text-indigo-500 uppercase tracking-widest italic">
+        <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest italic">
           {title || 'Media Library'}
         </p>
         <button
           onClick={() => navigate('/media')}
-          className="text-[8px] text-gray-500 hover:text-indigo-500 uppercase font-black transition-colors"
+          className="text-[8px] text-gray-500 hover:text-emerald-500 uppercase font-black transition-colors"
         >
           View All
         </button>

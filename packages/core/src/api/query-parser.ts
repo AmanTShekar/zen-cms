@@ -134,7 +134,18 @@ export function parseQueryParams(
     parsed.populate = capDepth(all, parsed.depth ?? 5)
   } else if (query.populate) {
     const pStr = Array.isArray(query.populate) ? query.populate.join(',') : query.populate
-    parsed.populate = pStr.split(',').map((s: string) => s.trim()).filter(Boolean)
+    
+    // Strapi populate-deep plugin pattern
+    if (pStr.startsWith('deep')) {
+      const match = pStr.match(/deep:(\d+)/)
+      const depth = match ? parseInt(match[1]) : 5
+      parsed.depth = depth
+      parsed.populate = ['*']
+    } else if (pStr === '*') {
+      parsed.populate = ['*']
+    } else {
+      parsed.populate = pStr.split(',').map((s: string) => s.trim()).filter(Boolean)
+    }
   }
 
   // normalize filter operators

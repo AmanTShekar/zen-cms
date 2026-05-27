@@ -38,6 +38,6 @@ describe('Auth Service', () => {
     expect(AuthService.validatePassword('short')).toMatchObject({ valid: false })
     expect(AuthService.validatePassword('nouppercase1')).toMatchObject({ valid: false })
     expect(AuthService.validatePassword('NoNumbers')).toMatchObject({ valid: false })
-    expect(AuthService.validatePassword('ValidPass1')).toMatchObject({ valid: true })
+    expect(AuthService.validatePassword('ValidPass1!')).toMatchObject({ valid: true })
   })
 })

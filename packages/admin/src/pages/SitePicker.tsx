@@ -250,11 +250,11 @@ export default function SitePicker() {
                       }}
                       className={`flex items-center gap-3 px-5 py-3 transition-all duration-300 border ${
                         isActive
-                          ? 'border-[#8B5CF6] bg-[#8B5CF6]/10 text-white shadow-[0_0_15px_rgba(139,92,246,0.25)]'
+                          ? 'border-[#10B981] bg-[#10B981]/10 text-white shadow-[0_0_15px_rgba(16,185,129,0.25)]'
                           : 'border-white/[0.06] bg-white/[0.02] text-white/60 hover:border-white/20 hover:text-white'
                       } rounded-lg`}
                     >
-                      <Briefcase size={14} className={isActive ? 'text-[#8B5CF6]' : 'text-white/40'} />
+                      <Briefcase size={14} className={isActive ? 'text-[#10B981]' : 'text-white/40'} />
                       <div className="text-left">
                         <span className="text-xs font-black uppercase tracking-wider block leading-tight">
                           {ws.name}
@@ -269,7 +269,7 @@ export default function SitePicker() {
 
                 <button
                   onClick={() => setShowNewWorkspaceModal(true)}
-                  className="flex items-center gap-2 px-5 py-3 border border-dashed border-white/20 hover:border-[#8B5CF6]/50 text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-[#8B5CF6] transition-all duration-300 font-mono rounded-lg"
+                  className="flex items-center gap-2 px-5 py-3 border border-dashed border-white/20 hover:border-[#10B981]/50 text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-[#10B981] transition-all duration-300 font-mono rounded-lg"
                 >
                   <Plus size={14} />
                   New Workspace
@@ -460,7 +460,7 @@ export default function SitePicker() {
           >
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
-                <Briefcase size={16} className="text-[#8B5CF6]" />
+                <Briefcase size={16} className="text-[#10B981]" />
                 <h2 className="text-[12px] font-black uppercase tracking-[0.2em]">New Workspace</h2>
               </div>
               <button
@@ -487,7 +487,7 @@ export default function SitePicker() {
                     }
                   }}
                   placeholder="e.g. Zenith Studio"
-                  className="w-full bg-white/[0.02] border border-white/10 focus:border-[#8B5CF6]/50 px-4 py-3 text-[12px] focus:outline-none transition-colors rounded-none placeholder:text-white/25 text-white"
+                  className="w-full bg-white/[0.02] border border-white/10 focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none transition-colors rounded-none placeholder:text-white/25 text-white"
                 />
               </div>
 
@@ -503,7 +503,7 @@ export default function SitePicker() {
                     setWsSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
                   }
                   placeholder="e.g. zenith-studio"
-                  className="w-full bg-white/[0.02] border border-white/10 focus:border-[#8B5CF6]/50 px-4 py-3 text-[12px] focus:outline-none transition-colors rounded-none placeholder:text-white/25 text-white"
+                  className="w-full bg-white/[0.02] border border-white/10 focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none transition-colors rounded-none placeholder:text-white/25 text-white"
                 />
               </div>
 
@@ -517,7 +517,7 @@ export default function SitePicker() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-[#8B5CF6] text-white hover:bg-[#7c4deb] px-6 py-3.5 text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-300 font-mono shadow-[0_0_15px_rgba(139,92,246,0.4)]"
+                  className="flex-1 bg-[#10B981] text-white hover:bg-[#059669] px-6 py-3.5 text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-300 font-mono shadow-[0_0_15px_rgba(16,185,129,0.4)]"
                 >
                   Create
                 </button>

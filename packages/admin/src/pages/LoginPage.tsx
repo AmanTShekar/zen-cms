@@ -16,6 +16,7 @@ import {
   EyeOff,
   MousePointer2,
   WifiOff,
+  ShieldCheck,
 } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -36,6 +37,8 @@ const LoginPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [needsSetup, setNeedsSetup] = useState(false)
+  const [tempToken, setTempToken] = useState<string | null>(null)
+  const [twoFactorToken, setTwoFactorToken] = useState('')
 
   React.useEffect(() => {
     // Check if the system requires initial administrator provisioning
@@ -71,9 +74,28 @@ const LoginPage: React.FC = () => {
         const { user } = res.data.data
         setUser(user)
         navigate('/setup')
-      } else {
-        await login(data.email, data.password)
+      } else if (tempToken) {
+        if (!twoFactorToken) {
+          setError({ message: '2FA token required', type: 'auth' })
+          setIsSubmitting(false)
+          return
+        }
+        const res = await api.post('/auth/2fa/verify-login', { tempToken, token: twoFactorToken })
+        const { user } = res.data.data
+        setUser(user)
         navigate('/')
+      } else {
+        try {
+          await login(data.email, data.password)
+          navigate('/')
+        } catch (err: any) {
+          if (err.response?.data?.data?.require2FA) {
+            setTempToken(err.response.data.data.tempToken)
+            setError(null)
+          } else {
+            throw err
+          }
+        }
       }
     } catch (err: any) {
       if (err.code === 'ERR_NETWORK' || !err.response) {
@@ -100,7 +122,7 @@ const LoginPage: React.FC = () => {
   return (
     <div
       className={cn(
-        'min-h-screen flex items-center justify-center p-4 md:p-6 relative overflow-auto font-sans antialiased selection:bg-indigo-600 selection:text-white transition-colors duration-500',
+        'min-h-screen flex items-center justify-center p-4 md:p-6 relative overflow-auto font-sans antialiased selection:bg-emerald-600 selection:text-white transition-colors duration-500',
         theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-[#111827]'
       )}
     >
@@ -108,13 +130,13 @@ const LoginPage: React.FC = () => {
       <div
         className={cn(
           'fixed top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500 z-0',
-          theme === 'dark' ? 'bg-indigo-500/10' : 'bg-indigo-500/[0.03]'
+          theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-500/[0.03]'
         )}
       />
       <div
         className={cn(
           'fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500 z-0',
-          theme === 'dark' ? 'bg-indigo-500/10' : 'bg-indigo-500/[0.02]'
+          theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-500/[0.02]'
         )}
       />
 
@@ -163,10 +185,10 @@ const LoginPage: React.FC = () => {
                   theme === 'dark' ? 'text-white' : 'text-gray-900'
                 )}
               >
-                {needsSetup ? 'Setup Admin' : 'Sign In'}
+                {needsSetup ? 'Setup Admin' : tempToken ? 'Two-Factor Auth' : 'Sign In'}
               </h2>
               <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest italic leading-none mt-1">
-                {needsSetup ? 'Initialize Workstation' : 'Access Controlled'}
+                {needsSetup ? 'Initialize Workstation' : tempToken ? 'Verify Identity' : 'Access Controlled'}
               </p>
             </div>
 
@@ -281,111 +303,141 @@ const LoginPage: React.FC = () => {
             </AnimatePresence>
 
             {needsSetup && (
-              <div className="p-3 border border-indigo-500/20 bg-indigo-500/[0.03] text-[9.5px] leading-relaxed text-indigo-400 font-bold uppercase tracking-wider italic">
+              <div className="p-3 border border-emerald-500/20 bg-emerald-500/[0.03] text-[9.5px] leading-relaxed text-emerald-400 font-bold uppercase tracking-wider italic">
                 No administrative users detected. Create your root administrator account below to provision this Zenith workstation.
               </div>
             )}
 
-            <div className="space-y-4">
+            {tempToken ? (
               <div className="space-y-1.5">
                 <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest italic px-1">
-                  Email Address
+                  6-Digit Authenticator Code
                 </label>
                 <div className="relative group">
-                  <Mail
+                  <ShieldCheck
                     className={cn(
                       'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
-                      theme === 'dark'
-                        ? 'text-white/20 group-focus-within:text-indigo-400'
-                        : 'text-gray-300 group-focus-within:text-indigo-600'
+                      theme === 'dark' ? 'text-white/20' : 'text-gray-300'
                     )}
                     size={16}
                   />
                   <input
-                    {...register('email')}
-                    autoComplete="email"
-                    type="email"
-                    placeholder="admin@zenith.com"
+                    type="text"
+                    placeholder="000000"
+                    maxLength={6}
+                    value={twoFactorToken}
+                    onChange={(e) => setTwoFactorToken(e.target.value.replace(/\D/g, ''))}
                     className={cn(
-                      'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none transition-all',
+                      'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none transition-all tracking-widest text-center',
                       theme === 'dark'
-                        ? 'bg-white/5 border-white/10 text-white focus:bg-white/10 focus:ring-2 focus:ring-indigo-500/20'
-                        : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-indigo-100'
+                        ? 'bg-white/5 border-white/10 text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
+                        : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
                     )}
                   />
                 </div>
-                {errors.email && (
-                  <p className="text-[9px] text-red-500 font-bold mt-1 px-1">
-                    {errors.email.message}
-                  </p>
-                )}
               </div>
-
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between px-1">
-                  <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest italic">
-                    Account Password
+            ) : (
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest italic px-1">
+                    Email Address
                   </label>
-                  {!needsSetup && (
-                    <Link
-                      to="/forgot-password"
+                  <div className="relative group">
+                    <Mail
                       className={cn(
-                        'text-[9px] font-black uppercase tracking-widest italic hover:underline',
+                        'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
                         theme === 'dark'
-                          ? 'text-indigo-400 hover:text-indigo-300'
-                          : 'text-indigo-600 hover:text-indigo-700'
+                          ? 'text-white/20 group-focus-within:text-emerald-400'
+                          : 'text-gray-300 group-focus-within:text-emerald-600'
                       )}
-                    >
-                      Forgot Password?
-                    </Link>
+                      size={16}
+                    />
+                    <input
+                      {...register('email')}
+                      autoComplete="email"
+                      type="email"
+                      placeholder="admin@zenith.com"
+                      className={cn(
+                        'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none transition-all',
+                        theme === 'dark'
+                          ? 'bg-white/5 border-white/10 text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
+                          : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
+                      )}
+                    />
+                  </div>
+                  {errors.email && (
+                    <p className="text-[9px] text-red-500 font-bold mt-1 px-1">
+                      {errors.email.message}
+                    </p>
                   )}
                 </div>
-                <div className="relative group">
-                  <Lock
-                    className={cn(
-                      'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
-                      theme === 'dark'
-                        ? 'text-white/20 group-focus-within:text-indigo-400'
-                        : 'text-gray-300 group-focus-within:text-indigo-600'
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between px-1">
+                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest italic">
+                      Account Password
+                    </label>
+                    {!needsSetup && (
+                      <Link
+                        to="/forgot-password"
+                        className={cn(
+                          'text-[9px] font-black uppercase tracking-widest italic hover:underline',
+                          theme === 'dark'
+                            ? 'text-emerald-400 hover:text-emerald-300'
+                            : 'text-emerald-600 hover:text-emerald-700'
+                        )}
+                      >
+                        Forgot Password?
+                      </Link>
                     )}
-                    size={16}
-                  />
-                  <input
-                    {...register('password')}
-                    autoComplete="current-password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    className={cn(
-                      'w-full border rounded-none py-3 pl-12 pr-12 text-xs font-bold outline-none transition-all',
-                      theme === 'dark'
-                        ? 'bg-white/5 border-white/10 text-white focus:bg-white/10 focus:ring-2 focus:ring-indigo-500/20'
-                        : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-indigo-100'
-                    )}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className={cn(
-                      'absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-none transition-colors',
-                      theme === 'dark'
-                        ? 'text-white/20 hover:text-white'
-                        : 'text-gray-300 hover:text-gray-900'
-                    )}
-                  >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
+                  </div>
+                  <div className="relative group">
+                    <Lock
+                      className={cn(
+                        'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
+                        theme === 'dark'
+                          ? 'text-white/20 group-focus-within:text-emerald-400'
+                          : 'text-gray-300 group-focus-within:text-emerald-600'
+                      )}
+                      size={16}
+                    />
+                    <input
+                      {...register('password')}
+                      autoComplete="current-password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      className={cn(
+                        'w-full border rounded-none py-3 pl-12 pr-12 text-xs font-bold outline-none transition-all',
+                        theme === 'dark'
+                          ? 'bg-white/5 border-white/10 text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
+                          : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
+                      )}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className={cn(
+                        'absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-none transition-colors',
+                        theme === 'dark'
+                          ? 'text-white/20 hover:text-white'
+                          : 'text-gray-300 hover:text-gray-900'
+                      )}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="text-[9px] text-red-500 font-bold mt-1 px-1">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
-                {errors.password && (
-                  <p className="text-[9px] text-red-500 font-bold mt-1 px-1">
-                    {errors.password.message}
-                  </p>
-                )}
               </div>
-            </div>
+            )}
 
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || (tempToken !== null && twoFactorToken.length !== 6)}
               className={cn(
                 'w-full rounded-none py-4 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-xl transition-all group disabled:opacity-50 disabled:pointer-events-none',
                 theme === 'dark'
@@ -479,18 +531,18 @@ const LoginPage: React.FC = () => {
               className={cn(
                 'mt-8 p-4 border rounded-none space-y-3 cursor-pointer group hover:scale-[1.02] active:scale-[0.98] transition-all',
                 theme === 'dark'
-                  ? 'bg-indigo-500/5 border-indigo-500/10'
-                  : 'bg-indigo-50/50 border-indigo-100'
+                  ? 'bg-emerald-500/5 border-emerald-500/10'
+                  : 'bg-emerald-50/50 border-emerald-100'
               )}
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-indigo-500">
+                <div className="flex items-center gap-2 text-emerald-500">
                   <Info size={12} />
                   <span className="text-[8px] font-black uppercase tracking-widest italic">
                     Dev_Credentials
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-2 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="text-[7px] font-black uppercase">Auto_Fill</span>
                   <MousePointer2 size={10} />
                 </div>
@@ -503,7 +555,7 @@ const LoginPage: React.FC = () => {
                   <code
                     className={cn(
                       'text-[9px] font-black transition-colors',
-                      theme === 'dark' ? 'text-white/60' : 'text-indigo-900'
+                      theme === 'dark' ? 'text-white/60' : 'text-emerald-900'
                     )}
                   >
                     admin@zenith.com
@@ -516,7 +568,7 @@ const LoginPage: React.FC = () => {
                   <code
                     className={cn(
                       'text-[9px] font-black transition-colors',
-                      theme === 'dark' ? 'text-white/60' : 'text-indigo-900'
+                      theme === 'dark' ? 'text-white/60' : 'text-emerald-900'
                     )}
                   >
                     Zenith2024!

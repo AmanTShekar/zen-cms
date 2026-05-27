@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from 'react'
 import { motion, AnimatePresence, Reorder } from 'framer-motion'
-import { Layers, ChevronDown, ChevronUp, Plus, Trash2, GripVertical, Layout, Search, X } from 'lucide-react'
+import { Layers, ChevronDown, ChevronUp, Plus, Trash2, GripVertical, Layout } from 'lucide-react'
 import { useEditorBlocks } from '../../../context/BlockLibraryContext'
+import { useModalStore } from '../../../store/modalStore'
 import { humanize, type FieldDefinition } from '../constants'
 import { FieldRenderer } from '../FieldRenderer'
 import { cn } from '../../../lib/utils'
@@ -26,9 +27,8 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
   components,
 }) => {
   const BLOCK_LIBRARY = useEditorBlocks()
+  const { openComponentPicker } = useModalStore()
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
-  const [componentSearch, setComponentSearch] = useState('')
-  const [showComponentPicker, setShowComponentPicker] = useState(false)
 
   const componentTypeLabel = (type: string) =>
     humanize(type.replace(/^content\./, ''))
@@ -59,9 +59,11 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
     const items = [...value, newItem]
     onChange(items)
     setExpandedIds((prev) => new Set([...prev, id]))
-    setShowComponentPicker(false)
-    setComponentSearch('')
   }, [BLOCK_LIBRARY, value, onChange])
+
+  const handleOpenPicker = useCallback(() => {
+    openComponentPicker((blockType) => addItem(blockType))
+  }, [openComponentPicker, addItem])
 
   const removeItem = (dzId: string) => {
     onChange(value.filter((item) => item._dzId !== dzId))
@@ -83,19 +85,12 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
     ? BLOCK_LIBRARY.filter((b) => components.includes(b.type))
     : BLOCK_LIBRARY
 
-  const filteredComponents = componentSearch.trim()
-    ? availableComponents.filter((b) =>
-        b.title.toLowerCase().includes(componentSearch.toLowerCase()) ||
-        b.type.toLowerCase().includes(componentSearch.toLowerCase())
-      )
-    : availableComponents
-
   return (
     <div className="space-y-3">
       {/* Zone label */}
       <div className="flex items-center gap-2 px-1">
-        <Layers size={10} className="text-purple-400" />
-        <span className="text-xs font-black uppercase italic tracking-widest text-purple-400">
+        <Layers size={10} className="text-emerald-400" />
+        <span className="text-xs font-black uppercase italic tracking-widest text-emerald-400">
           Dynamic Zone
         </span>
         <span className="text-xs text-gray-500">— {value.length} component{value.length !== 1 ? 's' : ''}</span>
@@ -148,12 +143,12 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
                     <GripVertical size={12} className="text-gray-500 shrink-0 cursor-grab active:cursor-grabbing" />
                     <div className={cn(
                       'w-5 h-5 rounded-none flex items-center justify-center shrink-0',
-                      theme === 'dark' ? 'bg-purple-500/10' : 'bg-purple-50'
+                      theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50'
                     )}>
-                      <BlockIcon size={10} className="text-purple-400" />
+                      <BlockIcon size={10} className="text-emerald-400" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-black uppercase italic text-purple-300 truncate">
+                      <p className="text-xs font-black uppercase italic text-emerald-300 truncate">
                         {componentLabel}
                       </p>
                     </div>
@@ -176,10 +171,10 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
                       <button
                         onClick={() => toggleExpand(dzId)}
                         aria-label={isExpanded ? 'Collapse component' : 'Expand component'}
-                        className="p-1 text-gray-500 hover:text-purple-400 transition-colors"
+                        className="p-1 text-gray-500 hover:text-emerald-400 transition-colors"
                       >
                         {isExpanded
-                          ? <ChevronUp size={12} aria-hidden="true" className="text-purple-400" />
+                          ? <ChevronUp size={12} aria-hidden="true" className="text-emerald-400" />
                           : <ChevronDown size={12} aria-hidden="true" className="text-gray-400" />
                         }
                       </button>
@@ -225,130 +220,25 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
         </Reorder.Group>
       )}
 
-      {/* Add Component */}
-      <div className={cn(
-        'border rounded-none p-3',
-        theme === 'dark' ? 'border-white/5' : 'border-gray-200'
-      )}>
-        <div className="flex items-center gap-2 mb-2">
-          <Plus size={10} className="text-gray-500" />
-          <span className="text-xs font-black text-gray-500 uppercase italic tracking-widest">
-            Add Component
-          </span>
-        </div>
-        {showComponentPicker ? (
-          <div className="space-y-2">
-            <div className="relative">
-              <Search size={12} className={cn(
-                'absolute left-3 top-1/2 -translate-y-1/2',
-                theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
-              )} />
-              <input
-                type="text"
-                value={componentSearch}
-                onChange={(e) => setComponentSearch(e.target.value)}
-                placeholder="Search components..."
-                autoFocus
-                className={cn(
-                  'w-full pl-8 pr-8 py-2 text-xs font-bold border rounded-none bg-transparent',
-                  theme === 'dark'
-                    ? 'border-white/10 text-white placeholder-gray-600 focus:border-purple-500/30'
-                    : 'border-gray-200 text-black placeholder-gray-400 focus:border-purple-500/30'
-                )}
-              />
-              {componentSearch && (
-                <button
-                  onClick={() => setComponentSearch('')}
-                  className={cn(
-                    'absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5',
-                    theme === 'dark' ? 'text-gray-600 hover:text-white' : 'text-gray-400 hover:text-black'
-                  )}
-                >
-                  <X size={10} />
-                </button>
-              )}
-            </div>
-            <div className="max-h-48 overflow-y-auto space-y-1 custom-editor-scrollbar">
-              {filteredComponents.length === 0 ? (
-                <p className={cn('text-xs font-bold italic text-center py-3', theme === 'dark' ? 'text-gray-600' : 'text-gray-400')}>
-                  No components found
-                </p>
-              ) : (
-                filteredComponents.map((b) => {
-                  const Icon = b.icon || Layout
-                  return (
-                    <button
-                      key={b.type}
-                      onClick={() => addItem(b.type)}
-                      className={cn(
-                        'w-full flex items-center gap-2.5 px-2.5 py-2 rounded-none border text-left transition-all',
-                        theme === 'dark'
-                          ? 'bg-white/[0.02] border-white/5 hover:border-purple-500/30 hover:bg-purple-500/5'
-                          : 'bg-gray-50 border-gray-200 hover:border-purple-300 hover:bg-purple-50'
-                      )}
-                    >
-                      <div className={cn(
-                        'w-6 h-6 rounded-none flex items-center justify-center shrink-0',
-                        theme === 'dark' ? 'bg-purple-500/10' : 'bg-purple-50'
-                      )}>
-                        <Icon size={12} className="text-purple-400" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-black uppercase italic truncate">{b.title}</p>
-                        <p className={cn('text-[9px] font-bold truncate', theme === 'dark' ? 'text-gray-600' : 'text-gray-400')}>
-                          {b.description}
-                        </p>
-                      </div>
-                      <Plus size={10} className="text-purple-500 opacity-50 shrink-0" />
-                    </button>
-                  )
-                })
-              )}
-            </div>
-            <button
-              onClick={() => { setShowComponentPicker(false); setComponentSearch('') }}
-              className={cn(
-                'w-full px-2 py-1.5 text-[9px] font-black uppercase italic tracking-wider border rounded-none',
-                theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-white' : 'border-gray-200 text-gray-400 hover:text-black'
-              )}
-            >
-              Cancel
-            </button>
-          </div>
-        ) : (
-          <div className="flex flex-wrap gap-1.5">
-            {availableComponents.slice(0, 6).map((b) => {
-              const Icon = b.icon || Layout
-              return (
-                <button
-                  key={b.type}
-                  onClick={() => addItem(b.type)}
-                  className={cn(
-                    'flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-black uppercase italic tracking-wider border transition-all hover:border-purple-500/30',
-                    theme === 'dark'
-                      ? 'bg-white/[0.03] border-white/8 text-gray-400 hover:bg-purple-500/5 hover:text-purple-300'
-                      : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-purple-50 hover:border-purple-300 hover:text-purple-700'
-                  )}
-                >
-                  <Icon size={10} />
-                  {b.title}
-                </button>
-              )
-            })}
-            {availableComponents.length > 6 && (
-              <button
-                onClick={() => setShowComponentPicker(true)}
-                className={cn(
-                  'px-2.5 py-1.5 text-xs font-black uppercase italic tracking-wider border border-dashed',
-                  theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-purple-400' : 'border-gray-300 text-gray-400 hover:text-purple-600'
-                )}
-              >
-                +{availableComponents.length - 6} More
-              </button>
-            )}
-          </div>
+      {/* Add Component — opens global picker modal */}
+      <button
+        type="button"
+        onClick={handleOpenPicker}
+        className={cn(
+          'w-full flex items-center justify-center gap-2 py-2.5 border border-dashed rounded-none transition-all text-xs font-black uppercase italic tracking-widest',
+          theme === 'dark'
+            ? 'border-white/10 text-gray-500 hover:border-emerald-500/40 hover:text-emerald-400 hover:bg-emerald-500/5'
+            : 'border-gray-200 text-gray-400 hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50/50'
         )}
-      </div>
+      >
+        <Plus size={12} />
+        Add Component
+        {availableComponents.length > 0 && (
+          <span className={cn('text-[9px] font-black ml-1', theme === 'dark' ? 'text-gray-600' : 'text-gray-400')}>
+            ({availableComponents.length} available)
+          </span>
+        )}
+      </button>
     </div>
   )
 }

@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 
-const proxyErrorHandler = (err: any, req: any, res: any) => {
+const proxyErrorHandler = (err: any, _req: any, res: any) => {
   if (err.code === 'ECONNREFUSED') {
     if (res && res.writeHead) {
       res.writeHead(503, { 'Content-Type': 'text/plain' });
@@ -13,7 +13,7 @@ const proxyErrorHandler = (err: any, req: any, res: any) => {
 };
 
 export default defineConfig({
-  base: './',
+  base: '/',
   plugins: [react()],
   server: {
     port: 5175,

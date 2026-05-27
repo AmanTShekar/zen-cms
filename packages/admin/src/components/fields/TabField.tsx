@@ -22,7 +22,7 @@ interface TabsFieldConfig extends BaseFieldConfig {
 }
 
 const TabField: React.FC<TabFieldProps> = ({ field, value, onChange, disabled, renderField }) => {
-  const tf = field as TabsFieldConfig
+  const tf = field as unknown as TabsFieldConfig
   const tabs = tf.tabs || []
   const [activeTab, setActiveTab] = useState(0)
   const tabValue = (value && typeof value === 'object' ? value : {}) as Record<string, unknown>
@@ -44,7 +44,7 @@ const TabField: React.FC<TabFieldProps> = ({ field, value, onChange, disabled, r
             className={cn(
               'px-4 py-2.5 text-[10px] font-black uppercase tracking-wider transition-colors',
               activeTab === idx
-                ? 'text-purple-400 border-b-2 border-purple-500 bg-white/[0.03]'
+                ? 'text-emerald-400 border-b-2 border-emerald-500 bg-white/[0.03]'
                 : 'text-gray-500 hover:text-gray-300'
             )}
           >
@@ -60,7 +60,7 @@ const TabField: React.FC<TabFieldProps> = ({ field, value, onChange, disabled, r
             <div key={f.name} className="space-y-1.5">
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                 {f.label || f.name}
-                {f.required && <span className="text-danger ml-1">*</span>}
+                {(f as any).required && <span className="text-danger ml-1">*</span>}
               </label>
               {renderField(
                 f,

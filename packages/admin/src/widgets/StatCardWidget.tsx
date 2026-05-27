@@ -46,7 +46,7 @@ export default function StatCardWidget({ config = {}, theme, title }: WidgetProp
       <div
         className={cn(
           'w-9 h-9 rounded-none flex items-center justify-center',
-          theme === 'dark' ? 'bg-white/5 text-indigo-400' : 'bg-indigo-50 text-indigo-600'
+          theme === 'dark' ? 'bg-white/5 text-emerald-400' : 'bg-emerald-50 text-emerald-600'
         )}
       >
         <Database size={16} />

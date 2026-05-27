@@ -1,3 +1,6 @@
+import { useTenantStore } from './tenantStore'
+import { ApiError } from './ApiError'
+
 let isRefreshing = false
 let failedQueue: { resolve: (value: unknown) => void; reject: (reason?: unknown) => void }[] = []
 
@@ -10,6 +13,13 @@ const processQueue = (error: unknown, _token: string | null = null) => {
     }
   })
   failedQueue = []
+}
+
+// Wrapped version ensures rejection handler throws don't break the redirect
+const safeProcessQueue = (error: unknown, token: string | null) => {
+  try {
+    processQueue(error, token)
+  } catch { /* ignore — queue handlers should not throw */ }
 }
 
 const getCookie = (name: string): string | null => {
@@ -54,9 +64,9 @@ async function fetchWithAuth(method: string, path: string, body?: unknown, confi
     ...config?.headers,
   }
 
-  const token = localStorage.getItem('token')
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
+  const storeToken = useTenantStore.getState().token
+  if (storeToken) {
+    headers['Authorization'] = `Bearer ${storeToken}`
   }
 
   // Apply default headers set dynamically via api.defaults.headers
@@ -69,9 +79,35 @@ async function fetchWithAuth(method: string, path: string, body?: unknown, confi
   }
 
   // Ensure active site ID is dynamically set on every request to prevent tenant leaking
-  const currentSiteId = localStorage.getItem('activeSiteId')
+  const currentSiteId = useTenantStore.getState().activeSiteId
   if (currentSiteId && !headers['x-zenith-site-id']) {
     headers['x-zenith-site-id'] = currentSiteId
+  }
+
+  // Hard tenant guard — abort any tenant-scoped request missing x-zenith-site-id.
+  // Exempt: auth, site listing, uploads, health, and protocol paths that run before
+  // a site is selected (globals editor, document locks, collab presence, media proxy).
+  const isTenantExempt =
+    path.startsWith('/auth') ||
+    path === '/sites' ||
+    path.startsWith('/sites?') ||
+    path.startsWith('/sites/') ||
+    path.startsWith('/uploads') ||
+    path.startsWith('/health') ||
+    path.startsWith('/system') ||
+    path.startsWith('/globals') ||
+    path.startsWith('/locks') ||
+    path.startsWith('/presence') ||
+    path.startsWith('/media') ||
+    path.startsWith('/versions') ||
+    path.startsWith('/releases')
+  if (!currentSiteId && !headers['x-zenith-site-id'] && !isTenantExempt) {
+    throw new ApiError({
+      message:
+        'Missing tenant context: x-zenith-site-id is required for this request. ' +
+        'Ensure activeSiteId is set in localStorage before making API calls.',
+      code: 'ERR_NO_TENANT',
+    })
   }
 
   // Double-Submit Cookie CSRF for mutating requests
@@ -103,11 +139,8 @@ async function fetchWithAuth(method: string, path: string, body?: unknown, confi
       return { data, status: response.status, headers: response.headers }
     })
   } catch {
-    // Network error — throw axios-compatible error so callers catch it
-    const error: any = new Error('Network Error')
-    error.code = 'ERR_NETWORK'
-    error.response = undefined
-    throw error
+    // Network error — throw ApiError so callers catch a consistent shape
+    throw new ApiError({ message: 'Network Error', code: 'ERR_NETWORK' })
   }
 }
 
@@ -133,12 +166,11 @@ async function request<T = any>(
     isRefreshing = true
     try {
       const newToken = await refreshToken()
-      processQueue(null, newToken)
+      safeProcessQueue(null, newToken)
       return fetchWithAuth(method, path, body, config) as Promise<ApiResponse<T>>
     } catch (refreshError: unknown) {
-      processQueue(refreshError, null)
-      const err = refreshError as { status?: number }
-      if (err?.status === 401 && !window.location.pathname.includes('/login')) {
+      safeProcessQueue(refreshError, null)
+      if (refreshError instanceof ApiError && refreshError.status === 401 && !window.location.pathname.includes('/login')) {
         window.location.href = '/login'
       }
       throw refreshError
@@ -147,11 +179,14 @@ async function request<T = any>(
     }
   }
 
-  // Throw for non-2xx status codes (axios-compatible error shape)
+  // Throw for non-2xx status codes (ApiError with response payload)
   if (result.status >= 400) {
-    const error: any = new Error(result.data?.message || `Request failed with status ${result.status}`)
-    error.response = { data: result.data, status: result.status, headers: result.headers }
-    throw error
+    throw new ApiError({
+      message: result.data?.message || `Request failed with status ${result.status}`,
+      status: result.status,
+      code: 'ERR_HTTP',
+      response: { data: result.data, status: result.status, headers: result.headers },
+    })
   }
 
   return result as ApiResponse<T>
@@ -163,18 +198,25 @@ async function refreshToken(): Promise<string> {
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
   })
-  if (!res.ok) throw { status: res.status }
+  if (!res.ok) throw new ApiError({ message: 'Token refresh failed', status: res.status, code: 'ERR_REFRESH' })
   const body = await res.json()
   const newToken: string | undefined = body?.token || body?.accessToken
   if (newToken) {
-    localStorage.setItem('token', newToken)
+    useTenantStore.getState().setToken(newToken)
   }
   return newToken || ''
 }
 
 const getInitialSiteId = (): string => {
   if (typeof window !== 'undefined' && window.localStorage) {
-    return window.localStorage.getItem('activeSiteId') || ''
+    // First try from the store (which persists), fall back to raw localStorage for backward compatibility
+    const storeSiteId = useTenantStore.getState().activeSiteId
+    if (storeSiteId) return storeSiteId
+    const legacySiteId = window.localStorage.getItem('activeSiteId')
+    if (legacySiteId) {
+      useTenantStore.getState().setActiveSiteId(legacySiteId)
+      return legacySiteId
+    }
   }
   return ''
 }
@@ -194,15 +236,15 @@ const apiInstance = {
     return request<T>('POST', path, body, config)
   },
 
-  async patch<T = any>(path: string, body?: unknown, config?: { headers?: Record<string, string> }): Promise<ApiResponse<T>> {
+  async patch<T = any>(path: string, body?: unknown, config?: { headers?: Record<string, string>; params?: Record<string, any> }): Promise<ApiResponse<T>> {
     return request<T>('PATCH', path, body, config)
   },
 
-  async put<T = any>(path: string, body?: unknown, config?: { headers?: Record<string, string> }): Promise<ApiResponse<T>> {
+  async put<T = any>(path: string, body?: unknown, config?: { headers?: Record<string, string>; params?: Record<string, any> }): Promise<ApiResponse<T>> {
     return request<T>('PUT', path, body, config)
   },
 
-  async delete<T = any>(path: string, config?: { headers?: Record<string, string> }): Promise<ApiResponse<T>> {
+  async delete<T = any>(path: string, config?: { headers?: Record<string, string>; params?: Record<string, any> }): Promise<ApiResponse<T>> {
     return request<T>('DELETE', path, undefined, config)
   },
 }

@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Webhook, Plus, Trash2, Send, CheckCircle2, XCircle, Loader2, Bell, BellOff, Clock, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react'
 import { cn } from '../../lib/utils'
+import { confirm } from '../../store/confirmStore'
 import api from '../../lib/api'
 import toast from 'react-hot-toast'
 
@@ -57,30 +58,34 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
   const [expandedWebhook, setExpandedWebhook] = useState<string | null>(null)
   const [deliveries, setDeliveries] = useState<Record<string, DeliveryRecord[]>>({})
   const [loadingDeliveries, setLoadingDeliveries] = useState<string | null>(null)
+  const isMountedRef = useRef(true)
+  useEffect(() => { return () => { isMountedRef.current = false } }, [])
 
   const fetchWebhooks = async () => {
+    if (!isMountedRef.current) return
     setLoading(true)
     try {
       const res = await api.get('/system/webhooks')
-      setWebhooks(res.data.data || [])
+      if (isMountedRef.current) setWebhooks(res.data.data || [])
     } catch {
-      toast.error('Failed to load webhooks')
+      if (isMountedRef.current) toast.error('Failed to load webhooks')
     } finally {
-      setLoading(false)
+      if (isMountedRef.current) setLoading(false)
     }
   }
 
   React.useEffect(() => { fetchWebhooks() }, [])
 
   const fetchDeliveries = async (webhookId: string, url: string) => {
+    if (!isMountedRef.current) return
     setLoadingDeliveries(webhookId)
     try {
       const res = await api.get(`/system/webhooks/${webhookId}/deliveries?limit=25`)
-      setDeliveries(prev => ({ ...prev, [url]: res.data.data || [] }))
+      if (isMountedRef.current) setDeliveries(prev => ({ ...prev, [url]: res.data.data || [] }))
     } catch {
-      toast.error('Failed to load delivery log')
+      if (isMountedRef.current) toast.error('Failed to load delivery log')
     } finally {
-      setLoadingDeliveries(null)
+      if (isMountedRef.current) setLoadingDeliveries(null)
     }
   }
 
@@ -133,7 +138,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
   }
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this webhook?')) return
+    if (!await confirm({ message: 'Delete this webhook?' })) return
     try {
       await api.delete(`/system/webhooks/${id}`)
       toast.success('Webhook deleted')
@@ -200,7 +205,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
       <div className="flex items-center justify-between border-b border-white/5 pb-4">
         <div className="flex flex-col">
           <h3 className="text-sm font-black uppercase italic tracking-wider flex items-center gap-3">
-            <Webhook size={16} className="text-indigo-400" />
+            <Webhook size={16} className="text-emerald-400" />
             Webhook Management
           </h3>
           <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1">
@@ -211,7 +216,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
           <button
             type="button"
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 px-4 py-2 border border-indigo-500/30 hover:border-indigo-500 hover:bg-indigo-500/10 text-[10px] font-black uppercase italic transition-all text-indigo-400 hover:text-white"
+            className="flex items-center gap-2 px-4 py-2 border border-emerald-500/30 hover:border-emerald-500 hover:bg-emerald-500/10 text-[10px] font-black uppercase italic transition-all text-emerald-400 hover:text-white"
           >
             <Plus size={12} />
             Add Webhook
@@ -226,7 +231,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
           theme === 'dark' ? 'bg-white/[0.01] border-white/5' : 'bg-gray-50 border-gray-200'
         )}>
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase italic tracking-widest text-indigo-400">
+            <span className="text-[10px] font-black uppercase italic tracking-widest text-emerald-400">
               {editingId ? 'Edit Webhook' : 'New Webhook'}
             </span>
             <button onClick={resetForm} className="text-gray-500 hover:text-white text-[10px] font-black uppercase">Cancel</button>
@@ -242,7 +247,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                 placeholder="https://example.com/api/webhooks/zenith"
                 className={cn(
                   'w-full border rounded-none py-3 px-4 text-[12px] font-mono italic transition-all outline-none',
-                  theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-indigo-500' : 'bg-white border-gray-200 focus:border-indigo-500'
+                  theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                 )}
               />
             </div>
@@ -256,7 +261,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                 placeholder="whsec_..."
                 className={cn(
                   'w-full border rounded-none py-3 px-4 text-[12px] font-mono italic transition-all outline-none',
-                  theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-indigo-500' : 'bg-white border-gray-200 focus:border-indigo-500'
+                  theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                 )}
               />
             </div>
@@ -277,7 +282,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                       className={cn(
                         'px-3 py-1.5 text-[8px] font-black uppercase italic tracking-widest border rounded-none transition-all',
                         checked
-                          ? 'border-indigo-500/40 bg-indigo-500/10 text-indigo-400'
+                          ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
                           : theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-gray-300' : 'border-gray-200 text-gray-400 hover:text-gray-600'
                       )}
                     >
@@ -293,7 +298,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase italic tracking-wider transition-all disabled:opacity-40"
+              className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase italic tracking-wider transition-all disabled:opacity-40"
             >
               {saving ? <Loader2 size={12} className="animate-spin" /> : null}
               {editingId ? 'Update Webhook' : 'Create Webhook'}
@@ -305,7 +310,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
       {/* Webhook list */}
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 size={24} className="text-indigo-500 animate-spin" />
+          <Loader2 size={24} className="text-emerald-500 animate-spin" />
         </div>
       ) : webhooks.length === 0 ? (
         <div className={cn(
@@ -346,7 +351,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                       disabled={testingId === wh.id || !wh.enabled}
                       className={cn(
                         'p-2 border rounded-none transition-colors',
-                        theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-indigo-400' : 'border-gray-200 text-gray-400 hover:text-indigo-600'
+                        theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-emerald-400' : 'border-gray-200 text-gray-400 hover:text-emerald-600'
                       )}
                       title="Send test event"
                     >
@@ -388,8 +393,8 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                       className={cn(
                         'p-2 border rounded-none transition-colors',
                         expandedWebhook === wh.id
-                          ? 'border-indigo-500/40 text-indigo-400'
-                          : theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-indigo-400' : 'border-gray-200 text-gray-400 hover:text-indigo-600'
+                          ? 'border-emerald-500/40 text-emerald-400'
+                          : theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-emerald-400' : 'border-gray-200 text-gray-400 hover:text-emerald-600'
                       )}
                       title="Delivery log"
                     >
@@ -404,7 +409,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                       className={cn(
                         'px-2 py-0.5 text-[7px] font-black uppercase tracking-widest border rounded-none',
                         evt === '*'
-                          ? 'border-indigo-500/30 text-indigo-400 bg-indigo-500/5'
+                          ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/5'
                           : theme === 'dark' ? 'border-white/10 text-gray-500' : 'border-gray-200 text-gray-400'
                       )}
                     >
@@ -430,8 +435,8 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                 )}>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <Clock size={12} className="text-indigo-400" />
-                      <span className="text-[9px] font-black uppercase italic tracking-widest text-indigo-400">
+                      <Clock size={12} className="text-emerald-400" />
+                      <span className="text-[9px] font-black uppercase italic tracking-widest text-emerald-400">
                         Delivery Log
                       </span>
                     </div>
@@ -440,7 +445,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                       disabled={loadingDeliveries === wh.id}
                       className={cn(
                         'flex items-center gap-1.5 px-3 py-1.5 text-[7px] font-black uppercase italic border rounded-none transition-colors',
-                        theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-indigo-400' : 'border-gray-200 text-gray-400 hover:text-indigo-600'
+                        theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-emerald-400' : 'border-gray-200 text-gray-400 hover:text-emerald-600'
                       )}
                     >
                       {loadingDeliveries === wh.id ? (
@@ -454,7 +459,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
 
                   {loadingDeliveries === wh.id ? (
                     <div className="flex items-center justify-center py-8">
-                      <Loader2 size={16} className="text-indigo-500 animate-spin" />
+                      <Loader2 size={16} className="text-emerald-500 animate-spin" />
                     </div>
                   ) : !deliveries[wh.url] || deliveries[wh.url].length === 0 ? (
                     <div className={cn(

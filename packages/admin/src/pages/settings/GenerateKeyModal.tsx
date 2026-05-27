@@ -51,8 +51,8 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
         {/* Header */}
         <div className="flex items-center justify-between px-8 py-6 border-b border-white/5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-none bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-              <Key size={18} className="text-indigo-500" />
+            <div className="w-10 h-10 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+              <Key size={18} className="text-emerald-500" />
             </div>
             <span className="text-[12px] font-black uppercase italic tracking-wide">
               Generate Access Token
@@ -79,8 +79,8 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
               className={cn(
                 'w-full border rounded-none py-4 px-5 text-[13px] font-black italic transition-all outline-none',
                 theme === 'dark'
-                  ? 'bg-white/5 border-white/10 text-white focus:border-indigo-500/50'
-                  : 'bg-gray-50 border-gray-200 focus:border-indigo-500'
+                  ? 'bg-white/5 border-white/10 text-white focus:border-emerald-500/50'
+                  : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
               )}
             />
           </div>
@@ -99,7 +99,7 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
                   className={cn(
                     'py-3 text-[9px] font-black uppercase italic tracking-wider border rounded-none transition-all',
                     role === r
-                      ? 'border-indigo-500/40 bg-indigo-500/10 text-indigo-400'
+                      ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
                       : theme === 'dark'
                       ? 'border-white/10 text-gray-500 hover:border-white/20'
                       : 'border-gray-200 text-gray-400 hover:border-gray-300'
@@ -125,7 +125,7 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
                   className={cn(
                     'py-3 text-[9px] font-black italic border rounded-none transition-all',
                     expiresDays === d
-                      ? 'border-indigo-500/40 bg-indigo-500/10 text-indigo-400'
+                      ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
                       : theme === 'dark'
                       ? 'border-white/10 text-gray-500 hover:border-white/20'
                       : 'border-gray-200 text-gray-400 hover:border-gray-300'
@@ -149,7 +149,7 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
             className={cn(
               'w-full py-4 rounded-none text-[10px] font-black uppercase italic tracking-widest shadow-lg transition-all active:scale-95 disabled:opacity-40',
               theme === 'dark'
-                ? 'bg-indigo-500 hover:bg-indigo-600 text-white'
+                ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
                 : 'bg-gray-900 hover:bg-gray-800 text-white'
             )}
           >

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../lib/utils'
 import { toast } from 'react-hot-toast'
 import { FocalPointCropper } from './FocalPointCropper'
+import { useTheme } from '../context/ThemeContext'
 
 interface MediaPickerProps {
   value?: any
@@ -16,6 +17,7 @@ interface MediaPickerProps {
 }
 
 const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, disabled = false, focalPoint = false }) => {
+  const { theme } = useTheme()
   const [isOpen, setIsOpen] = useState(false)
   const [files, setFiles] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
@@ -122,7 +124,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
         {selectedFiles.map((file, i) => (
           <div
             key={file._id || i}
-            className="relative w-20 h-20 rounded-xl border border-white/10 overflow-hidden group shadow-sm transition-all hover:scale-105 active:scale-95"
+            className="relative w-20 h-20 rounded-none border border-white/10 overflow-hidden group shadow-sm transition-all hover:scale-105 active:scale-95"
           >
             <img src={getMediaUrl(file.url)} className="w-full h-full object-cover" alt="" />
             {!disabled && (
@@ -131,7 +133,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                 onClick={() =>
                   hasMany ? onChange(selectedFiles.filter((_, idx) => idx !== i)) : onChange(null)
                 }
-                className="absolute top-1 right-1 p-1 bg-black/60 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-1 right-1 p-1 bg-black/60 text-white rounded-none opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <X size={10} />
               </button>
@@ -142,7 +144,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="w-20 h-20 rounded-xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:border-purple-500/50 hover:text-purple-400 hover:bg-purple-500/5 transition-all group"
+            className="w-20 h-20 rounded-none border border-dashed border-white/10 flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:border-emerald-500/50 hover:text-emerald-400 hover:bg-emerald-500/5 transition-all group"
           >
             <Plus
               size={18}
@@ -159,36 +161,45 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
       <AnimatePresence>
         {isOpen && (
           <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-10 bg-[#0B0F19]/80 backdrop-blur-md">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.98, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.98, y: 10 }}
-              className="bg-[#111827]/90 backdrop-blur-xl border border-white/10 rounded-2xl w-full max-w-6xl h-[85vh] flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden"
-            >
-              <div className="p-8 border-b border-white/5 flex items-center justify-between bg-[#111827]/40 relative z-10">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-purple-600/20 border border-purple-500/30 rounded-xl flex items-center justify-center text-purple-400 shadow-lg">
-                    <ImageIcon size={20} />
-                  </div>
-                  <div className="flex flex-col">
-                    <h3 className="text-xl font-black text-white uppercase italic tracking-tight leading-none">
-                      Asset_Registry
-                    </h3>
-                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest italic mt-1.5">
-                      Centralized_Repository_For_Media_Architectures
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 text-gray-400 hover:text-white transition-all animate-fade-in"
+              <motion.div
+                initial={{ opacity: 0, scale: 0.98, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.98, y: 10 }}
+                className={cn(
+                  'w-full max-w-6xl border rounded-none overflow-hidden shadow-2xl flex flex-col h-[85vh]',
+                  theme === 'dark' ? 'bg-[#0a0a0a] border-white/10' : 'bg-white border-gray-200'
+                )}
+              >
+                <div
+                  className={cn(
+                    'p-6 border-b flex items-center justify-between shrink-0',
+                    theme === 'dark' ? 'border-white/5' : 'border-gray-100',
+                  )}
                 >
-                  <X size={18} />
-                </button>
-              </div>
-
-              <div className="flex-1 overflow-hidden flex flex-col p-8 gap-8 bg-[#0B0F19]/40">
-                {/* Focal Point step — show FocalPointCropper instead of the asset grid */}
+                  <h3
+                    className={cn(
+                      'text-lg font-black uppercase italic leading-none',
+                      theme === 'dark' ? 'text-white' : 'text-black',
+                    )}
+                  >
+                    Asset Registry
+                  </h3>
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    aria-label="Close"
+                    className={cn(
+                      'p-1 transition-colors',
+                      theme === 'dark' ? 'text-gray-400 hover:text-emerald-500' : 'text-gray-500 hover:text-emerald-600'
+                    )}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+  
+                <div className={cn(
+                  'flex-1 overflow-hidden flex flex-col p-8 gap-8',
+                  theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-white'
+                )}>
                 <AnimatePresence mode="wait">
                   {focalPending ? (
                     <motion.div
@@ -201,11 +212,11 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                       <div className="flex items-center gap-3">
                         <button
                           onClick={() => setFocalPending(null)}
-                          className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors italic border border-white/10 px-4 py-2 rounded-lg"
+                          className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors italic border border-white/10 px-4 py-2 rounded-none"
                         >
                           ← Back
                         </button>
-                        <span className="text-[9px] font-black uppercase tracking-widest text-purple-400 italic">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400 italic">
                           Step 2 of 2 — Set Focal Point
                         </span>
                       </div>
@@ -226,9 +237,8 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                       exit={{ opacity: 0 }}
                       className="flex flex-col h-full"
                     >
-                      {/* Step indicator for two-stage selection */}
                       {focalPoint && (
-                        <div className="text-[9px] font-black uppercase tracking-widest text-purple-400 italic mb-4">
+                        <div className="text-[9px] font-black uppercase tracking-widest text-emerald-400 italic mb-4">
                           Step 1 of 2 — Choose Asset
                         </div>
                       )}
@@ -236,7 +246,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                       <div className="flex flex-col md:flex-row md:items-center gap-6">
                         <div className="flex-1 relative group">
                           <Search
-                            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-purple-400 transition-colors"
+                            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-400 transition-colors"
                             size={16}
                           />
                           <input
@@ -244,10 +254,10 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                             placeholder="Filter assets by sequence or ID..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full bg-white/[0.02] border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-xs font-bold text-white placeholder:text-gray-500 transition-all focus:bg-white/[0.04] focus:border-purple-500/40 focus-visible:ring-2 focus-visible:ring-indigo-500"
+                            className="w-full bg-white/[0.02] border border-white/10 rounded-none pl-12 pr-4 py-3.5 text-xs font-bold text-white placeholder:text-gray-500 transition-all focus:bg-white/[0.04] focus:border-emerald-500/40 focus-visible:ring-1 focus-visible:ring-emerald-500 outline-none"
                           />
                         </div>
-                        <label className="flex items-center gap-3 px-8 py-3.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-all text-[11px] font-black uppercase tracking-widest shadow-xl shadow-purple-900/20 cursor-pointer hover:scale-[1.02] active:scale-95 italic leading-none shrink-0 border border-purple-500/30">
+                        <label className="flex items-center gap-3 px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-none transition-all text-[11px] font-black uppercase tracking-widest cursor-pointer hover:scale-[1.02] active:scale-95 italic leading-none shrink-0 border border-emerald-500/30">
                           <UploadCloud size={16} strokeWidth={3} />
                           <span>Ingest New Asset</span>
                           <input type="file" className="hidden" onChange={handleUpload} />
@@ -257,8 +267,8 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                       <div className="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 pr-2 custom-scrollbar">
                         {loading ? (
                           <div className="col-span-full h-full flex flex-col items-center justify-center gap-6">
-                            <Loader2 className="animate-spin text-purple-500" size={32} />
-                            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-purple-400 italic animate-pulse">
+                            <Loader2 className="animate-spin text-emerald-500" size={32} />
+                            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-emerald-400 italic animate-pulse">
                               Syncing_Asset_Library...
                             </span>
                           </div>
@@ -276,10 +286,10 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                                   key={file._id}
                                   onClick={() => toggleSelect(file)}
                                   className={cn(
-                                    'group relative aspect-square rounded-xl border-2 overflow-hidden cursor-pointer transition-all',
+                                    'group relative aspect-square rounded-none border overflow-hidden cursor-pointer transition-all',
                                     isSelected
-                                      ? 'border-purple-500 shadow-[0_0_15px_rgba(139,92,246,0.3)] scale-[0.98]'
-                                      : 'border-white/5 hover:border-purple-500/30'
+                                      ? 'border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)] scale-[0.98]'
+                                      : 'border-white/5 hover:border-emerald-500/30'
                                   )}
                                 >
                                   <img
@@ -291,7 +301,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                                     className={cn(
                                       'absolute inset-0 transition-all duration-300',
                                       isSelected
-                                        ? 'bg-purple-600/10'
+                                        ? 'bg-emerald-600/10'
                                         : 'bg-black/0 group-hover:bg-black/40'
                                     )}
                                   />
@@ -301,7 +311,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                                     </p>
                                   </div>
                                   {isSelected && (
-                                    <div className="absolute top-2 right-2 bg-purple-600 text-white rounded-lg p-1.5 shadow-xl animate-in zoom-in-50 duration-300">
+                                    <div className="absolute top-2 right-2 bg-emerald-600 text-white rounded-lg p-1.5 shadow-xl animate-in zoom-in-50 duration-300">
                                       <Check size={10} strokeWidth={4} />
                                     </div>
                                   )}
@@ -327,7 +337,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                           </button>
                           <button
                             onClick={() => { setIsOpen(false); setFocalPending(null) }}
-                            className="px-8 py-3 bg-purple-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-purple-900/20 hover:scale-[1.02] active:scale-95 transition-all italic leading-none border border-purple-500/30"
+                            className="px-8 py-3 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-emerald-900/20 hover:scale-[1.02] active:scale-95 transition-all italic leading-none border border-emerald-500/30"
                           >
                             Apply Selection
                           </button>

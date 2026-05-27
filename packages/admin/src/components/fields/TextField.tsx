@@ -37,14 +37,14 @@ const TextField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
         style={casingStyle}
         disabled={disabled}
         className={cn(
-          "w-full bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-none px-3 py-2 text-sm focus:border-purple-500/50 outline-none disabled:opacity-60 disabled:cursor-not-allowed text-white placeholder:text-gray-500",
+          "w-full bg-gray-900/65 backdrop-blur-md border border-white/8 rounded-none px-4 py-2.5 text-xs focus:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/50 outline-none disabled:opacity-60 disabled:cursor-not-allowed text-white placeholder:text-gray-500 transition-all",
           cf.type === 'color' && "h-10 p-1 cursor-pointer",
-          cf.type === 'uid' && "font-mono text-purple-400"
+          cf.type === 'uid' && "font-mono text-emerald-400"
         )}
         placeholder={`Enter ${cf.name}...`}
       />
-      {cf.maxLength && cf.type !== 'date' && (
-        <span className="absolute right-3 top-2.5 text-[9px] font-bold text-gray-400 font-mono uppercase pointer-events-none">
+      {cf.maxLength && (cf.type as string) !== 'date' && (
+        <span className="absolute right-3 top-2.5 text-[9px] font-bold text-gray-500 font-mono uppercase pointer-events-none">
           {((value as string) || '').length} / {cf.maxLength}
         </span>
       )}

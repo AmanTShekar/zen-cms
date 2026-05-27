@@ -73,7 +73,7 @@ const STEP_TYPES = [
     id: 'transform',
     name: 'Script',
     icon: Code2,
-    color: 'text-purple-500',
+    color: 'text-emerald-500',
     description: 'Custom JS/Logic execution',
   },
   {
@@ -191,8 +191,8 @@ const FlowBuilderPage: React.FC = () => {
   if (loading) {
     return (
       <div className="h-full flex flex-col items-center justify-center bg-black gap-6">
-        <div className="w-16 h-16 border-2 border-indigo-500 border-t-transparent animate-spin rounded-none" />
-        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-indigo-500 italic">
+        <div className="w-16 h-16 border-2 border-emerald-500 border-t-transparent animate-spin rounded-none" />
+        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-emerald-500 italic">
           Accessing_Flow_Matrix...
         </span>
       </div>
@@ -243,7 +243,7 @@ const FlowBuilderPage: React.FC = () => {
                   className={cn(
                     'w-1 h-1',
                     flow.active
-                      ? 'bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]'
+                      ? 'bg-emerald-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]'
                       : 'bg-zinc-800'
                   )}
                 />
@@ -267,7 +267,7 @@ const FlowBuilderPage: React.FC = () => {
                   <input
                     value={selectedFlow.name}
                     onChange={(e) => setSelectedFlow({ ...selectedFlow, name: e.target.value })}
-                    className="bg-transparent text-xl font-black text-white uppercase italic tracking-tighter outline-none focus:text-indigo-500 transition-colors"
+                    className="bg-transparent text-xl font-black text-white uppercase italic tracking-tighter outline-none focus:text-emerald-500 transition-colors"
                   />
                   <div className="flex items-center gap-1 bg-white/5 border border-white/10 p-0.5">
                     <button
@@ -309,7 +309,7 @@ const FlowBuilderPage: React.FC = () => {
                   className={cn(
                     'px-4 py-2 border text-[9px] font-black uppercase tracking-widest transition-all',
                     selectedFlow.active
-                      ? 'border-indigo-500 text-indigo-500 bg-indigo-500/5'
+                      ? 'border-emerald-500 text-emerald-500 bg-emerald-500/5'
                       : 'border-white/10 text-gray-600'
                   )}
                 >
@@ -342,7 +342,7 @@ const FlowBuilderPage: React.FC = () => {
                       className={cn(
                         'w-full bg-zinc-950 border p-8 flex flex-col items-center gap-6 relative transition-all group',
                         activeStepId === 'trigger'
-                          ? 'border-indigo-500 shadow-[0_0_30px_rgba(99,102,241,0.1)]'
+                          ? 'border-emerald-500 shadow-[0_0_30px_rgba(99,102,241,0.1)]'
                           : 'border-white/5'
                       )}
                       onClick={() => setActiveStepId('trigger')}
@@ -356,7 +356,7 @@ const FlowBuilderPage: React.FC = () => {
                           <Zap size={24} />
                         </div>
                         <div className="text-center">
-                          <span className="text-[9px] font-black text-indigo-500 uppercase tracking-[0.4em] italic">
+                          <span className="text-[9px] font-black text-emerald-500 uppercase tracking-[0.4em] italic">
                             Pulse_Initiator
                           </span>
                           <h3 className="text-lg font-black text-white uppercase italic tracking-tighter mt-1">
@@ -389,7 +389,7 @@ const FlowBuilderPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="w-px h-16 bg-gradient-to-b from-indigo-500 to-white/5 relative">
+                    <div className="w-px h-16 bg-gradient-to-b from-emerald-500 to-white/5 relative">
                       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 border-b border-r border-white/20 rotate-45" />
                     </div>
                   </div>
@@ -415,7 +415,7 @@ const FlowBuilderPage: React.FC = () => {
                             className={cn(
                               'w-full bg-zinc-950 border p-6 flex items-center gap-6 relative transition-all group cursor-pointer',
                               isActive
-                                ? 'border-indigo-500 shadow-[0_0_30px_rgba(99,102,241,0.1)]'
+                                ? 'border-emerald-500 shadow-[0_0_30px_rgba(99,102,241,0.1)]'
                                 : 'border-white/5 hover:border-white/10'
                             )}
                             onClick={() => setActiveStepId(step.id)}
@@ -565,10 +565,10 @@ const FlowBuilderPage: React.FC = () => {
                     <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar">
                       {activeStepId === 'trigger' ? (
                         <div className="space-y-6">
-                          <div className="bg-indigo-500/5 border border-indigo-500/20 p-4">
+                          <div className="bg-emerald-500/5 border border-emerald-500/20 p-4">
                             <div className="flex items-center gap-2 mb-2">
-                              <Info size={12} className="text-indigo-400" />
-                              <span className="text-[8px] font-black text-indigo-400 uppercase tracking-widest">
+                              <Info size={12} className="text-emerald-400" />
+                              <span className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">
                                 Protocol_Info
                               </span>
                             </div>
@@ -592,7 +592,7 @@ const FlowBuilderPage: React.FC = () => {
                               Webhook_URL (Mock)
                             </label>
                             <div className="p-4 bg-zinc-950 border border-white/5 flex items-center justify-between group">
-                              <code className="text-[9px] text-indigo-400 truncate">
+                              <code className="text-[9px] text-emerald-400 truncate">
                                 https://api.zenith.sys/flows/trg_{selectedFlow._id || 'pending'}
                               </code>
                               <button className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-500 hover:text-white">
@@ -615,7 +615,7 @@ const FlowBuilderPage: React.FC = () => {
                                 )
                                 setSelectedFlow({ ...selectedFlow, steps: newSteps })
                               }}
-                              className="w-full bg-zinc-950 border border-white/10 p-4 text-[11px] text-white uppercase italic tracking-tighter outline-none focus:border-indigo-500 transition-all"
+                              className="w-full bg-zinc-950 border border-white/10 p-4 text-[11px] text-white uppercase italic tracking-tighter outline-none focus:border-emerald-500 transition-all"
                             />
                           </div>
 
@@ -625,7 +625,7 @@ const FlowBuilderPage: React.FC = () => {
                                 <label className="text-[8px] font-black text-gray-600 uppercase tracking-widest">
                                   Logic_Script (V8_Engine)
                                 </label>
-                                <Code2 size={12} className="text-purple-500" />
+                                <Code2 size={12} className="text-emerald-500" />
                               </div>
                               <textarea
                                 value={(activeStep.config.script as any) || ''}
@@ -637,7 +637,7 @@ const FlowBuilderPage: React.FC = () => {
                                   )
                                   setSelectedFlow({ ...selectedFlow, steps: newSteps })
                                 }}
-                                className="flex-1 w-full bg-zinc-950 border border-white/10 p-4 text-[10px] text-emerald-500 font-mono resize-none outline-none focus:border-indigo-500 transition-all h-64 no-scrollbar"
+                                className="flex-1 w-full bg-zinc-950 border border-white/10 p-4 text-[10px] text-emerald-500 font-mono resize-none outline-none focus:border-emerald-500 transition-all h-64 no-scrollbar"
                               />
                               <div className="flex items-center gap-2 text-[8px] text-gray-700 italic">
                                 <Info size={10} />
@@ -654,7 +654,7 @@ const FlowBuilderPage: React.FC = () => {
                                     </label>
                                     <Variable
                                       size={10}
-                                      className="text-gray-800 hover:text-indigo-500 transition-colors cursor-pointer"
+                                      className="text-gray-800 hover:text-emerald-500 transition-colors cursor-pointer"
                                     />
                                   </div>
                                   <input
@@ -668,7 +668,7 @@ const FlowBuilderPage: React.FC = () => {
                                       )
                                       setSelectedFlow({ ...selectedFlow, steps: newSteps })
                                     }}
-                                    className="w-full bg-zinc-950 border border-white/10 p-4 text-[10px] text-white uppercase tracking-widest outline-none focus:border-indigo-500 transition-all"
+                                    className="w-full bg-zinc-950 border border-white/10 p-4 text-[10px] text-white uppercase tracking-widest outline-none focus:border-emerald-500 transition-all"
                                   />
                                 </div>
                               ))}
@@ -692,15 +692,15 @@ const FlowBuilderPage: React.FC = () => {
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-12 text-center relative overflow-hidden">
             {/* Background Decoration */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 blur-[120px] rounded-full" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/5 blur-[120px] rounded-full" />
 
             <div className="w-32 h-32 border-2 border-white/5 flex items-center justify-center text-gray-900 mb-10 bg-zinc-950/20 relative z-10 group">
               <Workflow
                 size={64}
-                className="group-hover:text-indigo-500 transition-all duration-700 group-hover:scale-110"
+                className="group-hover:text-emerald-500 transition-all duration-700 group-hover:scale-110"
               />
-              <div className="absolute -top-1 -left-1 w-2 h-2 bg-indigo-500" />
-              <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-indigo-500" />
+              <div className="absolute -top-1 -left-1 w-2 h-2 bg-emerald-500" />
+              <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-emerald-500" />
             </div>
 
             <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter mb-6 relative z-10">

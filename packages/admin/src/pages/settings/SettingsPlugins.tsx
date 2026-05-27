@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   Puzzle,
   Plus,
@@ -19,6 +19,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import { cn } from '../../lib/utils'
+import { confirm } from '../../store/confirmStore'
 import { motion, AnimatePresence } from 'framer-motion'
 import api from '../../lib/api'
 import toast from 'react-hot-toast'
@@ -65,16 +66,19 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
     homepage: '',
     packageName: '',
   })
+  const isMountedRef = useRef(true)
+  useEffect(() => { return () => { isMountedRef.current = false } }, [])
 
   const fetchPlugins = async () => {
+    if (!isMountedRef.current) return
     setLoading(true)
     try {
       const res = await api.get('/system/plugins')
-      setPlugins(res.data.data || [])
+      if (isMountedRef.current) setPlugins(res.data.data || [])
     } catch {
-      toast.error('Failed to load plugins')
+      if (isMountedRef.current) toast.error('Failed to load plugins')
     } finally {
-      setLoading(false)
+      if (isMountedRef.current) setLoading(false)
     }
   }
 
@@ -94,7 +98,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
   }
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Uninstall this plugin? Its functionality will be removed.')) return
+    if (!await confirm({ message: 'Uninstall this plugin? Its functionality will be removed.' })) return
     setSaving(id)
     try {
       await api.delete(`/system/plugins/${id}`)
@@ -157,7 +161,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
       <div className="flex items-center justify-between border-b border-white/5 pb-4">
         <div className="flex flex-col">
           <h3 className="text-sm font-black uppercase italic tracking-wider flex items-center gap-3">
-            <Puzzle size={16} className="text-indigo-400" />
+            <Puzzle size={16} className="text-emerald-400" />
             Plugin Registry
           </h3>
           <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1">
@@ -167,7 +171,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
         <button
           type="button"
           onClick={() => setShowInstallForm(!showInstallForm)}
-          className="flex items-center gap-2 px-4 py-2 border border-indigo-500/30 hover:border-indigo-500 hover:bg-indigo-500/10 text-[10px] font-black uppercase italic transition-all text-indigo-400 hover:text-white"
+          className="flex items-center gap-2 px-4 py-2 border border-emerald-500/30 hover:border-emerald-500 hover:bg-emerald-500/10 text-[10px] font-black uppercase italic transition-all text-emerald-400 hover:text-white"
         >
           <Plus size={12} />
           Install Plugin
@@ -188,7 +192,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
           >
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black uppercase italic tracking-widest text-indigo-400">
+                <span className="text-[10px] font-black uppercase italic tracking-widest text-emerald-400">
                   Register New Plugin
                 </span>
                 <button onClick={() => setShowInstallForm(false)} className="text-gray-500 hover:text-white text-[10px] font-black uppercase">
@@ -206,7 +210,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="acme-analytics"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono italic transition-all outline-none',
-                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-indigo-500' : 'bg-white border-gray-200 focus:border-indigo-500'
+                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -219,7 +223,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="ACME Analytics"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none',
-                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-indigo-500' : 'bg-white border-gray-200 focus:border-indigo-500'
+                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -232,7 +236,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="1.0.0"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none',
-                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-indigo-500' : 'bg-white border-gray-200 focus:border-indigo-500'
+                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -245,7 +249,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="ACME Corp"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none',
-                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-indigo-500' : 'bg-white border-gray-200 focus:border-indigo-500'
+                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -258,7 +262,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="https://example.com/plugin"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none',
-                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-indigo-500' : 'bg-white border-gray-200 focus:border-indigo-500'
+                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -271,7 +275,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="zenith-plugin-acme-analytics"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none',
-                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-indigo-500' : 'bg-white border-gray-200 focus:border-indigo-500'
+                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -286,7 +290,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                   rows={2}
                   className={cn(
                     'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none resize-none',
-                    theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-indigo-500' : 'bg-white border-gray-200 focus:border-indigo-500'
+                    theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                   )}
                 />
               </div>
@@ -295,7 +299,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                 <button
                   onClick={handleInstall}
                   disabled={saving === 'install'}
-                  className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase italic tracking-wider transition-all disabled:opacity-40"
+                  className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase italic tracking-wider transition-all disabled:opacity-40"
                 >
                   {saving === 'install' ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
                   Install Plugin
@@ -316,7 +320,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className={cn(
             'w-full border rounded-none py-3 pl-11 pr-4 text-[11px] font-bold italic transition-all outline-none',
-            theme === 'dark' ? 'bg-white/[0.02] border-white/10 text-white focus:border-indigo-500' : 'bg-white border-gray-200 focus:border-indigo-500'
+            theme === 'dark' ? 'bg-white/[0.02] border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
           )}
         />
       </div>
@@ -324,7 +328,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
       {/* Plugin list */}
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 size={24} className="text-indigo-500 animate-spin" />
+          <Loader2 size={24} className="text-emerald-500 animate-spin" />
         </div>
       ) : filteredPlugins.length === 0 ? (
         <div className={cn(
@@ -363,7 +367,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     <div className={cn(
                       'w-10 h-10 rounded-none border flex items-center justify-center',
                       plugin.enabled
-                        ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400'
+                        ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                         : theme === 'dark' ? 'bg-white/5 border-white/10 text-gray-600' : 'bg-gray-100 border-gray-200 text-gray-400'
                     )}>
                       <Puzzle size={18} />
@@ -400,7 +404,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                         rel="noopener noreferrer"
                         className={cn(
                           'p-2 border rounded-none transition-colors',
-                          theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-indigo-400' : 'border-gray-200 text-gray-400 hover:text-indigo-600'
+                          theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-emerald-400' : 'border-gray-200 text-gray-400 hover:text-emerald-600'
                         )}
                         title="Plugin homepage"
                       >
@@ -429,7 +433,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                         className={cn(
                           'p-2 border rounded-none transition-colors',
                           isExpanded
-                            ? 'border-indigo-500/30 text-indigo-400'
+                            ? 'border-emerald-500/30 text-emerald-400'
                             : theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-white' : 'border-gray-200 text-gray-400 hover:text-gray-600'
                         )}
                         title="Configure"
@@ -479,7 +483,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                               className={cn(
                                 'flex items-center gap-2 px-3 py-2 border rounded-none transition-colors',
                                 plugin.config?.[key]
-                                  ? 'border-indigo-500/30 bg-indigo-500/10 text-indigo-400'
+                                  ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
                                   : theme === 'dark' ? 'border-white/10 text-gray-500' : 'border-gray-200 text-gray-400'
                               )}
                             >
@@ -492,7 +496,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                               onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
                               className={cn(
                                 'w-full border rounded-none py-2.5 px-3 text-[11px] font-bold transition-all outline-none',
-                                theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-indigo-500' : 'bg-white border-gray-200 focus:border-indigo-500'
+                                theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                               )}
                             >
                               {schema.options?.map(opt => (
@@ -507,7 +511,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                               placeholder="••••••••"
                               className={cn(
                                 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none',
-                                theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-indigo-500' : 'bg-white border-gray-200 focus:border-indigo-500'
+                                theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                               )}
                             />
                           ) : (
@@ -517,7 +521,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                               onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
                               className={cn(
                                 'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none',
-                                theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-indigo-500' : 'bg-white border-gray-200 focus:border-indigo-500'
+                                theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                               )}
                             />
                           )}
@@ -527,7 +531,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                         <button
                           onClick={() => handleSaveConfig(plugin)}
                           disabled={saving === plugin.id}
-                          className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[9px] font-black uppercase italic tracking-wider transition-all disabled:opacity-40"
+                          className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-black uppercase italic tracking-wider transition-all disabled:opacity-40"
                         >
                           {saving === plugin.id ? <Loader2 size={10} className="animate-spin" /> : null}
                           Save Settings
@@ -545,7 +549,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
       {/* Info footer */}
       <div className={cn(
         'p-5 border rounded-none space-y-3',
-        theme === 'dark' ? 'bg-indigo-500/5 border-indigo-500/10' : 'bg-indigo-50 border-indigo-100'
+        theme === 'dark' ? 'bg-emerald-500/5 border-emerald-500/10' : 'bg-emerald-50 border-emerald-100'
       )}>
         <div className="flex items-center gap-3">
           <AlertTriangle size={14} className="text-amber-400" />
@@ -554,8 +558,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
         <ul className="space-y-1.5 text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-relaxed">
           <li>• Plugins are registered in the database and managed via this UI</li>
           <li>• Plugin code must be loaded at engine startup via cms.config.ts</li>
-          <li>• Community plugins should be published as <code className="text-indigo-400 font-mono">zenith-plugin-*</code> on npm</li>
-          <li>• Use <code className="text-indigo-400 font-mono">configSchema</code> to expose settings that admins can configure here</li>
+          <li>• Community plugins should be published as <code className="text-emerald-400 font-mono">zenith-plugin-*</code> on npm</li>
+          <li>• Use <code className="text-emerald-400 font-mono">configSchema</code> to expose settings that admins can configure here</li>
           <li>• Disabled plugins are not applied but remain installed for easy re-enabling</li>
         </ul>
       </div>

@@ -193,14 +193,14 @@ export default function SetupWizard() {
   const bg = isDark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'
   const card = isDark ? 'bg-[#0a0a0a] border-white/5' : 'bg-white border-gray-100 shadow-sm'
   const input = isDark
-    ? 'bg-white/5 border-white/10 text-white placeholder-gray-600 focus:border-indigo-500'
-    : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-indigo-400'
+    ? 'bg-white/5 border-white/10 text-white placeholder-gray-600 focus:border-emerald-500'
+    : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-emerald-400'
 
   const STEPS = [
     {
       title: 'Welcome to Zenith',
       subtitle: "Let's get your CMS set up in under 2 minutes.",
-      icon: <Zap size={28} className="text-indigo-400" />,
+      icon: <Zap size={28} className="text-emerald-400" />,
       content: (
         <div className="space-y-6">
           <div className="space-y-3">
@@ -242,7 +242,7 @@ export default function SetupWizard() {
     {
       title: 'What are you building?',
       subtitle: "We'll pre-select relevant content types for you.",
-      icon: <Globe size={28} className="text-indigo-400" />,
+      icon: <Globe size={28} className="text-emerald-400" />,
       content: (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {PROJECT_TYPES.map((pt) => (
@@ -254,10 +254,10 @@ export default function SetupWizard() {
               className={cn(
                 'flex flex-col items-center gap-3 p-5 border rounded-none transition-all text-center',
                 state.projectType === pt.id
-                  ? 'border-indigo-500 bg-indigo-500/10'
+                  ? 'border-emerald-500 bg-emerald-500/10'
                   : isDark
                     ? 'border-white/5 hover:border-white/20'
-                    : 'border-gray-100 hover:border-indigo-100'
+                    : 'border-gray-100 hover:border-emerald-100'
               )}
             >
               <span className="text-2xl">{pt.icon}</span>
@@ -271,7 +271,7 @@ export default function SetupWizard() {
     {
       title: 'Choose your content types',
       subtitle: 'Select the collections you want to start with.',
-      icon: <Layers size={28} className="text-indigo-400" />,
+      icon: <Layers size={28} className="text-emerald-400" />,
       content: (
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-2">
@@ -290,15 +290,15 @@ export default function SetupWizard() {
                   className={cn(
                     'flex items-center gap-3 px-4 py-3 border rounded-none text-left transition-all',
                     selected
-                      ? 'border-indigo-500 bg-indigo-500/10'
+                      ? 'border-emerald-500 bg-emerald-500/10'
                       : isDark
                         ? 'border-white/5 hover:border-white/20'
-                        : 'border-gray-100 hover:border-indigo-100'
+                        : 'border-gray-100 hover:border-emerald-100'
                   )}
                 >
                   <span>{col.icon}</span>
                   <span className="text-[11px] font-black uppercase italic">{col.label}</span>
-                  {selected && <Check size={12} className="text-indigo-400 ml-auto shrink-0" />}
+                  {selected && <Check size={12} className="text-emerald-400 ml-auto shrink-0" />}
                 </button>
               )
             })}
@@ -315,7 +315,7 @@ export default function SetupWizard() {
     {
       title: 'Database Setup',
       subtitle: 'Configure your database connection and write it to .env.',
-      icon: <Database size={28} className="text-indigo-400" />,
+      icon: <Database size={28} className="text-emerald-400" />,
       content: (
         <div className="space-y-4">
           <div className="space-y-2">
@@ -343,7 +343,7 @@ export default function SetupWizard() {
                   className={cn(
                     'flex-1 py-3 border text-[10px] font-black uppercase tracking-widest italic rounded-none transition-all',
                     state.dbDialect === dialect
-                      ? 'border-indigo-500 bg-indigo-500/10 text-white'
+                      ? 'border-emerald-500 bg-emerald-500/10 text-white'
                       : 'border-white/5 hover:border-white/20 text-gray-400'
                   )}
                 >
@@ -393,7 +393,7 @@ export default function SetupWizard() {
               className={cn(
                 'flex-1 py-3 text-[10px] font-black uppercase tracking-widest italic rounded-none transition-all flex items-center justify-center gap-2',
                 state.dbTestStatus === 'success' && !state.dbSaved
-                  ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20'
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20'
                   : 'bg-white/5 border border-white/5 text-gray-500 cursor-not-allowed'
               )}
             >
@@ -408,7 +408,7 @@ export default function SetupWizard() {
                 state.dbTestStatus === 'success'
                   ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400'
                   : state.dbTestStatus === 'testing'
-                    ? 'bg-indigo-500/5 border-indigo-500/10 text-indigo-400'
+                    ? 'bg-emerald-500/5 border-emerald-500/10 text-emerald-400'
                     : 'bg-red-500/5 border-red-500/20 text-red-400'
               )}
             >
@@ -424,7 +424,7 @@ export default function SetupWizard() {
     {
       title: 'AI Integration Engine',
       subtitle: 'Integrate state-of-the-art AI features natively into your CMS.',
-      icon: <Cpu size={28} className="text-indigo-400" />,
+      icon: <Cpu size={28} className="text-emerald-400" />,
       content: (
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -437,7 +437,7 @@ export default function SetupWizard() {
                   href="https://openrouter.ai/keys"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[8px] font-bold text-indigo-400 hover:underline flex items-center gap-0.5"
+                  className="text-[8px] font-bold text-emerald-400 hover:underline flex items-center gap-0.5"
                 >
                   Get Key <HelpCircle size={8} />
                 </a>
@@ -463,7 +463,7 @@ export default function SetupWizard() {
                   href="https://platform.openai.com/api-keys"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[8px] font-bold text-indigo-400 hover:underline flex items-center gap-0.5"
+                  className="text-[8px] font-bold text-emerald-400 hover:underline flex items-center gap-0.5"
                 >
                   Get Key <HelpCircle size={8} />
                 </a>
@@ -489,7 +489,7 @@ export default function SetupWizard() {
                   href="https://console.anthropic.com/settings/keys"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[8px] font-bold text-indigo-400 hover:underline flex items-center gap-0.5"
+                  className="text-[8px] font-bold text-emerald-400 hover:underline flex items-center gap-0.5"
                 >
                   Get Key <HelpCircle size={8} />
                 </a>
@@ -515,7 +515,7 @@ export default function SetupWizard() {
                   href="https://console.x.ai"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[8px] font-bold text-indigo-400 hover:underline flex items-center gap-0.5"
+                  className="text-[8px] font-bold text-emerald-400 hover:underline flex items-center gap-0.5"
                 >
                   Get Key <HelpCircle size={8} />
                 </a>
@@ -533,10 +533,10 @@ export default function SetupWizard() {
             </div>
           </div>
 
-          <div className="p-3 border border-indigo-500/20 bg-indigo-500/[0.03] rounded-none flex items-start gap-2.5">
-            <Info size={14} className="text-indigo-400 shrink-0 mt-0.5" />
+          <div className="p-3 border border-emerald-500/20 bg-emerald-500/[0.03] rounded-none flex items-start gap-2.5">
+            <Info size={14} className="text-emerald-400 shrink-0 mt-0.5" />
             <div>
-              <p className="text-[9px] font-black uppercase text-indigo-400 italic">
+              <p className="text-[9px] font-black uppercase text-emerald-400 italic">
                 Free AI Keys Available
               </p>
               <p className="text-[8px] text-gray-400 leading-normal mt-1">
@@ -599,7 +599,7 @@ export default function SetupWizard() {
     {
       title: 'Generate your API key',
       subtitle: 'This key lets your website fetch content from Zenith.',
-      icon: <Key size={28} className="text-indigo-400" />,
+      icon: <Key size={28} className="text-emerald-400" />,
       content: (
         <div className="space-y-5">
           {!state.generatedKey ? (
@@ -624,7 +624,7 @@ export default function SetupWizard() {
               <button
                 onClick={handleComplete}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 py-4 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-black uppercase italic rounded-none transition-all shadow-lg shadow-indigo-600/20"
+                className="w-full flex items-center justify-center gap-3 py-4 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black uppercase italic rounded-none transition-all shadow-lg shadow-emerald-600/20"
               >
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <Key size={16} />}
                 {loading ? 'Generating...' : 'Generate API Key'}
@@ -674,7 +674,7 @@ export default function SetupWizard() {
     {
       title: 'Connect your app',
       subtitle: 'Use these snippets to start pulling content from Zenith.',
-      icon: <Server size={28} className="text-indigo-400" />,
+      icon: <Server size={28} className="text-emerald-400" />,
       content: (
         <ConnectSnippet
           apiKey={state.generatedKey}
@@ -707,7 +707,7 @@ export default function SetupWizard() {
       <div className={cn('w-full max-w-2xl border rounded-none overflow-hidden', card)}>
         {/* Progress bar */}
         <div
-          className={cn('h-1 transition-all duration-500 bg-indigo-600')}
+          className={cn('h-1 transition-all duration-500 bg-emerald-600')}
           style={{ width: `${((step + 1) / TOTAL_STEPS) * 100}%` }}
         />
 
@@ -727,7 +727,7 @@ export default function SetupWizard() {
                 key={i}
                 className={cn(
                   'w-6 h-1 rounded-none transition-all',
-                  i <= step ? 'bg-indigo-500' : isDark ? 'bg-white/10' : 'bg-gray-200'
+                  i <= step ? 'bg-emerald-500' : isDark ? 'bg-white/10' : 'bg-gray-200'
                 )}
               />
             ))}
@@ -748,7 +748,7 @@ export default function SetupWizard() {
               <div
                 className={cn(
                   'w-14 h-14 rounded-none flex items-center justify-center shrink-0',
-                  isDark ? 'bg-indigo-500/10' : 'bg-indigo-50'
+                  isDark ? 'bg-emerald-500/10' : 'bg-emerald-50'
                 )}
               >
                 {current.icon}
@@ -799,7 +799,7 @@ export default function SetupWizard() {
               className={cn(
                 'flex items-center gap-2 px-8 py-2.5 text-[10px] font-black uppercase italic rounded-none transition-all',
                 current.canNext
-                  ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20'
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20'
                   : 'opacity-30 cursor-not-allowed bg-gray-600 text-gray-300'
               )}
             >

@@ -46,9 +46,9 @@ const DateField: React.FC<DateFieldProps> = ({ value, onChange, disabled, format
         onChange={(e) => onChange(parseInput(e.target.value, format))}
         disabled={disabled}
         className={cn(
-          'w-full bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-none pl-9 pr-3 py-2 text-sm',
-          'focus:border-purple-500/50 outline-none disabled:opacity-60 disabled:cursor-not-allowed',
-          'text-white placeholder:text-gray-500'
+          'w-full bg-gray-900/65 backdrop-blur-md border border-white/8 rounded-none pl-9 pr-4 py-2.5 text-xs',
+          'focus:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/50 outline-none disabled:opacity-60 disabled:cursor-not-allowed',
+          'text-white placeholder:text-gray-500 transition-all font-mono'
         )}
       />
     </div>

@@ -5,6 +5,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { useBlockLibrary } from '../hooks/useBlockLibrary'
+import { useCustomComponents } from '../hooks/useCustomComponents'
 import {
   BLOCK_LIBRARY as FALLBACK_BLOCKS,
   type BlockDefinition as EditorBlockDefinition,
@@ -58,6 +59,7 @@ function normalizeDefaultContent(apiBlock: any, fallback?: EditorBlockDefinition
 
 export function BlockLibraryProvider({ children }: { children: ReactNode }) {
   const apiBlocks = useBlockLibrary()
+  const customComponents = useCustomComponents()
 
   const enriched = useMemo(() => {
     const apiSlugs = new Set(apiBlocks.map((b) => b.slug))
@@ -76,8 +78,20 @@ export function BlockLibraryProvider({ children }: { children: ReactNode }) {
       } satisfies EditorBlockDefinition
     })
 
-    return [...merged, ...missingFromApi]
-  }, [apiBlocks])
+    const customMapped = customComponents.map((comp) => {
+      return {
+        type: comp.slug,
+        icon: ICON_MAP[comp.icon] || Box,
+        title: comp.displayName,
+        description: comp.description,
+        category: comp.category,
+        fields: comp.fields,
+        defaultContent: normalizeDefaultContent({ fields: comp.fields }),
+      } satisfies EditorBlockDefinition
+    })
+
+    return [...merged, ...missingFromApi, ...customMapped]
+  }, [apiBlocks, customComponents])
 
   return (
     <EditorBlockLibraryContext.Provider value={enriched}>

@@ -21,7 +21,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
               : 'bg-gray-50 border-gray-100 text-gray-500'
           )}
         >
-          <CreditCard size={48} className="mx-auto text-indigo-500 animate-pulse" />
+          <CreditCard size={48} className="mx-auto text-emerald-500 animate-pulse" />
           <h3 className="text-lg font-black uppercase italic tracking-wider">
             No Active Workspace Selected
           </h3>
@@ -41,13 +41,13 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
         className={cn(
           'p-6 rounded-none border flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all group',
           theme === 'dark'
-            ? 'bg-white/[0.01] border-white/5 hover:border-indigo-500/20'
+            ? 'bg-white/[0.01] border-white/5 hover:border-emerald-500/20'
             : 'bg-white border-gray-100 shadow-sm'
         )}
       >
         <div className="flex flex-col">
           <span className="text-[12px] font-black uppercase italic leading-none flex items-center gap-2">
-            <Sparkles size={14} className="text-indigo-400" />
+            <Sparkles size={14} className="text-emerald-400" />
             Enable Custom Pricing Plans & Monetization
           </span>
           <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1.5 leading-relaxed">
@@ -76,7 +76,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
               onChange={(e) => setActiveSite({ ...activeSite, billingEnabled: e.target.checked })}
               className="sr-only peer"
             />
-            <div className="w-12 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-none after:h-4 after:w-5 after:transition-all peer-checked:bg-indigo-600 shadow-inner border border-white/5"></div>
+            <div className="w-12 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-none after:h-4 after:w-5 after:transition-all peer-checked:bg-emerald-600 shadow-inner border border-white/5"></div>
           </label>
         </div>
       </div>
@@ -108,8 +108,8 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                   className={cn(
                     'w-full border rounded-none py-3 px-4 text-[12px] font-black italic transition-all outline-none',
                     theme === 'dark'
-                      ? 'bg-black border-white/10 text-white focus:border-indigo-500'
-                      : 'bg-white border-gray-200 focus:border-indigo-500'
+                      ? 'bg-black border-white/10 text-white focus:border-emerald-500'
+                      : 'bg-white border-gray-200 focus:border-emerald-500'
                   )}
                 />
               </div>
@@ -142,7 +142,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                   }
                   setActiveSite({ ...activeSite, pricingPlans: [...(activeSite.pricingPlans || []), newPlan] })
                 }}
-                className="flex items-center gap-2 px-4 py-2 border border-indigo-500/30 hover:border-indigo-500 hover:bg-indigo-500/10 text-[10px] font-black uppercase italic transition-all text-indigo-400 hover:text-white"
+                className="flex items-center gap-2 px-4 py-2 border border-emerald-500/30 hover:border-emerald-500 hover:bg-emerald-500/10 text-[10px] font-black uppercase italic transition-all text-emerald-400 hover:text-white"
               >
                 <PlusCircle size={12} />
                 Add Plan
@@ -157,8 +157,8 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                     'p-6 border rounded-none relative transition-all flex flex-col justify-between space-y-6',
                     plan.isPopular
                       ? theme === 'dark'
-                        ? 'bg-indigo-500/[0.03] border-indigo-500/40 shadow-[0_0_15px_rgba(99,102,241,0.05)]'
-                        : 'bg-indigo-50 border-indigo-200'
+                        ? 'bg-emerald-500/[0.03] border-emerald-500/40 shadow-[0_0_15px_rgba(99,102,241,0.05)]'
+                        : 'bg-emerald-50 border-emerald-200'
                       : theme === 'dark'
                         ? 'bg-white/[0.01] border-white/5'
                         : 'bg-white border-gray-100 shadow-sm'
@@ -175,7 +175,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                           setActiveSite({ ...activeSite, pricingPlans: plans })
                         }}
                         className={cn(
-                          'text-sm font-black uppercase italic outline-none border-b border-transparent focus:border-indigo-500 bg-transparent w-full mr-4',
+                          'text-sm font-black uppercase italic outline-none border-b border-transparent focus:border-emerald-500 bg-transparent w-full mr-4',
                           theme === 'dark' ? 'text-white' : 'text-gray-900'
                         )}
                       />
@@ -268,11 +268,11 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                                     plans[planIndex] = { ...plan, paywalledCollections: next }
                                     setActiveSite({ ...activeSite, pricingPlans: plans })
                                   }}
-                                  className="rounded-none border-white/10 text-indigo-600 focus:ring-0 focus:ring-offset-0 bg-black cursor-pointer"
+                                  className="rounded-none border-white/10 text-emerald-600 focus:ring-0 focus:ring-offset-0 bg-black cursor-pointer"
                                 />
                                 <span className={cn(
                                   'text-[9px] font-black uppercase italic tracking-widest transition-colors',
-                                  checked ? 'text-indigo-400' : 'text-gray-500 group-hover:text-gray-400'
+                                  checked ? 'text-emerald-400' : 'text-gray-500 group-hover:text-gray-400'
                                 )}>
                                   {col.label || col.slug}
                                 </span>
@@ -289,7 +289,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                       <div className="space-y-1.5">
                         {(plan.features || []).map((feat: string, featIdx: number) => (
                           <div key={featIdx} className="flex items-center gap-2">
-                            <span className="text-indigo-500 text-[10px] font-black">•</span>
+                            <span className="text-emerald-500 text-[10px] font-black">•</span>
                             <input
                               type="text"
                               value={feat}
@@ -327,7 +327,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                             plans[planIndex] = { ...plan, features: feats }
                             setActiveSite({ ...activeSite, pricingPlans: plans })
                           }}
-                          className="text-[9px] font-black text-indigo-400 hover:text-indigo-300 uppercase tracking-widest italic flex items-center gap-1 mt-1 shrink-0"
+                          className="text-[9px] font-black text-emerald-400 hover:text-emerald-300 uppercase tracking-widest italic flex items-center gap-1 mt-1 shrink-0"
                         >
                           <PlusCircleIcon size={10} />
                           Add Feature bullet
@@ -350,7 +350,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                         }}
                         className="sr-only peer"
                       />
-                      <div className="w-9 h-4 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-3 after:w-3.5 after:transition-all peer-checked:bg-indigo-600 shadow-inner border border-white/5"></div>
+                      <div className="w-9 h-4 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-3 after:w-3.5 after:transition-all peer-checked:bg-emerald-600 shadow-inner border border-white/5"></div>
                     </label>
                   </div>
                 </div>

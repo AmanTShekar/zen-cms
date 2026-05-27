@@ -161,7 +161,7 @@ const AuditLogPage: React.FC = () => {
   const getActionColor = (action: string) => {
     const upper = action?.toUpperCase()
     if (upper === 'CREATE') return 'bg-emerald-500/5 text-emerald-500 border-emerald-500/10'
-    if (upper === 'UPDATE') return 'bg-indigo-500/5 text-indigo-500 border-indigo-500/10'
+    if (upper === 'UPDATE') return 'bg-emerald-500/5 text-emerald-500 border-emerald-500/10'
     if (upper === 'DELETE') return 'bg-red-500/5 text-red-500 border-red-500/10'
     return 'bg-amber-500/5 text-amber-500 border-amber-500/10'
   }
@@ -189,7 +189,7 @@ const AuditLogPage: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-3 mb-1">
-              <span className="text-[8px] font-black text-indigo-500 uppercase tracking-[0.3em] italic">
+              <span className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.3em] italic">
                 System History
               </span>
               <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 shadow-[0_0_8px_#10b981]" />
@@ -211,7 +211,7 @@ const AuditLogPage: React.FC = () => {
               <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest opacity-60">
                 Total Logs
               </span>
-              <span className="text-xl font-black italic tracking-tighter leading-none text-indigo-500">
+              <span className="text-xl font-black italic tracking-tighter leading-none text-emerald-500">
                 {total.toLocaleString()}
               </span>
             </div>
@@ -276,7 +276,7 @@ const AuditLogPage: React.FC = () => {
             >
               <Search
                 size={16}
-                className="text-gray-500 group-focus-within:text-indigo-500 transition-colors"
+                className="text-gray-500 group-focus-within:text-emerald-500 transition-colors"
               />
               <input
                 type="text"
@@ -377,7 +377,7 @@ const AuditLogPage: React.FC = () => {
                   <td colSpan={5} className="py-20 text-center">
                     <Loader2
                       size={24}
-                      className="animate-spin text-indigo-500 mx-auto opacity-40"
+                      className="animate-spin text-emerald-500 mx-auto opacity-40"
                     />
                   </td>
                 </tr>
@@ -396,7 +396,7 @@ const AuditLogPage: React.FC = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     onClick={() => setShowDetails(showDetails === (log._id || log.id) ? null : (log._id || log.id))}
-                    className="hover:bg-indigo-500/[0.02] transition-colors cursor-pointer group"
+                    className="hover:bg-emerald-500/[0.02] transition-colors cursor-pointer group"
                   >
                     <td className="px-8 py-4">
                       <div className="flex items-center gap-3">

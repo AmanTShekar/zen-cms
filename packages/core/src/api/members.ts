@@ -5,15 +5,11 @@ import { createResponse } from './utils'
 import { InvalidPayloadError, NotFoundError, AuthenticationError } from '../errors'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
+import { JWT_SECRET } from '../services/auth'
 
 const router = Router()
 
-// ── Security: Hard-fail if JWT secret is missing in production ───────────────
-if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
-  throw new Error('[Zenith] FATAL: JWT_SECRET environment variable must be set in production.')
-}
-
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_only_fallback_secret_never_use_in_prod'
+// JWT_SECRET imported from services/auth with production guard
 
 // ── Register ─────────────────────────────────────────────────────────────────
 router.post('/register', async (req: Request, res: Response, next) => {
@@ -104,7 +100,7 @@ router.get('/me', async (req: Request, res: Response, next) => {
     const decoded = jwt.verify(token, JWT_SECRET) as any
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const member = await adapter.findOne<any>('z_members', { _id: decoded.id })
+    const member = await adapter.findOne<any>('z_members', { id: decoded.id })
     if (!member) throw new NotFoundError('Member', decoded.id)
 
     // Omit password

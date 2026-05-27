@@ -50,8 +50,8 @@ const TEMPLATES: Template[] = [
     tags: ['React 19', 'Vite', 'Tailwind CSS', 'Framer Motion', 'Zustand'],
     stars: 382,
     performanceScore: 99,
-    primaryColor: 'from-violet-600 to-indigo-600',
-    accentColor: '#8B5CF6',
+    primaryColor: 'from-violet-600 to-emerald-600',
+    accentColor: '#10B981',
     features: [
       'Interactive spatial layout engine',
       'Advanced dark mode glassmorphism styles',
@@ -242,7 +242,7 @@ const TemplatesPage: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-3 mb-1">
-              <span className="text-[8px] font-black text-indigo-500 uppercase tracking-[0.3em] italic">
+              <span className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.3em] italic">
                 Storefront Hub
               </span>
               <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 shadow-[0_0_8px_#10b981]" />
@@ -288,11 +288,11 @@ const TemplatesPage: React.FC = () => {
             : 'bg-gradient-to-r from-gray-50 via-white to-gray-50 border-gray-100'
         )}
       >
-        <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 blur-[100px] pointer-events-none rounded-full" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/5 blur-[100px] pointer-events-none rounded-full" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 blur-[100px] pointer-events-none rounded-full" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-500/5 blur-[100px] pointer-events-none rounded-full" />
 
         <div className="flex-1 space-y-3 z-10">
-          <div className="flex items-center gap-2 text-indigo-500">
+          <div className="flex items-center gap-2 text-emerald-500">
             <Sparkles size={16} className="animate-pulse" />
             <span className="text-[10px] font-black uppercase tracking-widest italic">
               Pre-integrated Storefront Ecosystem
@@ -317,7 +317,7 @@ const TemplatesPage: React.FC = () => {
         >
           <Search
             size={14}
-            className="text-gray-500 group-focus-within:text-indigo-500 transition-colors"
+            className="text-gray-500 group-focus-within:text-emerald-500 transition-colors"
           />
           <input
             type="text"
@@ -377,7 +377,7 @@ const TemplatesPage: React.FC = () => {
                         {template.category}
                       </span>
                       <span className="w-1 h-1 bg-gray-500 rounded-full" />
-                      <span className="text-[8px] font-mono font-black text-indigo-400">
+                      <span className="text-[8px] font-mono font-black text-emerald-400">
                         v{template.version}
                       </span>
                       {template.slug === activeSiteSlug && (
@@ -387,7 +387,7 @@ const TemplatesPage: React.FC = () => {
                         </div>
                       )}
                     </div>
-                    <h3 className="text-xl font-black tracking-tight uppercase italic leading-none group-hover:text-indigo-400 transition-colors mt-1.5">
+                    <h3 className="text-xl font-black tracking-tight uppercase italic leading-none group-hover:text-emerald-400 transition-colors mt-1.5">
                       {template.name}
                     </h3>
                   </div>
@@ -465,7 +465,7 @@ const TemplatesPage: React.FC = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
                     {template.features.map((feat, idx) => (
                       <div key={idx} className="flex items-center gap-2 text-xs text-gray-300">
-                        <div className="w-1.5 h-1.5 bg-indigo-500/40 border border-indigo-500 rounded-none shrink-0" />
+                        <div className="w-1.5 h-1.5 bg-emerald-500/40 border border-emerald-500 rounded-none shrink-0" />
                         <span className="uppercase tracking-tight truncate">{feat}</span>
                       </div>
                     ))}
@@ -495,7 +495,7 @@ const TemplatesPage: React.FC = () => {
                   theme === 'dark' ? 'bg-[#080808] border-white/5 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-600'
                 )}>
                   <div className="flex items-center gap-1.5 truncate">
-                    <Terminal size={10} className="text-indigo-400" />
+                    <Terminal size={10} className="text-emerald-400" />
                     <span className="truncate select-all">git clone {template.gitUrl}.git</span>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -631,7 +631,7 @@ const TemplatesPage: React.FC = () => {
                   <Server size={18} />
                 </div>
                 <div>
-                  <span className="text-[8px] font-black text-indigo-500 uppercase tracking-[0.25em] italic block">
+                  <span className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.25em] italic block">
                     Zero-Config Handshake
                   </span>
                   <h3 className="text-xl font-black uppercase italic tracking-tight leading-none mt-1">
@@ -656,7 +656,7 @@ const TemplatesPage: React.FC = () => {
                         className={cn(
                           'h-1 w-full rounded-none transition-all duration-500',
                           isCompleted
-                            ? 'bg-indigo-500 shadow-[0_0_8px_#6366f1]'
+                            ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]'
                             : isActive
                               ? 'bg-amber-500 animate-pulse'
                               : 'bg-white/5'
@@ -696,7 +696,7 @@ const TemplatesPage: React.FC = () => {
                             className={cn(
                               'border p-3 flex flex-col items-center justify-center gap-2 rounded-none transition-all group relative',
                               provider === prov.id
-                                ? 'bg-indigo-500/10 border-indigo-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.15)]'
+                                ? 'bg-emerald-500/10 border-emerald-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.15)]'
                                 : 'bg-white/[0.01] border-white/5 text-gray-500 hover:text-gray-300 hover:border-white/10'
                             )}
                           >
@@ -707,7 +707,7 @@ const TemplatesPage: React.FC = () => {
                               className={cn(
                                 'text-[7px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded-none border',
                                 provider === prov.id
-                                  ? 'border-indigo-500/30 text-indigo-400 bg-indigo-500/5'
+                                  ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/5'
                                   : 'border-white/5 text-gray-600 bg-white/5'
                               )}
                             >
@@ -726,7 +726,7 @@ const TemplatesPage: React.FC = () => {
                       )}
                     >
                       <div className="flex items-center gap-3">
-                        <GitBranch size={16} className="text-indigo-400" />
+                        <GitBranch size={16} className="text-emerald-400" />
                         <div className="flex flex-col">
                           <span className="text-[10px] font-black uppercase tracking-tight leading-none text-white">
                             AmanTShekar/{selectedTemplate.slug}
@@ -762,7 +762,7 @@ const TemplatesPage: React.FC = () => {
                   <div className="space-y-4 flex-1 flex flex-col">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <Terminal size={14} className="text-indigo-400" />
+                        <Terminal size={14} className="text-emerald-400" />
                         <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">
                           Simulated Edge Console Output
                         </span>
@@ -789,7 +789,7 @@ const TemplatesPage: React.FC = () => {
                             log.startsWith('[error]')
                               ? 'text-red-500'
                               : log.startsWith('[build]')
-                                ? 'text-indigo-300'
+                                ? 'text-emerald-300'
                                 : log.startsWith('[network]')
                                   ? 'text-cyan-300'
                                   : 'text-gray-300'
@@ -802,7 +802,7 @@ const TemplatesPage: React.FC = () => {
                       {/* Interactive Cursor */}
                       <div className="flex items-center gap-1">
                         <span className="text-gray-600 mr-2">[{terminalLogs.length + 1}]</span>
-                        <div className="w-1.5 h-3 bg-indigo-500 animate-pulse" />
+                        <div className="w-1.5 h-3 bg-emerald-500 animate-pulse" />
                       </div>
                     </div>
                   </div>
@@ -838,7 +838,7 @@ const TemplatesPage: React.FC = () => {
                       )}
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <Globe size={16} className="text-indigo-400 shrink-0" />
+                        <Globe size={16} className="text-emerald-400 shrink-0" />
                         <span className="text-[10px] font-black tracking-tight text-white uppercase truncate font-mono">
                           {liveUrl}
                         </span>

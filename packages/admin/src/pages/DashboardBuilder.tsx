@@ -30,6 +30,7 @@ import {
 import { toast } from 'react-hot-toast'
 import { v4 as uuidv4 } from 'uuid'
 import api from '../lib/api'
+import { confirm } from '../store/confirmStore'
 import { cn } from '../lib/utils'
 import { useTheme } from '../context/ThemeContext'
 import { WIDGET_REGISTRY, getWidgetDef } from '../widgets/registry'
@@ -129,7 +130,7 @@ function SortableWidget({
       className={cn(
         'relative rounded-none border overflow-hidden transition-all duration-200 flex flex-col',
         theme === 'dark' ? 'bg-[#080808] border-white/5' : 'bg-white border-gray-100 shadow-sm',
-        isEditing && 'ring-1 ring-inset ring-indigo-500/20',
+        isEditing && 'ring-1 ring-inset ring-emerald-500/20',
         isDragging && 'z-50 shadow-2xl shadow-black/40'
       )}
     >
@@ -145,7 +146,7 @@ function SortableWidget({
           <button
             {...attributes}
             {...listeners}
-            className="p-1 cursor-grab active:cursor-grabbing text-gray-500 hover:text-indigo-400 transition-colors touch-none"
+            className="p-1 cursor-grab active:cursor-grabbing text-gray-500 hover:text-emerald-400 transition-colors touch-none"
           >
             <GripVertical size={14} />
           </button>
@@ -166,7 +167,7 @@ function SortableWidget({
                   (onTitleChange(widget.id, titleDraft), setEditingTitle(false))
                 }
                 className={cn(
-                  'w-full text-[10px] font-black uppercase italic outline-none bg-transparent border-b border-indigo-500 pb-0.5',
+                  'w-full text-[10px] font-black uppercase italic outline-none bg-transparent border-b border-emerald-500 pb-0.5',
                   theme === 'dark' ? 'text-white' : 'text-gray-900'
                 )}
               />
@@ -195,7 +196,7 @@ function SortableWidget({
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => onConfigure(widget)}
-              className="p-1 text-gray-500 hover:text-indigo-450 transition-colors"
+              className="p-1 text-gray-500 hover:text-emerald-450 transition-colors"
               title="Configure Widget"
             >
               <Settings2 size={13} />
@@ -271,10 +272,10 @@ function WidgetPreviewMock({ type, theme }: { type: string; theme: 'dark' | 'lig
             <div
               className={cn(
                 'w-6 h-6 flex items-center justify-center',
-                isDark ? 'bg-white/5' : 'bg-indigo-50'
+                isDark ? 'bg-white/5' : 'bg-emerald-50'
               )}
             >
-              <Database size={10} className="text-indigo-500" />
+              <Database size={10} className="text-emerald-500" />
             </div>
             <div>
               <div className={cn('h-1.5 w-12 mb-1.5 rounded-sm', lineBg)} />
@@ -317,7 +318,7 @@ function WidgetPreviewMock({ type, theme }: { type: string; theme: 'dark' | 'lig
               {[40, 70, 45, 90, 60].map((h, i) => (
                 <div
                   key={i}
-                  className={cn('flex-1', isDark ? 'bg-indigo-500/50' : 'bg-indigo-200')}
+                  className={cn('flex-1', isDark ? 'bg-emerald-500/50' : 'bg-emerald-200')}
                   style={{ height: `${h}%` }}
                 />
               ))}
@@ -344,7 +345,7 @@ function WidgetPreviewMock({ type, theme }: { type: string; theme: 'dark' | 'lig
   return (
     <div
       className={cn(
-        'w-full h-24 p-3 border overflow-hidden relative group-hover:border-indigo-500/50 transition-colors',
+        'w-full h-24 p-3 border overflow-hidden relative group-hover:border-emerald-500/50 transition-colors',
         baseBg
       )}
     >
@@ -400,7 +401,7 @@ function WidgetPicker({
               theme === 'dark' ? 'bg-[#0a0a0a] border-white/5' : 'bg-[#fcfcfc] border-gray-100'
             )}
           >
-            <div className="flex items-center justify-between p-6 border-b border-white/5 bg-gradient-to-r from-transparent to-indigo-500/5">
+            <div className="flex items-center justify-between p-6 border-b border-white/5 bg-gradient-to-r from-transparent to-emerald-500/5">
               <div>
                 <h3 className="text-base font-black uppercase italic tracking-tighter">
                   Add Widget
@@ -442,9 +443,9 @@ function WidgetPicker({
             <div className="flex-1 overflow-y-auto p-5 space-y-8 custom-editor-scrollbar">
               {grouped.map(({ cat, widgets }) => (
                 <div key={cat}>
-                  <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                  <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
                     {cat}{' '}
-                    <span className="h-px flex-1 bg-gradient-to-r from-indigo-500/20 to-transparent" />
+                    <span className="h-px flex-1 bg-gradient-to-r from-emerald-500/20 to-transparent" />
                   </p>
                   <div className="grid grid-cols-2 gap-4">
                     {widgets.map((def) => {
@@ -468,8 +469,8 @@ function WidgetPicker({
                             className={cn(
                               'mt-3 w-full border-l-2 pl-3 py-1 transition-colors',
                               theme === 'dark'
-                                ? 'border-white/10 group-hover:border-indigo-500'
-                                : 'border-gray-200 group-hover:border-indigo-500'
+                                ? 'border-white/10 group-hover:border-emerald-500'
+                                : 'border-gray-200 group-hover:border-emerald-500'
                             )}
                           >
                             <div className="flex items-center gap-2 mb-1">
@@ -477,8 +478,8 @@ function WidgetPicker({
                                 size={12}
                                 className={
                                   theme === 'dark'
-                                    ? 'text-gray-400 group-hover:text-indigo-400'
-                                    : 'text-gray-500 group-hover:text-indigo-600'
+                                    ? 'text-gray-400 group-hover:text-emerald-400'
+                                    : 'text-gray-500 group-hover:text-emerald-600'
                                 }
                               />
                               <p className="text-[11px] font-black uppercase italic tracking-tight">
@@ -570,7 +571,7 @@ function WidgetConfigModal({
                 : 'bg-[#fcfcfc] border-gray-100 text-gray-900'
             )}
           >
-            <div className="flex items-center justify-between p-6 border-b border-white/5 bg-gradient-to-r from-transparent to-indigo-500/5">
+            <div className="flex items-center justify-between p-6 border-b border-white/5 bg-gradient-to-r from-transparent to-emerald-500/5">
               <div>
                 <h3 className="text-base font-black uppercase italic tracking-tighter">
                   Configure Widget
@@ -603,7 +604,7 @@ function WidgetConfigModal({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className={cn(
-                    'w-full px-4 py-2 text-[11px] font-black uppercase italic tracking-wider border rounded-none focus:border-indigo-500 outline-none',
+                    'w-full px-4 py-2 text-[11px] font-black uppercase italic tracking-wider border rounded-none focus:border-emerald-500 outline-none',
                     isDark
                       ? 'bg-black border-white/10 text-white'
                       : 'bg-white border-gray-200 text-gray-900'
@@ -622,7 +623,7 @@ function WidgetConfigModal({
                     value={width}
                     onChange={(e) => setWidth(Number(e.target.value))}
                     className={cn(
-                      'w-full px-3 py-2 text-[11px] font-black uppercase italic border rounded-none outline-none focus:border-indigo-500',
+                      'w-full px-3 py-2 text-[11px] font-black uppercase italic border rounded-none outline-none focus:border-emerald-500',
                       isDark
                         ? 'bg-black border-white/10 text-white'
                         : 'bg-white border-gray-200 text-gray-900'
@@ -643,7 +644,7 @@ function WidgetConfigModal({
                     value={height}
                     onChange={(e) => setHeight(Number(e.target.value))}
                     className={cn(
-                      'w-full px-3 py-2 text-[11px] font-black uppercase italic border rounded-none outline-none focus:border-indigo-500',
+                      'w-full px-3 py-2 text-[11px] font-black uppercase italic border rounded-none outline-none focus:border-emerald-500',
                       isDark
                         ? 'bg-black border-white/10 text-white'
                         : 'bg-white border-gray-200 text-gray-900'
@@ -661,7 +662,7 @@ function WidgetConfigModal({
               {/* Dynamic Type Configs */}
               {widget.type === 'stat-card' && (
                 <div className="space-y-4 pt-4 border-t border-white/5">
-                  <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest italic">
+                  <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest italic">
                     Metric Settings
                   </p>
 
@@ -673,7 +674,7 @@ function WidgetConfigModal({
                       value={config.metric || 'total_records'}
                       onChange={(e) => setConfig({ ...config, metric: e.target.value })}
                       className={cn(
-                        'w-full px-3 py-2 text-[11px] font-black uppercase italic border rounded-none outline-none focus:border-indigo-500',
+                        'w-full px-3 py-2 text-[11px] font-black uppercase italic border rounded-none outline-none focus:border-emerald-500',
                         isDark
                           ? 'bg-black border-white/10'
                           : 'bg-white border-gray-200 font-sans text-xs'
@@ -690,7 +691,7 @@ function WidgetConfigModal({
 
               {widget.type === 'custom-html' && (
                 <div className="space-y-4 pt-4 border-t border-white/5">
-                  <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest italic">
+                  <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest italic">
                     HTML Configuration
                   </p>
 
@@ -703,7 +704,7 @@ function WidgetConfigModal({
                       onChange={(e) => setConfig({ ...config, html: e.target.value })}
                       rows={12}
                       className={cn(
-                        'w-full p-4 font-mono text-[11px] border rounded-none outline-none focus:border-indigo-500 resize-none',
+                        'w-full p-4 font-mono text-[11px] border rounded-none outline-none focus:border-emerald-500 resize-none',
                         isDark
                           ? 'bg-black border-white/10 text-white'
                           : 'bg-white border-gray-200 text-gray-900'
@@ -734,7 +735,7 @@ function WidgetConfigModal({
               </button>
               <button
                 onClick={handleSave}
-                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[9px] font-black uppercase tracking-widest rounded-none transition-colors shadow-lg shadow-indigo-600/20"
+                className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-black uppercase tracking-widest rounded-none transition-colors shadow-lg shadow-emerald-600/20"
               >
                 Save Changes
               </button>
@@ -867,7 +868,7 @@ export default function DashboardBuilder() {
     markDirty(widgets.map((w) => (w.id === id ? { ...w, title } : w)))
 
   const resetLayout = async () => {
-    if (!window.confirm('Reset your dashboard to the default layout? This cannot be undone.'))
+    if (!await confirm({ message: 'Reset your dashboard to the default layout? This cannot be undone.' }))
       return
     try {
       const r = await api.post('/dashboard/layout/reset')
@@ -889,7 +890,7 @@ export default function DashboardBuilder() {
           theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]'
         )}
       >
-        <Loader2 size={32} className="animate-spin text-indigo-500" strokeWidth={1.5} />
+        <Loader2 size={32} className="animate-spin text-emerald-500" strokeWidth={1.5} />
         <p className="text-[10px] font-black uppercase tracking-[0.6em] text-gray-400 animate-pulse italic">
           Loading Dashboard...
         </p>
@@ -921,7 +922,7 @@ export default function DashboardBuilder() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[9px] font-black text-indigo-500 uppercase tracking-[0.4em] italic">
+              <span className="text-[9px] font-black text-emerald-500 uppercase tracking-[0.4em] italic">
                 Zenith Command Center
               </span>
               <div className="w-1.5 h-1.5 bg-emerald-500 rounded-none shadow-[0_0_8px_#10b981]" />
@@ -957,8 +958,8 @@ export default function DashboardBuilder() {
                 className={cn(
                   'flex items-center gap-2 px-4 py-2 border text-[9px] font-black uppercase italic rounded-none transition-all',
                   theme === 'dark'
-                    ? 'border-indigo-500/30 text-indigo-400 hover:bg-indigo-50/10'
-                    : 'border-indigo-200 text-indigo-600 hover:bg-indigo-50'
+                    ? 'border-emerald-500/30 text-emerald-400 hover:bg-emerald-50/10'
+                    : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
                 )}
               >
                 <Plus size={13} /> Add Widget
@@ -969,7 +970,7 @@ export default function DashboardBuilder() {
                   setIsEditing(false)
                 }}
                 disabled={saving}
-                className="flex items-center gap-2 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[9px] font-black uppercase italic rounded-none transition-all shadow-lg shadow-indigo-600/20"
+                className="flex items-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-black uppercase italic rounded-none transition-all shadow-lg shadow-emerald-600/20"
               >
                 {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
                 {saving ? 'Saving...' : 'Save Layout'}
@@ -1019,10 +1020,10 @@ export default function DashboardBuilder() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="bg-indigo-600/10 border-b border-indigo-500/20 px-6 py-3 flex items-center gap-3"
+            className="bg-emerald-600/10 border-b border-emerald-500/20 px-6 py-3 flex items-center gap-3"
           >
-            <CheckCircle2 size={14} className="text-indigo-400 shrink-0" />
-            <p className="text-[10px] font-black text-indigo-300 uppercase italic tracking-wider">
+            <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+            <p className="text-[10px] font-black text-emerald-300 uppercase italic tracking-wider">
               Edit mode active — drag widgets to reorder, click <strong>+ Add Widget</strong> to add
               new ones, click <strong>✕</strong> to remove.
             </p>
@@ -1050,7 +1051,7 @@ export default function DashboardBuilder() {
             </div>
             <button
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white text-[10px] font-black uppercase italic rounded-none shadow-lg shadow-indigo-600/20"
+              className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase italic rounded-none shadow-lg shadow-emerald-600/20"
             >
               <Plus size={14} /> Get Started
             </button>
@@ -1089,8 +1090,8 @@ export default function DashboardBuilder() {
                 className={cn(
                   'border rounded-none p-4 shadow-2xl opacity-90 font-black text-[11px] uppercase italic',
                   theme === 'dark'
-                    ? 'bg-[#0a0a0a] border-indigo-500/30 text-white'
-                    : 'bg-white border-indigo-200 text-gray-900'
+                    ? 'bg-[#0a0a0a] border-emerald-500/30 text-white'
+                    : 'bg-white border-emerald-200 text-gray-900'
                 )}
               >
                 {activeWidget.title || activeWidget.type}

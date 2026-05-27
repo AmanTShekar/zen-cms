@@ -269,42 +269,22 @@ router.get('/health', async (req: Request, res: Response) => {
   const adapter = (req as any).zenith?.adapter
   const dbHealth = adapter ? adapter.getHealth() : 'disconnected'
   const healthy = dbHealth === 'ok'
-  const config = (req as any).zenith?.config
-
-  const collections = (config?.collections || []).map(summarizeCollection)
-  const globals = (config?.globals || []).map(summarizeCollection)
+  const mem = process.memoryUsage()
 
   const data = {
     status: healthy ? 'ok' : 'degraded',
-    version: process.env.npm_package_version || '6.0.45-STABLE',
     timestamp: new Date().toISOString(),
     uptime: Math.floor(process.uptime()),
-    environment: process.env.NODE_ENV || 'production',
     database: dbHealth,
+    version: process.env.ZENITH_VERSION || '1.0.0',
+    environment: process.env.NODE_ENV || 'development',
     memory: {
-      used: `${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB`,
-      total: `${Math.round(os.totalmem() / 1024 / 1024 / 1024)}GB`,
+      rss: Math.round(mem.rss / 1024 / 1024) + 'MB',
+      heapUsed: Math.round(mem.heapUsed / 1024 / 1024) + 'MB',
+      heapTotal: Math.round(mem.heapTotal / 1024 / 1024) + 'MB',
     },
-    cpu: {
-      load: os.loadavg(),
-      cores: os.cpus().length,
-      usage: `${Math.round((os.loadavg()[0] * 100) / os.cpus().length)}%`,
-    },
-    registry: {
-      collections,
-      globals,
-    },
-    services: {
-      database: dbHealth,
-      email: process.env.RESEND_API_KEY ? 'configured' : 'dev-mode',
-      storage: process.env.CLOUDINARY_CLOUD_NAME ? 'cloudinary' : 'local',
-      ai:
-        process.env.ANTHROPIC_API_KEY ||
-        process.env.OPENAI_API_KEY ||
-        process.env.OPENROUTER_API_KEY
-          ? 'configured'
-          : 'disabled',
-    },
+    platform: process.platform,
+    nodeVersion: process.version,
   }
   res.status(healthy ? 200 : 503).json(createResponse(data))
 })
@@ -570,6 +550,21 @@ router.post(
       const { name, role, expiresInDays } = req.body
       const result = await ApiKeyService.generateKey(name, role, expiresInDays)
       res.status(201).json(createResponse(result))
+    } catch (err) {
+      next(err)
+    }
+  }
+)
+
+router.post(
+  '/api-keys/:id/revoke',
+  requireAuth,
+  requireRole('admin'),
+  async (req: Request, res: Response, next) => {
+    try {
+      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      await adapter.update('z_api_keys', req.params.id, { revoked: true, revokedAt: new Date() })
+      res.json(createResponse({ success: true }))
     } catch (err) {
       next(err)
     }

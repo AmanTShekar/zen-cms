@@ -6,6 +6,7 @@ import { useEditorStore } from '../../../store/editorStore'
 import { useModalStore } from '../../../store/modalStore'
 import { cn } from '../../../lib/utils'
 import { useFocusTrap } from '../../../hooks/useFocusTrap'
+import { confirm } from '../../../store/confirmStore'
 
 interface TemplatesModalProps {
   selectedSections: Set<string>
@@ -58,13 +59,13 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
               )}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-none bg-indigo-600 flex items-center justify-center text-white">
+                <div className="w-8 h-8 rounded-none bg-emerald-600 flex items-center justify-center text-white">
                   <Layout size={16} />
                 </div>
                 <div>
                   <h3
                     id={modalTitleId}
-                    className="text-lg font-black uppercase italic leading-none text-indigo-500"
+                    className="text-lg font-black uppercase italic leading-none text-emerald-500"
                   >
                     Block Templates
                   </h3>
@@ -76,7 +77,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
               <button
                 onClick={() => setTemplatesOpen(false)}
                 aria-label="Close"
-                className="p-1 hover:text-indigo-500 transition-colors"
+                className="p-1 hover:text-emerald-500 transition-colors"
                 style={{ color: theme === 'dark' ? '#fff' : '#000' }}
               >
                 <X size={18} />
@@ -102,12 +103,12 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
                       className={cn(
                         'p-4 border rounded-none space-y-3 relative group',
                         theme === 'dark'
-                          ? 'bg-white/[0.02] border-white/5 hover:border-indigo-500/30'
-                          : 'bg-gray-50 border-gray-200 hover:border-indigo-300'
+                          ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/30'
+                          : 'bg-gray-50 border-gray-200 hover:border-emerald-300'
                       )}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-black uppercase italic text-indigo-400">
+                        <span className="text-xs font-black uppercase italic text-emerald-400">
                           {template.name}
                         </span>
                         <span className="text-xs text-gray-500">
@@ -117,13 +118,13 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
                       <div className="flex gap-2">
                         <button
                           onClick={() => applyTemplate(template)}
-                          className="flex-1 py-2 bg-indigo-600 text-white text-xs font-black uppercase italic rounded-none hover:bg-indigo-500 transition-colors"
+                          className="flex-1 py-2 bg-emerald-600 text-white text-xs font-black uppercase italic rounded-none hover:bg-emerald-500 transition-colors"
                         >
                           Apply
                         </button>
                         <button
-                          onClick={() => {
-                            if (!window.confirm(`Delete template "${template.name}"? This cannot be undone.`)) return
+                          onClick={async () => {
+                            if (!await confirm({ message: `Delete template "${template.name}"? This cannot be undone.` })) return
                             deleteTemplate(template.id || template._id)
                             setTemplatesOpen(false)
                             setTimeout(() => setTemplatesOpen(true), 50)
@@ -159,7 +160,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
                     setSelectedSections(new Set())
                   }}
                   aria-label="Save selection as template"
-                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-xs font-black uppercase italic rounded-none hover:bg-indigo-500 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-xs font-black uppercase italic rounded-none hover:bg-emerald-500 transition-colors"
                 >
                   <Download size={12} aria-hidden="true" />
                   Save as Template

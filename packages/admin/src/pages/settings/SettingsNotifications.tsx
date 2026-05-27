@@ -43,7 +43,7 @@ const SettingsNotifications: React.FC<SettingsNotificationsProps> = ({
           className={cn(
             'w-full border rounded-none py-4 px-6 text-[12px] font-black italic focus:ring-4 transition-all outline-none',
             theme === 'dark'
-              ? 'bg-white/5 border-white/5 text-white focus:ring-indigo-500/5 focus:border-indigo-500/20'
+              ? 'bg-white/5 border-white/5 text-white focus:ring-emerald-500/5 focus:border-emerald-500/20'
               : 'bg-gray-50 border-gray-100'
           )}
           placeholder="smtp.relay.net"
@@ -60,7 +60,7 @@ const SettingsNotifications: React.FC<SettingsNotificationsProps> = ({
           className={cn(
             'w-full border rounded-none py-4 px-6 text-[12px] font-black italic focus:ring-4 transition-all outline-none',
             theme === 'dark'
-              ? 'bg-white/5 border-white/5 text-white focus:ring-indigo-500/5 focus:border-indigo-500/20'
+              ? 'bg-white/5 border-white/5 text-white focus:ring-emerald-500/5 focus:border-emerald-500/20'
               : 'bg-gray-50 border-gray-100'
           )}
         />

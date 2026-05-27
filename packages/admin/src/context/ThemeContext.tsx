@@ -12,11 +12,16 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
-    const saved = localStorage.getItem('zenith_theme')
-    return (
-      (saved as Theme) ||
+    if (typeof window === 'undefined') return 'dark'
+    const saved = localStorage.getItem('zenith_theme') as Theme | null
+    const initial = saved ||
       (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-    )
+    // Apply synchronously before first paint to prevent FOUC
+    try {
+      window.document.documentElement.classList.remove('light', 'dark')
+      window.document.documentElement.classList.add(initial)
+    } catch { /* ignore */ }
+    return initial
   })
 
   useEffect(() => {

@@ -15,7 +15,7 @@ import { $createListItemNode, $createListNode } from '@lexical/list'
 import { TOGGLE_LINK_COMMAND } from '@lexical/link'
 import { $insertNodeToNearestRoot } from '@lexical/utils'
 import { $createTableNode, $createTableRowNode, $createTableCellNode, TableCellHeaderStates } from '@lexical/table'
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import {
   Type,
@@ -384,14 +384,17 @@ export function SlashCommandPlugin() {
     ]
   }, [editor])
 
-  const filteredCommands = query
-    ? commands().filter(
-        (cmd) =>
-          cmd.label.toLowerCase().includes(query.toLowerCase()) ||
-          cmd.description.toLowerCase().includes(query.toLowerCase()) ||
-          cmd.keywords?.some((kw) => kw.toLowerCase().includes(query.toLowerCase())),
-      )
-    : commands()
+  const allCommands = useMemo(() => commands(), [editor])
+  const filteredCommands = useMemo(() => {
+    if (!query) return allCommands
+    const q = query.toLowerCase()
+    return allCommands.filter(
+      (cmd) =>
+        cmd.label.toLowerCase().includes(q) ||
+        cmd.description.toLowerCase().includes(q) ||
+        cmd.keywords?.some((kw) => kw.toLowerCase().includes(q)),
+    )
+  }, [allCommands, query])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -495,8 +498,8 @@ export function SlashCommandPlugin() {
           className={cn(
             'text-[7px] font-bold px-1.5 py-0.5 border rounded uppercase',
             theme === 'dark'
-              ? 'text-indigo-400 border-indigo-500/20'
-              : 'text-indigo-500 border-indigo-200',
+              ? 'text-emerald-400 border-emerald-500/20'
+              : 'text-emerald-500 border-emerald-200',
           )}
         >
           ↑↓ Enter
@@ -518,8 +521,8 @@ export function SlashCommandPlugin() {
                 'w-full text-left px-3 py-2.5 flex items-start gap-3 transition-all duration-100 relative',
                 isSelected
                   ? theme === 'dark'
-                    ? 'bg-indigo-500/20 text-indigo-400 border-l-2 border-indigo-500'
-                    : 'bg-indigo-50 text-indigo-600 border-l-2 border-indigo-500'
+                    ? 'bg-emerald-500/20 text-emerald-400 border-l-2 border-emerald-500'
+                    : 'bg-emerald-50 text-emerald-600 border-l-2 border-emerald-500'
                   : 'border-l-2 border-transparent hover:bg-white/5',
               )}
             >
@@ -528,8 +531,8 @@ export function SlashCommandPlugin() {
                   'w-7 h-7 rounded flex items-center justify-center border shrink-0',
                   isSelected
                     ? theme === 'dark'
-                      ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400'
-                      : 'bg-indigo-100 border-indigo-200 text-indigo-600'
+                      ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                      : 'bg-emerald-100 border-emerald-200 text-emerald-600'
                     : theme === 'dark'
                       ? 'bg-white/5 border-white/5 text-gray-400'
                       : 'bg-gray-100 border-gray-200 text-gray-500',

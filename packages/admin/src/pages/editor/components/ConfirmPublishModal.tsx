@@ -1,4 +1,5 @@
 import React from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AlertTriangle, X, Rocket } from 'lucide-react'
 import { useTheme } from '../../../context/ThemeContext'
@@ -17,7 +18,7 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
 }) => {
   const { theme } = useTheme()
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-[800] flex items-center justify-center bg-black/60 backdrop-blur-sm">
@@ -70,7 +71,7 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
               </button>
               <button
                 onClick={onConfirm}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-indigo-600 text-white text-xs font-black uppercase italic tracking-widest rounded-none hover:bg-indigo-500 transition-all"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-emerald-600 text-white text-xs font-black uppercase italic tracking-widest rounded-none hover:bg-emerald-500 transition-all"
               >
                 <Rocket size={12} />
                 Publish Now
@@ -79,7 +80,8 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }
 

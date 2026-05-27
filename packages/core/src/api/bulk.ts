@@ -27,7 +27,7 @@ router.post('/:collection/bulk/delete', async (req: Request, res: Response, next
     const config = (req as any).zenith?.config
     const user = (req as any).user
     const siteId = req.headers['x-zenith-site-id'] as string
-    const adapter = (req as any).__zenithAdapter
+    const adapter = (req as any).zenith?.adapter
 
     if (!adapter) {
       throw new Error('Database adapter not initialized on request context')
@@ -67,7 +67,7 @@ router.post('/:collection/bulk/update', async (req: Request, res: Response, next
     const config = (req as any).zenith?.config
     const user = (req as any).user
     const siteId = req.headers['x-zenith-site-id'] as string
-    const adapter = (req as any).__zenithAdapter
+    const adapter = (req as any).zenith?.adapter
 
     if (!adapter) {
       throw new Error('Database adapter not initialized on request context')
@@ -109,7 +109,7 @@ router.post('/:collection/bulk/publish', async (req: Request, res: Response, nex
     const config = (req as any).zenith?.config
     const user = (req as any).user
     const siteId = req.headers['x-zenith-site-id'] as string
-    const adapter = (req as any).__zenithAdapter
+    const adapter = (req as any).zenith?.adapter
 
     if (!adapter) {
       throw new Error('Database adapter not initialized on request context')
@@ -151,7 +151,7 @@ router.post('/:collection/bulk/unpublish', async (req: Request, res: Response, n
     const config = (req as any).zenith?.config
     const user = (req as any).user
     const siteId = req.headers['x-zenith-site-id'] as string
-    const adapter = (req as any).__zenithAdapter
+    const adapter = (req as any).zenith?.adapter
 
     if (!adapter) {
       throw new Error('Database adapter not initialized on request context')

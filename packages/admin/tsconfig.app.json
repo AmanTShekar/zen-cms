@@ -25,5 +25,5 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
-  "exclude": ["src/components/lexical"]
+  "exclude": ["src/components/lexical", "src/__tests__"]
 }

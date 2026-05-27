@@ -119,6 +119,7 @@ function mapFieldToMongoose(field: any): unknown {
     type,
     required: field.required || false,
     unique: field.unique || false,
+    index: field.index || false,
     default: field.defaultValue,
   }
 }
@@ -159,6 +160,13 @@ export function getModelForCollection(config: CollectionConfig): Model<unknown> 
   if (config.scheduling) {
     schema.add({
       scheduledAt: { type: Date, index: true },
+    })
+  }
+
+  // Soft Delete support
+  if (config.softDelete) {
+    schema.add({
+      deletedAt: { type: Date, default: null, index: true },
     })
   }
 

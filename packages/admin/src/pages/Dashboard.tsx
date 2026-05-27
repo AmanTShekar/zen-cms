@@ -122,7 +122,7 @@ const Dashboard: React.FC = () => {
           theme === 'dark' ? 'bg-[#0B0F19]' : 'bg-[#fafafa]'
         )}
       >
-        <Loader2 size={32} className="animate-spin text-purple-500" strokeWidth={1.5} />
+        <Loader2 size={32} className="animate-spin text-emerald-500" strokeWidth={1.5} />
         <p className="text-[10px] font-black uppercase tracking-[0.6em] text-gray-400 animate-pulse italic">
           Loading Dashboard...
         </p>
@@ -142,14 +142,14 @@ const Dashboard: React.FC = () => {
           <div
             className={cn(
               'w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transition-all border',
-              theme === 'dark' ? 'bg-purple-600/20 border-purple-500/30 text-purple-400' : 'bg-gray-900 border-gray-800 text-white'
+              theme === 'dark' ? 'bg-emerald-600/20 border-emerald-500/30 text-emerald-400' : 'bg-gray-900 border-gray-800 text-white'
             )}
           >
             <Monitor size={24} />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-[9px] font-black text-purple-400 uppercase tracking-[0.4em] italic">
+              <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.4em] italic">
                 Zenith Command Center
               </span>
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
@@ -168,7 +168,7 @@ const Dashboard: React.FC = () => {
             <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1 opacity-60">
               Last Synchronized
             </span>
-            <span className="text-[11px] font-black text-purple-400 italic tracking-tighter leading-none">
+            <span className="text-[11px] font-black text-emerald-400 italic tracking-tighter leading-none">
               {lastUpdated}
             </span>
           </div>
@@ -178,7 +178,7 @@ const Dashboard: React.FC = () => {
             className={cn(
               'w-12 h-12 border rounded-xl flex items-center justify-center transition-all shadow-sm',
               theme === 'dark'
-                ? 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-purple-500/30'
+                ? 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-emerald-500/30'
                 : 'bg-white border-gray-100 text-gray-400 hover:text-gray-900'
             )}
           >
@@ -195,7 +195,7 @@ const Dashboard: React.FC = () => {
             sub: 'Create new records in your collection',
             icon: Plus,
             action: () => navigate('/collections/products'),
-            color: 'bg-purple-600 shadow-purple-900/30 border border-purple-500/30',
+            color: 'bg-emerald-600 shadow-emerald-900/30 border border-emerald-500/30',
           },
           {
             title: 'Media Assets',
@@ -218,7 +218,7 @@ const Dashboard: React.FC = () => {
             className={cn(
               'p-6 rounded-2xl flex items-center gap-6 group transition-all text-left border',
               theme === 'dark'
-                ? 'card-interactive hover:border-purple-500/40'
+                ? 'card-interactive hover:border-emerald-500/40'
                 : 'bg-white border-gray-100 shadow-sm hover:shadow-md'
             )}
           >
@@ -263,7 +263,7 @@ const Dashboard: React.FC = () => {
               : '0',
             sub: 'Total Records',
             icon: Database,
-            color: 'text-purple-400',
+            color: 'text-emerald-400',
             path: '/collections',
           },
           {
@@ -271,7 +271,7 @@ const Dashboard: React.FC = () => {
             value: stats ? (stats.members || stats.users || 0).toLocaleString() : '0',
             sub: 'Personnel Records',
             icon: Users,
-            color: 'text-purple-400',
+            color: 'text-emerald-400',
             path: '/collections/members',
           },
           {
@@ -294,8 +294,8 @@ const Dashboard: React.FC = () => {
             className={cn(
               'rounded-2xl p-6 relative group overflow-hidden transition-all cursor-pointer border',
               theme === 'dark'
-                ? 'card-interactive hover:border-purple-500/40'
-                : 'bg-white border-gray-100 shadow-sm hover:border-indigo-500/20'
+                ? 'card-interactive hover:border-emerald-500/40'
+                : 'bg-white border-gray-100 shadow-sm hover:border-emerald-500/20'
             )}
           >
             <div className="flex items-center justify-between mb-5">
@@ -303,8 +303,8 @@ const Dashboard: React.FC = () => {
                 className={cn(
                   'w-10 h-10 rounded-xl flex items-center justify-center transition-all border',
                   theme === 'dark'
-                    ? 'bg-white/5 border-white/5 text-gray-400 group-hover:text-white group-hover:border-purple-500/20'
-                    : 'bg-gray-50 border-gray-100 text-gray-400 group-hover:text-indigo-600'
+                    ? 'bg-white/5 border-white/5 text-gray-400 group-hover:text-white group-hover:border-emerald-500/20'
+                    : 'bg-gray-50 border-gray-100 text-gray-400 group-hover:text-emerald-600'
                 )}
               >
                 <stat.icon size={18} />
@@ -397,7 +397,7 @@ const Dashboard: React.FC = () => {
                 )}
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <item.icon size={14} className="text-purple-400" />
+                  <item.icon size={14} className="text-emerald-400" />
                   <span className="text-[9px] font-black uppercase italic tracking-tight text-gray-400">
                     {item.label}
                   </span>
@@ -408,7 +408,7 @@ const Dashboard: React.FC = () => {
                 {item.type === 'progress' && (
                   <div className="h-1.5 w-full bg-white/5 rounded-full mt-4 overflow-hidden">
                     <div
-                      className="h-full bg-purple-500 rounded-full shadow-[0_0_8px_rgba(139,92,246,0.5)]"
+                      className="h-full bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"
                       style={{ width: item.value }}
                     />
                   </div>
@@ -420,13 +420,13 @@ const Dashboard: React.FC = () => {
           {/* 🕰️ Dynamic Activity Feed */}
           <div className="space-y-6">
             <div className="flex items-center justify-between px-2 pt-6 border-t border-white/[0.03]">
-              <h4 className="text-[10px] font-black uppercase tracking-widest italic text-purple-400">
+              <h4 className="text-[10px] font-black uppercase tracking-widest italic text-emerald-400">
                 Audit Logs
               </h4>
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => navigate('/audit-log')}
-                  className="text-[8px] font-black uppercase tracking-widest text-gray-400 hover:text-purple-400 transition-colors"
+                  className="text-[8px] font-black uppercase tracking-widest text-gray-400 hover:text-emerald-400 transition-colors"
                 >
                   View All
                 </button>
@@ -440,7 +440,7 @@ const Dashboard: React.FC = () => {
                   className={cn(
                     'flex items-center justify-between p-4 rounded-xl border transition-all group',
                     theme === 'dark'
-                      ? 'bg-white/[0.01] border-white/5 hover:border-purple-500/20'
+                      ? 'bg-white/[0.01] border-white/5 hover:border-emerald-500/20'
                       : 'bg-gray-50/30 border-gray-50'
                   )}
                 >
@@ -452,7 +452,7 @@ const Dashboard: React.FC = () => {
                           ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                           : log.action === 'delete'
                             ? 'bg-red-500/10 border-red-500/20 text-red-400'
-                            : 'bg-purple-500/10 border-purple-500/20 text-purple-400'
+                            : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                       )}
                     >
                       <Fingerprint size={14} />

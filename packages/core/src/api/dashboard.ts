@@ -6,6 +6,8 @@ import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { ValidationError, ConflictError } from '../errors'
 import fs from 'fs'
+import path from 'path'
+import os from 'os'
 
 const router: Router = Router()
 router.use(requireAuth)
@@ -186,8 +188,11 @@ router.put('/layout', async (req: Request, res: Response, next) => {
         '[Dashboard] Layout validation failed:',
         JSON.stringify(parsed.error.issues, null, 2)
       )
+      const debugPath = process.env.NODE_ENV === 'production'
+        ? path.join(os.tmpdir(), 'zenith-failed-layout-payload.json')
+        : path.join(process.cwd(), 'failed-layout-payload.json')
       fs.writeFileSync(
-        'C:/Users/Asus/Desktop/cms/failed-layout-payload.json',
+        debugPath,
         JSON.stringify({ body: req.body, issues: parsed.error.issues }, null, 2)
       )
       throw new ValidationError(

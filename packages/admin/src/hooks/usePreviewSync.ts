@@ -11,36 +11,16 @@ const debounce = <T extends (...args: any[]) => void>(fn: T, ms: number) => {
 }
 
 /**
- * Fast content hash for change detection — O(sections) not O(entire document).
- * Avoids JSON.stringify which is O(n) on the full page data and blocks the main thread.
+ * Content hash for change detection — samples enough of each string value
+ * to catch single-character edits anywhere in the content.
  */
 function quickHash(data: any): string {
-  const sections = data?.sections
-  if (!sections || !Array.isArray(sections)) return ''
-  // Rolling hash: combine section count + per-section content fingerprints
-  let h = sections.length * 2654435761
-  for (let i = 0; i < sections.length; i++) {
-    const s = sections[i]
-    // Hash section id length + content key count
-    h ^= (s.id?.length || 0) + (s.content ? Object.keys(s.content).length : 0)
-    h = Math.imul(h, 2654435761)
-    // Sample string content lengths (cheap, no string copying)
-    const content = s.content || {}
-    for (const key of Object.keys(content)) {
-      const v = content[key]
-      if (typeof v === 'string') {
-        h ^= v.length
-        // Sample first 4 chars for collision resistance
-        h ^= (v.charCodeAt(0) | 0) + (v.charCodeAt(1) << 8) + (v.charCodeAt(2) << 16)
-      } else if (typeof v === 'number') {
-        h ^= v | 0
-      } else if (typeof v === 'boolean') {
-        h ^= v ? 1 : 0
-      }
-      h = Math.imul(h, 2654435761)
-    }
+  if (!data) return ''
+  try {
+    return JSON.stringify(data)
+  } catch {
+    return String(Date.now())
   }
-  return String(h >>> 0)
 }
 
 /** Debounced, diff-guarded postMessage sync to the storefront iframe. */

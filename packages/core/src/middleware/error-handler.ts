@@ -14,7 +14,7 @@ export function globalErrorHandler(err: unknown, req: Request, res: Response, _n
     if (err.status >= 500) {
       logger.error({ err, url: req.url, method: req.method }, `${err.code}: ${err.message}`)
     } else {
-      logger.warn({ code: err.code, url: req.url, details: (err as any).details || (err as any).errors }, err.message); console.error(JSON.stringify(err, null, 2))
+      logger.warn({ code: err.code, url: req.url, details: (err as any).details || (err as any).errors }, err.message)
     }
     return res.status(err.status).json(err.toJSON())
   }

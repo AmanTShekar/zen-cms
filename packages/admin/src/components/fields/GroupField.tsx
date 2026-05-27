@@ -20,11 +20,11 @@ const GroupField: React.FC<GroupFieldProps> = ({ field, value, onChange, disable
       'border border-white/10 bg-white/[0.02] backdrop-blur-md p-4 space-y-4'
     )}>
       <div className="flex items-center gap-2 pb-2 border-b border-white/5">
-        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-purple-400">
+        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-400">
           {field.label || field.name}
         </span>
-        {field.admin?.description && (
-          <span className="text-[10px] text-gray-500 italic">{field.admin.description}</span>
+        {gf.admin?.description && (
+          <span className="text-[10px] text-gray-500 italic">{gf.admin.description}</span>
         )}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
@@ -32,7 +32,7 @@ const GroupField: React.FC<GroupFieldProps> = ({ field, value, onChange, disable
           <div key={f.name} className="space-y-1.5">
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
               {f.label || f.name}
-              {f.required && <span className="text-danger ml-1">*</span>}
+              {(f as any).required && <span className="text-danger ml-1">*</span>}
             </label>
             {renderField(
               f,

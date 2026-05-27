@@ -244,7 +244,7 @@ const SettingsPage = () => {
   if (loading) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center">
-        <Loader2 size={32} className="text-indigo-500 animate-spin" />
+        <Loader2 size={32} className="text-emerald-500 animate-spin" />
       </div>
     )
   }
@@ -253,7 +253,7 @@ const SettingsPage = () => {
     <div className="max-w-[1400px] mx-auto space-y-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-none bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-500">
+          <div className="w-14 h-14 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
             <SettingsIcon size={24} />
           </div>
           <div>
@@ -269,8 +269,8 @@ const SettingsPage = () => {
           onClick={handleSave}
           disabled={saving}
           className={cn(
-            'flex items-center justify-center gap-3 px-8 py-4 rounded-none text-[10px] font-black uppercase tracking-widest italic transition-all shadow-xl shadow-indigo-500/10 active:scale-95 disabled:opacity-50',
-            theme === 'dark' ? 'bg-indigo-500 hover:bg-indigo-600 text-white' : 'bg-gray-900 text-white hover:bg-gray-800'
+            'flex items-center justify-center gap-3 px-8 py-4 rounded-none text-[10px] font-black uppercase tracking-widest italic transition-all shadow-xl shadow-emerald-500/10 active:scale-95 disabled:opacity-50',
+            theme === 'dark' ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : 'bg-gray-900 text-white hover:bg-gray-800'
           )}
         >
           {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
@@ -292,13 +292,13 @@ const SettingsPage = () => {
               )}
             >
               <div className="flex items-center gap-3">
-                <tab.icon size={16} className={activeTab === tab.id ? 'text-indigo-500' : 'opacity-30 group-hover:opacity-60'} />
+                <tab.icon size={16} className={activeTab === tab.id ? 'text-emerald-500' : 'opacity-30 group-hover:opacity-60'} />
                 <div className="flex flex-col items-start leading-none">
                   <span className="text-[12px] font-black uppercase tracking-tight italic">{tab.label}</span>
                   <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1 opacity-60">{tab.sub}</span>
                 </div>
               </div>
-              {activeTab === tab.id && <div className="w-1 h-3 bg-indigo-500 rounded-none shadow-[0_0_8px_#6366f1]" />}
+              {activeTab === tab.id && <div className="w-1 h-3 bg-emerald-500 rounded-none shadow-[0_0_8px_#10b981]" />}
             </button>
           ))}
         </div>

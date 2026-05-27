@@ -108,8 +108,8 @@ export const FocalPointCropper: React.FC<FocalPointCropperProps> = ({
             width: '28px',
             height: '28px',
             borderRadius: '50%',
-            border: '2.5px solid #8B5CF6',
-            boxShadow: '0 0 12px #8B5CF6, inset 0 0 4px #8B5CF6',
+            border: '2.5px solid #10B981',
+            boxShadow: '0 0 12px #10B981, inset 0 0 4px #10B981',
             pointerEvents: 'none',
             display: 'flex',
             alignItems: 'center',
@@ -141,14 +141,14 @@ export const FocalPointCropper: React.FC<FocalPointCropperProps> = ({
       >
         <div>
           Focus Position:{' '}
-          <span style={{ color: '#8B5CF6', fontWeight: 600 }}>
+          <span style={{ color: '#10B981', fontWeight: 600 }}>
             X: {focalPoint.x}%, Y: {focalPoint.y}%
           </span>
         </div>
         <button
           onClick={triggerSave}
           style={{
-            backgroundColor: '#8B5CF6',
+            backgroundColor: '#10B981',
             color: '#FFFFFF',
             border: 'none',
             padding: '8px 16px',

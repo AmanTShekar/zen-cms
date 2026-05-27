@@ -54,7 +54,7 @@ export interface DatabaseAdapter {
 
   // ── Advanced Operations ───────────────────────────────────────────────────
   count(collection: string, query: Record<string, unknown>): Promise<number>
-  aggregate<T = unknown>(collection: string, pipeline: unknown[]): Promise<T[]>
+  aggregate<T = unknown>(collection: string, pipeline: unknown[], options?: BaseOptions): Promise<T[]>
 
   /**
    * Executes multiple operations in a transaction.

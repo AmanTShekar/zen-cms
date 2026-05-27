@@ -30,8 +30,8 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
           className={cn(
             'w-full border rounded-none py-3 px-4 text-[14px] font-black italic transition-all outline-none',
             theme === 'dark'
-              ? 'bg-black border-white/10 text-white focus:border-indigo-500'
-              : 'bg-white border-gray-200 focus:border-indigo-500'
+              ? 'bg-black border-white/10 text-white focus:border-emerald-500'
+              : 'bg-white border-gray-200 focus:border-emerald-500'
           )}
         />
       </div>
@@ -51,8 +51,8 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
           className={cn(
             'w-full border rounded-none py-3 px-4 text-[14px] font-black italic transition-all outline-none',
             theme === 'dark'
-              ? 'bg-black border-white/10 text-white focus:border-indigo-500'
-              : 'bg-white border-gray-200 focus:border-indigo-500'
+              ? 'bg-black border-white/10 text-white focus:border-emerald-500'
+              : 'bg-white border-gray-200 focus:border-emerald-500'
           )}
         />
       </div>
@@ -60,7 +60,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
         className={cn(
           'col-span-1 md:col-span-2 p-6 rounded-none border flex items-center justify-between transition-all group',
           theme === 'dark'
-            ? 'bg-white/[0.01] border-white/5 hover:border-indigo-500/20'
+            ? 'bg-white/[0.01] border-white/5 hover:border-emerald-500/20'
             : 'bg-white border-gray-100'
         )}
       >
@@ -79,7 +79,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
             onChange={(e) => setSettings({ ...settings, maintenanceMode: e.target.checked })}
             className="sr-only peer"
           />
-          <div className="w-12 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-none after:h-4 after:w-5 after:transition-all peer-checked:bg-indigo-600 shadow-inner border border-white/5"></div>
+          <div className="w-12 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-none after:h-4 after:w-5 after:transition-all peer-checked:bg-emerald-600 shadow-inner border border-white/5"></div>
         </label>
       </div>
     </>

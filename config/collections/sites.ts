@@ -1,15 +1,15 @@
-import { defineCollection } from 'sanity';
-import { z } from 'zod';
+import type { CollectionConfig } from '@zenithcms/types'
 
-export const sites = defineCollection({
-  name: 'site',
-  title: 'Site',
-  type: 'document',
-  schema: z.object({
-    _id: z.string().optional(),
-    name: z.string().min(1),
-    slug: z.string().min(1),
-    domain: z.string().optional(),
-    tenantId: z.string().min(1), // maps to X-Zenith-Site-Id header
-  }),
-});
+export const Site: CollectionConfig = {
+  name: 'Site',
+  slug: 'sites',
+  publicRead: true,
+  timestamps: true,
+  admin: { useAsTitle: 'name' },
+  fields: [
+    { name: 'siteId', type: 'text', required: true, label: 'Site ID' },
+    { name: 'name', type: 'text', required: true, label: 'Site Name' },
+    { name: 'slug', type: 'text', required: true, label: 'Slug' },
+    { name: 'domain', type: 'text', label: 'Domain' },
+  ],
+}

@@ -6,13 +6,16 @@ interface User {
   email: string
   name?: string
   role: 'admin' | 'editor' | 'viewer'
+  twoFactorEnabled?: boolean
 }
 
 interface AuthState {
   user: User | null
   isAuthenticated: boolean
   isLoading: boolean
+  siteId: string | null
   setUser: (user: User | null) => void
+  setSiteId: (siteId: string | null) => void
   login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   checkAuth: () => Promise<void>
@@ -22,8 +25,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
   isLoading: true,
+  siteId: null,
 
   setUser: (user) => set({ user, isAuthenticated: !!user }),
+
+  setSiteId: (siteId) => set({ siteId }),
 
   login: async (email, password) => {
     try {

@@ -4,7 +4,7 @@ import { cn } from '../lib/utils'
 import type { WidgetProps } from './registry'
 
 const ACTIONS = [
-  { title: 'New Content', icon: Plus, path: '/collections', color: 'bg-indigo-500' },
+  { title: 'New Content', icon: Plus, path: '/collections', color: 'bg-emerald-500' },
   { title: 'Media Library', icon: Box, path: '/media', color: 'bg-emerald-500' },
   { title: 'AI Writer', icon: Sparkles, path: '/ai-architect', color: 'bg-amber-500' },
 ]
@@ -31,7 +31,7 @@ export default function QuickActionsWidget({ config = {}, theme }: WidgetProps) 
             <div
               className={cn(
                 'w-10 h-10 rounded-none flex items-center justify-center text-white shadow-lg shrink-0 transition-transform group-hover:scale-110',
-                a.color || 'bg-indigo-500'
+                a.color || 'bg-emerald-500'
               )}
             >
               <Icon size={18} />

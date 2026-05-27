@@ -30,7 +30,7 @@ export default function ApiStatusWidget({ theme, title }: WidgetProps) {
 
   return (
     <div className="h-full flex flex-col gap-3">
-      <p className="text-[9px] font-black text-indigo-500 uppercase tracking-widest italic">
+      <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest italic">
         {title || 'API Health'}
       </p>
       <div

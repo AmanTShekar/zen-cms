@@ -97,8 +97,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ value, onChange, theme, height 
       className={cn(
         'w-full border rounded-none px-4 py-3 font-mono text-[11px] leading-relaxed resize-y outline-none transition-all',
         theme === 'dark'
-          ? 'bg-black border-white/10 text-emerald-300 focus:border-indigo-500/50'
-          : 'bg-gray-900 border-gray-600 text-emerald-300 focus:border-indigo-500'
+          ? 'bg-black border-white/10 text-emerald-300 focus:border-emerald-500/50'
+          : 'bg-gray-900 border-gray-600 text-emerald-300 focus:border-emerald-500'
       )}
       style={{ minHeight: height, fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace' }}
     />
@@ -252,7 +252,7 @@ const CollectionHooksPage: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center">
-        <Loader2 size={32} className="text-indigo-500 animate-spin" />
+        <Loader2 size={32} className="text-emerald-500 animate-spin" />
       </div>
     )
   }
@@ -272,7 +272,7 @@ const CollectionHooksPage: React.FC = () => {
             <ArrowLeft size={18} />
           </Link>
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-none bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-500">
+            <div className="w-12 h-12 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
               <Code2 size={22} />
             </div>
             <div>
@@ -289,8 +289,8 @@ const CollectionHooksPage: React.FC = () => {
           onClick={handleSave}
           disabled={saving || !isDirty()}
           className={cn(
-            'flex items-center justify-center gap-3 px-8 py-4 rounded-none text-[10px] font-black uppercase tracking-widest italic transition-all shadow-xl shadow-indigo-500/10 active:scale-95 disabled:opacity-50',
-            theme === 'dark' ? 'bg-indigo-500 hover:bg-indigo-600 text-white' : 'bg-gray-900 text-white hover:bg-gray-800'
+            'flex items-center justify-center gap-3 px-8 py-4 rounded-none text-[10px] font-black uppercase tracking-widest italic transition-all shadow-xl shadow-emerald-500/10 active:scale-95 disabled:opacity-50',
+            theme === 'dark' ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : 'bg-gray-900 text-white hover:bg-gray-800'
           )}
         >
           {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
@@ -308,12 +308,12 @@ const CollectionHooksPage: React.FC = () => {
           )}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Globe size={14} className="text-indigo-400" />
+                <Globe size={14} className="text-emerald-400" />
                 <span className="text-[10px] font-black uppercase tracking-widest">Public Read Access</span>
               </div>
               <button
                 onClick={() => setPublicRead(!publicRead)}
-                className="text-indigo-400 hover:text-indigo-300 transition-colors"
+                className="text-emerald-400 hover:text-emerald-300 transition-colors"
               >
                 {publicRead ? <ToggleRight size={28} /> : <ToggleLeft size={28} className="text-gray-600" />}
               </button>
@@ -340,15 +340,15 @@ const CollectionHooksPage: React.FC = () => {
                     className={cn(
                       'px-5 py-3 flex items-center justify-between transition-colors',
                       isActive
-                        ? 'bg-indigo-500/5'
+                        ? 'bg-emerald-500/5'
                         : theme === 'dark' ? 'hover:bg-white/[0.02]' : 'hover:bg-gray-50'
                     )}
                   >
                     <div className="flex items-center gap-2">
-                      {isActive && <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />}
+                      {isActive && <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />}
                       <span className={cn(
                         'text-[10px] font-black uppercase tracking-widest',
-                        isActive ? 'text-indigo-400' : theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                        isActive ? 'text-emerald-400' : theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
                       )}>
                         {hook.label}
                       </span>
@@ -356,7 +356,7 @@ const CollectionHooksPage: React.FC = () => {
                     {!isActive && (
                       <button
                         onClick={() => handleAddHook(hook.name)}
-                        className="text-indigo-400 hover:text-indigo-300 transition-colors"
+                        className="text-emerald-400 hover:text-emerald-300 transition-colors"
                         title={`Add ${hook.label} hook`}
                       >
                         <Plus size={14} />
@@ -380,15 +380,15 @@ const CollectionHooksPage: React.FC = () => {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">Active Hooks</span>
-                <span className="text-[8px] text-indigo-400 font-black">{activeHooks.length}</span>
+                <span className="text-[8px] text-emerald-400 font-black">{activeHooks.length}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">Custom Endpoints</span>
-                <span className="text-[8px] text-indigo-400 font-black">{endpoints.length}</span>
+                <span className="text-[8px] text-emerald-400 font-black">{endpoints.length}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">Fields</span>
-                <span className="text-[8px] text-indigo-400 font-black">{fields.length}</span>
+                <span className="text-[8px] text-emerald-400 font-black">{fields.length}</span>
               </div>
             </div>
           </div>
@@ -399,7 +399,7 @@ const CollectionHooksPage: React.FC = () => {
           {/* Collection Lifecycle Hooks */}
           <div className="space-y-4">
             <div className="flex items-center gap-3 border-b border-white/5 pb-4">
-              <Zap size={16} className="text-indigo-400" />
+              <Zap size={16} className="text-emerald-400" />
               <h2 className="text-sm font-black uppercase italic tracking-wider">Collection Lifecycle Hooks</h2>
               <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest ml-auto">
                 {activeHooks.length} active
@@ -439,13 +439,13 @@ const CollectionHooksPage: React.FC = () => {
                         className={cn(
                           'w-full px-5 py-4 flex items-center justify-between transition-colors',
                           isOpen
-                            ? theme === 'dark' ? 'bg-indigo-500/5' : 'bg-indigo-50'
+                            ? theme === 'dark' ? 'bg-emerald-500/5' : 'bg-emerald-50'
                             : theme === 'dark' ? 'hover:bg-white/[0.02]' : 'hover:bg-gray-50'
                         )}
                       >
                         <div className="flex items-center gap-3">
-                          {isOpen ? <ChevronDown size={14} className="text-indigo-400" /> : <ChevronRight size={14} className="text-gray-500" />}
-                          <FileCode size={14} className="text-indigo-400" />
+                          {isOpen ? <ChevronDown size={14} className="text-emerald-400" /> : <ChevronRight size={14} className="text-gray-500" />}
+                          <FileCode size={14} className="text-emerald-400" />
                           <div className="flex flex-col items-start">
                             <span className="text-[11px] font-black uppercase tracking-tight italic text-white">{hook.label}</span>
                             <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">{hook.event}</span>
@@ -526,7 +526,7 @@ const CollectionHooksPage: React.FC = () => {
                         value={ep.method}
                         onChange={(e) => handleUpdateEndpoint(idx, 'method', e.target.value)}
                         className={cn(
-                          'bg-black border text-[9px] font-black uppercase italic outline-none py-1.5 px-3 rounded-none focus:border-indigo-500',
+                          'bg-black border text-[9px] font-black uppercase italic outline-none py-1.5 px-3 rounded-none focus:border-emerald-500',
                           theme === 'dark' ? 'border-white/10 text-emerald-400' : 'border-gray-200 text-emerald-600'
                         )}
                       >
@@ -541,7 +541,7 @@ const CollectionHooksPage: React.FC = () => {
                         placeholder="/custom-path"
                         className={cn(
                           'flex-1 border rounded-none py-2 px-3 text-[11px] font-mono italic transition-all outline-none',
-                          theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-indigo-500' : 'bg-gray-50 border-gray-200 focus:border-indigo-500'
+                          theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                         )}
                       />
                       <button
@@ -558,7 +558,7 @@ const CollectionHooksPage: React.FC = () => {
                       placeholder="Brief description of this endpoint..."
                       className={cn(
                         'w-full border rounded-none py-2 px-3 text-[10px] transition-all outline-none',
-                        theme === 'dark' ? 'bg-black border-white/10 text-gray-300 focus:border-indigo-500' : 'bg-gray-50 border-gray-200 focus:border-indigo-500'
+                        theme === 'dark' ? 'bg-black border-white/10 text-gray-300 focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                       )}
                     />
                   </div>
@@ -570,18 +570,18 @@ const CollectionHooksPage: React.FC = () => {
           {/* Info card */}
           <div className={cn(
             'p-6 border rounded-none space-y-4',
-            theme === 'dark' ? 'bg-indigo-500/5 border-indigo-500/10' : 'bg-indigo-50 border-indigo-100'
+            theme === 'dark' ? 'bg-emerald-500/5 border-emerald-500/10' : 'bg-emerald-50 border-emerald-100'
           )}>
             <div className="flex items-center gap-3">
-              <Shield size={14} className="text-indigo-400" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Developer Notes</span>
+              <Shield size={14} className="text-emerald-400" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Developer Notes</span>
             </div>
             <ul className="space-y-2 text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-relaxed">
               <li>• Hooks are stored as JSON configuration and executed server-side</li>
-              <li>• <code className="text-indigo-400 font-mono">before*</code> hooks can modify data by returning the modified value</li>
-              <li>• <code className="text-indigo-400 font-mono">after*</code> hooks are for side effects (fire-and-forget)</li>
+              <li>• <code className="text-emerald-400 font-mono">before*</code> hooks can modify data by returning the modified value</li>
+              <li>• <code className="text-emerald-400 font-mono">after*</code> hooks are for side effects (fire-and-forget)</li>
               <li>• Custom endpoints are mounted at <code className="text-emerald-400 font-mono">/api/v1/{slug}/your-path</code></li>
-              <li>• Access <code className="text-indigo-400 font-mono">req.zenith.adapter</code> for database operations</li>
+              <li>• Access <code className="text-emerald-400 font-mono">req.zenith.adapter</code> for database operations</li>
             </ul>
           </div>
         </div>

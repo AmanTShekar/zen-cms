@@ -81,10 +81,22 @@ if (redisUrl) {
  * Uses a tiered approach: stricter for Auth, more relaxed for general API.
  */
 
-// General API: 100 requests per minute
+// Read rate limit config from env vars with sensible defaults
+function readRateLimitConfig(): { apiMax: number; apiWindowMs: number; authMax: number; authWindowMs: number } {
+  return {
+    apiMax: parseInt(process.env.RATE_LIMIT_API_MAX || '100', 10),
+    apiWindowMs: parseInt(process.env.RATE_LIMIT_API_WINDOW_MS || `${60 * 1000}`, 10),
+    authMax: parseInt(process.env.RATE_LIMIT_AUTH_MAX || '10', 10),
+    authWindowMs: parseInt(process.env.RATE_LIMIT_AUTH_WINDOW_MS || `${15 * 60 * 1000}`, 10),
+  }
+}
+
+const { apiMax, apiWindowMs, authMax, authWindowMs } = readRateLimitConfig()
+
+// General API: 100 requests per minute (configurable via env)
 export const rateLimitMiddleware = rateLimit({
-  windowMs: 60 * 1000,
-  max: 100,
+  windowMs: apiWindowMs,
+  max: apiMax,
   message: { error: 'Too many requests, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -95,10 +107,10 @@ export const rateLimitMiddleware = rateLimit({
 // Alias for clarity
 export const apiRateLimiter = rateLimitMiddleware
 
-// Auth Routes: 10 requests per 15 minutes (tighter)
+// Auth Routes: 10 requests per 15 minutes (configurable via env)
 export const authRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
+  windowMs: authWindowMs,
+  max: authMax,
   message: { error: 'Too many login attempts. Please wait 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,

@@ -69,6 +69,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
   const defaultNavItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
     { name: 'Templates', path: '/templates', icon: Layout },
+    { name: 'Campaigns', path: '/campaigns', icon: Command },
     { name: 'AI Content Hub', path: '/ai-architect', icon: Sparkles },
     { name: 'Automations', path: '/automations', icon: Workflow },
     { name: 'Plugins', path: '/plugins', icon: Puzzle },
@@ -210,7 +211,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
               <motion.div
                 animate={{ opacity: [0.1, 0.4, 0.1], scale: [1, 1.2, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="absolute inset-0 bg-indigo-500/20"
+                className="absolute inset-0 bg-emerald-500/20"
               />
             </div>
             <AnimatePresence>
@@ -226,7 +227,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     </span>
                     <div className="w-1 h-1 bg-emerald-500 rounded-none animate-pulse" />
                   </div>
-                  <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em] italic leading-none mt-1.5">
+                  <span className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.4em] italic leading-none mt-1.5">
                     v6.0 Stable
                   </span>
                 </motion.div>
@@ -257,7 +258,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                         className={cn(
                           'p-1 border rounded-none transition-all',
                           isCustomizing
-                            ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-400'
+                            ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400'
                             : 'border-transparent text-gray-500 hover:text-gray-300'
                         )}
                         title={isCustomizing ? 'Done' : 'Customize'}
@@ -338,7 +339,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                             {isActive && !isSidebarOpen && (
                               <motion.div
                                 layoutId="nav-glow-mini"
-                                className="absolute left-0 w-1 h-4 bg-indigo-500 rounded-none"
+                                className="absolute left-0 w-1 h-4 bg-emerald-500 rounded-none"
                               />
                             )}
                           </Link>
@@ -354,16 +355,16 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
           <nav className="space-y-1.5 pt-4 border-t border-white/[0.03]">
             <div className="px-3 mb-4 flex items-center justify-between">
               {isSidebarOpen && (
-                <span className="text-[12px] font-black text-indigo-500 uppercase tracking-[0.4em] italic leading-none">
+                <span className="text-[12px] font-black text-emerald-500 uppercase tracking-[0.4em] italic leading-none">
                   Global Settings
                 </span>
               )}
-              <ShieldCheck size={10} className="text-indigo-500" />
+              <ShieldCheck size={10} className="text-emerald-500" />
             </div>
 
             <div className="space-y-0.5">
               {globals.map((global) => {
-                const isActive = location.pathname === `/globals/${global.slug}`
+                const isActive = location.pathname.startsWith(`/globals/${global.slug}`)
                 return (
                   <Link
                     key={global.slug}
@@ -386,7 +387,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                           ? theme === 'dark'
                             ? 'bg-black'
                             : 'bg-emerald-400'
-                          : 'bg-gray-700/40 group-hover:bg-indigo-500'
+                          : 'bg-gray-700/40 group-hover:bg-emerald-500'
                       )}
                     />
                     {isSidebarOpen && (
@@ -437,7 +438,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                           ? theme === 'dark'
                             ? 'bg-black scale-110'
                             : 'bg-emerald-400'
-                          : 'bg-gray-700/40 group-hover:bg-indigo-500'
+                          : 'bg-gray-700/40 group-hover:bg-emerald-500'
                       )}
                     />
                     {isSidebarOpen && (
@@ -483,12 +484,72 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                       ? theme === 'dark'
                         ? 'bg-black scale-110'
                         : 'bg-emerald-400'
-                      : 'bg-gray-700/40 group-hover:bg-indigo-500'
+                      : 'bg-gray-700/40 group-hover:bg-emerald-500'
                   )}
                 />
                 {isSidebarOpen && (
                   <span className="text-[12px] font-black uppercase tracking-tight italic leading-none truncate">
                     Audit Logs
+                  </span>
+                )}
+              </Link>
+
+              <Link
+                to="/schema-builder"
+                className={cn(
+                  'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
+                  location.pathname === '/schema-builder'
+                    ? theme === 'dark'
+                      ? 'bg-white border-white text-black shadow-lg'
+                      : 'bg-gray-900 border-gray-800 text-white shadow-xl'
+                    : theme === 'dark'
+                      ? 'text-gray-450 border-white/5 hover:bg-white/[0.04] hover:text-white'
+                      : 'text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-gray-900'
+                )}
+              >
+                <div
+                  className={cn(
+                    'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
+                    location.pathname === '/schema-builder'
+                      ? theme === 'dark'
+                        ? 'bg-black scale-110'
+                        : 'bg-emerald-400'
+                      : 'bg-gray-700/40 group-hover:bg-emerald-500'
+                  )}
+                />
+                {isSidebarOpen && (
+                  <span className="text-[12px] font-black uppercase tracking-tight italic leading-none truncate">
+                    Schema Builder
+                  </span>
+                )}
+              </Link>
+
+              <Link
+                to="/component-builder"
+                className={cn(
+                  'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
+                  location.pathname === '/component-builder'
+                    ? theme === 'dark'
+                      ? 'bg-white border-white text-black shadow-lg'
+                      : 'bg-gray-900 border-gray-800 text-white shadow-xl'
+                    : theme === 'dark'
+                      ? 'text-gray-450 border-white/5 hover:bg-white/[0.04] hover:text-white'
+                      : 'text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-gray-900'
+                )}
+              >
+                <div
+                  className={cn(
+                    'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
+                    location.pathname === '/component-builder'
+                      ? theme === 'dark'
+                        ? 'bg-black scale-110'
+                        : 'bg-emerald-400'
+                      : 'bg-gray-700/40 group-hover:bg-emerald-500'
+                  )}
+                />
+                {isSidebarOpen && (
+                  <span className="text-[12px] font-black uppercase tracking-tight italic leading-none truncate">
+                    Component Builder
                   </span>
                 )}
               </Link>
@@ -513,12 +574,72 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                       ? theme === 'dark'
                         ? 'bg-black scale-110'
                         : 'bg-emerald-400'
-                      : 'bg-gray-700/40 group-hover:bg-indigo-500'
+                      : 'bg-gray-700/40 group-hover:bg-emerald-500'
                   )}
                 />
                 {isSidebarOpen && (
                   <span className="text-[12px] font-black uppercase tracking-tight italic leading-none truncate">
                     Members
+                  </span>
+                )}
+              </Link>
+
+              <Link
+                to="/redirects"
+                className={cn(
+                  'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
+                  location.pathname === '/redirects'
+                    ? theme === 'dark'
+                      ? 'bg-white border-white text-black shadow-lg'
+                      : 'bg-gray-900 border-gray-800 text-white shadow-xl'
+                    : theme === 'dark'
+                      ? 'text-gray-450 border-white/5 hover:bg-white/[0.04] hover:text-white'
+                      : 'text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-gray-900'
+                )}
+              >
+                <div
+                  className={cn(
+                    'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
+                    location.pathname === '/redirects'
+                      ? theme === 'dark'
+                        ? 'bg-black scale-110'
+                        : 'bg-emerald-400'
+                      : 'bg-gray-700/40 group-hover:bg-emerald-500'
+                  )}
+                />
+                {isSidebarOpen && (
+                  <span className="text-[12px] font-black uppercase tracking-tight italic leading-none truncate">
+                    Redirects
+                  </span>
+                )}
+              </Link>
+
+              <Link
+                to="/trash"
+                className={cn(
+                  'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
+                  location.pathname === '/trash'
+                    ? theme === 'dark'
+                      ? 'bg-white border-white text-black shadow-lg'
+                      : 'bg-gray-900 border-gray-800 text-white shadow-xl'
+                    : theme === 'dark'
+                      ? 'text-gray-450 border-white/5 hover:bg-white/[0.04] hover:text-white'
+                      : 'text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-gray-900'
+                )}
+              >
+                <div
+                  className={cn(
+                    'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
+                    location.pathname === '/trash'
+                      ? theme === 'dark'
+                        ? 'bg-black scale-110'
+                        : 'bg-emerald-400'
+                      : 'bg-gray-700/40 group-hover:bg-emerald-500'
+                  )}
+                />
+                {isSidebarOpen && (
+                  <span className="text-[12px] font-black uppercase tracking-tight italic leading-none truncate">
+                    Trash
                   </span>
                 )}
               </Link>
@@ -543,7 +664,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                       ? theme === 'dark'
                         ? 'bg-black scale-110'
                         : 'bg-emerald-400'
-                      : 'bg-gray-700/40 group-hover:bg-indigo-500'
+                      : 'bg-gray-700/40 group-hover:bg-emerald-500'
                   )}
                 />
                 {isSidebarOpen && (

@@ -51,16 +51,18 @@ import { Cpu } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import api from './lib/api'
 import { ThemeProvider } from './context/ThemeContext'
+import { BlockLibraryProvider } from './context/BlockLibraryContext'
+import { GlobalComponentPickerModal } from './components/GlobalComponentPickerModal'
 
 // ── Code-split page bundles ────────────────────────────────────────────────────
 const CollectionsPage = lazy(() => import('./pages/CollectionsPage'))
-const CollectionDetail = lazy(() => import('./pages/CollectionDetail'))
 const CollectionHooksPage = lazy(() => import('./pages/CollectionHooksPage'))
 const AuditLogPage = lazy(() => import('./pages/AuditLogPage'))
 const MediaLibrary = lazy(() => import('./pages/MediaLibrary'))
 const DemoFeatures = lazy(() => import('./pages/DemoFeatures'))
 const SpatialEditor = lazy(() => import('./pages/SpatialEditor'))
 const FlowBuilderPage = lazy(() => import('./pages/FlowBuilderPage'))
+const ComponentBuilderPage = lazy(() => import('./pages/ComponentBuilderPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const SystemHealthPage = lazy(() => import('./pages/SystemHealthPage'))
 const AIWriterPage = lazy(() => import('./pages/AIWriterPage'))
@@ -68,6 +70,10 @@ const PluginsPage = lazy(() => import('./pages/PluginsPage'))
 const DashboardBuilder = lazy(() => import('./pages/DashboardBuilder'))
 const TemplatesPage = lazy(() => import('./pages/TemplatesPage'))
 const SetupWizard = lazy(() => import('./pages/SetupWizard'))
+const RedirectsPage = lazy(() => import('./pages/RedirectsPage'))
+const TrashPage = lazy(() => import('./pages/TrashPage'))
+const BuilderPage = lazy(() => import('./pages/BuilderPage'))
+const CampaignsPage = lazy(() => import('./pages/CampaignsPage'))
 
 const PageLoader = () => (
   <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-8">
@@ -148,7 +154,8 @@ const App: React.FC = () => {
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <Toaster
+        <BlockLibraryProvider>
+          <Toaster
           position="bottom-right"
           toastOptions={{
             style: {
@@ -164,8 +171,10 @@ const App: React.FC = () => {
               fontStyle: 'italic',
             },
           }}
-        />
-        <BrowserRouter>
+          />
+          {/* Global component picker — available from all pages */}
+          <GlobalComponentPickerModal />
+          <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -193,7 +202,7 @@ const App: React.FC = () => {
 
             {/* 🌑 Standalone Focused Spatial Architecture (No Sidebar) */}
             <Route
-              path="/collections/pages/:id"
+              path="/collections/:slug/new"
               element={
                 <ProtectedRoute>
                   <ErrorBoundary>
@@ -205,17 +214,43 @@ const App: React.FC = () => {
               }
             />
             <Route
-              path="/collections/pages/new"
+              path="/collections/:slug/singleton"
               element={
                 <ProtectedRoute>
-                  <Suspense fallback={<PageLoader />}>
-                    <CollectionDetail />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<PageLoader />}>
+                      <SpatialEditor />
+                    </Suspense>
+                  </ErrorBoundary>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/collections/:slug/:id"
+              element={
+                <ProtectedRoute>
+                  <ErrorBoundary>
+                    <Suspense fallback={<PageLoader />}>
+                      <SpatialEditor />
+                    </Suspense>
+                  </ErrorBoundary>
                 </ProtectedRoute>
               }
             />
             <Route
               path="/globals/:slug"
+              element={
+                <ProtectedRoute>
+                  <ErrorBoundary>
+                    <Suspense fallback={<PageLoader />}>
+                      <SpatialEditor isGlobal />
+                    </Suspense>
+                  </ErrorBoundary>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/globals/:slug/:id"
               element={
                 <ProtectedRoute>
                   <ErrorBoundary>
@@ -240,9 +275,6 @@ const App: React.FC = () => {
                           <Route path="/collections" element={<CollectionsPage />} />
                           <Route path="/collections/:slug" element={<CollectionList />} />
                           <Route path="/collections/:slug/hooks" element={<CollectionHooksPage />} />
-                          <Route path="/collections/:slug/:id" element={<CollectionDetail />} />
-                          <Route path="/globals/:slug" element={<CollectionDetail isGlobal />} />
-                          <Route path="/globals/:slug/:id" element={<CollectionDetail isGlobal />} />
                           <Route path="/audit-log" element={<AuditLogPage />} />
                           <Route path="/media" element={<MediaLibrary />} />
                           <Route path="/playground" element={<DemoFeatures />} />
@@ -255,7 +287,12 @@ const App: React.FC = () => {
                           <Route path="/plugins" element={<PluginsPage />} />
                           <Route path="/settings" element={<SettingsPage />} />
                           <Route path="/ai-architect" element={<AIWriterPage />} />
+                          <Route path="/redirects" element={<RedirectsPage />} />
+                          <Route path="/trash" element={<TrashPage />} />
                           <Route path="/system" element={<SystemHealthPage />} />
+                          <Route path="/schema-builder" element={<BuilderPage />} />
+                          <Route path="/component-builder" element={<ComponentBuilderPage />} />
+                          <Route path="/campaigns" element={<CampaignsPage />} />
                           <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
                       </Suspense>
@@ -265,7 +302,8 @@ const App: React.FC = () => {
               }
             />
           </Routes>
-        </BrowserRouter>
+          </BrowserRouter>
+        </BlockLibraryProvider>
       </QueryClientProvider>
     </ThemeProvider>
   )

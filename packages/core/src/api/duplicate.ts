@@ -21,7 +21,7 @@ router.post('/:collection/:id/duplicate', async (req: Request, res: Response, ne
     const config = (req as any).zenith?.config
     const user = (req as any).user
     const siteId = req.headers['x-zenith-site-id'] as string
-    const adapter = (req as any).__zenithAdapter
+    const adapter = (req as any).zenith?.adapter
 
     if (!adapter) {
       throw new Error('Database adapter not initialized on request context')

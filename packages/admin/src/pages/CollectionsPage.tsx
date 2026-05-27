@@ -189,7 +189,7 @@ const CollectionsPage: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="animate-spin text-indigo-500" size={32} />
+        <Loader2 className="animate-spin text-emerald-500" size={32} />
       </div>
     )
   }
@@ -214,7 +214,7 @@ const CollectionsPage: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-3 mb-1">
-              <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em] italic">
+              <span className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.4em] italic">
                 Data_Architect
               </span>
               <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 shadow-[0_0_8px_#10b981]" />
@@ -236,7 +236,7 @@ const CollectionsPage: React.FC = () => {
 
           <button
             onClick={() => setIsAIModalOpen(true)}
-            className="flex items-center gap-2 px-6 py-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-colors"
+            className="flex items-center gap-2 px-6 py-4 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-colors"
           >
             <Zap size={14} />
             AI Architect
@@ -252,8 +252,8 @@ const CollectionsPage: React.FC = () => {
               className={cn(
                 'w-full border rounded-none py-4 pl-12 pr-4 text-[10px] font-black italic focus:ring-4 transition-all outline-none uppercase tracking-widest',
                 theme === 'dark'
-                  ? 'bg-white/[0.03] border-white/10 text-white focus:ring-indigo-500/20'
-                  : 'bg-white border-gray-200 focus:ring-indigo-500/10'
+                  ? 'bg-white/[0.03] border-white/10 text-white focus:ring-emerald-500/20'
+                  : 'bg-white border-gray-200 focus:ring-emerald-500/10'
               )}
             />
           </div>
@@ -265,7 +265,7 @@ const CollectionsPage: React.FC = () => {
         {[
           {
             label: 'Total Records',
-            value: Object.values(stats).reduce((a: any, b: any) => a + b, 0),
+            value: String(Object.values(stats).reduce((a: number, b: number) => a + b, 0)),
             icon: Activity,
             sub: 'Global Synchronization',
           },
@@ -291,7 +291,7 @@ const CollectionsPage: React.FC = () => {
               <span className="text-4xl font-black italic tracking-tighter">
                 {item.value}
               </span>
-              <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-widest">
+              <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">
                 {item.sub}
               </span>
             </div>
@@ -313,8 +313,8 @@ const CollectionsPage: React.FC = () => {
               className={cn(
                 'group p-6 border rounded-none flex flex-col gap-6 transition-all hover:-translate-y-1 relative',
                 theme === 'dark'
-                  ? 'bg-[#080808] border-white/5 hover:border-indigo-500/50'
-                  : 'bg-white border-gray-100 hover:border-indigo-500 shadow-sm'
+                  ? 'bg-[#080808] border-white/5 hover:border-emerald-500/50'
+                  : 'bg-white border-gray-100 hover:border-emerald-500 shadow-sm'
               )}
             >
               <div className="flex items-start justify-between">
@@ -329,7 +329,7 @@ const CollectionsPage: React.FC = () => {
                   <Layers size={20} />
                 </div>
                 <div className="flex flex-col items-end">
-                  <span className="text-[9px] font-black text-indigo-500 uppercase tracking-widest italic">
+                  <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest italic">
                     Registry_Node
                   </span>
                   <span className="text-lg font-black italic tracking-tighter">
@@ -339,7 +339,7 @@ const CollectionsPage: React.FC = () => {
               </div>
 
               <div>
-                <h3 className="text-xl font-black uppercase tracking-tighter italic leading-none mb-2 group-hover:text-indigo-500 transition-colors">
+                <h3 className="text-xl font-black uppercase tracking-tighter italic leading-none mb-2 group-hover:text-emerald-500 transition-colors">
                   {col.label.replace(/-/g, ' ')}
                 </h3>
                 <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest leading-relaxed">
@@ -351,14 +351,14 @@ const CollectionsPage: React.FC = () => {
                 <Link
                   to={`/collections/${col.slug}/hooks`}
                   onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-1.5 text-[8px] font-black text-gray-500 hover:text-indigo-400 uppercase tracking-[0.2em] italic transition-colors"
+                  className="flex items-center gap-1.5 text-[8px] font-black text-gray-500 hover:text-emerald-400 uppercase tracking-[0.2em] italic transition-colors"
                 >
                   <Code2 size={10} />
                   Hooks
                 </Link>
                 <ArrowRight
                   size={14}
-                  className="text-indigo-500 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all"
+                  className="text-emerald-500 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all"
                 />
               </div>
             </Link>
@@ -383,7 +383,7 @@ const CollectionsPage: React.FC = () => {
               ✕
             </button>
             <h2 className="text-2xl font-black italic uppercase tracking-tighter mb-4 flex items-center gap-2">
-              <Zap className="text-indigo-500" /> AI Schema Architect
+              <Zap className="text-emerald-500" /> AI Schema Architect
             </h2>
             <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-6">
               Describe the collection you want to create and let AI build the schema configuration.
@@ -394,7 +394,7 @@ const CollectionsPage: React.FC = () => {
               onChange={(e) => setAiPrompt(e.target.value)}
               placeholder="e.g., I need a blog post collection with title, content, cover image, seo metadata, and a category dropdown..."
               className={cn(
-                'w-full h-32 p-4 mb-4 font-mono text-sm border outline-none focus:ring-2 focus:ring-indigo-500 resize-none',
+                'w-full h-32 p-4 mb-4 font-mono text-sm border outline-none focus:ring-2 focus:ring-emerald-500 resize-none',
                 theme === 'dark' ? 'bg-black border-white/10' : 'bg-gray-50 border-gray-200'
               )}
             />
@@ -402,7 +402,7 @@ const CollectionsPage: React.FC = () => {
             <button
               onClick={handleAIGenerate}
               disabled={aiLoading}
-              className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black italic uppercase tracking-widest flex items-center justify-center gap-2"
+              className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black italic uppercase tracking-widest flex items-center justify-center gap-2"
             >
               {aiLoading ? <Loader2 className="animate-spin" size={16} /> : <Database size={16} />}
               {aiLoading ? 'Synthesizing Architecture...' : 'Generate Schema'}
@@ -455,7 +455,7 @@ const CollectionsPage: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-indigo-500 italic block">
+                <label className="text-[10px] font-black uppercase tracking-widest text-emerald-500 italic block">
                   Collection Name
                 </label>
                 <input
@@ -473,7 +473,7 @@ const CollectionsPage: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-indigo-500 italic block">
+                <label className="text-[10px] font-black uppercase tracking-widest text-emerald-500 italic block">
                   Slug
                 </label>
                 <input
@@ -532,7 +532,7 @@ const CollectionsPage: React.FC = () => {
                     )}
                   >
                     <div className="space-y-2">
-                      <label className="text-[8px] font-black uppercase tracking-widest text-indigo-500 italic block">
+                      <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500 italic block">
                         Field Name
                       </label>
                       <input
@@ -550,7 +550,7 @@ const CollectionsPage: React.FC = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[8px] font-black uppercase tracking-widest text-indigo-500 italic block">
+                      <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500 italic block">
                         Type
                       </label>
                       <select
@@ -575,7 +575,7 @@ const CollectionsPage: React.FC = () => {
 
                     {field.type === 'select' ? (
                       <div className="space-y-2">
-                        <label className="text-[8px] font-black uppercase tracking-widest text-indigo-500 italic block">
+                        <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500 italic block">
                           Options (Comma separated)
                         </label>
                         <input
@@ -593,7 +593,7 @@ const CollectionsPage: React.FC = () => {
                       </div>
                     ) : field.type === 'relationship' ? (
                       <div className="space-y-2">
-                        <label className="text-[8px] font-black uppercase tracking-widest text-indigo-500 italic block">
+                        <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500 italic block">
                           Relate To Collection
                         </label>
                         <select

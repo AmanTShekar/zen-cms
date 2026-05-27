@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react'
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import {
   Search,
   Trash2,
@@ -52,6 +52,8 @@ const MediaLibrary = () => {
   const [cropStart, setCropStart] = useState<{ x: number; y: number } | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [saveName, setSaveName] = useState('')
+  const isMountedRef = useRef(true)
+  useEffect(() => { return () => { isMountedRef.current = false } }, [])
 
   const filteredFiles = useMemo(() => {
     return files.filter((f: any) => {
@@ -267,10 +269,10 @@ const MediaLibrary = () => {
         )}
       >
         <div className="relative">
-          <div className="absolute inset-0 bg-indigo-500/20 blur-[100px] rounded-none animate-pulse" />
+          <div className="absolute inset-0 bg-emerald-500/20 blur-[100px] rounded-none animate-pulse" />
           <Cpu
             size={48}
-            className="text-indigo-500 animate-spin transition-all duration-1000"
+            className="text-emerald-500 animate-spin transition-all duration-1000"
             strokeWidth={1}
           />
         </div>
@@ -301,7 +303,7 @@ const MediaLibrary = () => {
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-3 mb-2">
-              <span className="text-[9px] font-black text-indigo-500 uppercase tracking-[0.4em] italic leading-none border px-2 py-1 rounded-none border-indigo-500/10 bg-indigo-500/5">
+              <span className="text-[9px] font-black text-emerald-500 uppercase tracking-[0.4em] italic leading-none border px-2 py-1 rounded-none border-emerald-500/10 bg-emerald-500/5">
                 OPERATIONAL_STORAGE
               </span>
               <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 shadow-[0_0_8px_#10b981]" />
@@ -369,7 +371,7 @@ const MediaLibrary = () => {
               <Database
                 size={16}
                 className={
-                  activeFolder === null ? 'text-indigo-500' : 'opacity-30 group-hover:opacity-60'
+                  activeFolder === null ? 'text-emerald-500' : 'opacity-30 group-hover:opacity-60'
                 }
               />
               <div className="flex flex-col items-start">
@@ -382,7 +384,7 @@ const MediaLibrary = () => {
               </div>
             </div>
             {activeFolder === null && (
-              <div className="w-1 h-4 bg-indigo-500 rounded-none shadow-[0_0_8px_#6366f1]" />
+              <div className="w-1 h-4 bg-emerald-500 rounded-none shadow-[0_0_8px_#10b981]" />
             )}
           </button>
 
@@ -404,7 +406,7 @@ const MediaLibrary = () => {
                   size={16}
                   className={
                     activeFolder === folder
-                      ? 'text-indigo-500'
+                      ? 'text-emerald-500'
                       : 'opacity-30 group-hover:opacity-60'
                   }
                 />
@@ -418,7 +420,7 @@ const MediaLibrary = () => {
                 </div>
               </div>
               {activeFolder === folder && (
-                <div className="w-1 h-4 bg-indigo-500 rounded-none shadow-[0_0_8px_#6366f1]" />
+                <div className="w-1 h-4 bg-emerald-500 rounded-none shadow-[0_0_8px_#10b981]" />
               )}
             </button>
           ))}
@@ -434,13 +436,13 @@ const MediaLibrary = () => {
           >
             <button
               onClick={toggleSelectAll}
-              className="p-1 text-gray-500 hover:text-indigo-400 transition-colors shrink-0"
+              className="p-1 text-gray-500 hover:text-emerald-400 transition-colors shrink-0"
               title={selectedIds.size === filteredFiles.length ? 'Deselect all' : 'Select all visible'}
             >
               {selectedIds.size > 0 ? <CheckSquare size={18} /> : <Square size={18} />}
             </button>
             <Search
-              className="text-gray-500 group-focus-within:text-indigo-500 transition-colors"
+              className="text-gray-500 group-focus-within:text-emerald-500 transition-colors"
               size={20}
               strokeWidth={1.5}
             />
@@ -457,7 +459,7 @@ const MediaLibrary = () => {
                 'p-2 rounded-none transition-all',
                 theme === 'dark'
                   ? 'text-gray-500 hover:text-white'
-                  : 'text-gray-400 hover:text-indigo-600'
+                  : 'text-gray-400 hover:text-emerald-600'
               )}
             >
               <RefreshCw
@@ -476,11 +478,11 @@ const MediaLibrary = () => {
                 exit={{ opacity: 0, y: -10 }}
                 className={cn(
                   'flex items-center justify-between px-6 py-4 border shadow-lg backdrop-blur-md',
-                  theme === 'dark' ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-indigo-50 border-indigo-100'
+                  theme === 'dark' ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-emerald-50 border-emerald-100'
                 )}
               >
                 <span className="text-[10px] font-black uppercase tracking-widest italic flex items-center gap-3">
-                  <CheckSquare size={14} className="text-indigo-500" />
+                  <CheckSquare size={14} className="text-emerald-500" />
                   {selectedIds.size} asset{selectedIds.size !== 1 ? 's' : ''} selected
                 </span>
                 <div className="flex items-center gap-3">
@@ -515,9 +517,9 @@ const MediaLibrary = () => {
                   className={cn(
                     'group relative border rounded-none overflow-hidden cursor-pointer transition-all duration-300 shadow-sm hover:shadow-2xl hover:scale-[1.03]',
                     theme === 'dark'
-                      ? 'bg-[#080808] border-white/5 hover:border-indigo-500/40'
-                      : 'bg-white border-gray-100 hover:border-indigo-200',
-                    selectedIds.has(file._id) && (theme === 'dark' ? 'border-indigo-500/60 ring-1 ring-indigo-500/30' : 'border-indigo-400 ring-1 ring-indigo-400/40')
+                      ? 'bg-[#080808] border-white/5 hover:border-emerald-500/40'
+                      : 'bg-white border-gray-100 hover:border-emerald-200',
+                    selectedIds.has(file._id) && (theme === 'dark' ? 'border-emerald-500/60 ring-1 ring-emerald-500/30' : 'border-emerald-400 ring-1 ring-emerald-400/40')
                   )}
                 >
                   {/* Selection checkbox */}
@@ -526,7 +528,7 @@ const MediaLibrary = () => {
                     className={cn(
                       'absolute top-2 left-2 z-20 w-6 h-6 flex items-center justify-center border transition-all',
                       selectedIds.has(file._id)
-                        ? 'bg-indigo-500 border-indigo-500 text-white'
+                        ? 'bg-emerald-500 border-emerald-500 text-white'
                         : 'bg-black/40 border-white/20 text-white opacity-0 group-hover:opacity-100'
                     )}
                   >
@@ -542,7 +544,7 @@ const MediaLibrary = () => {
                       />
                     ) : (
                       <div className="flex flex-col items-center gap-3">
-                        <Binary size={40} strokeWidth={1} className="text-indigo-500/30" />
+                        <Binary size={40} strokeWidth={1} className="text-emerald-500/30" />
                         <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest italic">
                           {file.mimetype?.split('/')[1] || 'DATA'}
                         </span>
@@ -581,7 +583,7 @@ const MediaLibrary = () => {
                       <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest italic">
                         {(file.size / 1024).toFixed(0)}KB
                       </span>
-                      <div className="w-1 h-1 rounded-none bg-indigo-500/20 group-hover:bg-indigo-500 transition-all" />
+                      <div className="w-1 h-1 rounded-none bg-emerald-500/20 group-hover:bg-emerald-500 transition-all" />
                     </div>
                   </div>
                 </motion.div>
@@ -618,7 +620,7 @@ const MediaLibrary = () => {
                   <div
                     className="absolute inset-0 opacity-10 pointer-events-none"
                     style={{
-                      backgroundImage: 'radial-gradient(circle, #6366f1 1px, transparent 1px)',
+                      backgroundImage: 'radial-gradient(circle, #10b981 1px, transparent 1px)',
                       backgroundSize: '40px 40px',
                     }}
                   />
@@ -642,7 +644,7 @@ const MediaLibrary = () => {
                       />
                       {isCropMode && cropRect && (
                         <div
-                          className="absolute border-2 border-indigo-500 bg-indigo-500/10 pointer-events-none z-30"
+                          className="absolute border-2 border-emerald-500 bg-emerald-500/10 pointer-events-none z-30"
                           style={{
                             left: cropRect.x,
                             top: cropRect.y,
@@ -654,10 +656,10 @@ const MediaLibrary = () => {
                     </div>
                   ) : (
                     <div className="relative z-10 flex flex-col items-center gap-6">
-                      <div className="p-12 rounded-none bg-indigo-500/5 border border-indigo-500/10 shadow-2xl">
+                      <div className="p-12 rounded-none bg-emerald-500/5 border border-emerald-500/10 shadow-2xl">
                         <Binary
                           size={80}
-                          className="text-indigo-500 opacity-20"
+                          className="text-emerald-500 opacity-20"
                           strokeWidth={0.5}
                         />
                       </div>
@@ -684,7 +686,7 @@ const MediaLibrary = () => {
                       </p>
                       <div className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
-                        <span className="text-[8px] font-black text-indigo-500 uppercase tracking-[0.4em] italic">
+                        <span className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.4em] italic">
                           NODE_SYNC_ACTIVE
                         </span>
                       </div>
@@ -704,7 +706,7 @@ const MediaLibrary = () => {
                       <h3 className="text-[24px] font-black uppercase tracking-tighter italic leading-none">
                         Metadata
                       </h3>
-                      <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.3em] italic">
+                      <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] italic">
                         Structural_Signature
                       </p>
                     </div>
@@ -731,7 +733,7 @@ const MediaLibrary = () => {
                             Simulation_Scale
                           </span>
                         </div>
-                        <span className="text-[18px] font-black text-indigo-500 italic tracking-tighter">
+                        <span className="text-[18px] font-black text-emerald-500 italic tracking-tighter">
                           {previewWidth}PX
                         </span>
                       </div>
@@ -742,7 +744,7 @@ const MediaLibrary = () => {
                         step="100"
                         value={previewWidth}
                         onChange={(e) => setPreviewWidth(parseInt(e.target.value))}
-                        className="w-full appearance-none bg-indigo-500/10 h-1 rounded-none outline-none cursor-pointer accent-indigo-500"
+                        className="w-full appearance-none bg-emerald-500/10 h-1 rounded-none outline-none cursor-pointer accent-emerald-500"
                       />
                     </div>
 
@@ -781,7 +783,7 @@ const MediaLibrary = () => {
                             className={cn(
                               'p-3 rounded-none border flex items-center justify-center transition-all',
                               flipX
-                                ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-500'
+                                ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-500'
                                 : theme === 'dark' ? 'border-white/10 hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
                             )}
                             title="Flip horizontal"
@@ -793,7 +795,7 @@ const MediaLibrary = () => {
                             className={cn(
                               'p-3 rounded-none border flex items-center justify-center transition-all',
                               flipY
-                                ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-500'
+                                ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-500'
                                 : theme === 'dark' ? 'border-white/10 hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
                             )}
                             title="Flip vertical"
@@ -807,7 +809,7 @@ const MediaLibrary = () => {
                             className={cn(
                               'flex-1 py-3 rounded-none text-[9px] font-black uppercase tracking-widest transition-all italic leading-none flex items-center justify-center gap-2 border',
                               isCropMode
-                                ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-500'
+                                ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-500'
                                 : theme === 'dark' ? 'border-white/10 text-gray-400 hover:border-white/30' : 'border-gray-100 hover:border-gray-300'
                             )}
                           >
@@ -844,7 +846,7 @@ const MediaLibrary = () => {
                                 'px-6 py-3 rounded-none text-[9px] font-black uppercase tracking-widest transition-all italic leading-none flex items-center justify-center gap-2',
                                 isProcessing
                                   ? 'bg-gray-500 text-gray-300'
-                                  : 'bg-indigo-500 text-white hover:bg-indigo-600 shadow-lg'
+                                  : 'bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg'
                               )}
                             >
                               <Save size={12} /> {isProcessing ? 'SAVING...' : 'SAVE'}
@@ -890,7 +892,7 @@ const MediaLibrary = () => {
                           <div className="flex items-center gap-4">
                             <item.icon
                               size={14}
-                              className="text-gray-500 group-hover:text-indigo-500 transition-colors"
+                              className="text-gray-500 group-hover:text-emerald-500 transition-colors"
                             />
                             <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest italic leading-none">
                               {item.label}

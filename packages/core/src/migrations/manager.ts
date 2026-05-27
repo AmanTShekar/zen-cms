@@ -31,7 +31,7 @@ export class MigrationManager {
     // Fetch already executed migrations
     let executedDocs: any[] = []
     const existingCollections = await adapter.getExistingCollections()
-    
+
     if (existingCollections.includes('z_migrations')) {
       try {
         executedDocs = await adapter.find<any>('z_migrations', {})
@@ -55,7 +55,7 @@ export class MigrationManager {
 
       try {
         logger.info(`[MigrationManager] Applying migration: "${m.name}" (Batch ${nextBatch})`)
-        
+
         // Execute migration inside atomic transaction
         await adapter.transaction(async (session) => {
           await m.up(adapter, session)
@@ -76,5 +76,68 @@ export class MigrationManager {
         throw err
       }
     }
+  }
+
+  /**
+   * Rolls back the most recent batch of migrations.
+   * Each batch is a group of migrations executed together in a single `run()` call.
+   */
+  static async rollback(migrations: Migration[], steps = 1): Promise<number> {
+    const adapter = AdapterFactory.getActiveAdapter()
+    if (!adapter) {
+      logger.warn('[MigrationManager] No active database adapter found. Skipping rollback.')
+      return 0
+    }
+
+    const existingCollections = await adapter.getExistingCollections()
+    if (!existingCollections.includes('z_migrations')) {
+      logger.info('[MigrationManager] No migrations table found. Nothing to roll back.')
+      return 0
+    }
+
+    const executedDocs = await adapter.find<any>('z_migrations', {}, { sort: { batch: -1, executedAt: -1 } })
+    if (executedDocs.length === 0) {
+      logger.info('[MigrationManager] No executed migrations found. Nothing to roll back.')
+      return 0
+    }
+
+    const uniqueBatches = [...new Set<number>(executedDocs.map((d: any) => d.batch))].sort((a, b) => b - a)
+    const batchesToRollback = uniqueBatches.slice(0, steps)
+    const migrationMap = new Map<string, Migration>()
+    for (const m of migrations) {
+      migrationMap.set(m.name, m)
+    }
+
+    let rolledBack = 0
+    for (const batch of batchesToRollback) {
+      const batchMigrations = executedDocs
+        .filter((d: any) => d.batch === batch)
+        .sort((a: any, b: any) => (b.executedAt || 0) - (a.executedAt || 0))
+
+      for (const doc of batchMigrations) {
+        const migration = migrationMap.get(doc.name)
+        if (!migration) {
+          logger.warn(`[MigrationManager] No migration definition found for "${doc.name}" — cannot roll back. Skipping.`)
+          continue
+        }
+
+        try {
+          logger.info(`[MigrationManager] Rolling back: "${migration.name}" (Batch ${batch})`)
+          await adapter.transaction(async (session) => {
+            await migration.down(adapter, session)
+            const id = (doc.id || doc._id).toString()
+            await adapter.delete('z_migrations', id)
+          })
+          rolledBack++
+          logger.info(`[MigrationManager] Rolled back: "${migration.name}" successfully.`)
+        } catch (err: any) {
+          logger.error({ err: err.message }, `[MigrationManager] Rollback failed for "${migration.name}". Aborting.`)
+          throw err
+        }
+      }
+    }
+
+    logger.info(`[MigrationManager] Rollback complete. Reversed ${rolledBack} migration(s).`)
+    return rolledBack
   }
 }

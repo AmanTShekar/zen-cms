@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
@@ -46,19 +47,46 @@ export const GlassDropdown = <T,>({
   const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const [menuPos, setMenuPos] = useState<{ top: number; left: number; width: number } | null>(null);
 
   const selectedOption = options.find((opt) => opt.value === value) || null;
 
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const menuWidth = isSidebarOpen ? rect.width : 240;
+    setMenuPos({
+      top: rect.bottom + 4 + window.scrollY,
+      left: isSidebarOpen ? rect.left + window.scrollX : rect.left - menuWidth + window.scrollX,
+      width: menuWidth,
+    });
+  }, [isSidebarOpen]);
+
+  // Update position on scroll/resize while open
+  useEffect(() => {
+    if (!isOpen) return;
+    updatePosition();
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [isOpen, updatePosition]);
+
   // Handle click outside to close the dropdown
   useEffect(() => {
+    if (!isOpen) return;
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
+      const target = event.target as Node;
+      if (triggerRef.current?.contains(target)) return;
+      if (containerRef.current?.contains(target)) return;
+      setIsOpen(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [isOpen]);
 
   const handleSelect = (option: DropdownOption<T>) => {
     if (disabled) return;
@@ -81,10 +109,10 @@ export const GlassDropdown = <T,>({
         "w-full flex items-center justify-between text-left transition-all duration-300 p-2.5",
         "relative overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.1)]",
         theme === 'dark'
-          ? "bg-[#111827]/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-indigo-500/50 hover:bg-[#111827]/85"
-          : "bg-white/65 backdrop-blur-[12px] text-gray-900 border border-black/[0.08] hover:border-indigo-500/30 hover:bg-white/85",
+          ? "bg-[#111827]/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-emerald-500/50 hover:bg-[#111827]/85"
+          : "bg-white/65 backdrop-blur-[12px] text-gray-900 border border-black/[0.08] hover:border-emerald-500/30 hover:bg-white/85",
         isSidebarOpen ? "rounded-[12px]" : "rounded-lg p-2 justify-center",
-        "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
+        "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
         triggerClassName
       )}
     >
@@ -92,7 +120,7 @@ export const GlassDropdown = <T,>({
         {selectedOption?.icon && (
           <div className={cn(
             "rounded-md flex items-center justify-center text-lg flex-shrink-0 transition-colors duration-300",
-            theme === 'dark' ? "bg-indigo-500/10 text-indigo-400" : "bg-indigo-50 text-indigo-600",
+            theme === 'dark' ? "bg-emerald-500/10 text-emerald-400" : "bg-emerald-50 text-emerald-600",
             isSidebarOpen ? "w-8 h-8" : "w-10 h-10"
           )}>
             {selectedOption.icon}
@@ -102,7 +130,7 @@ export const GlassDropdown = <T,>({
         {isSidebarOpen && (
           <div className="flex flex-col min-w-0">
             {selectedOption?.description && (
-              <span className="text-[8px] font-black text-indigo-400 dark:text-indigo-400 uppercase tracking-[0.2em] font-mono leading-none mb-1">
+              <span className="text-[8px] font-black text-emerald-400 dark:text-emerald-400 uppercase tracking-[0.2em] font-mono leading-none mb-1">
                 {selectedOption.description}
               </span>
             )}
@@ -126,31 +154,37 @@ export const GlassDropdown = <T,>({
   );
 
   return (
-    <div ref={containerRef} className={cn("relative transition-all duration-300", className)}>
-      {renderTrigger ? renderTrigger(selectedOption, isOpen, toggle) : defaultTrigger}
+    <div className={cn("relative transition-all duration-300", className)}>
+      <div ref={triggerRef} onClick={() => { if (!disabled) { if (!isOpen) updatePosition(); setIsOpen(!isOpen); } }}>
+        {renderTrigger ? renderTrigger(selectedOption, isOpen, toggle) : defaultTrigger}
+      </div>
 
-      <AnimatePresence>
-        {isOpen && (
+      {isOpen && menuPos && createPortal(
+        <AnimatePresence>
           <motion.div
+            ref={containerRef}
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
             style={{
-              backgroundColor: theme === 'dark' ? 'rgba(17, 24, 39, 0.65)' : 'rgba(255, 255, 255, 0.65)',
+              position: 'absolute',
+              top: menuPos.top,
+              left: menuPos.left,
+              width: isSidebarOpen ? menuPos.width : undefined,
+              zIndex: 9999,
+              backgroundColor: theme === 'dark' ? 'rgba(17, 24, 39, 0.95)' : 'rgba(255, 255, 255, 0.95)',
               backdropFilter: 'blur(12px)',
               WebkitBackdropFilter: 'blur(12px)',
             }}
             className={cn(
-              "absolute mt-2 z-50 rounded-[12px] overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.1)] border",
-              isSidebarOpen ? "left-0 right-0" : "left-16 w-[240px]",
+              "rounded-[12px] overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.3)] border",
               theme === 'dark'
                 ? "border-white/[0.08] text-white"
                 : "border-black/[0.08] text-gray-900",
               menuClassName
             )}
           >
-            {/* Header */}
             {headerText && (
               <div className={cn(
                 "px-4 py-2.5 border-b bg-white/[0.01]",
@@ -162,11 +196,9 @@ export const GlassDropdown = <T,>({
               </div>
             )}
 
-            {/* Options List */}
             <div className="max-h-[220px] overflow-y-auto py-1 scrollbar-thin">
               {options.map((option) => {
                 const isSelected = option.value === value;
-                
                 if (renderOption) {
                   return (
                     <div key={String(option.value)} onClick={() => handleSelect(option)} className="cursor-pointer">
@@ -174,7 +206,6 @@ export const GlassDropdown = <T,>({
                     </div>
                   );
                 }
-
                 return (
                   <button
                     key={String(option.value)}
@@ -183,7 +214,7 @@ export const GlassDropdown = <T,>({
                     className={cn(
                       "w-full px-4 py-2.5 flex items-center justify-between text-left transition-colors duration-200",
                       theme === 'dark' ? "hover:bg-white/[0.04]" : "hover:bg-black/[0.02]",
-                      isSelected && (theme === 'dark' ? "bg-indigo-500/10 text-indigo-400" : "bg-indigo-50 text-indigo-600")
+                      isSelected && (theme === 'dark' ? "bg-emerald-500/10 text-emerald-400" : "bg-emerald-50 text-emerald-600")
                     )}
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -198,7 +229,7 @@ export const GlassDropdown = <T,>({
                       </div>
                     </div>
                     {isSelected && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
                     )}
                   </button>
                 );
@@ -211,7 +242,6 @@ export const GlassDropdown = <T,>({
               )}
             </div>
 
-            {/* Footer */}
             {footerAction && (
               <div className={cn(
                 "border-t bg-white/[0.02]",
@@ -221,8 +251,9 @@ export const GlassDropdown = <T,>({
               </div>
             )}
           </motion.div>
-        )}
-      </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 };

@@ -198,6 +198,7 @@ export interface Media extends ZenithDocument {
 }
 
 export interface LandingPage extends ZenithDocument {
+  siteId: string;
   title: string;
   heroDescription?: string;
   sections?: ({

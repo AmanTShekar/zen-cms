@@ -7,6 +7,7 @@ export const LandingPage: GlobalConfig = {
   publicRead: true,
   versions: true,
   fields: [
+    { name: 'siteId', type: 'text', required: true, label: 'Site ID' },
     { name: 'title', type: 'text', required: true, label: 'Page Title' },
     { name: 'heroDescription', type: 'richtext', label: 'Main Content / Description' },
     {

@@ -1,0 +1,126 @@
+import { Router, Request, Response } from 'express'
+import { requireAuth, requireRole } from '../middleware/auth'
+import { createResponse } from './utils'
+import { InvalidPayloadError, NotFoundError } from '../errors'
+import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { DatabaseAdapter } from '@zenithcms/types'
+import { logger } from '../services/logger'
+
+const SCHEMAS_COLLECTION = 'z_schemas'
+
+const getAdapter = (req: Request): DatabaseAdapter =>
+  (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+
+const toSchemaDTO = (d: any) => ({
+  id: String(d._id ?? d.id),
+  slug: d.slug,
+  singular: d.singular,
+  plural: d.plural,
+  fields: d.fields,
+  settings: d.settings,
+  createdAt: d.createdAt?.toISOString?.() || d.createdAt,
+  updatedAt: d.updatedAt?.toISOString?.() || d.updatedAt,
+})
+
+const router = Router()
+
+// ── List all schemas ─────────────────────────────────────────────────────────
+router.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
+  try {
+    const adapter = getAdapter(req)
+    const docs = await adapter.find<any>(SCHEMAS_COLLECTION, {})
+    res.json(createResponse(docs.map(toSchemaDTO)))
+  } catch (err) {
+    next(err)
+  }
+})
+
+// ── Get schema by ID ─────────────────────────────────────────────────────────
+router.get('/:id', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
+  try {
+    const adapter = getAdapter(req)
+    const docs = await adapter.find<any>(SCHEMAS_COLLECTION, { id: req.params.id })
+    const doc = docs[0]
+    if (!doc) throw new NotFoundError(`Schema "${req.params.id}" not found`)
+    res.json(createResponse(toSchemaDTO(doc)))
+  } catch (err) {
+    next(err)
+  }
+})
+
+// ── Create schema ────────────────────────────────────────────────────────────
+router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
+  try {
+    const { slug, singular, plural, fields, settings } = req.body
+    if (!slug) throw new InvalidPayloadError('Schema slug is required')
+    if (!singular) throw new InvalidPayloadError('Schema singular name is required')
+    if (!plural) throw new InvalidPayloadError('Schema plural name is required')
+
+    const adapter = getAdapter(req)
+    
+    // Check if slug already exists
+    const existing = await adapter.find<any>(SCHEMAS_COLLECTION, { slug })
+    if (existing && existing.length > 0) {
+      throw new InvalidPayloadError(`Schema with slug "${slug}" already exists`)
+    }
+
+    const doc = await adapter.create<any>(SCHEMAS_COLLECTION, {
+      slug,
+      singular,
+      plural,
+      fields: fields || [],
+      settings: settings || {}
+    })
+
+    // In a real implementation, we would need to trigger the CMS engine to merge this hybrid schema
+    // and potentially create the table in PostgreSQL via Adapter's _ensureTable or similar method.
+    logger.info(`New schema "${slug}" created. System restart may be required to register dynamic routes.`)
+
+    res.status(201).json(createResponse(toSchemaDTO(doc)))
+  } catch (err) {
+    next(err)
+  }
+})
+
+// ── Update schema ────────────────────────────────────────────────────────────
+router.put('/:id', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
+  try {
+    const { id } = req.params
+    const { singular, plural, fields, settings } = req.body
+    const adapter = getAdapter(req)
+
+    const update: Record<string, unknown> = { updatedAt: new Date() }
+    if (singular !== undefined) update.singular = singular
+    if (plural !== undefined) update.plural = plural
+    if (fields !== undefined) update.fields = fields
+    if (settings !== undefined) update.settings = settings
+
+    const doc = await adapter.update<any>(SCHEMAS_COLLECTION, id, update)
+    if (!doc) throw new NotFoundError(`Schema "${id}" not found`)
+
+    logger.info(`Schema "${doc.slug}" updated.`)
+
+    res.json(createResponse(toSchemaDTO(doc)))
+  } catch (err) {
+    next(err)
+  }
+})
+
+// ── Delete schema ────────────────────────────────────────────────────────────
+router.delete('/:id', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
+  try {
+    const { id } = req.params
+    const adapter = getAdapter(req)
+
+    const deleted = await adapter.delete(SCHEMAS_COLLECTION, id)
+    if (!deleted) throw new NotFoundError(`Schema "${id}" not found`)
+
+    logger.info(`Schema "${id}" deleted. System restart may be required to unmount routes.`)
+
+    res.json(createResponse({ message: 'Schema deleted' }))
+  } catch (err) {
+    next(err)
+  }
+})
+
+export default router

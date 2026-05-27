@@ -34,7 +34,7 @@ const CollapsibleField: React.FC<Props> = ({
       >
         <span className="flex items-center gap-2">
           <span
-            className={`transition-transform duration-200 text-purple-400 ${
+            className={`transition-transform duration-200 text-emerald-400 ${
               isOpen ? 'rotate-90' : ''
             }`}
           >
@@ -49,7 +49,7 @@ const CollapsibleField: React.FC<Props> = ({
             <div key={f.name} className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-300 capitalize">
                 {f.label || f.name}
-                {f.required && <span className="text-danger ml-1">*</span>}
+                {(f as any).required && <span className="text-danger ml-1">*</span>}
               </label>
               {renderField(f, (value as Record<string, unknown>)?.[f.name], (val: unknown) =>
                 onChange({ ...((value as Record<string, unknown>) || {}), [f.name]: val })

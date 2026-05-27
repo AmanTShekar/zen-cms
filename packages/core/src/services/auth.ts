@@ -17,8 +17,8 @@ if (process.env.NODE_ENV === 'production') {
 
 // In dev, these fallbacks are acceptable because the production guard above
 // throws if either secret is missing when NODE_ENV=production.
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_fallback_secret_change_in_prod'
-const JWT_REFRESH_SECRET =
+export const JWT_SECRET = process.env.JWT_SECRET || 'dev_fallback_secret_change_in_prod'
+export const JWT_REFRESH_SECRET =
   process.env.JWT_REFRESH_SECRET || 'dev_fallback_refresh_change_in_prod'
 const SALT_ROUNDS = 12
 const MAX_FAILED_ATTEMPTS = 5
@@ -90,11 +90,17 @@ export const AuthService = {
     if (password.length < 8) {
       return { valid: false, message: 'Password must be at least 8 characters' }
     }
+    if (!/[a-z]/.test(password)) {
+      return { valid: false, message: 'Password must contain at least one lowercase letter' }
+    }
     if (!/[A-Z]/.test(password)) {
       return { valid: false, message: 'Password must contain at least one uppercase letter' }
     }
     if (!/[0-9]/.test(password)) {
       return { valid: false, message: 'Password must contain at least one number' }
+    }
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      return { valid: false, message: 'Password must contain at least one special character' }
     }
     return { valid: true }
   },

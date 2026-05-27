@@ -66,8 +66,8 @@ function ToolbarButton({ onClick, isActive, disabled, title, children }: Toolbar
         'w-9 h-9 flex items-center justify-center transition-all relative active:scale-90',
         isActive
           ? theme === 'dark'
-            ? 'bg-indigo-500/20 text-indigo-400'
-            : 'bg-indigo-50 text-indigo-600'
+            ? 'bg-emerald-500/20 text-emerald-400'
+            : 'bg-emerald-50 text-emerald-600'
           : theme === 'dark'
             ? 'text-gray-500 hover:bg-white/5 hover:text-white'
             : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900',
@@ -142,8 +142,8 @@ function BlockTypeDropdown({ blockType, onBlockTypeChange }: {
                   'w-full text-left px-3 py-2 text-[10px] font-black uppercase italic transition-all',
                   blockType === opt.value
                     ? theme === 'dark'
-                      ? 'text-indigo-400 bg-indigo-500/10'
-                      : 'text-indigo-600 bg-indigo-50'
+                      ? 'text-emerald-400 bg-emerald-500/10'
+                      : 'text-emerald-600 bg-emerald-50'
                     : theme === 'dark'
                       ? 'text-gray-400 hover:bg-white/5 hover:text-white'
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',

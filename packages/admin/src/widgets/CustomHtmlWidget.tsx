@@ -1,14 +1,7 @@
 import { useState } from 'react'
 import { cn } from '../lib/utils'
+import { sanitizeHtml } from '../lib/sanitize'
 import type { WidgetProps } from './registry'
-
-// DOMPurify-style lightweight sanitizer (strips script tags at minimum)
-function sanitizeHtml(html: string): string {
-  return html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '<!-- script removed -->')
-    .replace(/on\w+="[^"]*"/gi, '')
-    .replace(/on\w+='[^']*'/gi, '')
-}
 
 export default function CustomHtmlWidget({
   config = {},
@@ -30,7 +23,7 @@ export default function CustomHtmlWidget({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           className={cn(
-            'flex-1 w-full border rounded-none p-3 font-mono text-[11px] resize-none outline-none focus:border-indigo-500',
+            'flex-1 w-full border rounded-none p-3 font-mono text-[11px] resize-none outline-none focus:border-emerald-500',
             theme === 'dark' ? 'bg-black border-white/10 text-white' : 'bg-gray-50 border-gray-200'
           )}
           placeholder="<h2>Hello World</h2>"
@@ -41,7 +34,7 @@ export default function CustomHtmlWidget({
               onConfigChange({ ...config, html: draft })
               setEditing(false)
             }}
-            className="px-4 py-2 bg-indigo-600 text-white text-[9px] font-black uppercase tracking-widest rounded-none"
+            className="px-4 py-2 bg-emerald-600 text-white text-[9px] font-black uppercase tracking-widest rounded-none"
           >
             Save
           </button>
@@ -76,7 +69,7 @@ export default function CustomHtmlWidget({
         />
       )}
       {isEditing && (
-        <div className="absolute inset-0 border-2 border-dashed border-indigo-500/30 rounded-none pointer-events-none" />
+        <div className="absolute inset-0 border-2 border-dashed border-emerald-500/30 rounded-none pointer-events-none" />
       )}
     </div>
   )

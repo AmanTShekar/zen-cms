@@ -229,13 +229,27 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
 
     logger.info('PostgresDrizzleAdapter: Zod Parser Cache pre-allocated for speed.')
 
-    // Configure connection pooling for Serverless environments
-    this.pool = new Pool({
+    // Configure connection pooling (configurable via env)
+    const poolMax = parseInt(process.env.POSTGRES_POOL_MAX || '20', 10)
+    const poolIdleTimeout = parseInt(process.env.POSTGRES_POOL_IDLE_TIMEOUT || '30000', 10)
+    const poolConnectionTimeout = parseInt(process.env.POSTGRES_POOL_CONNECT_TIMEOUT || '2000', 10)
+    const poolSslRejectUnauthorized = process.env.POSTGRES_SSL_REJECT_UNAUTHORIZED || 'true'
+
+    const poolOptions: any = {
       connectionString: this.connectionString,
-      max: 20,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000,
-    })
+      max: poolMax,
+      idleTimeoutMillis: poolIdleTimeout,
+      connectionTimeoutMillis: poolConnectionTimeout,
+    }
+
+    // Enable SSL when POSTGRES_URI contains sslmode=require or when explicitly configured
+    if (process.env.POSTGRES_SSL_ENABLED === 'true' || this.connectionString.includes('sslmode=require')) {
+      poolOptions.ssl = {
+        rejectUnauthorized: poolSslRejectUnauthorized !== 'false',
+      }
+    }
+
+    this.pool = new Pool(poolOptions)
 
     this.db = drizzle(this.pool)
     logger.info('PostgresDrizzleAdapter: Initialized successfully with connection pooling')
@@ -383,7 +397,9 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
           lock_until TIMESTAMP,
           email_verified BOOLEAN DEFAULT false NOT NULL,
           verification_token TEXT,
-          verification_token_expiry TIMESTAMP
+          verification_token_expiry TIMESTAMP,
+          two_factor_secret TEXT,
+          two_factor_enabled BOOLEAN DEFAULT false NOT NULL
         );
         CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
       `
@@ -448,6 +464,33 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
           updated_at TIMESTAMP DEFAULT NOW() NOT NULL
         );
         CREATE INDEX IF NOT EXISTS idx_webhook_configs_url ON z_webhook_configs(url);
+      `
+
+      const createSchemasTable = sql`
+        CREATE TABLE IF NOT EXISTS z_schemas (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          slug TEXT UNIQUE NOT NULL,
+          singular TEXT NOT NULL,
+          plural TEXT NOT NULL,
+          fields JSONB NOT NULL DEFAULT '[]'::jsonb,
+          settings JSONB NOT NULL DEFAULT '{}'::jsonb,
+          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_schemas_slug ON z_schemas(slug);
+      `
+
+      const createCampaignsTable = sql`
+        CREATE TABLE IF NOT EXISTS z_campaigns (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          subject TEXT NOT NULL,
+          body TEXT NOT NULL,
+          status TEXT DEFAULT 'draft' NOT NULL,
+          audience TEXT DEFAULT 'all' NOT NULL,
+          sent_at TIMESTAMP,
+          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+        );
       `
 
       const createPluginsTable = sql`
@@ -626,11 +669,19 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       await db.execute(createVersionTable)
       await db.execute(createFlowsTable)
       await db.execute(createUsersTable)
+      try {
+        await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS two_factor_secret TEXT`)
+        await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS two_factor_enabled BOOLEAN DEFAULT false NOT NULL`)
+      } catch (err) {
+        logger.warn({ err }, 'Failed to add 2FA columns to users table')
+      }
       await db.execute(createPasswordResetsTable)
       await db.execute(createApiKeysTable)
       await db.execute(createMigrationsTable)
       await db.execute(createWebhookDeliveriesTable)
       await db.execute(createWebhookConfigsTable)
+      await db.execute(createSchemasTable)
+      await db.execute(createCampaignsTable)
       await db.execute(createPluginsTable)
       await db.execute(createSettingsTable)
       await db.execute(createSitesTable)
@@ -766,6 +817,10 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       columns['status'] = text('status').default('published')
     }
 
+    if (config.softDelete) {
+      columns['deletedAt'] = timestamp('deleted_at')
+    }
+
     for (const field of config.fields) {
       if (field.type === 'relation' && (field as any).junctionTable) {
         continue
@@ -834,6 +889,10 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         createSql += `,\n  "status" TEXT DEFAULT 'published'`
       }
 
+      if (config.softDelete) {
+        createSql += `,\n  "deleted_at" TIMESTAMP`
+      }
+
       for (const field of config.fields) {
         if (field.type === 'relation' && (field as any).junctionTable) {
           continue
@@ -857,6 +916,11 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       `)
 
       const existingCols = (result.rows || []).map((r: any) => r.column_name)
+
+      if (config.softDelete && !existingCols.includes('deleted_at')) {
+        logger.info(`PostgresDrizzleAdapter: Auto-migrating ADD COLUMN "deleted_at" to "${config.slug}"`)
+        await db.execute(sql.raw(`ALTER TABLE "${config.slug}" ADD COLUMN "deleted_at" TIMESTAMP`))
+      }
 
       for (const field of config.fields) {
         if (field.type === 'relation' && (field as any).junctionTable) {
@@ -1124,7 +1188,8 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
 
     let dbQuery = client.select().from(table).$dynamic()
 
-    const where = this.buildWhereClause(table, query)
+    let where = this.buildWhereClause(table, query)
+    where = this.tenantScope(table, where, options)
     if (where) {
       dbQuery = dbQuery.where(where)
     }
@@ -1164,7 +1229,8 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     const client = this.getDbClient(options)
     const dbQuery = this._selectWithColumns(client, table, collection, options)
 
-    const where = this.buildWhereClause(table, query)
+    let where = this.buildWhereClause(table, query)
+    where = this.tenantScope(table, where, options)
 
     const result = await dbQuery.where(where ?? sql`1=1`).limit(1)
     if (result.length === 0) return null
@@ -1699,7 +1765,8 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     }
 
     let dbQuery = executor.update(table).set(updatePayload).$dynamic()
-    const where = this.buildWhereClause(table, query)
+    let where = this.buildWhereClause(table, query)
+    where = this.tenantScope(table, where, options)
     if (where) {
       dbQuery = dbQuery.where(where)
     }
@@ -1738,7 +1805,8 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     const client = this.getDbClient(options)
     const executor = options.session ? (options.session as typeof client) : client
 
-    const where = this.buildWhereClause(table, query)
+    let where = this.buildWhereClause(table, query)
+    where = this.tenantScope(table, where, options)
     let dbQuery = executor.delete(table).$dynamic()
     if (where) {
       dbQuery = dbQuery.where(where)
@@ -1782,7 +1850,8 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       .from(table)
       .$dynamic()
 
-    const where = this.buildWhereClause(table, query)
+    let where = this.buildWhereClause(table, query)
+    where = this.tenantScope(table, where, options)
     if (where) {
       dbQuery = dbQuery.where(where)
     }
@@ -1791,7 +1860,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     return Number(result[0]?.count || 0)
   }
 
-  async aggregate<T = unknown>(collection: string, pipeline: unknown[]): Promise<T[]> {
+  async aggregate<T = unknown>(collection: string, pipeline: unknown[], options?: BaseOptions): Promise<T[]> {
     throw new Error('Aggregation pipelines not natively supported in Postgres. Use native SQL.')
   }
 

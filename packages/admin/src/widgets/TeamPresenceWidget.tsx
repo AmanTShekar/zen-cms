@@ -4,7 +4,7 @@ import { cn } from '../lib/utils'
 import type { WidgetProps } from './registry'
 
 const COLORS = [
-  'bg-indigo-500',
+  'bg-emerald-500',
   'bg-emerald-500',
   'bg-amber-500',
   'bg-rose-500',
@@ -34,7 +34,7 @@ export default function TeamPresenceWidget({ theme, title }: WidgetProps) {
   return (
     <div className="h-full flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <p className="text-[9px] font-black text-indigo-500 uppercase tracking-widest italic">
+        <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest italic">
           {title || 'Online Now'}
         </p>
         <span className="text-[8px] font-black text-gray-500">{members.length} active</span>

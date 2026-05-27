@@ -106,10 +106,14 @@ router.get('/:filename', async (req: Request, res: Response, next) => {
         res.type(typeMap[ext] || 'application/octet-stream')
       }
 
+      // Cache transformed images for 7 days — query params produce variant-specific results
+      res.set('Cache-Control', 'public, max-age=604800')
       return transform.pipe(res)
     }
 
     // Default static fallback: stream the original file directly
+    // Immutable cache: the filename uniquely identifies the content
+    res.set('Cache-Control', 'public, max-age=31536000, immutable')
     res.sendFile(filePath)
   } catch (err: any) {
     next(err)

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { produce } from 'immer'
 import api from '../lib/api'
+import type { FieldDefinition } from '../pages/editor/constants'
 
 // ── Domain types ───────────────────────────────────────────────────────────────
 
@@ -69,17 +70,21 @@ interface EditorState {
   lastSavedAt: string | null
   undoStack: PageData[]
   redoStack: PageData[]
+  /** Set of section IDs that have been mutated since the last successful save */
+  dirtySections: Set<string>
 
   // Active Selections
   activeSection: string | null
   selectedField: { blockId: string; fieldKey: string } | null
+  selectedFieldId: string | null
+  setSelectedFieldId: (id: string | null) => void
 
   // Schema and Configuration
-  schemaFields: any[]
-  fieldSettings: Record<string, any>
+  schemaFields: FieldDefinition[]
+  fieldSettings: Record<string, FieldDefinition>
   fieldErrors: Record<string, string>
   history: Version[]
-  templates: any[]
+  templates: PageData[]
 
   // Relations Dialog Data
   relationsField: { sectionId: string; fieldKey: string } | null
@@ -102,11 +107,11 @@ interface EditorState {
   setLastSavedAt: (val: string | null) => void
   setActiveSection: (section: string | null) => void
   setSelectedField: (field: { blockId: string; fieldKey: string } | null) => void
-  setSchemaFields: (fields: any[]) => void
-  setFieldSettings: (settings: Record<string, any>) => void
+  setSchemaFields: (fields: FieldDefinition[]) => void
+  setFieldSettings: (settings: Record<string, FieldDefinition>) => void
   setFieldErrors: (errors: Record<string, string>) => void
   setHistory: (history: Version[]) => void
-  setTemplates: (templates: any[]) => void
+  setTemplates: (templates: PageData[]) => void
 
   setRelationsField: (field: { sectionId: string; fieldKey: string } | null) => void
   setRelationsSearch: (search: string) => void
@@ -124,18 +129,16 @@ interface EditorState {
   setField: (sectionId: string, fieldKey: string, value: any) => void
   undo: () => void
   redo: () => void
-  load: (id: string, isGlobal: boolean) => Promise<PageData>
-  save: (id: string, isGlobal: boolean, getPayload: (data: PageData) => Record<string, unknown>) => Promise<void>
+  load: (slug: string, id: string, isGlobal: boolean) => Promise<PageData>
+  save: (slug: string, id: string, isGlobal: boolean, getPayload: (data: PageData) => Record<string, unknown>) => Promise<void>
   /** Reset transient editor state when navigating between documents */
   reset: () => void
 }
 
 const STORAGE_KEY = 'zenith_editor_state'
-const MAX_UNDO_STACK = 50
-const PERSIST_DEBOUNCE_MS = 2000
+const MAX_UNDO_STACK = 200
 const UNDO_DEBOUNCE_MS = 1200
 
-let persistTimer: ReturnType<typeof setTimeout> | null = null
 let lastUndoTime = 0
 
 const loadPersisted = () => {
@@ -153,17 +156,6 @@ const loadPersisted = () => {
   return null
 }
 
-/** Debounced persist — saves data, undoStack, and redoStack to localStorage after a pause in updates */
-const persist = (get: () => EditorState) => {
-  if (persistTimer) clearTimeout(persistTimer)
-  persistTimer = setTimeout(() => {
-    try {
-      const { data, undoStack, redoStack } = get()
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ data, undoStack, redoStack }))
-    } catch { /* storage full or disabled */ }
-  }, PERSIST_DEBOUNCE_MS)
-}
-
 const deepClone = <T,>(obj: T): T =>
   typeof structuredClone === 'function'
     ? structuredClone(obj)
@@ -179,9 +171,11 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   lastSavedAt: null,
   undoStack: restored ? restored.undoStack : [],
   redoStack: restored ? restored.redoStack : [],
+  dirtySections: new Set<string>(),
 
   activeSection: 'root',
   selectedField: null,
+  selectedFieldId: null,
 
   schemaFields: [],
   fieldSettings: {},
@@ -207,6 +201,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   setLastSavedAt: (lastSavedAt) => set({ lastSavedAt }),
   setActiveSection: (activeSection) => set({ activeSection }),
   setSelectedField: (selectedField) => set({ selectedField }),
+  setSelectedFieldId: (selectedFieldId) => set({ selectedFieldId }),
   setSchemaFields: (schemaFields) => set({ schemaFields }),
   setFieldSettings: (fieldSettings) => set({ fieldSettings }),
   setFieldErrors: (fieldErrors) => set({ fieldErrors }),
@@ -238,11 +233,15 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         ? [...state.undoStack.slice(-MAX_UNDO_STACK + 1), current]
         : state.undoStack
       if (shouldPushUndo) lastUndoTime = now
+      // Mark all sections that exist in newData as potentially dirty
+      const nextDirty = new Set(state.dirtySections)
+      newData.sections.forEach((s) => nextDirty.add(s.id))
       return ({
         data: newData,
         hasUnsavedChanges: true,
         undoStack: nextUndoStack,
         redoStack: [],
+        dirtySections: nextDirty,
       })
     })
   },
@@ -269,11 +268,15 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       return { ...s, content: { ...s.content, [fieldKey]: value } }
     })
     const newData = { ...current, sections: newSections }
+    // Track the specific dirty section for future partial-diff payloads
+    const nextDirty = new Set(get().dirtySections)
+    nextDirty.add(sectionId)
     set({
       data: newData,
       hasUnsavedChanges: true,
       undoStack: nextUndoStack,
       redoStack: [],
+      dirtySections: nextDirty,
     })
   },
 
@@ -284,7 +287,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     const newUndoStack = undoStack.slice(0, -1)
     const redoState = deepClone(data)
     const nextRedo = [...redoStack.slice(-MAX_UNDO_STACK + 1), redoState]
-    persist(get)
     set({
       data: previous,
       undoStack: newUndoStack,
@@ -300,7 +302,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     const newRedoStack = redoStack.slice(0, -1)
     const currentState = deepClone(data)
     const nextUndo = [...undoStack.slice(-MAX_UNDO_STACK + 1), currentState]
-    persist(get)
     set({
       data: next,
       undoStack: nextUndo,
@@ -309,12 +310,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     })
   },
 
-  load: async (id, isGlobal) => {
+  load: async (slug, id, isGlobal) => {
     set({ loading: true, undoStack: [], redoStack: [], hasUnsavedChanges: false })
     try {
       const res = isGlobal
         ? await api.get(`/globals/${id}`)
-        : await api.get(`/pages/${id}`)
+        : await api.get(`/${slug}/${id}`)
 
       const normalizedSections = (res.data.data.sections || []).map(
         (s: Record<string, unknown>, idx: number) => ({
@@ -332,7 +333,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     }
   },
 
-  save: async (id, isGlobal, getPayload) => {
+  save: async (slug, id, isGlobal, getPayload) => {
     const { data } = get()
     if (!data) return
     set({ saving: true })
@@ -340,13 +341,13 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       const payload = getPayload(data)
       const res = isGlobal
         ? await api.patch(`/globals/${id}`, payload)
-        : await api.patch(`/pages/${id}`, payload)
+        : await api.patch(`/${slug}/${id}`, payload)
       // Sync version from server response for optimistic locking
       const serverVersion = res.data?.data?._version
       if (serverVersion !== undefined) {
-        set({ data: { ...data, _version: serverVersion }, hasUnsavedChanges: false })
+        set({ data: { ...data, _version: serverVersion }, hasUnsavedChanges: false, dirtySections: new Set<string>() })
       } else {
-        set({ hasUnsavedChanges: false })
+        set({ hasUnsavedChanges: false, dirtySections: new Set<string>() })
       }
     } finally {
       set({ saving: false })
@@ -364,6 +365,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       lastSavedAt: null,
       undoStack: [],
       redoStack: [],
+      dirtySections: new Set<string>(),
       activeSection: 'root',
       selectedField: null,
       fieldErrors: {},

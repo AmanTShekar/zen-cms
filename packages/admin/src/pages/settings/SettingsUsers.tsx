@@ -39,7 +39,7 @@ const SettingsUsers: React.FC<SettingsUsersProps> = ({ users, theme, fetchData }
     <>
       <div className="col-span-full space-y-4">
         <div className="flex items-center justify-between mb-4 px-2">
-          <span className="text-[10px] font-black uppercase italic tracking-[0.3em] text-indigo-500">
+          <span className="text-[10px] font-black uppercase italic tracking-[0.3em] text-emerald-500">
             {users.length} Active Operators
           </span>
           <button
@@ -61,7 +61,7 @@ const SettingsUsers: React.FC<SettingsUsersProps> = ({ users, theme, fetchData }
               )}
             >
               <div className="flex items-center gap-5">
-                <div className="w-12 h-12 rounded-none bg-indigo-500/10 flex items-center justify-center text-indigo-500 border border-indigo-500/20">
+                <div className="w-12 h-12 rounded-none bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/20">
                   <Users size={20} />
                 </div>
                 <div className="flex flex-col leading-none">

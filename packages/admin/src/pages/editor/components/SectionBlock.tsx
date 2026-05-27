@@ -1,5 +1,6 @@
 import React from 'react'
-import { Grip, Copy, Trash2, AlignLeft, AlignCenter, AlignRight, Undo2, Redo2, ChevronDown, ChevronRight, MoreHorizontal, ArrowUp, ArrowDown, Clipboard, ClipboardPaste, Edit3 } from 'lucide-react'
+import { createPortal } from 'react-dom'
+import { Grip, Copy, Trash2, AlignLeft, AlignCenter, AlignRight, ChevronDown, ChevronRight, MoreHorizontal, ArrowUp, ArrowDown, Clipboard, ClipboardPaste, Edit3 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../../../lib/utils'
 import { useEditorBlocks } from '../../../context/BlockLibraryContext'
@@ -91,16 +92,19 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
   const blockDef = BLOCK_LIBRARY.find((b) => b.type === section.blockType)
   const [menuOpen, setMenuOpen] = React.useState(false)
   const menuRef = React.useRef<HTMLDivElement>(null)
+  const menuAnchorRef = React.useRef<HTMLButtonElement>(null)
+  const [menuPos, setMenuPos] = React.useState<{ top: number; left: number } | null>(null)
   const [editingBlockName, setEditingBlockName] = React.useState(false)
   const blockNameInputRef = React.useRef<HTMLInputElement>(null)
 
-  // Global undo/redo from store (keeps per-block buttons in sync with Ctrl+Z)
-  const { undo: globalUndo, redo: globalRedo, undoStack, redoStack } = useEditorStore()
+  // Global undo/redo available via Ctrl+Z / Ctrl+Y (see EditorToolbar for step-count badge)
+  const { undo: _globalUndo, redo: _globalRedo } = useEditorStore()
 
   // Close menu on outside click
   React.useEffect(() => {
     if (!menuOpen) return
     const handleClick = (e: MouseEvent) => {
+      if (menuAnchorRef.current?.contains(e.target as Node)) return // let the button toggle
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMenuOpen(false)
       }
@@ -112,9 +116,6 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
   const handleFieldChange = (key: string, value: any) => {
     onFieldChange(key, value)
   }
-
-  const handleUndo = () => globalUndo()
-  const handleRedo = () => globalRedo()
 
   const isCallout = section.blockType === 'callout'
   const calloutType = section.content?.type || 'info'
@@ -136,9 +137,9 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
     default: '',
     light: 'bg-white/90 text-black border-gray-200 shadow-sm',
     dark: 'bg-[#0B0F19]/90 text-white border-white/10 shadow-lg',
-    'cyber-purple': 'bg-gradient-to-br from-indigo-950/70 via-purple-900/50 to-black/80 text-white border-purple-500/20 shadow-purple-500/5',
+    'cyber-emerald': 'bg-gradient-to-br from-emerald-950/70 via-emerald-900/50 to-black/80 text-white border-emerald-500/20 shadow-emerald-500/5',
     glassmorphic: 'bg-gray-900/65 backdrop-blur-[12px] border-white/8 shadow-[0_4px_30px_rgba(0,0,0,0.1)] text-white'
-  }[blockTheme as 'default' | 'light' | 'dark' | 'cyber-purple' | 'glassmorphic'] || ''
+  }[blockTheme as 'default' | 'light' | 'dark' | 'cyber-emerald' | 'glassmorphic'] || ''
 
   const paddingClasses = {
     none: 'py-2 px-6',
@@ -193,7 +194,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
         'rounded-none border transition-all duration-500 relative cursor-pointer',
         calloutClasses,
         themeClasses || (theme === 'dark' ? 'bg-white/[0.01] border-white/5 hover:border-white/10' : 'bg-white border-gray-100 hover:border-gray-200'),
-        isActive && 'ring-2 ring-indigo-500/50 scale-[1.005]',
+        isActive && 'ring-2 ring-emerald-500/50 scale-[1.005]',
         isMultiSelected && !isActive && 'ring-2 ring-amber-500/40'
       )}
     >
@@ -210,14 +211,16 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
           <div
             onPointerDown={(e) => dragControls && dragControls.start(e)}
             title="Drag to reorder"
+            role="presentation"
+            aria-hidden="true"
             className={cn(
               'w-7 h-7 rounded-none border flex items-center justify-center cursor-grab active:cursor-grabbing shrink-0 transition-all',
               theme === 'dark'
-                ? 'bg-white/5 border-white/10 text-indigo-400/60 hover:bg-indigo-500/10 hover:border-indigo-500/30 hover:text-indigo-400'
-                : 'bg-gray-100 border-gray-200 text-indigo-500/60 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600'
+                ? 'bg-white/5 border-white/10 text-emerald-400/60 hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-400'
+                : 'bg-gray-100 border-gray-200 text-emerald-500/60 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-600'
             )}
           >
-            <Grip size={12} />
+            <Grip size={12} aria-hidden="true" />
           </div>
 
           {/* Index badge */}
@@ -231,7 +234,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
           {/* Block type pill — human-readable */}
           <span className={cn(
             'px-2 py-0.5 text-[8px] font-black uppercase italic tracking-wider border shrink-0',
-            theme === 'dark' ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' : 'bg-purple-50 border-purple-200 text-purple-700'
+            theme === 'dark' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700'
           )}>
             {humanize(section.blockType)}
           </span>
@@ -285,7 +288,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
             onClick={(e) => { e.stopPropagation(); onToggleCollapse() }}
             className={cn(
               'p-1.5 rounded-none border transition-all',
-              theme === 'dark' ? 'text-gray-500 border-transparent hover:text-indigo-400' : 'text-gray-400 border-transparent hover:text-indigo-500'
+              theme === 'dark' ? 'text-gray-500 border-transparent hover:text-emerald-400' : 'text-gray-400 border-transparent hover:text-emerald-500'
             )}
             title={isCollapsed ? 'Expand' : 'Collapse'}
           >
@@ -293,50 +296,26 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
           </button>
 
           {/* Compact action menu */}
-          <div ref={menuRef} className="relative">
-            <button
-              onClick={(e) => { e.stopPropagation(); setMenuOpen(!menuOpen) }}
-              className={cn(
-                'p-1.5 rounded-none border transition-all',
-                menuOpen
-                  ? theme === 'dark' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-400' : 'bg-indigo-100 border-indigo-200 text-indigo-600'
-                  : theme === 'dark' ? 'text-gray-500 border-transparent hover:text-indigo-400' : 'text-gray-400 border-transparent hover:text-indigo-500'
-              )}
-              title="Actions"
-            >
-              <MoreHorizontal size={14} />
-            </button>
-
-            <AnimatePresence>
-              {menuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                  transition={{ duration: 0.1 }}
-                  className={cn(
-                    'absolute right-0 top-full mt-1 z-50 min-w-[160px] border shadow-xl',
-                    theme === 'dark' ? 'bg-[#0F0F0F] border-white/10' : 'bg-white border-gray-200'
-                  )}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="py-1">
-                    {index > 0 && (
-                      <ActionItem icon={<ArrowUp size={12} />} label="Move Up" onClick={() => { onMoveUp(); setMenuOpen(false) }} theme={theme} />
-                    )}
-                    {index < totalSections - 1 && (
-                      <ActionItem icon={<ArrowDown size={12} />} label="Move Down" onClick={() => { onMoveDown(); setMenuOpen(false) }} theme={theme} />
-                    )}
-                    <ActionItem icon={<Copy size={12} />} label="Duplicate" onClick={() => { onDuplicate(); setMenuOpen(false) }} theme={theme} />
-                    <ActionItem icon={<Clipboard size={12} />} label="Copy" onClick={() => { onCopy(); setMenuOpen(false) }} theme={theme} />
-                    <ActionItem icon={<ClipboardPaste size={12} />} label="Paste" onClick={() => { onPaste(); setMenuOpen(false) }} theme={theme} />
-                    <div className={cn('border-t my-1', theme === 'dark' ? 'border-white/10' : 'border-gray-100')} />
-                    <ActionItem icon={<Trash2 size={12} />} label="Remove" onClick={() => { onDelete(); setMenuOpen(false) }} theme={theme} danger />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          <button
+            ref={menuAnchorRef}
+            onClick={(e) => {
+              e.stopPropagation()
+              if (!menuOpen && menuAnchorRef.current) {
+                const rect = menuAnchorRef.current.getBoundingClientRect()
+                setMenuPos({ top: rect.bottom + 4, left: rect.right - 160 })
+              }
+              setMenuOpen(!menuOpen)
+            }}
+            className={cn(
+              'p-1.5 rounded-none border transition-all',
+              menuOpen
+                ? theme === 'dark' ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' : 'bg-emerald-100 border-emerald-200 text-emerald-600'
+                : theme === 'dark' ? 'text-gray-500 border-transparent hover:text-emerald-400' : 'text-gray-400 border-transparent hover:text-emerald-500'
+            )}
+            title="Actions"
+          >
+            <MoreHorizontal size={14} />
+          </button>
         </div>
       </div>
 
@@ -369,7 +348,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
                         'p-1 transition-all',
                         section.align === align || (!section.align && align === 'left')
                           ? theme === 'dark' ? 'bg-white/10 text-white' : 'bg-black text-white shadow-sm'
-                          : 'text-gray-400 hover:text-indigo-500'
+                          : 'text-gray-400 hover:text-emerald-500'
                       )}
                     >
                       {align === 'left' && <AlignLeft size={10} />}
@@ -379,32 +358,15 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
                   ))}
                 </div>
                 <div className="flex items-center gap-1">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleUndo() }}
-                    disabled={undoStack.length === 0}
+                  <span
                     className={cn(
-                      'p-1 rounded-none border transition-all text-[8px] font-black uppercase italic flex items-center gap-1',
-                      undoStack.length > 0
-                        ? theme === 'dark' ? 'text-gray-500 border-transparent hover:text-indigo-400' : 'text-gray-400 border-transparent hover:text-indigo-500'
-                        : 'opacity-20 cursor-not-allowed border-transparent'
+                      'text-[8px] font-bold uppercase italic tracking-wider select-none',
+                      theme === 'dark' ? 'text-gray-700' : 'text-gray-400'
                     )}
-                    title="Undo"
+                    title="Use Ctrl+Z / Ctrl+Y to undo or redo changes"
                   >
-                    <Undo2 size={10} /> Undo
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleRedo() }}
-                    disabled={redoStack.length === 0}
-                    className={cn(
-                      'p-1 rounded-none border transition-all text-[8px] font-black uppercase italic flex items-center gap-1',
-                      redoStack.length > 0
-                        ? theme === 'dark' ? 'text-gray-500 border-transparent hover:text-indigo-400' : 'text-gray-400 border-transparent hover:text-indigo-500'
-                        : 'opacity-20 cursor-not-allowed border-transparent'
-                    )}
-                    title="Redo"
-                  >
-                    <Redo2 size={10} /> Redo
-                  </button>
+                    Ctrl+Z / Ctrl+Y to undo/redo
+                  </span>
                 </div>
               </div>
 
@@ -429,7 +391,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
                   <table className="w-full border-collapse text-left text-xs font-mono">
                     <thead>
                       <tr className={cn(theme === 'dark' ? 'bg-white/5 border-b border-white/10' : 'bg-gray-150 border-b border-gray-200')}>
-                        {((section.content?.headers as any[]) || []).map((h, hIdx) => (
+                        {((section.content?.headers) || []).map((h, hIdx) => (
                           <th key={hIdx} className="p-2.5">
                             <input
                               type="text"
@@ -439,7 +401,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
                                 headers[hIdx] = { ...headers[hIdx], text: e.target.value }
                                 handleFieldChange('headers', headers)
                               }}
-                              className="bg-transparent border-none font-bold w-full focus:bg-white/5 focus-visible:ring-2 focus-visible:ring-indigo-500 rounded px-1 text-xs"
+                              className="bg-transparent border-none font-bold w-full focus:bg-white/5 focus-visible:ring-2 focus-visible:ring-emerald-500 rounded px-1 text-xs"
                               placeholder={`Header ${hIdx + 1}`}
                             />
                           </th>
@@ -456,7 +418,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
                               }))
                               handleFieldChange('rows', rows)
                             }}
-                            className="text-xs text-indigo-400 font-bold hover:text-indigo-300"
+                            className="text-xs text-emerald-400 font-bold hover:text-emerald-300"
                           >
                             + Col
                           </button>
@@ -464,9 +426,9 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
                       </tr>
                     </thead>
                     <tbody>
-                      {((section.content?.rows as any[]) || []).map((row, rIdx) => (
+                      {((section.content?.rows) || []).map((row, rIdx) => (
                         <tr key={rIdx} className={cn(theme === 'dark' ? 'border-b border-white/5 hover:bg-white/[0.01]' : 'border-b border-gray-150 hover:bg-gray-50')}>
-                          {((row.cells as any[]) || []).map((cell, cIdx) => (
+                          {((row.cells) || []).map((cell, cIdx) => (
                             <td key={cIdx} className="p-2">
                               <input
                                 type="text"
@@ -478,7 +440,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
                                   rows[rIdx] = { ...rows[rIdx], cells }
                                   handleFieldChange('rows', rows)
                                 }}
-                                className="bg-transparent border-none w-full focus:bg-white/5 focus-visible:ring-2 focus-visible:ring-indigo-500 rounded px-1"
+                                className="bg-transparent border-none w-full focus:bg-white/5 focus-visible:ring-2 focus-visible:ring-emerald-500 rounded px-1"
                                 placeholder="Cell..."
                               />
                             </td>
@@ -498,17 +460,17 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
                         </tr>
                       ))}
                       <tr>
-                        <td colSpan={((section.content?.headers as any[]) || []).length + 1} className="p-2">
+                        <td colSpan={((section.content?.headers) || []).length + 1} className="p-2">
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
                               const rows = [...(section.content.rows || [])]
-                              const numCols = ((section.content?.headers as any[]) || []).length
+                              const numCols = ((section.content?.headers) || []).length
                               const newCells = Array.from({ length: numCols }, () => ({ text: '' }))
                               rows.push({ cells: newCells })
                               handleFieldChange('rows', rows)
                             }}
-                            className="text-xs text-indigo-400 font-bold hover:text-indigo-300 flex items-center gap-1"
+                            className="text-xs text-emerald-400 font-bold hover:text-emerald-300 flex items-center gap-1"
                           >
                             + Add Row
                           </button>
@@ -593,6 +555,34 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Action menu rendered via portal to escape overflow-hidden clipping */}
+      {menuOpen && menuPos && createPortal(
+        <div
+          ref={menuRef}
+          style={{ position: 'fixed', top: menuPos.top, left: menuPos.left, zIndex: 900 }}
+          className={cn(
+            'min-w-[160px] border shadow-xl rounded-none',
+            theme === 'dark' ? 'bg-[#0F0F0F] border-white/10' : 'bg-white border-gray-200'
+          )}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="py-1">
+            {index > 0 && (
+              <ActionItem icon={<ArrowUp size={12} />} label="Move Up" onClick={() => { onMoveUp(); setMenuOpen(false) }} theme={theme} />
+            )}
+            {index < totalSections - 1 && (
+              <ActionItem icon={<ArrowDown size={12} />} label="Move Down" onClick={() => { onMoveDown(); setMenuOpen(false) }} theme={theme} />
+            )}
+            <ActionItem icon={<Copy size={12} />} label="Duplicate" onClick={() => { onDuplicate(); setMenuOpen(false) }} theme={theme} />
+            <ActionItem icon={<Clipboard size={12} />} label="Copy" onClick={() => { onCopy(); setMenuOpen(false) }} theme={theme} />
+            <ActionItem icon={<ClipboardPaste size={12} />} label="Paste" onClick={() => { onPaste(); setMenuOpen(false) }} theme={theme} />
+            <div className={cn('border-t my-1', theme === 'dark' ? 'border-white/10' : 'border-gray-100')} />
+            <ActionItem icon={<Trash2 size={12} />} label="Remove" onClick={() => { onDelete(); setMenuOpen(false) }} theme={theme} danger />
+          </div>
+        </div>,
+        document.body
+      )}
 
     </div>
   )

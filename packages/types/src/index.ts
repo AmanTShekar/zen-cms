@@ -220,6 +220,7 @@ export interface CollectionConfig {
   maxVersions?: number
   scheduling?: boolean
   publicRead?: boolean
+  softDelete?: boolean
   hooks?: {
     beforeValidate?: (data: any, user: any, context: { hookType: string }) => any | Promise<any>
     beforeCreate?: (data: any, user: any, context: { hookType: string }) => any | Promise<any>

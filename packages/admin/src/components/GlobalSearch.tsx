@@ -60,14 +60,14 @@ const GlobalSearch: React.FC = () => {
   }, [query])
 
   const highlightMatch = (text: string, match: string) => {
-    if (!match) return text
+    if (!match || !text) return text || ''
     const escapedMatch = match.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     const parts = text.split(new RegExp(`(${escapedMatch})`, 'gi'))
     return parts.map((part, i) =>
       part.toLowerCase() === match.toLowerCase() ? (
         <span
           key={i}
-          className="text-indigo-500 font-black underline decoration-2 underline-offset-2"
+          className="text-emerald-500 font-black underline decoration-2 underline-offset-2"
         >
           {part}
         </span>
@@ -114,13 +114,13 @@ const GlobalSearch: React.FC = () => {
         className={cn(
           'flex items-center gap-2 px-4 py-2 rounded-none transition-all border',
           isFocused
-            ? 'bg-white border-indigo-500 shadow-lg text-black'
+            ? 'bg-white border-emerald-500 shadow-lg text-black'
             : 'bg-white/5 border-white/5 text-gray-500 hover:bg-white/10'
         )}
       >
         <Search
           size={18}
-          className={cn('transition-colors', isFocused ? 'text-indigo-500' : 'text-gray-500')}
+          className={cn('transition-colors', isFocused ? 'text-emerald-500' : 'text-gray-500')}
         />
         <input
           type="text"
@@ -128,7 +128,7 @@ const GlobalSearch: React.FC = () => {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
           placeholder="Search collections & commands..."
-          className="bg-transparent border-none text-[13px] font-black uppercase tracking-widest italic flex-1 placeholder:text-gray-700 focus-visible:ring-2 focus-visible:ring-indigo-500 rounded px-1"
+          className="bg-transparent border-none text-[13px] font-black uppercase tracking-widest italic flex-1 placeholder:text-gray-700 focus-visible:ring-2 focus-visible:ring-emerald-500 rounded px-1"
         />
         {query && (
           <button onClick={() => setQuery('')} className="p-1 hover:bg-black/5 rounded-none">
@@ -163,7 +163,7 @@ const GlobalSearch: React.FC = () => {
                       onClick={() => handleSelect(`/collections/${res.collection}/${res.id}`)}
                       className="w-full flex items-center gap-3 p-2.5 rounded-none hover:bg-gray-50 transition-all text-left group"
                     >
-                      <div className="w-7 h-7 rounded-none bg-indigo-50 flex items-center justify-center text-indigo-500 flex-shrink-0">
+                      <div className="w-7 h-7 rounded-none bg-emerald-50 flex items-center justify-center text-emerald-500 flex-shrink-0">
                         <FileText size={14} />
                       </div>
                       <div className="flex flex-col min-w-0">
@@ -206,7 +206,7 @@ const GlobalSearch: React.FC = () => {
                       onClick={() => handleSelect(cmd.path)}
                       className="w-full flex items-center gap-3 p-2.5 rounded-none hover:bg-gray-50 transition-all text-left group"
                     >
-                      <div className="w-7 h-7 rounded-none bg-gray-100 flex items-center justify-center text-gray-500 flex-shrink-0 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+                      <div className="w-7 h-7 rounded-none bg-gray-100 flex items-center justify-center text-gray-500 flex-shrink-0 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
                         <cmd.icon size={14} />
                       </div>
                       <div className="flex flex-col min-w-0">
@@ -228,8 +228,8 @@ const GlobalSearch: React.FC = () => {
                 Core_Intelligence_Stream
               </span>
               <div className="flex items-center gap-2">
-                <div className="w-1 h-1 bg-indigo-500 rounded-none animate-pulse" />
-                <span className="text-[8px] font-black uppercase text-indigo-500 italic">
+                <div className="w-1 h-1 bg-emerald-500 rounded-none animate-pulse" />
+                <span className="text-[8px] font-black uppercase text-emerald-500 italic">
                   Sync_Active
                 </span>
               </div>

@@ -7,6 +7,7 @@ export const Post: CollectionConfig = {
   drafts: true,
   versions: true,
   seo: true,
+  softDelete: true,
   timestamps: true,
   labels: { singular: 'Post', plural: 'Posts' },
   fields: [

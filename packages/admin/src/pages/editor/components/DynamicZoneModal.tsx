@@ -35,8 +35,8 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item, idx, theme, removeF
       className={cn(
         'flex items-center gap-3 p-3 rounded-none border group',
         theme === 'dark'
-          ? 'bg-white/5 border-white/10 hover:border-purple-500/20'
-          : 'bg-gray-50 border-gray-200 hover:border-purple-200'
+          ? 'bg-white/5 border-white/10 hover:border-emerald-500/20'
+          : 'bg-gray-50 border-gray-200 hover:border-emerald-200'
       )}
     >
       <div
@@ -45,8 +45,8 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item, idx, theme, removeF
       >
         <GripVertical size={12} className="text-gray-500" />
       </div>
-      <div className="w-6 h-6 rounded-none bg-purple-500/10 flex items-center justify-center shrink-0">
-        <Layout size={12} className="text-purple-400" />
+      <div className="w-6 h-6 rounded-none bg-emerald-500/10 flex items-center justify-center shrink-0">
+        <Layout size={12} className="text-emerald-400" />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-xs font-black uppercase italic truncate">
@@ -124,13 +124,13 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
               theme === 'dark' ? 'border-white/5' : 'border-gray-100'
             )}>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-none bg-purple-600/20 border border-purple-500/30 flex items-center justify-center">
-                  <Layers size={16} className="text-purple-400" />
+                <div className="w-8 h-8 rounded-none bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
+                  <Layers size={16} className="text-emerald-400" />
                 </div>
                 <div>
                   <h2
                     id={modalTitleId}
-                    className="text-base font-black uppercase italic text-purple-400 leading-none"
+                    className="text-base font-black uppercase italic text-emerald-400 leading-none"
                   >
                     Dynamic Zone
                   </h2>
@@ -210,8 +210,8 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
                     className={cn(
                       'w-full pl-8 pr-3 py-2 text-xs font-bold border rounded-none bg-transparent',
                       theme === 'dark'
-                        ? 'border-white/10 text-white placeholder-gray-600 focus:border-purple-500/30'
-                        : 'border-gray-200 text-black placeholder-gray-400 focus:border-purple-500/30'
+                        ? 'border-white/10 text-white placeholder-gray-600 focus:border-emerald-500/30'
+                        : 'border-gray-200 text-black placeholder-gray-400 focus:border-emerald-500/30'
                     )}
                   />
                 </div>
@@ -231,12 +231,12 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
                           className={cn(
                             'w-full flex items-center gap-3 p-3 rounded-none border transition-all text-left',
                             theme === 'dark'
-                              ? 'bg-white/[0.01] border-white/5 hover:border-purple-500/30 hover:bg-purple-500/5'
-                              : 'bg-gray-50 border-gray-200 hover:border-purple-300 hover:bg-purple-50'
+                              ? 'bg-white/[0.01] border-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/5'
+                              : 'bg-gray-50 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50'
                           )}
                         >
-                          <div className="w-8 h-8 rounded-none bg-purple-500/10 flex items-center justify-center shrink-0">
-                            <Icon size={14} className="text-purple-400" />
+                          <div className="w-8 h-8 rounded-none bg-emerald-500/10 flex items-center justify-center shrink-0">
+                            <Icon size={14} className="text-emerald-400" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-black uppercase italic truncate">{block.title}</p>
@@ -244,7 +244,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
                               {block.description}
                             </p>
                           </div>
-                          <PlusCircle size={14} aria-hidden="true" className="text-purple-500 opacity-50 shrink-0" />
+                          <PlusCircle size={14} aria-hidden="true" className="text-emerald-500 opacity-50 shrink-0" />
                         </button>
                       )
                     })

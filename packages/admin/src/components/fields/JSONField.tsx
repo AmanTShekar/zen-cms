@@ -62,7 +62,7 @@ const JSONField: React.FC<JSONFieldProps> = ({ value, onChange, disabled, rows =
             'w-full bg-[#0d1117] backdrop-blur-md border rounded-none px-9 py-2.5 text-xs font-mono resize-y focus:outline-none transition-colors',
             'text-[#e6edf3] placeholder:text-gray-600 disabled:opacity-60 disabled:cursor-not-allowed',
             focused
-              ? 'border-purple-500/50'
+              ? 'border-emerald-500/50'
               : jsonValid === false
                 ? 'border-red-500/40'
                 : 'border-white/10'
@@ -87,7 +87,7 @@ const JSONField: React.FC<JSONFieldProps> = ({ value, onChange, disabled, rows =
           <button
             type="button"
             onClick={handleFormat}
-            className="text-[9px] font-bold uppercase tracking-wider text-gray-500 hover:text-purple-400 transition-colors"
+            className="text-[9px] font-bold uppercase tracking-wider text-gray-500 hover:text-emerald-400 transition-colors"
           >
             Format
           </button>

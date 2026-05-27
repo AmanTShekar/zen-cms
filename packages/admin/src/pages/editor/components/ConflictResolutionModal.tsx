@@ -96,7 +96,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
                 <p className="text-xs font-bold text-gray-500 mt-1 leading-relaxed">
                   Another editor saved changes to this document while you were editing.
                   <br />
-                  Version mismatch: you had <span className="font-black text-indigo-400">v{localVersion ?? '?'}</span>, server now at <span className="font-black text-amber-400">v{serverVersion ?? '?'}</span>.
+                  Version mismatch: you had <span className="font-black text-emerald-400">v{localVersion ?? '?'}</span>, server now at <span className="font-black text-amber-400">v{serverVersion ?? '?'}</span>.
                 </p>
                 {conflictMessage && (
                   <p className="text-xs font-bold italic text-rose-400/70 mt-1.5 tracking-wide">
@@ -134,7 +134,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
               )}>
                 <div className="text-center">
                   <p className="text-[7px] font-black uppercase italic text-gray-600 tracking-widest mb-1">Your Version</p>
-                  <p className="text-lg font-black italic text-indigo-400">v{localVersion ?? '?'}</p>
+                  <p className="text-lg font-black italic text-emerald-400">v{localVersion ?? '?'}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-[7px] font-black uppercase italic text-gray-600 tracking-widest mb-1">Server Version</p>
@@ -168,7 +168,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
                 disabled={loading}
                 onClick={handleForceSave}
                 className={cn(
-                  'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-black uppercase italic tracking-widest rounded-none transition-all bg-indigo-600 text-white hover:bg-indigo-500 border border-indigo-600',
+                  'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-black uppercase italic tracking-widest rounded-none transition-all bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-600',
                   loading && 'opacity-50 cursor-not-allowed'
                 )}
               >

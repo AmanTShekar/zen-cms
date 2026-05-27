@@ -22,14 +22,14 @@ const CodeField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
         spellCheck={false}
         className={cn(
           'w-full bg-[#0d1117] backdrop-blur-md border border-white/10 rounded-none px-4 py-3 text-sm font-mono',
-          'focus:border-purple-500/50 outline-none disabled:opacity-60 disabled:cursor-not-allowed',
+          'focus:border-emerald-500/50 outline-none disabled:opacity-60 disabled:cursor-not-allowed',
           'text-[#e6edf3] placeholder:text-gray-600'
         )}
         placeholder={`Enter ${cf.language || 'code'}...`}
       />
       <div className="absolute top-2 right-3 flex items-center gap-2">
         {cf.language && (
-          <span className="text-[9px] font-bold text-purple-400/60 font-mono uppercase">
+          <span className="text-[9px] font-bold text-emerald-400/60 font-mono uppercase">
             {cf.language}
           </span>
         )}

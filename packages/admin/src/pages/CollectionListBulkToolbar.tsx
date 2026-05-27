@@ -22,11 +22,11 @@ const CollectionListBulkToolbar: React.FC<CollectionListBulkToolbarProps> = ({
       transition={{ duration: 0.2 }}
       className={cn(
         'border rounded-none px-6 py-3 flex items-center justify-between gap-4 shadow-lg',
-        theme === 'dark' ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-indigo-50 border-indigo-200'
+        theme === 'dark' ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-emerald-50 border-emerald-200'
       )}
     >
       <div className="flex items-center gap-3">
-        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 italic">
+        <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 italic">
           {selectedIds.size} Selected
         </span>
         <button onClick={onClearSelection} className="p-1 text-gray-500 hover:text-white transition-colors" title="Clear selection">

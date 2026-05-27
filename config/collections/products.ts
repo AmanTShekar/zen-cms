@@ -4,6 +4,7 @@ export const Product: CollectionConfig = {
   name: 'Product',
   slug: 'products',
   drafts: true,
+  softDelete: true,
   timestamps: true,
   versions: true,
   labels: { singular: 'Product', plural: 'Products' },
@@ -66,4 +67,3 @@ export const Product: CollectionConfig = {
     },
   ],
 }
-

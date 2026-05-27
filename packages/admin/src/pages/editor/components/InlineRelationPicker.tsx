@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Link2, Search, X, Check, Loader2, Plus, Minus } from 'lucide-react'
+import { Link2, Search, X, Check, Loader2, Plus, Minus, Edit3 } from 'lucide-react'
 import { useTheme } from '../../../context/ThemeContext'
 import { cn } from '../../../lib/utils'
 import api from '../../../lib/api'
 import toast from 'react-hot-toast'
+import DocumentEditModal from '../../../components/DocumentEditModal'
 
 interface InlineRelationPickerProps {
   blockId: string
@@ -31,6 +32,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
   const [search, setSearch] = useState('')
   const [results, setResults] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
+  const [editItemId, setEditItemId] = useState<string | null>(null)
   const [selected, setSelected] = useState<Set<string>>(new Set(
     value ? (Array.isArray(value) ? value : [value]) : []
   ))
@@ -141,8 +143,8 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
         className={cn(
           'w-full px-4 py-3 flex items-center justify-between border text-xs font-bold transition-all rounded-none',
           theme === 'dark'
-            ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20'
-            : 'bg-indigo-50 border-indigo-200 text-indigo-600 hover:bg-indigo-100'
+            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
+            : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100'
         )}
       >
         <span className="flex items-center gap-2">
@@ -175,12 +177,12 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
               'px-4 py-3 border-b flex items-center justify-between shrink-0',
               theme === 'dark' ? 'border-white/5' : 'border-gray-100'
             )}>
-              <span className="text-xs font-black uppercase italic tracking-widest text-indigo-400">
+              <span className="text-xs font-black uppercase italic tracking-widest text-emerald-400">
                 Content Relations
               </span>
               <div className="flex items-center gap-1.5">
                 {selectedCount > 0 && (
-                  <span className="text-xs font-black text-indigo-400 uppercase italic">
+                  <span className="text-xs font-black text-emerald-400 uppercase italic">
                     {selectedCount} selected
                   </span>
                 )}
@@ -209,7 +211,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
 
             {!collection ? (
               <div className="p-6 text-center">
-                <p className="text-xs font-black uppercase italic text-indigo-400 mb-1">No collection configured</p>
+                <p className="text-xs font-black uppercase italic text-emerald-400 mb-1">No collection configured</p>
                 <p className="text-xs text-gray-500">Set <code className="text-xs">relationTo</code> on the field to enable inline relation picker.</p>
               </div>
             ) : (
@@ -241,7 +243,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
                 <div className="flex-1 overflow-y-auto max-h-56 custom-editor-scrollbar px-2 pb-2 space-y-0.5">
                   {loading ? (
                     <div className="flex items-center justify-center py-8 gap-2">
-                      <Loader2 size={14} className="animate-spin text-indigo-500" />
+                      <Loader2 size={14} className="animate-spin text-emerald-500" />
                       <span className="text-xs font-bold text-gray-500 uppercase italic animate-pulse">Searching...</span>
                     </div>
                   ) : results.length === 0 ? (
@@ -263,8 +265,8 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
                             'w-full flex items-center gap-2.5 px-3 py-2 rounded-none text-left text-xs font-semibold transition-all border',
                             isSelected
                               ? theme === 'dark'
-                                ? 'bg-indigo-500/15 border-indigo-500/20 text-indigo-300'
-                                : 'bg-indigo-50 border-indigo-200 text-indigo-700'
+                                ? 'bg-emerald-500/15 border-emerald-500/20 text-emerald-300'
+                                : 'bg-emerald-50 border-emerald-200 text-emerald-700'
                               : theme === 'dark'
                                 ? 'border-white/0 text-gray-300 hover:bg-white/5 hover:border-white/5'
                                 : 'border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-100'
@@ -274,7 +276,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
                           <div className={cn(
                             'w-4 h-4 rounded-none border flex items-center justify-center shrink-0 transition-all',
                             isSelected
-                              ? 'bg-indigo-500 border-indigo-500 text-white'
+                              ? 'bg-emerald-500 border-emerald-500 text-white'
                               : theme === 'dark'
                                 ? 'border-white/10 bg-white/5'
                                 : 'border-gray-300 bg-white'
@@ -301,9 +303,28 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
 
                           {/* +/- for hasMany */}
                           {hasMany && isSelected && (
-                            <div className="shrink-0">
-                              <Minus size={10} className="text-indigo-400" />
+                            <div className="shrink-0 ml-1">
+                              <Minus size={10} className="text-emerald-400" />
                             </div>
+                          )}
+                          
+                          {/* Edit button */}
+                          {isSelected && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setEditItemId(id)
+                              }}
+                              className={cn(
+                                'shrink-0 p-1.5 ml-2 transition-colors border',
+                                theme === 'dark'
+                                  ? 'border-white/10 hover:bg-white/10 text-white'
+                                  : 'border-gray-200 hover:bg-gray-100 text-black'
+                              )}
+                              title="Edit Document"
+                            >
+                              <Edit3 size={10} />
+                            </button>
                           )}
                         </button>
                       )
@@ -330,7 +351,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
                   <button
                     onClick={handleApply}
                     className={cn(
-                      'flex-1 py-1.5 text-xs font-black uppercase italic rounded-none transition-all bg-indigo-600 text-white hover:bg-indigo-500'
+                      'flex-1 py-1.5 text-xs font-black uppercase italic rounded-none transition-all bg-emerald-600 text-white hover:bg-emerald-500'
                     )}
                   >
                     Done
@@ -341,6 +362,18 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {collection && (
+        <DocumentEditModal
+          isOpen={!!editItemId}
+          onClose={() => setEditItemId(null)}
+          collectionSlug={collection}
+          documentId={editItemId || ''}
+          onSaved={() => {
+            fetchResults(collection, search)
+          }}
+        />
+      )}
     </div>
   )
 }

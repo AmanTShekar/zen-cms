@@ -68,7 +68,7 @@ const ResetPasswordPage: React.FC = () => {
   return (
     <div
       className={cn(
-        'min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-sans antialiased selection:bg-indigo-600 selection:text-white transition-colors duration-500',
+        'min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-sans antialiased selection:bg-emerald-600 selection:text-white transition-colors duration-500',
         theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-[#111827]'
       )}
     >
@@ -76,13 +76,13 @@ const ResetPasswordPage: React.FC = () => {
       <div
         className={cn(
           'absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500',
-          theme === 'dark' ? 'bg-indigo-500/10' : 'bg-indigo-500/[0.03]'
+          theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-500/[0.03]'
         )}
       ></div>
       <div
         className={cn(
           'absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500',
-          theme === 'dark' ? 'bg-indigo-500/10' : 'bg-indigo-500/[0.02]'
+          theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-500/[0.02]'
         )}
       ></div>
 
@@ -248,8 +248,8 @@ const ResetPasswordPage: React.FC = () => {
                       className={cn(
                         'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
                         theme === 'dark'
-                          ? 'text-white/20 group-focus-within:text-indigo-400'
-                          : 'text-gray-300 group-focus-within:text-indigo-600'
+                          ? 'text-white/20 group-focus-within:text-emerald-400'
+                          : 'text-gray-300 group-focus-within:text-emerald-600'
                       )}
                       size={16}
                     />
@@ -260,8 +260,8 @@ const ResetPasswordPage: React.FC = () => {
                       className={cn(
                         'w-full border rounded-none py-3 pl-12 pr-12 text-xs font-bold outline-none transition-all',
                         theme === 'dark'
-                          ? 'bg-white/5 border-white/10 text-white focus:bg-white/10 focus:ring-2 focus:ring-indigo-500/20'
-                          : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-indigo-100'
+                          ? 'bg-white/5 border-white/10 text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
+                          : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
                       )}
                     />
                     <button
@@ -294,8 +294,8 @@ const ResetPasswordPage: React.FC = () => {
                       className={cn(
                         'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
                         theme === 'dark'
-                          ? 'text-white/20 group-focus-within:text-indigo-400'
-                          : 'text-gray-300 group-focus-within:text-indigo-600'
+                          ? 'text-white/20 group-focus-within:text-emerald-400'
+                          : 'text-gray-300 group-focus-within:text-emerald-600'
                       )}
                       size={16}
                     />
@@ -306,8 +306,8 @@ const ResetPasswordPage: React.FC = () => {
                       className={cn(
                         'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none transition-all',
                         theme === 'dark'
-                          ? 'bg-white/5 border-white/10 text-white focus:bg-white/10 focus:ring-2 focus:ring-indigo-500/20'
-                          : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-indigo-100'
+                          ? 'bg-white/5 border-white/10 text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
+                          : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
                       )}
                     />
                   </div>
@@ -348,8 +348,8 @@ const ResetPasswordPage: React.FC = () => {
                   className={cn(
                     'text-[9px] font-black uppercase tracking-widest italic hover:underline flex items-center justify-center gap-2 transition-colors',
                     theme === 'dark'
-                      ? 'text-indigo-400 hover:text-indigo-300'
-                      : 'text-indigo-600 hover:text-indigo-700'
+                      ? 'text-emerald-400 hover:text-emerald-300'
+                      : 'text-emerald-600 hover:text-emerald-700'
                   )}
                 >
                   <ArrowLeft size={10} />

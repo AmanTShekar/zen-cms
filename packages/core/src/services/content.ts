@@ -22,6 +22,8 @@ export interface ContentOperationOptions extends BaseOptions {
   overrideLock?: boolean
   /** For optimistic locking: if provided, update fails with ConflictError when stale */
   expectedVersion?: number
+  /** Include soft-deleted documents in query results */
+  includeDeleted?: boolean
 }
 
 /**
@@ -181,6 +183,11 @@ export class ContentService<T = unknown> {
       query._status = 'published'
     }
 
+    // Filter out soft-deleted items by default
+    if (this.config.softDelete && !options.includeDeleted) {
+      query.deletedAt = null
+    }
+
     // Apply RLS (Row Level Security)
     if (options.user && typeof this.config.access?.read === 'function') {
       const access = this.config.access.read(options.user)
@@ -222,6 +229,11 @@ export class ContentService<T = unknown> {
     // Apply draft/publish isolation for public queries
     if (this.config.drafts && !options.user && !options.preview) {
       query._status = 'published'
+    }
+
+    // Filter out soft-deleted items by default
+    if (this.config.softDelete && !options.includeDeleted) {
+      query.deletedAt = null
     }
 
     let doc = await this.adapter.findOne<T>(this.config.slug, query, options)
@@ -445,7 +457,15 @@ export class ContentService<T = unknown> {
       targetId = (doc as any)._id
     }
 
-    const success = await this.adapter.delete(this.config.slug, targetId, options)
+    let success = false
+    if (this.config.softDelete && !options.includeDeleted) {
+      // Perform soft delete by updating deletedAt
+      const doc = await this.adapter.update(this.config.slug, targetId, { deletedAt: new Date() }, options)
+      success = !!doc
+    } else {
+      success = await this.adapter.delete(this.config.slug, targetId, options)
+    }
+
     if (!success) throw new NotFoundError(this.config.name, id)
 
     if (!options.skipHooks && this.config.hooks?.afterDelete) {
@@ -510,10 +530,12 @@ export class ContentService<T = unknown> {
         .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
         .slice(maxVersions)
 
-      for (const version of toDelete) {
-        const vid = (version as any)._id?.toString() || (version as any).id
-        if (vid) await this.adapter.delete('versions', vid)
-      }
+      await Promise.all(
+        toDelete.map(async (version: any) => {
+          const vid = version._id?.toString() || version.id
+          if (vid) await this.adapter.delete('versions', vid)
+        })
+      )
     } catch (err) {
       logger.warn({ err, collection: this.config.slug, documentId }, 'Version pruning failed')
     }

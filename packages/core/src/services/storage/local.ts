@@ -2,6 +2,7 @@ import fs from 'fs/promises'
 import { mkdirSync } from 'fs'
 import path from 'path'
 import crypto from 'crypto'
+import sharp from 'sharp'
 import { StorageProvider, UploadResult } from './base'
 import { logger } from '../../services/logger'
 
@@ -25,27 +26,45 @@ export class LocalStorageProvider extends StorageProvider {
     options: { filename: string; mimetype: string }
   ): Promise<UploadResult> {
     // Guard Rail 2: Prevent directory traversal on upload and replace spaces
-    const safeBaseName = path.basename(options.filename).replace(/\s+/g, '-')
+    let safeBaseName = path.basename(options.filename).replace(/\s+/g, '-')
+    let mimetype = options.mimetype
+    let bufferToSave: Buffer | string = fileInput
     
+    // Holy Grail image optimization (Skip SVGs and GIFs to preserve animations/vectors)
+    if (mimetype.startsWith('image/') && !mimetype.includes('svg') && !mimetype.includes('gif')) {
+      try {
+        bufferToSave = await sharp(typeof fileInput === 'string' ? await fs.readFile(fileInput) : fileInput)
+          .resize({ width: 1920, withoutEnlargement: true, fit: 'inside' })
+          .webp({ quality: 80 })
+          .toBuffer()
+        
+        mimetype = 'image/webp'
+        safeBaseName = safeBaseName.replace(/\.[^/.]+$/, "") + '.webp'
+      } catch (err: any) {
+        logger.warn({ err: err.message }, `[Zenith] Sharp image optimization failed, falling back to original`)
+        // Fallback to original if sharp fails
+      }
+    }
+
     // Guard Rail 3: Prevent race condition collisions using cryptographically secure UUIDs
     const filename = `${crypto.randomUUID()}-${safeBaseName}`
     const filePath = path.join(this.uploadDir, filename)
 
     let size = 0
-    if (typeof fileInput === 'string') {
-      const stats = await fs.stat(fileInput)
+    if (typeof bufferToSave === 'string') {
+      const stats = await fs.stat(bufferToSave)
       size = stats.size
-      await fs.copyFile(fileInput, filePath)
+      await fs.copyFile(bufferToSave, filePath)
     } else {
-      size = fileInput.length
-      await fs.writeFile(filePath, fileInput)
+      size = bufferToSave.length
+      await fs.writeFile(filePath, bufferToSave)
     }
 
     return {
       url: `/media/${filename}`,
       id: filename,
       filename,
-      mimetype: options.mimetype,
+      mimetype,
       size,
     }
   }

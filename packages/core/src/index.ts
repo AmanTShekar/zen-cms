@@ -17,6 +17,8 @@ import { ContentService } from './services/content'
 import { FlowEngine } from './services/flow-engine'
 import { WebhookService } from './services/webhook'
 import { PresenceService } from './services/presence'
+import { sessionStore } from './services/session-store'
+import { eventHub } from './services/event-hub'
 
 // ── Register Mongoose Schemas (Required for MongoDB Mode) ────────────────────
 import './database/user-model'
@@ -50,6 +52,7 @@ import { maintenanceMiddleware } from './middleware/maintenance'
 import { metricsMiddleware, getPrometheusMetrics } from './middleware/metrics'
 import { tracerMiddleware } from './middleware/tracer'
 import { siteVaryMiddleware } from './middleware/siteVary'
+import { requestTimeout } from './middleware/timeout'
 
 // ── Routers ──────────────────────────────────────────────────────────────────
 import { createCollectionRouter } from './api/factory'
@@ -59,6 +62,7 @@ import authRouter from './api/auth'
 import uploadRouter from './api/upload'
 import _mediaRouter from './api/media'
 import importExportRouter from './api/import-export'
+import backupRouter from './api/backup'
 import preferencesRouter from './api/preferences'
 import versionsRouter from './api/versions'
 import locksRouter from './api/locks'
@@ -77,7 +81,18 @@ import rolesRouter, { seedSystemRoles } from './api/roles'
 import templatesRouter from './api/templates'
 import webhooksRouter from './api/webhooks'
 import pluginsRouter from './api/plugins'
+import schemasRouter from './api/schemas'
+import componentsRouter from './api/components'
+import campaignsRouter from './api/campaigns'
 import blocksRouter from './api/blocks'
+import redirectsRouter from './api/redirects'
+import duplicateRouter from './api/duplicate'
+import bulkRouter from './api/bulk'
+import trashRouter from './api/trash'
+import eventsRouter from './api/events'
+
+// ── Redirect Handler Middleware ───────────────────────────────────────────────
+import { redirectHandler } from './middleware/redirect-handler'
 
 // ── GraphQL / Swagger (optional) ─────────────────────────────────────────────
 import { setupSwagger } from './api/swagger'
@@ -127,42 +142,42 @@ export class ZenithEngine {
    */
   public get local() {
     return {
-      find: async (collectionSlug: string, query: any = {}, options: any = {}) => {
+      find: async (collectionSlug: string, query: any = {}, options: Partial<import('./services/content').ContentOperationOptions> = {}) => {
         const service = this.servicesMap.get(collectionSlug)
         if (!service)
           throw new Error(`Collection or Global "${collectionSlug}" not registered in Local API`)
-        return await service.find(query, options)
+        return await service.find(query, options as any)
       },
-      findOne: async (collectionSlug: string, query: any = {}, options: any = {}) => {
+      findOne: async (collectionSlug: string, query: any = {}, options: Partial<import('./services/content').ContentOperationOptions> = {}) => {
         const service = this.servicesMap.get(collectionSlug)
         if (!service)
           throw new Error(`Collection or Global "${collectionSlug}" not registered in Local API`)
-        const result = await service.find(query, { ...options, limit: 1 })
+        const result = await service.find(query, { ...options, limit: 1 } as any)
         return result.length > 0 ? result[0] : null
       },
-      findById: async (collectionSlug: string, id: string, options: any = {}) => {
+      findById: async (collectionSlug: string, id: string, options: Partial<import('./services/content').ContentOperationOptions> = {}) => {
         const service = this.servicesMap.get(collectionSlug)
         if (!service)
           throw new Error(`Collection or Global "${collectionSlug}" not registered in Local API`)
-        return await service.findById(id, options)
+        return await service.findById(id, options as any)
       },
-      create: async (collectionSlug: string, data: any, options: any = {}) => {
+      create: async (collectionSlug: string, data: any, options: Partial<import('./services/content').ContentOperationOptions> = {}) => {
         const service = this.servicesMap.get(collectionSlug)
         if (!service)
           throw new Error(`Collection or Global "${collectionSlug}" not registered in Local API`)
-        return await service.create(data, options)
+        return await service.create(data, options as any)
       },
-      update: async (collectionSlug: string, id: string, data: any, options: any = {}) => {
+      update: async (collectionSlug: string, id: string, data: any, options: Partial<import('./services/content').ContentOperationOptions> = {}) => {
         const service = this.servicesMap.get(collectionSlug)
         if (!service)
           throw new Error(`Collection or Global "${collectionSlug}" not registered in Local API`)
-        return await service.update(id, data, options)
+        return await service.update(id, data, options as any)
       },
-      delete: async (collectionSlug: string, id: string, options: any = {}) => {
+      delete: async (collectionSlug: string, id: string, options: Partial<import('./services/content').ContentOperationOptions> = {}) => {
         const service = this.servicesMap.get(collectionSlug)
         if (!service)
           throw new Error(`Collection or Global "${collectionSlug}" not registered in Local API`)
-        return await service.delete(id, options)
+        return await service.delete(id, options as any)
       },
     }
   }
@@ -174,6 +189,9 @@ export class ZenithEngine {
    * Phase 3: Neural Bridge & Route Generation
    */
   constructor(options: ZenithOptions) {
+    // ── Production Environment Validation ──────────────────────────────────────
+    this._validateEnvironment()
+
     const pluginResult = applyPlugins(options.config, options.plugins || [])
     this.config = pluginResult.config
     if (pluginResult.errors.length > 0) {
@@ -200,6 +218,66 @@ export class ZenithEngine {
 
     this._initMiddleware()
     this._initRoutes()
+    this._initAuditTrail()
+  }
+
+  /**
+   * Validates critical environment variables at startup.
+   * In production, missing secrets cause a hard failure.
+   * In development, missing values log a warning but allow boot.
+   */
+  private _validateEnvironment() {
+    const requiredInProduction = [
+      ['JWT_SECRET', 'JWT signing secret'],
+      ['JWT_REFRESH_SECRET', 'JWT refresh token secret'],
+    ]
+    const recommended = [
+      ['DATABASE_TYPE', 'Database dialect (postgres/mongodb)'],
+      ['PREVIEW_SECRET', 'Preview token signing secret'],
+    ]
+
+    if (process.env.NODE_ENV === 'production') {
+      for (const [key, desc] of requiredInProduction) {
+        if (!process.env[key]) {
+          throw new Error(`[Zenith] FATAL: ${key} (${desc}) must be set in production.`)
+        }
+      }
+      for (const [key, desc] of recommended) {
+        if (!process.env[key]) {
+          logger.warn({ key }, `[Zenith] Recommended env var "${key}" (${desc}) is not set.`)
+        }
+      }
+    }
+  }
+
+  /**
+   * Subscribes to the global event hub to record immutable audit trails.
+   */
+  private _initAuditTrail() {
+    const handleEvent = async (action: string, payload: any) => {
+      try {
+        const { collection, documentId, user, siteId, data } = payload
+        if (!user) return
+        
+        await this.adapter.create('z_audit_logs', {
+          userId: user.id || user._id,
+          userEmail: user.email,
+          action,
+          collectionName: collection,
+          documentId,
+          changes: data,
+          siteId,
+          timestamp: new Date(),
+          status: 'success'
+        })
+      } catch (err: any) {
+        logger.error({ err: err.message }, 'Failed to persist immutable audit log')
+      }
+    }
+
+    eventHub.on('content.created', (payload) => handleEvent('create', payload))
+    eventHub.on('content.updated', (payload) => handleEvent('update', payload))
+    eventHub.on('content.deleted', (payload) => handleEvent('delete', payload))
   }
 
   private async _initPlugins() {
@@ -225,7 +303,7 @@ export class ZenithEngine {
         contentSecurityPolicy: {
           directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"], // unsafe-inline needed for Swagger UI
             styleSrc: ["'self'", "'unsafe-inline'"], // unsafe-inline needed for Swagger UI
             imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
             connectSrc: ["'self'"],
@@ -243,7 +321,7 @@ export class ZenithEngine {
         origin:
           this.corsOptions?.origins ||
           process.env.CORS_ORIGINS?.split(',').map((o) => o.trim()) ||
-          true,
+          (process.env.NODE_ENV === 'production' ? false : true),
         credentials: this.corsOptions?.credentials ?? true,
       })
     )
@@ -277,6 +355,9 @@ export class ZenithEngine {
       }
       next()
     })
+
+    // Global request timeout — 30 seconds
+    this.app.use(requestTimeout(30_000))
   }
 
   private _initRoutes() {
@@ -291,6 +372,11 @@ export class ZenithEngine {
     this.app.use('/api/v1/system', systemRouter)
     this.app.use('/api/v1/system/webhooks', webhooksRouter)
     this.app.use('/api/v1/system/plugins', pluginsRouter)
+    this.app.use('/api/v1/system/schemas', schemasRouter)
+    this.app.use('/api/v1/system/components', componentsRouter)
+    this.app.use('/api/v1/system/campaigns', campaignsRouter)
+    this.app.use('/api/v1/system/backup', backupRouter)
+    this.app.use('/api/v1/events', eventsRouter)
 
     // ── Media ────────────────────────────────────────────────────────────────
     this.app.use('/api/v1/upload', uploadRouter)
@@ -315,6 +401,13 @@ export class ZenithEngine {
     this.app.use('/api/v1/roles', rolesRouter)
     this.app.use('/api/v1/templates', templatesRouter)
     this.app.use('/api/v1/blocks', blocksRouter)
+    this.app.use('/api/v1/redirects', redirectsRouter)
+    this.app.use('/api/v1/trash', trashRouter)
+    this.app.use('/api/v1/duplicate', duplicateRouter)
+    this.app.use('/api/v1/bulk', bulkRouter)
+
+    // ── Redirect Handler (intercepts 404s for matching redirect rules) ────────
+    this.app.get('/*', redirectHandler)
 
     // ── Dynamic Collection Routers ────────────────────────────────────────────
     const webhooks = this.config.webhooks || []
@@ -389,7 +482,24 @@ export class ZenithEngine {
   public async start(port = this.port || Number(process.env.PORT) || 3000) {
     try {
       await this._initPlugins() // Phase 2: Call onInit hooks
-      await this.adapter.connect()
+
+      // Retry DB connection with exponential backoff (max ~30s)
+      let lastError: Error | null = null
+      for (let attempt = 1; attempt <= 5; attempt++) {
+        try {
+          await this.adapter.connect()
+          lastError = null
+          break
+        } catch (err: any) {
+          lastError = err
+          if (attempt < 5) {
+            const delay = Math.min(1000 * Math.pow(2, attempt - 1), 15_000)
+            logger.warn({ attempt, delay }, `Database connection attempt ${attempt} failed. Retrying in ${delay}ms...`)
+            await new Promise((resolve) => setTimeout(resolve, delay))
+          }
+        }
+      }
+      if (lastError) throw lastError
       logger.info(`Database connected (${this.adapter.name})`)
 
       // Load persisted webhook configs into engine config
@@ -431,6 +541,33 @@ export class ZenithEngine {
           const webhooks = this.config.webhooks || []
           this.app.use(`/api/v1/${dbCol.slug}`, createCollectionRouter(colConfig, this.adapter, webhooks))
           logger.info(`  → /api/v1/${dbCol.slug} (dynamic db-backed collection mounted, ${dbCol.fields.length} fields)`)
+        }
+      }
+
+      // Load Content-Type Builder schemas
+      let dbSchemas: any[] = []
+      try {
+        dbSchemas = await this.adapter.find<any>('z_schemas', {})
+        logger.info(`[Zenith Engine] Loaded ${dbSchemas.length} UI Builder schemas from database`)
+      } catch (err: any) {
+        logger.info({ err: err.message }, '[Zenith Engine] No UI Builder schemas found or z_schemas not yet initialized')
+      }
+
+      for (const dbSchema of dbSchemas) {
+        if (!this.config.collections.some((c) => c.slug === dbSchema.slug)) {
+          const schemaConfig = {
+            name: dbSchema.plural || dbSchema.slug,
+            slug: dbSchema.slug,
+            labels: { singular: dbSchema.singular, plural: dbSchema.plural },
+            fields: dbSchema.fields || [],
+            ...(dbSchema.settings || {})
+          }
+          this.config.collections.push(schemaConfig)
+          
+          const { createCollectionRouter } = await import('./api/factory')
+          const webhooks = this.config.webhooks || []
+          this.app.use(`/api/v1/${dbSchema.slug}`, createCollectionRouter(schemaConfig, this.adapter, webhooks))
+          logger.info(`  → /api/v1/${dbSchema.slug} (UI Builder schema mounted, ${dbSchema.fields?.length || 0} fields)`)
         }
       }
 
@@ -513,6 +650,7 @@ export class ZenithEngine {
       WebhookService.init(this.config)
       FlowEngine.init()
       PresenceService.init(this.adapter)
+      sessionStore.startCleanup()
 
       // Start audit log rotation (daily check at 3am)
       if (process.env.AUDIT_ROTATION_DISABLE !== 'true') {
@@ -532,6 +670,45 @@ export class ZenithEngine {
 
       // GraphQL needs DB to be connected first (model registration)
       await setupGraphQL(this.app, this.config)
+
+      // ── Admin SPA Serving (production) ────────────────────────────────────
+      const adminDist = path.resolve(process.cwd(), 'packages/admin/dist')
+      try {
+        await fs.access(adminDist)
+        const stat = await fs.stat(adminDist)
+        if (stat.isDirectory()) {
+          // Hashed assets (in /assets/) — cache forever since filenames are unique
+          this.app.use('/assets', express.static(path.join(adminDist, 'assets'), {
+            maxAge: '1y',
+            immutable: true,
+          }))
+
+          // Other static files (favicon, etc.)
+          this.app.use(express.static(adminDist))
+
+          // SPA catch-all: serve index.html for any unmatched GET (non-API) route
+          let cachedHtml: string | null = null
+          this.app.get('*', (req, res, next) => {
+            if (req.path.startsWith('/api/') || req.path.startsWith('/media/') || req.path.startsWith('/uploads/')) {
+              return next()
+            }
+            if (!req.accepts('html')) return next()
+            if (cachedHtml) {
+              return res.type('html').send(cachedHtml)
+            }
+            fs.readFile(path.join(adminDist, 'index.html'), 'utf-8')
+              .then((html) => {
+                cachedHtml = html
+                res.type('html').send(html)
+              })
+              .catch(() => next())
+          })
+
+          logger.info(`Admin SPA serving from ${adminDist}`)
+        }
+      } catch {
+        logger.info('Admin SPA dist not found — serving API only')
+      }
 
       const server = this.app.listen(port, () => {
         console.log(`
@@ -608,11 +785,35 @@ export class ZenithEngine {
             socket.to(`doc:${collection}:${documentId}`).emit('typing:stop', { userEmail, field })
           })
 
+          // ── Real-time Collection Data Sync Subscriptions ──
+          socket.on('collection:subscribe', ({ collection }) => {
+            socket.join(`collection:${collection}`)
+          })
+
+          socket.on('collection:unsubscribe', ({ collection }) => {
+            socket.leave(`collection:${collection}`)
+          })
+
           socket.on('disconnect', () => {
             // Natural session expiration handled via Presence TTL heartbeats
           })
         })
         ;(this as any).io = io
+
+        // Tie EventHub to Real-Time Socket Broadcasts
+        const { eventHub } = await import('./services/event-hub')
+        eventHub.on('content.created', (payload) => {
+          io.to(`collection:${payload.collection}`).emit('content.created', payload)
+        })
+        eventHub.on('content.updated', (payload) => {
+          io.to(`collection:${payload.collection}`).emit('content.updated', payload)
+          io.to(`doc:${payload.collection}:${payload.document.id}`).emit('content.updated', payload)
+        })
+        eventHub.on('content.deleted', (payload) => {
+          io.to(`collection:${payload.collection}`).emit('content.deleted', payload)
+          io.to(`doc:${payload.collection}:${payload.id}`).emit('content.deleted', payload)
+        })
+
         logger.info('Zenith WebSocket Collaboration Server active')
       } catch (wsError: any) {
         logger.warn({ err: wsError.message }, 'Real-time WebSocket initialization deferred')
@@ -656,10 +857,22 @@ export class ZenithEngine {
         }
 
         SchedulerService.stop()
+        sessionStore.stopCleanup()
 
         // Shutdown webhook service
         try {
           await WebhookService.shutdown()
+        } catch {
+          // ignored
+        }
+
+        // Close Socket.IO server
+        try {
+          const io = (this as any).io
+          if (io) {
+            await new Promise<void>((resolve) => io.close(resolve))
+            logger.info('Socket.IO server closed')
+          }
         } catch {
           // ignored
         }

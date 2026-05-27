@@ -30,8 +30,8 @@
     --border-rgb: 255 255 255;
     --border-strong: rgba(255, 255, 255, 0.15);
 
-    --accent-rgb: 139 92 246; /* Cyber-Purple */
-    --color-cyber-purple: #8B5CF6;
+    --accent-rgb: 16 185 129; /* Cyber-Purple */
+    --color-cyber-purple: #10B981;
     --color-emerald-green: #10B981;
 
     /* Tactical Color Injection - High Saturation for observability */
@@ -67,7 +67,7 @@
     --border-rgb: 17 24 39;
     --border-strong: rgba(17, 24, 39, 0.15);
 
-    --accent-rgb: 139 92 246;
+    --accent-rgb: 16 185 129;
 
     --status-green: #10b981;
     --status-red: #dc2626;
@@ -400,7 +400,7 @@
 
 /* ── Link ───────────────────────────────────────────────── */
 .zenith-lexical-editor .lexical-link {
-  color: #8b5cf6;
+  color: #10B981;
   text-decoration: underline;
   text-underline-offset: 2px;
   cursor: pointer;
@@ -525,7 +525,7 @@
 
 /* ── Hashtag ────────────────────────────────────────────── */
 .zenith-lexical-editor .lexical-hashtag {
-  color: #8b5cf6;
+  color: #10B981;
   font-weight: 600;
   font-size: 0.9em;
 }

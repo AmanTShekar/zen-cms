@@ -104,8 +104,8 @@ const ToolBtn = ({ onClick, isActive, title, children, className }: ToolBtnProps
         'w-9 h-9 rounded-none transition-all flex items-center justify-center relative active:scale-90 group/btn',
         isActive
           ? theme === 'dark'
-            ? 'bg-indigo-500/20 text-indigo-400'
-            : 'bg-indigo-50 text-indigo-600'
+            ? 'bg-emerald-500/20 text-emerald-400'
+            : 'bg-emerald-50 text-emerald-600'
           : theme === 'dark'
             ? 'text-gray-500 hover:bg-white/5 hover:text-white'
             : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900',
@@ -141,8 +141,7 @@ const ColorPicker = ({
     '#10b981',
     '#06b6d4',
     '#3b82f6',
-    '#6366f1',
-    '#8b5cf6',
+    '#10b981',
     '#d946ef',
     '#f43f5e',
     '#111827',
@@ -347,7 +346,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     editorProps: {
       attributes: {
         class: cn(
-          'prose prose-indigo max-w-none focus:outline-none transition-all selection:bg-indigo-500/30 leading-relaxed',
+          'prose prose-indigo max-w-none focus:outline-none transition-all selection:bg-emerald-500/30 leading-relaxed',
           theme === 'dark' ? 'prose-invert text-white' : 'text-black',
           mode === 'heading'
             ? 'text-5xl md:text-7xl font-black italic tracking-tighter p-0 min-h-0 uppercase leading-[0.85]'
@@ -605,7 +604,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                   setShowColor(false)
                 }}
                 className={cn(
-                  'flex items-center gap-4 px-4 py-2 rounded-none hover:bg-indigo-500/10 transition-all min-w-[140px] justify-between group/ctrl',
+                  'flex items-center gap-4 px-4 py-2 rounded-none hover:bg-emerald-500/10 transition-all min-w-[140px] justify-between group/ctrl',
                   theme === 'dark' ? 'text-white' : 'text-black'
                 )}
               >
@@ -642,8 +641,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                           setShowFont(false)
                         }}
                         className={cn(
-                          'w-full text-left px-5 py-3 text-[11px] font-black uppercase italic hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-between group',
-                          selectedFont === f.name && 'text-indigo-500'
+                          'w-full text-left px-5 py-3 text-[11px] font-black uppercase italic hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-between group',
+                          selectedFont === f.name && 'text-emerald-500'
                         )}
                         style={{ fontFamily: f.family }}
                       >
@@ -668,7 +667,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                   setShowColor(false)
                 }}
                 className={cn(
-                  'flex items-center gap-3 px-4 py-2 rounded-none hover:bg-indigo-500/10 transition-all group/ctrl',
+                  'flex items-center gap-3 px-4 py-2 rounded-none hover:bg-emerald-500/10 transition-all group/ctrl',
                   theme === 'dark' ? 'text-white' : 'text-black'
                 )}
               >
@@ -696,7 +695,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                           ;(editor.chain().focus() as any).setFontSize(s).run()
                           setShowFontSize(false)
                         }}
-                        className="px-2 py-3 text-[10px] font-black hover:bg-indigo-600 hover:text-white transition-all border border-white/5 text-center"
+                        className="px-2 py-3 text-[10px] font-black hover:bg-emerald-600 hover:text-white transition-all border border-white/5 text-center"
                       >
                         {s.replace('px', '')}
                       </button>
@@ -718,7 +717,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                   setShowColor(false)
                 }}
                 className={cn(
-                  'flex items-center gap-3 px-4 py-2 rounded-none hover:bg-indigo-500/10 transition-all group/ctrl',
+                  'flex items-center gap-3 px-4 py-2 rounded-none hover:bg-emerald-500/10 transition-all group/ctrl',
                   theme === 'dark' ? 'text-white' : 'text-black'
                 )}
               >
@@ -746,7 +745,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                         editor.chain().focus().setParagraph().run()
                         setShowHeadings(false)
                       }}
-                      className="w-full text-left px-5 py-3 text-[10px] font-black uppercase italic hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-between"
+                      className="w-full text-left px-5 py-3 text-[10px] font-black uppercase italic hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-between"
                     >
                       Paragraph {editor.isActive('paragraph') && <Check size={10} />}
                     </button>
@@ -755,7 +754,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                         editor.chain().focus().toggleHeading({ level: 1 }).run()
                         setShowHeadings(false)
                       }}
-                      className="w-full text-left px-5 py-3 text-[10px] font-black uppercase italic hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-between"
+                      className="w-full text-left px-5 py-3 text-[10px] font-black uppercase italic hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-between"
                     >
                       H1 Primary {editor.isActive('heading', { level: 1 }) && <Check size={10} />}
                     </button>
@@ -764,7 +763,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                         editor.chain().focus().toggleHeading({ level: 2 }).run()
                         setShowHeadings(false)
                       }}
-                      className="w-full text-left px-5 py-3 text-[10px] font-black uppercase italic hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-between"
+                      className="w-full text-left px-5 py-3 text-[10px] font-black uppercase italic hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-between"
                     >
                       H2 Secondary {editor.isActive('heading', { level: 2 }) && <Check size={10} />}
                     </button>
@@ -773,7 +772,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                         editor.chain().focus().toggleHeading({ level: 3 }).run()
                         setShowHeadings(false)
                       }}
-                      className="w-full text-left px-5 py-3 text-[10px] font-black uppercase italic hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-between"
+                      className="w-full text-left px-5 py-3 text-[10px] font-black uppercase italic hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-between"
                     >
                       H3 Tertiary {editor.isActive('heading', { level: 3 }) && <Check size={10} />}
                     </button>
@@ -910,8 +909,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                     'w-8 h-8 rounded-none transition-colors flex items-center justify-center hover:bg-white/5',
                     editor.isActive('bold')
                       ? theme === 'dark'
-                        ? 'text-indigo-400 bg-white/5'
-                        : 'text-indigo-600 bg-gray-100'
+                        ? 'text-emerald-400 bg-white/5'
+                        : 'text-emerald-600 bg-gray-100'
                       : 'text-gray-400'
                   )}
                 >
@@ -924,8 +923,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                     'w-8 h-8 rounded-none transition-colors flex items-center justify-center hover:bg-white/5',
                     editor.isActive('italic')
                       ? theme === 'dark'
-                        ? 'text-indigo-400 bg-white/5'
-                        : 'text-indigo-600 bg-gray-100'
+                        ? 'text-emerald-400 bg-white/5'
+                        : 'text-emerald-600 bg-gray-100'
                       : 'text-gray-400'
                   )}
                 >
@@ -938,8 +937,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                     'w-8 h-8 rounded-none transition-colors flex items-center justify-center hover:bg-white/5',
                     editor.isActive('underline')
                       ? theme === 'dark'
-                        ? 'text-indigo-400 bg-white/5'
-                        : 'text-indigo-600 bg-gray-100'
+                        ? 'text-emerald-400 bg-white/5'
+                        : 'text-emerald-600 bg-gray-100'
                       : 'text-gray-400'
                   )}
                 >
@@ -956,8 +955,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                     'w-8 h-8 rounded-none transition-colors flex items-center justify-center hover:bg-white/5',
                     editor.isActive('link')
                       ? theme === 'dark'
-                        ? 'text-indigo-400 bg-white/5'
-                        : 'text-indigo-600 bg-gray-100'
+                        ? 'text-emerald-400 bg-white/5'
+                        : 'text-emerald-600 bg-gray-100'
                       : 'text-gray-400'
                   )}
                 >
@@ -1027,7 +1026,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
               <div className="flex-1 overflow-y-auto p-8 grid grid-cols-2 md:grid-cols-4 gap-6 no-scrollbar">
                 {loading ? (
                   <div className="col-span-full h-full flex items-center justify-center py-20">
-                    <Loader2 className="animate-spin text-indigo-500" />
+                    <Loader2 className="animate-spin text-emerald-500" />
                   </div>
                 ) : (
                   files.map((file) => (

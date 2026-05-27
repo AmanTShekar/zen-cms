@@ -30,7 +30,7 @@ export default function SystemHealthWidget({ theme, title }: WidgetProps) {
 
   return (
     <div className="h-full flex flex-col gap-3">
-      <p className="text-[9px] font-black text-indigo-500 uppercase tracking-widest italic">
+      <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest italic">
         {title || 'Infrastructure Vitals'}
       </p>
       <div className="grid grid-cols-3 gap-2 flex-1">
@@ -42,7 +42,7 @@ export default function SystemHealthWidget({ theme, title }: WidgetProps) {
               theme === 'dark' ? 'bg-white/[0.02] border-white/5' : 'bg-gray-50 border-gray-100'
             )}
           >
-            <m.icon size={14} className="text-indigo-400" />
+            <m.icon size={14} className="text-emerald-400" />
             <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">
               {m.label}
             </span>

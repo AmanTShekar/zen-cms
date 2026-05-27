@@ -10,7 +10,7 @@ import { useTheme } from '../../../context/ThemeContext'
 import { useEditorStore } from '../../../store/editorStore'
 import { usePanelStore } from '../../../store/panelStore'
 import { cn } from '../../../lib/utils'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, Reorder } from 'framer-motion'
 import { type Section, humanize } from '../constants'
 import { useEditorBlocks } from '../../../context/BlockLibraryContext'
 
@@ -37,6 +37,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
     data,
     activeSection: editorActiveSection,
     setActiveSection: editorSetActiveSection,
+    updateData,
   } = useEditorStore()
 
   const {
@@ -58,6 +59,19 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
       s.blockType.toLowerCase().includes(q)
     )
   }, [data?.sections, searchQuery, searchActive])
+
+  /**
+   * Transactional reorder guard:
+   * - Blocked entirely while search is active (filtered list != full list)
+   * - Validates that every id in newSections exists in the current document
+   *   before committing, preventing phantom-section bugs
+   */
+  const handleLayerReorder = (newSections: Section[]) => {
+    if (searchActive) return // block reorder in filtered mode
+    const allIds = new Set(data?.sections.map((s) => s.id))
+    if (!newSections.every((s) => allIds.has(s.id))) return // integrity check
+    updateData((draft) => { draft.sections = newSections })
+  }
 
   // Get block icon for a section
   const getBlockIcon = (blockType: string) => {
@@ -96,7 +110,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
               onMouseDown={startResizing('left')}
               className={cn(
                 'absolute right-0 top-0 bottom-0 w-1 cursor-col-resize z-50 transition-colors',
-                resizingSide === 'left' ? 'bg-indigo-500' : 'bg-transparent hover:bg-indigo-500/50'
+                resizingSide === 'left' ? 'bg-emerald-500' : 'bg-transparent hover:bg-emerald-500/50'
               )}
             />
 
@@ -111,7 +125,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                 <button
                   onClick={() => { setInjectionIndex(0); setBlockPickerOpen(true); }}
                   className={cn(
-                    'p-1 rounded-none border transition-all text-gray-400 hover:text-indigo-500',
+                    'p-1 rounded-none border transition-all text-gray-400 hover:text-emerald-500',
                     dark ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'
                   )}
                   aria-label="Add new section"
@@ -145,8 +159,8 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                     className={cn(
                       'w-full pl-7 pr-7 py-1.5 text-xs font-bold border rounded-none bg-transparent transition-all',
                       dark
-                        ? 'border-white/5 text-white placeholder-gray-600 focus:border-indigo-500/30'
-                        : 'border-gray-200 text-black placeholder-gray-400 focus:border-indigo-500/30'
+                        ? 'border-white/5 text-white placeholder-gray-600 focus:border-emerald-500/30'
+                        : 'border-gray-200 text-black placeholder-gray-400 focus:border-emerald-500/30'
                     )}
                     aria-label="Filter layers"
                   />
@@ -220,7 +234,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                           'shrink-0',
                           activeSection === section.id
                             ? ''
-                            : dark ? 'text-indigo-400/60' : 'text-indigo-500/60'
+                            : dark ? 'text-emerald-400/60' : 'text-emerald-500/60'
                         )} />
                         <span className="text-xs font-black uppercase italic tracking-tight truncate flex-1">
                           {section.blockName || section.title || humanize(section.blockType)}
@@ -240,89 +254,62 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                   })}
                 </div>
               ) : (
-                <div className="space-y-1">
-                  {(searchActive ? filteredSections : (data?.sections || [])).map((section: Section) => {
+                <Reorder.Group
+                  axis="y"
+                  values={data?.sections || []}
+                  onReorder={handleLayerReorder}
+                  className="space-y-1"
+                  as="div"
+                >
+                  {(data?.sections || []).map((section: Section) => {
                     const BlockIcon = getBlockIcon(section.blockType)
-                    return searchActive ? (
-                      <button
-                        key={section.id}
-                        onClick={() => editorSetActiveSection(section.id)}
-                        className={cn(
-                          'w-full flex items-center gap-2.5 px-2.5 py-2 rounded-none border text-left transition-all',
-                          activeSection === section.id
-                            ? dark
-                              ? 'bg-white border-white text-black'
-                              : 'bg-black border-black text-white'
-                            : dark
-                              ? 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10'
-                              : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
-                        )}
-                        aria-label={`Select section: ${section.blockName || section.title || humanize(section.blockType)}`}
-                      >
-                        <BlockIcon size={12} className={cn(
-                          'shrink-0',
-                          activeSection === section.id
-                            ? ''
-                            : dark ? 'text-indigo-400/60' : 'text-indigo-500/60'
-                        )} />
-                        <span className="text-xs font-black uppercase italic tracking-tight truncate flex-1">
-                          {section.blockName || section.title || humanize(section.blockType)}
-                        </span>
-                        {section.blockType !== humanize(section.blockType) && (
-                          <span className={cn(
-                            'text-[8px] font-black uppercase tracking-wider shrink-0',
-                            activeSection === section.id
-                              ? 'opacity-60'
-                              : dark ? 'text-gray-600' : 'text-gray-400'
-                          )}>
-                            {humanize(section.blockType)}
-                          </span>
-                        )}
-                      </button>
-                    ) : (
-                      <div
-                        key={section.id}
-                        className="w-full flex items-center gap-0"
-                      >
-                        <button
-                          onClick={() => editorSetActiveSection(section.id)}
-                          className={cn(
-                            'flex-1 flex items-center gap-2.5 px-2.5 py-2 rounded-none border text-left transition-all',
-                            activeSection === section.id
-                              ? dark
-                                ? 'bg-white border-white text-black'
-                                : 'bg-black border-black text-white'
-                              : dark
-                                ? 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10'
-                                : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
-                          )}
-                          aria-label={`Select section: ${section.blockName || section.title || humanize(section.blockType)}`}
-                        >
-                          <GripVertical size={12} className="opacity-30 shrink-0" />
-                          <BlockIcon size={12} className={cn(
-                            'shrink-0',
-                            activeSection === section.id
-                              ? ''
-                              : dark ? 'text-indigo-400/60' : 'text-indigo-500/60'
-                          )} />
-                          <span className="text-xs font-black uppercase italic tracking-tight truncate flex-1">
-                            {section.blockName || section.title || humanize(section.blockType)}
-                          </span>
-                          {section.blockType !== humanize(section.blockType) && (
-                            <span className={cn(
-                              'text-[8px] font-black uppercase tracking-wider shrink-0',
+                    return (
+                      <Reorder.Item key={section.id} value={section} as="div">
+                        <div className="w-full flex items-center gap-0">
+                          <button
+                            onClick={() => editorSetActiveSection(section.id)}
+                            className={cn(
+                              'flex-1 flex items-center gap-2.5 px-2.5 py-2 rounded-none border text-left transition-all',
                               activeSection === section.id
-                                ? 'opacity-60'
-                                : dark ? 'text-gray-600' : 'text-gray-400'
-                            )}>
-                              {humanize(section.blockType)}
+                                ? dark
+                                  ? 'bg-white border-white text-black'
+                                  : 'bg-black border-black text-white'
+                                : dark
+                                  ? 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10'
+                                  : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                            )}
+                            aria-label={`Select section: ${section.blockName || section.title || humanize(section.blockType)}`}
+                          >
+                            <GripVertical
+                              size={12}
+                              className="opacity-30 shrink-0 cursor-grab active:cursor-grabbing"
+                              aria-hidden="true"
+                            />
+                            <BlockIcon size={12} className={cn(
+                              'shrink-0',
+                              activeSection === section.id
+                                ? ''
+                                : dark ? 'text-emerald-400/60' : 'text-emerald-500/60'
+                            )} aria-hidden="true" />
+                            <span className="text-xs font-black uppercase italic tracking-tight truncate flex-1">
+                              {section.blockName || section.title || humanize(section.blockType)}
                             </span>
-                          )}
-                        </button>
-                      </div>
+                            {section.blockType !== humanize(section.blockType) && (
+                              <span className={cn(
+                                'text-[8px] font-black uppercase tracking-wider shrink-0',
+                                activeSection === section.id
+                                  ? 'opacity-60'
+                                  : dark ? 'text-gray-600' : 'text-gray-400'
+                              )}>
+                                {humanize(section.blockType)}
+                              </span>
+                            )}
+                          </button>
+                        </div>
+                      </Reorder.Item>
                     )
                   })}
-                </div>
+                </Reorder.Group>
               )}
             </div>
           </motion.aside>

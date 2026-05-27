@@ -456,9 +456,15 @@ export class MongooseAdapter implements DatabaseAdapter {
     return model.countDocuments(this._normalizeQuery(query, options))
   }
 
-  async aggregate<T = unknown>(collection: string, pipeline: unknown[]): Promise<T[]> {
+  async aggregate<T = unknown>(collection: string, pipeline: unknown[], options?: BaseOptions): Promise<T[]> {
     const model = this.getModel(collection)
-    return model.aggregate(pipeline as any).exec() as Promise<T[]>
+    const enrichedPipeline = [...pipeline] as any[]
+    // Inject tenant scoping — prepend $match stage to prevent cross-tenant data leaks
+    const siteId = options?.siteId || options?.tenantId
+    if (siteId) {
+      enrichedPipeline.unshift({ $match: { siteId } })
+    }
+    return model.aggregate(enrichedPipeline).exec() as Promise<T[]>
   }
 
   async transaction<T>(fn: (session: any) => Promise<T>): Promise<T> {

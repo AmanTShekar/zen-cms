@@ -34,10 +34,17 @@ export interface FieldDefinition {
   dateFormat?: 'date' | 'datetime' | 'time'
   /** For dz (dynamic zone) fields: list of available component types from BLOCK_LIBRARY */
   components?: string[]
+  /** For blocks field: list of block definitions */
+  blocks?: Array<{ slug: string; labels?: { singular: string; plural: string }; fields?: FieldDefinition[] }>
+  /** For tabs field: tab group definitions */
+  tabs?: Array<{ name: string; label?: string; fields?: FieldDefinition[] }>
   /** Relation target collection(s) */
   relationTo?: string | string[]
   /** Source field for slug auto-generation */
   sourceField?: string
+  /** Block array limits */
+  minRows?: number
+  maxRows?: number
   /** Help text displayed below the field label */
   description?: string
   admin?: {
@@ -45,6 +52,39 @@ export interface FieldDefinition {
       Field?: React.ComponentType<any>
     }
   }
+}
+
+// ── Typed sub-interfaces for complex field shapes ─────────────────────────────
+
+/** Asserts that a string is a valid FieldDefinition type. Use in switch default branches. */
+export function assertFieldType(type: string): asserts type is FieldDefinition['type'] {
+  const validTypes = new Set<string>([
+    'text', 'richtext', 'lexical', 'media', 'relation', 'number', 'boolean', 'select',
+    'array', 'group', 'code', 'collapsible', 'join', 'point', 'radio', 'row', 'ui',
+    'textarea', 'checkbox', 'date', 'json', 'dz', 'email', 'password', 'uid', 'color',
+    'blocks', 'tabs',
+  ])
+  if (!validTypes.has(type)) {
+    throw new Error(
+      `[Zenith] Unknown field type: "${type}". ` +
+      `Add it to the FieldDefinition union in constants.ts and handle it in FieldRenderer.tsx.`
+    )
+  }
+}
+
+/** Array field — guaranteed to have sub-fields */
+export type ArrayFieldDef = FieldDefinition & { type: 'array'; fields: FieldDefinition[] }
+
+/** Group field — guaranteed to have sub-fields */
+export type GroupFieldDef = FieldDefinition & { type: 'group'; fields: FieldDefinition[] }
+
+/** Dynamic Zone field — guaranteed to have component slugs */
+export type DynamicZoneFieldDef = FieldDefinition & { type: 'dz'; components: string[] }
+
+/** Blocks field — guaranteed to have block definitions */
+export type BlocksFieldDef = FieldDefinition & {
+  type: 'blocks'
+  blocks: NonNullable<FieldDefinition['blocks']>
 }
 
 export interface BlockDefinition {

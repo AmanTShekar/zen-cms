@@ -19,7 +19,7 @@ export const STANDARD_STYLE_FIELDS: FieldDefinition[] = [
       { label: 'Default', value: 'default' },
       { label: 'Light', value: 'light' },
       { label: 'Dark', value: 'dark' },
-      { label: 'Cyber-Purple Gradient', value: 'cyber-purple' },
+      { label: 'Cyber-Purple Gradient', value: 'cyber-emerald' },
       { label: 'Glassmorphic Translucent', value: 'glassmorphic' }
     ],
     placeholder: 'Select Theme',

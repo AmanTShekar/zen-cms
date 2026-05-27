@@ -85,55 +85,37 @@ export const MediaLibraryModal: React.FC = () => {
             role="dialog"
             aria-modal="true"
             aria-labelledby={modalTitleId}
-            initial={{ scale: 0.95, opacity: 0, y: 10 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className={cn(
-              'relative w-full max-w-[1200px] h-[88vh] flex flex-col border rounded-none shadow-[0_30px_80px_rgba(0,0,0,0.8)] overflow-hidden',
+              'w-full max-w-6xl border rounded-none overflow-hidden shadow-2xl flex flex-col h-[85vh]',
               theme === 'dark'
-                ? 'bg-[#0d0d12] border-white/10'
+                ? 'bg-[#0a0a0a] border-white/10'
                 : 'bg-white border-gray-200'
             )}
           >
-            {/* Header */}
-            <div className={cn(
-              'flex items-center justify-between px-8 py-5 border-b shrink-0',
-              theme === 'dark' ? 'border-white/5 bg-white/[0.015]' : 'border-gray-100 bg-gray-50'
-            )}>
-              <div className="flex items-center gap-4">
-                <div className={cn(
-                  'w-11 h-11 rounded-none flex items-center justify-center shadow-xl',
-                  theme === 'dark' ? 'bg-purple-600/20 border border-purple-500/30 text-purple-400' : 'bg-purple-100 border border-purple-200 text-purple-600'
-                )}>
-                  <ImageIcon size={22} />
-                </div>
-                <div className="flex flex-col">
-                  <h2
-                    id={modalTitleId}
-                    className={cn(
-                      'text-xl font-black uppercase italic tracking-tight leading-none',
-                      theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    )}
-                  >
-                    Asset_Registry
-                  </h2>
-                  <span className={cn(
-                    'text-xs font-bold uppercase italic tracking-widest mt-1.5',
-                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                  )}>
-                    {mediaAssets.length} File{mediaAssets.length !== 1 ? 's' : ''} / Centralized_Media_Store
-                  </span>
-                </div>
-              </div>
+            <div
+              className={cn(
+                'p-6 border-b flex items-center justify-between shrink-0',
+                theme === 'dark' ? 'border-white/5' : 'border-gray-100',
+              )}
+            >
+              <h3
+                id={modalTitleId}
+                className={cn(
+                  'text-lg font-black uppercase italic leading-none',
+                  theme === 'dark' ? 'text-white' : 'text-black',
+                )}
+              >
+                Asset Registry
+              </h3>
               <button
                 onClick={() => setMediaLibraryOpen(false)}
                 aria-label="Close"
                 className={cn(
-                  'w-10 h-10 rounded-none border flex items-center justify-center transition-all',
-                  theme === 'dark'
-                    ? 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
-                    : 'bg-gray-100 border-gray-200 text-gray-555 hover:text-black hover:bg-gray-200'
+                  'p-1 transition-colors',
+                  theme === 'dark' ? 'text-gray-400 hover:text-emerald-500' : 'text-gray-500 hover:text-emerald-600'
                 )}
               >
                 <X size={18} />
@@ -149,7 +131,7 @@ export const MediaLibraryModal: React.FC = () => {
                 <Search
                   className={cn(
                     'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
-                    theme === 'dark' ? 'text-gray-555 group-focus-within:text-purple-400' : 'text-gray-400 group-focus-within:text-purple-600'
+                    theme === 'dark' ? 'text-gray-555 group-focus-within:text-emerald-400' : 'text-gray-400 group-focus-within:text-emerald-600'
                   )}
                   size={15}
                 />
@@ -162,8 +144,8 @@ export const MediaLibraryModal: React.FC = () => {
                   className={cn(
                     'w-full rounded-none pl-12 pr-4 py-3 text-xs font-bold transition-all',
                     theme === 'dark'
-                      ? 'bg-white/[0.03] border border-white/10 text-white placeholder:text-gray-600 focus-visible:border-purple-500/40 focus-visible:bg-white/[0.05]'
-                      : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus-visible:border-purple-400 focus-visible:bg-white'
+                      ? 'bg-white/[0.03] border border-white/10 text-white placeholder:text-gray-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.05]'
+                      : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus-visible:border-emerald-400 focus-visible:bg-white'
                   )}
                 />
               </div>
@@ -176,8 +158,8 @@ export const MediaLibraryModal: React.FC = () => {
                 className={cn(
                   'rounded-none border py-3 px-4 text-xs font-black uppercase italic transition-all',
                   theme === 'dark'
-                    ? 'bg-white/5 border-white/10 text-gray-400 focus-visible:border-purple-500/40'
-                    : 'bg-gray-55 border-gray-200 text-gray-600 focus-visible:border-purple-400'
+                    ? 'bg-white/5 border-white/10 text-gray-400 focus-visible:border-emerald-500/40'
+                    : 'bg-gray-55 border-gray-200 text-gray-600 focus-visible:border-emerald-400'
                 )}
               >
                 <option value="all">All Types</option>
@@ -192,8 +174,8 @@ export const MediaLibraryModal: React.FC = () => {
               <label className={cn(
                 'flex items-center gap-2 px-5 py-3 rounded-none border cursor-pointer transition-all text-xs font-black uppercase italic tracking-wider',
                 theme === 'dark'
-                  ? 'bg-purple-600/20 border-purple-500/30 text-purple-300 hover:bg-purple-600/30 hover:border-purple-500/50'
-                  : 'bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100 hover:border-purple-300'
+                  ? 'bg-emerald-600/20 border-emerald-500/30 text-emerald-300 hover:bg-emerald-600/30 hover:border-emerald-500/50'
+                  : 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300'
               )}>
                 <Upload size={14} />
                 Ingest
@@ -223,8 +205,8 @@ export const MediaLibraryModal: React.FC = () => {
             <div className="flex-1 overflow-y-auto p-6">
               {mediaLoading ? (
                 <div className="flex flex-col items-center justify-center h-full gap-5">
-                  <Loader2 size={36} className="animate-spin text-purple-500" />
-                  <span className="text-xs font-black uppercase italic text-purple-400 tracking-[0.3em] animate-pulse">
+                  <Loader2 size={36} className="animate-spin text-emerald-500" />
+                  <span className="text-xs font-black uppercase italic text-emerald-400 tracking-[0.3em] animate-pulse">
                     Loading Registry...
                   </span>
                 </div>
@@ -366,7 +348,7 @@ export const MediaLibraryModal: React.FC = () => {
                                 }}
                                 className={cn(
                                   'mt-1 px-2 py-1 rounded-none border text-xs font-black uppercase italic transition-all',
-                                  'border-indigo-500/40 text-indigo-400 hover:border-indigo-500 hover:text-indigo-300 bg-indigo-500/10'
+                                  'border-emerald-500/40 text-emerald-400 hover:border-emerald-500 hover:text-emerald-300 bg-emerald-500/10'
                                 )}
                               >
                                 Select

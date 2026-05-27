@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
   ChevronLeft,
   Undo2,
@@ -26,6 +26,8 @@ import { cn } from '../../lib/utils'
 import { AutoSaveIndicator } from './components/AutoSaveIndicator'
 import { SchedulePicker } from './components/SchedulePicker'
 import { ConfirmPublishModal } from './components/ConfirmPublishModal'
+import { TranslationModal } from './components/TranslationModal'
+import { CollabAvatars } from './components/CollabAvatars'
 
 interface EditorToolbarProps {
   handleSave: () => Promise<void>
@@ -33,16 +35,32 @@ interface EditorToolbarProps {
   handleUnpublish: () => Promise<void>
   isGlobal?: boolean
   onClose?: () => void
+  collab?: any
 }
 
 export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   handleSave,
   handlePublish,
   handleUnpublish,
+  isGlobal,
   onClose,
+  collab,
 }) => {
   const navigate = useNavigate()
+  const { id, slug } = useParams<{ id: string; slug: string }>()
   const { theme, toggleTheme } = useTheme()
+
+  const handleBack = () => {
+    if (onClose) {
+      onClose()
+    } else {
+      if (isGlobal) {
+        navigate(`/globals/${slug}`)
+      } else {
+        navigate(`/collections/${slug || 'pages'}/${id}`)
+      }
+    }
+  }
 
   const {
     saving,
@@ -84,6 +102,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   const [showSchedulePicker, setShowSchedulePicker] = useState(false)
   const [showLocaleDropdown, setShowLocaleDropdown] = useState(false)
   const [showPublishConfirm, setShowPublishConfirm] = useState(false)
+  const [showTranslationModal, setShowTranslationModal] = useState(false)
 
   const localeRef = useRef<HTMLDivElement>(null)
 
@@ -115,7 +134,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   const iconBtnDisabled = (disabled: boolean) =>
     disabled
       ? dark ? 'bg-black/20 border-white/5 text-white/20 cursor-not-allowed' : 'bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed'
-      : dark ? 'bg-white/5 border-white/5 text-gray-400 hover:text-indigo-400' : 'bg-gray-100 border-gray-200 text-gray-500 hover:text-indigo-600'
+      : dark ? 'bg-white/5 border-white/5 text-gray-400 hover:text-emerald-400' : 'bg-gray-100 border-gray-200 text-gray-500 hover:text-emerald-600'
 
   // Last saved time display
   const lastSavedLabel = lastSavedAt
@@ -125,26 +144,27 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   return (
     <header
       className={cn(
-        'h-14 border-b flex items-center justify-between px-4 z-[100] backdrop-blur-3xl transition-all gap-3 shrink-0 overflow-x-auto no-scrollbar',
+        'h-14 border-b flex items-center justify-between px-4 z-[100] backdrop-blur-3xl transition-all gap-3 shrink-0 overflow-visible',
         dark ? 'bg-black/90 border-white/5' : 'bg-white/90 border-gray-100 shadow-sm'
       )}
     >
       {/* Left: Back + SEO */}
       <div className="flex items-center gap-2 shrink-0">
         <button
-          onClick={() => onClose ? onClose() : navigate(-1)}
+          onClick={handleBack}
           className={cn(iconBtn, dark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-black')}
           aria-label="Back to collection"
           title="Back"
         >
-          <ChevronLeft size={18} />
+          <ChevronLeft size={16} />
         </button>
+        <div className={cn('h-4 w-px mx-1', dark ? 'bg-white/10' : 'bg-gray-200')} />
         <button
           onClick={() => setSeoOpen(!seoOpen)}
           className={cn(
             'px-2.5 py-1.5 rounded-none border text-xs font-black uppercase italic flex items-center gap-1.5 transition-all',
             seoOpen
-              ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400'
+              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
               : dark ? 'bg-white/5 border-white/5 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
           )}
           aria-label={seoOpen ? 'Close SEO panel' : 'Open SEO panel'}
@@ -158,13 +178,39 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
       {/* Center: Essential actions */}
       <div className="flex items-center gap-1 shrink-0">
         {/* Undo / Redo */}
-        <button onClick={undo} disabled={undoStack.length === 0} aria-label="Undo"
-          className={cn(iconBtn, iconBtnDisabled(undoStack.length === 0))}>
+        <button
+          onClick={undo}
+          disabled={undoStack.length === 0}
+          aria-label={undoStack.length > 0 ? `Undo (${undoStack.length} step${undoStack.length !== 1 ? 's' : ''} available)` : 'Nothing to undo'}
+          title={undoStack.length > 0 ? `Undo (${undoStack.length} step${undoStack.length !== 1 ? 's' : ''})` : 'Nothing to undo'}
+          className={cn(iconBtn, iconBtnDisabled(undoStack.length === 0), 'relative')}
+        >
           <Undo2 size={15} />
+          {undoStack.length > 0 && (
+            <span
+              className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[8px] font-black tabular-nums rounded-full bg-emerald-600 text-white leading-none"
+              aria-hidden="true"
+            >
+              {undoStack.length > 99 ? '99+' : undoStack.length}
+            </span>
+          )}
         </button>
-        <button onClick={redo} disabled={redoStack.length === 0} aria-label="Redo"
-          className={cn(iconBtn, iconBtnDisabled(redoStack.length === 0))}>
+        <button
+          onClick={redo}
+          disabled={redoStack.length === 0}
+          aria-label={redoStack.length > 0 ? `Redo (${redoStack.length} step${redoStack.length !== 1 ? 's' : ''} available)` : 'Nothing to redo'}
+          title={redoStack.length > 0 ? `Redo (${redoStack.length} step${redoStack.length !== 1 ? 's' : ''})` : 'Nothing to redo'}
+          className={cn(iconBtn, iconBtnDisabled(redoStack.length === 0), 'relative')}
+        >
           <Redo2 size={15} />
+          {redoStack.length > 0 && (
+            <span
+              className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[8px] font-black tabular-nums rounded-full bg-emerald-600/80 text-white leading-none"
+              aria-hidden="true"
+            >
+              {redoStack.length > 99 ? '99+' : redoStack.length}
+            </span>
+          )}
         </button>
 
         <div className="w-px h-6 bg-white/5 mx-1" />
@@ -208,6 +254,18 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
           <Languages size={13} />
         </button>
 
+        {/* Translation Mode */}
+        {i18nEnabled && (
+          <button
+            onClick={() => setShowTranslationModal(true)}
+            className={cn(iconBtn, 'text-emerald-500 hover:text-emerald-400')}
+            title="Translation Mode (Side-by-Side)"
+            aria-label="Open Translation Mode"
+          >
+            <Globe size={13} />
+          </button>
+        )}
+
         {/* Locale dropdown */}
         {i18nEnabled && (
           <div className="relative" ref={localeRef}>
@@ -236,7 +294,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
                     className={cn(
                       'w-full flex items-center gap-2 px-3 py-2 text-xs font-bold uppercase transition-colors',
                       currentLocale === locale.code
-                        ? dark ? 'bg-indigo-500/10 text-indigo-400' : 'bg-indigo-50 text-indigo-600'
+                        ? dark ? 'bg-emerald-500/10 text-emerald-400' : 'bg-emerald-50 text-emerald-600'
                         : dark ? 'text-gray-400 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50'
                     )}
                   >
@@ -342,11 +400,23 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
           <SchedulePicker open={showSchedulePicker} onClose={() => setShowSchedulePicker(false)} />
         </div>
 
+        {/* Collab Avatars */}
+        {collab && (
+          <div className="mx-2">
+            <CollabAvatars
+              users={collab.collabUsers}
+              localUser={collab.localUser}
+              isConnected={collab.isConnected}
+              theme={theme}
+            />
+          </div>
+        )}
+
         {/* Save */}
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-1.5 px-4 py-1.5 rounded-none text-xs font-black uppercase bg-indigo-600 text-white shadow-[0_0_16px_rgba(79,70,229,0.3)] hover:bg-indigo-500 transition-all active:scale-95 disabled:opacity-50"
+          className="flex items-center gap-1.5 px-4 py-1.5 rounded-none text-xs font-black uppercase bg-emerald-600 text-white shadow-[0_0_16px_rgba(79,70,229,0.3)] hover:bg-emerald-500 transition-all active:scale-95 disabled:opacity-50"
           aria-label="Save document"
         >
           {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
@@ -362,6 +432,12 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
           handlePublish()
         }}
         onCancel={() => setShowPublishConfirm(false)}
+      />
+
+      {/* Translation modal */}
+      <TranslationModal
+        open={showTranslationModal}
+        onClose={() => setShowTranslationModal(false)}
       />
     </header>
   )

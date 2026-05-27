@@ -42,18 +42,22 @@ interface FormBuilderProps {
   fields: FieldConfig[]
   initialData?: any
   onSubmit?: (data: any) => Promise<void>
+  onValuesChange?: (data: any) => void
   isSubmitting?: boolean
   activeLocale?: string
   readOnlyLocale?: string
+  hideSubmitButton?: boolean
 }
 
 const FormBuilder: React.FC<FormBuilderProps> = ({
   fields,
   initialData,
   onSubmit,
-  isSubmitting,
+  onValuesChange,
+  isSubmitting = false,
   activeLocale,
   readOnlyLocale,
+  hideSubmitButton = false,
 }) => {
   const currentLocale = activeLocale || 'en'
   const isReadOnly = !!readOnlyLocale
@@ -67,6 +71,15 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
   } = useForm({
     defaultValues: initialData || {},
   })
+
+  React.useEffect(() => {
+    if (onValuesChange) {
+      const subscription = watch((value) => {
+        onValuesChange(value)
+      })
+      return () => subscription.unsubscribe()
+    }
+  }, [watch, onValuesChange])
 
   const formValues = watch()
   const initialDataRef = React.useRef(initialData)
@@ -162,6 +175,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
           onChange={onChange}
           hasMany={field.hasMany}
           disabled={disabled}
+          focalPoint={field.admin?.focalPoint ?? true}
         />
       )
     }
@@ -286,11 +300,11 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
         return (
           <div key={field.name} className={`space-y-2 ${isFullWidth ? 'col-span-2' : ''}`}>
             <div className="flex items-center justify-between">
-              <label className="text-sm font-semibold text-white capitalize flex items-center gap-2">
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] italic flex items-center gap-2">
                 {field.label || field.name.replace(/([A-Z])/g, ' $1')}
-                {field.required && <span className="text-danger">*</span>}
+                {field.required && <span className="text-rose-500">*</span>}
                 {field.localized && (
-                  <span className="px-1.5 py-0.5 text-[9px] font-black tracking-widest text-accent bg-accent/10 border border-accent/20 rounded uppercase">
+                  <span className="px-1.5 py-0.5 text-[8px] font-black tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-none uppercase">
                     {isReadOnly ? readOnlyLocale : currentLocale}
                   </span>
                 )}
@@ -334,27 +348,30 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
     <form onSubmit={onSubmit ? handleSubmit(handleFormSubmit) : undefined} className="space-y-8">
       {renderFormContent()}
 
-      <div className="pt-8 border-t border-border flex items-center justify-between">
-        <p className="text-xs text-gray-400">
-          Fields marked with <span className="text-danger">*</span> are required.
-        </p>
-        <div className="flex gap-3">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="btn btn-primary min-w-[140px] h-11"
-          >
-            {isSubmitting ? (
-              <div className="flex items-center gap-2">
-                <Loader2 size={18} className="animate-spin" />
-                <span>Saving...</span>
-              </div>
-            ) : (
-              'Save Changes'
-            )}
-          </button>
+      {/* Submit Button */}
+      {!hideSubmitButton && (
+        <div className="mt-10 pt-6 border-t border-gray-100 flex items-center justify-between">
+          <p className="text-xs text-gray-400">
+            Fields marked with <span className="text-danger">*</span> are required.
+          </p>
+          <div className="flex gap-3">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="btn btn-primary min-w-[140px] h-11"
+            >
+              {isSubmitting ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 size={16} className="animate-spin" />
+                  Saving...
+                </div>
+              ) : (
+                'Save Changes'
+              )}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </form>
   )
 }

@@ -4,6 +4,7 @@ export const Page: CollectionConfig = {
   name: 'Pages',
   slug: 'pages',
   publicRead: true,
+  softDelete: true,
   labels: {
     singular: 'Page',
     plural: 'Pages',
@@ -11,10 +12,10 @@ export const Page: CollectionConfig = {
   versions: true,
   seo: true,
   fields: [
-      { name: 'siteId', type: 'text', required: true },
-      {
+    { name: 'siteId', type: 'text', required: true },
+    {
       name: 'meta',
-      type: 'object',
+      type: 'group',
       label: 'SEO Metadata',
       fields: [
         { name: 'title', type: 'text' },

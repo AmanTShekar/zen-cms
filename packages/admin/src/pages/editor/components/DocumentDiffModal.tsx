@@ -111,9 +111,9 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
             )}
           >
             {/* Header */}
-            <div className="p-6 border-b border-white/5 flex items-center justify-between shrink-0 bg-gradient-to-r from-indigo-500/5 to-transparent">
+            <div className="p-6 border-b border-white/5 flex items-center justify-between shrink-0 bg-gradient-to-r from-emerald-500/5 to-transparent">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 border flex items-center justify-center text-indigo-400">
+                <div className="w-9 h-9 border flex items-center justify-center text-emerald-400">
                   <ArrowLeftRight size={16} />
                 </div>
                 <div>
@@ -141,7 +141,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
             <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-editor-scrollbar">
               {loading ? (
                 <div className="h-full flex flex-col items-center justify-center gap-4">
-                  <Loader2 size={32} className="animate-spin text-indigo-500" />
+                  <Loader2 size={32} className="animate-spin text-emerald-500" />
                   <p className="text-xs font-black uppercase tracking-[0.4em] text-gray-500 italic animate-pulse">
                     Analyzing delta changes...
                   </p>
@@ -172,7 +172,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
                         isDark ? 'bg-white/[0.02] border-white/5' : 'bg-gray-100 border-gray-200'
                       )}>
                         <div className="flex items-center gap-2">
-                          <FileText size={13} className="text-indigo-400" />
+                          <FileText size={13} className="text-emerald-400" />
                           <span className="text-xs font-black uppercase italic tracking-wider">
                             {diff.field.replace(':', ' ➔ ').toUpperCase()}
                           </span>
@@ -180,7 +180,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
                         <button
                           onClick={() => handleRollbackField(diff.field)}
                           disabled={rollingBackField === diff.field}
-                          className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-black uppercase bg-indigo-600/10 hover:bg-indigo-600 border border-indigo-500/20 hover:border-indigo-500 text-indigo-400 hover:text-white transition-all disabled:opacity-50"
+                          className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-black uppercase bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-emerald-500 text-emerald-400 hover:text-white transition-all disabled:opacity-50"
                         >
                           {rollingBackField === diff.field ? (
                             <Loader2 size={10} className="animate-spin" />
@@ -220,7 +220,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-white/5 flex items-center justify-end bg-gradient-to-r from-transparent to-indigo-500/5">
+            <div className="p-4 border-t border-white/5 flex items-center justify-end bg-gradient-to-r from-transparent to-emerald-500/5">
               <button
                 onClick={onClose}
                 className="px-5 py-2 border border-white/10 hover:border-white/20 text-xs font-black uppercase tracking-widest hover:bg-white/5 transition-all text-gray-400 hover:text-white"

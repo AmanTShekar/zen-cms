@@ -138,7 +138,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
             className={cn(
               'px-4 py-2 text-[9px] font-black uppercase italic tracking-widest border-b-2 -mb-px transition-all',
               tab === t.id
-                ? 'border-indigo-500 text-indigo-400'
+                ? 'border-emerald-500 text-emerald-400'
                 : 'border-transparent text-gray-500 hover:text-gray-300'
             )}
           >
@@ -178,8 +178,8 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
           className={cn(
             'flex items-center gap-2 px-5 py-2.5 border text-[9px] font-black uppercase italic rounded-none transition-all',
             isDark
-              ? 'border-white/10 text-gray-400 hover:border-indigo-500/40 hover:text-indigo-400'
-              : 'border-gray-200 text-gray-600 hover:border-indigo-300'
+              ? 'border-white/10 text-gray-400 hover:border-emerald-500/40 hover:text-emerald-400'
+              : 'border-gray-200 text-gray-600 hover:border-emerald-300'
           )}
         >
           {testing ? <Loader2 size={13} className="animate-spin" /> : <Globe size={13} />}

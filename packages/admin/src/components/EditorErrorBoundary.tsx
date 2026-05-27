@@ -68,10 +68,10 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
       <div
         className={cn(
           'w-14 h-14 rounded-full flex items-center justify-center border-2',
-          theme === 'dark' ? 'bg-red-500/10 border-red-500/20' : 'bg-red-50 border-red-200'
+          theme === 'dark' ? 'bg-rose-500/10 border-rose-500/20' : 'bg-rose-50 border-rose-200'
         )}
       >
-        <AlertTriangle size={24} className={theme === 'dark' ? 'text-red-400' : 'text-red-500'} />
+        <AlertTriangle size={24} className={theme === 'dark' ? 'text-rose-400' : 'text-rose-500'} />
       </div>
 
       <div className="text-center max-w-md">
@@ -86,7 +86,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
         <p
           className={cn(
             'text-xs leading-relaxed font-mono px-3 py-2 border rounded-none',
-            theme === 'dark' ? 'text-red-400 bg-red-500/5 border-red-500/10' : 'text-red-600 bg-red-50 border-red-200'
+            theme === 'dark' ? 'text-rose-400 bg-rose-500/5 border-rose-500/10' : 'text-rose-600 bg-rose-50 border-rose-200'
           )}
         >
           {error.message}
@@ -98,7 +98,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
           onClick={onReset}
           className={cn(
             'flex items-center gap-2 px-4 py-2 text-xs font-black uppercase italic border rounded-none transition-all',
-            'bg-indigo-600 hover:bg-indigo-500 text-white border-indigo-600'
+            'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-600'
           )}
         >
           <RefreshCw size={12} />

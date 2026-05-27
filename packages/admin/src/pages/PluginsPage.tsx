@@ -100,7 +100,7 @@ const PluginsPage = () => {
         'Power tip-tap rich text editors with inline content draft generation, grammar correction, and dynamic prompt templates.',
       downloads: 19823,
       verified: true,
-      icon: <Cpu size={20} className="text-purple-500" />,
+      icon: <Cpu size={20} className="text-emerald-500" />,
     },
   ]
 
@@ -141,8 +141,8 @@ const PluginsPage = () => {
       lowercaseName.includes('copilot') ||
       lowercaseName.includes('ai')
     )
-      return <Cpu size={20} className="text-purple-500" />
-    return <Puzzle size={20} className="text-indigo-500" />
+      return <Cpu size={20} className="text-emerald-500" />
+    return <Puzzle size={20} className="text-emerald-500" />
   }
 
   const togglePlugin = async (id: string | undefined, currentStatus: string | undefined) => {
@@ -207,7 +207,7 @@ const PluginsPage = () => {
           theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]'
         )}
       >
-        <Loader2 size={32} className="animate-spin text-indigo-500" strokeWidth={1.5} />
+        <Loader2 size={32} className="animate-spin text-emerald-500" strokeWidth={1.5} />
         <p className="text-[10px] font-black uppercase tracking-[0.6em] text-gray-400 animate-pulse italic">
           Syncing plugins...
         </p>
@@ -236,7 +236,7 @@ const PluginsPage = () => {
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-3 mb-1">
-              <span className="text-[8px] font-black text-indigo-500 uppercase tracking-[0.3em] italic">
+              <span className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.3em] italic">
                 System Extensions
               </span>
               <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 shadow-[0_0_8px_#10b981]" />
@@ -296,7 +296,7 @@ const PluginsPage = () => {
           >
             <Search
               size={14}
-              className="text-gray-500 group-focus-within:text-indigo-500 transition-colors"
+              className="text-gray-500 group-focus-within:text-emerald-500 transition-colors"
             />
             <input
               type="text"
@@ -327,7 +327,7 @@ const PluginsPage = () => {
                 'px-8 py-3 rounded-none text-[9px] font-black uppercase tracking-[0.2em] shadow-lg transition-all italic leading-none flex items-center gap-3 active:scale-95',
                 theme === 'dark'
                   ? 'bg-white text-black hover:bg-gray-200'
-                  : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-600/10'
+                  : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-600/10'
               )}
             >
               <Plus size={14} strokeWidth={3} />
@@ -376,7 +376,7 @@ const PluginsPage = () => {
                           {plugin.icon}
                         </div>
                         <div className="flex flex-col">
-                          <h3 className="text-sm font-black tracking-tight uppercase italic leading-none group-hover:text-indigo-500 transition-colors">
+                          <h3 className="text-sm font-black tracking-tight uppercase italic leading-none group-hover:text-emerald-500 transition-colors">
                             {plugin.name}
                           </h3>
                           <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest italic mt-1.5">
@@ -404,7 +404,7 @@ const PluginsPage = () => {
                           className={cn(
                             'px-4 py-1.5 rounded-none text-[9px] font-black uppercase italic border shadow-inner transition-all flex items-center gap-2',
                             installed
-                              ? 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20 shadow-[0_0_10px_rgba(99,102,241,0.1)]'
+                              ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-[0_0_10px_rgba(99,102,241,0.1)]'
                               : 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20'
                           )}
                         >
@@ -472,8 +472,8 @@ const PluginsPage = () => {
                               installed
                                 ? 'bg-zinc-500/5 border-zinc-500/10 text-zinc-500 cursor-not-allowed'
                                 : installingId === plugin.id
-                                  ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-400 cursor-wait'
-                                  : 'bg-indigo-600 border-indigo-700 text-white hover:bg-indigo-700 shadow-indigo-600/10 active:scale-95'
+                                  ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400 cursor-wait'
+                                  : 'bg-emerald-600 border-emerald-700 text-white hover:bg-emerald-700 shadow-emerald-600/10 active:scale-95'
                             )}
                           >
                             {installingId === plugin.id ? (
@@ -499,7 +499,7 @@ const PluginsPage = () => {
                             </span>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-1.5 text-indigo-500">
+                          <div className="flex items-center gap-1.5 text-emerald-500">
                             <Activity size={12} strokeWidth={3} />
                             <span className="text-[9px] font-black uppercase tracking-tighter italic">
                               Community
@@ -547,13 +547,13 @@ const PluginsPage = () => {
               theme === 'dark' ? 'border-white/10' : 'border-gray-100'
             )}
           >
-            <Cpu size={10} className="text-indigo-500" />
+            <Cpu size={10} className="text-emerald-500" />
             <span>Active Plugins: {plugins.filter((p) => p.status === 'active').length}</span>
           </div>
         </div>
         <div className="flex items-center gap-8">
           <div className="flex items-center gap-2">
-            <Activity size={10} className="text-indigo-500" />
+            <Activity size={10} className="text-emerald-500" />
             <span>System Status: Optimal</span>
           </div>
         </div>

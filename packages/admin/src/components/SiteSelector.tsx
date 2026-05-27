@@ -117,7 +117,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
   const workspaceOptions: DropdownOption[] = workspaces.map((ws) => ({
     value: ws._id || ws.id,
     label: ws.name,
-    icon: <Briefcase size={16} className="text-[#8B5CF6]" />,
+    icon: <Briefcase size={16} className="text-[#10B981]" />,
     slug: ws.slug,
   }));
 
@@ -140,17 +140,17 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
           "w-full flex items-center justify-between text-left transition-all duration-300 p-2.5",
           "relative overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.1)]",
           theme === 'dark' 
-            ? "bg-[#111827]/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-[#8B5CF6]/50 hover:bg-[#111827]/85" 
-            : "bg-white/65 backdrop-blur-[12px] text-gray-900 border border-black/[0.08] hover:border-[#8B5CF6]/30 hover:bg-white/85",
+            ? "bg-[#111827]/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-[#10B981]/50 hover:bg-[#111827]/85" 
+            : "bg-white/65 backdrop-blur-[12px] text-gray-900 border border-black/[0.08] hover:border-[#10B981]/30 hover:bg-white/85",
           isSidebarOpen ? "rounded-[12px]" : "rounded-lg p-2 justify-center",
-          "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-indigo-500"
+          "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-500"
         )}
         title={!isSidebarOpen ? activeLabel : undefined}
       >
         <div className={cn("flex items-center min-w-0 z-10", isSidebarOpen ? "gap-3" : "gap-0 justify-center")}>
           <div className={cn(
             "rounded-md flex items-center justify-center flex-shrink-0 transition-colors duration-300",
-            theme === 'dark' ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "bg-[#8B5CF6]/5 text-[#8B5CF6]",
+            theme === 'dark' ? "bg-[#10B981]/10 text-[#10B981]" : "bg-[#10B981]/5 text-[#10B981]",
             isSidebarOpen ? "w-8 h-8" : "w-10 h-10"
           )}>
             <Briefcase size={16} />
@@ -158,7 +158,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
           
           {isSidebarOpen && (
             <div className="flex flex-col min-w-0">
-              <span className="text-[8px] font-black text-[#8B5CF6] uppercase tracking-[0.2em] font-mono leading-none mb-1">
+              <span className="text-[8px] font-black text-[#10B981] uppercase tracking-[0.2em] font-mono leading-none mb-1">
                 WORKSPACE
               </span>
               <span className="text-xs font-black uppercase tracking-wide truncate leading-none">
@@ -196,7 +196,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
             ? "bg-[#111827]/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-[#10B981]/50 hover:bg-[#111827]/85" 
             : "bg-white/65 backdrop-blur-[12px] text-gray-900 border border-black/[0.08] hover:border-[#10B981]/30 hover:bg-white/85",
           isSidebarOpen ? "rounded-[12px]" : "rounded-lg p-2 justify-center",
-          "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-indigo-500"
+          "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-500"
         )}
         title={!isSidebarOpen ? activeLabel : undefined}
       >
@@ -241,7 +241,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
         className={cn(
           "w-full px-4 py-2.5 flex items-center justify-between text-left transition-colors duration-200",
           theme === 'dark' ? "hover:bg-white/[0.04]" : "hover:bg-black/[0.02]",
-          isSelected && (theme === 'dark' ? "bg-[#8B5CF6]/10 text-[#8B5CF6]" : "bg-[#8B5CF6]/5 text-[#8B5CF6]")
+          isSelected && (theme === 'dark' ? "bg-[#10B981]/10 text-[#10B981]" : "bg-[#10B981]/5 text-[#10B981]")
         )}
       >
         <div className="flex items-center gap-3 min-w-0">
@@ -252,7 +252,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
           </div>
         </div>
         {isSelected && (
-          <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6] shadow-[0_0_8px_rgba(139,92,246,0.8)]" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
         )}
       </button>
     );
@@ -292,7 +292,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
           : "text-gray-600 hover:text-black hover:bg-black/[0.02]"
       )}
     >
-      <Sliders size={12} className="text-[#8B5CF6]" />
+      <Sliders size={12} className="text-[#10B981]" />
       Manage Workspaces & Tenants
     </Link>
   );

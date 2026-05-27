@@ -30,7 +30,7 @@ export async function find${capitalized}Compiled(db: any, table: any, filters: {
     baseQuery = baseQuery.session(options.session)
   }
 
-  return await baseQuery.exec()
+  return await baseQuery.lean().exec()
 }
 
 export async function create${capitalized}Compiled(db: any, table: any, data: any, options: any = {}) {

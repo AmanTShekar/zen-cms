@@ -4,6 +4,7 @@ import { X, Eye, History, MessageSquare, Monitor, Tablet, Smartphone } from 'luc
 import { useTheme } from '../../../context/ThemeContext'
 import { useEditorStore } from '../../../store/editorStore'
 import { usePanelStore } from '../../../store/panelStore'
+import { useTenantStorage } from '../../../hooks/useTenantStorage'
 import { cn } from '../../../lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import api from '../../../lib/api'
@@ -42,8 +43,11 @@ export const RightPanel: React.FC<RightPanelProps> = ({
   const { theme } = useTheme()
   const { history, data } = useEditorStore()
   const { rightOpen, rightWidth, activeRightTab, setActiveRightTab, setRightOpen, previewMode, setPreviewMode } = usePanelStore()
+  const { siteId: tenantSiteId, siteSlug, siteDomain } = useTenantStorage()
 
   const [sites, setSites] = React.useState<any[]>([])
+  const [previewToken, setPreviewToken] = React.useState<string | null>(null)
+  const collectionSlug = isGlobal ? 'globals' : (slug || 'pages')
 
   React.useEffect(() => {
     api.get('/sites')
@@ -53,17 +57,29 @@ export const RightPanel: React.FC<RightPanelProps> = ({
       .catch(() => { toast.error('Failed to load sites') })
   }, [])
 
-  const pageSiteId = data?.siteId || localStorage.getItem('activeSiteId') || ''
+  React.useEffect(() => {
+    const fetchToken = async () => {
+      if (!documentId || documentId === 'new') return
+      if (collectionSlug === 'globals') return // Globals do not support preview tokens yet
+      try {
+        const res = await api.post(`/${collectionSlug}/${documentId}/preview-token`)
+        setPreviewToken(res.data.data?.token || null)
+      } catch { /* ignore */ }
+    }
+    fetchToken()
+  }, [collectionSlug, documentId])
+
+  const pageSiteId = data?.siteId || tenantSiteId || ''
   const matchingSite = sites.find((s) => (s._id || s.id) === pageSiteId)
 
-  // Resolve dynamic storefront URL based on local storage configurations or fallback port mappings
+  // Resolve dynamic storefront URL based on Zustand/localStorage configurations or fallback port mappings
   let resolvedStorefrontUrl = storefrontUrl || ''
   if (!resolvedStorefrontUrl) {
-    const slugToUse = matchingSite ? matchingSite.slug : (localStorage.getItem('activeSiteSlug') || '')
-    const domainToUse = matchingSite ? matchingSite.domain : (localStorage.getItem('activeSiteDomain') || '')
+    const slugToUse = matchingSite ? matchingSite.slug : siteSlug
+    const domainToUse = matchingSite ? matchingSite.domain : siteDomain
 
     if (slugToUse === 'storefront-glass') {
-      resolvedStorefrontUrl = 'http://localhost:5173'
+      resolvedStorefrontUrl = 'http://localhost:5178'
     } else if (slugToUse === 'demo') {
       resolvedStorefrontUrl = 'http://localhost:5174'
     } else if (slugToUse === 'blog-demo') {
@@ -75,7 +91,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
         ? domainToUse
         : `http://${domainToUse}`
     } else {
-      resolvedStorefrontUrl = 'http://localhost:5173' // default fallback
+      resolvedStorefrontUrl = '' // No valid storefront configuration found
     }
   }
 
@@ -115,8 +131,8 @@ export const RightPanel: React.FC<RightPanelProps> = ({
             className={cn(
               'absolute left-0 top-0 bottom-0 w-1 cursor-col-resize z-50 transition-colors',
               resizingSide === 'right'
-                ? 'bg-indigo-500 shadow-[0_0_15px_#6366f1]'
-                : 'bg-transparent hover:bg-indigo-500/50'
+                ? 'bg-emerald-500 shadow-[0_0_15px_#10b981]'
+                : 'bg-transparent hover:bg-emerald-500/50'
             )}
           />
 
@@ -142,7 +158,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                     className={cn(
                       'text-xs font-black uppercase tracking-[0.2em] italic',
                       activeRightTab === tab.id
-                        ? dark ? 'text-indigo-400' : 'text-indigo-600'
+                        ? dark ? 'text-emerald-400' : 'text-emerald-600'
                         : dark ? 'text-white' : 'text-black'
                     )}
                   >
@@ -151,13 +167,13 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                   <div
                     className="h-0.5 w-full mt-1"
                     style={{
-                      backgroundColor: activeRightTab === tab.id ? '#6366f1' : 'transparent',
+                      backgroundColor: activeRightTab === tab.id ? '#10b981' : 'transparent',
                     }}
                   />
                 </button>
               ))}
             </div>
-            <button onClick={() => setRightOpen(false)} className="p-1 hover:text-indigo-500 transition-colors" aria-label="Close panel">
+            <button onClick={() => setRightOpen(false)} className="p-1 hover:text-emerald-500 transition-colors" aria-label="Close panel">
               <X size={16} />
             </button>
           </div>
@@ -183,8 +199,8 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                           'flex items-center gap-1.5 px-2.5 py-1 rounded-none border text-[10px] font-black uppercase italic tracking-wider transition-all',
                           isActive
                             ? dark
-                              ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400'
-                              : 'bg-indigo-50 border-indigo-200 text-indigo-600'
+                              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                              : 'bg-emerald-50 border-emerald-200 text-emerald-600'
                             : dark
                               ? 'bg-white/5 border-white/5 text-gray-500 hover:text-gray-300'
                               : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-600'
@@ -204,24 +220,23 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                   {resolvedStorefrontUrl ? (
                     <div
                       className={cn(
-                        'transition-all duration-300 border overflow-hidden',
-                        dark ? 'border-white/5 bg-white/5' : 'border-gray-200 bg-white shadow-lg',
-                        isDesktop ? 'w-full h-full' : 'rounded-lg'
+                        'transition-all duration-300 border overflow-hidden bg-white',
+                        dark ? 'border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)]' : 'border-gray-200 shadow-2xl',
+                        isDesktop ? 'w-full h-full' : 'rounded-[32px]'
                       )}
                       style={
                         isDesktop
                           ? undefined
                           : {
                               width: Math.min(viewport.width, rightWidth - 40),
-                              height: '100%',
-                              maxWidth: '100%',
+                              height: viewport.height,
                             }
                       }
                     >
                       <iframe
                         allow="clipboard-read; clipboard-write"
                         ref={iframeRef}
-                        src={`${resolvedStorefrontUrl}?preview=true&pageId=${isGlobal ? documentId : id || ''}&siteId=${pageSiteId}&viewport=${previewMode}`}
+                        src={`${resolvedStorefrontUrl}?preview=true&token=${previewToken || ''}&collection=${collectionSlug}&id=${documentId}&siteId=${pageSiteId}&viewport=${previewMode}`}
                         className="w-full h-full border-none rounded-none"
                         title="Live Preview"
                         sandbox="allow-same-origin allow-scripts allow-forms"
@@ -272,7 +287,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                   <div className="space-y-2">
                     {history.map((v, idx) => (
                       <div
-                        key={v.id}
+                        key={v._id || v.id}
                         className={cn(
                           'group p-3 rounded-none border transition-all cursor-pointer space-y-1',
                           dark
@@ -306,7 +321,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                             </button>
                             <button
                               onClick={(e) => { e.stopPropagation(); handleRestore(v._id) }}
-                              className="flex-1 py-1 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black uppercase italic tracking-widest text-center transition-all"
+                              className="flex-1 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black uppercase italic tracking-widest text-center transition-all"
                             >
                               Restore
                             </button>

@@ -4,6 +4,7 @@ export const Member: CollectionConfig = {
   name: 'Members',
   slug: 'members',
   versions: true,
+  softDelete: true,
   labels: {
     singular: 'Member',
     plural: 'Members',
@@ -13,7 +14,7 @@ export const Member: CollectionConfig = {
     defaultColumns: ['email', 'name', 'subscriptionStatus', 'createdAt'],
   },
   fields: [
-      { name: 'siteId', type: 'text', required: true },
+    { name: 'siteId', type: 'text', required: true },
     { name: 'email', type: 'text', required: true, unique: true, label: 'Email Address' },
     { name: 'name', type: 'text', label: 'Full Name' },
     {

@@ -58,8 +58,8 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
             className={cn(
               'w-full border rounded-none py-5 px-8 text-[12px] font-black italic transition-all outline-none appearance-none cursor-pointer',
               theme === 'dark'
-                ? 'bg-white/5 border-white/5 text-white hover:border-indigo-500/20'
-                : 'bg-gray-50 border-gray-100 hover:border-indigo-500/20'
+                ? 'bg-white/5 border-white/5 text-white hover:border-emerald-500/20'
+                : 'bg-gray-50 border-gray-100 hover:border-emerald-500/20'
             )}
           >
             {AI_MODELS.map((m) => (
@@ -68,7 +68,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
           </select>
           <ChevronDown
             size={18}
-            className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none group-hover:text-indigo-500 transition-colors"
+            className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none group-hover:text-emerald-500 transition-colors"
           />
         </div>
       </div>
@@ -84,7 +84,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
             className={cn(
               'w-full border rounded-none py-5 px-8 text-[12px] font-black italic focus:ring-4 transition-all outline-none pr-16',
               theme === 'dark'
-                ? 'bg-white/5 border-white/5 text-white focus:border-indigo-500/20'
+                ? 'bg-white/5 border-white/5 text-white focus:border-emerald-500/20'
                 : 'bg-gray-50 border-gray-100'
             )}
             placeholder="sk-..."

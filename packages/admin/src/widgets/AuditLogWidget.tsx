@@ -31,13 +31,13 @@ export default function AuditLogWidget({ theme, title }: WidgetProps) {
   return (
     <div className="h-full flex flex-col justify-between gap-3 select-none">
       <div className="flex items-center justify-between border-b border-white/5 pb-1">
-        <p className="text-[9px] font-black text-indigo-500 uppercase tracking-widest italic flex items-center gap-1">
+        <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest italic flex items-center gap-1">
           <Fingerprint size={10} className="animate-pulse" /> {title || 'Recent Activity'}
         </p>
         <Link
           to="/audit-log"
           className={cn(
-            'text-[8px] font-black uppercase tracking-widest italic transition-all flex items-center gap-0.5 hover:text-indigo-400',
+            'text-[8px] font-black uppercase tracking-widest italic transition-all flex items-center gap-0.5 hover:text-emerald-400',
             theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
           )}
         >
@@ -64,7 +64,7 @@ export default function AuditLogWidget({ theme, title }: WidgetProps) {
                   ? 'bg-emerald-500/10 text-emerald-500'
                   : log.action === 'delete'
                     ? 'bg-red-500/10 text-red-500'
-                    : 'bg-indigo-500/10 text-indigo-500'
+                    : 'bg-emerald-500/10 text-emerald-500'
               )}
             >
               <Fingerprint size={10} />
@@ -83,7 +83,7 @@ export default function AuditLogWidget({ theme, title }: WidgetProps) {
                       ? 'text-emerald-400'
                       : log.action === 'delete'
                         ? 'text-red-400'
-                        : 'text-indigo-400'
+                        : 'text-emerald-400'
                   }
                 >
                   {log.action}
@@ -104,8 +104,8 @@ export default function AuditLogWidget({ theme, title }: WidgetProps) {
             className={cn(
               'flex-1 py-1.5 text-[8px] font-black uppercase tracking-widest italic transition-all border text-center flex items-center justify-center gap-1',
               theme === 'dark'
-                ? 'bg-white/[0.02] border-white/5 text-indigo-400 hover:bg-white/[0.05] hover:border-indigo-500/20'
-                : 'bg-gray-50 border-gray-100 text-indigo-600 hover:bg-gray-100 hover:border-indigo-600/20'
+                ? 'bg-white/[0.02] border-white/5 text-emerald-400 hover:bg-white/[0.05] hover:border-emerald-500/20'
+                : 'bg-gray-50 border-gray-100 text-emerald-600 hover:bg-gray-100 hover:border-emerald-600/20'
             )}
           >
             <ChevronDown size={10} /> Show More ({logs.length - displayLimit} left)
@@ -116,8 +116,8 @@ export default function AuditLogWidget({ theme, title }: WidgetProps) {
             className={cn(
               'flex-1 py-1.5 text-[8px] font-black uppercase tracking-widest italic transition-all border text-center flex items-center justify-center gap-1',
               theme === 'dark'
-                ? 'bg-white/[0.02] border-white/5 text-indigo-400 hover:bg-white/[0.05] hover:border-indigo-500/20'
-                : 'bg-gray-50 border-gray-100 text-indigo-600 hover:bg-gray-100 hover:border-indigo-600/20'
+                ? 'bg-white/[0.02] border-white/5 text-emerald-400 hover:bg-white/[0.05] hover:border-emerald-500/20'
+                : 'bg-gray-50 border-gray-100 text-emerald-600 hover:bg-gray-100 hover:border-emerald-600/20'
             )}
           >
             <ChevronUp size={10} /> Collapse List
@@ -129,8 +129,8 @@ export default function AuditLogWidget({ theme, title }: WidgetProps) {
           className={cn(
             'px-3 py-1.5 text-[8px] font-black uppercase tracking-widest italic transition-all border text-center flex items-center justify-center gap-1 hover:scale-[1.02]',
             theme === 'dark'
-              ? 'bg-indigo-600 border-indigo-500/30 text-white hover:bg-indigo-700'
-              : 'bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700 shadow-sm'
+              ? 'bg-emerald-600 border-emerald-500/30 text-white hover:bg-emerald-700'
+              : 'bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-700 shadow-sm'
           )}
         >
           <Eye size={10} /> View Audits
