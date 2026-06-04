@@ -151,7 +151,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
       <div
         className={cn(
           'relative rounded-none border overflow-hidden',
-          isDark ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-gray-900 border-gray-700'
+          isDark ? 'bg-black border-white/[0.08]' : 'bg-gray-900 border-gray-700'
         )}
       >
         <pre className="overflow-x-auto p-5 text-[11px] font-mono text-gray-300 leading-relaxed">
@@ -163,7 +163,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
             'absolute top-3 right-3 p-2 border rounded-none text-[9px] font-black uppercase transition-all',
             copied
               ? 'border-emerald-500 text-emerald-500 bg-emerald-500/10'
-              : 'border-white/[0.08] text-gray-400 hover:border-white/30 bg-[#0B0F19]/40'
+              : 'border-white/[0.08] text-gray-400 hover:border-white/30 bg-black/40'
           )}
         >
           {copied ? <Check size={13} /> : <Copy size={13} />}

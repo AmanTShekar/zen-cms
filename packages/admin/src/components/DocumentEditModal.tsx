@@ -68,14 +68,14 @@ const DocumentEditModal: React.FC<DocumentEditModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[1100] flex items-center justify-center p-4 md:p-8 bg-[#0B0F19]/60 backdrop-blur-md">
+      <div className="fixed inset-0 z-[1100] flex items-center justify-center p-4 md:p-8 bg-black/60 backdrop-blur-md">
         <motion.div
           initial={{ opacity: 0, y: 10, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 10, scale: 0.98 }}
           className={cn(
             'w-full max-w-4xl border rounded-none overflow-hidden shadow-2xl flex flex-col h-[85vh]',
-            theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-200'
+            theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200'
           )}
         >
           <div

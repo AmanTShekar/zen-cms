@@ -134,7 +134,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
             className={cn(
               'absolute top-full right-0 mt-2 z-50 w-48 border rounded-none shadow-2xl p-3',
               theme === 'dark'
-                ? 'bg-[#0B0F19] border-white/[0.08] text-white'
+                ? 'bg-black border-white/[0.08] text-white'
                 : 'bg-white border-gray-200 text-gray-900 shadow-gray-200/50'
             )}
             onClick={() => setExpanded(false)}

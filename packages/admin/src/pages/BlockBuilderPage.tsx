@@ -187,7 +187,7 @@ export default function BlockBuilderPage() {
 
   const inputClass = cn(
     'border outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-bold transition-colors py-2.5 px-3',
-    dark ? 'bg-[#0B0F19] border-white/[0.08] focus:border-emerald-500 text-white placeholder-gray-600' : 'bg-white border-gray-200 focus:border-emerald-500 text-gray-900 placeholder-gray-400'
+    dark ? 'bg-black border-white/[0.08] focus:border-emerald-500 text-white placeholder-gray-600' : 'bg-white border-gray-200 focus:border-emerald-500 text-gray-900 placeholder-gray-400'
   )
   
   const blocksByCategory = savedBlocks.reduce((acc, block) => {
@@ -198,8 +198,8 @@ export default function BlockBuilderPage() {
   }, {} as Record<string, SavedBlock[]>)
 
   return (
-    <div className={cn('flex h-[calc(100vh-4rem)] overflow-hidden', dark ? 'bg-[#0B0F19] text-white' : 'bg-gray-50 text-gray-900')}>
-      <div className={cn('w-64 flex-shrink-0 border-r flex flex-col', dark ? 'border-white/[0.08] bg-[#0B0F19]' : 'border-gray-200 bg-white')}>
+    <div className={cn('flex h-[calc(100vh-4rem)] overflow-hidden', dark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900')}>
+      <div className={cn('w-64 flex-shrink-0 border-r flex flex-col', dark ? 'border-white/[0.08] bg-black' : 'border-gray-200 bg-white')}>
         <div className="p-4 border-b border-inherit flex items-center justify-between">
           <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
             <Database size={14} className="text-emerald-500" /> Blocks
@@ -232,7 +232,7 @@ export default function BlockBuilderPage() {
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden relative">
-        <div className={cn('px-6 py-4 border-b flex items-center justify-between gap-4 shrink-0', dark ? 'border-white/[0.08] bg-[#0B0F19]' : 'border-gray-200 bg-white')}>
+        <div className={cn('px-6 py-4 border-b flex items-center justify-between gap-4 shrink-0', dark ? 'border-white/[0.08] bg-black' : 'border-gray-200 bg-white')}>
           <div className="flex items-center gap-4">
             <div className={cn('w-10 h-10 rounded-none flex items-center justify-center', dark ? 'bg-white text-black' : 'bg-gray-900 text-white')}>
               <Layers size={20} />
@@ -252,7 +252,7 @@ export default function BlockBuilderPage() {
         </div>
 
         <div className="flex-1 overflow-auto p-6 space-y-6">
-          <div className={cn('rounded-none border p-6 space-y-4', dark ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
+          <div className={cn('rounded-none border p-6 space-y-4', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
             <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2"><Settings size={12} /> Component Settings</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -274,7 +274,7 @@ export default function BlockBuilderPage() {
             </div>
           </div>
 
-          <div className={cn('rounded-none border', dark ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
+          <div className={cn('rounded-none border', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
             <div className="px-6 py-4 border-b border-inherit flex items-center justify-between">
               <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2"><Layers size={12} /> Fields ({fields.length})</h3>
               <button onClick={() => { setModalStep('TYPE'); setActiveField({}); setEditingFieldIndex(null); setSettingsTab('BASIC'); setIsFieldModalOpen(true) }} className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest rounded-none transition-all">
@@ -317,9 +317,9 @@ export default function BlockBuilderPage() {
 
       <AnimatePresence>
         {isFieldModalOpen && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/80 backdrop-blur-sm p-4">
-            <motion.div initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 10 }} className="w-full max-w-4xl border rounded-none shadow-2xl flex flex-col max-h-[85vh] bg-[#0B0F19] border-white/[0.08] overflow-hidden">
-              <div className="px-6 py-4 border-b border-white/[0.08] flex items-center justify-between bg-[#0B0F19]/50">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <motion.div initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 10 }} className="w-full max-w-4xl border rounded-none shadow-2xl flex flex-col max-h-[85vh] bg-black border-white/[0.08] overflow-hidden">
+              <div className="px-6 py-4 border-b border-white/[0.08] flex items-center justify-between bg-black/50">
                 <h2 className="text-sm font-black uppercase tracking-widest text-white flex items-center gap-2">
                   {modalStep === 'TYPE' ? 'Select a field for your Component' : `Configure ${activeField?.type} field`}
                 </h2>
@@ -332,7 +332,7 @@ export default function BlockBuilderPage() {
                     const Icon = ft.icon
                     return (
                       <button key={ft.value} onClick={() => { setActiveField({ type: ft.value, admin: {} }); setModalStep('SETTINGS') }} className="flex items-start gap-4 p-4 rounded-none border border-white/[0.08] bg-white/5 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all text-left">
-                        <div className="mt-1 p-2 rounded-none bg-[#0B0F19]/50 border border-white/[0.08]"><Icon size={18} style={{ color: ft.color }} /></div>
+                        <div className="mt-1 p-2 rounded-none bg-black/50 border border-white/[0.08]"><Icon size={18} style={{ color: ft.color }} /></div>
                         <div>
                           <div className="text-sm font-bold text-white mb-1">{ft.label}</div>
                           <div className="text-[10px] text-gray-400 leading-relaxed">{ft.desc}</div>
@@ -345,7 +345,7 @@ export default function BlockBuilderPage() {
 
               {modalStep === 'SETTINGS' && (
                 <div className="flex flex-col flex-1 overflow-hidden">
-                  <div className="flex border-b border-white/[0.08] px-6 pt-4 gap-6 bg-[#0B0F19]/20">
+                  <div className="flex border-b border-white/[0.08] px-6 pt-4 gap-6 bg-black/20">
                     {['BASIC', 'VALIDATION', 'ADMIN'].map(tab => (
                       <button key={tab} onClick={() => setSettingsTab(tab as any)} className={cn("pb-3 text-[10px] font-black uppercase tracking-widest transition-colors relative", settingsTab === tab ? "text-emerald-500" : "text-gray-500 hover:text-white")}>
                         {tab}
@@ -502,7 +502,7 @@ export default function BlockBuilderPage() {
                 </div>
               )}
 
-              <div className="px-6 py-4 border-t border-white/[0.08] bg-[#0B0F19]/50 flex justify-between">
+              <div className="px-6 py-4 border-t border-white/[0.08] bg-black/50 flex justify-between">
                 {modalStep === 'SETTINGS' ? (
                   <button onClick={() => setModalStep('TYPE')} className="px-4 py-2 text-sm font-bold text-gray-400 hover:text-white transition-colors">
                     â†  Back to Types

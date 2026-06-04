@@ -216,7 +216,7 @@ const CollectionList: React.FC = () => {
   }
 
   return (
-    <div className={cn('p-10 space-y-10 min-h-screen transition-colors duration-500', theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-gray-900')}>
+    <div className={cn('p-10 space-y-10 min-h-screen transition-colors duration-500', theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900')}>
       {/* Header */}
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-6">
@@ -289,12 +289,12 @@ const CollectionList: React.FC = () => {
       )}
 
       {/* Data Registry */}
-      <div className={cn('border rounded-none overflow-hidden shadow-sm backdrop-blur-3xl transition-all', theme === 'dark' ? 'bg-[#0B0F19]/80 border-white/[0.08]' : 'bg-white border-gray-100')}>
+      <div className={cn('border rounded-none overflow-hidden shadow-sm backdrop-blur-3xl transition-all', theme === 'dark' ? 'bg-black/80 border-white/[0.08]' : 'bg-white border-gray-100')}>
         <div className={cn('px-6 py-4 border-b flex items-center justify-between', theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/20')}>
           <div className="relative w-full max-w-sm">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={14} />
             <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="NEURAL_SEARCH_KERNEL..."
-              className={cn('w-full border rounded-none py-2.5 pl-10 pr-4 text-[9px] font-black italic focus:ring-4 transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black uppercase tracking-widest', theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:ring-emerald-500/20' : 'bg-white border-gray-100 focus:ring-emerald-500/10')}
+              className={cn('w-full border rounded-none py-2.5 pl-10 pr-4 text-[9px] font-black italic focus:ring-4 transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black uppercase tracking-widest', theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:ring-emerald-500/20' : 'bg-white border-gray-100 focus:ring-emerald-500/10')}
             />
           </div>
           <div className="flex items-center gap-2 relative">
@@ -308,7 +308,7 @@ const CollectionList: React.FC = () => {
               <AnimatePresence>
                 {columnMenuOpen && (
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                    className={cn('absolute right-0 top-full mt-2 w-64 border rounded-none shadow-2xl z-50 p-4 backdrop-blur-3xl', theme === 'dark' ? 'bg-[#0B0F19]/90 border-white/[0.08]' : 'bg-white border-gray-100')}
+                    className={cn('absolute right-0 top-full mt-2 w-64 border rounded-none shadow-2xl z-50 p-4 backdrop-blur-3xl', theme === 'dark' ? 'bg-black/90 border-white/[0.08]' : 'bg-white border-gray-100')}
                   >
                     <h4 className="text-[10px] font-black uppercase tracking-[0.2em] italic mb-4 text-emerald-500">Column_Orchestration</h4>
                     <div className="space-y-2 max-h-64 overflow-y-auto no-scrollbar">
@@ -329,9 +329,9 @@ const CollectionList: React.FC = () => {
             <button onClick={() => setImportModalOpen(true)} className="p-2.5 border rounded-none text-gray-500 hover:text-emerald-500 transition-colors" title="Import"><Upload size={14} /></button>
             <div className="w-px h-6 bg-gray-200 dark:bg-white/10 mx-2" />
             <div className="flex bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/[0.08] rounded-none p-0.5">
-              <button onClick={() => setLayout('table')} className={cn('p-2 transition-all', layout === 'table' ? 'bg-white dark:bg-[#0B0F19] shadow-sm text-emerald-500' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white')} title="Table View"><LayoutList size={14} /></button>
-              <button onClick={() => setLayout('cards')} className={cn('p-2 transition-all', layout === 'cards' ? 'bg-white dark:bg-[#0B0F19] shadow-sm text-emerald-500' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white')} title="Cards View"><LayoutGrid size={14} /></button>
-              <button onClick={() => setLayout('kanban')} className={cn('p-2 transition-all', layout === 'kanban' ? 'bg-white dark:bg-[#0B0F19] shadow-sm text-emerald-500' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white')} title="Kanban View"><Kanban size={14} /></button>
+              <button onClick={() => setLayout('table')} className={cn('p-2 transition-all', layout === 'table' ? 'bg-white dark:bg-black shadow-sm text-emerald-500' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white')} title="Table View"><LayoutList size={14} /></button>
+              <button onClick={() => setLayout('cards')} className={cn('p-2 transition-all', layout === 'cards' ? 'bg-white dark:bg-black shadow-sm text-emerald-500' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white')} title="Cards View"><LayoutGrid size={14} /></button>
+              <button onClick={() => setLayout('kanban')} className={cn('p-2 transition-all', layout === 'kanban' ? 'bg-white dark:bg-black shadow-sm text-emerald-500' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white')} title="Kanban View"><Kanban size={14} /></button>
             </div>
           </div>
         </div>
@@ -495,7 +495,7 @@ const CollectionList: React.FC = () => {
                   }
 
                   return Object.entries(groups).map(([status, items]) => (
-                    <div key={status} className={cn("w-80 flex flex-col border rounded-none", theme === 'dark' ? 'bg-[#0B0F19]/50 border-white/[0.08]' : 'bg-gray-50 border-gray-100')}>
+                    <div key={status} className={cn("w-80 flex flex-col border rounded-none", theme === 'dark' ? 'bg-black/50 border-white/[0.08]' : 'bg-gray-50 border-gray-100')}>
                       <div className="p-4 flex items-center justify-between border-b border-inherit">
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] italic flex items-center gap-2">
                           <div className={cn("w-2 h-2 rounded-none shadow-[0_0_8px_currentColor]", status === 'published' ? 'bg-emerald-500 text-emerald-500' : status === 'draft' ? 'bg-amber-500 text-amber-500' : 'bg-gray-500 text-gray-500')} />

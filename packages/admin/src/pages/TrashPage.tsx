@@ -395,7 +395,7 @@ const TrashPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -404,7 +404,7 @@ const TrashPage = () => {
               className={cn(
                 'w-full max-w-sm border shadow-2xl p-6 text-center',
                 dark
-                  ? 'bg-[#0B0F19] border-white/[0.08]'
+                  ? 'bg-black border-white/[0.08]'
                   : 'bg-white border-gray-200'
               )}
             >
@@ -469,7 +469,7 @@ const TrashPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -478,7 +478,7 @@ const TrashPage = () => {
               className={cn(
                 'w-full max-w-sm border shadow-2xl p-6 text-center',
                 dark
-                  ? 'bg-[#0B0F19] border-white/[0.08]'
+                  ? 'bg-black border-white/[0.08]'
                   : 'bg-white border-gray-200'
               )}
             >
@@ -546,7 +546,7 @@ const TrashPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -555,7 +555,7 @@ const TrashPage = () => {
               className={cn(
                 'w-full max-w-sm border shadow-2xl p-6 text-center',
                 dark
-                  ? 'bg-[#0B0F19] border-white/[0.08]'
+                  ? 'bg-black border-white/[0.08]'
                   : 'bg-white border-gray-200'
               )}
             >

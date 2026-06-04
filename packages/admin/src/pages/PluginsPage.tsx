@@ -204,7 +204,7 @@ const PluginsPage = () => {
       <div
         className={cn(
           'h-screen w-full flex flex-col items-center justify-center gap-8 transition-colors duration-500',
-          theme === 'dark' ? 'bg-[#0B0F19]' : 'bg-[#fafafa]'
+          theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]'
         )}
       >
         <Loader2 size={32} className="animate-spin text-emerald-500" strokeWidth={1.5} />
@@ -220,7 +220,7 @@ const PluginsPage = () => {
     <div
       className={cn(
         'p-6 space-y-8 min-h-screen transition-colors duration-500 relative',
-        theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-gray-900'
+        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
       )}
     >
       {/* 🏛️ Compact Header */}

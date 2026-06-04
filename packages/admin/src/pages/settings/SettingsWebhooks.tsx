@@ -266,7 +266,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                 placeholder="https://example.com/api/webhooks/zenith"
                 className={cn(
                   'w-full border rounded-none py-3 px-4 text-[12px] font-mono italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                  theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                  theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                 )}
               />
             </div>
@@ -280,7 +280,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                 placeholder="whsec_..."
                 className={cn(
                   'w-full border rounded-none py-3 px-4 text-[12px] font-mono italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                  theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                  theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                 )}
               />
             </div>
@@ -289,7 +289,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
               <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Subscribed Events</label>
               <div className={cn(
                 'p-4 border rounded-none flex flex-wrap gap-2 max-h-40 overflow-y-auto',
-                theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-200'
+                theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200'
               )}>
                 {AVAILABLE_EVENTS.map((evt) => {
                   const checked = formEvents.includes(evt.value)
@@ -455,7 +455,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
               {expandedWebhook === wh.id && (
                 <div className={cn(
                   'border border-t-0 rounded-none p-4',
-                  theme === 'dark' ? 'bg-[#0B0F19]/30 border-white/[0.08]' : 'bg-gray-50 border-gray-200'
+                  theme === 'dark' ? 'bg-black/30 border-white/[0.08]' : 'bg-gray-50 border-gray-200'
                 )}>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">

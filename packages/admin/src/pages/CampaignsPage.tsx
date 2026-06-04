@@ -129,7 +129,7 @@ const CampaignsPage: React.FC = () => {
                     onChange={(e) => setActiveCampaign({ ...activeCampaign, subject: e.target.value })}
                     className={cn(
                       'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
-                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                     )}
                     placeholder="Exciting News from Zenith"
                   />
@@ -141,7 +141,7 @@ const CampaignsPage: React.FC = () => {
                     onChange={(e) => setActiveCampaign({ ...activeCampaign, audience: e.target.value })}
                     className={cn(
                       'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
-                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] focus:border-emerald-500 text-white' : 'bg-gray-50 border-gray-200 focus:border-emerald-500 text-black'
+                      theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-emerald-500 text-white' : 'bg-gray-50 border-gray-200 focus:border-emerald-500 text-black'
                     )}
                   >
                     <option value="all" className="text-black">All Subscribers</option>
@@ -157,7 +157,7 @@ const CampaignsPage: React.FC = () => {
                     rows={10}
                     className={cn(
                       'w-full border p-3 text-[11px] font-mono outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
-                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                     )}
                     placeholder="Hello {{name}}, we have some exciting news..."
                   />

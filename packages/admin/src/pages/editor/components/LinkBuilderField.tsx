@@ -89,7 +89,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
         className={cn(
           'w-full px-3 py-2 flex items-center justify-between border text-xs transition-all rounded-none font-medium',
           theme === 'dark'
-            ? 'bg-[#0B0F19]/40 border-white/[0.08] text-gray-300 hover:border-emerald-500/50 focus:border-emerald-500 focus:bg-[#0B0F19]/80'
+            ? 'bg-black/40 border-white/[0.08] text-gray-300 hover:border-emerald-500/50 focus:border-emerald-500 focus:bg-black/80'
             : 'bg-white border-gray-200 text-gray-800 hover:border-emerald-500 focus:border-emerald-500'
         )}
       >
@@ -111,7 +111,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
             className={cn(
               'fixed z-[1000] w-[340px] border rounded-none shadow-2xl overflow-hidden flex flex-col',
               theme === 'dark'
-                ? 'bg-[#0B0F19]/98 backdrop-blur-xl border-white/[0.08] text-white'
+                ? 'bg-black/98 backdrop-blur-xl border-white/[0.08] text-white'
                 : 'bg-white/98 backdrop-blur-xl border-gray-200 text-gray-900'
             )}
           >
@@ -155,7 +155,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
                     placeholder="https:// or /path"
                     className={cn(
                       'w-full px-3 py-2 text-xs font-medium border rounded-none transition-colors outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500',
-                      theme === 'dark' ? 'bg-[#0B0F19]/20 border-white/[0.08] text-white' : 'bg-white border-gray-200 text-black'
+                      theme === 'dark' ? 'bg-black/20 border-white/[0.08] text-white' : 'bg-white border-gray-200 text-black'
                     )}
                   />
                 </div>
@@ -203,7 +203,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
                         onChange={(e) => setSearch(e.target.value)}
                         className={cn(
                           'w-full pl-8 pr-3 py-1.5 text-xs border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500',
-                          theme === 'dark' ? 'bg-[#0B0F19]/20 border-white/[0.08] text-white' : 'bg-white border-gray-200 text-black'
+                          theme === 'dark' ? 'bg-black/20 border-white/[0.08] text-white' : 'bg-white border-gray-200 text-black'
                         )}
                       />
                     </div>
@@ -241,7 +241,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
             
             <div className={cn(
               'p-2 border-t flex justify-end shrink-0',
-              theme === 'dark' ? 'border-white/[0.08] bg-[#0B0F19]/20' : 'border-gray-100 bg-gray-50'
+              theme === 'dark' ? 'border-white/[0.08] bg-black/20' : 'border-gray-100 bg-gray-50'
             )}>
               <button
                 onClick={() => setOpen(false)}

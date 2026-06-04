@@ -34,7 +34,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     <AnimatePresence>
       {open && (
         <div
-          className="fixed inset-0 z-[900] flex items-center justify-center bg-[#0B0F19]/60 backdrop-blur-sm"
+          className="fixed inset-0 z-[900] flex items-center justify-center bg-black/60 backdrop-blur-sm"
           onClick={(e) => { if (e.target === e.currentTarget) onCancel() }}
         >
           <motion.div
@@ -49,7 +49,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             className={cn(
               'w-full max-w-sm border rounded-none shadow-2xl p-5',
               dark
-                ? 'bg-[#0B0F19] border-white/[0.08] text-white'
+                ? 'bg-black border-white/[0.08] text-white'
                 : 'bg-white border-gray-200 text-gray-900'
             )}
           >

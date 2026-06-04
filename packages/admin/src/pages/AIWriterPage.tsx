@@ -182,7 +182,7 @@ const AIWriterPage = () => {
     <div
       className={cn(
         'p-12 min-h-screen flex flex-col transition-colors duration-500 gap-10',
-        theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-gray-900'
+        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
       )}
     >
       {/* 🚀 Header Orchestration */}
@@ -279,7 +279,7 @@ const AIWriterPage = () => {
                 <div
                   className={cn(
                     'p-4 border rounded-none space-y-2 shadow-sm transition-all',
-                    theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-100'
+                    theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100'
                   )}
                 >
                   <span className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em] px-2 italic">
@@ -310,7 +310,7 @@ const AIWriterPage = () => {
               <div
                 className={cn(
                   'border rounded-none p-8 shadow-sm relative overflow-hidden transition-all',
-                  theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-100'
+                  theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100'
                 )}
               >
                 <div className="flex items-center gap-4 mb-6">
@@ -363,7 +363,7 @@ const AIWriterPage = () => {
                       ? 'opacity-50 cursor-not-allowed'
                       : theme === 'dark'
                         ? 'bg-white text-black hover:bg-gray-200'
-                        : 'bg-gray-900 text-white hover:bg-[#0B0F19]'
+                        : 'bg-gray-900 text-white hover:bg-black'
                   )}
                 >
                   {loading ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} />}
@@ -381,7 +381,7 @@ const AIWriterPage = () => {
             className={cn(
               'absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-12 rounded-none border z-50 flex items-center justify-center transition-all hover:scale-110',
               theme === 'dark'
-                ? 'bg-[#0B0F19] border-white/[0.08] text-gray-500 hover:text-white'
+                ? 'bg-black border-white/[0.08] text-gray-500 hover:text-white'
                 : 'bg-white border-gray-100 text-gray-400 hover:text-emerald-600 shadow-md'
             )}
           >
@@ -395,7 +395,7 @@ const AIWriterPage = () => {
           <div
             className={cn(
               'border rounded-none h-full min-h-[500px] shadow-sm relative overflow-hidden transition-all flex flex-col',
-              theme === 'dark' ? 'bg-[#0B0F19]/80 border-white/[0.08]' : 'bg-white border-gray-100'
+              theme === 'dark' ? 'bg-black/80 border-white/[0.08]' : 'bg-white border-gray-100'
             )}
           >
             <div

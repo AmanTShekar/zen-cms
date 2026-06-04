@@ -70,7 +70,7 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
         className={cn(
           'p-1.5 border rounded-none shadow-2xl backdrop-blur-xl relative',
           theme === 'dark'
-            ? 'bg-[#0B0F19]/95 border-white/8 text-white'
+            ? 'bg-black/95 border-white/8 text-white'
             : 'bg-white/95 border-gray-200 text-gray-900 shadow-gray-200/50'
         )}
       >
@@ -103,7 +103,7 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
                 className={cn(
                   'p-1.5 border rounded-none shadow-2xl backdrop-blur-xl max-h-72 overflow-y-auto custom-editor-scrollbar',
                   theme === 'dark'
-                    ? 'bg-[#0B0F19]/95 border-white/8 text-white'
+                    ? 'bg-black/95 border-white/8 text-white'
                     : 'bg-white/95 border-gray-200 text-gray-900'
                 )}
               >

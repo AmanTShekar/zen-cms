@@ -31,7 +31,7 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
       className={cn(
         'fixed z-[2500] w-64 max-h-[320px] overflow-y-auto border p-1 shadow-2xl transition-all duration-200',
         theme === 'dark'
-          ? 'bg-[#0b0f19]/85 backdrop-blur-[12px] border-white/8 shadow-[0_10px_40px_rgba(0,0,0,0.5)] text-white'
+          ? 'bg-black/85 backdrop-blur-[12px] border-white/8 shadow-[0_10px_40px_rgba(0,0,0,0.5)] text-white'
           : 'bg-white/95 backdrop-blur-[12px] border-gray-200 shadow-[0_10px_30px_rgba(0,0,0,0.1)] text-black'
       )}
       style={{

@@ -52,12 +52,12 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div
         className={cn(
           'w-full max-w-md border rounded-none shadow-2xl',
           theme === 'dark'
-            ? 'bg-[#0B0F19] border-white/[0.08]'
+            ? 'bg-black border-white/[0.08]'
             : 'bg-white border-gray-100 shadow-black/10'
         )}
       >

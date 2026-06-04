@@ -60,7 +60,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
             onChange={(e) => setActiveSite({ ...activeSite, currency: e.target.value })}
             className={cn(
               'border rounded-none py-1.5 px-3 text-[11px] font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-              theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white' : 'bg-white border-gray-200 text-gray-800'
+              theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200 text-gray-800'
             )}
           >
             <option value="USD">USD ($)</option>
@@ -108,7 +108,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                   className={cn(
                     'w-full border rounded-none py-3 px-4 text-[12px] font-black italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                     theme === 'dark'
-                      ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500'
+                      ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500'
                       : 'bg-white border-gray-200 focus:border-emerald-500'
                   )}
                 />
@@ -204,7 +204,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                           }}
                           className={cn(
                             'w-full border rounded-none py-1.5 px-3 text-[10px] font-black italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                            theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white' : 'bg-white border-gray-200'
+                            theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200'
                           )}
                         />
                       </div>
@@ -221,7 +221,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                             }}
                             className={cn(
                               'w-full border rounded-none py-1.5 px-3 text-[10px] font-black italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                              theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white' : 'bg-white border-gray-200'
+                              theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200'
                             )}
                           />
                           <select
@@ -233,7 +233,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                             }}
                             className={cn(
                               'border rounded-none py-1.5 px-2 text-[9px] font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                              theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white' : 'bg-white border-gray-200'
+                              theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200'
                             )}
                           >
                             <option value="monthly">/mo</option>
@@ -267,7 +267,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                                     plans[planIndex] = { ...plan, paywalledCollections: next }
                                     setActiveSite({ ...activeSite, pricingPlans: plans })
                                   }}
-                                  className="rounded-none border-white/[0.08] text-emerald-600 focus:ring-0 focus:ring-offset-0 bg-[#0B0F19] cursor-pointer"
+                                  className="rounded-none border-white/[0.08] text-emerald-600 focus:ring-0 focus:ring-offset-0 bg-black cursor-pointer"
                                 />
                                 <span className={cn(
                                   'text-[9px] font-black uppercase italic tracking-widest transition-colors',

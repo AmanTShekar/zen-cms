@@ -109,7 +109,7 @@ export const GlassDropdown = <T,>({
         "w-full flex items-center justify-between text-left transition-all duration-300 p-2.5",
         "relative overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.1)]",
         theme === 'dark'
-          ? "bg-[#0B0F19]/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-emerald-500/50 hover:bg-[#0B0F19]/85"
+          ? "bg-black/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-emerald-500/50 hover:bg-black/85"
           : "bg-white/65 backdrop-blur-[12px] text-gray-900 border border-black/[0.08] hover:border-emerald-500/30 hover:bg-white/85",
         isSidebarOpen ? "rounded-none" : "rounded-none p-2 justify-center",
         "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
@@ -213,7 +213,7 @@ export const GlassDropdown = <T,>({
                     onClick={() => handleSelect(option)}
                     className={cn(
                       "w-full px-4 py-2.5 flex items-center justify-between text-left transition-colors duration-200",
-                      theme === 'dark' ? "hover:bg-white/[0.04]" : "hover:bg-[#0B0F19]/[0.02]",
+                      theme === 'dark' ? "hover:bg-white/[0.04]" : "hover:bg-black/[0.02]",
                       isSelected && (theme === 'dark' ? "bg-emerald-500/10 text-emerald-400" : "bg-emerald-50 text-emerald-600")
                     )}
                   >

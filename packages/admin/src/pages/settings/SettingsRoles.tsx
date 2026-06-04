@@ -281,7 +281,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
 
                 <div className="space-y-3">
                   {(editingRole.permissions || []).map((perm, permIdx) => (
-                    <div key={permIdx} className="border border-white/[0.08] bg-[#0B0F19]/40">
+                    <div key={permIdx} className="border border-white/[0.08] bg-black/40">
                       {/* Rule header */}
                       <div className="p-4 flex flex-col gap-4">
                         <div className="flex items-center gap-3 flex-wrap">
@@ -294,7 +294,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
                               updated[permIdx] = { ...perm, resource: e.target.value }
                               setEditingRole({ ...editingRole, permissions: updated })
                             }}
-                            className="bg-[#0B0F19] border border-white/[0.08] text-white text-[11px] font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none focus:border-emerald-500 disabled:opacity-50"
+                            className="bg-black border border-white/[0.08] text-white text-[11px] font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none focus:border-emerald-500 disabled:opacity-50"
                           >
                             {availableCollections.map(c => (<option key={c.slug} value={c.slug}>{c.label}</option>))}
                           </select>
@@ -316,7 +316,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
                                       updated[permIdx] = { ...perm, actions: next }
                                       setEditingRole({ ...editingRole, permissions: updated })
                                     }}
-                                    className="rounded-none border-white/[0.08] text-emerald-600 focus:ring-0 bg-[#0B0F19] cursor-pointer"
+                                    className="rounded-none border-white/[0.08] text-emerald-600 focus:ring-0 bg-black cursor-pointer"
                                   />
                                   <span className={cn('text-[8px] font-black uppercase italic tracking-wider', checked ? 'text-emerald-400' : 'text-gray-500')}>{act}</span>
                                 </label>
@@ -428,7 +428,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
                 </div>
                 <div className="space-y-2">
                   {users.filter(u => u.role === editingRole.roleName || u.role === editingRole.roleType).map(u => (
-                    <div key={u._id} className="flex items-center justify-between p-3 border border-white/[0.08] bg-[#0B0F19]/40">
+                    <div key={u._id} className="flex items-center justify-between p-3 border border-white/[0.08] bg-black/40">
                       <div className="flex flex-col">
                         <span className="text-[11px] font-black text-white">{u.email}</span>
                         <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">{u._id}</span>

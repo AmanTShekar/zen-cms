@@ -269,7 +269,7 @@ export const VisualGraphPage = () => {
       <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-6 pointer-events-none">
         <div className={cn(
           'flex items-center gap-6 px-6 py-3 border backdrop-blur-xl rounded-none',
-          dark ? 'bg-[#0B0F19]/80 border-white/[0.08]' : 'bg-white/90 border-gray-200'
+          dark ? 'bg-black/80 border-white/[0.08]' : 'bg-white/90 border-gray-200'
         )}>
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
@@ -309,7 +309,7 @@ export const VisualGraphPage = () => {
             onChange={e => setSearch(e.target.value)}
             className={cn(
               'pl-8 pr-8 py-2 text-[11px] border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black w-44 transition-all',
-              dark ? 'bg-[#0B0F19]/80 border-white/[0.08] text-white placeholder:text-gray-600 focus:border-emerald-500/50 backdrop-blur-xl' : 'bg-white border-gray-200 text-gray-900 focus:border-emerald-500'
+              dark ? 'bg-black/80 border-white/[0.08] text-white placeholder:text-gray-600 focus:border-emerald-500/50 backdrop-blur-xl' : 'bg-white border-gray-200 text-gray-900 focus:border-emerald-500'
             )}
           />
           {search && (
@@ -326,13 +326,13 @@ export const VisualGraphPage = () => {
         ].map(({ icon: Icon, action, title }) => (
           <button key={title} onClick={action} title={title} className={cn(
             'p-2.5 border rounded-none backdrop-blur-xl transition-all hover:scale-105 active:scale-95',
-            dark ? 'bg-[#0B0F19]/80 border-white/[0.08] text-gray-400 hover:text-white hover:border-white/[0.08]' : 'bg-white border-gray-200 text-gray-600 hover:text-black shadow-sm'
+            dark ? 'bg-black/80 border-white/[0.08] text-gray-400 hover:text-white hover:border-white/[0.08]' : 'bg-white border-gray-200 text-gray-600 hover:text-black shadow-sm'
           )}>
             <Icon size={16} />
           </button>
         ))}
 
-        <div className={cn('text-center px-2 py-1.5 border rounded-none backdrop-blur-xl text-[10px] font-black tabular-nums', dark ? 'bg-[#0B0F19]/80 border-white/[0.08] text-gray-400' : 'bg-white border-gray-200 text-gray-500')}>
+        <div className={cn('text-center px-2 py-1.5 border rounded-none backdrop-blur-xl text-[10px] font-black tabular-nums', dark ? 'bg-black/80 border-white/[0.08] text-gray-400' : 'bg-white border-gray-200 text-gray-500')}>
           {Math.round(zoom * 100)}%
         </div>
       </div>
@@ -448,7 +448,7 @@ export const VisualGraphPage = () => {
                     className={cn(
                       'rounded-none border backdrop-blur-xl shadow-2xl overflow-hidden w-52',
                       'transition-all duration-200',
-                      dark ? 'bg-[#0B0F19]/90' : 'bg-white/95',
+                      dark ? 'bg-black/90' : 'bg-white/95',
                       isSelected
                         ? 'border-opacity-100 shadow-[0_0_30px_rgba(0,0,0,0.4)]'
                         : dark ? 'border-white/[0.08]' : 'border-gray-200',
@@ -527,7 +527,7 @@ export const VisualGraphPage = () => {
             transition={{ type: 'spring', damping: 28, stiffness: 300 }}
             className={cn(
               'absolute right-0 top-0 bottom-0 w-80 border-l z-30 flex flex-col',
-              dark ? 'bg-[#0B0F19]/95 border-white/[0.06] backdrop-blur-2xl' : 'bg-white/95 border-gray-200 backdrop-blur-xl'
+              dark ? 'bg-black/95 border-white/[0.06] backdrop-blur-2xl' : 'bg-white/95 border-gray-200 backdrop-blur-xl'
             )}
           >
             <div className="p-5 border-b flex items-start justify-between gap-3" style={{ borderColor: `${selectedNode.color}20` }}>
@@ -643,7 +643,7 @@ export const VisualGraphPage = () => {
       {!loading && nodes.length > 0 && (
         <div className={cn(
           'absolute bottom-4 left-4 z-20 w-36 h-24 border rounded-none overflow-hidden backdrop-blur-xl',
-          dark ? 'bg-[#0B0F19]/80 border-white/[0.08]' : 'bg-white/80 border-gray-200'
+          dark ? 'bg-black/80 border-white/[0.08]' : 'bg-white/80 border-gray-200'
         )}>
           <svg viewBox="0 0 1400 1000" className="w-full h-full">
             {nodes.map(node => {

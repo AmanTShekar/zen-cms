@@ -24,7 +24,7 @@ export default function CustomHtmlWidget({
           onChange={(e) => setDraft(e.target.value)}
           className={cn(
             'flex-1 w-full border rounded-none p-3 font-mono text-[11px] resize-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500',
-            theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white' : 'bg-gray-50 border-gray-200'
+            theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-gray-50 border-gray-200'
           )}
           placeholder="<h2>Hello World</h2>"
         />

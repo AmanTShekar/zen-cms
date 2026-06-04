@@ -103,7 +103,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18 }}
             onClick={closeComponentPicker}
-            className="absolute inset-0 bg-[#0B0F19]/75 backdrop-blur-md"
+            className="absolute inset-0 bg-black/75 backdrop-blur-md"
           />
 
           {/* Modal */}
@@ -152,7 +152,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
                     'w-9 h-9 flex items-center justify-center border rounded-none transition-all flex-shrink-0 mt-0.5',
                     isDark
                       ? 'bg-white/5 border-white/[0.08] text-white hover:bg-white hover:text-black'
-                      : 'bg-gray-100 border-gray-200 text-black hover:bg-[#0B0F19] hover:text-white'
+                      : 'bg-gray-100 border-gray-200 text-black hover:bg-black hover:text-white'
                   )}
                 >
                   <X size={15} />
@@ -261,7 +261,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
                                 <Icon size={16} />
                               </div>
                               {block.category && (
-                                <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-[#0B0F19]/50 backdrop-blur text-white/80 rounded-none">
+                                <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-black/50 backdrop-blur text-white/80 rounded-none">
                                   {block.category}
                                 </span>
                               )}

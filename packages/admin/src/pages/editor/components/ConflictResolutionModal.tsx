@@ -59,7 +59,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[1000] flex items-center justify-center bg-[#0B0F19]/70 backdrop-blur-sm"
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/70 backdrop-blur-sm"
           onClick={(e) => {
             if (e.target === e.currentTarget) onClose()
           }}
@@ -72,7 +72,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
             className={cn(
               'w-full max-w-md border rounded-none shadow-2xl',
               theme === 'dark'
-                ? 'bg-[#0B0F19] border-rose-500/20 text-white'
+                ? 'bg-black border-rose-500/20 text-white'
                 : 'bg-white border-rose-200 text-gray-900'
             )}
           >

@@ -79,7 +79,7 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
           <div className="w-10 h-10 bg-emerald-500/20 text-emerald-500 flex items-center justify-center rounded-none mb-4 font-black">2</div>
           <h4 className="text-[14px] font-black uppercase italic mb-2">Site Identification</h4>
           <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
-            Include the <strong>X-Zenith-Site-Id</strong> header in all your requests. Your current site ID is <code className="bg-[#0B0F19]/20 px-1 py-0.5 rounded text-emerald-500">{activeSiteId}</code>.
+            Include the <strong>X-Zenith-Site-Id</strong> header in all your requests. Your current site ID is <code className="bg-black/20 px-1 py-0.5 rounded text-emerald-500">{activeSiteId}</code>.
           </p>
         </div>
 
@@ -102,7 +102,7 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
         "border rounded-none overflow-hidden mt-8",
         theme === 'dark' ? "bg-[#0A0A0A] border-white/[0.08]" : "bg-gray-900 border-gray-800"
       )}>
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08] bg-[#0B0F19]/40">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08] bg-black/40">
           <div className="flex items-center gap-2">
             {(['fetch', 'curl', 'axios'] as const).map(lang => (
               <button

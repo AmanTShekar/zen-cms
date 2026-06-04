@@ -33,11 +33,11 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div
         className={cn(
           'w-full max-w-sm border rounded-none shadow-2xl',
-          theme === 'dark' ? 'bg-[#0B0F19] border-red-500/10' : 'bg-white border-red-100'
+          theme === 'dark' ? 'bg-black border-red-500/10' : 'bg-white border-red-100'
         )}
       >
         <div className="flex items-center justify-between px-8 py-6 border-b border-white/[0.08]">

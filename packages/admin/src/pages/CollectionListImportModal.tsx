@@ -47,14 +47,14 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
   }
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-[#0B0F19]/40 backdrop-blur-md">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md">
       <motion.div
         initial={{ opacity: 0, scale: 0.98, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.98, y: 15 }}
         className={cn(
           'border rounded-none w-full max-w-2xl shadow-2xl flex flex-col overflow-hidden',
-          theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white' : 'bg-white border-gray-100 text-gray-900'
+          theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-100 text-gray-900'
         )}
       >
         {/* Header */}

@@ -107,14 +107,14 @@ export const RightPanel: React.FC<RightPanelProps> = ({
             'border-l flex flex-col z-50 overflow-hidden shrink-0',
             'md:relative fixed inset-y-0 right-0 max-md:!w-[280px] max-md:z-[100] max-md:shadow-2xl',
             dark
-              ? 'bg-[#0B0F19] border-white/[0.08]'
+              ? 'bg-black border-white/[0.08]'
               : 'bg-white border-gray-200 shadow-xl'
           )}
         >
           {/* Mobile backdrop */}
           <div
             onClick={() => setRightOpen(false)}
-            className="md:hidden fixed inset-0 bg-[#0B0F19]/50 backdrop-blur-sm z-[99]"
+            className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[99]"
           />
           {/* Resize handle */}
           <div
@@ -236,7 +236,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                   ) : (
                     <div className={cn(
                       'flex flex-col items-center justify-center h-full gap-3 text-center p-8',
-                      dark ? 'bg-[#0B0F19]/40' : 'bg-gray-50'
+                      dark ? 'bg-black/40' : 'bg-gray-50'
                     )}>
                       <Eye size={28} className={dark ? 'text-gray-600' : 'text-gray-300'} />
                       <div>

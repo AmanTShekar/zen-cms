@@ -104,7 +104,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setDynamicZoneModalOpen(false)}
-            className="absolute inset-0 bg-[#0B0F19]/70 backdrop-blur-md"
+            className="absolute inset-0 bg-black/70 backdrop-blur-md"
           />
           <motion.div
             ref={dialogRef}
@@ -146,7 +146,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
                   'p-1.5 rounded-none border transition-all',
                   theme === 'dark'
                     ? 'bg-white/5 border-white/[0.08] hover:bg-white hover:text-black'
-                    : 'bg-gray-100 border-gray-200 hover:bg-[#0B0F19] hover:text-white'
+                    : 'bg-gray-100 border-gray-200 hover:bg-black hover:text-white'
                 )}
               >
                 <X size={14} />

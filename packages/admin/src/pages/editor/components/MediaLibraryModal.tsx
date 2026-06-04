@@ -105,7 +105,7 @@ export const MediaLibraryModal: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setMediaLibraryOpen(false)}
-            className="absolute inset-0 bg-[#0B0F19]/80 backdrop-blur-md"
+            className="absolute inset-0 bg-black/80 backdrop-blur-md"
           />
           <motion.div
             ref={dialogRef}
@@ -385,7 +385,7 @@ export const MediaLibraryModal: React.FC = () => {
                             <div className={cn(
                               'absolute top-1.5 left-1.5 px-1.5 py-0.5 text-[6px] font-black uppercase italic border rounded-none',
                               theme === 'dark'
-                                ? 'bg-[#0B0F19]/60 border-white/[0.08] text-gray-400'
+                                ? 'bg-black/60 border-white/[0.08] text-gray-400'
                                 : 'bg-white/80 border-gray-200 text-gray-500'
                             )}>
                               {(file.mimetype || 'file').split('/')[1]?.toUpperCase().slice(0, 4) || 'FILE'}

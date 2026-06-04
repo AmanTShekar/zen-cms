@@ -97,7 +97,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
       {versionId && (
         <>
           {/* Backdrop */}
-          <div className="fixed inset-0 z-[110] bg-[#0B0F19]/50 backdrop-blur-md" onClick={onClose} />
+          <div className="fixed inset-0 z-[110] bg-black/50 backdrop-blur-md" onClick={onClose} />
 
           {/* Modal Container */}
           <motion.div
@@ -107,7 +107,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
             transition={{ type: 'spring', damping: 25, stiffness: 250 }}
             className={cn(
               'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[120] w-[85vw] max-w-[1100px] h-[80vh] flex flex-col border shadow-2xl overflow-hidden font-sans',
-              isDark ? 'bg-[#0B0F19] border-white/8 text-white' : 'bg-white border-gray-250 text-gray-900'
+              isDark ? 'bg-black border-white/8 text-white' : 'bg-white border-gray-250 text-gray-900'
             )}
           >
             {/* Header */}
@@ -163,7 +163,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
                       key={diff.field}
                       className={cn(
                         'border rounded-none overflow-hidden',
-                        isDark ? 'border-white/[0.08] bg-[#0B0F19]/10' : 'border-gray-200 bg-gray-50/50'
+                        isDark ? 'border-white/[0.08] bg-black/10' : 'border-gray-200 bg-gray-50/50'
                       )}
                     >
                       {/* Diff Item Header */}

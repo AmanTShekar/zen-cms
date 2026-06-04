@@ -97,7 +97,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setLeftOpen(false)}
-            className="md:hidden fixed inset-0 bg-[#0B0F19]/50 backdrop-blur-sm z-[99]"
+            className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[99]"
           />
           <motion.aside
             initial={{ x: '-100%' }}
@@ -108,7 +108,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
             className={cn(
               'border-r flex flex-col z-50 overflow-hidden shrink-0 h-full',
               'md:relative fixed inset-y-0 left-0 max-md:!w-[280px] max-md:z-[100] max-md:shadow-2xl',
-              dark ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-200'
+              dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200'
             )}
           >
             {/* Resize handle */}
@@ -217,7 +217,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                           activeSection === section.id
                             ? dark
                               ? 'bg-white border-white text-black'
-                              : 'bg-[#0B0F19] border-black text-white'
+                              : 'bg-black border-black text-white'
                             : dark
                               ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:bg-white/10'
                               : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
@@ -267,7 +267,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                               activeSection === section.id
                                 ? dark
                                   ? 'bg-white border-white text-black'
-                                  : 'bg-[#0B0F19] border-black text-white'
+                                  : 'bg-black border-black text-white'
                                 : dark
                                   ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:bg-white/10'
                                   : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'

@@ -123,7 +123,7 @@ const LoginPage: React.FC = () => {
     <div
       className={cn(
         'min-h-screen flex items-center justify-center p-4 md:p-6 relative overflow-auto font-sans antialiased selection:bg-emerald-600 selection:text-white transition-colors duration-500',
-        theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-[#111827]'
+        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-[#111827]'
       )}
     >
       {/* Background elements */}
@@ -442,7 +442,7 @@ const LoginPage: React.FC = () => {
                 'w-full rounded-none py-4 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-xl transition-all group disabled:opacity-50 disabled:pointer-events-none',
                 theme === 'dark'
                   ? 'bg-white text-black hover:bg-gray-100 shadow-white/5'
-                  : 'bg-gray-900 text-white hover:bg-[#0B0F19] shadow-gray-900/20'
+                  : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
               )}
             >
               {isSubmitting ? (
@@ -465,7 +465,7 @@ const LoginPage: React.FC = () => {
               <div className="text-center relative">
                 <span className={cn(
                   'text-[8px] font-black uppercase tracking-widest italic px-2 relative z-10',
-                  theme === 'dark' ? 'bg-[#0B0F19] text-gray-400' : 'bg-white text-gray-400'
+                  theme === 'dark' ? 'bg-black text-gray-400' : 'bg-white text-gray-400'
                 )}>
                   Or Sign In With Single Sign-On (SSO)
                 </span>

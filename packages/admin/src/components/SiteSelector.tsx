@@ -153,7 +153,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
           "w-full flex items-center justify-between text-left transition-all duration-300 p-2.5",
           "relative overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.1)]",
           theme === 'dark' 
-            ? "bg-[#0B0F19]/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-[#10B981]/50 hover:bg-[#0B0F19]/85" 
+            ? "bg-black/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-[#10B981]/50 hover:bg-black/85" 
             : "bg-white/65 backdrop-blur-[12px] text-gray-900 border border-black/[0.08] hover:border-[#10B981]/30 hover:bg-white/85",
           isSidebarOpen ? "rounded-none" : "rounded-none p-2 justify-center",
           "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-500"
@@ -206,7 +206,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
           "w-full flex items-center justify-between text-left transition-all duration-300 p-2.5",
           "relative overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.1)]",
           theme === 'dark' 
-            ? "bg-[#0B0F19]/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-[#10B981]/50 hover:bg-[#0B0F19]/85" 
+            ? "bg-black/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-[#10B981]/50 hover:bg-black/85" 
             : "bg-white/65 backdrop-blur-[12px] text-gray-900 border border-black/[0.08] hover:border-[#10B981]/30 hover:bg-white/85",
           isSidebarOpen ? "rounded-none" : "rounded-none p-2 justify-center",
           "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-500"
@@ -253,7 +253,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
         type="button"
         className={cn(
           "w-full px-4 py-2.5 flex items-center justify-between text-left transition-colors duration-200",
-          theme === 'dark' ? "hover:bg-white/[0.04]" : "hover:bg-[#0B0F19]/[0.02]",
+          theme === 'dark' ? "hover:bg-white/[0.04]" : "hover:bg-black/[0.02]",
           isSelected && (theme === 'dark' ? "bg-[#10B981]/10 text-[#10B981]" : "bg-[#10B981]/5 text-[#10B981]")
         )}
       >
@@ -277,7 +277,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
         type="button"
         className={cn(
           "w-full px-4 py-2.5 flex items-center justify-between text-left transition-colors duration-200",
-          theme === 'dark' ? "hover:bg-white/[0.04]" : "hover:bg-[#0B0F19]/[0.02]",
+          theme === 'dark' ? "hover:bg-white/[0.04]" : "hover:bg-black/[0.02]",
           isSelected && (theme === 'dark' ? "bg-[#10B981]/10 text-[#10B981]" : "bg-[#10B981]/5 text-[#10B981]")
         )}
       >
@@ -302,7 +302,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
         "w-full px-4 py-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest font-mono transition-colors",
         theme === 'dark' 
           ? "text-gray-400 hover:text-white hover:bg-white/[0.03]" 
-          : "text-gray-600 hover:text-black hover:bg-[#0B0F19]/[0.02]"
+          : "text-gray-600 hover:text-black hover:bg-black/[0.02]"
       )}
     >
       <Sliders size={12} className="text-[#10B981]" />
@@ -314,7 +314,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
     <div 
       className={cn(
         "px-4 py-3 flex flex-col gap-3 transition-all duration-300",
-        theme === 'dark' ? 'bg-[#0B0F19]/10' : 'bg-gray-50/20'
+        theme === 'dark' ? 'bg-black/10' : 'bg-gray-50/20'
       )}
     >
       {/* Workspace Select */}

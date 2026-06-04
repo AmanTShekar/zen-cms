@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
 /**
  * Zenith Premium Design System - Refined Industrial Edition
  * ─────────────────────────────────────────────────────────────
@@ -12,8 +14,8 @@
 @layer base {
   :root {
     /* Premium Obsidian Glassmorphism Design System */
-    --bg-app: #0B0F19;
-    --bg-app-rgb: 11 15 25;
+    --bg-app: #000000;
+    --bg-app-rgb: 0 0 0;
     --bg-surface: #111827;
     --bg-surface-rgb: 17 24 39;
     --bg-subtle: #1f2937;
@@ -91,20 +93,23 @@
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    background: #0B0F19;
+    background: #000000;
   }
 
   #root {
     width: 100%;
     height: 100%;
-    background-color: var(--background-color, #0B0F19);
+    background-color: var(--background-color, #000000);
   }
 
   body {
-    @apply bg-app text-primary font-sans antialiased overflow-x-hidden;
+    @apply bg-app text-primary font-sans overflow-x-hidden;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01', 'ss03';
     letter-spacing: -0.01em;
-    font-size: 17.2px; /* Precision Operational Font */
+    font-size: 15px; /* Precision Operational Font */
   }
 
   /* 💎 Premium Obsidian Glassmorphism Card Style */

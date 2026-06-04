@@ -190,7 +190,7 @@ export default function SetupWizard() {
   }
 
   const isDark = theme === 'dark'
-  const bg = isDark ? 'bg-[#0B0F19] text-white' : 'bg-gray-50 text-gray-900'
+  const bg = isDark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'
   const card = isDark ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm'
   const input = isDark
     ? 'bg-white/5 border-white/[0.08] text-white placeholder-gray-600 focus:border-emerald-500'
@@ -646,7 +646,7 @@ export default function SetupWizard() {
                 <div
                   className={cn(
                     'flex items-center gap-3 p-3 border rounded-none font-mono text-[11px] break-all',
-                    isDark ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-gray-100 border-gray-200'
+                    isDark ? 'bg-black border-white/[0.08]' : 'bg-gray-100 border-gray-200'
                   )}
                 >
                   <span className="flex-1">{state.generatedKey}</span>

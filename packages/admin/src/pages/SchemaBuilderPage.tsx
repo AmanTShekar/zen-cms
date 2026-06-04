@@ -109,7 +109,7 @@ function FieldTypePicker({ value, onChange, theme }: { value: FieldType; onChang
         onClick={() => setOpen(!open)}
         className={cn(
           'flex items-center gap-2 px-3 py-2 border text-[10px] font-black uppercase tracking-widest transition-all w-full',
-          theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] hover:border-emerald-500/50' : 'bg-gray-50 border-gray-200 hover:border-emerald-500'
+          theme === 'dark' ? 'bg-black border-white/[0.08] hover:border-emerald-500/50' : 'bg-gray-50 border-gray-200 hover:border-emerald-500'
         )}
       >
         <Icon size={12} style={{ color: current?.color }} />
@@ -124,7 +124,7 @@ function FieldTypePicker({ value, onChange, theme }: { value: FieldType; onChang
             exit={{ opacity: 0, y: 4 }}
             className={cn(
               'absolute z-50 top-full left-0 mt-1 w-64 border shadow-2xl max-h-72 overflow-y-auto',
-              theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-200'
+              theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200'
             )}
           >
             {FIELD_TYPES.map(ft => {
@@ -165,7 +165,7 @@ function FieldAdvancedPanel({
   const [open, setOpen] = useState(false)
   const inputClass = cn(
     'w-full border p-2 text-[11px] font-mono outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
-    theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+    theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
   )
   const checkClass = 'accent-emerald-500 w-3.5 h-3.5'
   const labelClass = 'text-[9px] font-black uppercase tracking-widest text-gray-500'
@@ -188,7 +188,7 @@ function FieldAdvancedPanel({
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className={cn('mt-3 p-4 border space-y-4', theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-gray-50/50 border-gray-100')}>
+            <div className={cn('mt-3 p-4 border space-y-4', theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-gray-50/50 border-gray-100')}>
               {/* Flags */}
               <div className="flex flex-wrap gap-x-6 gap-y-2">
                 {[
@@ -565,14 +565,14 @@ ${fieldsCode}
 
   const inputClass = cn(
     'border outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-bold transition-colors py-2.5 px-3',
-    dark ? 'bg-[#0B0F19] border-white/[0.08] focus:border-emerald-500 text-white' : 'bg-white border-gray-200 focus:border-emerald-500 text-gray-900'
+    dark ? 'bg-black border-white/[0.08] focus:border-emerald-500 text-white' : 'bg-white border-gray-200 focus:border-emerald-500 text-gray-900'
   )
 
   return (
-    <div className={cn('flex h-[calc(100vh-4rem)] overflow-hidden', dark ? 'bg-[#0B0F19] text-white' : 'bg-gray-50 text-gray-900')}>
+    <div className={cn('flex h-[calc(100vh-4rem)] overflow-hidden', dark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900')}>
 
       {/* ── Schemas Sidebar ─────────────────────────────────────────────── */}
-      <div className={cn('w-64 flex-shrink-0 border-r flex flex-col', dark ? 'border-white/[0.08] bg-[#0B0F19]' : 'border-gray-200 bg-white')}>
+      <div className={cn('w-64 flex-shrink-0 border-r flex flex-col', dark ? 'border-white/[0.08] bg-black' : 'border-gray-200 bg-white')}>
         <div className="p-4 border-b border-inherit flex items-center justify-between">
           <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
             <Database size={14} className="text-emerald-500" /> Schemas
@@ -624,7 +624,7 @@ ${fieldsCode}
       {/* ── Main Editor ─────────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header toolbar */}
-        <div className={cn('px-6 py-4 border-b flex items-center justify-between gap-4 shrink-0', dark ? 'border-white/[0.08] bg-[#0B0F19]' : 'border-gray-200 bg-white')}>
+        <div className={cn('px-6 py-4 border-b flex items-center justify-between gap-4 shrink-0', dark ? 'border-white/[0.08] bg-black' : 'border-gray-200 bg-white')}>
           <div className="flex items-center gap-4">
             <div className={cn('w-10 h-10 rounded-none flex items-center justify-center', dark ? 'bg-white text-black' : 'bg-gray-900 text-white')}>
               <Layers size={20} />
@@ -680,7 +680,7 @@ ${fieldsCode}
           )}
 
           {/* Collection Meta */}
-          <div className={cn('rounded-none border p-6 space-y-4', dark ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
+          <div className={cn('rounded-none border p-6 space-y-4', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
             <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2">
               <Settings size={12} /> Collection Settings
             </h3>
@@ -745,7 +745,7 @@ ${fieldsCode}
           </div>
 
           {/* Fields */}
-          <div className={cn('rounded-none border', dark ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
+          <div className={cn('rounded-none border', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
             <div className="px-6 py-4 border-b border-inherit flex items-center justify-between">
               <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2">
                 <Layers size={12} /> Fields ({fields.length})
@@ -769,7 +769,7 @@ ${fieldsCode}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.97 }}
-                    className={cn('p-4 border rounded-none relative group', dark ? 'bg-[#0B0F19]/40 border-white/[0.08]' : 'bg-gray-50 border-gray-100', isCodeFirst && 'opacity-70')}
+                    className={cn('p-4 border rounded-none relative group', dark ? 'bg-black/40 border-white/[0.08]' : 'bg-gray-50 border-gray-100', isCodeFirst && 'opacity-70')}
                   >
                     {/* Delete button */}
                     {!isCodeFirst && (
@@ -870,8 +870,8 @@ ${fieldsCode}
       {/* ── Code Modal ─────────────────────────────────────────────────── */}
       <AnimatePresence>
         {showCode && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/70 backdrop-blur-sm p-4">
-            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-3xl border rounded-none shadow-2xl p-6 relative flex flex-col h-[80vh] bg-[#0B0F19] border-white/[0.08]">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-3xl border rounded-none shadow-2xl p-6 relative flex flex-col h-[80vh] bg-black border-white/[0.08]">
               <button onClick={() => setShowCode(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X size={20} /></button>
               <h2 className="text-xl font-black italic tracking-tight uppercase mb-4 flex items-center gap-3">
                 <Code className="text-emerald-500" /> Generated TypeScript
@@ -893,8 +893,8 @@ ${fieldsCode}
       {/* ── AI Generate Modal ───────────────────────────────────────────── */}
       <AnimatePresence>
         {showAI && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/70 backdrop-blur-sm p-4">
-            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none shadow-2xl p-6 relative bg-[#0B0F19] border-white/[0.08]">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none shadow-2xl p-6 relative bg-black border-white/[0.08]">
               <button onClick={() => setShowAI(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X size={20} /></button>
               <h2 className="text-xl font-black italic tracking-tight uppercase mb-2 flex items-center gap-3">
                 <Sparkles className="text-purple-400" /> AI Schema Architect
@@ -907,7 +907,7 @@ ${fieldsCode}
                 value={aiPrompt}
                 onChange={e => setAiPrompt(e.target.value)}
                 placeholder='e.g. "A blog post collection with title, slug, content, featured image, author relation to users, published date, and category select field with options."'
-                className="w-full bg-[#0B0F19] border border-white/[0.08] focus:border-purple-500/50 p-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none placeholder:text-gray-600 text-white resize-none mb-4"
+                className="w-full bg-black border border-white/[0.08] focus:border-purple-500/50 p-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none placeholder:text-gray-600 text-white resize-none mb-4"
               />
               <button
                 disabled={isAIGenerating || !aiPrompt}
@@ -924,8 +924,8 @@ ${fieldsCode}
       {/* ── Introspect Modal ─────────────────────────────────────────────── */}
       <AnimatePresence>
         {showIntrospect && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/70 backdrop-blur-sm p-4">
-            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none shadow-2xl p-6 relative bg-[#0B0F19] border-white/[0.08]">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none shadow-2xl p-6 relative bg-black border-white/[0.08]">
               <button onClick={() => setShowIntrospect(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X size={20} /></button>
               <h2 className="text-xl font-black italic tracking-tight uppercase mb-2 flex items-center gap-3">
                 <Database className="text-emerald-500" /> DB Introspection
@@ -938,7 +938,7 @@ ${fieldsCode}
                 placeholder="postgresql://user:password@localhost:5432/mydb"
                 value={dbUri}
                 onChange={e => setDbUri(e.target.value)}
-                className="w-full bg-[#0B0F19] border border-white/[0.08] focus:border-emerald-500/50 p-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none placeholder:text-gray-600 text-white mb-4 font-mono"
+                className="w-full bg-black border border-white/[0.08] focus:border-emerald-500/50 p-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none placeholder:text-gray-600 text-white mb-4 font-mono"
               />
               <button
                 disabled={isIntrospecting}

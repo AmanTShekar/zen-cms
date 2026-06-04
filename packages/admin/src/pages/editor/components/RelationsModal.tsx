@@ -117,7 +117,7 @@ export const RelationsModal: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setRelationsModalOpen(false)}
-            className="absolute inset-0 bg-[#0B0F19]/70 backdrop-blur-md"
+            className="absolute inset-0 bg-black/70 backdrop-blur-md"
           />
           <motion.div
             ref={dialogRef}
@@ -164,7 +164,7 @@ export const RelationsModal: React.FC = () => {
                     'p-2 rounded-none border transition-all',
                     theme === 'dark'
                       ? 'bg-white/5 border-white/[0.08] text-white hover:bg-white hover:text-black'
-                      : 'bg-gray-100 border-gray-200 text-black hover:bg-[#0B0F19] hover:text-white'
+                      : 'bg-gray-100 border-gray-200 text-black hover:bg-black hover:text-white'
                   )}
                 >
                   <X size={16} />

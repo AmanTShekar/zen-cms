@@ -98,7 +98,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ value, onChange, theme, height 
       className={cn(
         'w-full border rounded-none px-4 py-3 font-mono text-[11px] leading-relaxed resize-y outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
         theme === 'dark'
-          ? 'bg-[#0B0F19] border-white/[0.08] text-emerald-300 focus:border-emerald-500/50'
+          ? 'bg-black border-white/[0.08] text-emerald-300 focus:border-emerald-500/50'
           : 'bg-gray-900 border-gray-600 text-emerald-300 focus:border-emerald-500'
       )}
       style={{ minHeight: height, fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace' }}
@@ -530,7 +530,7 @@ const CollectionHooksPage: React.FC = () => {
                         value={ep.method}
                         onChange={(e) => handleUpdateEndpoint(idx, 'method', e.target.value)}
                         className={cn(
-                          'bg-[#0B0F19] border text-[9px] font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none focus:border-emerald-500',
+                          'bg-black border text-[9px] font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none focus:border-emerald-500',
                           theme === 'dark' ? 'border-white/[0.08] text-emerald-400' : 'border-gray-200 text-emerald-600'
                         )}
                       >
@@ -545,7 +545,7 @@ const CollectionHooksPage: React.FC = () => {
                         placeholder="/custom-path"
                         className={cn(
                           'flex-1 border rounded-none py-2 px-3 text-[11px] font-mono italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                          theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+                          theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                         )}
                       />
                       <button
@@ -562,7 +562,7 @@ const CollectionHooksPage: React.FC = () => {
                       placeholder="Brief description of this endpoint..."
                       className={cn(
                         'w-full border rounded-none py-2 px-3 text-[10px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                        theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-gray-300 focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+                        theme === 'dark' ? 'bg-black border-white/[0.08] text-gray-300 focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                       )}
                     />
                   </div>

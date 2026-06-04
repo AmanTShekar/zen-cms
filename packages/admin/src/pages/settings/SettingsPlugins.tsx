@@ -210,7 +210,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="acme-analytics"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -223,7 +223,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="ACME Analytics"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -236,7 +236,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="1.0.0"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -249,7 +249,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="ACME Corp"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -262,7 +262,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="https://example.com/plugin"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -275,7 +275,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="zenith-plugin-acme-analytics"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -290,7 +290,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                   rows={2}
                   className={cn(
                     'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
-                    theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                    theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                   )}
                 />
               </div>
@@ -464,7 +464,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                       exit={{ opacity: 0, height: 0 }}
                       className={cn(
                         'border-t px-5 py-4 space-y-4',
-                        theme === 'dark' ? 'border-white/[0.08] bg-[#0B0F19]/20' : 'border-gray-100 bg-gray-50/50'
+                        theme === 'dark' ? 'border-white/[0.08] bg-black/20' : 'border-gray-100 bg-gray-50/50'
                       )}
                     >
                       <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Plugin Settings</span>
@@ -496,7 +496,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                               onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
                               className={cn(
                                 'w-full border rounded-none py-2.5 px-3 text-[11px] font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                                theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                                theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                               )}
                             >
                               {schema.options?.map(opt => (
@@ -511,7 +511,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                               placeholder="••••••••"
                               className={cn(
                                 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                                theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                                theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                               )}
                             />
                           ) : (
@@ -521,7 +521,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                               onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
                               className={cn(
                                 'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                                theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                                theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                               )}
                             />
                           )}

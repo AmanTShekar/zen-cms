@@ -219,7 +219,7 @@ export function LexicalRichTextEditor({
         'flex flex-col overflow-hidden transition-all duration-300 relative',
         isFull
           ? theme === 'dark'
-            ? 'bg-[#0B0F19] border border-white/[0.08] shadow-2xl'
+            ? 'bg-black border border-white/[0.08] shadow-2xl'
             : 'bg-white border border-gray-100 shadow-xl'
           : 'bg-transparent',
         className,

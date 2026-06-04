@@ -173,7 +173,7 @@ const AuditLogPage: React.FC = () => {
     <div
       className={cn(
         'flex flex-col min-h-screen p-6 space-y-6 transition-colors duration-500',
-        theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-gray-900'
+        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
       )}
     >
       {/* Header */}
@@ -257,7 +257,7 @@ const AuditLogPage: React.FC = () => {
       <div
         className={cn(
           'border rounded-none shadow-sm flex flex-col relative transition-colors backdrop-blur-3xl overflow-hidden',
-          theme === 'dark' ? 'bg-[#0B0F19]/80 border-white/[0.08]' : 'bg-white border-gray-100'
+          theme === 'dark' ? 'bg-black/80 border-white/[0.08]' : 'bg-white border-gray-100'
         )}
       >
         {/* Control Bar */}
@@ -271,7 +271,7 @@ const AuditLogPage: React.FC = () => {
             <div
               className={cn(
                 'flex items-center gap-4 border px-6 py-3 rounded-none w-full max-w-md shadow-inner transition-all group relative overflow-hidden',
-                theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-100'
+                theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100'
               )}
             >
               <Search
@@ -293,7 +293,7 @@ const AuditLogPage: React.FC = () => {
               onChange={(e) => { setFilterAction(e.target.value); setPage(1) }}
               className={cn(
                 'px-4 py-3 border rounded-none text-[9px] font-black uppercase tracking-widest italic',
-                theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-gray-400' : 'bg-white border-gray-100 text-gray-400'
+                theme === 'dark' ? 'bg-black border-white/[0.08] text-gray-400' : 'bg-white border-gray-100 text-gray-400'
               )}
             >
               <option value="">All Actions</option>
@@ -327,7 +327,7 @@ const AuditLogPage: React.FC = () => {
                 'flex items-center gap-3 px-8 py-3 rounded-none font-black text-[9px] uppercase tracking-[0.2em] transition-all shadow-lg italic leading-none active:scale-95',
                 theme === 'dark'
                   ? 'bg-white text-black hover:bg-gray-200'
-                  : 'bg-gray-900 text-white hover:bg-[#0B0F19] shadow-gray-900/20'
+                  : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
               )}
             >
               {exporting ? (
@@ -521,7 +521,7 @@ const AuditLogPage: React.FC = () => {
                   <div className="text-[7px] font-black uppercase tracking-widest text-gray-500 mb-2">Changes</div>
                   <pre className={cn(
                     'p-4 rounded-none text-[10px] font-mono max-h-48 overflow-auto border',
-                    theme === 'dark' ? 'bg-[#0B0F19]/50 border-white/[0.08] text-gray-400' : 'bg-gray-50 border-gray-100 text-gray-600'
+                    theme === 'dark' ? 'bg-black/50 border-white/[0.08] text-gray-400' : 'bg-gray-50 border-gray-100 text-gray-600'
                   )}>
                     {JSON.stringify(log.changes, null, 2)}
                   </pre>

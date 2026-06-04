@@ -16,7 +16,7 @@ class ErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return this.props.fallback ?? (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-[#0B0F19] gap-6 p-8">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-6 p-8">
           <div className="text-[80px] leading-none select-none text-white/5 font-black italic font-mono">
             500
           </div>
@@ -80,7 +80,7 @@ const CampaignsPage = lazy(() => import('./pages/CampaignsPage'))
 const VisualGraphPage = lazy(() => import('./pages/VisualGraphPage'))
 
 const PageLoader = () => (
-  <div className="min-h-screen flex flex-col items-center justify-center bg-[#0B0F19] gap-8">
+  <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-8">
     <div className="relative">
       <Cpu size={64} className="text-white animate-pulse" strokeWidth={0.5} />
       <div className="absolute inset-0 blur-3xl bg-white/10 animate-pulse" />
@@ -122,7 +122,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   if (isLoading || (isAuthenticated && onboardingDone === null)) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0B0F19] gap-8">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-8">
         <div className="relative">
           <Cpu size={64} className="text-white animate-pulse" strokeWidth={0.5} />
           <div className="absolute inset-0 blur-3xl bg-white/10 animate-pulse"></div>

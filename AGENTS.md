@@ -81,7 +81,7 @@ Zenith CMS demands state-of-the-art UI styling. Flat, generic, or default browse
 All admin dashboard container panels must satisfy this specific visual specification:
 ```css
 /* Deep dark translucent card layout */
-background-color: rgba(17, 24, 39, 0.65);
+background-color: rgba(0, 0, 0, 0.65);
 backdrop-filter: blur(12px);
 -webkit-backdrop-filter: blur(12px);
 border: 1px solid rgba(255, 255, 255, 0.08);
@@ -90,7 +90,7 @@ box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 ```
 
 ### Design Standards Checklist
-- [ ] **Harmony**: Base backgrounds must use Deep Obsidian (`#0B0F19`).
+- [ ] **Harmony**: Base backgrounds must use Pure Black (`#000000` / `bg-black`).
 - [ ] **Accents**: Use HSL-mapped Cyber-Purple (`#8B5CF6`) or Emerald-Green (`#10B981`) instead of basic red/blue styles.
 - [ ] **Interactive Scales**: Apply subtle spring scaling (`transform: scale(1.02)`) on active cards.
 - [ ] **Micro-animations**: Integrate clean, hardware-accelerated Framer Motion keyframes.

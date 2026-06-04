@@ -355,7 +355,7 @@ const SettingsPage = () => {
           <div className={cn(
             'p-8 min-h-[600px] transition-colors',
             theme === 'dark' 
-              ? 'bg-[#0B0F19]/65 backdrop-blur-[12px] border border-white/[0.08] rounded-none shadow-[0_4px_30px_rgba(0,0,0,0.1)]' 
+              ? 'bg-black/65 backdrop-blur-[12px] border border-white/[0.08] rounded-none shadow-[0_4px_30px_rgba(0,0,0,0.1)]' 
               : 'bg-white border border-gray-100 shadow-sm rounded-none'
           )}>
             <AnimatePresence mode="wait">

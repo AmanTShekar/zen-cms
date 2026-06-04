@@ -133,7 +133,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
 
   const iconBtnDisabled = (disabled: boolean) =>
     disabled
-      ? dark ? 'bg-[#0B0F19]/20 border-white/[0.08] text-white/20 cursor-not-allowed' : 'bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed'
+      ? dark ? 'bg-black/20 border-white/[0.08] text-white/20 cursor-not-allowed' : 'bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed'
       : dark ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-emerald-400' : 'bg-gray-100 border-gray-200 text-gray-500 hover:text-emerald-600'
 
   // Last saved time display
@@ -145,7 +145,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
     <header
       className={cn(
         'h-14 border-b flex items-center justify-between px-4 z-[100] backdrop-blur-3xl transition-all gap-3 shrink-0 overflow-visible',
-        dark ? 'bg-[#0B0F19]/90 border-white/[0.08]' : 'bg-white/90 border-gray-100 shadow-sm'
+        dark ? 'bg-black/90 border-white/[0.08]' : 'bg-white/90 border-gray-100 shadow-sm'
       )}
     >
       {/* Left: Back + SEO */}
@@ -316,7 +316,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
             className={cn(
               'px-2.5 py-1 rounded-none text-xs font-black uppercase italic transition-all',
               viewMode === 'visual'
-                ? dark ? 'bg-white text-black' : 'bg-[#0B0F19] text-white'
+                ? dark ? 'bg-white text-black' : 'bg-black text-white'
                 : dark ? 'text-white/50 hover:text-white' : 'text-gray-600 hover:text-black'
             )}
           >
@@ -327,7 +327,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
             className={cn(
               'px-2.5 py-1 rounded-none text-xs font-black uppercase italic transition-all',
               viewMode === 'code'
-                ? dark ? 'bg-white text-black' : 'bg-[#0B0F19] text-white'
+                ? dark ? 'bg-white text-black' : 'bg-black text-white'
                 : dark ? 'text-white/50 hover:text-white' : 'text-gray-600 hover:text-black'
             )}
           >

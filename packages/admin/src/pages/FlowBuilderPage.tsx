@@ -190,7 +190,7 @@ const FlowBuilderPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-full flex flex-col items-center justify-center bg-[#0B0F19] gap-6">
+      <div className="h-full flex flex-col items-center justify-center bg-black gap-6">
         <div className="w-16 h-16 border-2 border-emerald-500 border-t-transparent animate-spin rounded-none" />
         <span className="text-[10px] font-black uppercase tracking-[0.5em] text-emerald-500 italic">
           Accessing_Flow_Matrix...
@@ -200,9 +200,9 @@ const FlowBuilderPage: React.FC = () => {
   }
 
   return (
-    <div className="h-full flex flex-col md:flex-row bg-[#0B0F19] overflow-hidden select-none font-sans">
+    <div className="h-full flex flex-col md:flex-row bg-black overflow-hidden select-none font-sans">
       {/* ── Left Sidebar: Sequences ── */}
-      <div className="w-full md:w-72 border-r border-white/[0.08] flex flex-col bg-[#0B0F19]/40">
+      <div className="w-full md:w-72 border-r border-white/[0.08] flex flex-col bg-black/40">
         <div className="p-6 border-b border-white/[0.08] flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-1.5 h-1.5 indicator-blue" />
@@ -261,7 +261,7 @@ const FlowBuilderPage: React.FC = () => {
         {selectedFlow ? (
           <>
             {/* Context Header */}
-            <div className="px-8 h-20 border-b border-white/[0.08] flex items-center justify-between bg-[#0B0F19]/80 backdrop-blur-md z-10">
+            <div className="px-8 h-20 border-b border-white/[0.08] flex items-center justify-between bg-black/80 backdrop-blur-md z-10">
               <div className="flex flex-col">
                 <div className="flex items-center gap-4">
                   <input
@@ -352,7 +352,7 @@ const FlowBuilderPage: React.FC = () => {
                       </div>
 
                       <div className="flex flex-col items-center gap-4">
-                        <div className="w-12 h-12 bg-[#0B0F19] border border-white/[0.08] flex items-center justify-center text-amber-500">
+                        <div className="w-12 h-12 bg-black border border-white/[0.08] flex items-center justify-center text-amber-500">
                           <Zap size={24} />
                         </div>
                         <div className="text-center">
@@ -426,7 +426,7 @@ const FlowBuilderPage: React.FC = () => {
 
                             <div
                               className={cn(
-                                'w-12 h-12 flex items-center justify-center bg-[#0B0F19] border border-white/[0.08]',
+                                'w-12 h-12 flex items-center justify-center bg-black border border-white/[0.08]',
                                 stepType.color
                               )}
                             >
@@ -479,7 +479,7 @@ const FlowBuilderPage: React.FC = () => {
                           'w-16 h-16 border-2 transition-all flex items-center justify-center group relative overflow-hidden',
                           showNodeMenu
                             ? 'bg-white text-black border-white'
-                            : 'bg-[#0B0F19] text-white border-white/[0.08] hover:border-white/[0.08]'
+                            : 'bg-black text-white border-white/[0.08] hover:border-white/[0.08]'
                         )}
                       >
                         <Plus
@@ -507,7 +507,7 @@ const FlowBuilderPage: React.FC = () => {
                               >
                                 <div
                                   className={cn(
-                                    'w-10 h-10 flex items-center justify-center bg-[#0B0F19] border border-white/[0.08]',
+                                    'w-10 h-10 flex items-center justify-center bg-black border border-white/[0.08]',
                                     type.color
                                   )}
                                 >

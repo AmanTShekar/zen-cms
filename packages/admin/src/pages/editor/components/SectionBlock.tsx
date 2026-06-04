@@ -136,7 +136,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
   const themeClasses = {
     default: '',
     light: 'bg-white/90 text-black border-gray-200 shadow-sm',
-    dark: 'bg-[#0B0F19]/90 text-white border-white/[0.08] shadow-lg',
+    dark: 'bg-black/90 text-white border-white/[0.08] shadow-lg',
     'cyber-emerald': 'bg-gradient-to-br from-emerald-950/70 via-emerald-900/50 to-black/80 text-white border-emerald-500/20 shadow-emerald-500/5',
     glassmorphic: 'bg-gray-900/65 backdrop-blur-[12px] border-white/8 shadow-[0_4px_30px_rgba(0,0,0,0.1)] text-white'
   }[blockTheme as 'default' | 'light' | 'dark' | 'cyber-emerald' | 'glassmorphic'] || ''
@@ -337,7 +337,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
               )}>
                 <div className={cn(
                   'flex items-center gap-0.5 p-0.5 rounded-none border',
-                  theme === 'dark' ? 'bg-[#0B0F19]/20 border-white/[0.08]' : 'bg-white border-gray-200'
+                  theme === 'dark' ? 'bg-black/20 border-white/[0.08]' : 'bg-white border-gray-200'
                 )}>
                   {(['left', 'center', 'right'] as const).map((align) => (
                     <button
@@ -347,7 +347,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
                       className={cn(
                         'p-1 transition-all',
                         section.align === align || (!section.align && align === 'left')
-                          ? theme === 'dark' ? 'bg-white/10 text-white' : 'bg-[#0B0F19] text-white shadow-sm'
+                          ? theme === 'dark' ? 'bg-white/10 text-white' : 'bg-black text-white shadow-sm'
                           : 'text-gray-400 hover:text-emerald-500'
                       )}
                     >
@@ -387,7 +387,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
               )}
 
               {section.blockType === 'table' ? (
-                <div className="w-full overflow-x-auto border border-white/[0.08] bg-[#0B0F19]/20 p-4 rounded-none">
+                <div className="w-full overflow-x-auto border border-white/[0.08] bg-black/20 p-4 rounded-none">
                   <table className="w-full border-collapse text-left text-xs font-mono">
                     <thead>
                       <tr className={cn(theme === 'dark' ? 'bg-white/5 border-b border-white/[0.08]' : 'bg-gray-150 border-b border-gray-200')}>
@@ -613,7 +613,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
           style={{ position: 'fixed', top: menuPos.top, left: menuPos.left, zIndex: 900 }}
           className={cn(
             'min-w-[160px] border shadow-xl rounded-none',
-            theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-200'
+            theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200'
           )}
           onClick={(e) => e.stopPropagation()}
         >

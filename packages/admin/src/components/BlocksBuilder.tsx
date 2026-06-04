@@ -280,7 +280,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
     : { [activeCategory]: filtered }
 
   return createPortal(
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-8 bg-[#0B0F19]/70 backdrop-blur-md" onClick={onClose}>
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-8 bg-black/70 backdrop-blur-md" onClick={onClose}>
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -289,7 +289,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
         onClick={(e) => e.stopPropagation()}
         className={cn(
           "w-full max-w-4xl border rounded-none overflow-hidden shadow-2xl flex flex-col h-[85vh]",
-          theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-200'
+          theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200'
         )}
       >
         {/* Header */}
@@ -321,7 +321,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
 
         <div className={cn(
           "flex-1 overflow-hidden flex flex-col p-6",
-          theme === 'dark' ? 'bg-[#0B0F19]' : 'bg-white'
+          theme === 'dark' ? 'bg-black' : 'bg-white'
         )}>
           {/* Search */}
           <div className="relative mb-6 shrink-0">
@@ -419,12 +419,12 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                             </div>
                           )}
                           {stock.admin?.category && (
-                            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-[#0B0F19]/60 backdrop-blur text-white/80 rounded-none">
+                            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-black/60 backdrop-blur text-white/80 rounded-none">
                               {stock.admin.category}
                             </span>
                           )}
                           {stock.admin?.imageURL && (
-                            <div className="absolute top-2 right-2 w-5 h-5 bg-[#0B0F19]/50 backdrop-blur flex items-center justify-center text-white/70 rounded-none">
+                            <div className="absolute top-2 right-2 w-5 h-5 bg-black/50 backdrop-blur flex items-center justify-center text-white/70 rounded-none">
                               {getBlockIcon(stock.slug)}
                             </div>
                           )}
@@ -665,7 +665,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
 
       {/* Side-by-Side Live Preview Iframe */}
       {showPreview && (
-        <div className="w-full h-full min-h-[700px] border border-white/[0.08] rounded-none overflow-hidden sticky top-4 bg-[#0B0F19] shadow-2xl flex flex-col">
+        <div className="w-full h-full min-h-[700px] border border-white/[0.08] rounded-none overflow-hidden sticky top-4 bg-black shadow-2xl flex flex-col">
           <div className="px-4 py-2 border-b border-white/[0.08] flex items-center justify-between shrink-0">
             <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-400 italic flex items-center gap-2">
               <div className="w-2 h-2 rounded-none bg-emerald-500 animate-pulse shadow-[0_0_10px_#10B981]" />

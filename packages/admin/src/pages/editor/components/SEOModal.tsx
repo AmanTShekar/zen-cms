@@ -101,7 +101,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
   return (
     <AnimatePresence>
       {seoOpen && (
-        <div className="fixed inset-0 z-[600] flex items-center justify-center p-6 bg-[#0B0F19]/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[600] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
           <motion.div
             ref={dialogRef}
             role="dialog"

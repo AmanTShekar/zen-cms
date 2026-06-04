@@ -169,7 +169,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
             className={cn(
               'fixed z-[900] w-80 border rounded-none shadow-2xl overflow-hidden flex flex-col',
               theme === 'dark'
-                ? 'bg-[#0B0F19]/98 backdrop-blur-xl border-white/8 text-white'
+                ? 'bg-black/98 backdrop-blur-xl border-white/8 text-white'
                 : 'bg-white/98 backdrop-blur-xl border-gray-200 text-gray-900'
             )}
           >

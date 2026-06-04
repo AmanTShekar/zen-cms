@@ -1152,14 +1152,14 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
   // Loading state
   if (loading)
     return (
-      <div className={cn('h-screen w-full flex flex-col items-center justify-center gap-8', theme === 'dark' ? 'bg-[#0B0F19]' : 'bg-[#fafafa]')}>
+      <div className={cn('h-screen w-full flex flex-col items-center justify-center gap-8', theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]')}>
         <Cpu size={48} className="text-emerald-500 animate-spin" />
         <p className="text-[10px] font-black uppercase tracking-[0.8em] text-gray-500 animate-pulse italic">Initializing Canvas...</p>
       </div>
     )
 
   return (
-    <div className={cn('h-screen flex flex-col overflow-hidden transition-colors duration-500', theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-white text-black')}>
+    <div className={cn('h-screen flex flex-col overflow-hidden transition-colors duration-500', theme === 'dark' ? 'bg-black text-white' : 'bg-white text-black')}>
       {/* ── Header ── */}
       {/* ── Editor Toolbar ── */}
       <EditorToolbar
@@ -1287,7 +1287,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
                   )}
 
                   {topLevelFields.length > 0 && (
-                      <div className={cn("border rounded-none p-10 shadow-sm relative overflow-hidden transition-colors", theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-100')}>
+                      <div className={cn("border rounded-none p-10 shadow-sm relative overflow-hidden transition-colors", theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100')}>
                         <div className="absolute top-0 right-0 p-10 opacity-[0.01] pointer-events-none">
                           <Terminal size={180} strokeWidth={0.5} />
                         </div>
@@ -1319,7 +1319,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
                 </div>
               ) : (
                 <div className="flex-1 flex flex-col pt-10">
-                  <div className={cn('flex-1 p-10 font-mono text-sm overflow-auto rounded-none border', theme === 'dark' ? 'bg-[#0B0F19]/50 border-white/[0.08] text-emerald-300' : 'bg-gray-100 border-gray-200 text-emerald-900')}>
+                  <div className={cn('flex-1 p-10 font-mono text-sm overflow-auto rounded-none border', theme === 'dark' ? 'bg-black/50 border-white/[0.08] text-emerald-300' : 'bg-gray-100 border-gray-200 text-emerald-900')}>
                     <pre className="no-scrollbar">{JSON.stringify(data, null, 3)}</pre>
                   </div>
                 </div>

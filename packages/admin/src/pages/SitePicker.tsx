@@ -184,9 +184,9 @@ export default function SitePicker() {
   )
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white flex flex-col justify-between selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-black text-white flex flex-col justify-between selection:bg-white selection:text-black">
       {/* 🚀 Sleek Minimal Top Navigation Header */}
-      <header className="border-b border-white/[0.04] px-8 py-6 flex items-center justify-between backdrop-blur-md bg-[#0B0F19]/50 sticky top-0 z-50">
+      <header className="border-b border-white/[0.04] px-8 py-6 flex items-center justify-between backdrop-blur-md bg-black/50 sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <div className="relative flex items-center justify-center w-8 h-8 rounded-none border border-white/[0.08] bg-white/5">
             <Cpu size={16} className="text-white animate-pulse" />
@@ -454,7 +454,7 @@ export default function SitePicker() {
 
       {/* Workspace Creation Modal */}
       {showNewWorkspaceModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0B0F19]/80 backdrop-blur-md">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md">
           <div
             className="w-full max-w-md p-8 relative overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.5)]"
             style={{

@@ -69,7 +69,7 @@ const ResetPasswordPage: React.FC = () => {
     <div
       className={cn(
         'min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-sans antialiased selection:bg-emerald-600 selection:text-white transition-colors duration-500',
-        theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-[#111827]'
+        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-[#111827]'
       )}
     >
       {/* 🏛️ Professional Minimalist Background */}
@@ -188,7 +188,7 @@ const ResetPasswordPage: React.FC = () => {
                   'w-full rounded-none py-4 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-xl transition-all group',
                   theme === 'dark'
                     ? 'bg-white text-black hover:bg-gray-100 shadow-white/5'
-                    : 'bg-gray-900 text-white hover:bg-[#0B0F19] shadow-gray-900/20'
+                    : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
                 )}
               >
                 <ArrowLeft size={16} />
@@ -214,7 +214,7 @@ const ResetPasswordPage: React.FC = () => {
                   'w-full rounded-none py-4 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-xl transition-all group',
                   theme === 'dark'
                     ? 'bg-white text-black hover:bg-gray-100 shadow-white/5'
-                    : 'bg-gray-900 text-white hover:bg-[#0B0F19] shadow-gray-900/20'
+                    : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
                 )}
               >
                 <span>Proceed to Login</span>
@@ -326,7 +326,7 @@ const ResetPasswordPage: React.FC = () => {
                   'w-full rounded-none py-4 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-xl transition-all group disabled:opacity-50 disabled:pointer-events-none',
                   theme === 'dark'
                     ? 'bg-white text-black hover:bg-gray-100 shadow-white/5'
-                    : 'bg-gray-900 text-white hover:bg-[#0B0F19] shadow-gray-900/20'
+                    : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
                 )}
               >
                 {isSubmitting ? (

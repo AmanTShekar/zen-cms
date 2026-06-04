@@ -226,7 +226,7 @@ const TemplatesPage: React.FC = () => {
     <div
       className={cn(
         'space-y-8 min-h-screen transition-colors duration-500 relative pb-12',
-        theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-gray-900'
+        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
       )}
     >
       {/* 🚀 Visual Header Block */}
@@ -412,7 +412,7 @@ const TemplatesPage: React.FC = () => {
                 <div
                   className={cn(
                     'w-full h-40 rounded-none relative overflow-hidden border transition-all duration-500 flex items-center justify-center group-hover:scale-[1.01]',
-                    theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-gray-50 border-gray-100'
+                    theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-gray-50 border-gray-100'
                   )}
                 >
                   {/* Glass Card Vector Grid Backdrop */}
@@ -425,7 +425,7 @@ const TemplatesPage: React.FC = () => {
                   />
 
                   {/* Decorative Elements mimicking UI */}
-                  <div className="w-5/6 h-2/3 border border-white/[0.08] rounded-none bg-[#0B0F19]/45 backdrop-blur-md p-4 flex flex-col justify-between shadow-2xl relative overflow-hidden">
+                  <div className="w-5/6 h-2/3 border border-white/[0.08] rounded-none bg-black/45 backdrop-blur-md p-4 flex flex-col justify-between shadow-2xl relative overflow-hidden">
                     <div className="flex items-center justify-between">
                       <div className="flex gap-1.5">
                         <div className="w-2 h-2 rounded-none bg-red-500/40" />
@@ -492,7 +492,7 @@ const TemplatesPage: React.FC = () => {
                 {/* Clone Command & Zip Download */}
                 <div className={cn(
                   'p-3 border rounded-none flex items-center justify-between gap-3 text-[10px] font-mono',
-                  theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-600'
+                  theme === 'dark' ? 'bg-black border-white/[0.08] text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-600'
                 )}>
                   <div className="flex items-center gap-1.5 truncate">
                     <Terminal size={10} className="text-emerald-400" />
@@ -585,7 +585,7 @@ const TemplatesPage: React.FC = () => {
                   toast.error('Build sequence in progress. Please wait for termination.')
                 }
               }}
-              className="absolute inset-0 bg-[#0B0F19]/85 backdrop-blur-xl"
+              className="absolute inset-0 bg-black/85 backdrop-blur-xl"
             />
 
             {/* Modal Box */}
@@ -596,7 +596,7 @@ const TemplatesPage: React.FC = () => {
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
               className={cn(
                 'w-full max-w-2xl border rounded-none p-6 md:p-8 flex flex-col gap-6 relative shadow-2xl overflow-hidden z-10',
-                theme === 'dark' ? 'bg-[#0b0f19] border-white/[0.08]' : 'bg-white border-gray-200'
+                theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200'
               )}
             >
               {/* Top Accent Gradient Bar */}
@@ -780,7 +780,7 @@ const TemplatesPage: React.FC = () => {
                     </div>
 
                     {/* Console Logger */}
-                    <div className="flex-1 min-h-[160px] bg-[#0B0F19] border border-white/[0.08] p-4 font-mono text-[9px] text-gray-400 overflow-y-auto space-y-1.5 no-scrollbar scroll-smooth">
+                    <div className="flex-1 min-h-[160px] bg-black border border-white/[0.08] p-4 font-mono text-[9px] text-gray-400 overflow-y-auto space-y-1.5 no-scrollbar scroll-smooth">
                       {terminalLogs.map((log, idx) => (
                         <div
                           key={idx}
@@ -833,7 +833,7 @@ const TemplatesPage: React.FC = () => {
                     {/* Clipboard copy container */}
                     <div
                       className={cn(
-                        'max-w-md mx-auto p-4 border rounded-none flex items-center justify-between gap-4 bg-[#0B0F19]/40',
+                        'max-w-md mx-auto p-4 border rounded-none flex items-center justify-between gap-4 bg-black/40',
                         theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
                       )}
                     >

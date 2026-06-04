@@ -129,7 +129,7 @@ function SortableWidget({
       style={widgetStyle}
       className={cn(
         'relative rounded-none border overflow-hidden transition-all duration-200 flex flex-col',
-        theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm',
+        theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm',
         isEditing && 'ring-1 ring-inset ring-emerald-500/20',
         isDragging && 'z-50 shadow-2xl shadow-black/40'
       )}
@@ -390,7 +390,7 @@ function WidgetPicker({
     <AnimatePresence>
       {open && (
         <>
-          <div className="fixed inset-0 z-[90] bg-[#0B0F19]/40 backdrop-blur-sm" onClick={onClose} />
+          <div className="fixed inset-0 z-[90] bg-black/40 backdrop-blur-sm" onClick={onClose} />
           <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
@@ -427,7 +427,7 @@ function WidgetPicker({
               <div
                 className={cn(
                   'flex items-center gap-3 px-4 py-2.5 border rounded-none shadow-inner',
-                  theme === 'dark' ? 'bg-[#0B0F19]/50 border-white/[0.08]' : 'bg-white border-gray-200'
+                  theme === 'dark' ? 'bg-black/50 border-white/[0.08]' : 'bg-white border-gray-200'
                 )}
               >
                 <Search size={14} className="text-gray-500 shrink-0" />
@@ -492,8 +492,8 @@ function WidgetPicker({
                           </div>
 
                           {alreadyAdded && (
-                            <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#0B0F19]/40 backdrop-blur-[1px]">
-                              <span className="bg-[#0B0F19] text-white px-3 py-1 text-[8px] font-black uppercase tracking-widest border border-white/[0.08] shadow-xl">
+                            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 backdrop-blur-[1px]">
+                              <span className="bg-black text-white px-3 py-1 text-[8px] font-black uppercase tracking-widest border border-white/[0.08] shadow-xl">
                                 Already Added
                               </span>
                             </div>
@@ -558,7 +558,7 @@ function WidgetConfigModal({
     <AnimatePresence>
       {open && (
         <>
-          <div className="fixed inset-0 z-[90] bg-[#0B0F19]/40 backdrop-blur-sm" onClick={onClose} />
+          <div className="fixed inset-0 z-[90] bg-black/40 backdrop-blur-sm" onClick={onClose} />
           <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
@@ -606,7 +606,7 @@ function WidgetConfigModal({
                   className={cn(
                     'w-full px-4 py-2 text-[11px] font-black uppercase italic tracking-wider border rounded-none focus:border-emerald-500 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                     isDark
-                      ? 'bg-[#0B0F19] border-white/[0.08] text-white'
+                      ? 'bg-black border-white/[0.08] text-white'
                       : 'bg-white border-gray-200 text-gray-900'
                   )}
                   placeholder={def?.label}
@@ -625,7 +625,7 @@ function WidgetConfigModal({
                     className={cn(
                       'w-full px-3 py-2 text-[11px] font-black uppercase italic border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500',
                       isDark
-                        ? 'bg-[#0B0F19] border-white/[0.08] text-white'
+                        ? 'bg-black border-white/[0.08] text-white'
                         : 'bg-white border-gray-200 text-gray-900'
                     )}
                   >
@@ -646,7 +646,7 @@ function WidgetConfigModal({
                     className={cn(
                       'w-full px-3 py-2 text-[11px] font-black uppercase italic border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500',
                       isDark
-                        ? 'bg-[#0B0F19] border-white/[0.08] text-white'
+                        ? 'bg-black border-white/[0.08] text-white'
                         : 'bg-white border-gray-200 text-gray-900'
                     )}
                   >
@@ -676,7 +676,7 @@ function WidgetConfigModal({
                       className={cn(
                         'w-full px-3 py-2 text-[11px] font-black uppercase italic border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500',
                         isDark
-                          ? 'bg-[#0B0F19] border-white/[0.08]'
+                          ? 'bg-black border-white/[0.08]'
                           : 'bg-white border-gray-200 font-sans text-xs'
                       )}
                     >
@@ -706,7 +706,7 @@ function WidgetConfigModal({
                       className={cn(
                         'w-full p-4 font-mono text-[11px] border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500 resize-none',
                         isDark
-                          ? 'bg-[#0B0F19] border-white/[0.08] text-white'
+                          ? 'bg-black border-white/[0.08] text-white'
                           : 'bg-white border-gray-200 text-gray-900'
                       )}
                       placeholder="<h3>Custom Block</h3>"
@@ -887,7 +887,7 @@ export default function DashboardBuilder() {
       <div
         className={cn(
           'h-screen w-full flex flex-col items-center justify-center gap-6',
-          theme === 'dark' ? 'bg-[#0B0F19]' : 'bg-[#fafafa]'
+          theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]'
         )}
       >
         <Loader2 size={32} className="animate-spin text-emerald-500" strokeWidth={1.5} />
@@ -901,14 +901,14 @@ export default function DashboardBuilder() {
     <div
       className={cn(
         'min-h-full transition-colors duration-500',
-        theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-gray-900'
+        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
       )}
     >
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <header
         className={cn(
           'sticky top-0 z-30 flex items-center justify-between px-6 py-4 border-b backdrop-blur-md transition-colors',
-          theme === 'dark' ? 'bg-[#0B0F19]/90 border-white/[0.08]' : 'bg-white/90 border-gray-100'
+          theme === 'dark' ? 'bg-black/90 border-white/[0.08]' : 'bg-white/90 border-gray-100'
         )}
       >
         <div className="flex items-center gap-4">

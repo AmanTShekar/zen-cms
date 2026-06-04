@@ -56,7 +56,7 @@ const SettingsUsers: React.FC<SettingsUsersProps> = ({ users, theme, fetchData }
               className={cn(
                 'flex items-center justify-between p-4 border rounded-none transition-all group',
                 theme === 'dark'
-                  ? 'bg-[#0B0F19]/40 border-white/[0.08] hover:border-red-500/10'
+                  ? 'bg-black/40 border-white/[0.08] hover:border-red-500/10'
                   : 'bg-gray-50 border-gray-100'
               )}
             >

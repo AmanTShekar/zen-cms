@@ -478,7 +478,7 @@ export function SlashCommandPlugin() {
       className={cn(
         'fixed z-[2500] w-72 max-h-[360px] overflow-y-auto border shadow-2xl backdrop-blur-2xl',
         theme === 'dark'
-          ? 'bg-[#0b0f19]/95 border-white/[0.08] shadow-[0_20px_60px_rgba(0,0,0,0.6)]'
+          ? 'bg-black/95 border-white/[0.08] shadow-[0_20px_60px_rgba(0,0,0,0.6)]'
           : 'bg-white/95 border-gray-200 shadow-[0_20px_60px_rgba(0,0,0,0.15)]',
       )}
       style={{ top: position.top, left: position.left }}

@@ -54,7 +54,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
             className={cn(
               'flex-1 font-mono text-sm px-3 py-2 rounded-none border truncate',
               theme === 'dark'
-                ? 'bg-[#0B0F19]/40 border-white/[0.08] text-emerald-300'
+                ? 'bg-black/40 border-white/[0.08] text-emerald-300'
                 : 'bg-white border-emerald-200 text-emerald-700'
             )}
           >
