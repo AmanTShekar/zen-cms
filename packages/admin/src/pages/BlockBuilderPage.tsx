@@ -234,7 +234,7 @@ export default function BlockBuilderPage() {
       <div className="flex-1 flex flex-col overflow-hidden relative">
         <div className={cn('px-6 py-4 border-b flex items-center justify-between gap-4 shrink-0', dark ? 'border-white/5 bg-black' : 'border-gray-200 bg-white')}>
           <div className="flex items-center gap-4">
-            <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center', dark ? 'bg-white text-black' : 'bg-gray-900 text-white')}>
+            <div className={cn('w-10 h-10 rounded-none flex items-center justify-center', dark ? 'bg-white text-black' : 'bg-gray-900 text-white')}>
               <Layers size={20} />
             </div>
             <div>
@@ -245,39 +245,39 @@ export default function BlockBuilderPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-lg shadow-emerald-900/30 disabled:opacity-50">
+            <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black uppercase tracking-widest rounded-none transition-all shadow-lg shadow-emerald-900/30 disabled:opacity-50">
               {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} Save Code
             </button>
           </div>
         </div>
 
         <div className="flex-1 overflow-auto p-6 space-y-6">
-          <div className={cn('rounded-xl border p-6 space-y-4', dark ? 'bg-[#0a0f1a] border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
+          <div className={cn('rounded-none border p-6 space-y-4', dark ? 'bg-[#0a0f1a] border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
             <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2"><Settings size={12} /> Component Settings</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Display Name</label>
-                <input type="text" value={title} onChange={e => { setTitle(e.target.value); setSlug(e.target.value.toLowerCase().replace(/\\s+/g, '-').replace(/[^a-z0-9-]/g, '')) }} className={cn(inputClass, 'w-full rounded-lg')} placeholder="e.g. Hero Banner" />
+                <input type="text" value={title} onChange={e => { setTitle(e.target.value); setSlug(e.target.value.toLowerCase().replace(/\\s+/g, '-').replace(/[^a-z0-9-]/g, '')) }} className={cn(inputClass, 'w-full rounded-none')} placeholder="e.g. Hero Banner" />
               </div>
               <div>
                 <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">API Slug (filename)</label>
-                <input type="text" value={slug} onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} className={cn(inputClass, 'w-full rounded-lg font-mono')} placeholder="e.g. hero-banner" />
+                <input type="text" value={slug} onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} className={cn(inputClass, 'w-full rounded-none font-mono')} placeholder="e.g. hero-banner" />
               </div>
               <div>
                 <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Category</label>
-                <input type="text" value={category} onChange={e => setCategory(e.target.value)} className={cn(inputClass, 'w-full rounded-lg')} placeholder="e.g. Layout, Content, Media" />
+                <input type="text" value={category} onChange={e => setCategory(e.target.value)} className={cn(inputClass, 'w-full rounded-none')} placeholder="e.g. Layout, Content, Media" />
               </div>
               <div>
                 <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Description</label>
-                <input type="text" value={description} onChange={e => setDescription(e.target.value)} className={cn(inputClass, 'w-full rounded-lg')} placeholder="Brief description for editors" />
+                <input type="text" value={description} onChange={e => setDescription(e.target.value)} className={cn(inputClass, 'w-full rounded-none')} placeholder="Brief description for editors" />
               </div>
             </div>
           </div>
 
-          <div className={cn('rounded-xl border', dark ? 'bg-[#0a0f1a] border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
+          <div className={cn('rounded-none border', dark ? 'bg-[#0a0f1a] border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
             <div className="px-6 py-4 border-b border-inherit flex items-center justify-between">
               <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2"><Layers size={12} /> Fields ({fields.length})</h3>
-              <button onClick={() => { setModalStep('TYPE'); setActiveField({}); setEditingFieldIndex(null); setSettingsTab('BASIC'); setIsFieldModalOpen(true) }} className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all">
+              <button onClick={() => { setModalStep('TYPE'); setActiveField({}); setEditingFieldIndex(null); setSettingsTab('BASIC'); setIsFieldModalOpen(true) }} className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest rounded-none transition-all">
                 <Plus size={12} /> Add new field
               </button>
             </div>
@@ -293,7 +293,7 @@ export default function BlockBuilderPage() {
                     <div key={i} className="flex items-center justify-between px-6 py-4 hover:bg-white/5 transition-colors group cursor-pointer"
                          onClick={() => { setActiveField(field); setEditingFieldIndex(i); setModalStep('SETTINGS'); setSettingsTab('BASIC'); setIsFieldModalOpen(true) }}>
                       <div className="flex items-center gap-4">
-                        <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-none bg-emerald-500/10 flex items-center justify-center">
                           {(() => { const ft = FIELD_TYPES.find(t => t.value === field.type); const Icon = ft ? ft.icon : Box; return <Icon size={14} className="text-emerald-500" /> })()}
                         </div>
                         <div>
@@ -305,7 +305,7 @@ export default function BlockBuilderPage() {
                           <div className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mt-0.5">{field.type} {field.label ? `· ${field.label}` : ''}</div>
                         </div>
                       </div>
-                      <button onClick={(e) => { e.stopPropagation(); removeField(i) }} className="opacity-0 group-hover:opacity-100 p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-all"><Trash2 size={14} /></button>
+                      <button onClick={(e) => { e.stopPropagation(); removeField(i) }} className="opacity-0 group-hover:opacity-100 p-2 text-red-500 hover:bg-red-500/10 rounded-none transition-all"><Trash2 size={14} /></button>
                     </div>
                   ))}
                 </div>
@@ -318,7 +318,7 @@ export default function BlockBuilderPage() {
       <AnimatePresence>
         {isFieldModalOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-            <motion.div initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 10 }} className="w-full max-w-4xl border rounded-2xl shadow-2xl flex flex-col max-h-[85vh] bg-[#0a0f1a] border-white/10 overflow-hidden">
+            <motion.div initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 10 }} className="w-full max-w-4xl border rounded-none shadow-2xl flex flex-col max-h-[85vh] bg-[#0a0f1a] border-white/10 overflow-hidden">
               <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-black/50">
                 <h2 className="text-sm font-black uppercase tracking-widest text-white flex items-center gap-2">
                   {modalStep === 'TYPE' ? 'Select a field for your Component' : `Configure ${activeField?.type} field`}
@@ -331,8 +331,8 @@ export default function BlockBuilderPage() {
                   {FIELD_TYPES.map((ft) => {
                     const Icon = ft.icon
                     return (
-                      <button key={ft.value} onClick={() => { setActiveField({ type: ft.value, admin: {} }); setModalStep('SETTINGS') }} className="flex items-start gap-4 p-4 rounded-xl border border-white/5 bg-white/5 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all text-left">
-                        <div className="mt-1 p-2 rounded-lg bg-black/50 border border-white/5"><Icon size={18} style={{ color: ft.color }} /></div>
+                      <button key={ft.value} onClick={() => { setActiveField({ type: ft.value, admin: {} }); setModalStep('SETTINGS') }} className="flex items-start gap-4 p-4 rounded-none border border-white/5 bg-white/5 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all text-left">
+                        <div className="mt-1 p-2 rounded-none bg-black/50 border border-white/5"><Icon size={18} style={{ color: ft.color }} /></div>
                         <div>
                           <div className="text-sm font-bold text-white mb-1">{ft.label}</div>
                           <div className="text-[10px] text-gray-400 leading-relaxed">{ft.desc}</div>
@@ -358,19 +358,19 @@ export default function BlockBuilderPage() {
                       <div className="grid grid-cols-2 gap-6">
                         <div className="col-span-2 sm:col-span-1">
                           <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Name (Key in JSON)*</label>
-                          <input type="text" value={activeField?.name || ''} onChange={e => setActiveField(prev => ({ ...prev, name: e.target.value.replace(/\\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '') }))} className={cn(inputClass, 'w-full rounded-lg font-mono')} placeholder="e.g. heroTitle" />
+                          <input type="text" value={activeField?.name || ''} onChange={e => setActiveField(prev => ({ ...prev, name: e.target.value.replace(/\\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '') }))} className={cn(inputClass, 'w-full rounded-none font-mono')} placeholder="e.g. heroTitle" />
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                           <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Display Label</label>
-                          <input type="text" value={activeField?.label || ''} onChange={e => setActiveField(prev => ({ ...prev, label: e.target.value }))} className={cn(inputClass, 'w-full rounded-lg')} placeholder="e.g. Hero Title" />
+                          <input type="text" value={activeField?.label || ''} onChange={e => setActiveField(prev => ({ ...prev, label: e.target.value }))} className={cn(inputClass, 'w-full rounded-none')} placeholder="e.g. Hero Title" />
                         </div>
                         <div className="col-span-2">
                           <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Description</label>
-                          <input type="text" value={activeField?.description || ''} onChange={e => setActiveField(prev => ({ ...prev, description: e.target.value }))} className={cn(inputClass, 'w-full rounded-lg')} placeholder="Help text for content editors" />
+                          <input type="text" value={activeField?.description || ''} onChange={e => setActiveField(prev => ({ ...prev, description: e.target.value }))} className={cn(inputClass, 'w-full rounded-none')} placeholder="Help text for content editors" />
                         </div>
                         <div className="col-span-2">
                           <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Default Value</label>
-                          <input type="text" value={activeField?.defaultValue || ''} onChange={e => setActiveField(prev => ({ ...prev, defaultValue: e.target.value }))} className={cn(inputClass, 'w-full rounded-lg')} placeholder="e.g. Welcome" />
+                          <input type="text" value={activeField?.defaultValue || ''} onChange={e => setActiveField(prev => ({ ...prev, defaultValue: e.target.value }))} className={cn(inputClass, 'w-full rounded-none')} placeholder="e.g. Welcome" />
                         </div>
                         
                         {activeField?.type === 'relation' && (
@@ -379,7 +379,7 @@ export default function BlockBuilderPage() {
                             <div className="grid grid-cols-2 gap-6">
                               <div>
                                 <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Relates To</label>
-                                <select value={activeField.relationTo || ''} onChange={e => setActiveField(prev => ({ ...prev, relationTo: e.target.value }))} className={cn(inputClass, 'w-full rounded-lg cursor-pointer')}>
+                                <select value={activeField.relationTo || ''} onChange={e => setActiveField(prev => ({ ...prev, relationTo: e.target.value }))} className={cn(inputClass, 'w-full rounded-none cursor-pointer')}>
                                   <option value="">-- Select Collection --</option>
                                   {availableCollections.map(c => <option key={c} value={c}>{c}</option>)}
                                 </select>
@@ -398,7 +398,7 @@ export default function BlockBuilderPage() {
 
                     {settingsTab === 'VALIDATION' && (
                       <div className="space-y-6">
-                        <div className="grid grid-cols-2 gap-4 bg-white/5 p-4 rounded-xl border border-white/5">
+                        <div className="grid grid-cols-2 gap-4 bg-white/5 p-4 rounded-none border border-white/5">
                           <label className="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" checked={!!activeField?.required} onChange={e => setActiveField(prev => ({ ...prev, required: e.target.checked }))} className="accent-emerald-500 w-4 h-4" />
                             <span className="text-xs font-bold text-gray-300">Required field</span>
@@ -413,15 +413,15 @@ export default function BlockBuilderPage() {
                           <div className="grid grid-cols-2 gap-6">
                             <div>
                               <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Min Length</label>
-                              <input type="number" value={activeField?.minLength || ''} onChange={e => setActiveField(prev => ({ ...prev, minLength: parseInt(e.target.value) || undefined }))} className={cn(inputClass, 'w-full rounded-lg')} placeholder="e.g. 5" />
+                              <input type="number" value={activeField?.minLength || ''} onChange={e => setActiveField(prev => ({ ...prev, minLength: parseInt(e.target.value) || undefined }))} className={cn(inputClass, 'w-full rounded-none')} placeholder="e.g. 5" />
                             </div>
                             <div>
                               <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Max Length</label>
-                              <input type="number" value={activeField?.maxLength || ''} onChange={e => setActiveField(prev => ({ ...prev, maxLength: parseInt(e.target.value) || undefined }))} className={cn(inputClass, 'w-full rounded-lg')} placeholder="e.g. 100" />
+                              <input type="number" value={activeField?.maxLength || ''} onChange={e => setActiveField(prev => ({ ...prev, maxLength: parseInt(e.target.value) || undefined }))} className={cn(inputClass, 'w-full rounded-none')} placeholder="e.g. 100" />
                             </div>
                             <div className="col-span-2">
                               <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Regex Pattern</label>
-                              <input type="text" value={activeField?.regex || ''} onChange={e => setActiveField(prev => ({ ...prev, regex: e.target.value }))} className={cn(inputClass, 'w-full rounded-lg font-mono')} placeholder="^[A-Za-z]+$" />
+                              <input type="text" value={activeField?.regex || ''} onChange={e => setActiveField(prev => ({ ...prev, regex: e.target.value }))} className={cn(inputClass, 'w-full rounded-none font-mono')} placeholder="^[A-Za-z]+$" />
                             </div>
                           </div>
                         )}
@@ -430,11 +430,11 @@ export default function BlockBuilderPage() {
                           <div className="grid grid-cols-2 gap-6">
                             <div>
                               <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Minimum Value</label>
-                              <input type="number" value={activeField?.min || ''} onChange={e => setActiveField(prev => ({ ...prev, min: parseInt(e.target.value) || undefined }))} className={cn(inputClass, 'w-full rounded-lg')} placeholder="e.g. 0" />
+                              <input type="number" value={activeField?.min || ''} onChange={e => setActiveField(prev => ({ ...prev, min: parseInt(e.target.value) || undefined }))} className={cn(inputClass, 'w-full rounded-none')} placeholder="e.g. 0" />
                             </div>
                             <div>
                               <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Maximum Value</label>
-                              <input type="number" value={activeField?.max || ''} onChange={e => setActiveField(prev => ({ ...prev, max: parseInt(e.target.value) || undefined }))} className={cn(inputClass, 'w-full rounded-lg')} placeholder="e.g. 100" />
+                              <input type="number" value={activeField?.max || ''} onChange={e => setActiveField(prev => ({ ...prev, max: parseInt(e.target.value) || undefined }))} className={cn(inputClass, 'w-full rounded-none')} placeholder="e.g. 100" />
                             </div>
                           </div>
                         )}
@@ -443,7 +443,7 @@ export default function BlockBuilderPage() {
                           <div className="grid grid-cols-2 gap-6">
                             <div>
                               <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Date Mode</label>
-                              <select value={activeField?.dateFormat || 'date'} onChange={e => setActiveField(prev => ({ ...prev, dateFormat: e.target.value }))} className={cn(inputClass, 'w-full rounded-lg cursor-pointer')}>
+                              <select value={activeField?.dateFormat || 'date'} onChange={e => setActiveField(prev => ({ ...prev, dateFormat: e.target.value }))} className={cn(inputClass, 'w-full rounded-none cursor-pointer')}>
                                 <option value="date">Date Only</option>
                                 <option value="datetime">Date & Time</option>
                                 <option value="time">Time Only</option>
@@ -456,7 +456,7 @@ export default function BlockBuilderPage() {
 
                     {settingsTab === 'ADMIN' && (
                       <div className="space-y-6">
-                        <div className="grid grid-cols-2 gap-4 bg-white/5 p-4 rounded-xl border border-white/5">
+                        <div className="grid grid-cols-2 gap-4 bg-white/5 p-4 rounded-none border border-white/5">
                           <label className="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" checked={!!activeField?.i18n} onChange={e => setActiveField(prev => ({ ...prev, i18n: e.target.checked }))} className="accent-blue-500 w-4 h-4" />
                             <span className="text-xs font-bold text-gray-300">Enable Localization (i18n)</span>
@@ -474,7 +474,7 @@ export default function BlockBuilderPage() {
                         <div className="grid grid-cols-2 gap-6">
                           <div>
                             <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Field Width</label>
-                            <select value={activeField?.admin?.width || '100%'} onChange={e => setActiveField(prev => ({ ...prev, admin: { ...prev.admin, width: e.target.value } }))} className={cn(inputClass, 'w-full rounded-lg cursor-pointer')}>
+                            <select value={activeField?.admin?.width || '100%'} onChange={e => setActiveField(prev => ({ ...prev, admin: { ...prev.admin, width: e.target.value } }))} className={cn(inputClass, 'w-full rounded-none cursor-pointer')}>
                               <option value="100%">100% (Full Width)</option>
                               <option value="50%">50% (Half Width)</option>
                               <option value="33%">33% (One Third)</option>
@@ -483,7 +483,7 @@ export default function BlockBuilderPage() {
                           </div>
                           <div>
                             <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Placeholder</label>
-                            <input type="text" value={activeField?.admin?.placeholder || ''} onChange={e => setActiveField(prev => ({ ...prev, admin: { ...prev.admin, placeholder: e.target.value } }))} className={cn(inputClass, 'w-full rounded-lg')} placeholder="e.g. Enter a value..." />
+                            <input type="text" value={activeField?.admin?.placeholder || ''} onChange={e => setActiveField(prev => ({ ...prev, admin: { ...prev.admin, placeholder: e.target.value } }))} className={cn(inputClass, 'w-full rounded-none')} placeholder="e.g. Enter a value..." />
                           </div>
                           
                           <div className="col-span-2">
@@ -493,7 +493,7 @@ export default function BlockBuilderPage() {
                                  const parsed = e.target.value ? JSON.parse(e.target.value) : undefined;
                                  setActiveField(prev => ({ ...prev, admin: { ...prev.admin, condition: parsed } }))
                                } catch (err) {}
-                            }} className={cn(inputClass, 'w-full rounded-lg font-mono')} placeholder='{"field": "theme", "equals": "dark"}' />
+                            }} className={cn(inputClass, 'w-full rounded-none font-mono')} placeholder='{"field": "theme", "equals": "dark"}' />
                           </div>
                         </div>
                       </div>
@@ -509,7 +509,7 @@ export default function BlockBuilderPage() {
                   </button>
                 ) : <div />}
                 {modalStep === 'SETTINGS' && (
-                  <button onClick={handleFieldSubmit} className="px-6 py-2 bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-lg shadow-emerald-900/30">
+                  <button onClick={handleFieldSubmit} className="px-6 py-2 bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black uppercase tracking-widest rounded-none transition-all shadow-lg shadow-emerald-900/30">
                     {editingFieldIndex !== null ? 'Update Field' : 'Add Field'}
                   </button>
                 )}

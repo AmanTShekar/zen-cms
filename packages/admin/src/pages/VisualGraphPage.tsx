@@ -268,11 +268,11 @@ export const VisualGraphPage = () => {
       {/* ── Top HUD Bar ──────────────────────────────────────────────── */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-6 pointer-events-none">
         <div className={cn(
-          'flex items-center gap-6 px-6 py-3 border backdrop-blur-xl rounded-xl',
+          'flex items-center gap-6 px-6 py-3 border backdrop-blur-xl rounded-none',
           dark ? 'bg-[#0a0f1a]/80 border-white/[0.08]' : 'bg-white/90 border-gray-200'
         )}>
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
               <Network size={16} className="text-emerald-400" />
             </div>
             <div>
@@ -308,7 +308,7 @@ export const VisualGraphPage = () => {
             value={search}
             onChange={e => setSearch(e.target.value)}
             className={cn(
-              'pl-8 pr-8 py-2 text-[11px] border rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black w-44 transition-all',
+              'pl-8 pr-8 py-2 text-[11px] border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black w-44 transition-all',
               dark ? 'bg-[#0a0f1a]/80 border-white/10 text-white placeholder:text-gray-600 focus:border-emerald-500/50 backdrop-blur-xl' : 'bg-white border-gray-200 text-gray-900 focus:border-emerald-500'
             )}
           />
@@ -325,14 +325,14 @@ export const VisualGraphPage = () => {
           { icon: Maximize2, action: () => { setZoom(0.75); setPan({ x: 0, y: 0 }) }, title: 'Reset View' },
         ].map(({ icon: Icon, action, title }) => (
           <button key={title} onClick={action} title={title} className={cn(
-            'p-2.5 border rounded-lg backdrop-blur-xl transition-all hover:scale-105 active:scale-95',
+            'p-2.5 border rounded-none backdrop-blur-xl transition-all hover:scale-105 active:scale-95',
             dark ? 'bg-[#0a0f1a]/80 border-white/10 text-gray-400 hover:text-white hover:border-white/20' : 'bg-white border-gray-200 text-gray-600 hover:text-black shadow-sm'
           )}>
             <Icon size={16} />
           </button>
         ))}
 
-        <div className={cn('text-center px-2 py-1.5 border rounded-lg backdrop-blur-xl text-[10px] font-black tabular-nums', dark ? 'bg-[#0a0f1a]/80 border-white/10 text-gray-400' : 'bg-white border-gray-200 text-gray-500')}>
+        <div className={cn('text-center px-2 py-1.5 border rounded-none backdrop-blur-xl text-[10px] font-black tabular-nums', dark ? 'bg-[#0a0f1a]/80 border-white/10 text-gray-400' : 'bg-white border-gray-200 text-gray-500')}>
           {Math.round(zoom * 100)}%
         </div>
       </div>
@@ -446,7 +446,7 @@ export const VisualGraphPage = () => {
                 >
                   <div
                     className={cn(
-                      'rounded-xl border backdrop-blur-xl shadow-2xl overflow-hidden w-52',
+                      'rounded-none border backdrop-blur-xl shadow-2xl overflow-hidden w-52',
                       'transition-all duration-200',
                       dark ? 'bg-[#111827]/90' : 'bg-white/95',
                       isSelected
@@ -460,7 +460,7 @@ export const VisualGraphPage = () => {
                       className="px-4 py-3 flex items-center gap-2.5"
                       style={{ borderBottom: `1px solid ${node.color}20`, background: `${node.color}10` }}
                     >
-                      <div className="w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-lg" style={{ background: node.color, boxShadow: `0 0 8px ${node.color}` }} />
+                      <div className="w-2.5 h-2.5 rounded-none flex-shrink-0 shadow-lg" style={{ background: node.color, boxShadow: `0 0 8px ${node.color}` }} />
                       <div className="min-w-0 flex-1">
                         <p className={cn('text-[11px] font-black uppercase tracking-widest truncate', dark ? 'text-white' : 'text-black')}>
                           {node.label}
@@ -533,7 +533,7 @@ export const VisualGraphPage = () => {
             <div className="p-5 border-b flex items-start justify-between gap-3" style={{ borderColor: `${selectedNode.color}20` }}>
               <div>
                 <div className="flex items-center gap-2.5 mb-1">
-                  <div className="w-3 h-3 rounded-full" style={{ background: selectedNode.color, boxShadow: `0 0 8px ${selectedNode.color}` }} />
+                  <div className="w-3 h-3 rounded-none" style={{ background: selectedNode.color, boxShadow: `0 0 8px ${selectedNode.color}` }} />
                   <h2 className={cn('text-sm font-black uppercase tracking-wider', dark ? 'text-white' : 'text-black')}>
                     {selectedNode.label}
                   </h2>
@@ -550,17 +550,17 @@ export const VisualGraphPage = () => {
 
             {/* Badges */}
             <div className="px-5 py-3 flex flex-wrap gap-2 border-b border-white/[0.04]">
-              <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-lg bg-white/5 text-gray-400">
+              <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-none bg-white/5 text-gray-400">
                 <Database size={10} /> {selectedNode.fields.length} Fields
               </span>
-              <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-lg bg-white/5 text-gray-400">
+              <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-none bg-white/5 text-gray-400">
                 <Link2 size={10} /> {edges.filter(e => e.source === selectedNode.id).length} Out-links
               </span>
-              <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-lg bg-white/5 text-gray-400">
+              <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-none bg-white/5 text-gray-400">
                 <Layers size={10} /> {edges.filter(e => e.target === selectedNode.id).length} In-links
               </span>
-              {selectedNode.singleton && <span className="text-[9px] font-black uppercase px-2 py-1 rounded-lg bg-purple-900/40 text-purple-300">Singleton</span>}
-              {selectedNode.drafts && <span className="text-[9px] font-black uppercase px-2 py-1 rounded-lg bg-amber-900/40 text-amber-300">Drafts On</span>}
+              {selectedNode.singleton && <span className="text-[9px] font-black uppercase px-2 py-1 rounded-none bg-purple-900/40 text-purple-300">Singleton</span>}
+              {selectedNode.drafts && <span className="text-[9px] font-black uppercase px-2 py-1 rounded-none bg-amber-900/40 text-amber-300">Drafts On</span>}
             </div>
 
             {/* API Endpoints */}
@@ -585,7 +585,7 @@ export const VisualGraphPage = () => {
               <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-3">Field Schema</p>
               <div className="space-y-2">
                 {selectedNode.fields.map((field, i) => (
-                  <div key={i} className={cn('p-3 rounded-lg border', dark ? 'bg-white/[0.03] border-white/[0.06]' : 'bg-gray-50 border-gray-100')}>
+                  <div key={i} className={cn('p-3 rounded-none border', dark ? 'bg-white/[0.03] border-white/[0.06]' : 'bg-gray-50 border-gray-100')}>
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <span className={cn('text-[11px] font-bold font-mono', dark ? 'text-white' : 'text-black')}>
                         {field.required && <span className="text-red-400 mr-1">*</span>}
@@ -613,7 +613,7 @@ export const VisualGraphPage = () => {
                     <button
                       key={`out-${i}`}
                       onClick={() => setSelectedNode(nodes.find(n => n.id === e.target) || null)}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 transition-colors text-[10px]"
+                      className="w-full text-left px-2.5 py-1.5 rounded-none bg-emerald-500/10 hover:bg-emerald-500/20 transition-colors text-[10px]"
                     >
                       <span className="text-emerald-400 font-black">.{e.fieldName}</span>
                       <span className="text-gray-400 mx-1">→</span>
@@ -625,7 +625,7 @@ export const VisualGraphPage = () => {
                     <button
                       key={`in-${i}`}
                       onClick={() => setSelectedNode(nodes.find(n => n.id === e.source) || null)}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 transition-colors text-[10px]"
+                      className="w-full text-left px-2.5 py-1.5 rounded-none bg-purple-500/10 hover:bg-purple-500/20 transition-colors text-[10px]"
                     >
                       <span className="text-gray-300 font-mono">{e.source}</span>
                       <span className="text-gray-400 mx-1">→</span>
@@ -642,7 +642,7 @@ export const VisualGraphPage = () => {
       {/* ── Mini-map ─────────────────────────────────────────────────── */}
       {!loading && nodes.length > 0 && (
         <div className={cn(
-          'absolute bottom-4 left-4 z-20 w-36 h-24 border rounded-xl overflow-hidden backdrop-blur-xl',
+          'absolute bottom-4 left-4 z-20 w-36 h-24 border rounded-none overflow-hidden backdrop-blur-xl',
           dark ? 'bg-[#0a0f1a]/80 border-white/10' : 'bg-white/80 border-gray-200'
         )}>
           <svg viewBox="0 0 1400 1000" className="w-full h-full">

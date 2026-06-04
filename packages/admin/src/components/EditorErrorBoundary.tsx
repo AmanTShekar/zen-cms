@@ -67,7 +67,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
     <div className="flex flex-col items-center justify-center h-full min-h-64 gap-6 p-8">
       <div
         className={cn(
-          'w-14 h-14 rounded-full flex items-center justify-center border-2',
+          'w-14 h-14 rounded-none flex items-center justify-center border-2',
           theme === 'dark' ? 'bg-rose-500/10 border-rose-500/20' : 'bg-rose-50 border-rose-200'
         )}
       >

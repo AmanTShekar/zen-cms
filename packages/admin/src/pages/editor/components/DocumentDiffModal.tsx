@@ -129,7 +129,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
                 onClick={onClose}
                 aria-label="Close diff view"
                 className={cn(
-                  'p-2 rounded-full transition-colors',
+                  'p-2 rounded-none transition-colors',
                   isDark ? 'hover:bg-white/5 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-600 hover:text-black'
                 )}
               >
@@ -162,7 +162,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
                     <div
                       key={diff.field}
                       className={cn(
-                        'border rounded-lg overflow-hidden',
+                        'border rounded-none overflow-hidden',
                         isDark ? 'border-white/5 bg-black/10' : 'border-gray-200 bg-gray-50/50'
                       )}
                     >

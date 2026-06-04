@@ -150,7 +150,7 @@ function BlockRow({
     >
       {/* Index Badge */}
       <div className={cn(
-        'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-black border z-10 transition-all',
+        'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-none flex items-center justify-center text-[8px] font-black border z-10 transition-all',
         isExpanded
           ? 'bg-accent text-white border-accent shadow-[0_0_8px_rgba(16,185,129,0.6)]'
           : 'bg-app text-gray-400 border-border group-hover:border-accent/40 group-hover:text-accent'
@@ -419,12 +419,12 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                             </div>
                           )}
                           {stock.admin?.category && (
-                            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-black/60 backdrop-blur text-white/80 rounded-sm">
+                            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-black/60 backdrop-blur text-white/80 rounded-none">
                               {stock.admin.category}
                             </span>
                           )}
                           {stock.admin?.imageURL && (
-                            <div className="absolute top-2 right-2 w-5 h-5 bg-black/50 backdrop-blur flex items-center justify-center text-white/70 rounded-sm">
+                            <div className="absolute top-2 right-2 w-5 h-5 bg-black/50 backdrop-blur flex items-center justify-center text-white/70 rounded-none">
                               {getBlockIcon(stock.slug)}
                             </div>
                           )}
@@ -557,7 +557,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
             <Layers size={16} className="text-accent" />
             <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Page Components</span>
             {blocks.length > 0 && (
-              <span className="px-1.5 py-0.5 text-[9px] font-black bg-accent/15 text-accent border border-accent/25 rounded-full">
+              <span className="px-1.5 py-0.5 text-[9px] font-black bg-accent/15 text-accent border border-accent/25 rounded-none">
                 {blocks.length}
               </span>
             )}
@@ -604,7 +604,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
       {/* Empty State */}
       {blocks.length === 0 && (
         <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="border border-dashed border-border p-10 flex flex-col items-center gap-4 text-center bg-white/[0.05]/20 rounded-none">
-          <div className="w-12 h-12 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-none bg-accent/10 border border-accent/20 flex items-center justify-center">
             <Layers size={20} className="text-accent/50" />
           </div>
           <div>
@@ -668,7 +668,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
         <div className="w-full h-full min-h-[700px] border border-white/10 rounded-none overflow-hidden sticky top-4 bg-[#0B0F19] shadow-2xl flex flex-col">
           <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between shrink-0">
             <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-400 italic flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10B981]" />
+              <div className="w-2 h-2 rounded-none bg-emerald-500 animate-pulse shadow-[0_0_10px_#10B981]" />
               Live Preview Connected
             </span>
             <span className="text-[9px] font-mono text-gray-500">{previewUrl}</span>

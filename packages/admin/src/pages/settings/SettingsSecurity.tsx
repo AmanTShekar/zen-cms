@@ -54,7 +54,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
     <>
       <div
         className={cn(
-          'p-5 rounded-xl border flex items-center justify-between transition-all group col-span-1 md:col-span-2',
+          'p-5 rounded-none border flex items-center justify-between transition-all group col-span-1 md:col-span-2',
           theme === 'dark'
             ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20'
             : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
@@ -75,13 +75,13 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
             onChange={(e) => setSettings({ ...settings, allowRegistration: e.target.checked })}
             className="sr-only peer"
           />
-          <div className="w-11 h-6 bg-gray-500/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 border border-white/10 shadow-inner"></div>
+          <div className="w-11 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 border border-white/10 shadow-inner"></div>
         </label>
       </div>
 
       <div
         className={cn(
-          'p-5 rounded-xl border transition-all space-y-3',
+          'p-5 rounded-none border transition-all space-y-3',
           theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
         )}
       >
@@ -93,7 +93,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
           value={settings.jwtExpiresIn}
           onChange={(e) => setSettings({ ...settings, jwtExpiresIn: e.target.value })}
           className={cn(
-            'w-full border rounded-lg py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+            'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
             theme === 'dark'
               ? 'bg-[#0f141f] border-white/10 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
               : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
@@ -106,7 +106,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
       
       <div
         className={cn(
-          'p-5 rounded-xl border transition-all space-y-3',
+          'p-5 rounded-none border transition-all space-y-3',
           theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
         )}
       >
@@ -118,7 +118,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
           value={settings.passwordMinLength}
           onChange={(e) => setSettings({ ...settings, passwordMinLength: Number(e.target.value) })}
           className={cn(
-            'w-full border rounded-lg py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+            'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
             theme === 'dark'
               ? 'bg-[#0f141f] border-white/10 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
               : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
@@ -128,12 +128,12 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
 
       <div
         className={cn(
-          'col-span-1 md:col-span-2 p-6 rounded-xl border transition-all space-y-6',
+          'col-span-1 md:col-span-2 p-6 rounded-none border transition-all space-y-6',
           theme === 'dark' ? 'bg-white/[0.02] border-white/5' : 'bg-gray-50/50 border-gray-100'
         )}
       >
         <div className="flex items-center gap-4 border-b border-gray-200 dark:border-white/10 pb-5">
-          <div className="p-3 bg-emerald-500/10 text-emerald-500 rounded-xl">
+          <div className="p-3 bg-emerald-500/10 text-emerald-500 rounded-none">
             {enabled ? <ShieldCheck size={24} /> : <ShieldAlert size={24} />}
           </div>
           <div>
@@ -149,7 +149,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
         ) : setupState === 'idle' ? (
           <button
             onClick={handleSetup}
-            className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition-colors flex items-center gap-2"
+            className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none transition-colors flex items-center gap-2"
           >
             Configure 2FA
           </button>
@@ -158,7 +158,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
         ) : (
           <div className="space-y-4">
             <p className="text-xs font-medium text-gray-400">1. Scan the QR code with your authenticator app.</p>
-            {qrCode && <img src={qrCode} alt="2FA QR Code" className="w-48 h-48 border-4 border-white rounded-xl" />}
+            {qrCode && <img src={qrCode} alt="2FA QR Code" className="w-48 h-48 border-4 border-white rounded-none" />}
             <p className="text-xs font-medium text-gray-400">2. Enter the 6-digit code below to verify.</p>
             <div className="flex gap-3">
               <input
@@ -168,7 +168,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
                 value={token}
                 onChange={(e) => setToken(e.target.value.replace(/\D/g, ''))}
                 className={cn(
-                  'w-48 border rounded-xl py-3 px-4 text-center text-xl font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black tracking-widest',
+                  'w-48 border rounded-none py-3 px-4 text-center text-xl font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black tracking-widest',
                   theme === 'dark'
                     ? 'bg-[#0f141f] border-white/20 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
                     : 'bg-white border-gray-300 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
@@ -177,7 +177,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
               <button
                 onClick={handleVerify}
                 disabled={token.length !== 6 || verifying}
-                className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-bold rounded-xl transition-colors flex items-center gap-2"
+                className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-bold rounded-none transition-colors flex items-center gap-2"
               >
                 {verifying ? <Loader2 size={14} className="animate-spin" /> : 'Verify & Enable'}
               </button>

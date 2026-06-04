@@ -73,7 +73,7 @@ const JSONField: React.FC<JSONFieldProps> = ({ value, onChange, disabled, rows =
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className={cn(
-            'inline-block w-1.5 h-1.5 rounded-full',
+            'inline-block w-1.5 h-1.5 rounded-none',
             jsonValid === true ? 'bg-emerald-500 shadow-[0_0_6px_#10b981]' : jsonValid === false ? 'bg-red-500 shadow-[0_0_6px_#ef4444]' : 'bg-gray-600'
           )} />
           <span className={cn(

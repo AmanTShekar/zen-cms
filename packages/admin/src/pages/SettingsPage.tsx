@@ -291,7 +291,7 @@ const SettingsPage = () => {
     <div className="max-w-[1400px] mx-auto space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
+          <div className="w-12 h-12 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
             <SettingsIcon size={24} />
           </div>
           <div>
@@ -307,7 +307,7 @@ const SettingsPage = () => {
           onClick={handleSave}
           disabled={saving}
           className={cn(
-            'flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-50',
+            'flex items-center justify-center gap-2 px-6 py-2.5 rounded-none text-sm font-bold transition-all disabled:opacity-50',
             theme === 'dark' ? 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'bg-gray-900 text-white hover:bg-gray-800'
           )}
         >
@@ -329,14 +329,14 @@ const SettingsPage = () => {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={cn(
-                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group border',
+                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-none transition-all group border',
                       activeTab === tab.id
                         ? theme === 'dark' ? 'bg-white/[0.06] border-white/10 text-white shadow-sm' : 'bg-white border-gray-100 shadow-sm text-gray-900'
                         : theme === 'dark' ? 'text-gray-400 border-transparent hover:bg-white/[0.02] hover:text-gray-200' : 'text-gray-500 border-transparent hover:bg-gray-50'
                     )}
                   >
                     <div className={cn(
-                      "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
+                      "w-8 h-8 rounded-none flex items-center justify-center transition-colors",
                       activeTab === tab.id ? "bg-emerald-500/10 text-emerald-500" : "bg-white/5 text-gray-400 group-hover:text-gray-300"
                     )}>
                       <tab.icon size={16} />
@@ -355,8 +355,8 @@ const SettingsPage = () => {
           <div className={cn(
             'p-8 min-h-[600px] transition-colors',
             theme === 'dark' 
-              ? 'bg-[#111827]/65 backdrop-blur-[12px] border border-white/[0.08] rounded-xl shadow-[0_4px_30px_rgba(0,0,0,0.1)]' 
-              : 'bg-white border border-gray-100 shadow-sm rounded-xl'
+              ? 'bg-[#111827]/65 backdrop-blur-[12px] border border-white/[0.08] rounded-none shadow-[0_4px_30px_rgba(0,0,0,0.1)]' 
+              : 'bg-white border border-gray-100 shadow-sm rounded-none'
           )}>
             <AnimatePresence mode="wait">
               <motion.div
@@ -367,7 +367,7 @@ const SettingsPage = () => {
                 className="space-y-8 relative z-10"
               >
                 <div className="flex items-center gap-4 border-b border-white/[0.05] pb-6">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                  <div className="w-10 h-10 rounded-none bg-emerald-500/10 flex items-center justify-center text-emerald-500">
                     {activeTabDetails?.icon && <activeTabDetails.icon size={20} />}
                   </div>
                   <div>

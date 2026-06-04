@@ -278,8 +278,8 @@ function WidgetPreviewMock({ type, theme }: { type: string; theme: 'dark' | 'lig
               <Database size={10} className="text-emerald-500" />
             </div>
             <div>
-              <div className={cn('h-1.5 w-12 mb-1.5 rounded-sm', lineBg)} />
-              <div className={cn('h-4 w-16 rounded-sm', isDark ? 'bg-white/20' : 'bg-gray-300')} />
+              <div className={cn('h-1.5 w-12 mb-1.5 rounded-none', lineBg)} />
+              <div className={cn('h-4 w-16 rounded-none', isDark ? 'bg-white/20' : 'bg-gray-300')} />
             </div>
           </div>
         )
@@ -287,13 +287,13 @@ function WidgetPreviewMock({ type, theme }: { type: string; theme: 'dark' | 'lig
       case 'recent-content':
         return (
           <div className="flex flex-col h-full gap-2 overflow-hidden">
-            <div className={cn('h-2 w-16 mb-1 rounded-sm', lineBg)} />
+            <div className={cn('h-2 w-16 mb-1 rounded-none', lineBg)} />
             {[1, 2, 3].map((i) => (
               <div key={i} className="flex gap-2 items-center">
                 <div className={cn('w-4 h-4 shrink-0', lineBg)} />
                 <div className="flex-1 space-y-1">
-                  <div className={cn('h-1.5 w-full rounded-sm', lineBg)} />
-                  <div className={cn('h-1 w-1/2 rounded-sm', lineBg)} />
+                  <div className={cn('h-1.5 w-full rounded-none', lineBg)} />
+                  <div className={cn('h-1 w-1/2 rounded-none', lineBg)} />
                 </div>
               </div>
             ))}
@@ -313,7 +313,7 @@ function WidgetPreviewMock({ type, theme }: { type: string; theme: 'dark' | 'lig
       case 'api-status':
         return (
           <div className="flex flex-col h-full gap-2">
-            <div className={cn('h-2 w-16 mb-2 rounded-sm', lineBg)} />
+            <div className={cn('h-2 w-16 mb-2 rounded-none', lineBg)} />
             <div className="flex items-end gap-1 h-8">
               {[40, 70, 45, 90, 60].map((h, i) => (
                 <div
@@ -413,7 +413,7 @@ function WidgetPicker({
               <button
                 onClick={onClose}
                 className={cn(
-                  'p-2 rounded-full transition-colors',
+                  'p-2 rounded-none transition-colors',
                   theme === 'dark'
                     ? 'bg-white/5 hover:bg-white/10 text-gray-400'
                     : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
@@ -583,7 +583,7 @@ function WidgetConfigModal({
               <button
                 onClick={onClose}
                 className={cn(
-                  'p-2 rounded-full transition-colors',
+                  'p-2 rounded-none transition-colors',
                   isDark
                     ? 'bg-white/5 hover:bg-white/10 text-gray-400'
                     : 'bg-gray-100 hover:bg-gray-200 text-gray-600'

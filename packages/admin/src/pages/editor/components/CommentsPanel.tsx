@@ -340,7 +340,7 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
       {loading ? (
         <div className="text-center py-4">
           <div className={cn(
-            'w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-2'
+            'w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-none animate-spin mx-auto mb-2'
           )} />
           <p className="text-xs text-gray-500 italic font-bold">Loading comments...</p>
         </div>

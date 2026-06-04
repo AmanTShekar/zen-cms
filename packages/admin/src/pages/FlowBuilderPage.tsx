@@ -692,7 +692,7 @@ const FlowBuilderPage: React.FC = () => {
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-12 text-center relative overflow-hidden">
             {/* Background Decoration */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/5 blur-[120px] rounded-full" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/5 blur-[120px] rounded-none" />
 
             <div className="w-32 h-32 border-2 border-white/5 flex items-center justify-center text-gray-900 mb-10 bg-zinc-950/20 relative z-10 group">
               <Workflow

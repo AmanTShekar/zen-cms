@@ -68,7 +68,7 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
         exit={{ opacity: 0, scale: 0.95, y: -5 }}
         transition={{ duration: 0.15 }}
         className={cn(
-          'p-1.5 border rounded-lg shadow-2xl backdrop-blur-xl relative',
+          'p-1.5 border rounded-none shadow-2xl backdrop-blur-xl relative',
           theme === 'dark'
             ? 'bg-[#0B0F19]/95 border-white/8 text-white'
             : 'bg-white/95 border-gray-200 text-gray-900 shadow-gray-200/50'
@@ -80,7 +80,7 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
             onMouseEnter={() => setShowConvertMenu(true)}
             onClick={() => setShowConvertMenu(!showConvertMenu)}
             className={cn(
-              'w-full flex items-center justify-between px-3 py-2 text-left text-xs font-semibold rounded-md transition-colors',
+              'w-full flex items-center justify-between px-3 py-2 text-left text-xs font-semibold rounded-none transition-colors',
               theme === 'dark' ? 'hover:bg-white/5' : 'hover:bg-gray-100'
             )}
           >
@@ -101,7 +101,7 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
                 initial={{ opacity: 0, x: -5 }}
                 animate={{ opacity: 1, x: 0 }}
                 className={cn(
-                  'p-1.5 border rounded-lg shadow-2xl backdrop-blur-xl max-h-72 overflow-y-auto custom-editor-scrollbar',
+                  'p-1.5 border rounded-none shadow-2xl backdrop-blur-xl max-h-72 overflow-y-auto custom-editor-scrollbar',
                   theme === 'dark'
                     ? 'bg-[#0B0F19]/95 border-white/8 text-white'
                     : 'bg-white/95 border-gray-200 text-gray-900'
@@ -115,7 +115,7 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
                       onClose()
                     }}
                     className={cn(
-                      'w-full flex items-center gap-2.5 px-2.5 py-1.5 text-left text-xs rounded-md transition-colors font-medium',
+                      'w-full flex items-center gap-2.5 px-2.5 py-1.5 text-left text-xs rounded-none transition-colors font-medium',
                       theme === 'dark' ? 'hover:bg-white/5' : 'hover:bg-gray-100'
                     )}
                   >
@@ -137,7 +137,7 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
             onClose()
           }}
           className={cn(
-            'w-full flex items-center gap-2 px-3 py-2 text-left text-xs font-semibold rounded-md transition-colors',
+            'w-full flex items-center gap-2 px-3 py-2 text-left text-xs font-semibold rounded-none transition-colors',
             theme === 'dark' ? 'hover:bg-white/5' : 'hover:bg-gray-100'
           )}
         >
@@ -152,21 +152,21 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
           <button
             onClick={() => { onAlign('left'); onClose() }}
             aria-label="Align left"
-            className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-md transition-all', theme === 'dark' ? 'border-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/5 text-gray-400 hover:text-emerald-400' : 'border-gray-200 hover:border-emerald-200 hover:bg-emerald-50 text-gray-600 hover:text-emerald-600')}
+            className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-none transition-all', theme === 'dark' ? 'border-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/5 text-gray-400 hover:text-emerald-400' : 'border-gray-200 hover:border-emerald-200 hover:bg-emerald-50 text-gray-600 hover:text-emerald-600')}
           >
             <AlignLeft size={13} aria-hidden="true" />
           </button>
           <button
             onClick={() => { onAlign('center'); onClose() }}
             aria-label="Align center"
-            className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-md transition-all', theme === 'dark' ? 'border-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/5 text-gray-400 hover:text-emerald-400' : 'border-gray-200 hover:border-emerald-200 hover:bg-emerald-50 text-gray-600 hover:text-emerald-600')}
+            className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-none transition-all', theme === 'dark' ? 'border-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/5 text-gray-400 hover:text-emerald-400' : 'border-gray-200 hover:border-emerald-200 hover:bg-emerald-50 text-gray-600 hover:text-emerald-600')}
           >
             <AlignCenter size={13} aria-hidden="true" />
           </button>
           <button
             onClick={() => { onAlign('right'); onClose() }}
             aria-label="Align right"
-            className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-md transition-all', theme === 'dark' ? 'border-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/5 text-gray-400 hover:text-emerald-400' : 'border-gray-200 hover:border-emerald-200 hover:bg-emerald-50 text-gray-600 hover:text-emerald-600')}
+            className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-none transition-all', theme === 'dark' ? 'border-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/5 text-gray-400 hover:text-emerald-400' : 'border-gray-200 hover:border-emerald-200 hover:bg-emerald-50 text-gray-600 hover:text-emerald-600')}
           >
             <AlignRight size={13} aria-hidden="true" />
           </button>
@@ -181,7 +181,7 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
             onClose()
           }}
           className={cn(
-            'w-full flex items-center gap-2 px-3 py-2 text-left text-xs font-semibold rounded-md transition-colors',
+            'w-full flex items-center gap-2 px-3 py-2 text-left text-xs font-semibold rounded-none transition-colors',
             theme === 'dark' ? 'hover:bg-rose-500/10 text-rose-400' : 'hover:bg-rose-50 text-rose-600'
           )}
         >

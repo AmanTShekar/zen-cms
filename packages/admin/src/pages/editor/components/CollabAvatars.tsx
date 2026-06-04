@@ -60,7 +60,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             className={cn(
-              'w-6 h-6 rounded-full flex items-center justify-center text-[7px] font-black italic border-2 border-white/20 shadow-sm',
+              'w-6 h-6 rounded-none flex items-center justify-center text-[7px] font-black italic border-2 border-white/20 shadow-sm',
             )}
             style={{ backgroundColor: localUser.color }}
           >
@@ -90,7 +90,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
               animate={{ scale: 1, x: 0 }}
               transition={{ delay: idx * 0.05 }}
               className={cn(
-                'relative -ml-1.5 w-6 h-6 rounded-full flex items-center justify-center text-[7px] font-black italic border-2 shadow-sm',
+                'relative -ml-1.5 w-6 h-6 rounded-none flex items-center justify-center text-[7px] font-black italic border-2 shadow-sm',
               )}
               style={{
                 backgroundColor: u.color,
@@ -111,7 +111,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
             onClick={() => setExpanded((v) => !v)}
             aria-label={`${overflowCount} more users editing`}
             className={cn(
-              'relative -ml-1.5 w-6 h-6 rounded-full flex items-center justify-center text-[7px] font-black border-2 shadow-sm transition-transform',
+              'relative -ml-1.5 w-6 h-6 rounded-none flex items-center justify-center text-[7px] font-black border-2 shadow-sm transition-transform',
               theme === 'dark'
                 ? 'bg-gray-800 border-white/10 text-gray-400 hover:scale-110'
                 : 'bg-gray-200 border-white text-gray-600 hover:scale-110'
@@ -146,7 +146,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
               {[localUser, ...users.filter((u) => u.id !== localUser.id)].map((u) => (
                 <div key={u.id} className="flex items-center gap-2">
                   <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-black italic text-white shrink-0"
+                    className="w-5 h-5 rounded-none flex items-center justify-center text-xs font-black italic text-white shrink-0"
                     style={{ backgroundColor: u.color }}
                   >
                     {initials(u.name, u.email)}

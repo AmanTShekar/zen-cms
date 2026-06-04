@@ -261,12 +261,12 @@ export const GlobalComponentPickerModal: React.FC = () => {
                                 <Icon size={16} />
                               </div>
                               {block.category && (
-                                <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-black/50 backdrop-blur text-white/80 rounded-sm">
+                                <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-black/50 backdrop-blur text-white/80 rounded-none">
                                   {block.category}
                                 </span>
                               )}
                               <div className="absolute bottom-0 right-0 p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <div className="w-5 h-5 bg-emerald-500 flex items-center justify-center rounded-sm">
+                                <div className="w-5 h-5 bg-emerald-500 flex items-center justify-center rounded-none">
                                   <Plus size={10} className="text-white" />
                                 </div>
                               </div>
@@ -297,7 +297,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
               </p>
               <p className={cn('text-[9px]', isDark ? 'text-gray-500' : 'text-gray-400')}>
                 Press{' '}
-                <kbd className={cn('px-1.5 py-0.5 font-mono rounded-sm text-[8px] border', isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200')}>
+                <kbd className={cn('px-1.5 py-0.5 font-mono rounded-none text-[8px] border', isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200')}>
                   Esc
                 </kbd>{' '}
                 to close

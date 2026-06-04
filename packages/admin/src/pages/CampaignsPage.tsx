@@ -193,8 +193,8 @@ const CampaignsPage: React.FC = () => {
                   <div>
                     <h4 className="text-[12px] font-black uppercase tracking-widest italic flex items-center gap-2">
                       {c.subject}
-                      {c.status === 'draft' && <span className="px-2 py-0.5 bg-gray-500/20 text-gray-400 text-[8px] rounded-full">Draft</span>}
-                      {c.status === 'sent' && <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[8px] rounded-full">Sent</span>}
+                      {c.status === 'draft' && <span className="px-2 py-0.5 bg-gray-500/20 text-gray-400 text-[8px] rounded-none">Draft</span>}
+                      {c.status === 'sent' && <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[8px] rounded-none">Sent</span>}
                     </h4>
                     <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">
                       Audience: {c.audience} • Created: {new Date(c.createdAt).toLocaleDateString()}

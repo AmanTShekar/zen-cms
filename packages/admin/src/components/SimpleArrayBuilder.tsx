@@ -118,7 +118,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
           <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">
             {label}
           </span>
-          <span className="px-1.5 py-0.5 text-[9px] font-black bg-emerald-500/15 text-emerald-500 border border-emerald-500/25 rounded-full">
+          <span className="px-1.5 py-0.5 text-[9px] font-black bg-emerald-500/15 text-emerald-500 border border-emerald-500/25 rounded-none">
             {value.length}
           </span>
         </div>
@@ -179,7 +179,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
                 >
                   {/* Index Badge */}
                   <div className={cn(
-                    'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-black border z-10 transition-all',
+                    'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-none flex items-center justify-center text-[8px] font-black border z-10 transition-all',
                     isExpanded
                       ? 'bg-emerald-500 text-white border-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]'
                       : 'bg-app text-gray-400 border-border group-hover:border-emerald-500/40 group-hover:text-emerald-500'

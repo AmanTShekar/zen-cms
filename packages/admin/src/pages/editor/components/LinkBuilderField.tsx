@@ -28,7 +28,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
   const { data } = useEditorStore()
 
   // Extract page anchors
-  const anchors = data?.sections?.map(s => s.content?.anchorId).filter(Boolean) || []
+  const anchors = (data?.sections?.map(s => s.content?.anchorId).filter(Boolean) as string[]) || []
 
   // Close on click outside
   useEffect(() => {

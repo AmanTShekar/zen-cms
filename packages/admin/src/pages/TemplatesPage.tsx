@@ -288,8 +288,8 @@ const TemplatesPage: React.FC = () => {
             : 'bg-gradient-to-r from-gray-50 via-white to-gray-50 border-gray-100'
         )}
       >
-        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 blur-[100px] pointer-events-none rounded-full" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-500/5 blur-[100px] pointer-events-none rounded-full" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 blur-[100px] pointer-events-none rounded-none" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-500/5 blur-[100px] pointer-events-none rounded-none" />
 
         <div className="flex-1 space-y-3 z-10">
           <div className="flex items-center gap-2 text-emerald-500">
@@ -376,7 +376,7 @@ const TemplatesPage: React.FC = () => {
                       <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">
                         {template.category}
                       </span>
-                      <span className="w-1 h-1 bg-gray-500 rounded-full" />
+                      <span className="w-1 h-1 bg-gray-500 rounded-none" />
                       <span className="text-[8px] font-mono font-black text-emerald-400">
                         v{template.version}
                       </span>
@@ -419,7 +419,7 @@ const TemplatesPage: React.FC = () => {
                   <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none" />
                   <div
                     className={cn(
-                      'absolute w-48 h-48 rounded-full blur-[60px] opacity-20 bg-gradient-to-br',
+                      'absolute w-48 h-48 rounded-none blur-[60px] opacity-20 bg-gradient-to-br',
                       template.primaryColor
                     )}
                   />
@@ -428,9 +428,9 @@ const TemplatesPage: React.FC = () => {
                   <div className="w-5/6 h-2/3 border border-white/10 rounded-none bg-black/45 backdrop-blur-md p-4 flex flex-col justify-between shadow-2xl relative overflow-hidden">
                     <div className="flex items-center justify-between">
                       <div className="flex gap-1.5">
-                        <div className="w-2 h-2 rounded-full bg-red-500/40" />
-                        <div className="w-2 h-2 rounded-full bg-yellow-500/40" />
-                        <div className="w-2 h-2 rounded-full bg-green-500/40" />
+                        <div className="w-2 h-2 rounded-none bg-red-500/40" />
+                        <div className="w-2 h-2 rounded-none bg-yellow-500/40" />
+                        <div className="w-2 h-2 rounded-none bg-green-500/40" />
                       </div>
                       <div className="px-2 py-0.5 bg-white/5 border border-white/10 rounded-none text-[6px] font-mono text-gray-500 uppercase tracking-widest">
                         SECURE_SSL
@@ -768,7 +768,7 @@ const TemplatesPage: React.FC = () => {
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
+                        <div className="w-1.5 h-1.5 rounded-none bg-amber-500 animate-ping" />
                         <span className="text-[8px] font-mono text-amber-500 uppercase font-black">
                           {deployStep === 1
                             ? 'GIT_FETCH'

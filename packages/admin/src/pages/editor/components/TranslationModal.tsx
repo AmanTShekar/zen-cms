@@ -163,7 +163,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
                 return (
                   <div key={`${field.sectionId}-${field.fieldName}`} className="space-y-4 relative">
                     <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-none" />
                       <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-400">
                         {field.sectionName} <span className="text-gray-500 mx-1">&gt;</span> {humanize(field.fieldName)}
                       </h4>

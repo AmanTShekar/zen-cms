@@ -213,7 +213,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                       className={cn(
                         'transition-all duration-300 border overflow-hidden bg-white',
                         dark ? 'border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)]' : 'border-gray-200 shadow-2xl',
-                        isDesktop ? 'w-full h-full' : 'rounded-[32px]'
+                        isDesktop ? 'w-full h-full' : 'rounded-none'
                       )}
                       style={
                         isDesktop

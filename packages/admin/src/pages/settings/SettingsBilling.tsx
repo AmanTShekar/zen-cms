@@ -249,7 +249,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                       <label className="text-[8px] font-black text-gray-500 uppercase tracking-wider block">Paywall Restricted Collections</label>
                       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 mt-4">
                         {(healthData?.collections || []).length === 0 ? (
-                          <div className="col-span-full py-4 text-center border border-dashed border-gray-200 dark:border-white/10 rounded-xl">
+                          <div className="col-span-full py-4 text-center border border-dashed border-gray-200 dark:border-white/10 rounded-none">
                             <span className="text-[10px] font-black uppercase tracking-widest italic text-gray-500">No collections available to monetize</span>
                           </div>
                         ) : (

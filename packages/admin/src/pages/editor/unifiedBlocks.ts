@@ -5,7 +5,7 @@ export interface UnifiedBlockDefinition {
   iconName: string
   title: string
   description: string
-  category: 'Layout' | 'Content' | 'Commerce' | 'Media' | 'Social' | 'General'
+  category: 'Layout' | 'Content' | 'Commerce' | 'Media' | 'Social' | 'General' | 'Advanced'
   fields: FieldDefinition[]
   defaultContent: Record<string, any>
 }

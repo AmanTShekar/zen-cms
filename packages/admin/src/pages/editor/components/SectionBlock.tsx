@@ -376,9 +376,9 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
                   theme === 'dark' ? 'bg-[#0F172A]/80 border-white/5' : 'bg-gray-100 border-gray-200'
                 )}>
                   <div className="flex gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                    <span className="w-2.5 h-2.5 rounded-none bg-rose-500" />
+                    <span className="w-2.5 h-2.5 rounded-none bg-amber-500" />
+                    <span className="w-2.5 h-2.5 rounded-none bg-emerald-500" />
                   </div>
                   <span className="text-xs font-black uppercase tracking-wider text-gray-500 italic">
                     {section.content?.language || 'javascript'} terminal

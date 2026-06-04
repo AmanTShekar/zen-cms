@@ -19,8 +19,8 @@ import { useQueryClient } from '@tanstack/react-query'
 
 const EmptyCollectionState = ({ slug, theme }: { slug: string, theme: string }) => {
   return (
-    <div className={cn("py-24 px-6 text-center border-dashed border-2 rounded-xl flex flex-col items-center justify-center gap-6 my-10 mx-auto max-w-2xl", theme === 'dark' ? 'border-white/10 bg-white/[0.02]' : 'border-emerald-500/20 bg-emerald-50/50')}>
-      <div className={cn("w-16 h-16 rounded-full flex items-center justify-center", theme === 'dark' ? 'bg-white/5 text-emerald-400' : 'bg-emerald-100 text-emerald-600')}>
+    <div className={cn("py-24 px-6 text-center border-dashed border-2 rounded-none flex flex-col items-center justify-center gap-6 my-10 mx-auto max-w-2xl", theme === 'dark' ? 'border-white/10 bg-white/[0.02]' : 'border-emerald-500/20 bg-emerald-50/50')}>
+      <div className={cn("w-16 h-16 rounded-none flex items-center justify-center", theme === 'dark' ? 'bg-white/5 text-emerald-400' : 'bg-emerald-100 text-emerald-600')}>
         <Database size={28} />
       </div>
       <div>
@@ -31,7 +31,7 @@ const EmptyCollectionState = ({ slug, theme }: { slug: string, theme: string }) 
       </div>
       <Link 
         to={`/collections/${slug}/new`}
-        className={cn("px-8 py-4 rounded-full font-black text-[11px] uppercase tracking-widest shadow-xl transition-all italic leading-none flex items-center gap-3", theme === 'dark' ? 'bg-emerald-500 text-white hover:bg-emerald-400 hover:shadow-emerald-500/20' : 'bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-emerald-600/20')}
+        className={cn("px-8 py-4 rounded-none font-black text-[11px] uppercase tracking-widest shadow-xl transition-all italic leading-none flex items-center gap-3", theme === 'dark' ? 'bg-emerald-500 text-white hover:bg-emerald-400 hover:shadow-emerald-500/20' : 'bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-emerald-600/20')}
       >
         <Plus size={16} strokeWidth={3} /> Launch Page Builder
       </Link>

@@ -188,7 +188,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
           <Undo2 size={15} />
           {undoStack.length > 0 && (
             <span
-              className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[8px] font-black tabular-nums rounded-full bg-emerald-600 text-white leading-none"
+              className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[8px] font-black tabular-nums rounded-none bg-emerald-600 text-white leading-none"
               aria-hidden="true"
             >
               {undoStack.length > 99 ? '99+' : undoStack.length}
@@ -205,7 +205,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
           <Redo2 size={15} />
           {redoStack.length > 0 && (
             <span
-              className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[8px] font-black tabular-nums rounded-full bg-emerald-600/80 text-white leading-none"
+              className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[8px] font-black tabular-nums rounded-none bg-emerald-600/80 text-white leading-none"
               aria-hidden="true"
             >
               {redoStack.length > 99 ? '99+' : redoStack.length}

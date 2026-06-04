@@ -349,7 +349,7 @@ const CollectionHooksPage: React.FC = () => {
                     )}
                   >
                     <div className="flex items-center gap-2">
-                      {isActive && <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />}
+                      {isActive && <div className="w-1.5 h-1.5 rounded-none bg-emerald-500" />}
                       <span className={cn(
                         'text-[10px] font-black uppercase tracking-widest',
                         isActive ? 'text-emerald-400' : theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
