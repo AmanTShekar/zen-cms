@@ -1,277 +1,277 @@
 import React, { useState, useCallback } from 'react'
 import {
-  Plus,
-  GripVertical,
-  Trash2,
-  ChevronDown,
-  ArrowUp,
-  ArrowDown,
-  Copy,
-  Layers,
+ Plus,
+ GripVertical,
+ Trash2,
+ ChevronDown,
+ ArrowUp,
+ ArrowDown,
+ Copy,
+ Layers,
 } from 'lucide-react'
 import { motion, AnimatePresence, Reorder } from 'framer-motion'
 import { cn, uid } from '../lib/utils'
 
 interface FieldConfig {
-  name: string
-  label?: string
-  type: string
-  required?: boolean
-  [key: string]: unknown
+ name: string
+ label?: string
+ type: string
+ required?: boolean
+ [key: string]: unknown
 }
 
 interface SimpleArrayBuilderProps {
-  value?: Record<string, unknown>[]
-  onChange: (value: Record<string, unknown>[]) => void
-  fields: FieldConfig[]
-  label: string
-  renderField: (
-    field: FieldConfig,
-    value: unknown,
-    onChange: (val: unknown) => void
-  ) => React.ReactNode
-  disabled?: boolean
+ value?: Record<string, unknown>[]
+ onChange: (value: Record<string, unknown>[]) => void
+ fields: FieldConfig[]
+ label: string
+ renderField: (
+ field: FieldConfig,
+ value: unknown,
+ onChange: (val: unknown) => void
+ ) => React.ReactNode
+ disabled?: boolean
 }
 
 const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
-  value = [],
-  onChange,
-  fields,
-  label,
-  renderField,
-  disabled = false,
+ value = [],
+ onChange,
+ fields,
+ label,
+ renderField,
+ disabled = false,
 }) => {
-  const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({})
+ const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({})
 
-  // Ensure every item has an internal `_id` for Framer Motion Reorder tracking
-  const items = React.useMemo(() => {
-    return value.map((item, idx) => ({
-      ...item,
-      _id: (item as any)._id || `array_item_${uid()}_${idx}`
-    }))
-  }, [value])
+ // Ensure every item has an internal `_id` for Framer Motion Reorder tracking
+ const items = React.useMemo(() => {
+ return value.map((item, idx) => ({
+ ...item,
+ _id: (item as any)._id || `array_item_${uid()}_${idx}`
+ }))
+ }, [value])
 
-  const toggleItem = (id: string) => {
-    setExpandedIds((prev) => ({ ...prev, [id]: !prev[id] }))
-  }
+ const toggleItem = (id: string) => {
+ setExpandedIds((prev) => ({ ...prev, [id]: !prev[id] }))
+ }
 
-  const expandAll = () => {
-    const next: Record<string, boolean> = {}
-    items.forEach((item) => { next[item._id as string] = true })
-    setExpandedIds(next)
-  }
+ const expandAll = () => {
+ const next: Record<string, boolean> = {}
+ items.forEach((item) => { next[item._id as string] = true })
+ setExpandedIds(next)
+ }
 
-  const collapseAll = () => {
-    setExpandedIds({})
-  }
+ const collapseAll = () => {
+ setExpandedIds({})
+ }
 
-  const addItem = useCallback(() => {
-    const newId = `array_item_${uid()}`
-    const newItem: any = { _id: newId, id: newId }
-    fields.forEach((f) => {
-      if (f.defaultValue !== undefined) {
-        newItem[f.name] = f.defaultValue
-      }
-    })
-    onChange([...value, newItem])
-    setExpandedIds((prev) => ({ ...prev, [newId]: true }))
-  }, [value, fields, onChange])
+ const addItem = useCallback(() => {
+ const newId = `array_item_${uid()}`
+ const newItem: any = { _id: newId, id: newId }
+ fields.forEach((f) => {
+ if (f.defaultValue !== undefined) {
+ newItem[f.name] = f.defaultValue
+ }
+ })
+ onChange([...value, newItem])
+ setExpandedIds((prev) => ({ ...prev, [newId]: true }))
+ }, [value, fields, onChange])
 
-  const removeItem = useCallback((index: number) => {
-    const next = [...value]
-    next.splice(index, 1)
-    onChange(next)
-  }, [value, onChange])
+ const removeItem = useCallback((index: number) => {
+ const next = [...value]
+ next.splice(index, 1)
+ onChange(next)
+ }, [value, onChange])
 
-  const duplicateItem = useCallback((index: number) => {
-    const next = [...value]
-    const newId = `array_item_${uid()}`
-    const dupItem = { ...value[index], _id: newId, id: newId }
-    next.splice(index + 1, 0, dupItem)
-    onChange(next)
-    setExpandedIds((prev) => ({ ...prev, [newId]: true }))
-  }, [value, onChange])
+ const duplicateItem = useCallback((index: number) => {
+ const next = [...value]
+ const newId = `array_item_${uid()}`
+ const dupItem = { ...value[index], _id: newId, id: newId }
+ next.splice(index + 1, 0, dupItem)
+ onChange(next)
+ setExpandedIds((prev) => ({ ...prev, [newId]: true }))
+ }, [value, onChange])
 
-  const moveItem = useCallback((index: number, direction: 'up' | 'down') => {
-    if (direction === 'up' && index === 0) return
-    if (direction === 'down' && index === value.length - 1) return
-    const next = [...value]
-    const targetIndex = direction === 'up' ? index - 1 : index + 1
-    const temp = next[index]
-    next[index] = next[targetIndex]
-    next[targetIndex] = temp
-    onChange(next)
-  }, [value, onChange])
+ const moveItem = useCallback((index: number, direction: 'up' | 'down') => {
+ if (direction === 'up' && index === 0) return
+ if (direction === 'down' && index === value.length - 1) return
+ const next = [...value]
+ const targetIndex = direction === 'up' ? index - 1 : index + 1
+ const temp = next[index]
+ next[index] = next[targetIndex]
+ next[targetIndex] = temp
+ onChange(next)
+ }, [value, onChange])
 
-  const updateItem = useCallback((index: number, updates: Record<string, unknown>) => {
-    const next = [...value]
-    next[index] = { ...next[index], ...updates }
-    onChange(next)
-  }, [value, onChange])
+ const updateItem = useCallback((index: number, updates: Record<string, unknown>) => {
+ const next = [...value]
+ next[index] = { ...next[index], ...updates }
+ onChange(next)
+ }, [value, onChange])
 
-  return (
-    <div className="flex flex-col gap-4 pl-5 select-none">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <Layers size={16} strokeWidth={2} className="text-emerald-500" />
-          <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">
-            {label}
-          </span>
-          <span className="px-1.5 py-0.5 text-[9px] font-black bg-emerald-500/15 text-emerald-500 border border-emerald-500/25 rounded-none">
-            {value.length}
-          </span>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          {value.length > 0 && (
-            <div className="flex items-center gap-1.5 border border-white/[0.08] bg-white/[0.02] p-0.5 rounded-none mr-2">
-              <button type="button" onClick={expandAll} className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-white transition-all hover:bg-white/[0.05]">Expand All</button>
-              <div className="w-px h-3 bg-white/10" />
-              <button type="button" onClick={collapseAll} className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-white transition-all hover:bg-white/[0.05]">Collapse All</button>
-            </div>
-          )}
-          {!disabled && (
-            <button
-              type="button"
-              onClick={addItem}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider hover:bg-emerald-500 transition-all shadow-sm shadow-emerald-900/20 rounded-none"
-            >
-              <Plus size={11} strokeWidth={2} /> Add Component
-            </button>
-          )}
-        </div>
-      </div>
+ return (
+ <div className="flex flex-col gap-4 pl-5 select-none">
+ {/* Header */}
+ <div className="flex items-center justify-between">
+ <div className="flex items-center gap-2.5">
+ <Layers size={16} strokeWidth={2} className="text-emerald-500" />
+ <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">
+ {label}
+ </span>
+ <span className="px-1.5 py-0.5 text-[9px] font-black bg-emerald-500/15 text-emerald-500 border border-emerald-500/25 rounded-none">
+ {value.length}
+ </span>
+ </div>
+ 
+ <div className="flex items-center gap-2">
+ {value.length > 0 && (
+ <div className="flex items-center gap-1.5 border border-white/[0.08] bg-white/[0.02] p-0.5 rounded-none mr-2">
+ <button type="button" onClick={expandAll} className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-white transition-all hover:bg-white/[0.05]">Expand All</button>
+ <div className="w-px h-3 bg-white/10" />
+ <button type="button" onClick={collapseAll} className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-white transition-all hover:bg-white/[0.05]">Collapse All</button>
+ </div>
+ )}
+ {!disabled && (
+ <button
+ type="button"
+ onClick={addItem}
+ className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider hover:bg-emerald-500 transition-all shadow-sm shadow-emerald-900/20 rounded-none"
+ >
+ <Plus size={11} strokeWidth={2} /> Add Component
+ </button>
+ )}
+ </div>
+ </div>
 
-      {/* List */}
-      <Reorder.Group axis="y" values={items} onReorder={(reordered) => onChange(reordered.map(item => { const { _id, ...rest } = item; return rest }))} className="space-y-3">
-        <AnimatePresence initial={false}>
-          {items.map((item, index) => {
-            const itemKey = item._id as string
-            const isExpanded = !!expandedIds[itemKey]
-            
-            // Generate a simple preview text from the first string field if available
-            const previewText = (() => {
-              for (const f of fields) {
-                if (['text', 'string'].includes(f.type) && typeof item[f.name] === 'string') {
-                  return item[f.name]
-                }
-              }
-              return `Component ${index + 1}`
-            })()
+ {/* List */}
+ <Reorder.Group axis="y" values={items} onReorder={(reordered) => onChange(reordered.map(item => { const { _id, ...rest } = item; return rest }))} className="space-y-3">
+ <AnimatePresence initial={false}>
+ {items.map((item, index) => {
+ const itemKey = item._id as string
+ const isExpanded = !!expandedIds[itemKey]
+ 
+ // Generate a simple preview text from the first string field if available
+ const previewText = (() => {
+ for (const f of fields) {
+ if (['text', 'string'].includes(f.type) && typeof item[f.name] === 'string') {
+ return item[f.name]
+ }
+ }
+ return `Component ${index + 1}`
+ })()
 
-            return (
-              <motion.div
-                key={itemKey}
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Reorder.Item
-                  value={item}
-                  drag={!disabled ? 'y' : false}
-                  whileDrag={{ scale: 1.01, zIndex: 50, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
-                  className={cn(
-                    'group relative bg-app border rounded-none overflow-visible shadow-sm transition-colors duration-150',
-                    isExpanded ? 'border-emerald-500/60 shadow-[0_0_0_3px_rgba(16,185,129,0.08)]' : 'border-border hover:border-white/[0.08]'
-                  )}
-                >
-                  {/* Index Badge */}
-                  <div className={cn(
-                    'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-none flex items-center justify-center text-[8px] font-black border z-10 transition-all',
-                    isExpanded
-                      ? 'bg-emerald-500 text-white border-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]'
-                      : 'bg-app text-gray-400 border-border group-hover:border-emerald-500/40 group-hover:text-emerald-500'
-                  )}>
-                    {index + 1}
-                  </div>
+ return (
+ <motion.div
+ key={itemKey}
+ initial={{ opacity: 0, height: 0 }}
+ animate={{ opacity: 1, height: 'auto' }}
+ exit={{ opacity: 0, height: 0 }}
+ transition={{ duration: 0.2 }}
+ >
+ <Reorder.Item
+ value={item}
+ drag={!disabled ? 'y' : false}
+ whileDrag={{ scale: 1.01, zIndex: 50, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
+ className={cn(
+ 'group relative bg-app border rounded-none overflow-visible shadow-sm transition-colors duration-150',
+ isExpanded ? 'border-emerald-500/60 shadow-[0_0_0_3px_rgba(16,185,129,0.08)]' : 'border-border hover:border-white/[0.08]'
+ )}
+ >
+ {/* Index Badge */}
+ <div className={cn(
+ 'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-none flex items-center justify-center text-[8px] font-black border z-10 transition-all',
+ isExpanded
+ ? 'bg-emerald-500 text-white border-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]'
+ : 'bg-app text-gray-400 border-border group-hover:border-emerald-500/40 group-hover:text-emerald-500'
+ )}>
+ {index + 1}
+ </div>
 
-                  {/* Accent bar when expanded */}
-                  {isExpanded && <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-emerald-500 rounded-l" />}
+ {/* Accent bar when expanded */}
+ {isExpanded && <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-emerald-500 rounded-l" />}
 
-                  {/* Header Row */}
-                  <div className="flex items-center gap-2.5 px-4 py-3 cursor-pointer" onClick={() => toggleItem(itemKey)}>
-                    {!disabled && (
-                      <div className="p-1 text-gray-400/30 hover:text-gray-400 cursor-grab active:cursor-grabbing flex-shrink-0" onPointerDown={(e) => e.stopPropagation()}>
-                        <GripVertical size={13} />
-                      </div>
-                    )}
+ {/* Header Row */}
+ <div className="flex items-center gap-2.5 px-4 py-3 cursor-pointer" onClick={() => toggleItem(itemKey)}>
+ {!disabled && (
+ <div className="p-1 text-gray-400/30 hover:text-gray-400 cursor-grab active:cursor-grabbing flex-shrink-0" onPointerDown={(e) => e.stopPropagation()}>
+ <GripVertical size={13} />
+ </div>
+ )}
 
-                    {/* Labels */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-bold text-white truncate">
-                          {previewText}
-                        </span>
-                      </div>
-                    </div>
+ {/* Labels */}
+ <div className="flex-1 min-w-0">
+ <div className="flex items-center gap-2">
+ <span className="text-[11px] font-bold text-white truncate">
+ {previewText}
+ </span>
+ </div>
+ </div>
 
-                    {/* Actions */}
-                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-                      {!disabled && (
-                        <>
-                          <button type="button" onClick={() => moveItem(index, 'up')} disabled={index === 0} title="Move Up" className="p-1.5 text-gray-400 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowUp size={11} /></button>
-                          <button type="button" onClick={() => moveItem(index, 'down')} disabled={index === items.length - 1} title="Move Down" className="p-1.5 text-gray-400 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowDown size={11} /></button>
-                          <button type="button" onClick={() => duplicateItem(index)} title="Duplicate" className="p-1.5 text-gray-400 hover:text-emerald-500 transition-colors"><Copy size={11} /></button>
-                          <button type="button" onClick={() => removeItem(index)} title="Remove" className="p-1.5 text-gray-400 hover:text-danger transition-colors"><Trash2 size={11} /></button>
-                        </>
-                      )}
-                      <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }} className="p-1.5 text-gray-400/50 ml-0.5">
-                        <ChevronDown size={13} />
-                      </motion.div>
-                    </div>
-                  </div>
+ {/* Actions */}
+ <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+ {!disabled && (
+ <>
+ <button type="button" onClick={() => moveItem(index, 'up')} disabled={index === 0} title="Move Up" className="p-1.5 text-gray-400 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowUp size={11} /></button>
+ <button type="button" onClick={() => moveItem(index, 'down')} disabled={index === items.length - 1} title="Move Down" className="p-1.5 text-gray-400 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowDown size={11} /></button>
+ <button type="button" onClick={() => duplicateItem(index)} title="Duplicate" className="p-1.5 text-gray-400 hover:text-emerald-500 transition-colors"><Copy size={11} /></button>
+ <button type="button" onClick={() => removeItem(index)} title="Remove" className="p-1.5 text-gray-400 hover:text-danger transition-colors"><Trash2 size={11} /></button>
+ </>
+ )}
+ <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }} className="p-1.5 text-gray-400/50 ml-0.5">
+ <ChevronDown size={13} />
+ </motion.div>
+ </div>
+ </div>
 
-                  {/* Expanded Fields */}
-                  <AnimatePresence initial={false}>
-                    {isExpanded && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                        className="overflow-hidden"
-                      >
-                        <div className="px-5 pb-6 pt-4 border-t border-border bg-white/[0.05]/40">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {fields.map((f) => {
-                              const fullWidth = ['richtext','textarea','blocks','array','media','code','collapsible'].includes(f.type)
-                              return (
-                                <div key={f.name} className={cn('flex flex-col gap-1.5', fullWidth && 'col-span-2')}>
-                                  <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1">
-                                    {f.label || f.name}
-                                    {f.required && <span className="text-danger">*</span>}
-                                  </label>
-                                  {renderField(f as unknown as FieldConfig, item[f.name], (val: any) => updateItem(index, { [f.name]: val }))}
-                                </div>
-                              )
-                            })}
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </Reorder.Item>
-              </motion.div>
-            )
-          })}
-        </AnimatePresence>
-      </Reorder.Group>
+ {/* Expanded Fields */}
+ <AnimatePresence initial={false}>
+ {isExpanded && (
+ <motion.div
+ initial={{ height: 0, opacity: 0 }}
+ animate={{ height: 'auto', opacity: 1 }}
+ exit={{ height: 0, opacity: 0 }}
+ transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+ className="overflow-hidden"
+ >
+ <div className="px-5 pb-6 pt-4 border-t border-border bg-white/[0.05]/40">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+ {fields.map((f) => {
+ const fullWidth = ['richtext','textarea','blocks','array','media','code','collapsible'].includes(f.type)
+ return (
+ <div key={f.name} className={cn('flex flex-col gap-1.5', fullWidth && 'col-span-2')}>
+ <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1">
+ {f.label || f.name}
+ {f.required && <span className="text-danger">*</span>}
+ </label>
+ {renderField(f as unknown as FieldConfig, item[f.name], (val: any) => updateItem(index, { [f.name]: val }))}
+ </div>
+ )
+ })}
+ </div>
+ </div>
+ </motion.div>
+ )}
+ </AnimatePresence>
+ </Reorder.Item>
+ </motion.div>
+ )
+ })}
+ </AnimatePresence>
+ </Reorder.Group>
 
-      {/* Empty State / Add Button */}
-      {!disabled && (
-        <motion.button
-          layout
-          type="button"
-          onClick={addItem}
-          className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-gray-400/60 text-[10px] font-black uppercase tracking-wider hover:border-emerald-500/50 hover:text-emerald-500 hover:bg-emerald-500/5 transition-all rounded-none"
-        >
-          <Plus size={11} strokeWidth={2} /> Add {label}
-        </motion.button>
-      )}
-    </div>
-  )
+ {/* Empty State / Add Button */}
+ {!disabled && (
+ <motion.button
+ layout
+ type="button"
+ onClick={addItem}
+ className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-gray-400/60 text-[10px] font-black uppercase tracking-wider hover:border-emerald-500/50 hover:text-emerald-500 hover:bg-emerald-500/5 transition-all rounded-none"
+ >
+ <Plus size={11} strokeWidth={2} /> Add {label}
+ </motion.button>
+ )}
+ </div>
+ )
 }
 
 export default SimpleArrayBuilder

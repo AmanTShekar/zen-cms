@@ -11,21 +11,21 @@ import React, { useEffect } from 'react'
 import { useModalStore } from '../../../store/modalStore'
 
 interface BlockPickerModalProps {
-  addBlock: (blockType: string) => void
+ addBlock: (blockType: string) => void
 }
 
 export const BlockPickerModal: React.FC<BlockPickerModalProps> = ({ addBlock }) => {
-  const { blockPickerOpen, setBlockPickerOpen, openComponentPicker } = useModalStore()
+ const { blockPickerOpen, setBlockPickerOpen, openComponentPicker } = useModalStore()
 
-  useEffect(() => {
-    if (blockPickerOpen) {
-      // Hand off to the global picker, then clear the local flag
-      openComponentPicker((blockType) => {
-        addBlock(blockType)
-      })
-      setBlockPickerOpen(false)
-    }
-  }, [blockPickerOpen]) // eslint-disable-line react-hooks/exhaustive-deps
+ useEffect(() => {
+ if (blockPickerOpen) {
+ // Hand off to the global picker, then clear the local flag
+ openComponentPicker((blockType) => {
+ addBlock(blockType)
+ })
+ setBlockPickerOpen(false)
+ }
+ }, [blockPickerOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  return null
+ return null
 }

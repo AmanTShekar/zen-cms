@@ -6,53 +6,53 @@ import { persist } from 'zustand/middleware'
  * It persists to localStorage so the values survive page reloads.
  */
 interface TenantState {
-  token: string | null
-  activeSiteId: string | null
-  activeSiteName: string | null
-  setToken: (token: string | null) => void
-  setActiveSiteId: (siteId: string | null, siteName?: string | null) => void
+ token: string | null
+ activeSiteId: string | null
+ activeSiteName: string | null
+ setToken: (token: string | null) => void
+ setActiveSiteId: (siteId: string | null, siteName?: string | null) => void
 }
 
 function getLegacyToken(): string | null {
-  try {
-    return localStorage.getItem('token')
-  } catch {
-    return null
-  }
+ try {
+ return localStorage.getItem('token')
+ } catch {
+ return null
+ }
 }
 
 function getLegacySiteId(): string | null {
-  try {
-    return localStorage.getItem('activeSiteId')
-  } catch {
-    return null
-  }
+ try {
+ return localStorage.getItem('activeSiteId')
+ } catch {
+ return null
+ }
 }
 
 function getLegacySiteName(): string | null {
-  try {
-    return localStorage.getItem('activeSiteName')
-  } catch {
-    return null
-  }
+ try {
+ return localStorage.getItem('activeSiteName')
+ } catch {
+ return null
+ }
 }
 
 export const useTenantStore = create<TenantState>()(
-  persist(
-    (set) => ({
-      // First try the persisted store; fall back to legacy localStorage keys
-      token: getLegacyToken(),
-      activeSiteId: getLegacySiteId(),
-      activeSiteName: getLegacySiteName(),
-      setToken: (token) => set({ token }),
-      setActiveSiteId: (siteId, siteName) =>
-        set((state) => ({
-          activeSiteId: siteId,
-          activeSiteName: siteName ?? state.activeSiteName,
-        })),
-    }),
-    {
-      name: 'zenith-tenant-store',
-    }
-  )
+ persist(
+ (set) => ({
+ // First try the persisted store; fall back to legacy localStorage keys
+ token: getLegacyToken(),
+ activeSiteId: getLegacySiteId(),
+ activeSiteName: getLegacySiteName(),
+ setToken: (token) => set({ token }),
+ setActiveSiteId: (siteId, siteName) =>
+ set((state) => ({
+ activeSiteId: siteId,
+ activeSiteName: siteName ?? state.activeSiteName,
+ })),
+ }),
+ {
+ name: 'zenith-tenant-store',
+ }
+ )
 )
