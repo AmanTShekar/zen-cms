@@ -204,7 +204,7 @@ const PluginsPage = () => {
       <div
         className={cn(
           'h-screen w-full flex flex-col items-center justify-center gap-8 transition-colors duration-500',
-          theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]'
+          theme === 'dark' ? 'bg-[#0B0F19]' : 'bg-[#fafafa]'
         )}
       >
         <Loader2 size={32} className="animate-spin text-emerald-500" strokeWidth={1.5} />
@@ -220,7 +220,7 @@ const PluginsPage = () => {
     <div
       className={cn(
         'p-6 space-y-8 min-h-screen transition-colors duration-500 relative',
-        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
+        theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-gray-900'
       )}
     >
       {/* 🏛️ Compact Header */}
@@ -251,7 +251,7 @@ const PluginsPage = () => {
           <div
             className={cn(
               'p-1 rounded-none border flex items-center shadow-sm backdrop-blur-xl',
-              theme === 'dark' ? 'bg-white/[0.02] border-white/5' : 'bg-white border-gray-100'
+              theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-100'
             )}
           >
             {['Installed', 'Marketplace'].map((tab) => (
@@ -276,7 +276,7 @@ const PluginsPage = () => {
             className={cn(
               'w-12 h-12 border rounded-none flex items-center justify-center transition-all',
               theme === 'dark'
-                ? 'bg-white/5 border-white/5 text-gray-400'
+                ? 'bg-white/5 border-white/[0.08] text-gray-400'
                 : 'bg-white border-gray-100 text-gray-400'
             )}
           >
@@ -287,11 +287,11 @@ const PluginsPage = () => {
 
       {/* 📋 Registry Matrix */}
       <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between gap-6 border-b border-white/5 pb-6">
+        <div className="flex items-center justify-between gap-6 border-b border-white/[0.08] pb-6">
           <div
             className={cn(
               'flex items-center gap-4 px-5 py-2.5 rounded-none border shadow-inner w-full max-w-sm transition-all group',
-              theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-white border-gray-100 shadow-sm'
+              theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm'
             )}
           >
             <Search
@@ -359,7 +359,7 @@ const PluginsPage = () => {
                     className={cn(
                       'border rounded-none p-5 shadow-sm hover:shadow-xl transition-all flex flex-col gap-5 relative group backdrop-blur-xl',
                       theme === 'dark'
-                        ? 'bg-white/[0.02] border-white/5'
+                        ? 'bg-white/[0.02] border-white/[0.08]'
                         : 'bg-white border-gray-100'
                     )}
                   >
@@ -369,7 +369,7 @@ const PluginsPage = () => {
                           className={cn(
                             'w-12 h-12 rounded-none flex items-center justify-center shadow-inner transition-all duration-500 overflow-hidden relative',
                             theme === 'dark'
-                              ? 'bg-white/5 border border-white/10'
+                              ? 'bg-white/5 border border-white/[0.08]'
                               : 'bg-gray-50 border border-gray-100'
                           )}
                         >
@@ -418,7 +418,7 @@ const PluginsPage = () => {
                         'Core modular component providing essential system functionality.'}
                     </p>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                    <div className="flex items-center justify-between pt-4 border-t border-white/[0.08]">
                       <div className="flex items-center gap-2">
                         {activeTab === 'installed' ? (
                           <>
@@ -443,7 +443,7 @@ const PluginsPage = () => {
                               className={cn(
                                 'flex items-center gap-2 px-4 py-2 rounded-none text-[9px] font-black uppercase tracking-widest transition-all italic leading-none border',
                                 theme === 'dark'
-                                  ? 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/20'
+                                  ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-white hover:border-white/[0.08]'
                                   : 'bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100'
                               )}
                             >
@@ -532,7 +532,7 @@ const PluginsPage = () => {
         className={cn(
           'h-10 border rounded-none flex items-center px-6 justify-between text-[8px] font-black tracking-[0.3em] uppercase italic transition-colors backdrop-blur-xl',
           theme === 'dark'
-            ? 'bg-white/[0.02] border-white/5 text-gray-500'
+            ? 'bg-white/[0.02] border-white/[0.08] text-gray-500'
             : 'bg-white border-gray-100 text-gray-400'
         )}
       >
@@ -544,7 +544,7 @@ const PluginsPage = () => {
           <div
             className={cn(
               'flex items-center gap-2 border-l pl-8',
-              theme === 'dark' ? 'border-white/10' : 'border-gray-100'
+              theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
             )}
           >
             <Cpu size={10} className="text-emerald-500" />

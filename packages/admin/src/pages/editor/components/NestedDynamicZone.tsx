@@ -91,7 +91,7 @@ const DraggableZoneItem = ({
             transition={{ duration: 0.15 }}
             className="overflow-hidden"
           >
-            <div className={cn('px-4 py-4 space-y-4 border-t', theme === 'dark' ? 'border-white/5' : 'border-gray-200')}>
+            <div className={cn('px-4 py-4 space-y-4 border-t', theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200')}>
               {def.fields.map((field: any) => (
                 <div key={field.name} className="space-y-1">
                   <label className="text-xs font-black text-gray-400 uppercase tracking-widest italic block">
@@ -197,7 +197,7 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
       {value.length === 0 ? (
         <div className={cn(
           'py-5 text-center border border-dashed rounded-none',
-          theme === 'dark' ? 'border-white/5 text-gray-500' : 'border-gray-200 text-gray-400'
+          theme === 'dark' ? 'border-white/[0.08] text-gray-500' : 'border-gray-200 text-gray-400'
         )}>
           <p className="text-xs font-bold italic">No components — add one below</p>
         </div>
@@ -236,7 +236,7 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
         className={cn(
           'w-full flex items-center justify-center gap-2 py-2.5 border border-dashed rounded-none transition-all text-xs font-black uppercase italic tracking-widest',
           theme === 'dark'
-            ? 'border-white/10 text-gray-500 hover:border-emerald-500/40 hover:text-emerald-400 hover:bg-emerald-500/5'
+            ? 'border-white/[0.08] text-gray-500 hover:border-emerald-500/40 hover:text-emerald-400 hover:bg-emerald-500/5'
             : 'border-gray-200 text-gray-400 hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50/50'
         )}
       >

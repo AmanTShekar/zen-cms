@@ -108,7 +108,7 @@ const CampaignsPage: React.FC = () => {
           >
             <div className={cn(
               'p-6 border space-y-4',
-              theme === 'dark' ? 'bg-white/[0.02] border-white/5' : 'bg-white border-gray-100'
+              theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-100'
             )}>
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 border-b border-emerald-500/20 pb-2">Campaign Details</h3>
@@ -129,7 +129,7 @@ const CampaignsPage: React.FC = () => {
                     onChange={(e) => setActiveCampaign({ ...activeCampaign, subject: e.target.value })}
                     className={cn(
                       'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
-                      theme === 'dark' ? 'bg-black border-white/10 focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                     )}
                     placeholder="Exciting News from Zenith"
                   />
@@ -141,7 +141,7 @@ const CampaignsPage: React.FC = () => {
                     onChange={(e) => setActiveCampaign({ ...activeCampaign, audience: e.target.value })}
                     className={cn(
                       'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
-                      theme === 'dark' ? 'bg-black border-white/10 focus:border-emerald-500 text-white' : 'bg-gray-50 border-gray-200 focus:border-emerald-500 text-black'
+                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] focus:border-emerald-500 text-white' : 'bg-gray-50 border-gray-200 focus:border-emerald-500 text-black'
                     )}
                   >
                     <option value="all" className="text-black">All Subscribers</option>
@@ -157,7 +157,7 @@ const CampaignsPage: React.FC = () => {
                     rows={10}
                     className={cn(
                       'w-full border p-3 text-[11px] font-mono outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
-                      theme === 'dark' ? 'bg-black border-white/10 focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                     )}
                     placeholder="Hello {{name}}, we have some exciting news..."
                   />
@@ -188,7 +188,7 @@ const CampaignsPage: React.FC = () => {
               campaigns.map(c => (
                 <div key={c.id} className={cn(
                   'flex items-center justify-between p-5 border transition-colors',
-                  theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04]' : 'bg-white border-gray-100 hover:bg-gray-50'
+                  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:bg-white/[0.04]' : 'bg-white border-gray-100 hover:bg-gray-50'
                 )}>
                   <div>
                     <h4 className="text-[12px] font-black uppercase tracking-widest italic flex items-center gap-2">

@@ -160,7 +160,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
         {selectedFiles.map((file, i) => (
           <div
             key={file._id || i}
-            className="relative w-20 h-20 rounded-none border border-white/10 overflow-hidden group shadow-sm transition-all hover:scale-105 active:scale-95"
+            className="relative w-20 h-20 rounded-none border border-white/[0.08] overflow-hidden group shadow-sm transition-all hover:scale-105 active:scale-95"
           >
             <img 
               src={getMediaUrl(file.url)} 
@@ -173,7 +173,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                 onClick={() =>
                   hasMany ? onChange(selectedFiles.filter((_, idx) => idx !== i)) : onChange(null)
                 }
-                className="absolute top-1 right-1 p-1 bg-black/60 text-white rounded-none opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-1 right-1 p-1 bg-[#0B0F19]/60 text-white rounded-none opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <X size={10} />
               </button>
@@ -184,7 +184,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="w-20 h-20 rounded-none border border-dashed border-white/10 flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:border-emerald-500/50 hover:text-emerald-400 hover:bg-emerald-500/5 transition-all group"
+            className="w-20 h-20 rounded-none border border-dashed border-white/[0.08] flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:border-emerald-500/50 hover:text-emerald-400 hover:bg-emerald-500/5 transition-all group"
           >
             <Plus
               size={18}
@@ -209,7 +209,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
             <div
               className={cn(
                 'w-full border rounded-none overflow-hidden shadow-2xl flex flex-col',
-                theme === 'dark' ? 'bg-[#0B0F19]/80 backdrop-blur-xl border-white/10' : 'bg-white border-gray-200'
+                theme === 'dark' ? 'bg-[#0B0F19]/80 backdrop-blur-xl border-white/[0.08]' : 'bg-white border-gray-200'
               )}
             >
               <div className="flex flex-col p-4 gap-4">
@@ -220,7 +220,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                   <button
                     type="button"
                     onClick={() => setIsOpen(false)}
-                    className={cn('p-1 rounded-none transition-colors', theme === 'dark' ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-500 hover:text-black hover:bg-black/5')}
+                    className={cn('p-1 rounded-none transition-colors', theme === 'dark' ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-500 hover:text-black hover:bg-[#0B0F19]/5')}
                   >
                     <X size={14} />
                   </button>
@@ -231,7 +231,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                     <motion.div key="focal-step" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex flex-col gap-4">
                       {/* Focal Point Editor */}
                       <div className="flex items-center gap-3">
-                        <button type="button" onClick={() => setFocalPending(null)} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors italic border border-white/10 px-3 py-1.5 rounded-none">
+                        <button type="button" onClick={() => setFocalPending(null)} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors italic border border-white/[0.08] px-3 py-1.5 rounded-none">
                           ← Back
                         </button>
                       </div>
@@ -255,7 +255,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                             placeholder="Search assets..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-none pl-9 pr-3 py-2 text-xs font-medium text-white placeholder:text-gray-500 transition-all focus:bg-white/10 focus:border-emerald-500/50 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black"
+                            className="w-full bg-white/5 border border-white/[0.08] rounded-none pl-9 pr-3 py-2 text-xs font-medium text-white placeholder:text-gray-500 transition-all focus:bg-white/10 focus:border-emerald-500/50 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black"
                           />
                         </div>
                         <label className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 rounded-none transition-all text-[10px] font-bold uppercase tracking-widest cursor-pointer border border-emerald-500/30">
@@ -266,7 +266,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                       </div>
 
                       {/* Middle Area: Scrollable Grid */}
-                      <div className="h-[280px] overflow-y-auto grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 pr-2 custom-scrollbar border border-white/5 rounded-none p-2 bg-black/20">
+                      <div className="h-[280px] overflow-y-auto grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 pr-2 custom-scrollbar border border-white/[0.08] rounded-none p-2 bg-[#0B0F19]/20">
                         {loading ? (
                           <div className="col-span-full h-full flex flex-col items-center justify-center gap-4">
                             <Loader2 className="animate-spin text-emerald-500" size={24} />
@@ -302,7 +302,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                                     'group relative aspect-square rounded-none border overflow-hidden cursor-pointer transition-all',
                                     isSelected
                                       ? 'border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)] scale-[0.98]'
-                                      : 'border-white/5 hover:border-emerald-500/30'
+                                      : 'border-white/[0.08] hover:border-emerald-500/30'
                                   )}
                                 >
                                   <img
@@ -315,7 +315,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                                       'absolute inset-0 transition-all duration-300',
                                       isSelected
                                         ? 'bg-emerald-600/10'
-                                        : 'bg-black/0 group-hover:bg-black/40'
+                                        : 'bg-[#0B0F19]/0 group-hover:bg-[#0B0F19]/40'
                                     )}
                                   />
                                   <div className="absolute inset-x-0 bottom-0 p-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all bg-gradient-to-t from-black/80 to-transparent">
@@ -336,7 +336,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                       </div>
 
                       {/* Bottom Area: Actions */}
-                      <div className="pt-2 border-t border-white/5 flex items-center justify-end gap-3 mt-2">
+                      <div className="pt-2 border-t border-white/[0.08] flex items-center justify-end gap-3 mt-2">
                         <button
                           type="button"
                           onClick={() => { setIsOpen(false); setFocalPending(null) }}

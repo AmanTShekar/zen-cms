@@ -54,7 +54,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
             className={cn(
               'flex-1 font-mono text-sm px-3 py-2 rounded-none border truncate',
               theme === 'dark'
-                ? 'bg-black/40 border-white/10 text-emerald-300'
+                ? 'bg-[#0B0F19]/40 border-white/[0.08] text-emerald-300'
                 : 'bg-white border-emerald-200 text-emerald-700'
             )}
           >
@@ -84,7 +84,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
       <div
         className={cn(
           'p-5 rounded-none border transition-all space-y-3',
-          theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+          theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
         )}
       >
         <label className="text-xs font-semibold text-gray-400 px-1">
@@ -97,7 +97,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
           className={cn(
             'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
             theme === 'dark'
-              ? 'bg-[#0f141f] border-white/10 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+              ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
               : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
           )}
         />
@@ -106,7 +106,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
       <div
         className={cn(
           'p-5 rounded-none border transition-all space-y-3',
-          theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+          theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
         )}
       >
         <label className="text-xs font-semibold text-gray-400 px-1">
@@ -119,7 +119,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
           className={cn(
             'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
             theme === 'dark'
-              ? 'bg-[#0f141f] border-white/10 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+              ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
               : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
           )}
         />
@@ -128,7 +128,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
       <div
         className={cn(
           'p-5 rounded-none border transition-all space-y-3',
-          theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+          theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
         )}
       >
         <label className="text-xs font-semibold text-gray-400 px-1">
@@ -142,7 +142,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
           className={cn(
             'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
             theme === 'dark'
-              ? 'bg-[#0f141f] border-white/10 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+              ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
               : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
           )}
         />
@@ -151,7 +151,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
       <div
         className={cn(
           'p-5 rounded-none border transition-all space-y-3',
-          theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+          theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
         )}
       >
         <label className="text-xs font-semibold text-gray-400 px-1">
@@ -165,7 +165,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
           className={cn(
             'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
             theme === 'dark'
-              ? 'bg-[#0f141f] border-white/10 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+              ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
               : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
           )}
         />
@@ -174,7 +174,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
       <div
         className={cn(
           'p-5 rounded-none border transition-all space-y-3',
-          theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+          theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
         )}
       >
         <label className="text-xs font-semibold text-gray-400 px-1">
@@ -187,7 +187,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
           className={cn(
             'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
             theme === 'dark'
-              ? 'bg-[#0f141f] border-white/10 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+              ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
               : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
           )}
         />
@@ -196,7 +196,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
       <div
         className={cn(
           'p-5 rounded-none border transition-all space-y-3',
-          theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+          theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
         )}
       >
         <label className="text-xs font-semibold text-gray-400 px-1">
@@ -209,7 +209,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
           className={cn(
             'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
             theme === 'dark'
-              ? 'bg-[#0f141f] border-white/10 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+              ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
               : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
           )}
         />
@@ -219,7 +219,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
         className={cn(
           'p-5 rounded-none border flex items-center justify-between transition-all group col-span-1 md:col-span-2',
           theme === 'dark'
-            ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20'
+            ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20'
             : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
         )}
       >
@@ -238,7 +238,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
             onChange={(e) => setSettings({ ...settings, maintenanceMode: e.target.checked })}
             className="sr-only peer"
           />
-          <div className="w-11 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 border border-white/10 shadow-inner"></div>
+          <div className="w-11 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 border border-white/[0.08] shadow-inner"></div>
         </label>
       </div>
     </>

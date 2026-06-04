@@ -39,7 +39,7 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
         left: `${position.left}px`,
       }}
     >
-      <div className="px-3 py-2 border-b border-white/5 mb-1 flex items-center justify-between">
+      <div className="px-3 py-2 border-b border-white/[0.08] mb-1 flex items-center justify-between">
         <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 italic">
           Block Command
         </span>
@@ -73,7 +73,7 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
                       ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                       : 'bg-emerald-100 border-emerald-200 text-emerald-600'
                     : theme === 'dark'
-                    ? 'bg-white/5 border-white/5 text-gray-400'
+                    ? 'bg-white/5 border-white/[0.08] text-gray-400'
                     : 'bg-gray-100 border-gray-200 text-gray-500'
                 )}
               >

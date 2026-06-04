@@ -105,7 +105,7 @@ export const MediaLibraryModal: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setMediaLibraryOpen(false)}
-            className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            className="absolute inset-0 bg-[#0B0F19]/80 backdrop-blur-md"
           />
           <motion.div
             ref={dialogRef}
@@ -118,14 +118,14 @@ export const MediaLibraryModal: React.FC = () => {
             className={cn(
               'w-full max-w-6xl border rounded-none overflow-hidden shadow-2xl flex flex-col h-[85vh]',
               theme === 'dark'
-                ? 'bg-[#0a0a0a] border-white/10'
+                ? 'bg-[#0a0a0a] border-white/[0.08]'
                 : 'bg-white border-gray-200'
             )}
           >
             <div
               className={cn(
                 'p-6 border-b flex items-center justify-between shrink-0',
-                theme === 'dark' ? 'border-white/5' : 'border-gray-100',
+                theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100',
               )}
             >
               <h3
@@ -152,7 +152,7 @@ export const MediaLibraryModal: React.FC = () => {
             {/* Toolbar: search, filters, upload */}
             <div className={cn(
               'flex items-center gap-4 px-8 py-4 border-b shrink-0',
-              theme === 'dark' ? 'border-white/5' : 'border-gray-100'
+              theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
             )}>
               <div className="relative group flex-1">
                 <Search
@@ -171,7 +171,7 @@ export const MediaLibraryModal: React.FC = () => {
                   className={cn(
                     'w-full rounded-none pl-12 pr-4 py-3 text-xs font-bold transition-all',
                     theme === 'dark'
-                      ? 'bg-white/[0.03] border border-white/10 text-white placeholder:text-gray-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.05]'
+                      ? 'bg-white/[0.03] border border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.05]'
                       : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus-visible:border-emerald-400 focus-visible:bg-white'
                   )}
                 />
@@ -185,7 +185,7 @@ export const MediaLibraryModal: React.FC = () => {
                 className={cn(
                   'rounded-none border py-3 px-4 text-xs font-black uppercase italic transition-all',
                   theme === 'dark'
-                    ? 'bg-white/5 border-white/10 text-gray-400 focus-visible:border-emerald-500/40'
+                    ? 'bg-white/5 border-white/[0.08] text-gray-400 focus-visible:border-emerald-500/40'
                     : 'bg-gray-55 border-gray-200 text-gray-600 focus-visible:border-emerald-400'
                 )}
               >
@@ -244,7 +244,7 @@ export const MediaLibraryModal: React.FC = () => {
                       <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
                         <div className={cn(
                           'w-16 h-16 rounded-none border-2 border-dashed flex items-center justify-center',
-                          theme === 'dark' ? 'border-white/10 text-gray-600' : 'border-gray-200 text-gray-300'
+                          theme === 'dark' ? 'border-white/[0.08] text-gray-600' : 'border-gray-200 text-gray-300'
                         )}>
                           <ImageIcon size={28} />
                         </div>
@@ -350,8 +350,8 @@ export const MediaLibraryModal: React.FC = () => {
                                 className={cn(
                                   'mt-1.5 px-2 py-1 rounded-none border text-xs font-black uppercase italic transition-all',
                                   theme === 'dark'
-                                    ? 'border-white/20 text-white/70 hover:border-white/40 hover:text-white bg-white/5'
-                                    : 'border-white/30 text-white/80 hover:border-white/50 hover:text-white bg-white/10'
+                                    ? 'border-white/[0.08] text-white/70 hover:border-white/40 hover:text-white bg-white/5'
+                                    : 'border-white/30 text-white/80 hover:border-white/[0.08]0 hover:text-white bg-white/10'
                                 )}
                               >
                                 Copy URL
@@ -385,7 +385,7 @@ export const MediaLibraryModal: React.FC = () => {
                             <div className={cn(
                               'absolute top-1.5 left-1.5 px-1.5 py-0.5 text-[6px] font-black uppercase italic border rounded-none',
                               theme === 'dark'
-                                ? 'bg-black/60 border-white/10 text-gray-400'
+                                ? 'bg-[#0B0F19]/60 border-white/[0.08] text-gray-400'
                                 : 'bg-white/80 border-gray-200 text-gray-500'
                             )}>
                               {(file.mimetype || 'file').split('/')[1]?.toUpperCase().slice(0, 4) || 'FILE'}
@@ -402,7 +402,7 @@ export const MediaLibraryModal: React.FC = () => {
             {/* Footer */}
             <div className={cn(
               'flex items-center justify-between px-8 py-3 border-t shrink-0',
-              theme === 'dark' ? 'border-white/5 bg-white/[0.015]' : 'border-gray-100 bg-gray-50'
+              theme === 'dark' ? 'border-white/[0.08] bg-white/[0.015]' : 'border-gray-100 bg-gray-50'
             )}>
               <span className={cn(
                 'text-xs font-bold uppercase italic tracking-widest',
@@ -416,7 +416,7 @@ export const MediaLibraryModal: React.FC = () => {
                 className={cn(
                   'px-5 py-2 text-xs font-black uppercase italic rounded-none border transition-all',
                   theme === 'dark'
-                    ? 'border-white/10 text-gray-400 hover:border-white/20 hover:text-white'
+                    ? 'border-white/[0.08] text-gray-400 hover:border-white/[0.08] hover:text-white'
                     : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:text-black'
                 )}
               >

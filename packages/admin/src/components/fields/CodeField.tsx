@@ -21,7 +21,7 @@ const CodeField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
         disabled={disabled}
         spellCheck={false}
         className={cn(
-          'w-full bg-[#0d1117] backdrop-blur-md border border-white/10 rounded-none px-4 py-3 text-sm font-mono',
+          'w-full bg-[#0d1117] backdrop-blur-md border border-white/[0.08] rounded-none px-4 py-3 text-sm font-mono',
           'focus:border-emerald-500/50 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black disabled:opacity-60 disabled:cursor-not-allowed',
           'text-[#e6edf3] placeholder:text-gray-600'
         )}

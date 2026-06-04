@@ -109,7 +109,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
           className={cn(
             'flex items-center gap-2 px-3 py-2 text-xs font-black uppercase italic border rounded-none transition-all',
             theme === 'dark'
-              ? 'border-white/10 text-gray-400 hover:bg-white/5'
+              ? 'border-white/[0.08] text-gray-400 hover:bg-white/5'
               : 'border-gray-200 text-gray-500 hover:bg-gray-50'
           )}
         >
@@ -131,7 +131,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
           <pre
             className={cn(
               'w-full text-[9px] font-mono p-3 border rounded-none overflow-x-auto max-h-48',
-              theme === 'dark' ? 'bg-white/5 border-white/10 text-gray-500' : 'bg-gray-50 border-gray-200 text-gray-500'
+              theme === 'dark' ? 'bg-white/5 border-white/[0.08] text-gray-500' : 'bg-gray-50 border-gray-200 text-gray-500'
             )}
           >
             {error.componentStack}

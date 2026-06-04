@@ -40,7 +40,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
               ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
               : 'bg-emerald-50 border-emerald-200 text-emerald-600'
             : theme === 'dark'
-              ? 'bg-white/5 border-white/10 text-gray-500'
+              ? 'bg-white/5 border-white/[0.08] text-gray-500'
               : 'bg-gray-100 border-gray-200 text-gray-400'
         )}
         title={isConnected ? 'Live collaboration active' : 'Offline — changes saved locally'}
@@ -60,7 +60,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             className={cn(
-              'w-6 h-6 rounded-none flex items-center justify-center text-[7px] font-black italic border-2 border-white/20 shadow-sm',
+              'w-6 h-6 rounded-none flex items-center justify-center text-[7px] font-black italic border-2 border-white/[0.08] shadow-sm',
             )}
             style={{ backgroundColor: localUser.color }}
           >
@@ -113,7 +113,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
             className={cn(
               'relative -ml-1.5 w-6 h-6 rounded-none flex items-center justify-center text-[7px] font-black border-2 shadow-sm transition-transform',
               theme === 'dark'
-                ? 'bg-gray-800 border-white/10 text-gray-400 hover:scale-110'
+                ? 'bg-gray-800 border-white/[0.08] text-gray-400 hover:scale-110'
                 : 'bg-gray-200 border-white text-gray-600 hover:scale-110'
             )}
             style={{ zIndex: 0 }}
@@ -134,7 +134,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
             className={cn(
               'absolute top-full right-0 mt-2 z-50 w-48 border rounded-none shadow-2xl p-3',
               theme === 'dark'
-                ? 'bg-[#0B0F19] border-white/10 text-white'
+                ? 'bg-[#0B0F19] border-white/[0.08] text-white'
                 : 'bg-white border-gray-200 text-gray-900 shadow-gray-200/50'
             )}
             onClick={() => setExpanded(false)}

@@ -226,7 +226,7 @@ const TemplatesPage: React.FC = () => {
     <div
       className={cn(
         'space-y-8 min-h-screen transition-colors duration-500 relative pb-12',
-        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
+        theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-gray-900'
       )}
     >
       {/* 🚀 Visual Header Block */}
@@ -257,7 +257,7 @@ const TemplatesPage: React.FC = () => {
         <div
           className={cn(
             'p-1 rounded-none border flex items-center shadow-sm backdrop-blur-xl self-start md:self-auto overflow-x-auto max-w-full no-scrollbar',
-            theme === 'dark' ? 'bg-white/[0.02] border-white/5' : 'bg-white border-gray-100'
+            theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-100'
           )}
         >
           {categories.map((cat) => (
@@ -284,7 +284,7 @@ const TemplatesPage: React.FC = () => {
         className={cn(
           'relative p-6 md:p-8 overflow-hidden border backdrop-blur-xl shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-6 transition-all',
           theme === 'dark'
-            ? 'bg-gradient-to-r from-zinc-950 via-neutral-900 to-zinc-950 border-white/5 shadow-white/5'
+            ? 'bg-gradient-to-r from-zinc-950 via-neutral-900 to-zinc-950 border-white/[0.08] shadow-white/5'
             : 'bg-gradient-to-r from-gray-50 via-white to-gray-50 border-gray-100'
         )}
       >
@@ -312,7 +312,7 @@ const TemplatesPage: React.FC = () => {
         <div
           className={cn(
             'flex items-center gap-4 px-5 py-3 rounded-none border shadow-inner w-full md:max-w-xs transition-all group z-10 shrink-0 self-start md:self-auto',
-            theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-white border-gray-100 shadow-sm'
+            theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm'
           )}
         >
           <Search
@@ -331,7 +331,7 @@ const TemplatesPage: React.FC = () => {
 
       {/* 📋 Showcase Cards Grid */}
       {filteredTemplates.length === 0 ? (
-        <div className="py-24 flex flex-col items-center justify-center gap-4 opacity-30 border border-dashed border-white/10">
+        <div className="py-24 flex flex-col items-center justify-center gap-4 opacity-30 border border-dashed border-white/[0.08]">
           <Layout size={40} strokeWidth={1} className="text-gray-500 animate-pulse" />
           <p className="text-[10px] font-black uppercase tracking-[0.4em] italic">
             No templates matching filters found
@@ -351,7 +351,7 @@ const TemplatesPage: React.FC = () => {
                 className={cn(
                   'border rounded-none p-6 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col gap-6 relative group backdrop-blur-xl',
                   theme === 'dark'
-                    ? 'bg-gradient-to-br from-zinc-950 via-[#111827]/65 to-zinc-950 border-white/5 hover:border-white/10'
+                    ? 'bg-gradient-to-br from-zinc-950 via-[#111827]/65 to-zinc-950 border-white/[0.08] hover:border-white/[0.08]'
                     : 'bg-white border-gray-100 hover:border-gray-300'
                 )}
                 style={{
@@ -412,7 +412,7 @@ const TemplatesPage: React.FC = () => {
                 <div
                   className={cn(
                     'w-full h-40 rounded-none relative overflow-hidden border transition-all duration-500 flex items-center justify-center group-hover:scale-[1.01]',
-                    theme === 'dark' ? 'bg-[#080808] border-white/5' : 'bg-gray-50 border-gray-100'
+                    theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-gray-50 border-gray-100'
                   )}
                 >
                   {/* Glass Card Vector Grid Backdrop */}
@@ -425,14 +425,14 @@ const TemplatesPage: React.FC = () => {
                   />
 
                   {/* Decorative Elements mimicking UI */}
-                  <div className="w-5/6 h-2/3 border border-white/10 rounded-none bg-black/45 backdrop-blur-md p-4 flex flex-col justify-between shadow-2xl relative overflow-hidden">
+                  <div className="w-5/6 h-2/3 border border-white/[0.08] rounded-none bg-[#0B0F19]/45 backdrop-blur-md p-4 flex flex-col justify-between shadow-2xl relative overflow-hidden">
                     <div className="flex items-center justify-between">
                       <div className="flex gap-1.5">
                         <div className="w-2 h-2 rounded-none bg-red-500/40" />
                         <div className="w-2 h-2 rounded-none bg-yellow-500/40" />
                         <div className="w-2 h-2 rounded-none bg-green-500/40" />
                       </div>
-                      <div className="px-2 py-0.5 bg-white/5 border border-white/10 rounded-none text-[6px] font-mono text-gray-500 uppercase tracking-widest">
+                      <div className="px-2 py-0.5 bg-white/5 border border-white/[0.08] rounded-none text-[6px] font-mono text-gray-500 uppercase tracking-widest">
                         SECURE_SSL
                       </div>
                     </div>
@@ -443,7 +443,7 @@ const TemplatesPage: React.FC = () => {
                       <div className="h-1.5 w-1/2 bg-white/5 rounded-none" />
                     </div>
 
-                    <div className="flex justify-between items-center pt-2 border-t border-white/5">
+                    <div className="flex justify-between items-center pt-2 border-t border-white/[0.08]">
                       <div className="flex items-center gap-1 text-gray-500 text-[6px] font-black uppercase">
                         <Layers size={8} /> {template.id === 'storefront-glass' ? 'Glassmorphism' : template.id === 'storefront-editorial' ? 'Editorial' : template.id === 'blog-demo' ? 'Dev Blog' : 'E-Commerce'}
                       </div>
@@ -480,7 +480,7 @@ const TemplatesPage: React.FC = () => {
                       className={cn(
                         'px-2 py-1 text-[8px] font-mono font-black uppercase tracking-wider border rounded-none shadow-sm',
                         theme === 'dark'
-                          ? 'bg-white/5 border-white/10 text-gray-300'
+                          ? 'bg-white/5 border-white/[0.08] text-gray-300'
                           : 'bg-gray-100 border-gray-200 text-gray-600'
                       )}
                     >
@@ -492,7 +492,7 @@ const TemplatesPage: React.FC = () => {
                 {/* Clone Command & Zip Download */}
                 <div className={cn(
                   'p-3 border rounded-none flex items-center justify-between gap-3 text-[10px] font-mono',
-                  theme === 'dark' ? 'bg-[#080808] border-white/5 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-600'
+                  theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-600'
                 )}>
                   <div className="flex items-center gap-1.5 truncate">
                     <Terminal size={10} className="text-emerald-400" />
@@ -506,7 +506,7 @@ const TemplatesPage: React.FC = () => {
                       }}
                       className={cn(
                         'p-1.5 rounded-none border transition-all flex items-center justify-center hover:scale-105 active:scale-95',
-                        theme === 'dark' ? 'border-white/10 bg-white/5 hover:text-white' : 'border-gray-200 bg-white hover:text-black'
+                        theme === 'dark' ? 'border-white/[0.08] bg-white/5 hover:text-white' : 'border-gray-200 bg-white hover:text-black'
                       )}
                       title="Copy clone command"
                     >
@@ -516,7 +516,7 @@ const TemplatesPage: React.FC = () => {
                       href={`${template.gitUrl}/archive/refs/heads/main.zip`}
                       className={cn(
                         'p-1.5 rounded-none border transition-all flex items-center justify-center hover:scale-105 active:scale-95',
-                        theme === 'dark' ? 'border-white/10 bg-white/5 text-gray-400 hover:text-white' : 'border-gray-200 bg-white text-gray-600 hover:text-black'
+                        theme === 'dark' ? 'border-white/[0.08] bg-white/5 text-gray-400 hover:text-white' : 'border-gray-200 bg-white text-gray-600 hover:text-black'
                       )}
                       title="Download ZIP"
                     >
@@ -526,7 +526,7 @@ const TemplatesPage: React.FC = () => {
                 </div>
 
                 {/* Git Action Panel */}
-                <div className="pt-4 border-t border-white/5 mt-auto flex items-center justify-between gap-4">
+                <div className="pt-4 border-t border-white/[0.08] mt-auto flex items-center justify-between gap-4">
                   <a
                     href={template.gitUrl}
                     target="_blank"
@@ -534,7 +534,7 @@ const TemplatesPage: React.FC = () => {
                     className={cn(
                       'px-4 py-3 border rounded-none text-[9px] font-black uppercase tracking-widest transition-all italic leading-none flex items-center gap-2 group/git',
                       theme === 'dark'
-                        ? 'border-white/10 bg-white/[0.02] text-gray-400 hover:text-white hover:border-white/20'
+                        ? 'border-white/[0.08] bg-white/[0.02] text-gray-400 hover:text-white hover:border-white/[0.08]'
                         : 'border-gray-200 bg-white text-gray-600 hover:text-black hover:border-gray-300 shadow-sm'
                     )}
                   >
@@ -585,7 +585,7 @@ const TemplatesPage: React.FC = () => {
                   toast.error('Build sequence in progress. Please wait for termination.')
                 }
               }}
-              className="absolute inset-0 bg-black/85 backdrop-blur-xl"
+              className="absolute inset-0 bg-[#0B0F19]/85 backdrop-blur-xl"
             />
 
             {/* Modal Box */}
@@ -596,7 +596,7 @@ const TemplatesPage: React.FC = () => {
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
               className={cn(
                 'w-full max-w-2xl border rounded-none p-6 md:p-8 flex flex-col gap-6 relative shadow-2xl overflow-hidden z-10',
-                theme === 'dark' ? 'bg-[#0b0f19] border-white/10' : 'bg-white border-gray-200'
+                theme === 'dark' ? 'bg-[#0b0f19] border-white/[0.08]' : 'bg-white border-gray-200'
               )}
             >
               {/* Top Accent Gradient Bar */}
@@ -613,7 +613,7 @@ const TemplatesPage: React.FC = () => {
                   onClick={() => setIsDeployModalOpen(false)}
                   className={cn(
                     'absolute top-6 right-6 w-8 h-8 rounded-none border flex items-center justify-center text-gray-500 hover:text-white transition-all',
-                    theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'
+                    theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-50 border-gray-200'
                   )}
                 >
                   ✕
@@ -641,7 +641,7 @@ const TemplatesPage: React.FC = () => {
               </div>
 
               {/* Active Deployment Stepper */}
-              <div className="grid grid-cols-4 gap-2 border-b border-white/5 pb-5">
+              <div className="grid grid-cols-4 gap-2 border-b border-white/[0.08] pb-5">
                 {[
                   { label: 'Configure', activeStep: 0 },
                   { label: 'Connect Repo', activeStep: 1 },
@@ -697,7 +697,7 @@ const TemplatesPage: React.FC = () => {
                               'border p-3 flex flex-col items-center justify-center gap-2 rounded-none transition-all group relative',
                               provider === prov.id
                                 ? 'bg-emerald-500/10 border-emerald-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.15)]'
-                                : 'bg-white/[0.01] border-white/5 text-gray-500 hover:text-gray-300 hover:border-white/10'
+                                : 'bg-white/[0.01] border-white/[0.08] text-gray-500 hover:text-gray-300 hover:border-white/[0.08]'
                             )}
                           >
                             <span className="text-xs font-black uppercase tracking-tight italic">
@@ -708,7 +708,7 @@ const TemplatesPage: React.FC = () => {
                                 'text-[7px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded-none border',
                                 provider === prov.id
                                   ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/5'
-                                  : 'border-white/5 text-gray-600 bg-white/5'
+                                  : 'border-white/[0.08] text-gray-600 bg-white/5'
                               )}
                             >
                               {prov.latency}
@@ -722,7 +722,7 @@ const TemplatesPage: React.FC = () => {
                     <div
                       className={cn(
                         'p-4 border rounded-none flex items-center justify-between gap-4',
-                        theme === 'dark' ? 'bg-white/[0.01] border-white/5' : 'bg-gray-50 border-gray-100'
+                        theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50 border-gray-100'
                       )}
                     >
                       <div className="flex items-center gap-3">
@@ -742,7 +742,7 @@ const TemplatesPage: React.FC = () => {
                     </div>
 
                     {/* Actions */}
-                    <div className="pt-4 border-t border-white/5 flex justify-end">
+                    <div className="pt-4 border-t border-white/[0.08] flex justify-end">
                       <button
                         onClick={handleStartDeployment}
                         className={cn(
@@ -780,7 +780,7 @@ const TemplatesPage: React.FC = () => {
                     </div>
 
                     {/* Console Logger */}
-                    <div className="flex-1 min-h-[160px] bg-black border border-white/5 p-4 font-mono text-[9px] text-gray-400 overflow-y-auto space-y-1.5 no-scrollbar scroll-smooth">
+                    <div className="flex-1 min-h-[160px] bg-[#0B0F19] border border-white/[0.08] p-4 font-mono text-[9px] text-gray-400 overflow-y-auto space-y-1.5 no-scrollbar scroll-smooth">
                       {terminalLogs.map((log, idx) => (
                         <div
                           key={idx}
@@ -833,8 +833,8 @@ const TemplatesPage: React.FC = () => {
                     {/* Clipboard copy container */}
                     <div
                       className={cn(
-                        'max-w-md mx-auto p-4 border rounded-none flex items-center justify-between gap-4 bg-black/40',
-                        theme === 'dark' ? 'border-white/5' : 'border-gray-100'
+                        'max-w-md mx-auto p-4 border rounded-none flex items-center justify-between gap-4 bg-[#0B0F19]/40',
+                        theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
                       )}
                     >
                       <div className="flex items-center gap-3 min-w-0">
@@ -849,20 +849,20 @@ const TemplatesPage: React.FC = () => {
                           'p-2.5 rounded-none border transition-all flex items-center justify-center shrink-0',
                           copied
                             ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                            : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
+                            : 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-white'
                         )}
                       >
                         {copied ? <Check size={14} /> : <Copy size={14} />}
                       </button>
                     </div>
 
-                    <div className="pt-4 border-t border-white/5 flex items-center justify-between gap-4 max-w-md mx-auto">
+                    <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between gap-4 max-w-md mx-auto">
                       <button
                         onClick={() => setIsDeployModalOpen(false)}
                         className={cn(
                           'w-full py-3.5 border rounded-none text-[9px] font-black uppercase tracking-widest transition-all italic leading-none',
                           theme === 'dark'
-                            ? 'border-white/10 bg-white/[0.01] text-gray-400 hover:text-white hover:border-white/20'
+                            ? 'border-white/[0.08] bg-white/[0.01] text-gray-400 hover:text-white hover:border-white/[0.08]'
                             : 'border-gray-200 bg-white text-gray-600 hover:text-black hover:border-gray-300'
                         )}
                       >

@@ -36,7 +36,7 @@ export default function ApiStatusWidget({ theme, title }: WidgetProps) {
       <div
         className={cn(
           'flex-1 flex flex-col items-center justify-center gap-3 border rounded-none',
-          theme === 'dark' ? 'bg-white/[0.01] border-white/5' : 'bg-gray-50 border-gray-100'
+          theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50 border-gray-100'
         )}
       >
         {status === 'checking' ? (

@@ -123,7 +123,7 @@ const LoginPage: React.FC = () => {
     <div
       className={cn(
         'min-h-screen flex items-center justify-center p-4 md:p-6 relative overflow-auto font-sans antialiased selection:bg-emerald-600 selection:text-white transition-colors duration-500',
-        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-[#111827]'
+        theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-[#111827]'
       )}
     >
       {/* Background elements */}
@@ -174,7 +174,7 @@ const LoginPage: React.FC = () => {
           animate={{ opacity: 1, scale: 1 }}
           className={cn(
             'border rounded-none p-8 shadow-2xl relative transition-all duration-500',
-            theme === 'dark' ? 'bg-white/[0.02] border-white/5' : 'bg-white border-gray-100'
+            theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-100'
           )}
         >
           <div className="flex items-center justify-between mb-8">
@@ -196,7 +196,7 @@ const LoginPage: React.FC = () => {
             <div
               className={cn(
                 'p-1 rounded-none border flex items-center gap-1 transition-all',
-                theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-100 border-gray-200'
+                theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-100 border-gray-200'
               )}
             >
               <button
@@ -330,7 +330,7 @@ const LoginPage: React.FC = () => {
                     className={cn(
                       'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all tracking-widest text-center',
                       theme === 'dark'
-                        ? 'bg-white/5 border-white/10 text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
+                        ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
                         : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
                     )}
                   />
@@ -360,7 +360,7 @@ const LoginPage: React.FC = () => {
                       className={cn(
                         'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
                         theme === 'dark'
-                          ? 'bg-white/5 border-white/10 text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
+                          ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
                           : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
                       )}
                     />
@@ -409,7 +409,7 @@ const LoginPage: React.FC = () => {
                       className={cn(
                         'w-full border rounded-none py-3 pl-12 pr-12 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
                         theme === 'dark'
-                          ? 'bg-white/5 border-white/10 text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
+                          ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
                           : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
                       )}
                     />
@@ -442,7 +442,7 @@ const LoginPage: React.FC = () => {
                 'w-full rounded-none py-4 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-xl transition-all group disabled:opacity-50 disabled:pointer-events-none',
                 theme === 'dark'
                   ? 'bg-white text-black hover:bg-gray-100 shadow-white/5'
-                  : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
+                  : 'bg-gray-900 text-white hover:bg-[#0B0F19] shadow-gray-900/20'
               )}
             >
               {isSubmitting ? (
@@ -461,7 +461,7 @@ const LoginPage: React.FC = () => {
 
           {/* SSO/OAuth Provider Module */}
           {!needsSetup && (
-            <div className="mt-6 pt-6 border-t border-white/5 space-y-4">
+            <div className="mt-6 pt-6 border-t border-white/[0.08] space-y-4">
               <div className="text-center relative">
                 <span className={cn(
                   'text-[8px] font-black uppercase tracking-widest italic px-2 relative z-10',
@@ -490,7 +490,7 @@ const LoginPage: React.FC = () => {
                   className={cn(
                     'border rounded-none py-2 px-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02]',
                     theme === 'dark'
-                      ? 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+                      ? 'bg-white/5 border-white/[0.08] text-white hover:bg-white/10'
                       : 'bg-gray-50 border-gray-100 text-gray-900 hover:bg-gray-100'
                   )}
                 >
@@ -514,7 +514,7 @@ const LoginPage: React.FC = () => {
                   className={cn(
                     'border rounded-none py-2 px-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02]',
                     theme === 'dark'
-                      ? 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+                      ? 'bg-white/5 border-white/[0.08] text-white hover:bg-white/10'
                       : 'bg-gray-50 border-gray-100 text-gray-900 hover:bg-gray-100'
                   )}
                 >

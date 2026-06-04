@@ -103,7 +103,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18 }}
             onClick={closeComponentPicker}
-            className="absolute inset-0 bg-black/75 backdrop-blur-md"
+            className="absolute inset-0 bg-[#0B0F19]/75 backdrop-blur-md"
           />
 
           {/* Modal */}
@@ -119,7 +119,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
             className={cn(
               'relative w-full max-w-3xl flex flex-col overflow-hidden rounded-none shadow-[0_40px_100px_rgba(0,0,0,0.8)] max-h-[90vh] border',
               isDark
-                ? 'bg-[#08080a] border-white/10'
+                ? 'bg-[#08080a] border-white/[0.08]'
                 : 'bg-white border-gray-200'
             )}
             style={{
@@ -131,7 +131,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/70 to-transparent" />
 
             {/* Header */}
-            <div className={cn('px-6 pt-6 pb-4 border-b flex-shrink-0', isDark ? 'border-white/5' : 'border-gray-100')}>
+            <div className={cn('px-6 pt-6 pb-4 border-b flex-shrink-0', isDark ? 'border-white/[0.08]' : 'border-gray-100')}>
               <div className="flex items-start justify-between mb-5">
                 <div>
                   <p className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.4em] mb-1.5">
@@ -151,8 +151,8 @@ export const GlobalComponentPickerModal: React.FC = () => {
                   className={cn(
                     'w-9 h-9 flex items-center justify-center border rounded-none transition-all flex-shrink-0 mt-0.5',
                     isDark
-                      ? 'bg-white/5 border-white/10 text-white hover:bg-white hover:text-black'
-                      : 'bg-gray-100 border-gray-200 text-black hover:bg-black hover:text-white'
+                      ? 'bg-white/5 border-white/[0.08] text-white hover:bg-white hover:text-black'
+                      : 'bg-gray-100 border-gray-200 text-black hover:bg-[#0B0F19] hover:text-white'
                   )}
                 >
                   <X size={15} />
@@ -174,7 +174,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
                   className={cn(
                     'w-full pl-10 pr-10 py-2.5 text-sm rounded-none border transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                     isDark
-                      ? 'bg-white/[0.04] border-white/10 text-white placeholder-gray-600 focus:border-emerald-500/40 focus:bg-white/[0.06]'
+                      ? 'bg-white/[0.04] border-white/[0.08] text-white placeholder-gray-600 focus:border-emerald-500/40 focus:bg-white/[0.06]'
                       : 'bg-gray-50 border-gray-200 text-black placeholder-gray-400 focus:border-emerald-400'
                   )}
                 />
@@ -261,7 +261,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
                                 <Icon size={16} />
                               </div>
                               {block.category && (
-                                <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-black/50 backdrop-blur text-white/80 rounded-none">
+                                <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-[#0B0F19]/50 backdrop-blur text-white/80 rounded-none">
                                   {block.category}
                                 </span>
                               )}
@@ -291,13 +291,13 @@ export const GlobalComponentPickerModal: React.FC = () => {
             </div>
 
             {/* Footer */}
-            <div className={cn('px-6 py-3 border-t flex items-center justify-between flex-shrink-0', isDark ? 'border-white/5 bg-white/[0.02]' : 'border-gray-100 bg-gray-50/50')}>
+            <div className={cn('px-6 py-3 border-t flex items-center justify-between flex-shrink-0', isDark ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-100 bg-gray-50/50')}>
               <p className={cn('text-[9px]', isDark ? 'text-gray-500' : 'text-gray-400')}>
                 {filtered.length} component{filtered.length !== 1 ? 's' : ''} available
               </p>
               <p className={cn('text-[9px]', isDark ? 'text-gray-500' : 'text-gray-400')}>
                 Press{' '}
-                <kbd className={cn('px-1.5 py-0.5 font-mono rounded-none text-[8px] border', isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200')}>
+                <kbd className={cn('px-1.5 py-0.5 font-mono rounded-none text-[8px] border', isDark ? 'bg-white/5 border-white/[0.08]' : 'bg-white border-gray-200')}>
                   Esc
                 </kbd>{' '}
                 to close

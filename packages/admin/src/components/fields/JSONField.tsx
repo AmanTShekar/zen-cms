@@ -65,7 +65,7 @@ const JSONField: React.FC<JSONFieldProps> = ({ value, onChange, disabled, rows =
               ? 'border-emerald-500/50'
               : jsonValid === false
                 ? 'border-red-500/40'
-                : 'border-white/10'
+                : 'border-white/[0.08]'
           )}
           placeholder='{"key": "value"}'
         />

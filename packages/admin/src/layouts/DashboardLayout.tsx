@@ -173,7 +173,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
     <div
       className={cn(
         'flex h-full w-full transition-colors duration-500 font-sans',
-        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
+        theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-gray-900'
       )}
     >
       {/* Mobile Sidebar Overlay */}
@@ -184,7 +184,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-40 bg-[#0B0F19]/60 backdrop-blur-sm"
           />
         )}
       </AnimatePresence>
@@ -201,7 +201,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
           'h-full flex-shrink-0 flex flex-col border-r z-50 transition-colors duration-500',
           isMobile ? 'fixed inset-y-0 left-0 shadow-2xl' : 'relative',
           theme === 'dark'
-            ? 'bg-[#080808] border-white/5'
+            ? 'bg-[#0B0F19] border-white/[0.08]'
             : 'bg-white border-gray-100 shadow-sm'
         )}
       >
@@ -289,7 +289,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                             className={cn(
                               'flex items-center gap-4 px-4 py-3 rounded-none border group cursor-grab active:cursor-grabbing',
                               theme === 'dark'
-                                ? 'border-white/5 text-gray-400 hover:bg-white/[0.03]'
+                                ? 'border-white/[0.08] text-gray-400 hover:bg-white/[0.03]'
                                 : 'border-gray-100 text-gray-500 hover:bg-gray-50'
                             )}
                           >
@@ -384,7 +384,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                           ? 'bg-white border-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]'
                           : 'bg-gray-900 border-gray-800 text-white shadow-xl'
                         : theme === 'dark'
-                          ? 'text-gray-500 border-white/5 hover:bg-white/[0.03] hover:text-gray-300'
+                          ? 'text-gray-500 border-white/[0.08] hover:bg-white/[0.03] hover:text-gray-300'
                           : 'text-gray-500 border-gray-100 hover:bg-gray-100 hover:text-gray-900'
                     )}
                   >
@@ -393,7 +393,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                         'w-2 h-2 rounded-none transition-all shadow-[0_0_10px_currentColor]',
                         isActive
                           ? theme === 'dark'
-                            ? 'bg-black'
+                            ? 'bg-[#0B0F19]'
                             : 'bg-emerald-400'
                           : 'bg-gray-700/40 group-hover:bg-emerald-500'
                       )}
@@ -433,7 +433,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                           ? 'bg-white border-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]'
                           : 'bg-gray-900 border-gray-800 text-white shadow-xl'
                         : theme === 'dark'
-                          ? 'text-gray-400 border-white/5 hover:bg-white/[0.04] hover:text-white'
+                          ? 'text-gray-400 border-white/[0.08] hover:bg-white/[0.04] hover:text-white'
                           : 'text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-gray-900'
                     )}
                   >
@@ -442,7 +442,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                         'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
                         isActive
                           ? theme === 'dark'
-                            ? 'bg-black scale-110'
+                            ? 'bg-[#0B0F19] scale-110'
                             : 'bg-emerald-400'
                           : 'bg-gray-700/40 group-hover:bg-emerald-500'
                       )}
@@ -479,7 +479,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                       ? 'bg-white border-white text-black shadow-lg'
                       : 'bg-gray-900 border-gray-800 text-white shadow-xl'
                     : theme === 'dark'
-                      ? 'text-gray-450 border-white/5 hover:bg-white/[0.04] hover:text-white'
+                      ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-white'
                       : 'text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-gray-900'
                 )}
               >
@@ -488,7 +488,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
                     location.pathname === '/audit-log'
                       ? theme === 'dark'
-                        ? 'bg-black scale-110'
+                        ? 'bg-[#0B0F19] scale-110'
                         : 'bg-emerald-400'
                       : 'bg-gray-700/40 group-hover:bg-emerald-500'
                   )}
@@ -509,7 +509,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                       ? 'bg-white border-white text-black shadow-lg'
                       : 'bg-gray-900 border-gray-800 text-white shadow-xl'
                     : theme === 'dark'
-                      ? 'text-gray-450 border-white/5 hover:bg-white/[0.04] hover:text-white'
+                      ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-white'
                       : 'text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-gray-900'
                 )}
               >
@@ -518,7 +518,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
                     location.pathname === '/schema-builder'
                       ? theme === 'dark'
-                        ? 'bg-black scale-110'
+                        ? 'bg-[#0B0F19] scale-110'
                         : 'bg-emerald-400'
                       : 'bg-gray-700/40 group-hover:bg-emerald-500'
                   )}
@@ -539,7 +539,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                       ? 'bg-white border-white text-black shadow-lg'
                       : 'bg-gray-900 border-gray-800 text-white shadow-xl'
                     : theme === 'dark'
-                      ? 'text-gray-450 border-white/5 hover:bg-white/[0.04] hover:text-white'
+                      ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-white'
                       : 'text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-gray-900'
                 )}
               >
@@ -548,7 +548,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
                     location.pathname === '/block-builder'
                       ? theme === 'dark'
-                        ? 'bg-black scale-110'
+                        ? 'bg-[#0B0F19] scale-110'
                         : 'bg-emerald-400'
                       : 'bg-gray-700/40 group-hover:bg-emerald-500'
                   )}
@@ -569,7 +569,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                       ? 'bg-white border-white text-black shadow-lg'
                       : 'bg-gray-900 border-gray-800 text-white shadow-xl'
                     : theme === 'dark'
-                      ? 'text-gray-450 border-white/5 hover:bg-white/[0.04] hover:text-white'
+                      ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-white'
                       : 'text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-gray-900'
                 )}
               >
@@ -578,7 +578,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
                     location.pathname === '/component-builder'
                       ? theme === 'dark'
-                        ? 'bg-black scale-110'
+                        ? 'bg-[#0B0F19] scale-110'
                         : 'bg-emerald-400'
                       : 'bg-gray-700/40 group-hover:bg-emerald-500'
                   )}
@@ -599,7 +599,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                       ? 'bg-white border-white text-black shadow-lg'
                       : 'bg-gray-900 border-gray-800 text-white shadow-xl'
                     : theme === 'dark'
-                      ? 'text-gray-450 border-white/5 hover:bg-white/[0.04] hover:text-white'
+                      ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-white'
                       : 'text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-gray-900'
                 )}
               >
@@ -608,7 +608,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
                     location.pathname.startsWith('/collections/members')
                       ? theme === 'dark'
-                        ? 'bg-black scale-110'
+                        ? 'bg-[#0B0F19] scale-110'
                         : 'bg-emerald-400'
                       : 'bg-gray-700/40 group-hover:bg-emerald-500'
                   )}
@@ -629,7 +629,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                       ? 'bg-white border-white text-black shadow-lg'
                       : 'bg-gray-900 border-gray-800 text-white shadow-xl'
                     : theme === 'dark'
-                      ? 'text-gray-450 border-white/5 hover:bg-white/[0.04] hover:text-white'
+                      ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-white'
                       : 'text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-gray-900'
                 )}
               >
@@ -638,7 +638,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
                     location.pathname === '/redirects'
                       ? theme === 'dark'
-                        ? 'bg-black scale-110'
+                        ? 'bg-[#0B0F19] scale-110'
                         : 'bg-emerald-400'
                       : 'bg-gray-700/40 group-hover:bg-emerald-500'
                   )}
@@ -659,7 +659,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                       ? 'bg-white border-white text-black shadow-lg'
                       : 'bg-gray-900 border-gray-800 text-white shadow-xl'
                     : theme === 'dark'
-                      ? 'text-gray-450 border-white/5 hover:bg-white/[0.04] hover:text-white'
+                      ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-white'
                       : 'text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-gray-900'
                 )}
               >
@@ -668,7 +668,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
                     location.pathname === '/trash'
                       ? theme === 'dark'
-                        ? 'bg-black scale-110'
+                        ? 'bg-[#0B0F19] scale-110'
                         : 'bg-emerald-400'
                       : 'bg-gray-700/40 group-hover:bg-emerald-500'
                   )}
@@ -689,7 +689,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                       ? 'bg-white border-white text-black shadow-lg'
                       : 'bg-gray-900 border-gray-800 text-white shadow-xl'
                     : theme === 'dark'
-                      ? 'text-gray-450 border-white/5 hover:bg-white/[0.04] hover:text-white'
+                      ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-white'
                       : 'text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-gray-900'
                 )}
               >
@@ -698,7 +698,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
                     location.pathname === '/system'
                       ? theme === 'dark'
-                        ? 'bg-black scale-110'
+                        ? 'bg-[#0B0F19] scale-110'
                         : 'bg-emerald-400'
                       : 'bg-gray-700/40 group-hover:bg-emerald-500'
                   )}
@@ -714,7 +714,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-white/[0.03] bg-black/[0.02]">
+        <div className="p-4 border-t border-white/[0.03] bg-[#0B0F19]/[0.02]">
           <button
             onClick={logout}
             className={cn(
@@ -738,14 +738,14 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
       <main
         className={cn(
           'flex-1 flex flex-col min-w-0 relative h-full overflow-hidden transition-colors duration-500',
-          theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]'
+          theme === 'dark' ? 'bg-[#0B0F19]' : 'bg-[#fafafa]'
         )}
       >
         <div className="flex-1 flex flex-col overflow-auto">
           <header
             className={cn(
               'h-20 flex items-center justify-between px-4 md:px-8 border-b z-40 transition-colors duration-500 backdrop-blur-xl shrink-0',
-              theme === 'dark' ? 'bg-black/60 border-white/5' : 'bg-white/60 border-gray-100'
+              theme === 'dark' ? 'bg-[#0B0F19]/60 border-white/[0.08]' : 'bg-white/60 border-gray-100'
             )}
           >
             <div className="flex items-center gap-4">
@@ -755,7 +755,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                 className={cn(
                   'p-2 rounded-none transition-all border',
                   theme === 'dark'
-                    ? 'bg-white/5 border-white/10 text-gray-400'
+                    ? 'bg-white/5 border-white/[0.08] text-gray-400'
                     : 'bg-gray-50 border-gray-100 text-gray-400'
                 )}
               >
@@ -793,7 +793,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                 className={cn(
                   'p-2 rounded-none border transition-all',
                   theme === 'dark'
-                    ? 'bg-white/5 border-white/10 text-gray-400'
+                    ? 'bg-white/5 border-white/[0.08] text-gray-400'
                     : 'bg-gray-50 border-gray-100 text-gray-600'
                 )}
               >
@@ -806,7 +806,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                 className={cn(
                   'p-2 rounded-none border transition-all',
                   theme === 'dark'
-                    ? 'bg-white/5 border-white/10 text-amber-400'
+                    ? 'bg-white/5 border-white/[0.08] text-amber-400'
                     : 'bg-gray-50 border-gray-100 text-gray-600'
                 )}
               >
@@ -845,7 +845,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                 >
                   <div className="bg-amber-500 text-black p-4 flex items-center justify-between shadow-[0_0_20px_rgba(245,158,11,0.2)] border border-amber-600">
                     <div className="flex items-center gap-4">
-                      <div className="w-8 h-8 bg-black/10 flex items-center justify-center animate-pulse">
+                      <div className="w-8 h-8 bg-[#0B0F19]/10 flex items-center justify-center animate-pulse">
                         <X size={16} />
                       </div>
                       <div className="flex flex-col">
@@ -859,7 +859,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     </div>
                     <Link
                       to="/settings"
-                      className="px-4 py-2 bg-black text-white text-[8px] font-black uppercase tracking-widest hover:bg-black/80 transition-all"
+                      className="px-4 py-2 bg-[#0B0F19] text-white text-[8px] font-black uppercase tracking-widest hover:bg-[#0B0F19]/80 transition-all"
                     >
                       Configure
                     </Link>

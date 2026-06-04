@@ -26,7 +26,7 @@ const CollapsibleField: React.FC<Props> = ({
   const collapsibleFields = cfField.fields || []
 
   return (
-    <div className="border border-white/10 rounded-none overflow-hidden">
+    <div className="border border-white/[0.08] rounded-none overflow-hidden">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -44,7 +44,7 @@ const CollapsibleField: React.FC<Props> = ({
         </span>
       </button>
       {isOpen && (
-        <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 border-t border-white/5">
+        <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 border-t border-white/[0.08]">
           {collapsibleFields.map((f) => (
             <div key={f.name} className="space-y-1.5">
               <label className="text-xs font-semibold text-gray-300 capitalize">

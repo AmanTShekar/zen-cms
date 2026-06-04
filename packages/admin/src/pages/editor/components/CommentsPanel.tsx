@@ -52,7 +52,7 @@ const CommentItem: React.FC<{
         'border rounded-none overflow-hidden',
         comment.resolved
           ? theme === 'dark' ? 'border-emerald-500/10 bg-emerald-500/[0.03]' : 'border-emerald-200 bg-emerald-50/50'
-          : theme === 'dark' ? 'border-white/5 bg-white/[0.02]' : 'border-gray-200 bg-white'
+          : theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-200 bg-white'
       )}
     >
       {/* Thread header */}
@@ -103,7 +103,7 @@ const CommentItem: React.FC<{
       {comment.replies?.length > 0 && (
         <div className={cn(
           'border-t',
-          theme === 'dark' ? 'border-white/5' : 'border-gray-100'
+          theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
         )}>
           <button
             onClick={() => setRepliesOpen((v) => !v)}
@@ -151,7 +151,7 @@ const CommentItem: React.FC<{
       {/* Actions */}
       <div className={cn(
         'px-3 py-1.5 border-t flex items-center gap-3',
-        theme === 'dark' ? 'border-white/5' : 'border-gray-100'
+        theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
       )}>
         <button
           onClick={() => setReplyOpen((v) => !v)}
@@ -203,7 +203,7 @@ const CommentItem: React.FC<{
           >
             <div className={cn(
               'px-3 py-2 border-t flex gap-2',
-              theme === 'dark' ? 'border-white/5' : 'border-gray-100'
+              theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
             )}>
               <input
                 autoFocus
@@ -237,7 +237,7 @@ const CommentItem: React.FC<{
                 aria-label="Cancel reply"
                 className={cn(
                   'px-2 py-1.5 text-xs font-black uppercase italic tracking-wider border rounded-none',
-                  theme === 'dark' ? 'border-white/5 text-gray-600' : 'border-gray-200 text-gray-400'
+                  theme === 'dark' ? 'border-white/[0.08] text-gray-600' : 'border-gray-200 text-gray-400'
                 )}
               >
                 <X size={10} aria-hidden="true" />
@@ -303,7 +303,7 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
       {/* New comment input */}
       <div className={cn(
         'border rounded-none p-2.5',
-        theme === 'dark' ? 'border-white/5 bg-white/[0.01]' : 'border-gray-200 bg-gray-50/50'
+        theme === 'dark' ? 'border-white/[0.08] bg-white/[0.01]' : 'border-gray-200 bg-gray-50/50'
       )}>
         <textarea
           value={newComment}
@@ -347,7 +347,7 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
       ) : filteredComments.length === 0 ? (
         <div className={cn(
           'py-5 text-center border border-dashed rounded-none',
-          theme === 'dark' ? 'border-white/5' : 'border-gray-200'
+          theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
         )}>
           <MessageSquare size={16} className="mx-auto text-gray-600 mb-1.5" />
           <p className="text-xs text-gray-500 font-bold italic">No comments yet</p>

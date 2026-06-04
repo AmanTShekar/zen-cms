@@ -194,7 +194,7 @@ const CollectionsPage: React.FC = () => {
     <div
       className={cn(
         'p-10 space-y-10 min-h-screen transition-colors duration-500',
-        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
+        theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-gray-900'
       )}
     >
       {/* 🏛️ Tactical Header */}
@@ -248,7 +248,7 @@ const CollectionsPage: React.FC = () => {
               className={cn(
                 'w-full border rounded-none py-4 pl-12 pr-4 text-[10px] font-black italic focus:ring-4 transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black uppercase tracking-widest',
                 theme === 'dark'
-                  ? 'bg-white/[0.03] border-white/10 text-white focus:ring-emerald-500/20'
+                  ? 'bg-white/[0.03] border-white/[0.08] text-white focus:ring-emerald-500/20'
                   : 'bg-white border-gray-200 focus:ring-emerald-500/10'
               )}
             />
@@ -273,7 +273,7 @@ const CollectionsPage: React.FC = () => {
             className={cn(
               'p-8 border rounded-none flex flex-col gap-4 transition-all relative overflow-hidden group',
               theme === 'dark'
-                ? 'bg-white/[0.02] border-white/5'
+                ? 'bg-white/[0.02] border-white/[0.08]'
                 : 'bg-white border-gray-100 shadow-sm'
             )}
           >
@@ -309,7 +309,7 @@ const CollectionsPage: React.FC = () => {
               className={cn(
                 'group p-6 border rounded-none flex flex-col gap-6 transition-all hover:-translate-y-1 relative',
                 theme === 'dark'
-                  ? 'bg-[#080808] border-white/5 hover:border-emerald-500/50'
+                  ? 'bg-[#0B0F19] border-white/[0.08] hover:border-emerald-500/50'
                   : 'bg-white border-gray-100 hover:border-emerald-500 shadow-sm'
               )}
             >
@@ -343,7 +343,7 @@ const CollectionsPage: React.FC = () => {
                 </p>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-white/5">
+              <div className="flex items-center justify-between pt-4 border-t border-white/[0.08]">
                 <Link
                   to={`/collections/${col.slug}/hooks`}
                   onClick={(e) => e.stopPropagation()}
@@ -363,12 +363,12 @@ const CollectionsPage: React.FC = () => {
       </div>
 
       {isAIModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/80 backdrop-blur-sm p-4">
           <div
             className={cn(
               'w-full max-w-3xl p-8 border shadow-2xl relative',
               theme === 'dark'
-                ? 'bg-[#0a0a0a] border-white/10 text-white'
+                ? 'bg-[#0a0a0a] border-white/[0.08] text-white'
                 : 'bg-white border-gray-200'
             )}
           >
@@ -391,7 +391,7 @@ const CollectionsPage: React.FC = () => {
               placeholder="e.g., I need a blog post collection with title, content, cover image, seo metadata, and a category dropdown..."
               className={cn(
                 'w-full h-32 p-4 mb-4 font-mono text-sm border outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:ring-2 focus:ring-emerald-500 resize-none',
-                theme === 'dark' ? 'bg-black border-white/10' : 'bg-gray-50 border-gray-200'
+                theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-gray-50 border-gray-200'
               )}
             />
 
@@ -405,12 +405,12 @@ const CollectionsPage: React.FC = () => {
             </button>
 
             {aiResult && (
-              <div className="mt-6 border-t border-white/10 pt-6">
+              <div className="mt-6 border-t border-white/[0.08] pt-6">
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
                   Generated Schema Configuration (Copy to cms.config.ts)
                 </p>
                 <div className="relative">
-                  <pre className="p-4 bg-black text-emerald-400 text-xs font-mono overflow-auto max-h-64 border border-white/5">
+                  <pre className="p-4 bg-[#0B0F19] text-emerald-400 text-xs font-mono overflow-auto max-h-64 border border-white/[0.08]">
                     {JSON.stringify(aiResult, null, 2)}
                   </pre>
                   <button
@@ -426,25 +426,25 @@ const CollectionsPage: React.FC = () => {
         </div>
       )}
       {isVisualModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/85 backdrop-blur-md p-4 overflow-y-auto">
           <div
             className={cn(
               'w-full max-w-4xl p-10 border shadow-2xl relative my-8',
               theme === 'dark'
-                ? 'bg-[#0a0a0a] border-white/10 text-white'
+                ? 'bg-[#0a0a0a] border-white/[0.08] text-white'
                 : 'bg-white border-gray-200 text-gray-900'
             )}
           >
             <button
               onClick={() => setIsVisualModalOpen(false)}
-              className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-none border border-white/10 transition-colors text-gray-400 hover:text-white"
+              className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-none border border-white/[0.08] transition-colors text-gray-400 hover:text-white"
             >
               ✕
             </button>
             <h2 className="text-3xl font-black italic uppercase tracking-tighter mb-4 flex items-center gap-3">
               <Database className="text-emerald-500 animate-pulse" /> Visual Schema Builder
             </h2>
-            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-8 border-b border-white/5 pb-4 italic">
+            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-8 border-b border-white/[0.08] pb-4 italic">
               Define collection specifications, fields, types, and constraints visually without
               writing code.
             </p>
@@ -463,7 +463,7 @@ const CollectionsPage: React.FC = () => {
                   className={cn(
                     'w-full px-4 py-3 text-sm font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all uppercase tracking-widest italic',
                     theme === 'dark'
-                      ? 'bg-black border-white/10 text-white'
+                      ? 'bg-[#0B0F19] border-white/[0.08] text-white'
                       : 'bg-gray-50 border-gray-200'
                   )}
                 />
@@ -482,7 +482,7 @@ const CollectionsPage: React.FC = () => {
                   className={cn(
                     'w-full px-4 py-3 text-sm font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all lowercase tracking-widest italic',
                     theme === 'dark'
-                      ? 'bg-black border-white/10 text-gray-400'
+                      ? 'bg-[#0B0F19] border-white/[0.08] text-gray-400'
                       : 'bg-gray-50 border-gray-200 text-gray-500'
                   )}
                 />
@@ -495,7 +495,7 @@ const CollectionsPage: React.FC = () => {
                 id="enable-drafts-checkbox"
                 checked={newColDrafts}
                 onChange={(e) => setNewColDrafts(e.target.checked)}
-                className="w-4 h-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded-none bg-black"
+                className="w-4 h-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded-none bg-[#0B0F19]"
               />
               <label
                 htmlFor="enable-drafts-checkbox"
@@ -506,7 +506,7 @@ const CollectionsPage: React.FC = () => {
             </div>
 
             <div className="space-y-6">
-              <div className="flex items-center justify-between border-b border-white/5 pb-3">
+              <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
                 <h3 className="text-xs font-black uppercase tracking-widest text-gray-400 italic">
                   Field Definitions
                 </h3>
@@ -525,7 +525,7 @@ const CollectionsPage: React.FC = () => {
                     className={cn(
                       'p-5 border rounded-none grid grid-cols-1 md:grid-cols-4 gap-4 items-center relative group/field',
                       theme === 'dark'
-                        ? 'bg-[#0f0f0f] border-white/5'
+                        ? 'bg-[#0B0F19] border-white/[0.08]'
                         : 'bg-gray-50 border-gray-100'
                     )}
                   >
@@ -542,7 +542,7 @@ const CollectionsPage: React.FC = () => {
                         className={cn(
                           'w-full px-3 py-2 text-xs font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all lowercase font-mono',
                           theme === 'dark'
-                            ? 'bg-black border-white/10 text-white'
+                            ? 'bg-[#0B0F19] border-white/[0.08] text-white'
                             : 'bg-white border-gray-200'
                         )}
                       />
@@ -558,7 +558,7 @@ const CollectionsPage: React.FC = () => {
                         className={cn(
                           'w-full px-3 py-2 text-xs font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
                           theme === 'dark'
-                            ? 'bg-black border-white/10 text-white'
+                            ? 'bg-[#0B0F19] border-white/[0.08] text-white'
                             : 'bg-white border-gray-200'
                         )}
                       >
@@ -585,7 +585,7 @@ const CollectionsPage: React.FC = () => {
                           className={cn(
                             'w-full px-3 py-2 text-xs font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
                             theme === 'dark'
-                              ? 'bg-black border-white/10 text-white'
+                              ? 'bg-[#0B0F19] border-white/[0.08] text-white'
                               : 'bg-white border-gray-200'
                           )}
                         />
@@ -601,7 +601,7 @@ const CollectionsPage: React.FC = () => {
                           className={cn(
                             'w-full px-3 py-2 text-xs font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
                             theme === 'dark'
-                              ? 'bg-black border-white/10 text-white'
+                              ? 'bg-[#0B0F19] border-white/[0.08] text-white'
                               : 'bg-white border-gray-200'
                           )}
                         >
@@ -621,7 +621,7 @@ const CollectionsPage: React.FC = () => {
                           id={`required-checkbox-${index}`}
                           checked={!!field.required}
                           onChange={(e) => handleFieldChange(index, 'required', e.target.checked)}
-                          className="w-3.5 h-3.5 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded-none bg-black"
+                          className="w-3.5 h-3.5 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded-none bg-[#0B0F19]"
                         />
                         <label
                           htmlFor={`required-checkbox-${index}`}
@@ -646,13 +646,13 @@ const CollectionsPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="mt-10 pt-8 border-t border-white/5 flex justify-end gap-4">
+            <div className="mt-10 pt-8 border-t border-white/[0.08] flex justify-end gap-4">
               <button
                 onClick={() => setIsVisualModalOpen(false)}
                 className={cn(
                   'px-6 py-3 font-black text-[9px] uppercase tracking-widest transition-all italic leading-none border',
                   theme === 'dark'
-                    ? 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
+                    ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-white'
                     : 'bg-white border-gray-200 text-gray-400 hover:text-gray-900'
                 )}
               >

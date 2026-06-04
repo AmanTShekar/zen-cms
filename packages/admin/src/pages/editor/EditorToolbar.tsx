@@ -123,18 +123,18 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   // Common button class for toolbar icon buttons
   const iconBtn = cn(
     'w-8 h-8 rounded-none flex items-center justify-center border transition-all',
-    dark ? 'bg-white/5 border-white/5' : 'bg-gray-100 border-gray-200'
+    dark ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-100 border-gray-200'
   )
 
   const iconBtnActive = (active: boolean) =>
     active
-      ? dark ? 'bg-white/10 border-white/10 text-white' : 'bg-gray-200 border-gray-300 text-black'
+      ? dark ? 'bg-white/10 border-white/[0.08] text-white' : 'bg-gray-200 border-gray-300 text-black'
       : dark ? 'text-gray-500 hover:text-white' : 'text-gray-400 hover:text-black'
 
   const iconBtnDisabled = (disabled: boolean) =>
     disabled
-      ? dark ? 'bg-black/20 border-white/5 text-white/20 cursor-not-allowed' : 'bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed'
-      : dark ? 'bg-white/5 border-white/5 text-gray-400 hover:text-emerald-400' : 'bg-gray-100 border-gray-200 text-gray-500 hover:text-emerald-600'
+      ? dark ? 'bg-[#0B0F19]/20 border-white/[0.08] text-white/20 cursor-not-allowed' : 'bg-gray-50 border-gray-100 text-gray-300 cursor-not-allowed'
+      : dark ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-emerald-400' : 'bg-gray-100 border-gray-200 text-gray-500 hover:text-emerald-600'
 
   // Last saved time display
   const lastSavedLabel = lastSavedAt
@@ -145,7 +145,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
     <header
       className={cn(
         'h-14 border-b flex items-center justify-between px-4 z-[100] backdrop-blur-3xl transition-all gap-3 shrink-0 overflow-visible',
-        dark ? 'bg-black/90 border-white/5' : 'bg-white/90 border-gray-100 shadow-sm'
+        dark ? 'bg-[#0B0F19]/90 border-white/[0.08]' : 'bg-white/90 border-gray-100 shadow-sm'
       )}
     >
       {/* Left: Back + SEO */}
@@ -165,7 +165,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
             'px-2.5 py-1.5 rounded-none border text-xs font-black uppercase italic flex items-center gap-1.5 transition-all',
             seoOpen
               ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-              : dark ? 'bg-white/5 border-white/5 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
+              : dark ? 'bg-white/5 border-white/[0.08] text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
           )}
           aria-label={seoOpen ? 'Close SEO panel' : 'Open SEO panel'}
           title="SEO"
@@ -274,7 +274,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
               aria-label={`Current language: ${currentLocale.toUpperCase()}. Click to change.`}
               className={cn(
                 'h-8 px-2 rounded-none border flex items-center gap-1.5 text-xs font-black uppercase italic transition-all',
-                dark ? 'bg-white/5 border-white/5 text-gray-400 hover:text-white' : 'bg-gray-100 border-gray-200 text-gray-500 hover:text-black'
+                dark ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-white' : 'bg-gray-100 border-gray-200 text-gray-500 hover:text-black'
               )}
             >
               <Languages size={13} />
@@ -284,7 +284,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
               <div
                 className={cn(
                   'absolute top-full mt-2 w-36 border rounded-none shadow-2xl z-50 overflow-hidden',
-                  dark ? 'bg-[#0a0a0a] border-white/10' : 'bg-white border-gray-200'
+                  dark ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-white border-gray-200'
                 )}
               >
                 {availableLocales.map((locale) => (
@@ -310,13 +310,13 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
         <div className="w-px h-6 bg-white/5 mx-1" />
 
         {/* Visual / JSON toggle */}
-        <div className={cn('flex items-center gap-0.5 p-0.5 rounded-none border', dark ? 'bg-white/5 border-white/5' : 'bg-gray-100 border-gray-200')}>
+        <div className={cn('flex items-center gap-0.5 p-0.5 rounded-none border', dark ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-100 border-gray-200')}>
           <button
             onClick={() => setViewMode('visual')}
             className={cn(
               'px-2.5 py-1 rounded-none text-xs font-black uppercase italic transition-all',
               viewMode === 'visual'
-                ? dark ? 'bg-white text-black' : 'bg-black text-white'
+                ? dark ? 'bg-white text-black' : 'bg-[#0B0F19] text-white'
                 : dark ? 'text-white/50 hover:text-white' : 'text-gray-600 hover:text-black'
             )}
           >
@@ -327,7 +327,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
             className={cn(
               'px-2.5 py-1 rounded-none text-xs font-black uppercase italic transition-all',
               viewMode === 'code'
-                ? dark ? 'bg-white text-black' : 'bg-black text-white'
+                ? dark ? 'bg-white text-black' : 'bg-[#0B0F19] text-white'
                 : dark ? 'text-white/50 hover:text-white' : 'text-gray-600 hover:text-black'
             )}
           >
@@ -347,7 +347,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
               'flex items-center gap-1 px-2.5 py-1.5 rounded-none border text-xs font-black uppercase italic transition-all',
               publishStatus === 'draft' && workflowStatus !== 'scheduled'
                 ? dark ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-600'
-                : dark ? 'bg-white/5 border-white/5 text-gray-500' : 'bg-gray-50 border-gray-200 text-gray-400'
+                : dark ? 'bg-white/5 border-white/[0.08] text-gray-500' : 'bg-gray-50 border-gray-200 text-gray-400'
             )}
             aria-label="Set as draft"
           >
@@ -361,7 +361,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
               'flex items-center gap-1 px-2.5 py-1.5 rounded-none border text-xs font-black uppercase italic transition-all',
               publishStatus === 'published'
                 ? dark ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-green-50 border-green-200 text-green-600'
-                : dark ? 'bg-white/5 border-white/5 text-gray-500 hover:text-white' : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-black'
+                : dark ? 'bg-white/5 border-white/[0.08] text-gray-500 hover:text-white' : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-black'
             )}
             aria-label="Publish document"
           >
@@ -387,7 +387,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
               'h-8 px-2.5 rounded-none border flex items-center gap-1.5 text-xs font-black uppercase italic transition-all',
               scheduledAt
                 ? dark ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-600'
-                : dark ? 'bg-white/5 border-white/5 text-gray-500 hover:text-white' : 'bg-gray-100 border-gray-200 text-gray-400 hover:text-black'
+                : dark ? 'bg-white/5 border-white/[0.08] text-gray-500 hover:text-white' : 'bg-gray-100 border-gray-200 text-gray-400 hover:text-black'
             )}
             title={scheduledAt ? `Scheduled: ${new Date(scheduledAt).toLocaleString()}` : 'Schedule publish'}
             aria-label={scheduledAt ? `Scheduled for ${new Date(scheduledAt).toLocaleDateString()}` : 'Schedule publish'}

@@ -35,7 +35,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item, idx, theme, removeF
       className={cn(
         'flex items-center gap-3 p-3 rounded-none border group',
         theme === 'dark'
-          ? 'bg-white/5 border-white/10 hover:border-emerald-500/20'
+          ? 'bg-white/5 border-white/[0.08] hover:border-emerald-500/20'
           : 'bg-gray-50 border-gray-200 hover:border-emerald-200'
       )}
     >
@@ -104,7 +104,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setDynamicZoneModalOpen(false)}
-            className="absolute inset-0 bg-black/70 backdrop-blur-md"
+            className="absolute inset-0 bg-[#0B0F19]/70 backdrop-blur-md"
           />
           <motion.div
             ref={dialogRef}
@@ -116,12 +116,12 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
             exit={{ scale: 0.9, opacity: 0 }}
             className={cn(
               'absolute right-0 top-0 bottom-0 w-[450px] border-l shadow-2xl flex flex-col overflow-hidden',
-              theme === 'dark' ? 'bg-[#060606] border-white/10' : 'bg-white border-gray-200'
+              theme === 'dark' ? 'bg-[#060606] border-white/[0.08]' : 'bg-white border-gray-200'
             )}
           >
             <div className={cn(
               'p-6 border-b flex items-center justify-between',
-              theme === 'dark' ? 'border-white/5' : 'border-gray-100'
+              theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
             )}>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-none bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
@@ -145,8 +145,8 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
                 className={cn(
                   'p-1.5 rounded-none border transition-all',
                   theme === 'dark'
-                    ? 'bg-white/5 border-white/10 hover:bg-white hover:text-black'
-                    : 'bg-gray-100 border-gray-200 hover:bg-black hover:text-white'
+                    ? 'bg-white/5 border-white/[0.08] hover:bg-white hover:text-black'
+                    : 'bg-gray-100 border-gray-200 hover:bg-[#0B0F19] hover:text-white'
                 )}
               >
                 <X size={14} />
@@ -210,7 +210,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
                     className={cn(
                       'w-full pl-8 pr-3 py-2 text-xs font-bold border rounded-none bg-transparent',
                       theme === 'dark'
-                        ? 'border-white/10 text-white placeholder-gray-600 focus:border-emerald-500/30'
+                        ? 'border-white/[0.08] text-white placeholder-gray-600 focus:border-emerald-500/30'
                         : 'border-gray-200 text-black placeholder-gray-400 focus:border-emerald-500/30'
                     )}
                   />
@@ -231,7 +231,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
                           className={cn(
                             'w-full flex items-center gap-3 p-3 rounded-none border transition-all text-left',
                             theme === 'dark'
-                              ? 'bg-white/[0.01] border-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/5'
+                              ? 'bg-white/[0.01] border-white/[0.08] hover:border-emerald-500/30 hover:bg-emerald-500/5'
                               : 'bg-gray-50 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50'
                           )}
                         >

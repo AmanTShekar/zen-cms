@@ -478,7 +478,7 @@ export function SlashCommandPlugin() {
       className={cn(
         'fixed z-[2500] w-72 max-h-[360px] overflow-y-auto border shadow-2xl backdrop-blur-2xl',
         theme === 'dark'
-          ? 'bg-[#0b0f19]/95 border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.6)]'
+          ? 'bg-[#0b0f19]/95 border-white/[0.08] shadow-[0_20px_60px_rgba(0,0,0,0.6)]'
           : 'bg-white/95 border-gray-200 shadow-[0_20px_60px_rgba(0,0,0,0.15)]',
       )}
       style={{ top: position.top, left: position.left }}
@@ -486,7 +486,7 @@ export function SlashCommandPlugin() {
       <div
         className={cn(
           'px-3 py-2 border-b flex items-center justify-between',
-          theme === 'dark' ? 'border-white/5' : 'border-gray-100',
+          theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100',
         )}
       >
         <span
@@ -537,7 +537,7 @@ export function SlashCommandPlugin() {
                       ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                       : 'bg-emerald-100 border-emerald-200 text-emerald-600'
                     : theme === 'dark'
-                      ? 'bg-white/5 border-white/5 text-gray-400'
+                      ? 'bg-white/5 border-white/[0.08] text-gray-400'
                       : 'bg-gray-100 border-gray-200 text-gray-500',
                 )}
               >

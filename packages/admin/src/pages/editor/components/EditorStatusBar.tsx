@@ -51,7 +51,7 @@ export const EditorStatusBar: React.FC = () => {
       className={cn(
         'h-7 border-t flex items-center justify-between px-5 shrink-0 select-none',
         theme === 'dark'
-          ? 'bg-black/90 border-white/5 text-gray-600'
+          ? 'bg-[#0B0F19]/90 border-white/[0.08] text-gray-600'
           : 'bg-white/90 border-gray-100 text-gray-400'
       )}
     >

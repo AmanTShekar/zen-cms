@@ -63,7 +63,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
       ref={popoverRef}
       className={cn(
         'absolute top-full mt-2 right-0 w-64 border shadow-2xl z-50 p-3',
-        theme === 'dark' ? 'bg-[#0a0a0a] border-white/10' : 'bg-white border-gray-200'
+        theme === 'dark' ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-white border-gray-200'
       )}
       onClick={(e) => e.stopPropagation()}
     >
@@ -96,7 +96,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
         className={cn(
           'w-full px-2 py-1.5 rounded-none border text-xs font-mono',
           theme === 'dark'
-            ? 'bg-white/5 border-white/10 text-white'
+            ? 'bg-white/5 border-white/[0.08] text-white'
             : 'bg-gray-50 border-gray-200 text-black'
         )}
       />
@@ -105,7 +105,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
           onClick={onClose}
           className={cn(
             'flex-1 py-1.5 border text-xs font-black uppercase italic text-center transition-all',
-            theme === 'dark' ? 'border-white/10 text-gray-400 hover:bg-white/5' : 'border-gray-200 text-gray-500 hover:bg-gray-50'
+            theme === 'dark' ? 'border-white/[0.08] text-gray-400 hover:bg-white/5' : 'border-gray-200 text-gray-500 hover:bg-gray-50'
           )}
         >
           Cancel

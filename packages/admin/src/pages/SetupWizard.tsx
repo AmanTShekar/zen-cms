@@ -190,10 +190,10 @@ export default function SetupWizard() {
   }
 
   const isDark = theme === 'dark'
-  const bg = isDark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'
-  const card = isDark ? 'bg-[#0a0a0a] border-white/5' : 'bg-white border-gray-100 shadow-sm'
+  const bg = isDark ? 'bg-[#0B0F19] text-white' : 'bg-gray-50 text-gray-900'
+  const card = isDark ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm'
   const input = isDark
-    ? 'bg-white/5 border-white/10 text-white placeholder-gray-600 focus:border-emerald-500'
+    ? 'bg-white/5 border-white/[0.08] text-white placeholder-gray-600 focus:border-emerald-500'
     : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-emerald-400'
 
   const STEPS = [
@@ -256,7 +256,7 @@ export default function SetupWizard() {
                 state.projectType === pt.id
                   ? 'border-emerald-500 bg-emerald-500/10'
                   : isDark
-                    ? 'border-white/5 hover:border-white/20'
+                    ? 'border-white/[0.08] hover:border-white/[0.08]'
                     : 'border-gray-100 hover:border-emerald-100'
               )}
             >
@@ -292,7 +292,7 @@ export default function SetupWizard() {
                     selected
                       ? 'border-emerald-500 bg-emerald-500/10'
                       : isDark
-                        ? 'border-white/5 hover:border-white/20'
+                        ? 'border-white/[0.08] hover:border-white/[0.08]'
                         : 'border-gray-100 hover:border-emerald-100'
                   )}
                 >
@@ -344,7 +344,7 @@ export default function SetupWizard() {
                     'flex-1 py-3 border text-[10px] font-black uppercase tracking-widest italic rounded-none transition-all',
                     state.dbDialect === dialect
                       ? 'border-emerald-500 bg-emerald-500/10 text-white'
-                      : 'border-white/5 hover:border-white/20 text-gray-400'
+                      : 'border-white/[0.08] hover:border-white/[0.08] text-gray-400'
                   )}
                 >
                   {dialect === 'mongodb' ? 'MongoDB / Mongoose' : 'PostgreSQL / Drizzle'}
@@ -377,7 +377,7 @@ export default function SetupWizard() {
               type="button"
               onClick={testDbConnection}
               disabled={state.dbTestStatus === 'testing'}
-              className="flex-1 py-3 border border-white/10 hover:border-white/30 text-[10px] font-black uppercase tracking-widest italic rounded-none transition-all flex items-center justify-center gap-2"
+              className="flex-1 py-3 border border-white/[0.08] hover:border-white/30 text-[10px] font-black uppercase tracking-widest italic rounded-none transition-all flex items-center justify-center gap-2"
             >
               {state.dbTestStatus === 'testing' ? (
                 <Loader2 size={12} className="animate-spin" />
@@ -394,7 +394,7 @@ export default function SetupWizard() {
                 'flex-1 py-3 text-[10px] font-black uppercase tracking-widest italic rounded-none transition-all flex items-center justify-center gap-2',
                 state.dbTestStatus === 'success' && !state.dbSaved
                   ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20'
-                  : 'bg-white/5 border border-white/5 text-gray-500 cursor-not-allowed'
+                  : 'bg-white/5 border border-white/[0.08] text-gray-500 cursor-not-allowed'
               )}
             >
               Save Configuration
@@ -582,7 +582,7 @@ export default function SetupWizard() {
                   icon: '📝',
                 },
               ].map((feat, i) => (
-                <div key={i} className="p-2.5 border border-white/5 bg-white/[0.01] rounded-none flex gap-2">
+                <div key={i} className="p-2.5 border border-white/[0.08] bg-white/[0.01] rounded-none flex gap-2">
                   <span className="text-base">{feat.icon}</span>
                   <div>
                     <p className="text-[9px] font-black uppercase italic leading-none">{feat.title}</p>
@@ -646,7 +646,7 @@ export default function SetupWizard() {
                 <div
                   className={cn(
                     'flex items-center gap-3 p-3 border rounded-none font-mono text-[11px] break-all',
-                    isDark ? 'bg-black border-white/10' : 'bg-gray-100 border-gray-200'
+                    isDark ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-gray-100 border-gray-200'
                   )}
                 >
                   <span className="flex-1">{state.generatedKey}</span>
@@ -657,7 +657,7 @@ export default function SetupWizard() {
                       state.keyCopied
                         ? 'border-emerald-50 text-emerald-500'
                         : isDark
-                          ? 'border-white/20 hover:border-white/40'
+                          ? 'border-white/[0.08] hover:border-white/40'
                           : 'border-gray-300 hover:border-gray-500'
                     )}
                   >
@@ -768,7 +768,7 @@ export default function SetupWizard() {
         <div
           className={cn(
             'flex items-center justify-between px-8 py-5 border-t',
-            isDark ? 'border-white/5' : 'border-gray-100'
+            isDark ? 'border-white/[0.08]' : 'border-gray-100'
           )}
         >
           <button
@@ -779,7 +779,7 @@ export default function SetupWizard() {
               step === 0
                 ? 'opacity-30 cursor-not-allowed'
                 : isDark
-                  ? 'border-white/10 hover:border-white/30'
+                  ? 'border-white/[0.08] hover:border-white/30'
                   : 'border-gray-200 hover:border-gray-400'
             )}
           >

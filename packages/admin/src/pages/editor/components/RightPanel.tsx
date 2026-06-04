@@ -107,14 +107,14 @@ export const RightPanel: React.FC<RightPanelProps> = ({
             'border-l flex flex-col z-50 overflow-hidden shrink-0',
             'md:relative fixed inset-y-0 right-0 max-md:!w-[280px] max-md:z-[100] max-md:shadow-2xl',
             dark
-              ? 'bg-[#080808] border-white/5'
+              ? 'bg-[#0B0F19] border-white/[0.08]'
               : 'bg-white border-gray-200 shadow-xl'
           )}
         >
           {/* Mobile backdrop */}
           <div
             onClick={() => setRightOpen(false)}
-            className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[99]"
+            className="md:hidden fixed inset-0 bg-[#0B0F19]/50 backdrop-blur-sm z-[99]"
           />
           {/* Resize handle */}
           <div
@@ -131,7 +131,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
           <div
             className={cn(
               'px-3 py-2 border-b flex items-center justify-between shrink-0',
-              dark ? 'border-white/5' : 'border-gray-100'
+              dark ? 'border-white/[0.08]' : 'border-gray-100'
             )}
           >
             <div className="flex items-center gap-4">
@@ -176,7 +176,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                 {/* Viewport size toggles */}
                 <div className={cn(
                   'flex items-center justify-center gap-1 px-3 py-2 border-b shrink-0',
-                  dark ? 'border-white/5' : 'border-gray-100'
+                  dark ? 'border-white/[0.08]' : 'border-gray-100'
                 )}>
                   {(['desktop', 'tablet', 'mobile'] as const).map((vp) => {
                     const vpConfig = VIEWPORT_SIZES[vp]
@@ -193,7 +193,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                               ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                               : 'bg-emerald-50 border-emerald-200 text-emerald-600'
                             : dark
-                              ? 'bg-white/5 border-white/5 text-gray-500 hover:text-gray-300'
+                              ? 'bg-white/5 border-white/[0.08] text-gray-500 hover:text-gray-300'
                               : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-600'
                         )}
                         aria-label={`${vp} preview`}
@@ -212,7 +212,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                     <div
                       className={cn(
                         'transition-all duration-300 border overflow-hidden bg-white',
-                        dark ? 'border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)]' : 'border-gray-200 shadow-2xl',
+                        dark ? 'border-white/[0.08] shadow-[0_0_40px_rgba(0,0,0,0.5)]' : 'border-gray-200 shadow-2xl',
                         isDesktop ? 'w-full h-full' : 'rounded-none'
                       )}
                       style={
@@ -236,7 +236,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                   ) : (
                     <div className={cn(
                       'flex flex-col items-center justify-center h-full gap-3 text-center p-8',
-                      dark ? 'bg-black/40' : 'bg-gray-50'
+                      dark ? 'bg-[#0B0F19]/40' : 'bg-gray-50'
                     )}>
                       <Eye size={28} className={dark ? 'text-gray-600' : 'text-gray-300'} />
                       <div>
@@ -278,7 +278,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                         className={cn(
                           'group p-3 rounded-none border transition-all cursor-pointer space-y-1',
                           dark
-                            ? 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04]'
+                            ? 'bg-white/[0.02] border-white/[0.08] hover:bg-white/[0.04]'
                             : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
                         )}
                       >
@@ -300,7 +300,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                               className={cn(
                                 'flex-1 py-1 border text-xs font-black uppercase italic tracking-widest text-center transition-all',
                                 dark
-                                  ? 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white'
+                                  ? 'bg-white/5 border-white/[0.08] text-gray-300 hover:bg-white/10 hover:text-white'
                                   : 'bg-gray-100 border-gray-250 text-gray-700 hover:bg-gray-200 hover:text-black'
                               )}
                             >

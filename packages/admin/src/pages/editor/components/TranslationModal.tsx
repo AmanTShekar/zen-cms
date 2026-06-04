@@ -69,18 +69,18 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
   return createPortal(
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-[#0B0F19]/60 backdrop-blur-sm">
           <motion.div
           initial={{ opacity: 0, scale: 0.98, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.98, y: 15 }}
           className={cn(
             'border rounded-none w-full max-w-6xl shadow-2xl flex flex-col overflow-hidden max-h-[90vh]',
-            dark ? 'bg-black border-white/5 text-white' : 'bg-white border-gray-100 text-gray-900'
+            dark ? 'bg-[#0B0F19] border-white/[0.08] text-white' : 'bg-white border-gray-100 text-gray-900'
           )}
         >
           {/* Header */}
-          <div className="p-6 border-b border-gray-50 dark:border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="p-6 border-b border-gray-50 dark:border-white/[0.08] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-emerald-600 rounded-none flex items-center justify-center text-white shadow-lg shrink-0">
                 <Languages size={18} />
@@ -104,7 +104,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
                   onChange={(e) => setReferenceLocale(e.target.value)}
                   className={cn(
                     'w-32 px-3 py-1.5 text-xs font-bold border rounded-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors appearance-none cursor-pointer',
-                    dark ? 'border-white/10 hover:border-white/30 text-white' : 'border-gray-200 hover:border-gray-400 text-black'
+                    dark ? 'border-white/[0.08] hover:border-white/30 text-white' : 'border-gray-200 hover:border-gray-400 text-black'
                   )}
                 >
                   {availableLocales.map(l => (
@@ -172,7 +172,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
                     <div className="grid grid-cols-2 gap-8">
                       {/* Left: Reference (Read-only) */}
                       <div className="opacity-70 pointer-events-none relative">
-                        <div className="absolute top-0 right-0 p-2 text-[8px] font-black uppercase tracking-widest text-gray-400 z-10 bg-black/50 backdrop-blur-md">
+                        <div className="absolute top-0 right-0 p-2 text-[8px] font-black uppercase tracking-widest text-gray-400 z-10 bg-[#0B0F19]/50 backdrop-blur-md">
                           Reference ({referenceLocale})
                         </div>
                         <FieldRenderer
@@ -185,7 +185,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
                       
                       {/* Right: Target (Editable) */}
                       <div className="relative border border-emerald-500/20 p-4 -m-4 bg-emerald-500/5">
-                        <div className="absolute top-0 right-0 p-2 text-[8px] font-black uppercase tracking-widest text-emerald-400 z-10 bg-black/50 backdrop-blur-md flex items-center gap-1.5">
+                        <div className="absolute top-0 right-0 p-2 text-[8px] font-black uppercase tracking-widest text-emerald-400 z-10 bg-[#0B0F19]/50 backdrop-blur-md flex items-center gap-1.5">
                           {targetValue ? <Check size={10} className="text-emerald-400" /> : null}
                           Target ({targetLocale})
                         </div>

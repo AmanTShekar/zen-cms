@@ -24,7 +24,7 @@ export default function QuickActionsWidget({ config = {}, theme }: WidgetProps) 
             className={cn(
               'flex items-center gap-4 px-6 py-4 border rounded-none flex-shrink-0 group transition-all text-left h-full',
               theme === 'dark'
-                ? 'bg-white/[0.02] border-white/5 hover:border-white/20'
+                ? 'bg-white/[0.02] border-white/[0.08] hover:border-white/[0.08]'
                 : 'bg-white border-gray-100 shadow-sm hover:shadow-md'
             )}
           >

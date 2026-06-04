@@ -136,7 +136,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
   const themeClasses = {
     default: '',
     light: 'bg-white/90 text-black border-gray-200 shadow-sm',
-    dark: 'bg-[#0B0F19]/90 text-white border-white/10 shadow-lg',
+    dark: 'bg-[#0B0F19]/90 text-white border-white/[0.08] shadow-lg',
     'cyber-emerald': 'bg-gradient-to-br from-emerald-950/70 via-emerald-900/50 to-black/80 text-white border-emerald-500/20 shadow-emerald-500/5',
     glassmorphic: 'bg-gray-900/65 backdrop-blur-[12px] border-white/8 shadow-[0_4px_30px_rgba(0,0,0,0.1)] text-white'
   }[blockTheme as 'default' | 'light' | 'dark' | 'cyber-emerald' | 'glassmorphic'] || ''
@@ -193,7 +193,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
       className={cn(
         'rounded-none border transition-all duration-500 relative cursor-pointer',
         calloutClasses,
-        themeClasses || (theme === 'dark' ? 'bg-white/[0.01] border-white/5 hover:border-white/10' : 'bg-white border-gray-100 hover:border-gray-200'),
+        themeClasses || (theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08] hover:border-white/[0.08]' : 'bg-white border-gray-100 hover:border-gray-200'),
         isActive && 'ring-2 ring-emerald-500/50 scale-[1.005]',
         isMultiSelected && !isActive && 'ring-2 ring-amber-500/40'
       )}
@@ -216,7 +216,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
             className={cn(
               'w-7 h-7 rounded-none border flex items-center justify-center cursor-grab active:cursor-grabbing shrink-0 transition-all',
               theme === 'dark'
-                ? 'bg-white/5 border-white/10 text-emerald-400/60 hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-400'
+                ? 'bg-white/5 border-white/[0.08] text-emerald-400/60 hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-400'
                 : 'bg-gray-100 border-gray-200 text-emerald-500/60 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-600'
             )}
           >
@@ -251,7 +251,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
               onClick={(e) => e.stopPropagation()}
               className={cn(
                 'text-xs font-black uppercase italic bg-transparent border-b px-1 min-w-[80px] max-w-[200px]',
-                theme === 'dark' ? 'text-white border-white/20' : 'text-black border-gray-300'
+                theme === 'dark' ? 'text-white border-white/[0.08]' : 'text-black border-gray-300'
               )}
               placeholder="Block name..."
             />
@@ -333,11 +333,11 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
               {/* Sub-toolbar: align + undo/redo (moved from header to reduce clutter) */}
               <div className={cn(
                 'flex items-center justify-between -mx-6 -mt-6 mb-6 px-4 py-2 border-b',
-                theme === 'dark' ? 'bg-white/[0.01] border-white/5' : 'bg-gray-50/50 border-gray-100'
+                theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50/50 border-gray-100'
               )}>
                 <div className={cn(
                   'flex items-center gap-0.5 p-0.5 rounded-none border',
-                  theme === 'dark' ? 'bg-black/20 border-white/5' : 'bg-white border-gray-200'
+                  theme === 'dark' ? 'bg-[#0B0F19]/20 border-white/[0.08]' : 'bg-white border-gray-200'
                 )}>
                   {(['left', 'center', 'right'] as const).map((align) => (
                     <button
@@ -347,7 +347,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
                       className={cn(
                         'p-1 transition-all',
                         section.align === align || (!section.align && align === 'left')
-                          ? theme === 'dark' ? 'bg-white/10 text-white' : 'bg-black text-white shadow-sm'
+                          ? theme === 'dark' ? 'bg-white/10 text-white' : 'bg-[#0B0F19] text-white shadow-sm'
                           : 'text-gray-400 hover:text-emerald-500'
                       )}
                     >
@@ -373,7 +373,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
               {section.blockType === 'code' && (
                 <div className={cn(
                   "w-full px-4 py-2 border-b flex items-center justify-between -mx-6 -mt-6 mb-6",
-                  theme === 'dark' ? 'bg-[#0F172A]/80 border-white/5' : 'bg-gray-100 border-gray-200'
+                  theme === 'dark' ? 'bg-[#0F172A]/80 border-white/[0.08]' : 'bg-gray-100 border-gray-200'
                 )}>
                   <div className="flex gap-1.5">
                     <span className="w-2.5 h-2.5 rounded-none bg-rose-500" />
@@ -387,10 +387,10 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
               )}
 
               {section.blockType === 'table' ? (
-                <div className="w-full overflow-x-auto border border-white/5 bg-black/20 p-4 rounded-none">
+                <div className="w-full overflow-x-auto border border-white/[0.08] bg-[#0B0F19]/20 p-4 rounded-none">
                   <table className="w-full border-collapse text-left text-xs font-mono">
                     <thead>
-                      <tr className={cn(theme === 'dark' ? 'bg-white/5 border-b border-white/10' : 'bg-gray-150 border-b border-gray-200')}>
+                      <tr className={cn(theme === 'dark' ? 'bg-white/5 border-b border-white/[0.08]' : 'bg-gray-150 border-b border-gray-200')}>
                         {((section.content?.headers) || []).map((h, hIdx) => (
                           <th key={hIdx} className="p-2.5">
                             <input
@@ -427,7 +427,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
                     </thead>
                     <tbody>
                       {((section.content?.rows) || []).map((row, rIdx) => (
-                        <tr key={rIdx} className={cn(theme === 'dark' ? 'border-b border-white/5 hover:bg-white/[0.01]' : 'border-b border-gray-150 hover:bg-gray-50')}>
+                        <tr key={rIdx} className={cn(theme === 'dark' ? 'border-b border-white/[0.08] hover:bg-white/[0.01]' : 'border-b border-gray-150 hover:bg-gray-50')}>
                           {((row.cells) || []).map((cell, cIdx) => (
                             <td key={cIdx} className="p-2">
                               <input
@@ -557,7 +557,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
                   {fieldsToRender.some(f => ['anchorId', 'theme', 'paddingY', 'containerWidth', 'bgImage'].includes(f.name)) && (
                     <div className={cn(
                       'pt-6 mt-6 border-t',
-                      theme === 'dark' ? 'border-white/10' : 'border-gray-200'
+                      theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
                     )}>
                       <h4 className="text-[10px] font-black uppercase italic tracking-widest text-emerald-500/50 mb-4 px-1">
                         Layout & Styling
@@ -613,7 +613,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
           style={{ position: 'fixed', top: menuPos.top, left: menuPos.left, zIndex: 900 }}
           className={cn(
             'min-w-[160px] border shadow-xl rounded-none',
-            theme === 'dark' ? 'bg-[#0F0F0F] border-white/10' : 'bg-white border-gray-200'
+            theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-200'
           )}
           onClick={(e) => e.stopPropagation()}
         >
@@ -627,7 +627,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
             <ActionItem icon={<Copy size={12} />} label="Duplicate" onClick={() => { onDuplicate(); setMenuOpen(false) }} theme={theme} />
             <ActionItem icon={<Clipboard size={12} />} label="Copy" onClick={() => { onCopy(); setMenuOpen(false) }} theme={theme} />
             <ActionItem icon={<ClipboardPaste size={12} />} label="Paste" onClick={() => { onPaste(); setMenuOpen(false) }} theme={theme} />
-            <div className={cn('border-t my-1', theme === 'dark' ? 'border-white/10' : 'border-gray-100')} />
+            <div className={cn('border-t my-1', theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100')} />
             <ActionItem icon={<Trash2 size={12} />} label="Remove" onClick={() => { onDelete(); setMenuOpen(false) }} theme={theme} danger />
           </div>
         </div>,

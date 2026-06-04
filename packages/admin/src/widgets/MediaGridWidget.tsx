@@ -59,7 +59,7 @@ export default function MediaGridWidget({ theme, title }: WidgetProps) {
       <div
         className={cn(
           'h-full flex flex-col items-center justify-center gap-3 border rounded-none cursor-pointer hover:border-emerald-500/30 transition-all',
-          theme === 'dark' ? 'border-white/5 border-dashed' : 'border-gray-200 border-dashed'
+          theme === 'dark' ? 'border-white/[0.08] border-dashed' : 'border-gray-200 border-dashed'
         )}
         onClick={() => navigate('/media')}
       >

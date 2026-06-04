@@ -158,7 +158,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
   return (
     <div className="col-span-full space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/5 pb-4">
+      <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
         <div className="flex flex-col">
           <h3 className="text-sm font-black uppercase italic tracking-wider flex items-center gap-3">
             <Puzzle size={16} className="text-emerald-400" />
@@ -187,7 +187,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
             exit={{ opacity: 0, height: 0 }}
             className={cn(
               'border rounded-none overflow-hidden',
-              theme === 'dark' ? 'bg-white/[0.01] border-white/5' : 'bg-gray-50 border-gray-200'
+              theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50 border-gray-200'
             )}
           >
             <div className="p-6 space-y-4">
@@ -210,7 +210,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="acme-analytics"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -223,7 +223,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="ACME Analytics"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -236,7 +236,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="1.0.0"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -249,7 +249,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="ACME Corp"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -262,7 +262,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="https://example.com/plugin"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -275,7 +275,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                     placeholder="zenith-plugin-acme-analytics"
                     className={cn(
                       'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                      theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                     )}
                   />
                 </div>
@@ -290,7 +290,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                   rows={2}
                   className={cn(
                     'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
-                    theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                    theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                   )}
                 />
               </div>
@@ -320,7 +320,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className={cn(
             'w-full border rounded-none py-3 pl-11 pr-4 text-[11px] font-bold italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-            theme === 'dark' ? 'bg-white/[0.02] border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+            theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
           )}
         />
       </div>
@@ -333,7 +333,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
       ) : filteredPlugins.length === 0 ? (
         <div className={cn(
           'p-12 border border-dashed rounded-none text-center space-y-4',
-          theme === 'dark' ? 'border-white/10' : 'border-gray-200'
+          theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
         )}>
           <Package size={40} className="mx-auto text-gray-600" />
           <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
@@ -357,7 +357,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                 className={cn(
                   'border rounded-none overflow-hidden transition-all',
                   plugin.enabled
-                    ? theme === 'dark' ? 'bg-white/[0.01] border-white/5' : 'bg-white border-gray-100'
+                    ? theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-100'
                     : theme === 'dark' ? 'bg-white/[0.005] border-white/[0.03] opacity-60' : 'bg-gray-50 border-gray-100 opacity-60'
                 )}
               >
@@ -368,7 +368,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                       'w-10 h-10 rounded-none border flex items-center justify-center',
                       plugin.enabled
                         ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-                        : theme === 'dark' ? 'bg-white/5 border-white/10 text-gray-600' : 'bg-gray-100 border-gray-200 text-gray-400'
+                        : theme === 'dark' ? 'bg-white/5 border-white/[0.08] text-gray-600' : 'bg-gray-100 border-gray-200 text-gray-400'
                     )}>
                       <Puzzle size={18} />
                     </div>
@@ -404,7 +404,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                         rel="noopener noreferrer"
                         className={cn(
                           'p-2 border rounded-none transition-colors',
-                          theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-emerald-400' : 'border-gray-200 text-gray-400 hover:text-emerald-600'
+                          theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-emerald-400' : 'border-gray-200 text-gray-400 hover:text-emerald-600'
                         )}
                         title="Plugin homepage"
                       >
@@ -418,7 +418,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                         'p-2 border rounded-none transition-colors',
                         plugin.enabled
                           ? 'border-amber-500/20 text-amber-500 hover:text-amber-400'
-                          : theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-emerald-400' : 'border-gray-200 text-gray-400 hover:text-emerald-600'
+                          : theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-emerald-400' : 'border-gray-200 text-gray-400 hover:text-emerald-600'
                       )}
                       title={plugin.enabled ? 'Disable' : 'Enable'}
                     >
@@ -434,7 +434,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                           'p-2 border rounded-none transition-colors',
                           isExpanded
                             ? 'border-emerald-500/30 text-emerald-400'
-                            : theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-white' : 'border-gray-200 text-gray-400 hover:text-gray-600'
+                            : theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-white' : 'border-gray-200 text-gray-400 hover:text-gray-600'
                         )}
                         title="Configure"
                       >
@@ -446,7 +446,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                       disabled={saving === plugin.id}
                       className={cn(
                         'p-2 border rounded-none transition-colors',
-                        theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-red-400' : 'border-gray-200 text-gray-400 hover:text-red-600'
+                        theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-red-400' : 'border-gray-200 text-gray-400 hover:text-red-600'
                       )}
                       title="Uninstall"
                     >
@@ -464,7 +464,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                       exit={{ opacity: 0, height: 0 }}
                       className={cn(
                         'border-t px-5 py-4 space-y-4',
-                        theme === 'dark' ? 'border-white/5 bg-black/20' : 'border-gray-100 bg-gray-50/50'
+                        theme === 'dark' ? 'border-white/[0.08] bg-[#0B0F19]/20' : 'border-gray-100 bg-gray-50/50'
                       )}
                     >
                       <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Plugin Settings</span>
@@ -484,7 +484,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                                 'flex items-center gap-2 px-3 py-2 border rounded-none transition-colors',
                                 plugin.config?.[key]
                                   ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
-                                  : theme === 'dark' ? 'border-white/10 text-gray-500' : 'border-gray-200 text-gray-400'
+                                  : theme === 'dark' ? 'border-white/[0.08] text-gray-500' : 'border-gray-200 text-gray-400'
                               )}
                             >
                               {plugin.config?.[key] ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
@@ -496,7 +496,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                               onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
                               className={cn(
                                 'w-full border rounded-none py-2.5 px-3 text-[11px] font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                                theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                                theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                               )}
                             >
                               {schema.options?.map(opt => (
@@ -511,7 +511,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                               placeholder="••••••••"
                               className={cn(
                                 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                                theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                                theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                               )}
                             />
                           ) : (
@@ -521,7 +521,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
                               onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
                               className={cn(
                                 'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                                theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
+                                theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                               )}
                             />
                           )}

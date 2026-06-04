@@ -145,7 +145,7 @@ function BlockRow({
       whileDrag={{ scale: 1.01, zIndex: 50, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
       className={cn(
         'group relative bg-app border rounded-none overflow-visible shadow-sm transition-colors duration-150',
-        isExpanded ? 'border-accent/60 shadow-[0_0_0_3px_rgba(16,185,129,0.08)]' : 'border-border hover:border-white/20'
+        isExpanded ? 'border-accent/60 shadow-[0_0_0_3px_rgba(16,185,129,0.08)]' : 'border-border hover:border-white/[0.08]'
       )}
     >
       {/* Index Badge */}
@@ -280,7 +280,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
     : { [activeCategory]: filtered }
 
   return createPortal(
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-8 bg-black/70 backdrop-blur-md" onClick={onClose}>
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-8 bg-[#0B0F19]/70 backdrop-blur-md" onClick={onClose}>
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -289,14 +289,14 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
         onClick={(e) => e.stopPropagation()}
         className={cn(
           "w-full max-w-4xl border rounded-none overflow-hidden shadow-2xl flex flex-col h-[85vh]",
-          theme === 'dark' ? 'bg-[#0B0F19] border-white/10' : 'bg-white border-gray-200'
+          theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-200'
         )}
       >
         {/* Header */}
         <div
           className={cn(
             'p-6 border-b flex items-center justify-between shrink-0',
-            theme === 'dark' ? 'border-white/5' : 'border-gray-100',
+            theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100',
           )}
         >
           <h3
@@ -338,7 +338,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
               className={cn(
                 "w-full rounded-none pl-11 pr-11 py-3 text-xs font-bold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black",
                 theme === 'dark' 
-                  ? 'bg-white/[0.03] border border-white/10 text-white placeholder:text-gray-600 focus:border-emerald-500/40 focus:bg-white/[0.05]'
+                  ? 'bg-white/[0.03] border border-white/[0.08] text-white placeholder:text-gray-600 focus:border-emerald-500/40 focus:bg-white/[0.05]'
                   : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-400 focus:bg-white'
               )} 
             />
@@ -356,7 +356,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
           </div>
 
           {/* Categories Tab Bar */}
-          <div className="flex items-center gap-1 p-1 border border-white/5 bg-white/[0.02] rounded-none shrink-0 mb-4 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1 p-1 border border-white/[0.08] bg-white/[0.02] rounded-none shrink-0 mb-4 overflow-x-auto no-scrollbar">
             {categories.map((cat) => (
               <button 
                 key={cat} 
@@ -419,12 +419,12 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                             </div>
                           )}
                           {stock.admin?.category && (
-                            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-black/60 backdrop-blur text-white/80 rounded-none">
+                            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-[#0B0F19]/60 backdrop-blur text-white/80 rounded-none">
                               {stock.admin.category}
                             </span>
                           )}
                           {stock.admin?.imageURL && (
-                            <div className="absolute top-2 right-2 w-5 h-5 bg-black/50 backdrop-blur flex items-center justify-center text-white/70 rounded-none">
+                            <div className="absolute top-2 right-2 w-5 h-5 bg-[#0B0F19]/50 backdrop-blur flex items-center justify-center text-white/70 rounded-none">
                               {getBlockIcon(stock.slug)}
                             </div>
                           )}
@@ -568,14 +568,14 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
               onClick={() => setShowPreview(!showPreview)}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all rounded-none border",
-                showPreview ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : "bg-white/[0.02] text-gray-400 border-white/5 hover:text-white"
+                showPreview ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : "bg-white/[0.02] text-gray-400 border-white/[0.08] hover:text-white"
               )}
             >
               {showPreview ? <EyeOff size={12} /> : <Eye size={12} />}
               {showPreview ? 'Close Preview' : 'Live Preview'}
             </button>
             {blocks.length > 0 && (
-              <div className="flex items-center gap-1.5 border border-white/5 bg-white/[0.02] p-0.5 rounded-none mr-2">
+              <div className="flex items-center gap-1.5 border border-white/[0.08] bg-white/[0.02] p-0.5 rounded-none mr-2">
                 <button
                   type="button"
                   onClick={expandAll}
@@ -665,8 +665,8 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
 
       {/* Side-by-Side Live Preview Iframe */}
       {showPreview && (
-        <div className="w-full h-full min-h-[700px] border border-white/10 rounded-none overflow-hidden sticky top-4 bg-[#0B0F19] shadow-2xl flex flex-col">
-          <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between shrink-0">
+        <div className="w-full h-full min-h-[700px] border border-white/[0.08] rounded-none overflow-hidden sticky top-4 bg-[#0B0F19] shadow-2xl flex flex-col">
+          <div className="px-4 py-2 border-b border-white/[0.08] flex items-center justify-between shrink-0">
             <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-400 italic flex items-center gap-2">
               <div className="w-2 h-2 rounded-none bg-emerald-500 animate-pulse shadow-[0_0_10px_#10B981]" />
               Live Preview Connected

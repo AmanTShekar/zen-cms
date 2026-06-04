@@ -115,7 +115,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
 
   return (
     <div className="col-span-full space-y-6">
-      <div className="flex items-center justify-between border-b border-white/5 pb-4">
+      <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
         <div className="flex flex-col">
           <h3 className="text-sm font-black uppercase italic tracking-wider">Roles & Permissions</h3>
           <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1">
@@ -133,7 +133,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
       </div>
 
       {/* Role type filter tabs */}
-      <div className="flex items-center gap-1 border-b border-white/5 pb-0">
+      <div className="flex items-center gap-1 border-b border-white/[0.08] pb-0">
         {(['all', 'system', 'custom'] as const).map((filter) => (
           <button
             key={filter}
@@ -160,7 +160,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
                 'p-4 border rounded-none flex items-center justify-between cursor-pointer transition-all',
                 editingRole?._id === role._id
                   ? 'bg-emerald-500/10 border-emerald-500/40'
-                  : 'bg-white/[0.01] border-white/5 hover:border-white/10'
+                  : 'bg-white/[0.01] border-white/[0.08] hover:border-white/[0.08]'
               )}
             >
               <div className="flex flex-col leading-none gap-1.5">
@@ -173,7 +173,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
                     'text-[7px] font-black uppercase px-1.5 py-0.5 tracking-widest border',
                     role.roleType === 'admin' ? 'border-red-500/30 text-red-400' :
                     role.roleType === 'editor' ? 'border-emerald-500/30 text-emerald-400' :
-                    'border-white/10 text-gray-500'
+                    'border-white/[0.08] text-gray-500'
                   )}>
                     {role.roleType}
                   </span>
@@ -223,8 +223,8 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
         {/* Permission editor */}
         <div className="xl:col-span-2">
           {editingRole ? (
-            <div className="space-y-6 p-6 border border-white/5 bg-white/[0.01] backdrop-blur-3xl">
-              <div className="flex items-center justify-between border-b border-white/5 pb-4">
+            <div className="space-y-6 p-6 border border-white/[0.08] bg-white/[0.01] backdrop-blur-3xl">
+              <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
                 <div className="flex flex-col">
                   <h4 className="text-xs font-black uppercase italic tracking-widest text-emerald-400">{editingRole.roleName}</h4>
                   {editingRole.description && (
@@ -281,7 +281,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
 
                 <div className="space-y-3">
                   {(editingRole.permissions || []).map((perm, permIdx) => (
-                    <div key={permIdx} className="border border-white/5 bg-black/40">
+                    <div key={permIdx} className="border border-white/[0.08] bg-[#0B0F19]/40">
                       {/* Rule header */}
                       <div className="p-4 flex flex-col gap-4">
                         <div className="flex items-center gap-3 flex-wrap">
@@ -294,7 +294,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
                               updated[permIdx] = { ...perm, resource: e.target.value }
                               setEditingRole({ ...editingRole, permissions: updated })
                             }}
-                            className="bg-black border border-white/10 text-white text-[11px] font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none focus:border-emerald-500 disabled:opacity-50"
+                            className="bg-[#0B0F19] border border-white/[0.08] text-white text-[11px] font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none focus:border-emerald-500 disabled:opacity-50"
                           >
                             {availableCollections.map(c => (<option key={c.slug} value={c.slug}>{c.label}</option>))}
                           </select>
@@ -316,7 +316,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
                                       updated[permIdx] = { ...perm, actions: next }
                                       setEditingRole({ ...editingRole, permissions: updated })
                                     }}
-                                    className="rounded-none border-white/10 text-emerald-600 focus:ring-0 bg-black cursor-pointer"
+                                    className="rounded-none border-white/[0.08] text-emerald-600 focus:ring-0 bg-[#0B0F19] cursor-pointer"
                                   />
                                   <span className={cn('text-[8px] font-black uppercase italic tracking-wider', checked ? 'text-emerald-400' : 'text-gray-500')}>{act}</span>
                                 </label>
@@ -328,7 +328,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
 
                       {/* Field permissions */}
                       {perm.resource !== '*' && (
-                        <div className="border-t border-white/5">
+                        <div className="border-t border-white/[0.08]">
                           <button
                             type="button"
                             disabled={editingRole.isSystem}
@@ -350,7 +350,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
                                 const fields = getCollectionFields(perm.resource)
                                 return (
                                   <div className="space-y-2">
-                                    <div className="grid grid-cols-12 gap-2 border-b border-white/5 pb-2">
+                                    <div className="grid grid-cols-12 gap-2 border-b border-white/[0.08] pb-2">
                                       <div className="col-span-4 text-[7px] font-black uppercase italic text-gray-600 tracking-widest">Field</div>
                                       <div className="col-span-4 text-[7px] font-black uppercase italic text-gray-600 tracking-widest flex items-center gap-1 justify-center"><Eye size={8} /> Read</div>
                                       <div className="col-span-4 text-[7px] font-black uppercase italic text-gray-600 tracking-widest flex items-center gap-1 justify-center"><Edit3 size={8} /> Write</div>
@@ -378,7 +378,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
                                                 'w-6 h-6 border rounded-none flex items-center justify-center transition-all',
                                                 readOn
                                                   ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400'
-                                                  : 'bg-transparent border-white/10 text-gray-600 hover:border-white/20',
+                                                  : 'bg-transparent border-white/[0.08] text-gray-600 hover:border-white/[0.08]',
                                                 editingRole.isSystem && 'opacity-50 cursor-not-allowed'
                                               )}
                                             >
@@ -394,7 +394,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
                                                 'w-6 h-6 border rounded-none flex items-center justify-center transition-all',
                                                 writeOn
                                                   ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400'
-                                                  : 'bg-transparent border-white/10 text-gray-600 hover:border-white/20',
+                                                  : 'bg-transparent border-white/[0.08] text-gray-600 hover:border-white/[0.08]',
                                                 editingRole.isSystem && 'opacity-50 cursor-not-allowed'
                                               )}
                                             >
@@ -420,7 +420,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
               </div>
 
               {/* User assignment */}
-              <div className="border-t border-white/5 pt-5 space-y-3">
+              <div className="border-t border-white/[0.08] pt-5 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">
                     Assigned Users ({users.filter(u => u.role === editingRole.roleName || u.role === editingRole.roleType).length})
@@ -428,7 +428,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
                 </div>
                 <div className="space-y-2">
                   {users.filter(u => u.role === editingRole.roleName || u.role === editingRole.roleType).map(u => (
-                    <div key={u._id} className="flex items-center justify-between p-3 border border-white/5 bg-black/40">
+                    <div key={u._id} className="flex items-center justify-between p-3 border border-white/[0.08] bg-[#0B0F19]/40">
                       <div className="flex flex-col">
                         <span className="text-[11px] font-black text-white">{u.email}</span>
                         <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">{u._id}</span>
@@ -443,7 +443,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
               </div>
             </div>
           ) : (
-            <div className="min-h-[300px] border border-dashed border-white/10 flex items-center justify-center text-center p-8">
+            <div className="min-h-[300px] border border-dashed border-white/[0.08] flex items-center justify-center text-center p-8">
               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest max-w-xs">
                 Select a role on the left to view and edit its permission rules.
               </p>

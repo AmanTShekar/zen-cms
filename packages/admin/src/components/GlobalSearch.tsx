@@ -115,7 +115,7 @@ const GlobalSearch: React.FC = () => {
           'flex items-center gap-2 px-4 py-2 rounded-none transition-all border',
           isFocused
             ? 'bg-white border-emerald-500 shadow-lg text-black'
-            : 'bg-white/5 border-white/5 text-gray-500 hover:bg-white/10'
+            : 'bg-white/5 border-white/[0.08] text-gray-500 hover:bg-white/10'
         )}
       >
         <Search
@@ -131,12 +131,12 @@ const GlobalSearch: React.FC = () => {
           className="bg-transparent border-none text-[13px] font-black uppercase tracking-widest italic flex-1 placeholder:text-gray-700 focus-visible:ring-2 focus-visible:ring-emerald-500 rounded px-1"
         />
         {query && (
-          <button onClick={() => setQuery('')} className="p-1 hover:bg-black/5 rounded-none">
+          <button onClick={() => setQuery('')} className="p-1 hover:bg-[#0B0F19]/5 rounded-none">
             <X size={14} />
           </button>
         )}
         {!isFocused && (
-          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-none border border-white/10 bg-black/20 text-[9px] font-black text-gray-600">
+          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-none border border-white/[0.08] bg-[#0B0F19]/20 text-[9px] font-black text-gray-600">
             <span>⌘</span>
             <span>K</span>
           </div>
@@ -223,7 +223,7 @@ const GlobalSearch: React.FC = () => {
               </div>
             </div>
 
-            <div className="px-4 py-2 bg-gray-900 border-t border-white/5 flex items-center justify-between">
+            <div className="px-4 py-2 bg-gray-900 border-t border-white/[0.08] flex items-center justify-between">
               <span className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-500 italic">
                 Core_Intelligence_Stream
               </span>

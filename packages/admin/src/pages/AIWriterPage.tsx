@@ -120,7 +120,7 @@ const AIWriterPage = () => {
             {result.issues?.map((issue: string, i: number) => (
               <div
                 key={i}
-                className="flex gap-3 items-start p-3 bg-white/5 border border-white/5 rounded-none"
+                className="flex gap-3 items-start p-3 bg-white/5 border border-white/[0.08] rounded-none"
               >
                 <AlertCircle size={14} className="text-amber-500 shrink-0 mt-0.5" />
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight leading-relaxed italic">
@@ -137,7 +137,7 @@ const AIWriterPage = () => {
       return (
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-white/5 border border-white/5 rounded-none">
+            <div className="p-4 bg-white/5 border border-white/[0.08] rounded-none">
               <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest block mb-1">
                 Readability
               </span>
@@ -145,7 +145,7 @@ const AIWriterPage = () => {
                 {result.readability}
               </span>
             </div>
-            <div className="p-4 bg-white/5 border border-white/5 rounded-none">
+            <div className="p-4 bg-white/5 border border-white/[0.08] rounded-none">
               <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest block mb-1">
                 Complexity
               </span>
@@ -182,7 +182,7 @@ const AIWriterPage = () => {
     <div
       className={cn(
         'p-12 min-h-screen flex flex-col transition-colors duration-500 gap-10',
-        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
+        theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-gray-900'
       )}
     >
       {/* 🚀 Header Orchestration */}
@@ -201,7 +201,7 @@ const AIWriterPage = () => {
               AI Content Architect
             </h1>
             <div className="flex items-center gap-3 mt-2">
-              <div className="px-3 py-1 rounded-none bg-white/5 border border-white/5 text-[8px] font-black text-emerald-400 uppercase italic">
+              <div className="px-3 py-1 rounded-none bg-white/5 border border-white/[0.08] text-[8px] font-black text-emerald-400 uppercase italic">
                 Zenith Pro
               </div>
               <div className="w-2 h-2 rounded-none bg-emerald-500 shadow-[0_0_12px_#10b981]" />
@@ -213,7 +213,7 @@ const AIWriterPage = () => {
           className={cn(
             'flex items-center p-1.5 rounded-none border transition-colors',
             theme === 'dark'
-              ? 'bg-white/[0.05] border-white/5'
+              ? 'bg-white/[0.05] border-white/[0.08]'
               : 'bg-white border-gray-100 shadow-sm'
           )}
         >
@@ -279,7 +279,7 @@ const AIWriterPage = () => {
                 <div
                   className={cn(
                     'p-4 border rounded-none space-y-2 shadow-sm transition-all',
-                    theme === 'dark' ? 'bg-[#080808] border-white/5' : 'bg-white border-gray-100'
+                    theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-100'
                   )}
                 >
                   <span className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em] px-2 italic">
@@ -310,7 +310,7 @@ const AIWriterPage = () => {
               <div
                 className={cn(
                   'border rounded-none p-8 shadow-sm relative overflow-hidden transition-all',
-                  theme === 'dark' ? 'bg-[#080808] border-white/5' : 'bg-white border-gray-100'
+                  theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-100'
                 )}
               >
                 <div className="flex items-center gap-4 mb-6">
@@ -318,7 +318,7 @@ const AIWriterPage = () => {
                     className={cn(
                       'w-10 h-10 rounded-none flex items-center justify-center border shadow-inner',
                       theme === 'dark'
-                        ? 'bg-white/5 border-white/10 text-emerald-500'
+                        ? 'bg-white/5 border-white/[0.08] text-emerald-500'
                         : 'bg-gray-50 border-gray-100 text-emerald-600'
                     )}
                   >
@@ -349,7 +349,7 @@ const AIWriterPage = () => {
                   className={cn(
                     'w-full h-48 bg-transparent border rounded-none p-6 text-[11px] font-black italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all resize-none placeholder:text-gray-700 mb-6',
                     theme === 'dark'
-                      ? 'border-white/10 text-white focus:border-emerald-500/30'
+                      ? 'border-white/[0.08] text-white focus:border-emerald-500/30'
                       : 'border-gray-100 text-gray-900 focus:border-emerald-500/20'
                   )}
                 />
@@ -363,7 +363,7 @@ const AIWriterPage = () => {
                       ? 'opacity-50 cursor-not-allowed'
                       : theme === 'dark'
                         ? 'bg-white text-black hover:bg-gray-200'
-                        : 'bg-gray-900 text-white hover:bg-black'
+                        : 'bg-gray-900 text-white hover:bg-[#0B0F19]'
                   )}
                 >
                   {loading ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} />}
@@ -381,7 +381,7 @@ const AIWriterPage = () => {
             className={cn(
               'absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-12 rounded-none border z-50 flex items-center justify-center transition-all hover:scale-110',
               theme === 'dark'
-                ? 'bg-black border-white/10 text-gray-500 hover:text-white'
+                ? 'bg-[#0B0F19] border-white/[0.08] text-gray-500 hover:text-white'
                 : 'bg-white border-gray-100 text-gray-400 hover:text-emerald-600 shadow-md'
             )}
           >
@@ -395,14 +395,14 @@ const AIWriterPage = () => {
           <div
             className={cn(
               'border rounded-none h-full min-h-[500px] shadow-sm relative overflow-hidden transition-all flex flex-col',
-              theme === 'dark' ? 'bg-[#080808]/80 border-white/5' : 'bg-white border-gray-100'
+              theme === 'dark' ? 'bg-[#0B0F19]/80 border-white/[0.08]' : 'bg-white border-gray-100'
             )}
           >
             <div
               className={cn(
                 'px-8 py-5 border-b flex items-center justify-between transition-colors',
                 theme === 'dark'
-                  ? 'bg-white/[0.02] border-white/5'
+                  ? 'bg-white/[0.02] border-white/[0.08]'
                   : 'bg-gray-50/30 border-gray-100'
               )}
             >
@@ -411,7 +411,7 @@ const AIWriterPage = () => {
                   className={cn(
                     'w-8 h-8 rounded-none border flex items-center justify-center',
                     theme === 'dark'
-                      ? 'bg-white/5 border-white/10 text-emerald-500'
+                      ? 'bg-white/5 border-white/[0.08] text-emerald-500'
                       : 'bg-white border-gray-100 text-emerald-600'
                   )}
                 >
@@ -512,7 +512,7 @@ const AIWriterPage = () => {
             </div>
 
             {result && mode === 'structure' && (
-              <div className="p-8 border-t border-white/5 bg-white/[0.01] space-y-6">
+              <div className="p-8 border-t border-white/[0.08] bg-white/[0.01] space-y-6">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     { label: 'Node_ID', value: 'GLOBAL' },
@@ -520,7 +520,7 @@ const AIWriterPage = () => {
                     { label: 'Kernel', value: 'V6.0_STABLE' },
                     { label: 'Engine', value: 'Refinement' },
                   ].map((stat, i) => (
-                    <div key={i} className="p-3 rounded-none bg-white/5 border border-white/5">
+                    <div key={i} className="p-3 rounded-none bg-white/5 border border-white/[0.08]">
                       <span className="text-[7px] font-black uppercase tracking-widest text-gray-500 block mb-1">
                         {stat.label}
                       </span>

@@ -176,7 +176,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
             {/* Header */}
             <div className={cn(
               'px-4 py-3 border-b flex items-center justify-between shrink-0',
-              theme === 'dark' ? 'border-white/5' : 'border-gray-100'
+              theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
             )}>
               <span className="text-xs font-black uppercase italic tracking-widest text-emerald-400">
                 Content Relations
@@ -233,7 +233,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
                       className={cn(
                         'w-full rounded-none py-2 pl-9 pr-3 text-xs font-bold border transition-all',
                         theme === 'dark'
-                          ? 'bg-white/5 border-white/5 text-white placeholder-gray-600'
+                          ? 'bg-white/5 border-white/[0.08] text-white placeholder-gray-600'
                           : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
                       )}
                     />
@@ -269,7 +269,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
                                 ? 'bg-emerald-500/15 border-emerald-500/20 text-emerald-300'
                                 : 'bg-emerald-50 border-emerald-200 text-emerald-700'
                               : theme === 'dark'
-                                ? 'border-white/0 text-gray-300 hover:bg-white/5 hover:border-white/5'
+                                ? 'border-white/0 text-gray-300 hover:bg-white/5 hover:border-white/[0.08]'
                                 : 'border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-100'
                           )}
                         >
@@ -279,7 +279,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
                             isSelected
                               ? 'bg-emerald-500 border-emerald-500 text-white'
                               : theme === 'dark'
-                                ? 'border-white/10 bg-white/5'
+                                ? 'border-white/[0.08] bg-white/5'
                                 : 'border-gray-300 bg-white'
                           )}>
                             {isSelected && <Check size={9} />}
@@ -319,7 +319,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
                               className={cn(
                                 'shrink-0 p-1.5 ml-2 transition-colors border',
                                 theme === 'dark'
-                                  ? 'border-white/10 hover:bg-white/10 text-white'
+                                  ? 'border-white/[0.08] hover:bg-white/10 text-white'
                                   : 'border-gray-200 hover:bg-gray-100 text-black'
                               )}
                               title="Edit Document"
@@ -336,14 +336,14 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
                 {/* Footer */}
                 <div className={cn(
                   'px-3 py-2.5 border-t flex items-center gap-2 shrink-0',
-                  theme === 'dark' ? 'border-white/5' : 'border-gray-100'
+                  theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
                 )}>
                   <button
                     onClick={handleClear}
                     className={cn(
                       'flex-1 py-1.5 text-xs font-black uppercase italic border rounded-none transition-all',
                       theme === 'dark'
-                        ? 'border-white/5 text-gray-500 hover:border-rose-500/20 hover:text-rose-400'
+                        ? 'border-white/[0.08] text-gray-500 hover:border-rose-500/20 hover:text-rose-400'
                         : 'border-gray-200 text-gray-400 hover:border-rose-200 hover:text-rose-500'
                     )}
                   >

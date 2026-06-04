@@ -50,7 +50,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
       <div
         className={cn(
           'p-5 rounded-none border transition-all space-y-3 col-span-1 md:col-span-2',
-          theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+          theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
         )}
       >
         <label className="text-xs font-semibold text-gray-400 px-1">
@@ -63,7 +63,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
             className={cn(
               'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black appearance-none cursor-pointer',
               theme === 'dark'
-                ? 'bg-[#0f141f] border-white/10 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+                ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
                 : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
             )}
           >
@@ -80,7 +80,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
       <div
         className={cn(
           'p-5 rounded-none border transition-all space-y-3 col-span-1 md:col-span-2',
-          theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+          theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
         )}
       >
         <label className="text-xs font-semibold text-gray-400 px-1">
@@ -94,7 +94,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
             className={cn(
               'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black pr-12',
               theme === 'dark'
-                ? 'bg-[#0f141f] border-white/10 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+                ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
                 : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
             )}
             placeholder="sk-..."
@@ -106,7 +106,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
       <div
         className={cn(
           'col-span-1 md:col-span-2 p-6 rounded-none border flex items-center justify-between transition-all',
-          theme === 'dark' ? 'bg-white/[0.02] border-white/5' : 'bg-gray-50/50 border-gray-100'
+          theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/50 border-gray-100'
         )}
       >
         <div className="flex items-center gap-4">
@@ -138,7 +138,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
             isConfigured
               ? 'bg-emerald-600 text-white hover:bg-emerald-500 border-transparent shadow-[0_0_15px_rgba(16,185,129,0.2)]'
               : theme === 'dark'
-              ? 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+              ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:bg-white/10'
               : 'bg-gray-100 border-transparent text-gray-600 hover:bg-gray-200'
           )}
         >

@@ -13,7 +13,7 @@ interface SettingsApiKeyModalProps {
 
 const SettingsApiKeyModal: React.FC<SettingsApiKeyModalProps> = ({ newKey, setNewKey, theme }) => {
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#0B0F19]/80 backdrop-blur-sm">
       <motion.div
         {...({
           initial: { scale: 0.9, opacity: 0 },
@@ -22,7 +22,7 @@ const SettingsApiKeyModal: React.FC<SettingsApiKeyModalProps> = ({ newKey, setNe
         } as any)}
         className={cn(
           'w-full max-w-md rounded-none p-6 border shadow-2xl relative overflow-hidden',
-          theme === 'dark' ? 'bg-[#0a0a0a] border-white/10' : 'bg-white border-gray-100'
+          theme === 'dark' ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-white border-gray-100'
         )}
       >
         <div className="absolute top-0 right-0 p-6 text-emerald-500/10 pointer-events-none">
@@ -48,7 +48,7 @@ const SettingsApiKeyModal: React.FC<SettingsApiKeyModalProps> = ({ newKey, setNe
           <div
             className={cn(
               'p-4 rounded-none border flex items-center justify-between gap-4 font-mono text-[10px] font-bold break-all transition-colors',
-              theme === 'dark' ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-100'
+              theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-50 border-gray-100'
             )}
           >
             {newKey.key}
@@ -68,7 +68,7 @@ const SettingsApiKeyModal: React.FC<SettingsApiKeyModalProps> = ({ newKey, setNe
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
             Frontend .env Integration:
           </p>
-          <div className={cn('p-4 rounded-none border font-mono text-[9px] whitespace-pre transition-colors text-emerald-400', theme === 'dark' ? 'bg-[#0a0a0a] border-white/10' : 'bg-gray-900 border-gray-800')}>
+          <div className={cn('p-4 rounded-none border font-mono text-[9px] whitespace-pre transition-colors text-emerald-400', theme === 'dark' ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-gray-900 border-gray-800')}>
 {`VITE_CMS_URL=${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/api/v1
 VITE_CMS_API_KEY=${newKey.key}
 VITE_CMS_SITE_ID=your_tenant_id`}

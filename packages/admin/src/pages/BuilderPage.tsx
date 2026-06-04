@@ -103,7 +103,7 @@ const BuilderPage: React.FC = () => {
       {/* Sidebar List */}
       <div className={cn(
         'w-64 border-r shrink-0 flex flex-col',
-        theme === 'dark' ? 'border-white/5 bg-black' : 'border-gray-200 bg-gray-50'
+        theme === 'dark' ? 'border-white/[0.08] bg-[#0B0F19]' : 'border-gray-200 bg-gray-50'
       )}>
         <div className="p-4 border-b border-inherit flex items-center justify-between">
           <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
@@ -129,7 +129,7 @@ const BuilderPage: React.FC = () => {
                   ? 'bg-emerald-500 text-white'
                   : theme === 'dark'
                     ? 'text-gray-400 hover:bg-white/5 hover:text-white'
-                    : 'text-gray-600 hover:bg-black/5 hover:text-black'
+                    : 'text-gray-600 hover:bg-[#0B0F19]/5 hover:text-black'
               )}
             >
               {s.singular}
@@ -168,7 +168,7 @@ const BuilderPage: React.FC = () => {
 
             <div className={cn(
               'p-6 border space-y-4',
-              theme === 'dark' ? 'bg-white/[0.02] border-white/5' : 'bg-white border-gray-100'
+              theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-100'
             )}>
               <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 mb-4 border-b border-emerald-500/20 pb-2">General Info</h3>
               <div className="grid grid-cols-2 gap-4">
@@ -180,7 +180,7 @@ const BuilderPage: React.FC = () => {
                     onChange={(e) => setActiveSchema({ ...activeSchema, singular: e.target.value })}
                     className={cn(
                       'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
-                      theme === 'dark' ? 'bg-black border-white/10 focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                     )}
                     placeholder="e.g. Article"
                   />
@@ -193,7 +193,7 @@ const BuilderPage: React.FC = () => {
                     onChange={(e) => setActiveSchema({ ...activeSchema, plural: e.target.value })}
                     className={cn(
                       'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
-                      theme === 'dark' ? 'bg-black border-white/10 focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                     )}
                     placeholder="e.g. Articles"
                   />
@@ -207,7 +207,7 @@ const BuilderPage: React.FC = () => {
                     disabled={!!activeSchema.id}
                     className={cn(
                       'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
-                      theme === 'dark' ? 'bg-black border-white/10 focus:border-emerald-500 disabled:opacity-50' : 'bg-gray-50 border-gray-200 focus:border-emerald-500 disabled:opacity-50'
+                      theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] focus:border-emerald-500 disabled:opacity-50' : 'bg-gray-50 border-gray-200 focus:border-emerald-500 disabled:opacity-50'
                     )}
                     placeholder="e.g. articles"
                   />
@@ -217,7 +217,7 @@ const BuilderPage: React.FC = () => {
 
             <div className={cn(
               'p-6 border space-y-4',
-              theme === 'dark' ? 'bg-white/[0.02] border-white/5' : 'bg-white border-gray-100'
+              theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-100'
             )}>
               <div className="flex items-center justify-between mb-4 border-b border-emerald-500/20 pb-2">
                 <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Fields Configuration</h3>
@@ -233,7 +233,7 @@ const BuilderPage: React.FC = () => {
                 {activeSchema.fields.map((field, idx) => (
                   <div key={idx} className={cn(
                     'flex items-center gap-3 p-3 border group',
-                    theme === 'dark' ? 'bg-black border-white/10' : 'bg-gray-50 border-gray-200'
+                    theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-gray-50 border-gray-200'
                   )}>
                     <input
                       type="text"

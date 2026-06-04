@@ -125,7 +125,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
         
         <div className="flex items-center gap-2">
           {value.length > 0 && (
-            <div className="flex items-center gap-1.5 border border-white/5 bg-white/[0.02] p-0.5 rounded-none mr-2">
+            <div className="flex items-center gap-1.5 border border-white/[0.08] bg-white/[0.02] p-0.5 rounded-none mr-2">
               <button type="button" onClick={expandAll} className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-white transition-all hover:bg-white/[0.05]">Expand All</button>
               <div className="w-px h-3 bg-white/10" />
               <button type="button" onClick={collapseAll} className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-white transition-all hover:bg-white/[0.05]">Collapse All</button>
@@ -174,7 +174,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
                   whileDrag={{ scale: 1.01, zIndex: 50, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
                   className={cn(
                     'group relative bg-app border rounded-none overflow-visible shadow-sm transition-colors duration-150',
-                    isExpanded ? 'border-emerald-500/60 shadow-[0_0_0_3px_rgba(16,185,129,0.08)]' : 'border-border hover:border-white/20'
+                    isExpanded ? 'border-emerald-500/60 shadow-[0_0_0_3px_rgba(16,185,129,0.08)]' : 'border-border hover:border-white/[0.08]'
                   )}
                 >
                   {/* Index Badge */}

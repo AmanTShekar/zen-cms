@@ -331,7 +331,7 @@ const SettingsPage = () => {
                     className={cn(
                       'w-full flex items-center gap-3 px-3 py-2.5 rounded-none transition-all group border',
                       activeTab === tab.id
-                        ? theme === 'dark' ? 'bg-white/[0.06] border-white/10 text-white shadow-sm' : 'bg-white border-gray-100 shadow-sm text-gray-900'
+                        ? theme === 'dark' ? 'bg-white/[0.06] border-white/[0.08] text-white shadow-sm' : 'bg-white border-gray-100 shadow-sm text-gray-900'
                         : theme === 'dark' ? 'text-gray-400 border-transparent hover:bg-white/[0.02] hover:text-gray-200' : 'text-gray-500 border-transparent hover:bg-gray-50'
                     )}
                   >
@@ -355,7 +355,7 @@ const SettingsPage = () => {
           <div className={cn(
             'p-8 min-h-[600px] transition-colors',
             theme === 'dark' 
-              ? 'bg-[#111827]/65 backdrop-blur-[12px] border border-white/[0.08] rounded-none shadow-[0_4px_30px_rgba(0,0,0,0.1)]' 
+              ? 'bg-[#0B0F19]/65 backdrop-blur-[12px] border border-white/[0.08] rounded-none shadow-[0_4px_30px_rgba(0,0,0,0.1)]' 
               : 'bg-white border border-gray-100 shadow-sm rounded-none'
           )}>
             <AnimatePresence mode="wait">

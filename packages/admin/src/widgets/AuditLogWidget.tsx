@@ -30,7 +30,7 @@ export default function AuditLogWidget({ theme, title }: WidgetProps) {
 
   return (
     <div className="h-full flex flex-col justify-between gap-3 select-none">
-      <div className="flex items-center justify-between border-b border-white/5 pb-1">
+      <div className="flex items-center justify-between border-b border-white/[0.08] pb-1">
         <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest italic flex items-center gap-1">
           <Fingerprint size={10} className="animate-pulse" /> {title || 'Recent Activity'}
         </p>
@@ -54,7 +54,7 @@ export default function AuditLogWidget({ theme, title }: WidgetProps) {
             key={log._id || i}
             className={cn(
               'flex items-center gap-3 p-2.5 border rounded-none transition-all hover:bg-white/[0.02]',
-              theme === 'dark' ? 'bg-white/[0.01] border-white/5' : 'bg-gray-50 border-gray-100'
+              theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50 border-gray-100'
             )}
           >
             <div
@@ -97,14 +97,14 @@ export default function AuditLogWidget({ theme, title }: WidgetProps) {
         ))}
       </div>
 
-      <div className="flex items-center gap-2 border-t border-white/5 pt-2 shrink-0">
+      <div className="flex items-center gap-2 border-t border-white/[0.08] pt-2 shrink-0">
         {logs.length > displayLimit ? (
           <button
             onClick={() => setDisplayLimit((prev) => Math.min(prev + 5, logs.length))}
             className={cn(
               'flex-1 py-1.5 text-[8px] font-black uppercase tracking-widest italic transition-all border text-center flex items-center justify-center gap-1',
               theme === 'dark'
-                ? 'bg-white/[0.02] border-white/5 text-emerald-400 hover:bg-white/[0.05] hover:border-emerald-500/20'
+                ? 'bg-white/[0.02] border-white/[0.08] text-emerald-400 hover:bg-white/[0.05] hover:border-emerald-500/20'
                 : 'bg-gray-50 border-gray-100 text-emerald-600 hover:bg-gray-100 hover:border-emerald-600/20'
             )}
           >
@@ -116,7 +116,7 @@ export default function AuditLogWidget({ theme, title }: WidgetProps) {
             className={cn(
               'flex-1 py-1.5 text-[8px] font-black uppercase tracking-widest italic transition-all border text-center flex items-center justify-center gap-1',
               theme === 'dark'
-                ? 'bg-white/[0.02] border-white/5 text-emerald-400 hover:bg-white/[0.05] hover:border-emerald-500/20'
+                ? 'bg-white/[0.02] border-white/[0.08] text-emerald-400 hover:bg-white/[0.05] hover:border-emerald-500/20'
                 : 'bg-gray-50 border-gray-100 text-emerald-600 hover:bg-gray-100 hover:border-emerald-600/20'
             )}
           >

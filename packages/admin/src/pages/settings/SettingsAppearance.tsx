@@ -32,7 +32,7 @@ const SettingsAppearance: React.FC<SettingsAppearanceProps> = ({ settings, setSe
           className={cn(
             'w-full border rounded-none py-6 pl-14 pr-6 text-sm font-mono font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
             theme === 'dark'
-              ? 'bg-[#0f141f]/80 border-white/10 text-emerald-50 focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/30 shadow-inner'
+              ? 'bg-[#0f141f]/80 border-white/[0.08] text-emerald-50 focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/30 shadow-inner'
               : 'bg-gray-50 border-gray-200 shadow-inner focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/30'
           )}
           placeholder="/* Inject custom CSS protocols here... */"

@@ -1152,14 +1152,14 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
   // Loading state
   if (loading)
     return (
-      <div className={cn('h-screen w-full flex flex-col items-center justify-center gap-8', theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]')}>
+      <div className={cn('h-screen w-full flex flex-col items-center justify-center gap-8', theme === 'dark' ? 'bg-[#0B0F19]' : 'bg-[#fafafa]')}>
         <Cpu size={48} className="text-emerald-500 animate-spin" />
         <p className="text-[10px] font-black uppercase tracking-[0.8em] text-gray-500 animate-pulse italic">Initializing Canvas...</p>
       </div>
     )
 
   return (
-    <div className={cn('h-screen flex flex-col overflow-hidden transition-colors duration-500', theme === 'dark' ? 'bg-black text-white' : 'bg-white text-black')}>
+    <div className={cn('h-screen flex flex-col overflow-hidden transition-colors duration-500', theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-white text-black')}>
       {/* ── Header ── */}
       {/* ── Editor Toolbar ── */}
       <EditorToolbar
@@ -1200,7 +1200,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
                   {/* Document Kernel (Root Fields) */}
                   <div id="document-kernel" className={cn('space-y-6 transition-all duration-500', data?.align === 'center' && 'text-center', data?.align === 'right' && 'text-right')}>
                     <div className="flex items-center justify-between">
-                      <div className={cn('flex items-center gap-0.5 p-0.5 rounded-none border', theme === 'dark' ? 'bg-white/5 border-white/5' : 'bg-gray-100 border-gray-200')}>
+                      <div className={cn('flex items-center gap-0.5 p-0.5 rounded-none border', theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-100 border-gray-200')}>
                         {(['left', 'center', 'right'] as const).map((align) => (
                           <button key={align} onClick={() => data && editorSetData({ ...data, align })} className={cn('p-1 transition-all', data?.align === align || (!data?.align && align === 'left') ? theme === 'dark' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-emerald-500')}>
                             {align === 'left' && <AlignLeft size={12} />} {align === 'center' && <AlignCenter size={12} />} {align === 'right' && <AlignRight size={12} />}
@@ -1212,7 +1212,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
                         className={cn(
                           'flex items-center gap-1.5 px-2 py-1 text-[8px] font-black uppercase italic rounded-none border transition-all',
                           theme === 'dark'
-                            ? 'border-white/5 text-gray-500 hover:text-emerald-400 hover:border-emerald-500/20'
+                            ? 'border-white/[0.08] text-gray-500 hover:text-emerald-400 hover:border-emerald-500/20'
                             : 'border-gray-200 text-gray-400 hover:text-emerald-600 hover:border-emerald-200'
                         )}
                         title="Collapse / Expand All"
@@ -1279,7 +1279,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
                       </Reorder.Group>
 
                       {/* Add Section Button */}
-                      <button onClick={() => { setInjectionIndex(null); setBlockPickerOpen(true) }} className={cn('w-full py-10 rounded-none border-2 border-dashed transition-all flex flex-col items-center gap-4 group', theme === 'dark' ? 'border-white/10 hover:border-emerald-500/40 hover:bg-emerald-500/5' : 'border-gray-200 hover:border-emerald-400 hover:bg-emerald-50')}>
+                      <button onClick={() => { setInjectionIndex(null); setBlockPickerOpen(true) }} className={cn('w-full py-10 rounded-none border-2 border-dashed transition-all flex flex-col items-center gap-4 group', theme === 'dark' ? 'border-white/[0.08] hover:border-emerald-500/40 hover:bg-emerald-500/5' : 'border-gray-200 hover:border-emerald-400 hover:bg-emerald-50')}>
                         <div className={cn('w-12 h-12 rounded-none border-2 border-dashed flex items-center justify-center group-hover:scale-110 transition-all', theme === 'dark' ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-emerald-300 bg-emerald-50/50')}><Plus size={22} className="text-emerald-500" /></div>
                         <p className="text-[11px] font-black uppercase tracking-[0.3em] italic text-gray-500 group-hover:text-emerald-400 transition-colors">Append Section</p>
                       </button>
@@ -1287,7 +1287,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
                   )}
 
                   {topLevelFields.length > 0 && (
-                      <div className={cn("border rounded-none p-10 shadow-sm relative overflow-hidden transition-colors", theme === 'dark' ? 'bg-[#080808] border-white/5' : 'bg-white border-gray-100')}>
+                      <div className={cn("border rounded-none p-10 shadow-sm relative overflow-hidden transition-colors", theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-100')}>
                         <div className="absolute top-0 right-0 p-10 opacity-[0.01] pointer-events-none">
                           <Terminal size={180} strokeWidth={0.5} />
                         </div>
@@ -1319,7 +1319,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
                 </div>
               ) : (
                 <div className="flex-1 flex flex-col pt-10">
-                  <div className={cn('flex-1 p-10 font-mono text-sm overflow-auto rounded-none border', theme === 'dark' ? 'bg-black/50 border-white/5 text-emerald-300' : 'bg-gray-100 border-gray-200 text-emerald-900')}>
+                  <div className={cn('flex-1 p-10 font-mono text-sm overflow-auto rounded-none border', theme === 'dark' ? 'bg-[#0B0F19]/50 border-white/[0.08] text-emerald-300' : 'bg-gray-100 border-gray-200 text-emerald-900')}>
                     <pre className="no-scrollbar">{JSON.stringify(data, null, 3)}</pre>
                   </div>
                 </div>

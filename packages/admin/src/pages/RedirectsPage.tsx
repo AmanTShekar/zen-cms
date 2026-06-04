@@ -145,7 +145,7 @@ const RedirectsPage = () => {
         <div className="flex items-center gap-4">
           <div className={cn(
             'w-10 h-10 flex items-center justify-center border',
-            dark ? 'bg-white/5 border-white/10' : 'bg-gray-100 border-gray-200'
+            dark ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-100 border-gray-200'
           )}>
             <ArrowLeftRight size={20} className="text-emerald-500" />
           </div>
@@ -187,14 +187,14 @@ const RedirectsPage = () => {
           className={cn(
             'w-full pl-10 pr-4 py-3 text-xs font-bold tracking-wider border outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
             dark
-              ? 'bg-white/[0.03] border-white/5 text-white placeholder:text-gray-600 focus:border-emerald-500/30'
+              ? 'bg-white/[0.03] border-white/[0.08] text-white placeholder:text-gray-600 focus:border-emerald-500/30'
               : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500'
           )}
         />
       </div>
 
       {/* Table */}
-      <div className={cn('border', dark ? 'border-white/5' : 'border-gray-200')}>
+      <div className={cn('border', dark ? 'border-white/[0.08]' : 'border-gray-200')}>
         {loading ? (
           <div className="flex items-center justify-center py-20 gap-3">
             <Loader2 size={20} className="animate-spin text-emerald-500" />
@@ -220,7 +220,7 @@ const RedirectsPage = () => {
               <thead>
                 <tr className={cn(
                   'text-[10px] font-black uppercase tracking-widest italic border-b',
-                  dark ? 'text-gray-500 border-white/5' : 'text-gray-400 border-gray-100'
+                  dark ? 'text-gray-500 border-white/[0.08]' : 'text-gray-400 border-gray-100'
                 )}>
                   <th className="px-5 py-4 font-normal">From</th>
                   <th className="px-5 py-4 font-normal hidden md:table-cell">To</th>
@@ -297,7 +297,7 @@ const RedirectsPage = () => {
                           className={cn(
                             'p-1.5 border transition-all',
                             dark
-                              ? 'border-white/5 text-gray-600 hover:text-gray-300 hover:border-white/10'
+                              ? 'border-white/[0.08] text-gray-600 hover:text-gray-300 hover:border-white/[0.08]'
                               : 'border-gray-200 text-gray-400 hover:text-gray-600'
                           )}
                           title="Test redirect"
@@ -324,7 +324,7 @@ const RedirectsPage = () => {
         {totalPages > 1 && (
           <div className={cn(
             'flex items-center justify-between px-5 py-4 border-t',
-            dark ? 'border-white/5' : 'border-gray-100'
+            dark ? 'border-white/[0.08]' : 'border-gray-100'
           )}>
             <span className={cn(
               'text-[10px] font-bold',
@@ -339,7 +339,7 @@ const RedirectsPage = () => {
                 className={cn(
                   'px-4 py-2 text-[10px] font-black uppercase italic tracking-widest border transition-all',
                   dark
-                    ? 'border-white/10 text-gray-400 hover:text-white disabled:opacity-30'
+                    ? 'border-white/[0.08] text-gray-400 hover:text-white disabled:opacity-30'
                     : 'border-gray-200 text-gray-600 hover:text-black disabled:opacity-30'
                 )}
               >
@@ -351,7 +351,7 @@ const RedirectsPage = () => {
                 className={cn(
                   'px-4 py-2 text-[10px] font-black uppercase italic tracking-widest border transition-all',
                   dark
-                    ? 'border-white/10 text-gray-400 hover:text-white disabled:opacity-30'
+                    ? 'border-white/[0.08] text-gray-400 hover:text-white disabled:opacity-30'
                     : 'border-gray-200 text-gray-600 hover:text-black disabled:opacity-30'
                 )}
               >
@@ -369,7 +369,7 @@ const RedirectsPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/60 backdrop-blur-sm"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -377,12 +377,12 @@ const RedirectsPage = () => {
               exit={{ opacity: 0, scale: 0.95 }}
               className={cn(
                 'w-full max-w-lg border shadow-2xl',
-                dark ? 'bg-[#0B0F19] border-white/10' : 'bg-white border-gray-200'
+                dark ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-200'
               )}
             >
               <div className={cn(
                 'px-6 py-5 border-b flex items-center justify-between',
-                dark ? 'border-white/5' : 'border-gray-100'
+                dark ? 'border-white/[0.08]' : 'border-gray-100'
               )}>
                 <h2 className={cn(
                   'text-sm font-black uppercase italic tracking-wider',
@@ -394,7 +394,7 @@ const RedirectsPage = () => {
                   onClick={() => setShowEditor(false)}
                   className={cn(
                     'p-1 border transition-all',
-                    dark ? 'border-white/10 text-gray-500 hover:text-white' : 'border-gray-200 text-gray-400'
+                    dark ? 'border-white/[0.08] text-gray-500 hover:text-white' : 'border-gray-200 text-gray-400'
                   )}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -417,7 +417,7 @@ const RedirectsPage = () => {
                     className={cn(
                       'w-full px-4 py-3 text-xs font-mono font-bold border outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
                       dark
-                        ? 'bg-white/[0.03] border-white/10 text-white placeholder:text-gray-700 focus:border-emerald-500/40'
+                        ? 'bg-white/[0.03] border-white/[0.08] text-white placeholder:text-gray-700 focus:border-emerald-500/40'
                         : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500'
                     )}
                   />
@@ -438,7 +438,7 @@ const RedirectsPage = () => {
                     className={cn(
                       'w-full px-4 py-3 text-xs font-mono font-bold border outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
                       dark
-                        ? 'bg-white/[0.03] border-white/10 text-white placeholder:text-gray-700 focus:border-emerald-500/40'
+                        ? 'bg-white/[0.03] border-white/[0.08] text-white placeholder:text-gray-700 focus:border-emerald-500/40'
                         : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500'
                     )}
                   />
@@ -461,7 +461,7 @@ const RedirectsPage = () => {
                           formType === t
                             ? typeColor(t) + ' bg-emerald-500/5'
                             : dark
-                              ? 'border-white/5 text-gray-600 hover:text-gray-400'
+                              ? 'border-white/[0.08] text-gray-600 hover:text-gray-400'
                               : 'border-gray-200 text-gray-400 hover:text-gray-600'
                         )}
                       >
@@ -483,14 +483,14 @@ const RedirectsPage = () => {
 
               <div className={cn(
                 'px-6 py-4 border-t flex items-center justify-end gap-3',
-                dark ? 'border-white/5' : 'border-gray-100'
+                dark ? 'border-white/[0.08]' : 'border-gray-100'
               )}>
                 <button
                   onClick={() => setShowEditor(false)}
                   className={cn(
                     'px-5 py-2.5 text-[10px] font-black uppercase italic tracking-widest border transition-all',
                     dark
-                      ? 'border-white/10 text-gray-400 hover:text-white'
+                      ? 'border-white/[0.08] text-gray-400 hover:text-white'
                       : 'border-gray-200 text-gray-600 hover:text-black'
                   )}
                 >
@@ -517,7 +517,7 @@ const RedirectsPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/60 backdrop-blur-sm"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -525,7 +525,7 @@ const RedirectsPage = () => {
               exit={{ opacity: 0, scale: 0.95 }}
               className={cn(
                 'w-full max-w-sm border shadow-2xl p-6 text-center',
-                dark ? 'bg-[#0B0F19] border-white/10' : 'bg-white border-gray-200'
+                dark ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-200'
               )}
             >
               <AlertTriangle size={32} className="mx-auto mb-4 text-red-500" />
@@ -546,7 +546,7 @@ const RedirectsPage = () => {
                   onClick={() => setDeleteConfirm(null)}
                   className={cn(
                     'px-5 py-2.5 text-[10px] font-black uppercase italic tracking-widest border transition-all',
-                    dark ? 'border-white/10 text-gray-400 hover:text-white' : 'border-gray-200 text-gray-600 hover:text-black'
+                    dark ? 'border-white/[0.08] text-gray-400 hover:text-white' : 'border-gray-200 text-gray-600 hover:text-black'
                   )}
                 >
                   Cancel

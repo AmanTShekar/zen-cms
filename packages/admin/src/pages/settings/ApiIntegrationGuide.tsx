@@ -43,7 +43,7 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
   }
 
   return (
-    <div className="mt-12 pt-12 border-t border-white/10 space-y-8">
+    <div className="mt-12 pt-12 border-t border-white/[0.08] space-y-8">
       <div className="flex flex-col gap-2">
         <h3 className="text-xl font-black uppercase italic tracking-tight flex items-center gap-3">
           <Terminal className="text-emerald-500" size={24} />
@@ -57,7 +57,7 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className={cn(
           "p-6 border rounded-none relative overflow-hidden group",
-          theme === 'dark' ? "bg-white/[0.02] border-white/10" : "bg-gray-50 border-gray-200"
+          theme === 'dark' ? "bg-white/[0.02] border-white/[0.08]" : "bg-gray-50 border-gray-200"
         )}>
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <Server size={48} />
@@ -71,7 +71,7 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
 
         <div className={cn(
           "p-6 border rounded-none relative overflow-hidden group",
-          theme === 'dark' ? "bg-white/[0.02] border-white/10" : "bg-gray-50 border-gray-200"
+          theme === 'dark' ? "bg-white/[0.02] border-white/[0.08]" : "bg-gray-50 border-gray-200"
         )}>
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <Info size={48} />
@@ -79,13 +79,13 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
           <div className="w-10 h-10 bg-emerald-500/20 text-emerald-500 flex items-center justify-center rounded-none mb-4 font-black">2</div>
           <h4 className="text-[14px] font-black uppercase italic mb-2">Site Identification</h4>
           <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
-            Include the <strong>X-Zenith-Site-Id</strong> header in all your requests. Your current site ID is <code className="bg-black/20 px-1 py-0.5 rounded text-emerald-500">{activeSiteId}</code>.
+            Include the <strong>X-Zenith-Site-Id</strong> header in all your requests. Your current site ID is <code className="bg-[#0B0F19]/20 px-1 py-0.5 rounded text-emerald-500">{activeSiteId}</code>.
           </p>
         </div>
 
         <div className={cn(
           "p-6 border rounded-none relative overflow-hidden group",
-          theme === 'dark' ? "bg-white/[0.02] border-white/10" : "bg-gray-50 border-gray-200"
+          theme === 'dark' ? "bg-white/[0.02] border-white/[0.08]" : "bg-gray-50 border-gray-200"
         )}>
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <Database size={48} />
@@ -100,9 +100,9 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
 
       <div className={cn(
         "border rounded-none overflow-hidden mt-8",
-        theme === 'dark' ? "bg-[#0A0A0A] border-white/10" : "bg-gray-900 border-gray-800"
+        theme === 'dark' ? "bg-[#0A0A0A] border-white/[0.08]" : "bg-gray-900 border-gray-800"
       )}>
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/40">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08] bg-[#0B0F19]/40">
           <div className="flex items-center gap-2">
             {(['fetch', 'curl', 'axios'] as const).map(lang => (
               <button

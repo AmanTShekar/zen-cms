@@ -97,7 +97,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
       {versionId && (
         <>
           {/* Backdrop */}
-          <div className="fixed inset-0 z-[110] bg-black/50 backdrop-blur-md" onClick={onClose} />
+          <div className="fixed inset-0 z-[110] bg-[#0B0F19]/50 backdrop-blur-md" onClick={onClose} />
 
           {/* Modal Container */}
           <motion.div
@@ -111,7 +111,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
             )}
           >
             {/* Header */}
-            <div className="p-6 border-b border-white/5 flex items-center justify-between shrink-0 bg-gradient-to-r from-emerald-500/5 to-transparent">
+            <div className="p-6 border-b border-white/[0.08] flex items-center justify-between shrink-0 bg-gradient-to-r from-emerald-500/5 to-transparent">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 border flex items-center justify-center text-emerald-400">
                   <ArrowLeftRight size={16} />
@@ -163,13 +163,13 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
                       key={diff.field}
                       className={cn(
                         'border rounded-none overflow-hidden',
-                        isDark ? 'border-white/5 bg-black/10' : 'border-gray-200 bg-gray-50/50'
+                        isDark ? 'border-white/[0.08] bg-[#0B0F19]/10' : 'border-gray-200 bg-gray-50/50'
                       )}
                     >
                       {/* Diff Item Header */}
                       <div className={cn(
                         'px-4 py-2.5 border-b flex items-center justify-between',
-                        isDark ? 'bg-white/[0.02] border-white/5' : 'bg-gray-100 border-gray-200'
+                        isDark ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-100 border-gray-200'
                       )}>
                         <div className="flex items-center gap-2">
                           <FileText size={13} className="text-emerald-400" />
@@ -220,10 +220,10 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-white/5 flex items-center justify-end bg-gradient-to-r from-transparent to-emerald-500/5">
+            <div className="p-4 border-t border-white/[0.08] flex items-center justify-end bg-gradient-to-r from-transparent to-emerald-500/5">
               <button
                 onClick={onClose}
-                className="px-5 py-2 border border-white/10 hover:border-white/20 text-xs font-black uppercase tracking-widest hover:bg-white/5 transition-all text-gray-400 hover:text-white"
+                className="px-5 py-2 border border-white/[0.08] hover:border-white/[0.08] text-xs font-black uppercase tracking-widest hover:bg-white/5 transition-all text-gray-400 hover:text-white"
               >
                 Close Comparison
               </button>

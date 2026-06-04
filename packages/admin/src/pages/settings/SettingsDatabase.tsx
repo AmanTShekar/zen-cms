@@ -84,7 +84,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
             className={cn(
               'p-8 border rounded-none flex flex-col gap-6 relative overflow-hidden group transition-all',
               theme === 'dark'
-                ? 'bg-white/[0.01] border-white/5 hover:border-emerald-500/20'
+                ? 'bg-white/[0.01] border-white/[0.08] hover:border-emerald-500/20'
                 : 'bg-gray-50 border-gray-100 shadow-sm'
             )}
           >
@@ -92,7 +92,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
               <div
                 className={cn(
                   'w-12 h-12 rounded-none flex items-center justify-center border',
-                  theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-white'
+                  theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-white'
                 )}
               >
                 <stat.icon size={22} className="text-gray-400 group-hover:text-emerald-500 transition-colors" />
@@ -118,7 +118,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
         className={cn(
           'p-6 border rounded-none',
           theme === 'dark'
-            ? 'bg-white/[0.01] border-white/5'
+            ? 'bg-white/[0.01] border-white/[0.08]'
             : 'bg-gray-50 border-gray-100'
         )}
       >
@@ -138,7 +138,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
               className={cn(
                 'w-full border rounded-none py-3 px-4 text-[11px] font-mono italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                 theme === 'dark'
-                  ? 'bg-white/5 border-white/10 text-white focus:border-emerald-500/50'
+                  ? 'bg-white/5 border-white/[0.08] text-white focus:border-emerald-500/50'
                   : 'bg-white border-gray-200 focus:border-emerald-500'
               )}
             />
@@ -158,7 +158,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
                     dbDialect === d
                       ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
                       : theme === 'dark'
-                      ? 'border-white/10 text-gray-500'
+                      ? 'border-white/[0.08] text-gray-500'
                       : 'border-gray-200 text-gray-400'
                   )}
                 >
@@ -173,7 +173,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
             className={cn(
               'px-6 py-3.5 rounded-none text-[9px] font-black uppercase italic tracking-widest border transition-all active:scale-95 disabled:opacity-40 flex items-center gap-2',
               theme === 'dark'
-                ? 'border-white/10 hover:border-white/20 text-gray-400 hover:text-white'
+                ? 'border-white/[0.08] hover:border-white/[0.08] text-gray-400 hover:text-white'
                 : 'border-gray-200 hover:border-gray-300 text-gray-400'
             )}
           >

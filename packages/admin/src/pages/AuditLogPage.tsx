@@ -173,7 +173,7 @@ const AuditLogPage: React.FC = () => {
     <div
       className={cn(
         'flex flex-col min-h-screen p-6 space-y-6 transition-colors duration-500',
-        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
+        theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-gray-900'
       )}
     >
       {/* Header */}
@@ -204,7 +204,7 @@ const AuditLogPage: React.FC = () => {
           <div
             className={cn(
               'px-6 py-3 border rounded-none flex items-center gap-8 shadow-sm backdrop-blur-xl',
-              theme === 'dark' ? 'bg-white/[0.02] border-white/5' : 'bg-white border-gray-100'
+              theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-100'
             )}
           >
             <div className="flex flex-col items-end">
@@ -244,7 +244,7 @@ const AuditLogPage: React.FC = () => {
             className={cn(
               'w-12 h-12 border rounded-none flex items-center justify-center transition-all hover:scale-105 active:scale-95',
               theme === 'dark'
-                ? 'bg-white/5 border-white/5 text-gray-400'
+                ? 'bg-white/5 border-white/[0.08] text-gray-400'
                 : 'bg-white border-gray-100 text-gray-400'
             )}
           >
@@ -257,21 +257,21 @@ const AuditLogPage: React.FC = () => {
       <div
         className={cn(
           'border rounded-none shadow-sm flex flex-col relative transition-colors backdrop-blur-3xl overflow-hidden',
-          theme === 'dark' ? 'bg-[#080808]/80 border-white/5' : 'bg-white border-gray-100'
+          theme === 'dark' ? 'bg-[#0B0F19]/80 border-white/[0.08]' : 'bg-white border-gray-100'
         )}
       >
         {/* Control Bar */}
         <div
           className={cn(
             'px-8 py-5 border-b flex items-center justify-between gap-6 transition-colors',
-            theme === 'dark' ? 'bg-white/[0.02] border-white/5' : 'bg-gray-50/30 border-gray-100'
+            theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/30 border-gray-100'
           )}
         >
           <div className="flex items-center gap-4 flex-1">
             <div
               className={cn(
                 'flex items-center gap-4 border px-6 py-3 rounded-none w-full max-w-md shadow-inner transition-all group relative overflow-hidden',
-                theme === 'dark' ? 'bg-black border-white/10' : 'bg-white border-gray-100'
+                theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-100'
               )}
             >
               <Search
@@ -293,7 +293,7 @@ const AuditLogPage: React.FC = () => {
               onChange={(e) => { setFilterAction(e.target.value); setPage(1) }}
               className={cn(
                 'px-4 py-3 border rounded-none text-[9px] font-black uppercase tracking-widest italic',
-                theme === 'dark' ? 'bg-black border-white/10 text-gray-400' : 'bg-white border-gray-100 text-gray-400'
+                theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-gray-400' : 'bg-white border-gray-100 text-gray-400'
               )}
             >
               <option value="">All Actions</option>
@@ -313,7 +313,7 @@ const AuditLogPage: React.FC = () => {
               className={cn(
                 'flex items-center gap-3 px-6 py-3 border rounded-none text-[9px] font-black uppercase tracking-widest transition-all italic hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/20',
                 theme === 'dark'
-                  ? 'bg-white/5 border-white/5 text-gray-400'
+                  ? 'bg-white/5 border-white/[0.08] text-gray-400'
                   : 'bg-white border-gray-100 text-gray-400'
               )}
             >
@@ -327,7 +327,7 @@ const AuditLogPage: React.FC = () => {
                 'flex items-center gap-3 px-8 py-3 rounded-none font-black text-[9px] uppercase tracking-[0.2em] transition-all shadow-lg italic leading-none active:scale-95',
                 theme === 'dark'
                   ? 'bg-white text-black hover:bg-gray-200'
-                  : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
+                  : 'bg-gray-900 text-white hover:bg-[#0B0F19] shadow-gray-900/20'
               )}
             >
               {exporting ? (
@@ -348,7 +348,7 @@ const AuditLogPage: React.FC = () => {
                 className={cn(
                   'border-b text-left',
                   theme === 'dark'
-                    ? 'border-white/5 bg-white/[0.01]'
+                    ? 'border-white/[0.08] bg-white/[0.01]'
                     : 'border-gray-50 bg-gray-50/10'
                 )}
               >
@@ -404,7 +404,7 @@ const AuditLogPage: React.FC = () => {
                           className={cn(
                             'w-8 h-8 rounded-none border flex items-center justify-center text-gray-500',
                             theme === 'dark'
-                              ? 'bg-white/5 border-white/10'
+                              ? 'bg-white/5 border-white/[0.08]'
                               : 'bg-gray-50 border-gray-100'
                           )}
                         >
@@ -481,7 +481,7 @@ const AuditLogPage: React.FC = () => {
             <div
               className={cn(
                 'px-8 py-6 border-t transition-colors',
-                theme === 'dark' ? 'bg-white/[0.02] border-white/5' : 'bg-gray-50/30 border-gray-100'
+                theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/30 border-gray-100'
               )}
             >
               <div className="grid grid-cols-3 gap-6 text-[10px] font-mono">
@@ -521,7 +521,7 @@ const AuditLogPage: React.FC = () => {
                   <div className="text-[7px] font-black uppercase tracking-widest text-gray-500 mb-2">Changes</div>
                   <pre className={cn(
                     'p-4 rounded-none text-[10px] font-mono max-h-48 overflow-auto border',
-                    theme === 'dark' ? 'bg-black/50 border-white/5 text-gray-400' : 'bg-gray-50 border-gray-100 text-gray-600'
+                    theme === 'dark' ? 'bg-[#0B0F19]/50 border-white/[0.08] text-gray-400' : 'bg-gray-50 border-gray-100 text-gray-600'
                   )}>
                     {JSON.stringify(log.changes, null, 2)}
                   </pre>
@@ -535,7 +535,7 @@ const AuditLogPage: React.FC = () => {
         <div
           className={cn(
             'px-8 py-6 border-t flex items-center justify-between transition-colors',
-            theme === 'dark' ? 'bg-white/[0.01] border-white/5' : 'bg-gray-50/20 border-gray-100'
+            theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50/20 border-gray-100'
           )}
         >
           <div className="flex items-center gap-4">
@@ -564,7 +564,7 @@ const AuditLogPage: React.FC = () => {
               className={cn(
                 'w-10 h-10 border rounded-none flex items-center justify-center transition-all disabled:opacity-20',
                 theme === 'dark'
-                  ? 'bg-white/5 border-white/5 text-gray-400'
+                  ? 'bg-white/5 border-white/[0.08] text-gray-400'
                   : 'bg-white border-gray-100 text-gray-400'
               )}
             >
@@ -588,7 +588,7 @@ const AuditLogPage: React.FC = () => {
               className={cn(
                 'w-10 h-10 border rounded-none flex items-center justify-center transition-all disabled:opacity-20',
                 theme === 'dark'
-                  ? 'bg-white/5 border-white/5 text-gray-400'
+                  ? 'bg-white/5 border-white/[0.08] text-gray-400'
                   : 'bg-white border-gray-100 text-gray-400'
               )}
             >

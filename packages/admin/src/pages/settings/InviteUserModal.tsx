@@ -52,17 +52,17 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/60 backdrop-blur-sm">
       <div
         className={cn(
           'w-full max-w-md border rounded-none shadow-2xl',
           theme === 'dark'
-            ? 'bg-[#080808] border-white/10'
+            ? 'bg-[#0B0F19] border-white/[0.08]'
             : 'bg-white border-gray-100 shadow-black/10'
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-8 py-6 border-b border-white/5">
+        <div className="flex items-center justify-between px-8 py-6 border-b border-white/[0.08]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
               <Users size={18} className="text-emerald-500" />
@@ -105,7 +105,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
                 className={cn(
                   'w-full border rounded-none py-4 px-5 text-[13px] font-black italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                   theme === 'dark'
-                    ? 'bg-white/5 border-white/10 text-white focus:border-emerald-500/50'
+                    ? 'bg-white/5 border-white/[0.08] text-white focus:border-emerald-500/50'
                     : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                 )}
               />
@@ -127,7 +127,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
                       role === r
                         ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
                         : theme === 'dark'
-                        ? 'border-white/10 text-gray-500 hover:border-white/20'
+                        ? 'border-white/[0.08] text-gray-500 hover:border-white/[0.08]'
                         : 'border-gray-200 text-gray-400 hover:border-gray-300'
                     )}
                   >

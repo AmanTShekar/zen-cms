@@ -117,7 +117,7 @@ export const RelationsModal: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setRelationsModalOpen(false)}
-            className="absolute inset-0 bg-black/70 backdrop-blur-md"
+            className="absolute inset-0 bg-[#0B0F19]/70 backdrop-blur-md"
           />
           <motion.div
             ref={dialogRef}
@@ -129,13 +129,13 @@ export const RelationsModal: React.FC = () => {
             exit={{ scale: 0.9, opacity: 0 }}
             className={cn(
               'absolute inset-4 md:inset-10 border rounded-none shadow-2xl flex flex-col overflow-hidden',
-              theme === 'dark' ? 'bg-[#060606] border-white/10' : 'bg-white border-gray-200'
+              theme === 'dark' ? 'bg-[#060606] border-white/[0.08]' : 'bg-white border-gray-200'
             )}
           >
             {/* Header */}
             <div className={cn(
               'p-6 border-b flex items-start justify-between shrink-0',
-              theme === 'dark' ? 'border-white/5' : 'border-gray-100'
+              theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
             )}>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-none bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
@@ -163,8 +163,8 @@ export const RelationsModal: React.FC = () => {
                   className={cn(
                     'p-2 rounded-none border transition-all',
                     theme === 'dark'
-                      ? 'bg-white/5 border-white/10 text-white hover:bg-white hover:text-black'
-                      : 'bg-gray-100 border-gray-200 text-black hover:bg-black hover:text-white'
+                      ? 'bg-white/5 border-white/[0.08] text-white hover:bg-white hover:text-black'
+                      : 'bg-gray-100 border-gray-200 text-black hover:bg-[#0B0F19] hover:text-white'
                   )}
                 >
                   <X size={16} />
@@ -175,7 +175,7 @@ export const RelationsModal: React.FC = () => {
             {/* Collection Selector */}
             <div className={cn(
               'p-4 border-b flex gap-2 overflow-x-auto',
-              theme === 'dark' ? 'border-white/5 bg-white/[0.01]' : 'border-gray-100 bg-gray-55'
+              theme === 'dark' ? 'border-white/[0.08] bg-white/[0.01]' : 'border-gray-100 bg-gray-55'
             )}>
               {availableCollections.map((col) => {
                 const isActive = activeCollection === col.slug
@@ -190,7 +190,7 @@ export const RelationsModal: React.FC = () => {
                           ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
                           : 'bg-emerald-50 border-emerald-300 text-emerald-600'
                         : theme === 'dark'
-                          ? 'border-white/10 text-gray-400 hover:border-emerald-500/30 hover:text-emerald-400'
+                          ? 'border-white/[0.08] text-gray-400 hover:border-emerald-500/30 hover:text-emerald-400'
                           : 'border-gray-200 text-gray-600 hover:border-emerald-300 hover:text-emerald-600'
                     )}
                   >
@@ -213,7 +213,7 @@ export const RelationsModal: React.FC = () => {
                   className={cn(
                     'w-full rounded-none py-3 pl-12 pr-4 text-xs font-bold italic  border',
                     theme === 'dark'
-                      ? 'bg-white/5 border-white/10 text-white focus-visible:border-emerald-500/50'
+                      ? 'bg-white/5 border-white/[0.08] text-white focus-visible:border-emerald-500/50'
                       : 'bg-gray-50 border-gray-200 text-gray-900 focus-visible:border-emerald-600/50'
                   )}
                 />
@@ -249,7 +249,7 @@ export const RelationsModal: React.FC = () => {
                             ? 'bg-emerald-500/10 border-emerald-500/30'
                             : 'bg-emerald-50 border-emerald-200'
                           : theme === 'dark'
-                            ? 'bg-white/[0.01] border-white/5 hover:border-white/10'
+                            ? 'bg-white/[0.01] border-white/[0.08] hover:border-white/[0.08]'
                             : 'bg-gray-50 border-gray-200 hover:border-emerald-200'
                       )}
                     >
@@ -258,7 +258,7 @@ export const RelationsModal: React.FC = () => {
                         selectedRelations.has(item.id || item._id)
                           ? 'bg-emerald-600 border-emerald-600'
                           : theme === 'dark'
-                            ? 'border-white/10'
+                            ? 'border-white/[0.08]'
                             : 'border-gray-300'
                       )}>
                         {selectedRelations.has(item.id || item._id) && <Check size={12} className="text-white" />}
@@ -283,7 +283,7 @@ export const RelationsModal: React.FC = () => {
             {/* Footer */}
             <div className={cn(
               'p-4 border-t flex items-center justify-between',
-              theme === 'dark' ? 'border-white/5 bg-white/[0.02]' : 'border-gray-100 bg-gray-50'
+              theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-100 bg-gray-50'
             )}>
               <span className="text-xs text-gray-500 font-bold italic">
                 Click entries to select/deselect for relation
@@ -294,7 +294,7 @@ export const RelationsModal: React.FC = () => {
                   className={cn(
                     'px-4 py-2 text-xs font-black uppercase italic rounded-none border transition-all',
                     theme === 'dark'
-                      ? 'border-white/10 text-gray-400 hover:border-white/20 hover:text-white'
+                      ? 'border-white/[0.08] text-gray-400 hover:border-white/[0.08] hover:text-white'
                       : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:text-black'
                   )}
                 >

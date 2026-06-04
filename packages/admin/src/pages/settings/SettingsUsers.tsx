@@ -44,7 +44,7 @@ const SettingsUsers: React.FC<SettingsUsersProps> = ({ users, theme, fetchData }
           </span>
           <button
             onClick={() => setInviteOpen(true)}
-            className="text-[10px] font-black uppercase italic border border-white/10 px-8 py-3 rounded-none hover:bg-white/5 transition-all"
+            className="text-[10px] font-black uppercase italic border border-white/[0.08] px-8 py-3 rounded-none hover:bg-white/5 transition-all"
           >
             Add Operator
           </button>
@@ -56,7 +56,7 @@ const SettingsUsers: React.FC<SettingsUsersProps> = ({ users, theme, fetchData }
               className={cn(
                 'flex items-center justify-between p-4 border rounded-none transition-all group',
                 theme === 'dark'
-                  ? 'bg-black/40 border-white/5 hover:border-red-500/10'
+                  ? 'bg-[#0B0F19]/40 border-white/[0.08] hover:border-red-500/10'
                   : 'bg-gray-50 border-gray-100'
               )}
             >

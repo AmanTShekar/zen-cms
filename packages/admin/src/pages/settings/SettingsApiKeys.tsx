@@ -48,14 +48,14 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
           </span>
           <button
             onClick={() => setGenerateOpen(true)}
-            className="text-[10px] font-black uppercase italic border border-white/10 px-8 py-3 rounded-none hover:bg-white/5 transition-all"
+            className="text-[10px] font-black uppercase italic border border-white/[0.08] px-8 py-3 rounded-none hover:bg-white/5 transition-all"
           >
             Generate Token
           </button>
         </div>
         <div className="grid grid-cols-1 gap-4">
           {apiKeys.length === 0 ? (
-            <div className="py-6 border border-dashed rounded-none border-white/5">
+            <div className="py-6 border border-dashed rounded-none border-white/[0.08]">
               <EmptyState
                 icon={Key}
                 title="No API keys"
@@ -63,7 +63,7 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
                 action={
                   <button
                     onClick={() => setGenerateOpen(true)}
-                    className="text-[10px] font-black uppercase italic border border-white/10 px-8 py-3 rounded-none hover:bg-white/5 transition-all"
+                    className="text-[10px] font-black uppercase italic border border-white/[0.08] px-8 py-3 rounded-none hover:bg-white/5 transition-all"
                   >
                     Generate Token
                   </button>
@@ -77,7 +77,7 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
               className={cn(
                 'flex items-center justify-between p-6 border rounded-none transition-all group',
                 theme === 'dark'
-                  ? 'bg-black/40 border-white/5 hover:border-red-500/10'
+                  ? 'bg-[#0B0F19]/40 border-white/[0.08] hover:border-red-500/10'
                   : 'bg-gray-50 border-gray-100'
               )}
             >

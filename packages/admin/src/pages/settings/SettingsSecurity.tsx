@@ -56,7 +56,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
         className={cn(
           'p-5 rounded-none border flex items-center justify-between transition-all group col-span-1 md:col-span-2',
           theme === 'dark'
-            ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20'
+            ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20'
             : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
         )}
       >
@@ -75,14 +75,14 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
             onChange={(e) => setSettings({ ...settings, allowRegistration: e.target.checked })}
             className="sr-only peer"
           />
-          <div className="w-11 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 border border-white/10 shadow-inner"></div>
+          <div className="w-11 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 border border-white/[0.08] shadow-inner"></div>
         </label>
       </div>
 
       <div
         className={cn(
           'p-5 rounded-none border transition-all space-y-3',
-          theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+          theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
         )}
       >
         <label className="text-xs font-semibold text-gray-400 px-1">
@@ -95,7 +95,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
           className={cn(
             'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
             theme === 'dark'
-              ? 'bg-[#0f141f] border-white/10 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+              ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
               : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
           )}
         />
@@ -107,7 +107,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
       <div
         className={cn(
           'p-5 rounded-none border transition-all space-y-3',
-          theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+          theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
         )}
       >
         <label className="text-xs font-semibold text-gray-400 px-1">
@@ -120,7 +120,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
           className={cn(
             'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
             theme === 'dark'
-              ? 'bg-[#0f141f] border-white/10 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+              ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
               : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
           )}
         />
@@ -129,10 +129,10 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
       <div
         className={cn(
           'col-span-1 md:col-span-2 p-6 rounded-none border transition-all space-y-6',
-          theme === 'dark' ? 'bg-white/[0.02] border-white/5' : 'bg-gray-50/50 border-gray-100'
+          theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/50 border-gray-100'
         )}
       >
-        <div className="flex items-center gap-4 border-b border-gray-200 dark:border-white/10 pb-5">
+        <div className="flex items-center gap-4 border-b border-gray-200 dark:border-white/[0.08] pb-5">
           <div className="p-3 bg-emerald-500/10 text-emerald-500 rounded-none">
             {enabled ? <ShieldCheck size={24} /> : <ShieldAlert size={24} />}
           </div>
@@ -170,7 +170,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
                 className={cn(
                   'w-48 border rounded-none py-3 px-4 text-center text-xl font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black tracking-widest',
                   theme === 'dark'
-                    ? 'bg-[#0f141f] border-white/20 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+                    ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
                     : 'bg-white border-gray-300 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
                 )}
               />

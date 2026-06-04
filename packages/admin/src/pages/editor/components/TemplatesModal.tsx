@@ -38,7 +38,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
   return (
     <AnimatePresence>
       {templatesOpen && (
-        <div className="fixed inset-0 z-[600] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[600] flex items-center justify-center p-6 bg-[#0B0F19]/60 backdrop-blur-sm">
           <motion.div
             ref={dialogRef}
             role="dialog"
@@ -49,13 +49,13 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
             exit={{ scale: 0.95, opacity: 0 }}
             className={cn(
               'w-full max-w-2xl border rounded-none overflow-hidden shadow-2xl',
-              theme === 'dark' ? 'bg-[#0a0a0a] border-white/10' : 'bg-white border-gray-200'
+              theme === 'dark' ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-white border-gray-200'
             )}
           >
             <div
               className={cn(
                 'p-6 border-b flex items-center justify-between',
-                theme === 'dark' ? 'border-white/5' : 'border-gray-100'
+                theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
               )}
             >
               <div className="flex items-center gap-3">
@@ -103,7 +103,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
                       className={cn(
                         'p-4 border rounded-none space-y-3 relative group',
                         theme === 'dark'
-                          ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/30'
+                          ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/30'
                           : 'bg-gray-50 border-gray-200 hover:border-emerald-300'
                       )}
                     >
@@ -133,7 +133,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
                           className={cn(
                             'p-2 border rounded-none transition-colors',
                             theme === 'dark'
-                              ? 'border-white/10 text-gray-500 hover:border-rose-500/30 hover:text-rose-500'
+                              ? 'border-white/[0.08] text-gray-500 hover:border-rose-500/30 hover:text-rose-500'
                               : 'border-gray-200 text-gray-400 hover:border-rose-300 hover:text-rose-500'
                           )}
                         >
@@ -149,7 +149,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
             {selectedSections.size > 0 && (
               <div className={cn(
                 'p-4 border-t flex items-center justify-between',
-                theme === 'dark' ? 'border-white/5 bg-white/[0.02]' : 'border-gray-100 bg-gray-50/50'
+                theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-100 bg-gray-50/50'
               )}>
                 <span className="text-xs text-gray-500 font-black uppercase tracking-widest italic">
                   {selectedSections.size} block{selectedSections.size > 1 ? 's' : ''} selected

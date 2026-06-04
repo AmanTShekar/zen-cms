@@ -98,7 +98,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ value, onChange, theme, height 
       className={cn(
         'w-full border rounded-none px-4 py-3 font-mono text-[11px] leading-relaxed resize-y outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
         theme === 'dark'
-          ? 'bg-black border-white/10 text-emerald-300 focus:border-emerald-500/50'
+          ? 'bg-[#0B0F19] border-white/[0.08] text-emerald-300 focus:border-emerald-500/50'
           : 'bg-gray-900 border-gray-600 text-emerald-300 focus:border-emerald-500'
       )}
       style={{ minHeight: height, fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace' }}
@@ -264,13 +264,13 @@ const CollectionHooksPage: React.FC = () => {
   return (
     <div className="max-w-[1400px] mx-auto space-y-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/[0.08] pb-8">
         <div className="flex items-center gap-4">
           <Link
             to={`/collections/${slug}`}
             className={cn(
               'w-10 h-10 rounded-none border flex items-center justify-center transition-colors',
-              theme === 'dark' ? 'border-white/10 text-gray-500 hover:text-white hover:border-white/20' : 'border-gray-200 text-gray-400 hover:text-gray-600'
+              theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-white hover:border-white/[0.08]' : 'border-gray-200 text-gray-400 hover:text-gray-600'
             )}
           >
             <ArrowLeft size={18} />
@@ -308,7 +308,7 @@ const CollectionHooksPage: React.FC = () => {
           {/* Public Read Toggle */}
           <div className={cn(
             'p-5 border rounded-none',
-            theme === 'dark' ? 'bg-white/[0.01] border-white/5' : 'bg-white border-gray-100'
+            theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-100'
           )}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -330,9 +330,9 @@ const CollectionHooksPage: React.FC = () => {
           {/* Available hooks to add */}
           <div className={cn(
             'border rounded-none overflow-hidden',
-            theme === 'dark' ? 'bg-white/[0.01] border-white/5' : 'bg-white border-gray-100'
+            theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-100'
           )}>
-            <div className="px-5 py-3 border-b border-white/5">
+            <div className="px-5 py-3 border-b border-white/[0.08]">
               <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Available Lifecycle Hooks</span>
             </div>
             <div className="divide-y divide-white/5">
@@ -375,7 +375,7 @@ const CollectionHooksPage: React.FC = () => {
           {/* Quick info */}
           <div className={cn(
             'p-5 border rounded-none space-y-3',
-            theme === 'dark' ? 'bg-white/[0.01] border-white/5' : 'bg-white border-gray-100'
+            theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-100'
           )}>
             <div className="flex items-center gap-2">
               <Terminal size={12} className="text-gray-500" />
@@ -402,7 +402,7 @@ const CollectionHooksPage: React.FC = () => {
         <div className="xl:col-span-2 space-y-8">
           {/* Collection Lifecycle Hooks */}
           <div className="space-y-4">
-            <div className="flex items-center gap-3 border-b border-white/5 pb-4">
+            <div className="flex items-center gap-3 border-b border-white/[0.08] pb-4">
               <Zap size={16} className="text-emerald-400" />
               <h2 className="text-sm font-black uppercase italic tracking-wider">Collection Lifecycle Hooks</h2>
               <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest ml-auto">
@@ -413,7 +413,7 @@ const CollectionHooksPage: React.FC = () => {
             {activeHooks.length === 0 ? (
               <div className={cn(
                 'p-8 border border-dashed rounded-none text-center space-y-3',
-                theme === 'dark' ? 'border-white/10' : 'border-gray-200'
+                theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
               )}>
                 <Code2 size={32} className="mx-auto text-gray-600" />
                 <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
@@ -435,7 +435,7 @@ const CollectionHooksPage: React.FC = () => {
                       exit={{ opacity: 0, y: -8 }}
                       className={cn(
                         'border rounded-none overflow-hidden',
-                        theme === 'dark' ? 'bg-white/[0.01] border-white/5' : 'bg-white border-gray-100'
+                        theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-100'
                       )}
                     >
                       <button
@@ -485,7 +485,7 @@ const CollectionHooksPage: React.FC = () => {
 
           {/* Custom Endpoints */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-white/5 pb-4">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
               <div className="flex items-center gap-3">
                 <Globe size={16} className="text-emerald-400" />
                 <h2 className="text-sm font-black uppercase italic tracking-wider">Custom Endpoints</h2>
@@ -505,7 +505,7 @@ const CollectionHooksPage: React.FC = () => {
             {endpoints.length === 0 ? (
               <div className={cn(
                 'p-8 border border-dashed rounded-none text-center space-y-3',
-                theme === 'dark' ? 'border-white/10' : 'border-gray-200'
+                theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
               )}>
                 <Globe size={32} className="mx-auto text-gray-600" />
                 <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
@@ -522,7 +522,7 @@ const CollectionHooksPage: React.FC = () => {
                     key={idx}
                     className={cn(
                       'p-5 border rounded-none space-y-4',
-                      theme === 'dark' ? 'bg-white/[0.01] border-white/5' : 'bg-white border-gray-100'
+                      theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-100'
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -530,8 +530,8 @@ const CollectionHooksPage: React.FC = () => {
                         value={ep.method}
                         onChange={(e) => handleUpdateEndpoint(idx, 'method', e.target.value)}
                         className={cn(
-                          'bg-black border text-[9px] font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none focus:border-emerald-500',
-                          theme === 'dark' ? 'border-white/10 text-emerald-400' : 'border-gray-200 text-emerald-600'
+                          'bg-[#0B0F19] border text-[9px] font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none focus:border-emerald-500',
+                          theme === 'dark' ? 'border-white/[0.08] text-emerald-400' : 'border-gray-200 text-emerald-600'
                         )}
                       >
                         {HTTP_METHODS.map(m => (
@@ -545,7 +545,7 @@ const CollectionHooksPage: React.FC = () => {
                         placeholder="/custom-path"
                         className={cn(
                           'flex-1 border rounded-none py-2 px-3 text-[11px] font-mono italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                          theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+                          theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-white focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                         )}
                       />
                       <button
@@ -562,7 +562,7 @@ const CollectionHooksPage: React.FC = () => {
                       placeholder="Brief description of this endpoint..."
                       className={cn(
                         'w-full border rounded-none py-2 px-3 text-[10px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
-                        theme === 'dark' ? 'bg-black border-white/10 text-gray-300 focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+                        theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08] text-gray-300 focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                       )}
                     />
                   </div>

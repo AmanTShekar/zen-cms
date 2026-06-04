@@ -59,7 +59,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-[#0B0F19]/70 backdrop-blur-sm"
           onClick={(e) => {
             if (e.target === e.currentTarget) onClose()
           }}
@@ -79,7 +79,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
             {/* Header */}
             <div className={cn(
               'px-6 py-5 border-b flex items-start gap-4',
-              theme === 'dark' ? 'border-white/5' : 'border-gray-100'
+              theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
             )}>
               <div className={cn(
                 'w-10 h-10 rounded-none border flex items-center justify-center shrink-0',
@@ -120,7 +120,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
               <div className={cn(
                 'p-4 border rounded-none text-xs font-bold italic tracking-wide leading-relaxed',
                 theme === 'dark'
-                  ? 'bg-white/3 border-white/5 text-gray-400'
+                  ? 'bg-white/3 border-white/[0.08] text-gray-400'
                   : 'bg-gray-50 border-gray-100 text-gray-600'
               )}>
                 <p>Choose <span className="font-black text-white">"Use Their Version"</span> to discard your unsaved changes and reload the server's latest content.</p>
@@ -130,7 +130,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
               {/* Version comparison */}
               <div className={cn(
                 'grid grid-cols-2 gap-3 p-3 border border-dashed rounded-none',
-                theme === 'dark' ? 'border-white/10' : 'border-gray-200'
+                theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
               )}>
                 <div className="text-center">
                   <p className="text-[7px] font-black uppercase italic text-gray-600 tracking-widest mb-1">Your Version</p>
@@ -146,7 +146,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
             {/* Actions */}
             <div className={cn(
               'px-6 py-4 border-t flex gap-3',
-              theme === 'dark' ? 'border-white/5' : 'border-gray-100'
+              theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
             )}>
               <button
                 type="button"

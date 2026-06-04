@@ -142,7 +142,7 @@ const TrashPage = () => {
           <div
             className={cn(
               'w-10 h-10 flex items-center justify-center border',
-              dark ? 'bg-white/5 border-white/10' : 'bg-gray-100 border-gray-200'
+              dark ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-100 border-gray-200'
             )}
           >
             <Trash2 size={20} className="text-red-500" />
@@ -197,7 +197,7 @@ const TrashPage = () => {
           className={cn(
             'w-full pl-10 pr-4 py-3 text-xs font-bold tracking-wider border outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
             dark
-              ? 'bg-white/[0.03] border-white/5 text-white placeholder:text-gray-600 focus:border-red-500/30'
+              ? 'bg-white/[0.03] border-white/[0.08] text-white placeholder:text-gray-600 focus:border-red-500/30'
               : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-red-500'
           )}
         />
@@ -205,7 +205,7 @@ const TrashPage = () => {
 
       {/* Table */}
       <div
-        className={cn('border', dark ? 'border-white/5' : 'border-gray-200')}
+        className={cn('border', dark ? 'border-white/[0.08]' : 'border-gray-200')}
       >
         {loading ? (
           <div className="flex items-center justify-center py-20 gap-3">
@@ -254,7 +254,7 @@ const TrashPage = () => {
                   className={cn(
                     'text-[10px] font-black uppercase tracking-widest italic border-b',
                     dark
-                      ? 'text-gray-500 border-white/5'
+                      ? 'text-gray-500 border-white/[0.08]'
                       : 'text-gray-400 border-gray-100'
                   )}
                 >
@@ -319,7 +319,7 @@ const TrashPage = () => {
                           className={cn(
                             'p-1.5 border transition-all',
                             dark
-                              ? 'border-white/5 text-gray-600 hover:text-emerald-400 hover:border-emerald-500/30'
+                              ? 'border-white/[0.08] text-gray-600 hover:text-emerald-400 hover:border-emerald-500/30'
                               : 'border-gray-200 text-gray-400 hover:text-emerald-600'
                           )}
                           title="Restore"
@@ -347,7 +347,7 @@ const TrashPage = () => {
           <div
             className={cn(
               'flex items-center justify-between px-5 py-4 border-t',
-              dark ? 'border-white/5' : 'border-gray-100'
+              dark ? 'border-white/[0.08]' : 'border-gray-100'
             )}
           >
             <span
@@ -365,7 +365,7 @@ const TrashPage = () => {
                 className={cn(
                   'px-4 py-2 text-[10px] font-black uppercase italic tracking-widest border transition-all',
                   dark
-                    ? 'border-white/10 text-gray-400 hover:text-white disabled:opacity-30'
+                    ? 'border-white/[0.08] text-gray-400 hover:text-white disabled:opacity-30'
                     : 'border-gray-200 text-gray-600 hover:text-black disabled:opacity-30'
                 )}
               >
@@ -377,7 +377,7 @@ const TrashPage = () => {
                 className={cn(
                   'px-4 py-2 text-[10px] font-black uppercase italic tracking-widest border transition-all',
                   dark
-                    ? 'border-white/10 text-gray-400 hover:text-white disabled:opacity-30'
+                    ? 'border-white/[0.08] text-gray-400 hover:text-white disabled:opacity-30'
                     : 'border-gray-200 text-gray-600 hover:text-black disabled:opacity-30'
                 )}
               >
@@ -395,7 +395,7 @@ const TrashPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/60 backdrop-blur-sm"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -404,7 +404,7 @@ const TrashPage = () => {
               className={cn(
                 'w-full max-w-sm border shadow-2xl p-6 text-center',
                 dark
-                  ? 'bg-[#0B0F19] border-white/10'
+                  ? 'bg-[#0B0F19] border-white/[0.08]'
                   : 'bg-white border-gray-200'
               )}
             >
@@ -440,7 +440,7 @@ const TrashPage = () => {
                   className={cn(
                     'px-5 py-2.5 text-[10px] font-black uppercase italic tracking-widest border transition-all',
                     dark
-                      ? 'border-white/10 text-gray-400 hover:text-white'
+                      ? 'border-white/[0.08] text-gray-400 hover:text-white'
                       : 'border-gray-200 text-gray-600 hover:text-black'
                   )}
                 >
@@ -469,7 +469,7 @@ const TrashPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/60 backdrop-blur-sm"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -478,7 +478,7 @@ const TrashPage = () => {
               className={cn(
                 'w-full max-w-sm border shadow-2xl p-6 text-center',
                 dark
-                  ? 'bg-[#0B0F19] border-white/10'
+                  ? 'bg-[#0B0F19] border-white/[0.08]'
                   : 'bg-white border-gray-200'
               )}
             >
@@ -517,7 +517,7 @@ const TrashPage = () => {
                   className={cn(
                     'px-5 py-2.5 text-[10px] font-black uppercase italic tracking-widest border transition-all',
                     dark
-                      ? 'border-white/10 text-gray-400 hover:text-white'
+                      ? 'border-white/[0.08] text-gray-400 hover:text-white'
                       : 'border-gray-200 text-gray-600 hover:text-black'
                   )}
                 >
@@ -546,7 +546,7 @@ const TrashPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0F19]/60 backdrop-blur-sm"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -555,7 +555,7 @@ const TrashPage = () => {
               className={cn(
                 'w-full max-w-sm border shadow-2xl p-6 text-center',
                 dark
-                  ? 'bg-[#0B0F19] border-white/10'
+                  ? 'bg-[#0B0F19] border-white/[0.08]'
                   : 'bg-white border-gray-200'
               )}
             >
@@ -586,7 +586,7 @@ const TrashPage = () => {
                   className={cn(
                     'px-5 py-2.5 text-[10px] font-black uppercase italic tracking-widest border transition-all',
                     dark
-                      ? 'border-white/10 text-gray-400 hover:text-white'
+                      ? 'border-white/[0.08] text-gray-400 hover:text-white'
                       : 'border-gray-200 text-gray-600 hover:text-black'
                   )}
                 >

@@ -128,7 +128,7 @@ function BlockTypeDropdown({ blockType, onBlockTypeChange }: {
             className={cn(
               'absolute top-full left-0 mt-1 z-[600] border shadow-[0_20px_60px_rgba(0,0,0,0.4)] p-1 min-w-[160px]',
               theme === 'dark'
-                ? 'bg-[#0b0f19]/95 border-white/10 backdrop-blur-2xl'
+                ? 'bg-[#0b0f19]/95 border-white/[0.08] backdrop-blur-2xl'
                 : 'bg-white border-gray-200 shadow-xl',
             )}
           >
@@ -285,7 +285,7 @@ export function Toolbar({ disabled }: { disabled?: boolean }) {
       className={cn(
         'flex items-center h-12 border-b px-3 gap-0.5 backdrop-blur-xl z-[100] flex-wrap',
         theme === 'dark'
-          ? 'bg-black/60 border-white/5'
+          ? 'bg-[#0B0F19]/60 border-white/[0.08]'
           : 'bg-white/95 border-gray-100 shadow-sm',
         disabled && 'opacity-50 pointer-events-none',
       )}

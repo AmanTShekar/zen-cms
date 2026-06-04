@@ -21,7 +21,7 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
   return createPortal(
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-[800] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[800] flex items-center justify-center bg-[#0B0F19]/60 backdrop-blur-sm">
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -30,7 +30,7 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
             className={cn(
               'w-full max-w-sm border rounded-none shadow-2xl p-6',
               theme === 'dark'
-                ? 'bg-[#0B0F19] border-white/10 text-white'
+                ? 'bg-[#0B0F19] border-white/[0.08] text-white'
                 : 'bg-white border-gray-200 text-gray-900'
             )}
           >
@@ -63,7 +63,7 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
                 className={cn(
                   'flex-1 py-2.5 text-xs font-black uppercase italic tracking-widest border rounded-none transition-all',
                   theme === 'dark'
-                    ? 'border-white/10 text-gray-400 hover:border-white/20 hover:text-white'
+                    ? 'border-white/[0.08] text-gray-400 hover:border-white/[0.08] hover:text-white'
                     : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:text-black'
                 )}
               >

@@ -47,7 +47,7 @@ const TelemetryCard = ({
     className={cn(
       'p-8 border rounded-none transition-all duration-500 relative group overflow-hidden',
       theme === 'dark'
-        ? 'bg-white/[0.02] border-white/[0.05] hover:border-white/10'
+        ? 'bg-white/[0.02] border-white/[0.05] hover:border-white/[0.08]'
         : 'bg-white border-gray-100 hover:border-gray-300 shadow-sm'
     )}
   >
@@ -179,7 +179,7 @@ const SystemHealthPage = () => {
       <div
         className={cn(
           'h-full w-full flex flex-col items-center justify-center gap-8',
-          theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]'
+          theme === 'dark' ? 'bg-[#0B0F19]' : 'bg-[#fafafa]'
         )}
       >
         <div className="relative w-24 h-24">
@@ -246,7 +246,7 @@ const SystemHealthPage = () => {
             'px-8 py-3 rounded-none font-black text-[11px] uppercase tracking-[0.2em] italic flex items-center gap-3 transition-all active:scale-95',
             theme === 'dark'
               ? 'bg-white text-black hover:bg-gray-200'
-              : 'bg-gray-900 text-white hover:bg-black'
+              : 'bg-gray-900 text-white hover:bg-[#0B0F19]'
           )}
         >
           <RefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} />
@@ -460,7 +460,7 @@ const SystemHealthPage = () => {
                 className={cn(
                   'p-6 border transition-all hover:bg-white/[0.02] group block',
                   theme === 'dark'
-                    ? 'bg-black/40 border-white/5 hover:border-emerald-500/20'
+                    ? 'bg-[#0B0F19]/40 border-white/[0.08] hover:border-emerald-500/20'
                     : 'bg-white border-gray-100 hover:border-emerald-500/10 shadow-sm'
                 )}
               >
@@ -470,7 +470,7 @@ const SystemHealthPage = () => {
                       className={cn(
                         'w-12 h-12 rounded-none flex items-center justify-center border transition-colors',
                         theme === 'dark'
-                          ? 'bg-white/5 border-white/10 group-hover:bg-emerald-500/10 group-hover:border-emerald-500/20'
+                          ? 'bg-white/5 border-white/[0.08] group-hover:bg-emerald-500/10 group-hover:border-emerald-500/20'
                           : 'bg-gray-50 border-gray-100 group-hover:bg-emerald-50 group-hover:border-emerald-200'
                       )}
                     >

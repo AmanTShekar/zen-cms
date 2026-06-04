@@ -293,7 +293,7 @@ const MediaLibrary = () => {
       <div
         className={cn(
           'h-screen w-full flex flex-col items-center justify-center gap-8',
-          theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]'
+          theme === 'dark' ? 'bg-[#0B0F19]' : 'bg-[#fafafa]'
         )}
       >
         <div className="relative">
@@ -315,7 +315,7 @@ const MediaLibrary = () => {
     <div
       className={cn(
         'p-6 space-y-6 min-h-screen transition-colors duration-500',
-        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
+        theme === 'dark' ? 'bg-[#0B0F19] text-white' : 'bg-[#fafafa] text-gray-900'
       )}
     >
       {/* 🏛️ Compact Header */}
@@ -346,7 +346,7 @@ const MediaLibrary = () => {
           <div
             className={cn(
               'hidden md:flex px-6 py-3 border rounded-none items-center gap-8 transition-colors',
-              theme === 'dark' ? 'bg-white/[0.02] border-white/5' : 'bg-white border-gray-100'
+              theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-100'
             )}
           >
             <div className="flex flex-col items-end leading-none">
@@ -371,7 +371,7 @@ const MediaLibrary = () => {
               'px-8 py-3.5 rounded-none font-black text-[11px] uppercase tracking-widest shadow-xl transition-all italic leading-none flex items-center gap-4 cursor-pointer',
               theme === 'dark'
                 ? 'bg-white text-black hover:bg-gray-200'
-                : 'bg-gray-900 text-white hover:bg-black'
+                : 'bg-gray-900 text-white hover:bg-[#0B0F19]'
             )}
           >
             <Plus size={16} strokeWidth={3} />
@@ -390,7 +390,7 @@ const MediaLibrary = () => {
               'w-full flex items-center justify-between px-5 py-3.5 rounded-none transition-all group border border-transparent leading-none',
               activeFolder === null
                 ? theme === 'dark'
-                  ? 'bg-white/[0.03] border-white/10 text-white shadow-lg'
+                  ? 'bg-white/[0.03] border-white/[0.08] text-white shadow-lg'
                   : 'bg-white border-gray-100 shadow-lg text-gray-900'
                 : 'text-gray-500 hover:text-gray-700 hover:bg-white/[0.02]'
             )}
@@ -424,7 +424,7 @@ const MediaLibrary = () => {
                 'w-full flex items-center justify-between px-5 py-3.5 rounded-none transition-all group border border-transparent leading-none',
                 activeFolder === folder
                   ? theme === 'dark'
-                    ? 'bg-white/[0.03] border-white/10 text-white shadow-lg'
+                    ? 'bg-white/[0.03] border-white/[0.08] text-white shadow-lg'
                     : 'bg-white border-gray-100 shadow-lg text-gray-900'
                   : 'text-gray-500 hover:text-gray-700 hover:bg-white/[0.02]'
               )}
@@ -459,7 +459,7 @@ const MediaLibrary = () => {
           <div
             className={cn(
               'flex items-center gap-4 px-6 border rounded-none shadow-sm relative transition-all group overflow-hidden backdrop-blur-3xl',
-              theme === 'dark' ? 'bg-[#080808]/80 border-white/10' : 'bg-white border-gray-100'
+              theme === 'dark' ? 'bg-[#0B0F19]/80 border-white/[0.08]' : 'bg-white border-gray-100'
             )}
           >
             <button
@@ -545,7 +545,7 @@ const MediaLibrary = () => {
                   className={cn(
                     'group relative border rounded-none overflow-hidden cursor-pointer transition-all duration-300 shadow-sm hover:shadow-2xl hover:scale-[1.03]',
                     theme === 'dark'
-                      ? 'bg-[#080808] border-white/5 hover:border-emerald-500/40'
+                      ? 'bg-[#0B0F19] border-white/[0.08] hover:border-emerald-500/40'
                       : 'bg-white border-gray-100 hover:border-emerald-200',
                     selectedIds.has(file._id) && (theme === 'dark' ? 'border-emerald-500/60 ring-1 ring-emerald-500/30' : 'border-emerald-400 ring-1 ring-emerald-400/40')
                   )}
@@ -557,13 +557,13 @@ const MediaLibrary = () => {
                       'absolute top-2 left-2 z-20 w-6 h-6 flex items-center justify-center border transition-all',
                       selectedIds.has(file._id)
                         ? 'bg-emerald-500 border-emerald-500 text-white'
-                        : 'bg-black/40 border-white/20 text-white opacity-0 group-hover:opacity-100'
+                        : 'bg-[#0B0F19]/40 border-white/[0.08] text-white opacity-0 group-hover:opacity-100'
                     )}
                   >
                     {selectedIds.has(file._id) ? <CheckSquare size={14} /> : <Square size={14} />}
                   </div>
 
-                  <div className="aspect-square flex items-center justify-center bg-black/[0.03] overflow-hidden relative">
+                  <div className="aspect-square flex items-center justify-center bg-[#0B0F19]/[0.03] overflow-hidden relative">
                     {file.mimetype?.startsWith('image') ? (
                       <img
                         src={getFullUrl(file.url)}
@@ -579,7 +579,7 @@ const MediaLibrary = () => {
                       </div>
                     )}
 
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-4 backdrop-blur-sm">
+                    <div className="absolute inset-0 bg-[#0B0F19]/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-4 backdrop-blur-sm">
                       <div className="flex gap-3">
                         <div className="w-10 h-10 bg-white text-black rounded-none flex items-center justify-center shadow-xl scale-90 group-hover:scale-100 transition-transform">
                           <Maximize2 size={18} />
@@ -600,7 +600,7 @@ const MediaLibrary = () => {
                     className={cn(
                       'p-4 border-t transition-colors',
                       theme === 'dark'
-                        ? 'bg-white/[0.01] border-white/5'
+                        ? 'bg-white/[0.01] border-white/[0.08]'
                         : 'bg-gray-50/20 border-gray-50'
                     )}
                   >
@@ -630,7 +630,7 @@ const MediaLibrary = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedFile(null)}
-              className="absolute inset-0 bg-black/95 backdrop-blur-3xl"
+              className="absolute inset-0 bg-[#0B0F19]/95 backdrop-blur-3xl"
             />
 
             <motion.div
@@ -639,12 +639,12 @@ const MediaLibrary = () => {
               exit={{ opacity: 0, scale: 0.98, y: 30 }}
               className={cn(
                 'w-full max-w-[1200px] h-full max-h-[800px] rounded-none overflow-hidden border shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col xl:row relative z-10',
-                theme === 'dark' ? 'bg-[#050505] border-white/10' : 'bg-white border-gray-100'
+                theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-100'
               )}
             >
               <div className="flex flex-col xl:flex-row h-full">
                 {/* Visual Analysis Sector */}
-                <div className="flex-1 bg-black/[0.1] flex items-center justify-center relative p-8 md:p-16 overflow-hidden min-h-[300px]">
+                <div className="flex-1 bg-[#0B0F19]/[0.1] flex items-center justify-center relative p-8 md:p-16 overflow-hidden min-h-[300px]">
                   <div
                     className="absolute inset-0 opacity-10 pointer-events-none"
                     style={{
@@ -667,7 +667,7 @@ const MediaLibrary = () => {
                           maxWidth: `${previewWidth}px`,
                           transform: `rotate(${rotation}deg) scaleX(${flipX ? -1 : 1}) scaleY(${flipY ? -1 : 1})`,
                         }}
-                        className="max-h-full object-contain shadow-[0_40px_100px_rgba(0,0,0,0.5)] relative rounded-none border border-white/10 transition-transform duration-300 select-none"
+                        className="max-h-full object-contain shadow-[0_40px_100px_rgba(0,0,0,0.5)] relative rounded-none border border-white/[0.08] transition-transform duration-300 select-none"
                         draggable={false}
                       />
                       {isCropMode && cropRect && (
@@ -726,7 +726,7 @@ const MediaLibrary = () => {
                 <div
                   className={cn(
                     'w-full xl:w-[400px] border-l p-10 space-y-10 overflow-y-auto no-scrollbar transition-colors',
-                    theme === 'dark' ? 'bg-[#080808] border-white/5' : 'bg-gray-50 border-gray-100'
+                    theme === 'dark' ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-gray-50 border-gray-100'
                   )}
                 >
                   <div className="flex items-center justify-between">
@@ -743,7 +743,7 @@ const MediaLibrary = () => {
                       className={cn(
                         'w-12 h-12 rounded-none transition-all flex items-center justify-center border shadow-lg group hover:rotate-90',
                         theme === 'dark'
-                          ? 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
+                          ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-white'
                           : 'bg-white border-gray-100 text-gray-400 hover:text-gray-900'
                       )}
                     >
@@ -790,7 +790,7 @@ const MediaLibrary = () => {
                             onClick={() => setRotation((r) => (r + 270) % 360)}
                             className={cn(
                               'p-3 rounded-none border flex items-center justify-center transition-all',
-                              theme === 'dark' ? 'border-white/10 hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
+                              theme === 'dark' ? 'border-white/[0.08] hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
                             )}
                             title="Rotate 90° CCW"
                           >
@@ -800,7 +800,7 @@ const MediaLibrary = () => {
                             onClick={() => setRotation((r) => (r + 90) % 360)}
                             className={cn(
                               'p-3 rounded-none border flex items-center justify-center transition-all',
-                              theme === 'dark' ? 'border-white/10 hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
+                              theme === 'dark' ? 'border-white/[0.08] hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
                             )}
                             title="Rotate 90° CW"
                           >
@@ -812,7 +812,7 @@ const MediaLibrary = () => {
                               'p-3 rounded-none border flex items-center justify-center transition-all',
                               flipX
                                 ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-500'
-                                : theme === 'dark' ? 'border-white/10 hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
+                                : theme === 'dark' ? 'border-white/[0.08] hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
                             )}
                             title="Flip horizontal"
                           >
@@ -824,7 +824,7 @@ const MediaLibrary = () => {
                               'p-3 rounded-none border flex items-center justify-center transition-all',
                               flipY
                                 ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-500'
-                                : theme === 'dark' ? 'border-white/10 hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
+                                : theme === 'dark' ? 'border-white/[0.08] hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
                             )}
                             title="Flip vertical"
                           >
@@ -838,7 +838,7 @@ const MediaLibrary = () => {
                               'flex-1 py-3 rounded-none text-[9px] font-black uppercase tracking-widest transition-all italic leading-none flex items-center justify-center gap-2 border',
                               isCropMode
                                 ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-500'
-                                : theme === 'dark' ? 'border-white/10 text-gray-400 hover:border-white/30' : 'border-gray-100 hover:border-gray-300'
+                                : theme === 'dark' ? 'border-white/[0.08] text-gray-400 hover:border-white/30' : 'border-gray-100 hover:border-gray-300'
                             )}
                           >
                             <Crop size={12} /> {isCropMode ? 'CROP_ACTIVE' : 'CROP'}
@@ -848,7 +848,7 @@ const MediaLibrary = () => {
                               onClick={resetTransform}
                               className={cn(
                                 'py-3 px-4 rounded-none text-[9px] font-black uppercase tracking-widest transition-all italic leading-none flex items-center justify-center gap-2 border',
-                                theme === 'dark' ? 'border-white/10 text-gray-400 hover:text-red-400 hover:border-red-400/30' : 'border-gray-100 hover:text-red-500 hover:border-red-300'
+                                theme === 'dark' ? 'border-white/[0.08] text-gray-400 hover:text-red-400 hover:border-red-400/30' : 'border-gray-100 hover:text-red-500 hover:border-red-300'
                               )}
                             >
                               <Undo2 size={12} /> RESET
@@ -864,7 +864,7 @@ const MediaLibrary = () => {
                               placeholder="transformed_filename.ext"
                               className={cn(
                                 'flex-1 px-3 py-3 text-[9px] font-mono border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black bg-transparent',
-                                theme === 'dark' ? 'border-white/10 text-white' : 'border-gray-100'
+                                theme === 'dark' ? 'border-white/[0.08] text-white' : 'border-gray-100'
                               )}
                             />
                             <button
@@ -913,7 +913,7 @@ const MediaLibrary = () => {
                           className={cn(
                             'p-4 border rounded-none flex items-center justify-between group transition-all',
                             theme === 'dark'
-                              ? 'bg-white/[0.01] border-white/5 hover:bg-white/[0.03]'
+                              ? 'bg-white/[0.01] border-white/[0.08] hover:bg-white/[0.03]'
                               : 'bg-white border-gray-100'
                           )}
                         >
@@ -942,7 +942,7 @@ const MediaLibrary = () => {
                           className={cn(
                             'p-4 rounded-none border font-mono text-[9px] break-all leading-relaxed shadow-inner opacity-60',
                             theme === 'dark'
-                              ? 'bg-black border-white/10'
+                              ? 'bg-[#0B0F19] border-white/[0.08]'
                               : 'bg-gray-100 border-gray-200'
                           )}
                         >
@@ -960,7 +960,7 @@ const MediaLibrary = () => {
                             'flex-1 py-4 rounded-none text-[10px] font-black uppercase tracking-widest transition-all shadow-lg italic leading-none flex items-center justify-center gap-3',
                             theme === 'dark'
                               ? 'bg-white text-black hover:bg-gray-200'
-                              : 'bg-gray-900 text-white hover:bg-black'
+                              : 'bg-gray-900 text-white hover:bg-[#0B0F19]'
                           )}
                         >
                           <Zap size={14} /> EXTRACT
@@ -970,7 +970,7 @@ const MediaLibrary = () => {
                           className={cn(
                             'w-14 h-14 rounded-none border flex items-center justify-center transition-all hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-500',
                             theme === 'dark'
-                              ? 'bg-white/5 border-white/10 text-gray-500'
+                              ? 'bg-white/5 border-white/[0.08] text-gray-500'
                               : 'bg-white border-gray-100 text-gray-400'
                           )}
                         >

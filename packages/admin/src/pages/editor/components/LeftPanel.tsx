@@ -97,7 +97,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setLeftOpen(false)}
-            className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[99]"
+            className="md:hidden fixed inset-0 bg-[#0B0F19]/50 backdrop-blur-sm z-[99]"
           />
           <motion.aside
             initial={{ x: '-100%' }}
@@ -108,7 +108,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
             className={cn(
               'border-r flex flex-col z-50 overflow-hidden shrink-0 h-full',
               'md:relative fixed inset-y-0 left-0 max-md:!w-[280px] max-md:z-[100] max-md:shadow-2xl',
-              dark ? 'bg-[#080808] border-white/5' : 'bg-white border-gray-200'
+              dark ? 'bg-[#0B0F19] border-white/[0.08]' : 'bg-white border-gray-200'
             )}
           >
             {/* Resize handle */}
@@ -122,7 +122,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
 
             {/* Header */}
             <div className={cn('px-3 py-3 border-b flex items-center justify-between',
-              dark ? 'border-white/5' : 'border-gray-100'
+              dark ? 'border-white/[0.08]' : 'border-gray-100'
             )}>
               <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 italic">
                 Layers
@@ -132,7 +132,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                   onClick={() => { setInjectionIndex(0); setBlockPickerOpen(true); }}
                   className={cn(
                     'p-1 rounded-none border transition-all text-gray-400 hover:text-emerald-500',
-                    dark ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'
+                    dark ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-50 border-gray-200'
                   )}
                   aria-label="Add new section"
                   title="Add section"
@@ -165,7 +165,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                     className={cn(
                       'w-full pl-7 pr-7 py-1.5 text-xs font-bold border rounded-none bg-transparent transition-all',
                       dark
-                        ? 'border-white/5 text-white placeholder-gray-600 focus:border-emerald-500/30'
+                        ? 'border-white/[0.08] text-white placeholder-gray-600 focus:border-emerald-500/30'
                         : 'border-gray-200 text-black placeholder-gray-400 focus:border-emerald-500/30'
                     )}
                     aria-label="Filter layers"
@@ -217,9 +217,9 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                           activeSection === section.id
                             ? dark
                               ? 'bg-white border-white text-black'
-                              : 'bg-black border-black text-white'
+                              : 'bg-[#0B0F19] border-black text-white'
                             : dark
-                              ? 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10'
+                              ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:bg-white/10'
                               : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
                         )}
                         aria-label={`Select section: ${section.blockName || section.title || humanize(section.blockType)}`}
@@ -267,9 +267,9 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                               activeSection === section.id
                                 ? dark
                                   ? 'bg-white border-white text-black'
-                                  : 'bg-black border-black text-white'
+                                  : 'bg-[#0B0F19] border-black text-white'
                                 : dark
-                                  ? 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10'
+                                  ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:bg-white/10'
                                   : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
                             )}
                             aria-label={`Select section: ${section.blockName || section.title || humanize(section.blockType)}`}
