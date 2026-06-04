@@ -20,9 +20,9 @@ import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { AuthService } from '../services/auth'
 import { EmailService } from '../services/email'
-import { seedTailoredData } from '../database/seed'
 import { ContentService } from '../services/content'
 import { createCollectionRouter } from './factory'
+import { execSync } from 'child_process'
 
 // ── Rate Limiters (Guard Rails) ─────────────────────────────────────────────
 const searchLimiter = rateLimit({
@@ -1359,9 +1359,14 @@ router.post(
       // Dynamic custom schema seeding based on vertical onboarding selection
       const projectType = state?.answers?.projectType || 'custom'
       if (projectType && projectType !== 'custom') {
-        const site = await adapter.findOne<any>('z_sites', {})
-        const siteId = site ? (site.id || site._id).toString() : undefined
-        await seedTailoredData(projectType, adapter, siteId)
+        const { execSync } = await import('child_process')
+        const path = await import('path')
+        const scriptPath = path.resolve(__dirname, `../../../templates/${projectType}/backend/setup.ts`)
+        try {
+          execSync(`npx tsx ${scriptPath}`, { stdio: 'inherit' })
+        } catch (e) {
+          console.error(`[Setup] Failed to seed template data for ${projectType}`, e)
+        }
       }
       
       res.json(
