@@ -171,7 +171,7 @@ const BuilderPage: React.FC = () => {
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-100'
  )}>
  <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 mb-4 border-b border-emerald-500/20 pb-2">General Info</h3>
- <div className="grid grid-cols-2 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-1">
  <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Singular Name</label>
  <input

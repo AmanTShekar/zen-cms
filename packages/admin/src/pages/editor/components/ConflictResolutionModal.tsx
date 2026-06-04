@@ -129,7 +129,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
 
  {/* Version comparison */}
  <div className={cn(
- 'grid grid-cols-2 gap-3 p-3 border border-dashed rounded-none',
+ 'grid grid-cols-1 md:grid-cols-2 gap-3 p-3 border border-dashed rounded-none',
  theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
  )}>
  <div className="text-center">

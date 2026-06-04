@@ -239,7 +239,7 @@ const CollectionList: React.FC = () => {
  </header>
 
  {/* Stats Rail */}
- <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6">
+ <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-4 gap-y-6">
  {[
  { label: 'Total Units', value: total, icon: Database },
  { label: 'Registry ID', value: slug?.toUpperCase().slice(0, 8), icon: Fingerprint },
@@ -338,7 +338,7 @@ const CollectionList: React.FC = () => {
 
  {layout === 'table' && (
  <div className="overflow-x-auto">
- <table className="w-full">
+ <div className="overflow-x-auto min-w-full pb-4"><table className="w-full">
  <thead>
  <tr className={cn('border-b text-left text-[8px] font-black text-gray-500 uppercase tracking-[0.4em] ', theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-50')}>
  <th className="px-4 py-4 w-10">
@@ -409,7 +409,7 @@ const CollectionList: React.FC = () => {
  )
  })}
  </tbody>
- </table>
+ </table></div>
  </div>
  )}
 

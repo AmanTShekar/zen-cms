@@ -116,7 +116,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">
  Auth Tier
  </label>
- <div className="grid grid-cols-3 gap-2">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
  {availableRoles.map((r) => (
  <button
  key={r}

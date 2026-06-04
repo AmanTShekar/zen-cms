@@ -169,7 +169,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  </h4>
  </div>
  
- <div className="grid grid-cols-2 gap-8">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
  {/* Left: Reference (Read-only) */}
  <div className="opacity-70 pointer-events-none relative">
  <div className="absolute top-0 right-0 p-2 text-[8px] font-black uppercase tracking-widest text-gray-400 z-10 bg-black/50 backdrop-blur-md">

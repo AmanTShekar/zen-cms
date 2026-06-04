@@ -641,7 +641,7 @@ const TemplatesPage: React.FC = () => {
  </div>
 
  {/* Active Deployment Stepper */}
- <div className="grid grid-cols-4 gap-2 border-b border-white/[0.08] pb-5">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 border-b border-white/[0.08] pb-5">
  {[
  { label: 'Configure', activeStep: 0 },
  { label: 'Connect Repo', activeStep: 1 },
@@ -684,7 +684,7 @@ const TemplatesPage: React.FC = () => {
  <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest leading-none">
  1. Select Cloud Deployment Target
  </label>
- <div className="grid grid-cols-3 gap-3">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
  {[
  { id: 'vercel', name: 'Vercel Edge', latency: 'Fastest' },
  { id: 'netlify', name: 'Netlify CDN', latency: 'Stable' },

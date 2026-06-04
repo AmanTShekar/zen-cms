@@ -96,7 +96,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  </p>
  </div>
  ) : (
- <div className="grid grid-cols-2 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  {templates.map((template: any) => (
  <div
  key={template.id || template._id}

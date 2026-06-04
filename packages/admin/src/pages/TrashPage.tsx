@@ -248,7 +248,7 @@ const TrashPage = () => {
  </div>
  ) : (
  <div className="overflow-x-auto">
- <table className="w-full text-left">
+ <div className="overflow-x-auto min-w-full pb-4"><table className="w-full text-left">
  <thead>
  <tr
  className={cn(
@@ -338,7 +338,7 @@ const TrashPage = () => {
  </tr>
  ))}
  </tbody>
- </table>
+ </table></div>
  </div>
  )}
 

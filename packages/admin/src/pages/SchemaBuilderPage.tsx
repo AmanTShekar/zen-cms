@@ -211,7 +211,7 @@ function FieldAdvancedPanel({
  </div>
 
  {/* Text inputs */}
- <div className="grid grid-cols-2 gap-3">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
  <div>
  <label className={cn(labelClass, 'block mb-1')}>Placeholder</label>
  <input type="text" value={field.placeholder || ''} onChange={e => onUpdate('placeholder', e.target.value)} className={inputClass} />
@@ -684,7 +684,7 @@ ${fieldsCode}
  <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2">
  <Settings size={12} /> Collection Settings
  </h3>
- <div className="grid grid-cols-2 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Display Name</label>
  <input
@@ -782,7 +782,7 @@ ${fieldsCode}
  )}
 
  {/* Main row */}
- <div className="grid grid-cols-3 gap-3 pr-8">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pr-8">
  <div>
  <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Field Name (key)</label>
  <input

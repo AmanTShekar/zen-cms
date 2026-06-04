@@ -472,7 +472,7 @@ const LoginPage: React.FC = () => {
  <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-white/5 z-0" />
  </div>
 
- <div className="grid grid-cols-2 gap-3">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
  <button
  type="button"
  onClick={async () => {

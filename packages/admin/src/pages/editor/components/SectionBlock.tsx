@@ -388,7 +388,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
 
  {section.blockType === 'table' ? (
  <div className="w-full overflow-x-auto border border-white/[0.08] bg-black/20 p-4 rounded-none">
- <table className="w-full border-collapse text-left text-xs font-mono">
+ <div className="overflow-x-auto min-w-full pb-4"><table className="w-full border-collapse text-left text-xs font-mono">
  <thead>
  <tr className={cn(theme === 'dark' ? 'bg-white/5 border-b border-white/[0.08]' : 'bg-gray-150 border-b border-gray-200')}>
  {((section.content?.headers) || []).map((h, hIdx) => (
@@ -477,7 +477,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  </td>
  </tr>
  </tbody>
- </table>
+ </table></div>
  </div>
  ) : (
  <div className="space-y-8">

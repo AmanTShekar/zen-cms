@@ -237,7 +237,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
  <span className={cn('h-px flex-1', isDark ? 'bg-white/5' : 'bg-gray-100')} />
  </div>
  )}
- <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+ <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-3 gap-3">
  {blocks.map((block) => {
  const Icon = block.icon
  const grad = CATEGORY_GRADIENTS[block.category || 'General'] ?? CATEGORY_GRADIENTS.General

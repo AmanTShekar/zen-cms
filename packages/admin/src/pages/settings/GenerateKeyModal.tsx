@@ -90,7 +90,7 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">
  Permissions Tier
  </label>
- <div className="grid grid-cols-3 gap-2">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
  {(['admin', 'editor', 'viewer'] as const).map((r) => (
  <button
  key={r}
@@ -116,7 +116,7 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">
  Expires After (days)
  </label>
- <div className="grid grid-cols-4 gap-2">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
  {[7, 30, 90, 365].map((d) => (
  <button
  key={d}

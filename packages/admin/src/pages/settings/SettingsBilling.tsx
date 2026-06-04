@@ -191,7 +191,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  </button>
  </div>
 
- <div className="grid grid-cols-2 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-1.5">
  <label className="text-[7px] font-black text-gray-500 uppercase tracking-wider">Plan Slug</label>
  <input
@@ -247,7 +247,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  {/* Paywalled Collections */}
  <div className="space-y-2">
  <label className="text-[8px] font-black text-gray-500 uppercase tracking-wider block">Paywall Restricted Collections</label>
- <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 mt-4">
+ <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 mt-4">
  {(healthData?.collections || []).length === 0 ? (
  <div className="col-span-full py-4 text-center border border-dashed border-gray-200 dark:border-white/[0.08] rounded-none">
  <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">No collections available to monetize</span>

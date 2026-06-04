@@ -266,7 +266,7 @@ export const VisualGraphPage = () => {
  <div className={cn('w-full h-[calc(100vh-4rem)] flex relative overflow-hidden', dark ? 'bg-[#030507]' : 'bg-gray-50')}>
 
  {/* ── Top HUD Bar ──────────────────────────────────────────────── */}
- <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-6 pointer-events-none">
+ <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 hidden md:flex items-center gap-6 pointer-events-none">
  <div className={cn(
  'flex items-center gap-6 px-6 py-3 border backdrop-blur-xl rounded-none',
  dark ? 'bg-black/80 border-white/[0.08]' : 'bg-white/90 border-gray-200'
@@ -446,7 +446,7 @@ export const VisualGraphPage = () => {
  >
  <div
  className={cn(
- 'rounded-none border backdrop-blur-xl shadow-2xl overflow-hidden w-52',
+ 'rounded-lg border backdrop-blur-xl shadow-2xl overflow-hidden w-56',
  'transition-all duration-200',
  dark ? 'bg-black/90' : 'bg-white/95',
  isSelected
@@ -642,7 +642,7 @@ export const VisualGraphPage = () => {
  {/* ── Mini-map ─────────────────────────────────────────────────── */}
  {!loading && nodes.length > 0 && (
  <div className={cn(
- 'absolute bottom-4 left-4 z-20 w-36 h-24 border rounded-none overflow-hidden backdrop-blur-xl',
+ 'absolute bottom-4 left-4 z-20 w-36 h-24 border rounded-lg overflow-hidden backdrop-blur-xl hidden md:block',
  dark ? 'bg-black/80 border-white/[0.08]' : 'bg-white/80 border-gray-200'
  )}>
  <svg viewBox="0 0 1400 1000" className="w-full h-full">

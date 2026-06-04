@@ -392,7 +392,7 @@ const ComponentBuilderPage: React.FC = () => {
  {/* General info */}
  <div className={cn('p-6 border rounded-none space-y-4', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
  <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 border-b border-emerald-500/20 pb-2">General Info</h3>
- <div className="grid grid-cols-2 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-1.5">
  <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block">Display Name</label>
  <input type="text" value={activeComponent.displayName} onChange={(e) => setActiveComponent({ ...activeComponent, displayName: e.target.value })} className={inputCls} placeholder="e.g. Hero Section" />

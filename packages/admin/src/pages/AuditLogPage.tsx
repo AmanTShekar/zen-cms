@@ -342,7 +342,7 @@ const AuditLogPage: React.FC = () => {
 
  {/* Log Table */}
  <div className="overflow-x-auto">
- <table className="w-full border-collapse">
+ <div className="overflow-x-auto min-w-full pb-4"><table className="w-full border-collapse">
  <thead>
  <tr
  className={cn(
@@ -470,7 +470,7 @@ const AuditLogPage: React.FC = () => {
  ))
  )}
  </tbody>
- </table>
+ </table></div>
  </div>
 
  {/* Detail Expand */}
@@ -484,7 +484,7 @@ const AuditLogPage: React.FC = () => {
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/30 border-gray-100'
  )}
  >
- <div className="grid grid-cols-3 gap-6 text-[10px] font-mono">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-[10px] font-mono">
  <div>
  <div className="text-[7px] font-black uppercase tracking-widest text-gray-500 mb-1">IP Address</div>
  <div className="font-bold">{log.ip || 'N/A'}</div>

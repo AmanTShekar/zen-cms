@@ -83,7 +83,7 @@ export default function MediaGridWidget({ theme, title }: WidgetProps) {
  View All
  </button>
  </div>
- <div className="grid grid-cols-3 gap-2 flex-1 overflow-hidden">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 flex-1 overflow-hidden">
  {media.map((item: any) => (
  <div
  key={item._id}

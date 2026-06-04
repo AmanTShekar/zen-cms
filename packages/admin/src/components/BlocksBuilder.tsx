@@ -396,7 +396,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
  <span className="h-px flex-1 bg-border" />
  </div>
  )}
- <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+ <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-3 gap-3">
  {blocks.map((stock) => {
  const grad = CATEGORY_GRADIENTS[stock.admin?.category || ''] ?? CATEGORY_GRADIENTS.General
  return (
@@ -549,7 +549,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
  }, [])
 
  return (
- <div className={cn("select-none", showPreview ? "grid grid-cols-2 gap-8" : "pl-5")}>
+ <div className={cn("select-none", showPreview ? "grid grid-cols-1 md:grid-cols-2 gap-8" : "pl-5")}>
  <div className="flex flex-col gap-4 w-full">
  {/* Header */}
  <div className="flex items-center justify-between">

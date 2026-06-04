@@ -136,7 +136,7 @@ const AIWriterPage = () => {
  if (activeTool === 'quality' && mode === 'tools') {
  return (
  <div className="space-y-6">
- <div className="grid grid-cols-2 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="p-4 bg-white/5 border border-white/[0.08] rounded-none">
  <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest block mb-1">
  Readability
@@ -513,7 +513,7 @@ const AIWriterPage = () => {
 
  {result && mode === 'structure' && (
  <div className="p-8 border-t border-white/[0.08] bg-white/[0.01] space-y-6">
- <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-4 gap-4">
  {[
  { label: 'Node_ID', value: 'GLOBAL' },
  { label: 'Latency', value: '42ms' },

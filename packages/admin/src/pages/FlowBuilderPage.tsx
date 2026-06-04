@@ -365,7 +365,7 @@ const FlowBuilderPage: React.FC = () => {
  </div>
  </div>
 
- <div className="grid grid-cols-3 gap-2 w-full pt-4 border-t border-white/[0.08]">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 w-full pt-4 border-t border-white/[0.08]">
  {TRIGGER_TYPES.map((t) => (
  <button
  key={t.id}

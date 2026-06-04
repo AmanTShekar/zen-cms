@@ -33,7 +33,7 @@ export default function SystemHealthWidget({ theme, title }: WidgetProps) {
  <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest ">
  {title || 'Infrastructure Vitals'}
  </p>
- <div className="grid grid-cols-3 gap-2 flex-1">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 flex-1">
  {metrics.map((m) => (
  <div
  key={m.label}

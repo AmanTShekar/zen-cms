@@ -244,7 +244,7 @@ export default function SetupWizard() {
  subtitle: "We'll pre-select relevant content types for you.",
  icon: <Globe size={28} className="text-emerald-400" />,
  content: (
- <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+ <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-3 gap-3">
  {PROJECT_TYPES.map((pt) => (
  <button
  key={pt.id}
@@ -274,7 +274,7 @@ export default function SetupWizard() {
  icon: <Layers size={28} className="text-emerald-400" />,
  content: (
  <div className="space-y-3">
- <div className="grid grid-cols-2 gap-2">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
  {STARTER_COLLECTIONS.map((col) => {
  const selected = state.selectedCollections.includes(col.id)
  return (
@@ -427,7 +427,7 @@ export default function SetupWizard() {
  icon: <Cpu size={28} className="text-emerald-400" />,
  content: (
  <div className="space-y-4">
- <div className="grid grid-cols-2 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-2">
  <div className="flex justify-between items-center">
  <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">
@@ -559,7 +559,7 @@ export default function SetupWizard() {
  <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-2">
  NATIVE AI CAPABILITIES INTEGRATED
  </p>
- <div className="grid grid-cols-2 gap-3">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
  {[
  {
  title: 'Schema Architect',

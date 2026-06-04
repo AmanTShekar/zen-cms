@@ -327,7 +327,7 @@ function WidgetPreviewMock({ type, theme }: { type: string; theme: 'dark' | 'lig
  )
  case 'media-grid':
  return (
- <div className="grid grid-cols-3 gap-1 h-full">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1 h-full">
  {[1, 2, 3, 4, 5, 6].map((i) => (
  <div key={i} className={cn('w-full h-full', lineBg)} />
  ))}
@@ -447,7 +447,7 @@ function WidgetPicker({
  {cat}{' '}
  <span className="h-px flex-1 bg-gradient-to-r from-emerald-500/20 to-transparent" />
  </p>
- <div className="grid grid-cols-2 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  {widgets.map((def) => {
  const alreadyAdded = def.singleton && existingTypes.includes(def.type)
  return (
@@ -614,7 +614,7 @@ function WidgetConfigModal({
  </div>
 
  {/* Grid Width/Height Spans */}
- <div className="grid grid-cols-2 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-2">
  <label className="text-[9px] font-black uppercase tracking-wider text-gray-500">
  Width Columns (1-12)

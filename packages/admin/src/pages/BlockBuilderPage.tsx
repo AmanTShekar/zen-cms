@@ -254,7 +254,7 @@ export default function BlockBuilderPage() {
  <div className="flex-1 overflow-auto p-6 space-y-6">
  <div className={cn('rounded-none border p-6 space-y-4', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
  <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2"><Settings size={12} /> Component Settings</h3>
- <div className="grid grid-cols-2 gap-4">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Display Name</label>
  <input type="text" value={title} onChange={e => { setTitle(e.target.value); setSlug(e.target.value.toLowerCase().replace(/\\s+/g, '-').replace(/[^a-z0-9-]/g, '')) }} className={cn(inputClass, 'w-full rounded-none')} placeholder="e.g. Hero Banner" />
@@ -355,7 +355,7 @@ export default function BlockBuilderPage() {
  </div>
  <div className="flex-1 overflow-auto p-6 max-w-3xl mx-auto w-full">
  {settingsTab === 'BASIC' && (
- <div className="grid grid-cols-2 gap-6">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div className="col-span-2 sm:col-span-1">
  <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Name (Key in JSON)*</label>
  <input type="text" value={activeField?.name || ''} onChange={e => setActiveField(prev => ({ ...prev, name: e.target.value.replace(/\\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '') }))} className={cn(inputClass, 'w-full rounded-none font-mono')} placeholder="e.g. heroTitle" />
@@ -376,7 +376,7 @@ export default function BlockBuilderPage() {
  {activeField?.type === 'relation' && (
  <div className="col-span-2 pt-4 border-t border-white/[0.08] space-y-4">
  <label className="text-[9px] font-black uppercase tracking-widest text-emerald-500 block">Relation Options</label>
- <div className="grid grid-cols-2 gap-6">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div>
  <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Relates To</label>
  <select value={activeField.relationTo || ''} onChange={e => setActiveField(prev => ({ ...prev, relationTo: e.target.value }))} className={cn(inputClass, 'w-full rounded-none cursor-pointer')}>
@@ -398,7 +398,7 @@ export default function BlockBuilderPage() {
 
  {settingsTab === 'VALIDATION' && (
  <div className="space-y-6">
- <div className="grid grid-cols-2 gap-4 bg-white/5 p-4 rounded-none border border-white/[0.08]">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/5 p-4 rounded-none border border-white/[0.08]">
  <label className="flex items-center gap-2 cursor-pointer">
  <input type="checkbox" checked={!!activeField?.required} onChange={e => setActiveField(prev => ({ ...prev, required: e.target.checked }))} className="accent-emerald-500 w-4 h-4" />
  <span className="text-xs font-bold text-gray-300">Required field</span>
@@ -410,7 +410,7 @@ export default function BlockBuilderPage() {
  </div>
  
  {(activeField?.type === 'text' || activeField?.type === 'textarea') && (
- <div className="grid grid-cols-2 gap-6">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div>
  <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Min Length</label>
  <input type="number" value={activeField?.minLength || ''} onChange={e => setActiveField(prev => ({ ...prev, minLength: parseInt(e.target.value) || undefined }))} className={cn(inputClass, 'w-full rounded-none')} placeholder="e.g. 5" />
@@ -427,7 +427,7 @@ export default function BlockBuilderPage() {
  )}
  
  {activeField?.type === 'number' && (
- <div className="grid grid-cols-2 gap-6">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div>
  <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Minimum Value</label>
  <input type="number" value={activeField?.min || ''} onChange={e => setActiveField(prev => ({ ...prev, min: parseInt(e.target.value) || undefined }))} className={cn(inputClass, 'w-full rounded-none')} placeholder="e.g. 0" />
@@ -440,7 +440,7 @@ export default function BlockBuilderPage() {
  )}
  
  {activeField?.type === 'date' && (
- <div className="grid grid-cols-2 gap-6">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div>
  <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Date Mode</label>
  <select value={activeField?.dateFormat || 'date'} onChange={e => setActiveField(prev => ({ ...prev, dateFormat: e.target.value }))} className={cn(inputClass, 'w-full rounded-none cursor-pointer')}>
@@ -456,7 +456,7 @@ export default function BlockBuilderPage() {
 
  {settingsTab === 'ADMIN' && (
  <div className="space-y-6">
- <div className="grid grid-cols-2 gap-4 bg-white/5 p-4 rounded-none border border-white/[0.08]">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/5 p-4 rounded-none border border-white/[0.08]">
  <label className="flex items-center gap-2 cursor-pointer">
  <input type="checkbox" checked={!!activeField?.i18n} onChange={e => setActiveField(prev => ({ ...prev, i18n: e.target.checked }))} className="accent-blue-500 w-4 h-4" />
  <span className="text-xs font-bold text-gray-300">Enable Localization (i18n)</span>
@@ -471,7 +471,7 @@ export default function BlockBuilderPage() {
  </label>
  </div>
 
- <div className="grid grid-cols-2 gap-6">
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div>
  <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Field Width</label>
  <select value={activeField?.admin?.width || '100%'} onChange={e => setActiveField(prev => ({ ...prev, admin: { ...prev.admin, width: e.target.value } }))} className={cn(inputClass, 'w-full rounded-none cursor-pointer')}>
