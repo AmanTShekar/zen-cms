@@ -473,7 +473,7 @@ ${typeFields}
           const user = token ? AuthService.verifyToken(token) : null
 
           // Adapter is injected by the engine on setup — falls back gracefully
-          const adapter = (req.raw as any).__zenithAdapter || null
+          const adapter = (req.raw as any).__zenithAdapter || AdapterFactory.getActiveAdapter()
           const siteId = req.raw.headers['x-zenith-site-id'] || req.raw.headers['X-Zenith-Site-Id']
 
           // Isolated DataLoaders mapping per request scope
@@ -483,21 +483,15 @@ ${typeFields}
               loaders.set(
                 slug,
                 new SimpleDataLoader(async (keys: string[]) => {
-                  const col = config.collections.find((c) => c.slug === slug)
-                  if (!col) {
-                    const filter = { _id: { $in: keys } }
-                    if (siteId) (filter as any).siteId = siteId
-                    const docs = await adapter.find(slug, filter)
-                    const docMap = new Map(docs.map((d: any) => [d._id?.toString() || d.id, d]))
-                    return keys.map((k) => docMap.get(k) || null)
-                  }
-
-                  const contentService = new ContentService(col, adapter)
-                  const filter = { _id: { $in: keys } }
-                  const docs = await contentService.find(filter, {
-                    user,
-                    siteId,
-                  } as any)
+                  // Adapter-safe per-ID fetching (avoids MongoDB $in for Postgres parity)
+                  const fetched = await Promise.all(
+                    keys.map((id) =>
+                      adapter.findOne(slug, { id }).catch(() =>
+                        adapter.findOne(slug, { _id: id }).catch(() => null)
+                      )
+                    )
+                  )
+                  const docs = fetched.filter(Boolean)
                   const docMap = new Map(docs.map((d: any) => [d._id?.toString() || d.id, d]))
                   return keys.map((k) => docMap.get(k) || null)
                 })

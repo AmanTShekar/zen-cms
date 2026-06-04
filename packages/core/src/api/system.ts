@@ -424,7 +424,7 @@ router.get(
           maintenanceMode: false,
           enableDrafts: true,
           defaultLocale: 'en',
-          allowedOrigins: ['*'],
+          allowedOrigins: [],
           jwtExpiresIn: '7d',
           passwordMinLength: 8,
           rateLimitWindow: 15,
