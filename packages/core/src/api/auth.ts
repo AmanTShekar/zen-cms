@@ -47,6 +47,15 @@ const authLimiter = rateLimit({
   skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
 })
 
+/** Resolve admin URL from env; fallback to localhost only in dev. */
+function getAdminUrl(): string {
+  if (process.env.ADMIN_URL) return process.env.ADMIN_URL
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('ADMIN_URL environment variable is required in production')
+  }
+  return 'http://localhost:5173'
+}
+
 // ── POST /api/v1/auth/login ──────────────────────────────────────────────────
 // Accepts email OR username + password
 router.post('/login', authLimiter, async (req: Request, res: Response, next) => {
@@ -194,7 +203,7 @@ router.post('/register', authLimiter, async (req: Request, res: Response, next) 
     await EmailService.sendWelcomeEmail(user.email, user.email.split('@')[0])
     try {
       const verifyToken = await AuthService.generateVerificationToken(userId)
-      const verifyUrl = `${process.env.ADMIN_URL || 'http://localhost:5173'}/verify-email?token=${verifyToken}`
+      const verifyUrl = `${getAdminUrl()}/verify-email?token=${verifyToken}`
       await EmailService.send({
         to: user.email,
         subject: 'Verify your Zenith CMS email address',
@@ -437,7 +446,7 @@ router.post('/forgot-password', authLimiter, async (req: Request, res: Response,
     await adapter.deleteMany('z_password_resets', { userId }) // Clear old tokens
     await adapter.create('z_password_resets', { userId, token: tokenHash, expiresAt })
 
-    const resetUrl = `${process.env.ADMIN_URL || 'http://localhost:5173'}/reset-password?token=${token}`
+    const resetUrl = `${getAdminUrl()}/reset-password?token=${token}`
     await EmailService.sendPasswordResetEmail(user.email, resetUrl)
 
     res.json(createResponse({ message: 'If that email exists, a reset link has been sent.' }))
@@ -501,7 +510,7 @@ router.post('/resend-verification', authLimiter, requireAuth, async (req: Reques
     }
 
     const verifyToken = await AuthService.generateVerificationToken(userId)
-    const verifyUrl = `${process.env.ADMIN_URL || 'http://localhost:5173'}/verify-email?token=${verifyToken}`
+    const verifyUrl = `${getAdminUrl()}/verify-email?token=${verifyToken}`
     await EmailService.send({
       to: user.email,
       subject: 'Verify your Zenith CMS email address',
