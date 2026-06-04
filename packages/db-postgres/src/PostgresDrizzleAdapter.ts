@@ -130,7 +130,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     settings: pgTable('z_settings', {
       id: uuid('id').defaultRandom().primaryKey(),
       siteName: text('site_name').default('Zenith CMS'),
-      publicUrl: text('public_url').default('http://localhost:3000'),
+      publicUrl: text('public_url'), // No default — must be set explicitly per deployment
       maintenanceMode: boolean('maintenance_mode').default(false),
       enableDrafts: boolean('enable_drafts').default(true),
       defaultLocale: text('default_locale').default('en'),
@@ -582,7 +582,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         CREATE TABLE IF NOT EXISTS z_settings (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
           site_name TEXT DEFAULT 'Zenith CMS',
-          public_url TEXT DEFAULT 'http://localhost:3000',
+          public_url TEXT, -- No default: must be set explicitly per deployment (PUBLIC_URL env var)
           maintenance_mode BOOLEAN DEFAULT false,
           enable_drafts BOOLEAN DEFAULT true,
           default_locale TEXT DEFAULT 'en',
@@ -1862,6 +1862,41 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       output._status = output.status
     }
     return output as unknown as T
+  }
+
+  async findOneAndUpdate<T = unknown>(
+    collection: string,
+    query: Record<string, unknown>,
+    update: Record<string, unknown>,
+    options?: BaseOptions & { returnDocument?: 'before' | 'after' }
+  ): Promise<T | null> {
+    const table = this.getTable(collection)
+    const client = this.getDbClient(options as FindOptions)
+    const executor = options?.session ? (options.session as typeof client) : client
+
+    let where = this.buildWhereClause(table, query)
+    where = this.tenantScope(table, where, options as FindOptions)
+
+    if (options?.returnDocument === 'after') {
+      const setData = { ...update, updatedAt: new Date() }
+      const result = await executor
+        .update(table)
+        .set(setData)
+        .where(where ?? sql`1=1`)
+        .returning()
+      const rows = result as any[]
+      if (!rows.length) return null
+      const r = rows[0]
+      const mapped = { ...r, _id: r.id }
+      if ('status' in mapped) mapped._status = mapped.status
+      return mapped as T
+    }
+
+    // returnDocument: 'before' or omitted — fetch before updating
+    const before = await this.findOne<T>(collection, query, options as FindOptions)
+    if (!before) return null
+    await executor.update(table).set({ ...update, updatedAt: new Date() }).where(where ?? sql`1=1`)
+    return before
   }
 
   async updateMany(

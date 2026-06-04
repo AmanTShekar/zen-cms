@@ -167,7 +167,7 @@ function SortableWidget({
                   (onTitleChange(widget.id, titleDraft), setEditingTitle(false))
                 }
                 className={cn(
-                  'w-full text-[10px] font-black uppercase italic outline-none bg-transparent border-b border-emerald-500 pb-0.5',
+                  'w-full text-[10px] font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black bg-transparent border-b border-emerald-500 pb-0.5',
                   theme === 'dark' ? 'text-white' : 'text-gray-900'
                 )}
               />
@@ -435,7 +435,7 @@ function WidgetPicker({
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search widgets by name or description..."
-                  className="bg-transparent text-[11px] font-black uppercase italic tracking-wider outline-none flex-1 placeholder-gray-500"
+                  className="bg-transparent text-[11px] font-black uppercase italic tracking-wider outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black flex-1 placeholder-gray-500"
                 />
               </div>
             </div>
@@ -604,7 +604,7 @@ function WidgetConfigModal({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className={cn(
-                    'w-full px-4 py-2 text-[11px] font-black uppercase italic tracking-wider border rounded-none focus:border-emerald-500 outline-none',
+                    'w-full px-4 py-2 text-[11px] font-black uppercase italic tracking-wider border rounded-none focus:border-emerald-500 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                     isDark
                       ? 'bg-black border-white/10 text-white'
                       : 'bg-white border-gray-200 text-gray-900'
@@ -623,7 +623,7 @@ function WidgetConfigModal({
                     value={width}
                     onChange={(e) => setWidth(Number(e.target.value))}
                     className={cn(
-                      'w-full px-3 py-2 text-[11px] font-black uppercase italic border rounded-none outline-none focus:border-emerald-500',
+                      'w-full px-3 py-2 text-[11px] font-black uppercase italic border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500',
                       isDark
                         ? 'bg-black border-white/10 text-white'
                         : 'bg-white border-gray-200 text-gray-900'
@@ -644,7 +644,7 @@ function WidgetConfigModal({
                     value={height}
                     onChange={(e) => setHeight(Number(e.target.value))}
                     className={cn(
-                      'w-full px-3 py-2 text-[11px] font-black uppercase italic border rounded-none outline-none focus:border-emerald-500',
+                      'w-full px-3 py-2 text-[11px] font-black uppercase italic border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500',
                       isDark
                         ? 'bg-black border-white/10 text-white'
                         : 'bg-white border-gray-200 text-gray-900'
@@ -674,7 +674,7 @@ function WidgetConfigModal({
                       value={config.metric || 'total_records'}
                       onChange={(e) => setConfig({ ...config, metric: e.target.value })}
                       className={cn(
-                        'w-full px-3 py-2 text-[11px] font-black uppercase italic border rounded-none outline-none focus:border-emerald-500',
+                        'w-full px-3 py-2 text-[11px] font-black uppercase italic border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500',
                         isDark
                           ? 'bg-black border-white/10'
                           : 'bg-white border-gray-200 font-sans text-xs'
@@ -704,7 +704,7 @@ function WidgetConfigModal({
                       onChange={(e) => setConfig({ ...config, html: e.target.value })}
                       rows={12}
                       className={cn(
-                        'w-full p-4 font-mono text-[11px] border rounded-none outline-none focus:border-emerald-500 resize-none',
+                        'w-full p-4 font-mono text-[11px] border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500 resize-none',
                         isDark
                           ? 'bg-black border-white/10 text-white'
                           : 'bg-white border-gray-200 text-gray-900'

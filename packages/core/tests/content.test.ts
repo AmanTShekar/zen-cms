@@ -22,7 +22,7 @@ const mockAdapter: any = {
   transaction: vi.fn((fn: any) => fn(null)),
   createAuditLog: vi.fn(),
   createVersion: vi.fn(),
-  getVersions: vi.fn(),
+  getVersions: vi.fn().mockResolvedValue([]),
 }
 
 const mockConfig: CollectionConfig = {
@@ -133,5 +133,31 @@ describe('Zenith ContentService - Engine Validation', () => {
       expect.any(Object)
     )
     expect(mockAdapter.delete).toHaveBeenCalledWith('posts', '1', expect.any(Object))
+  })
+
+  it('should prune old versions when maxVersions is exceeded', async () => {
+    const configWithMaxVersions: CollectionConfig = {
+      ...mockConfig,
+      maxVersions: 2,
+    }
+    const versionedService = new ContentService(configWithMaxVersions, mockAdapter)
+
+    // Simulate 3 existing versions — should prune 1 oldest
+    const mockVersions = [
+      { _id: 'v1', timestamp: new Date('2024-01-01') },
+      { _id: 'v2', timestamp: new Date('2024-01-02') },
+      { _id: 'v3', timestamp: new Date('2024-01-03') },
+    ]
+    mockAdapter.getVersions.mockResolvedValue(mockVersions)
+    mockAdapter.findOne.mockResolvedValue({ _id: '1', title: 'Old' })
+    mockAdapter.update.mockResolvedValue({ _id: '1', title: 'New' })
+
+    await versionedService.update('1', { title: 'New' }, { user: { id: 'admin', role: 'admin' } })
+
+    // v1 is the oldest — it should be deleted
+    expect(mockAdapter.delete).toHaveBeenCalledWith('versions', 'v1')
+    // v2 and v3 are the 2 most recent, they should be preserved
+    expect(mockAdapter.delete).not.toHaveBeenCalledWith('versions', 'v2')
+    expect(mockAdapter.delete).not.toHaveBeenCalledWith('versions', 'v3')
   })
 })

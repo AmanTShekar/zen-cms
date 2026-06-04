@@ -8,7 +8,7 @@ import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { logger } from '../services/logger'
 import { canTransition, roleFromString } from '../services/workflow-engine'
 
-const router = Router()
+const router: import('express').Router = Router()
 
 // All routes require authentication
 router.use(requireAuth)

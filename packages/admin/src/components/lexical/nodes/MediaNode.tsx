@@ -5,9 +5,19 @@ import type {
   LexicalNode,
   NodeKey,
   SerializedElementNode,
+  SerializedParagraphNode,
   Spread,
 } from 'lexical'
 import { $applyNodeReplacement, ParagraphNode } from 'lexical'
+
+// Blob registry so createDOM() can use authenticated blob URLs instead of raw relative paths
+export const mediaBlobRegistry: { url: string; blob: string }[] = []
+export function registerMediaBlob(url: string, blobUrl: string): void {
+  if (!mediaBlobRegistry.some((e) => e.url === url)) mediaBlobRegistry.push({ url, blob: blobUrl })
+}
+function getMediaBlobUrl(url: string): string | undefined {
+  return mediaBlobRegistry.find((e) => e.url === url)?.blob
+}
 
 export interface MediaPayload {
   mediaId: string
@@ -33,6 +43,8 @@ export type SerializedMediaNode = Spread<
     caption?: string
     type: 'media'
     version: 1
+    textFormat: number
+    textStyle: string
   },
   SerializedElementNode
 >
@@ -63,6 +75,28 @@ export class MediaNode extends ParagraphNode {
       node.__caption,
       node.__key,
     )
+  }
+
+  static importDOM(): import('lexical').DOMConversionMap | null {
+    return {
+      div: (node: Node) => ({
+        conversion: (element: HTMLElement) => {
+          if (element.getAttribute('data-media-id')) {
+            return {
+              node: $createMediaNode({
+                mediaId: element.getAttribute('data-media-id') || '',
+                url: element.getAttribute('data-media-url') || '',
+                mimeType: element.getAttribute('data-media-type') || '',
+                alt: element.getAttribute('data-media-alt') || '',
+                caption: element.getAttribute('data-media-caption') || undefined,
+              }),
+            }
+          }
+          return null
+        },
+        priority: 1,
+      }),
+    }
   }
 
   static importJSON(serialized: SerializedMediaNode): MediaNode {
@@ -111,7 +145,9 @@ export class MediaNode extends ParagraphNode {
   }
 
   exportJSON(): SerializedMediaNode {
+    const base = super.exportJSON()
     return {
+      ...base,
       mediaId: this.__mediaId,
       url: this.__url,
       alt: this.__alt,
@@ -122,8 +158,7 @@ export class MediaNode extends ParagraphNode {
       caption: this.__caption,
       type: 'media',
       version: 1,
-      ...super.exportJSON(),
-    }
+    } as SerializedMediaNode
   }
 
   createDOM(config: EditorConfig): HTMLElement {
@@ -136,7 +171,8 @@ export class MediaNode extends ParagraphNode {
 
     if (isImage) {
       const img = document.createElement('img')
-      img.src = this.__thumbnailUrl || this.__url
+      const rawUrl = this.__thumbnailUrl || this.__url
+      img.src = rawUrl.startsWith('http') ? rawUrl : (getMediaBlobUrl(rawUrl) || rawUrl)
       img.alt = this.__alt
       img.className = 'lexical-media-image'
       if (this.__width) img.width = this.__width

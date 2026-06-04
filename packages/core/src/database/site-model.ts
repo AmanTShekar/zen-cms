@@ -14,6 +14,7 @@ export interface ISitePlan {
 export interface ISite extends Document {
   name: string
   slug: string
+  domain?: string
   icon: string
   description?: string
   ownerId: string
@@ -39,6 +40,7 @@ const SiteSchema = new Schema<ISite>(
   {
     name: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
+    domain: { type: String, default: '' },
     icon: { type: String, default: '🌐' },
     description: { type: String },
     ownerId: { type: String, required: true, index: true },

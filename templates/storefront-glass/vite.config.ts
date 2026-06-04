@@ -2,6 +2,15 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const proxyErrorHandler = (err: any, _req: any, res: any) => {
+  if (err.code === 'ECONNREFUSED') {
+    if (res && res.writeHead) {
+      res.writeHead(503, { 'Content-Type': 'text/plain' });
+      res.end('Backend starting up...');
+    }
+  }
+};
+
 export default defineConfig(() => {
   return {
     plugins: [
@@ -26,7 +35,8 @@ export default defineConfig(() => {
       }),
     ],
     server: {
-      port: 5173,
+      port: 5177,
+      strictPort: true,
       open: true,
       proxy: {
         '/api': {

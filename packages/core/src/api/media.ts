@@ -142,7 +142,7 @@ router.get('/:id/transform', async (req: Request, res: Response, next) => {
   }
 })
 
-router.get('/:filename', async (req: Request, res: Response, next) => {
+router.get('/:filename', requireAuth, async (req: Request, res: Response, next) => {
   try {
     // Guard Rail: Prevent directory traversal attack
     const filename = path.basename(req.params.filename)

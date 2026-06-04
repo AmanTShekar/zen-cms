@@ -183,7 +183,7 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
                     placeholder="Search records..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-none pl-12 pr-4 py-3 text-xs font-bold outline-none focus:bg-white focus:ring-4 focus:ring-emerald-50"
+                    className="w-full bg-gray-50 border border-gray-100 rounded-none pl-12 pr-4 py-3 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:bg-white focus:ring-4 focus:ring-emerald-50"
                   />
                 </div>
 

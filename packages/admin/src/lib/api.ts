@@ -28,6 +28,9 @@ const getCookie = (name: string): string | null => {
   return match ? decodeURIComponent(match[2]) : null
 }
 
+// Security: Never hardcode localhost as a fallback in production.
+// If VITE_API_URL is not set, fall back to '/api/v1' (same-host relative path).
+// If the admin and API are on different hosts, VITE_API_URL must be explicitly configured.
 const BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
 
 interface ApiResponse<T = any> {
@@ -100,7 +103,8 @@ async function fetchWithAuth(method: string, path: string, body?: unknown, confi
     path.startsWith('/presence') ||
     path.startsWith('/media') ||
     path.startsWith('/versions') ||
-    path.startsWith('/releases')
+    path.startsWith('/releases') ||
+    path.startsWith('/workspaces')
   if (!currentSiteId && !headers['x-zenith-site-id'] && !isTenantExempt) {
     throw new ApiError({
       message:
@@ -152,8 +156,8 @@ async function request<T = any>(
 ): Promise<ApiResponse<T>> {
   const result = await fetchWithAuth(method, path, body, config)
 
-  // Handle 401 with token refresh
-  if (result.status === 401) {
+  // Handle 401 with token refresh (skip for login requests, as 401 means invalid credentials)
+  if (result.status === 401 && !path.includes('/login')) {
     if (isRefreshing) {
       // Queue this request until refresh completes
       return new Promise<unknown>((resolve, reject) => {
@@ -170,7 +174,8 @@ async function request<T = any>(
       return fetchWithAuth(method, path, body, config) as Promise<ApiResponse<T>>
     } catch (refreshError: unknown) {
       safeProcessQueue(refreshError, null)
-      if (refreshError instanceof ApiError && refreshError.status === 401 && !window.location.pathname.includes('/login')) {
+      if ((refreshError as any)?.status === 401 && !window.location.pathname.includes('/login')) {
+        localStorage.clear()
         window.location.href = '/login'
       }
       throw refreshError
@@ -181,6 +186,15 @@ async function request<T = any>(
 
   // Throw for non-2xx status codes (ApiError with response payload)
   if (result.status >= 400) {
+    const errorMsg = result.data?.error?.message || result.data?.message || '';
+    if (result.status === 403 && (errorMsg.includes('Access denied to this site') || errorMsg.includes('site_access') || errorMsg.includes('Forbidden'))) {
+      useTenantStore.getState().setActiveSiteId('')
+      localStorage.removeItem('activeSiteId')
+      if (!window.location.pathname.includes('/sites')) {
+        window.location.href = '/sites'
+      }
+    }
+
     throw new ApiError({
       message: result.data?.message || `Request failed with status ${result.status}`,
       status: result.status,

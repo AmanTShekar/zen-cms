@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../lib/utils'
 import { toast } from 'react-hot-toast'
 import { FocalPointCropper } from './FocalPointCropper'
+import EmptyState from './EmptyState'
 import { useTheme } from '../context/ThemeContext'
 
 interface MediaPickerProps {
@@ -26,6 +27,48 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
   const [focalPending, setFocalPending] = useState<any>(null)
 
   const selectedFiles = Array.isArray(value) ? value : value ? [value] : []
+
+  // Blob URL cache for authenticated media — prevents naked <img src> that skip auth cookies
+  const blobMap = React.useRef<Record<string, string>>({})
+  const blobTokens = React.useRef<Set<string>>(new Set())
+
+  const getMediaUrl = (url: string): string => {
+    if (!url) return ''
+    if (url.startsWith('http')) return url
+    // Return cached blob URL if already fetched
+    return blobMap.current[url] || url
+  }
+
+  // Pre-fetch internal media URLs with auth credentials when files change
+  useEffect(() => {
+    if (!files.length) return
+    const toFetch = files.filter((f: any) => f.url && !f.url.startsWith('http') && !blobMap.current[f.url])
+    if (!toFetch.length) return
+    const apiUrl = (import.meta.env.VITE_API_URL || '').replace('/api/v1', '')
+    toFetch.forEach((file: any) => {
+      fetch(`${apiUrl}${file.url}`, { credentials: 'include' })
+        .then((r) => r.blob())
+        .then((blob) => {
+          const objectUrl = URL.createObjectURL(blob)
+          blobTokens.current.add(objectUrl)
+          blobMap.current[file.url] = objectUrl
+          setRenderTrigger((n) => n + 1) // force re-render to pick up new blob URL
+        })
+        .catch(() => {
+          // Non-fatal: leave url as-is; browser will fail gracefully
+        })
+    })
+  }, [files])
+
+  // Re-render trigger for blob map updates
+  const [, setRenderTrigger] = React.useState(0)
+
+  // Clean up blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      blobTokens.current.forEach((url) => URL.revokeObjectURL(url))
+    }
+  }, [])
 
   const fetchFiles = async () => {
     setLoading(true)
@@ -111,13 +154,6 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
     }
   }
 
-  const getMediaUrl = (url: string) => {
-    if (!url) return ''
-    if (url.startsWith('http')) return url
-    const baseUrl = (import.meta.env.VITE_API_URL || '').replace('/api/v1', '')
-    return `${baseUrl}${url}`
-  }
-
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap gap-3">
@@ -128,8 +164,6 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
           >
             <img 
               src={getMediaUrl(file.url)} 
-              srcSet={file.url?.endsWith('.webp') ? `${getMediaUrl(file.url)} 1920w, ${getMediaUrl(file.url).replace('.webp', '-800w.webp')} 800w, ${getMediaUrl(file.url).replace('.webp', '-400w.webp')} 400w` : undefined}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="w-full h-full object-cover" 
               alt="" 
             />
@@ -166,67 +200,42 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
 
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-10 bg-[#0B0F19]/80 backdrop-blur-md">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.98, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.98, y: 10 }}
-                className={cn(
-                  'w-full max-w-6xl border rounded-none overflow-hidden shadow-2xl flex flex-col h-[85vh]',
-                  theme === 'dark' ? 'bg-[#0B0F19] border-white/10' : 'bg-white border-gray-200'
-                )}
-              >
-                <div
-                  className={cn(
-                    'p-6 border-b flex items-center justify-between shrink-0',
-                    theme === 'dark' ? 'border-white/5' : 'border-gray-100',
-                  )}
-                >
-                  <h3
-                    className={cn(
-                      'text-lg font-black uppercase italic leading-none',
-                      theme === 'dark' ? 'text-white' : 'text-black',
-                    )}
-                  >
+          <motion.div
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
+            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+            className="overflow-hidden w-full"
+          >
+            <div
+              className={cn(
+                'w-full border rounded-xl overflow-hidden shadow-2xl flex flex-col',
+                theme === 'dark' ? 'bg-[#0B0F19]/80 backdrop-blur-xl border-white/10' : 'bg-white border-gray-200'
+              )}
+            >
+              <div className="flex flex-col p-4 gap-4">
+                <div className="flex items-center justify-between">
+                  <h3 className={cn('text-sm font-black uppercase italic tracking-widest', theme === 'dark' ? 'text-white' : 'text-black')}>
                     Asset Registry
                   </h3>
                   <button
+                    type="button"
                     onClick={() => setIsOpen(false)}
-                    aria-label="Close"
-                    className={cn(
-                      'p-1 transition-colors',
-                      theme === 'dark' ? 'text-gray-400 hover:text-emerald-500' : 'text-gray-500 hover:text-emerald-600'
-                    )}
+                    className={cn('p-1 rounded-full transition-colors', theme === 'dark' ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-500 hover:text-black hover:bg-black/5')}
                   >
-                    <X size={18} />
+                    <X size={14} />
                   </button>
                 </div>
-  
-                <div className={cn(
-                  'flex-1 overflow-hidden flex flex-col p-8 gap-8',
-                  theme === 'dark' ? 'bg-[#0B0F19]' : 'bg-white'
-                )}>
+
                 <AnimatePresence mode="wait">
                   {focalPending ? (
-                    <motion.div
-                      key="focal-step"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      className="flex flex-col gap-4 h-full"
-                    >
+                    <motion.div key="focal-step" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex flex-col gap-4">
+                      {/* Focal Point Editor */}
                       <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => setFocalPending(null)}
-                          className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors italic border border-white/10 px-4 py-2 rounded-none"
-                        >
+                        <button type="button" onClick={() => setFocalPending(null)} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors italic border border-white/10 px-3 py-1.5 rounded-lg">
                           ← Back
                         </button>
-                        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400 italic">
-                          Step 2 of 2 — Set Focal Point
-                        </span>
                       </div>
-                      <div className="flex-1 flex items-center justify-center">
+                      <div className="flex-1 min-h-[300px] flex items-center justify-center">
                         <FocalPointCropper
                           imageUrl={getMediaUrl(focalPending.url)}
                           initialX={focalPending.focalPoint?.x ?? 50}
@@ -236,56 +245,54 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                       </div>
                     </motion.div>
                   ) : (
-                    <motion.div
-                      key="asset-grid"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="flex flex-col h-full"
-                    >
-                      {focalPoint && (
-                        <div className="text-[9px] font-black uppercase tracking-widest text-emerald-400 italic mb-4">
-                          Step 1 of 2 — Choose Asset
-                        </div>
-                      )}
-
-                      <div className="flex flex-col md:flex-row md:items-center gap-6">
+                    <motion.div key="asset-grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col gap-4">
+                      {/* Top Bar: Search and Upload */}
+                      <div className="flex flex-col sm:flex-row gap-3">
                         <div className="flex-1 relative group">
-                          <Search
-                            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-400 transition-colors"
-                            size={16}
-                          />
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-emerald-400 transition-colors" size={14} />
                           <input
                             type="text"
-                            placeholder="Filter assets by sequence or ID..."
+                            placeholder="Search assets..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full bg-white/[0.02] border border-white/10 rounded-none pl-12 pr-4 py-3.5 text-xs font-bold text-white placeholder:text-gray-500 transition-all focus:bg-white/[0.04] focus:border-emerald-500/40 focus-visible:ring-1 focus-visible:ring-emerald-500 outline-none"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs font-medium text-white placeholder:text-gray-500 transition-all focus:bg-white/10 focus:border-emerald-500/50 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black"
                           />
                         </div>
-                        <label className="flex items-center gap-3 px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-none transition-all text-[11px] font-black uppercase tracking-widest cursor-pointer hover:scale-[1.02] active:scale-95 italic leading-none shrink-0 border border-emerald-500/30">
-                          <UploadCloud size={16} strokeWidth={3} />
-                          <span>Ingest New Asset</span>
+                        <label className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest cursor-pointer border border-emerald-500/30">
+                          <UploadCloud size={14} />
+                          <span>Upload</span>
                           <input type="file" className="hidden" onChange={handleUpload} />
                         </label>
                       </div>
 
-                      <div className="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 pr-2 custom-scrollbar">
+                      {/* Middle Area: Scrollable Grid */}
+                      <div className="h-[280px] overflow-y-auto grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 pr-2 custom-scrollbar border border-white/5 rounded-xl p-2 bg-black/20">
                         {loading ? (
-                          <div className="col-span-full h-full flex flex-col items-center justify-center gap-6">
-                            <Loader2 className="animate-spin text-emerald-500" size={32} />
-                            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-emerald-400 italic animate-pulse">
-                              Syncing_Asset_Library...
-                            </span>
+                          <div className="col-span-full h-full flex flex-col items-center justify-center gap-4">
+                            <Loader2 className="animate-spin text-emerald-500" size={24} />
+                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-400 italic animate-pulse">Syncing...</span>
                           </div>
                         ) : (
-                          files
-                            .filter((f) =>
+                          (() => {
+                            const filtered = files.filter((f) =>
                               (f.alt || f.id || f.filename || '')
                                 .toLowerCase()
                                 .includes(search.toLowerCase())
                             )
-                            .map((file) => {
+                            
+                            if (filtered.length === 0) {
+                              return (
+                                <div className="col-span-full h-full flex flex-col justify-center py-6">
+                                  <EmptyState
+                                    icon={ImageIcon}
+                                    title={search ? 'No matches found' : 'No media assets'}
+                                    message={search ? 'Try a different search term' : 'Upload an image to get started'}
+                                  />
+                                </div>
+                              )
+                            }
+
+                            return filtered.map((file) => {
                               const isSelected = selectedFiles.some((f) => f._id === file._id)
                               return (
                                 <div
@@ -300,8 +307,6 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                                 >
                                   <img
                                     src={getMediaUrl(file.url)}
-                                    srcSet={file.url?.endsWith('.webp') ? `${getMediaUrl(file.url)} 1920w, ${getMediaUrl(file.url).replace('.webp', '-800w.webp')} 800w, ${getMediaUrl(file.url).replace('.webp', '-400w.webp')} 400w` : undefined}
-                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                     alt=""
                                   />
@@ -326,37 +331,33 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
                                 </div>
                               )
                             })
+                          })()
                         )}
                       </div>
 
-                      <div className="p-8 border-t border-white/5 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10B981]" />
-                          <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest italic">
-                            All_Systems_Operational
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <button
-                            onClick={() => { setIsOpen(false); setFocalPending(null) }}
-                            className="px-6 py-2 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-white transition-colors italic"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={() => { setIsOpen(false); setFocalPending(null) }}
-                            className="px-8 py-3 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-emerald-900/20 hover:scale-[1.02] active:scale-95 transition-all italic leading-none border border-emerald-500/30"
-                          >
-                            Apply Selection
-                          </button>
-                        </div>
+                      {/* Bottom Area: Actions */}
+                      <div className="pt-2 border-t border-white/5 flex items-center justify-end gap-3 mt-2">
+                        <button
+                          type="button"
+                          onClick={() => { setIsOpen(false); setFocalPending(null) }}
+                          className="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-white transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setIsOpen(false); setFocalPending(null) }}
+                          className="px-6 py-2 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 hover:text-white rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all border border-emerald-500/30"
+                        >
+                          Done
+                        </button>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

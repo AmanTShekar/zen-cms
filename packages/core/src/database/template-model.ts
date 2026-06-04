@@ -25,7 +25,7 @@ const TemplateSchema = new Schema<ITemplate>(
     thumbnail: { type: String },
     usageCount: { type: Number, default: 0 },
     isSystem: { type: Boolean, default: false },
-    siteId: { type: String, required: true, index: true },
+    siteId: { type: String, required: true },
     createdBy: { type: String, required: true },
   },
   { timestamps: true }

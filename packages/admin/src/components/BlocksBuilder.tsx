@@ -33,7 +33,7 @@ import { motion, AnimatePresence, Reorder } from 'framer-motion'
 import { cn, uid } from '../lib/utils'
 
 import type { FieldConfig } from '@zenithcms/types'
-import { useBlockLibrary } from '../hooks/useBlockLibrary'
+import { useEditorBlocks } from '../context/BlockLibraryContext'
 import { useModalStore } from '../store/modalStore'
 import { UNIFIED_BLOCK_LIBRARY } from '../pages/editor/unifiedBlocks'
 
@@ -116,23 +116,6 @@ const CATEGORY_GRADIENTS: Record<string, string> = {
   Social: 'from-amber-900/60 to-orange-900/40',
   General: 'from-[#1a1a2e]/80 to-[#16213e]/60',
 }
-
-const DEFAULT_BLOCKS: BlockDefinition[] = UNIFIED_BLOCK_LIBRARY.map((b) => ({
-  slug: b.type,
-  labels: { singular: b.title, plural: b.title + 's' },
-  fields: b.fields.map((f) => ({
-    name: f.name,
-    label: f.label || humanize(f.name),
-    type: f.type,
-    required: f.required,
-    defaultValue: b.defaultContent[f.name],
-    options: f.options,
-  })),
-  admin: {
-    description: b.description,
-    category: b.category,
-  }
-}))
 
 // ── Block Row ─────────────────────────────────────────────────────────────────
 function BlockRow({
@@ -245,7 +228,7 @@ function BlockRow({
                         </label>
                         {renderField
                           ? renderField(f as unknown as FieldConfig, block[f.name], (val: any) => onUpdate({ [f.name]: val }))
-                          : <input type="text" value={(block[f.name] as string) || ''} onChange={(e) => onUpdate({ [f.name]: e.target.value })} placeholder={`Enter ${f.label || f.name}...`} className="w-full bg-app border border-border px-3 py-2 text-sm focus:border-accent focus:ring-2 focus:ring-accent/10 outline-none transition-all rounded-none" />
+                          : <input type="text" value={(block[f.name] as string) || ''} onChange={(e) => onUpdate({ [f.name]: e.target.value })} placeholder={`Enter ${f.label || f.name}...`} className="w-full bg-app border border-border px-3 py-2 text-sm focus:border-accent focus:ring-2 focus:ring-accent/10 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all rounded-none" />
                         }
                       </div>
                     )
@@ -353,7 +336,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
               onChange={(e) => setSearch(e.target.value)} 
               placeholder="Search components..." 
               className={cn(
-                "w-full rounded-none pl-11 pr-11 py-3 text-xs font-bold transition-all focus:outline-none",
+                "w-full rounded-none pl-11 pr-11 py-3 text-xs font-bold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black",
                 theme === 'dark' 
                   ? 'bg-white/[0.03] border border-white/10 text-white placeholder:text-gray-600 focus:border-emerald-500/40 focus:bg-white/[0.05]'
                   : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-400 focus:bg-white'
@@ -469,7 +452,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
 const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
   value, onChange, availableBlocks, renderField, disabled = false,
 }) => {
-  const apiBlocks = useBlockLibrary()
+  const apiBlocks = useEditorBlocks()
   const { openComponentPicker } = useModalStore()
   const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({})
   const [showPreview, setShowPreview] = useState(false)
@@ -477,7 +460,27 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
   const previewUrl = import.meta.env.VITE_PREVIEW_URL || '/preview'
 
   const rawBlocks = (availableBlocks as BlockDefinition[]) || []
-  const blocksList: BlockDefinition[] = rawBlocks.length > 0 ? rawBlocks : (apiBlocks.length > 0 ? (apiBlocks as BlockDefinition[]) : DEFAULT_BLOCKS)
+  
+  // Transform EditorBlockDefinition into BlockDefinition for the builder
+  const transformedApiBlocks = apiBlocks.map(b => ({
+    slug: b.type,
+    labels: { singular: b.title, plural: b.title + 's' },
+    fields: b.fields.map(f => ({
+      name: f.name,
+      label: f.label || f.name,
+      type: f.type,
+      required: f.required,
+      defaultValue: b.defaultContent?.[f.name],
+      options: f.options
+    })),
+    admin: {
+      description: b.description,
+      category: b.category,
+      icon: b.icon ? (typeof b.icon === 'string' ? b.icon : b.icon.name) : undefined
+    }
+  })) as BlockDefinition[]
+
+  const blocksList: BlockDefinition[] = rawBlocks.length > 0 ? rawBlocks : transformedApiBlocks
   const blocks = value || []
 
   const toggleBlock = useCallback((key: string) => {

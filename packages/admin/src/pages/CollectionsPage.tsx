@@ -19,6 +19,7 @@ import { cn } from '../lib/utils'
 import api from '../lib/api'
 import toast from 'react-hot-toast'
 import { useTheme } from '../context/ThemeContext'
+import { useSystemMetadata } from '../hooks/useQueries'
 
 const CollectionsPage: React.FC = () => {
   const { theme } = useTheme()
@@ -33,23 +34,16 @@ const CollectionsPage: React.FC = () => {
    * Orchestrates parallel retrieval of system health (for schema/labels)
    * and record counts for each collection node.
    */
+  const { data: healthData, isLoading: healthLoading } = useSystemMetadata()
+
   useEffect(() => {
-    const fetchCollections = async () => {
+    const fetchCounts = async () => {
+      if (!healthData) return
       try {
-        // Parallel telemetry handshake
-        const [healthRes, countsRes] = await Promise.all([
-          api.get('/system/health').catch(() => null),
-          api.get('/system/counts').catch(() => null),
-        ])
+        const countsRes = await api.get('/system/counts').catch(() => null)
+        
+        const rawCollections = healthData.collections || []
 
-        const healthData = healthRes?.data?.data
-        const rawCollections = healthData?.registry?.collections || healthData?.collections || []
-
-        /**
-         * NORMALIZATION PROTOCOL
-         * Ensures every collection has a valid renderable label.
-         * Falls back to slug/name or 'Unnamed Collection' to prevent UI blank states.
-         */
         const processedCollections = rawCollections.map((c: any) => ({
           ...c,
           label: c.label || c.name || c.slug || 'Unnamed Collection',
@@ -65,8 +59,10 @@ const CollectionsPage: React.FC = () => {
       }
     }
 
-    fetchCollections()
-  }, [])
+    if (!healthLoading) {
+      fetchCounts()
+    }
+  }, [healthData, healthLoading])
 
   /**
    * SEARCH & FILTER LOGIC: CLIENT-SIDE MATRIX REDUCTION
@@ -168,8 +164,8 @@ const CollectionsPage: React.FC = () => {
             f.options && {
               options: f.options
                 .split(',')
-                .map((o: string) => o.trim())
-                .filter(Boolean),
+                .map((o: string) => ({ label: o.trim(), value: o.trim() }))
+                .filter((o: any) => o.value),
             }),
           ...(f.type === 'relationship' && f.relationTo && { relationTo: f.relationTo }),
         })),
@@ -250,7 +246,7 @@ const CollectionsPage: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className={cn(
-                'w-full border rounded-none py-4 pl-12 pr-4 text-[10px] font-black italic focus:ring-4 transition-all outline-none uppercase tracking-widest',
+                'w-full border rounded-none py-4 pl-12 pr-4 text-[10px] font-black italic focus:ring-4 transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black uppercase tracking-widest',
                 theme === 'dark'
                   ? 'bg-white/[0.03] border-white/10 text-white focus:ring-emerald-500/20'
                   : 'bg-white border-gray-200 focus:ring-emerald-500/10'
@@ -394,7 +390,7 @@ const CollectionsPage: React.FC = () => {
               onChange={(e) => setAiPrompt(e.target.value)}
               placeholder="e.g., I need a blog post collection with title, content, cover image, seo metadata, and a category dropdown..."
               className={cn(
-                'w-full h-32 p-4 mb-4 font-mono text-sm border outline-none focus:ring-2 focus:ring-emerald-500 resize-none',
+                'w-full h-32 p-4 mb-4 font-mono text-sm border outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:ring-2 focus:ring-emerald-500 resize-none',
                 theme === 'dark' ? 'bg-black border-white/10' : 'bg-gray-50 border-gray-200'
               )}
             />
@@ -460,11 +456,12 @@ const CollectionsPage: React.FC = () => {
                 </label>
                 <input
                   type="text"
+                  name="name"
                   value={newColName}
                   onChange={(e) => handleNameChange(e.target.value)}
                   placeholder="e.g. Review"
                   className={cn(
-                    'w-full px-4 py-3 text-sm font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all uppercase tracking-widest italic',
+                    'w-full px-4 py-3 text-sm font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all uppercase tracking-widest italic',
                     theme === 'dark'
                       ? 'bg-black border-white/10 text-white'
                       : 'bg-gray-50 border-gray-200'
@@ -478,11 +475,12 @@ const CollectionsPage: React.FC = () => {
                 </label>
                 <input
                   type="text"
+                  name="slug"
                   value={newColSlug}
                   onChange={(e) => setNewColSlug(e.target.value)}
                   placeholder="e.g. reviews"
                   className={cn(
-                    'w-full px-4 py-3 text-sm font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all lowercase tracking-widest italic',
+                    'w-full px-4 py-3 text-sm font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all lowercase tracking-widest italic',
                     theme === 'dark'
                       ? 'bg-black border-white/10 text-gray-400'
                       : 'bg-gray-50 border-gray-200 text-gray-500'
@@ -537,11 +535,12 @@ const CollectionsPage: React.FC = () => {
                       </label>
                       <input
                         type="text"
+                        name={`field-name-${index}`}
                         value={field.name}
                         onChange={(e) => handleFieldChange(index, 'name', e.target.value)}
                         placeholder="e.g. rating"
                         className={cn(
-                          'w-full px-3 py-2 text-xs font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all lowercase font-mono',
+                          'w-full px-3 py-2 text-xs font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all lowercase font-mono',
                           theme === 'dark'
                             ? 'bg-black border-white/10 text-white'
                             : 'bg-white border-gray-200'
@@ -557,7 +556,7 @@ const CollectionsPage: React.FC = () => {
                         value={field.type}
                         onChange={(e) => handleFieldChange(index, 'type', e.target.value)}
                         className={cn(
-                          'w-full px-3 py-2 text-xs font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all',
+                          'w-full px-3 py-2 text-xs font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
                           theme === 'dark'
                             ? 'bg-black border-white/10 text-white'
                             : 'bg-white border-gray-200'
@@ -584,7 +583,7 @@ const CollectionsPage: React.FC = () => {
                           onChange={(e) => handleFieldChange(index, 'options', e.target.value)}
                           placeholder="e.g. red, blue, green"
                           className={cn(
-                            'w-full px-3 py-2 text-xs font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all',
+                            'w-full px-3 py-2 text-xs font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
                             theme === 'dark'
                               ? 'bg-black border-white/10 text-white'
                               : 'bg-white border-gray-200'
@@ -600,7 +599,7 @@ const CollectionsPage: React.FC = () => {
                           value={field.relationTo || ''}
                           onChange={(e) => handleFieldChange(index, 'relationTo', e.target.value)}
                           className={cn(
-                            'w-full px-3 py-2 text-xs font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all',
+                            'w-full px-3 py-2 text-xs font-bold border rounded-none focus:ring-2 focus:ring-emerald-500 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
                             theme === 'dark'
                               ? 'bg-black border-white/10 text-white'
                               : 'bg-white border-gray-200'

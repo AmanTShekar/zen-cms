@@ -120,19 +120,22 @@ export function createZodSchema(fields: FieldConfig[], config?: any) {
         schema = z.union([z.date(), z.string().transform((v) => new Date(v))])
         break
 
-      // --- Media (MediaPicker asset objects, stored as JSONB) ---
+      // --- Media (MediaPicker asset objects, stored as JSONB or plain string URLs) ---
       case 'media': {
-        const asset = z.object({
-          _id: z.string().optional(),
-          id: z.string().optional(),
-          url: z.string().url({ message: 'Invalid URL' }),
-          alt: z.string().optional(),
-          width: z.number().optional(),
-          height: z.number().optional(),
-          mimetype: z.string().optional(),
-          size: z.number().optional(),
-          focalPoint: z.object({ x: z.number(), y: z.number() }).optional(),
-        }).passthrough()
+        const asset = z.union([
+          z.string({ message: 'Must be a valid media string or object' }),
+          z.object({
+            _id: z.string().optional(),
+            id: z.string().optional(),
+            url: z.string({ message: 'URL is required' }),
+            alt: z.string().optional(),
+            width: z.number().optional(),
+            height: z.number().optional(),
+            mimetype: z.string().optional(),
+            size: z.number().optional(),
+            focalPoint: z.object({ x: z.number(), y: z.number() }).optional(),
+          }).passthrough()
+        ])
         schema = field.hasMany ? z.array(asset) : asset
         break
       }
@@ -244,7 +247,14 @@ export function createZodSchema(fields: FieldConfig[], config?: any) {
       // --- Blocks (Discriminated Union) ---
       case 'blocks':
         if (field.blocks && field.blocks.length > 0) {
-          const blockSchemas = field.blocks.map((block: any) => {
+          const blockSchemas = field.blocks.map((blockDef: any) => {
+            let block = blockDef;
+            if (typeof blockDef === 'string') {
+              // We cannot resolve string references synchronously without a registry
+              block = undefined
+            }
+            if (!block) return z.any()
+
             const blockShape = createZodSchema(block.fields).shape
             return z.object({
               blockType: z.literal(block.slug),
@@ -298,6 +308,10 @@ export function createZodSchema(fields: FieldConfig[], config?: any) {
       .optional()
       .nullable()
   }
+
+  // Implicitly allow spatial blocks (sections) on all collections
+  // This ensures the editor's Layers panel works seamlessly without Zod stripping the payload
+  shape.sections = z.array(z.any()).optional()
 
   return z.object(shape as any)
 }

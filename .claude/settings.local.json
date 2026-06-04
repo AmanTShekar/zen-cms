@@ -17,7 +17,9 @@
       "Bash(grep -E \"\\(error|warning|build:|ERR|FAIL|[^/]+ [^/]+ build\\\\$\\)\")",
       "Bash(Get-Content \"C:\\\\Users\\\\Asus\\\\.claude\\\\projects\\\\c--Users-Asus-Desktop-cms\\\\7f84d7ea-942b-409b-a53b-0126e8ed4be5.jsonl\" -TotalCount 100)",
       "Bash(tail -n 500 \"C:\\\\Users\\\\Asus\\\\.claude\\\\projects\\\\c--Users-Asus-Desktop-cms\\\\7f84d7ea-942b-409b-a53b-0126e8ed4be5.jsonl\" 2>/dev/null | grep -o '\"role\":\"user\"' | wc -l)",
-      "Read(//c/Users/Asus/.claude/projects/c--Users-Asus-Desktop-cms/**)"
+      "Read(//c/Users/Asus/.claude/projects/c--Users-Asus-Desktop-cms/**)",
+      "Bash(node *)"
     ]
-  }
+  },
+  "prefersReducedMotion": false
 }

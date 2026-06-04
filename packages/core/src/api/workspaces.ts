@@ -6,7 +6,7 @@ import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import crypto from 'crypto'
 
-const router = Router()
+const router: import('express').Router = Router()
 
 // Require auth for all workspaces operations
 router.use(requireAuth)
@@ -17,9 +17,13 @@ router.get('/', async (req: Request, res: Response, next) => {
     const user = (req as any).user
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-    let workspaces = await adapter.find<any>('z_workspaces', {
-      $or: [{ ownerId: user.id }, { 'members.userId': user.id }]
-    }, { sort: { updatedAt: -1 } })
+    // Adapter-agnostic: fetch all then JS-filter by owner/membership
+    // ($or with dot-notation 'members.userId' is MongoDB-specific)
+    const all = await adapter.find<any>('z_workspaces', {}, { sort: { updatedAt: -1 } })
+    let workspaces = all.filter((ws: any) =>
+      ws.ownerId === user.id ||
+      (Array.isArray(ws.members) && ws.members.some((m: any) => m.userId === user.id))
+    )
 
     if (!workspaces || workspaces.length === 0) {
       const wsId = crypto.randomUUID()
@@ -92,14 +96,19 @@ router.get('/:id', async (req: Request, res: Response, next) => {
     const user = (req as any).user
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-    const workspace = await adapter.findOne<any>('z_workspaces', {
-      _id: id,
-      $or: [{ ownerId: user.id }, { 'members.userId': user.id }]
-    })
-
+    // Adapter-agnostic lookup with membership check in JS
+    const allById = await adapter.find<any>('z_workspaces', { id })
+    let workspace: any = allById[0] || null
     if (!workspace) {
-      throw new NotFoundError('Workspace', id)
+      const allByMongoId = await adapter.find<any>('z_workspaces', { _id: id })
+      workspace = allByMongoId[0] || null
     }
+
+    const isMember = workspace && (
+      workspace.ownerId === user.id ||
+      (Array.isArray(workspace.members) && workspace.members.some((m: any) => m.userId === user.id))
+    )
+    if (!isMember) throw new NotFoundError('Workspace', id)
 
     res.json(createResponse(workspace))
   } catch (err) {
@@ -114,10 +123,13 @@ router.patch('/:id', async (req: Request, res: Response, next) => {
     const user = (req as any).user
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-    const workspace = await adapter.findOne<any>('z_workspaces', { _id: id })
+    const allById = await adapter.find<any>('z_workspaces', { id })
+    let workspace: any = allById[0] || null
     if (!workspace) {
-      throw new NotFoundError('Workspace', id)
+      const allByMongoId = await adapter.find<any>('z_workspaces', { _id: id })
+      workspace = allByMongoId[0] || null
     }
+    if (!workspace) throw new NotFoundError('Workspace', id)
 
     const member = workspace.members?.find((m: any) => m.userId === user.id)
     const isAdmin = member?.role === 'admin' || workspace.ownerId === user.id
@@ -146,10 +158,13 @@ router.delete('/:id', async (req: Request, res: Response, next) => {
     const user = (req as any).user
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-    const workspace = await adapter.findOne<any>('z_workspaces', { _id: id })
+    const allById = await adapter.find<any>('z_workspaces', { id })
+    let workspace: any = allById[0] || null
     if (!workspace) {
-      throw new NotFoundError('Workspace', id)
+      const allByMongoId = await adapter.find<any>('z_workspaces', { _id: id })
+      workspace = allByMongoId[0] || null
     }
+    if (!workspace) throw new NotFoundError('Workspace', id)
 
     if (workspace.ownerId !== user.id) {
       return res.status(403).json({

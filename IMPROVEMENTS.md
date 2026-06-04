@@ -1,7 +1,7 @@
-# Zenith CMS — Improvements Tracker
+# Zenith CMS — Improvements & Gap Tracker
 
-> Consolidated improvement plan derived from all internal audits.
-> Generated: 2026-05-22 | Last verified: 2026-05-22 | Status: MOST P1/P2 COMPLETE
+> Consolidated improvement plan from all internal audits.
+> Generated: 2026-05-22 | Last updated: 2026-05-29 | Status: P1 MOSTLY DONE / P2 IN PROGRESS
 > Supersedes: internal/reports/GAP_ANALYSIS.md, REFERENCE_COMPARISON_MATRIX.md, COMPETITIVE_AUDIT.md
 
 ---
@@ -12,194 +12,189 @@
 |--------|---------|
 | ✅ | Completed & verified in code |
 | ⬜ | Not started |
-| 🔴 | P1 — Critical (security / data loss / breakage) |
-| 🟠 | P2 — Important (competitive parity) |
-| 🟡 | P3 — Enhancement (new capability) |
+| 🔴 | P0 — Blocking (security vulnerability or broken feature — do first) |
+| 🟠 | P1 — Should fix before public launch |
+| 🟡 | P2 — Important (competitive parity / first 30 days) |
+| 🟢 | P3 — Enhancement (new capability / roadmap) |
 
 ---
 
-## PHASE 1 — Robustness Hardening — ✅ ALL COMPLETE
+## PART A — What's Done
 
-### 🔴 1.1 Auth Hardening — ✅ DONE
+### Phase 1 — Robustness Hardening — ✅ ALL COMPLETE
 
-| # | Issue | Status |
-|---|-------|--------|
-| 1.1.1 | Account lockout after 5 failed attempts → 15-min lockout | ✅ `auth.ts` lines 100-145 |
-| 1.1.2 | Email verification flow (generate + verify + resend) | ✅ `auth.ts` lines 147-183, `api/auth.ts` lines 260-298 |
-| 1.1.3 | Hardcoded password replaced with `crypto.randomBytes(16).toString('base64url')` | ✅ `system.ts` line 746 |
-| 1.1.4 | OAuth/SSO strategies — P3, not yet implemented | ⬜ Phase 5 |
-| 1.1.5 | User model fields: `failedLoginAttempts`, `lockUntil`, `emailVerified`, `verificationToken` | ✅ `user-model.ts` lines 8-13 |
+| # | Issue | File |
+|---|-------|------|
+| 1.1.1 | Account lockout after 5 failed attempts → 15-min lockout | `auth.ts:100-145` |
+| 1.1.2 | Email verification flow (generate + verify + resend) | `auth.ts:147-183`, `api/auth.ts:260-298` |
+| 1.1.3 | Hardcoded password replaced with `crypto.randomBytes(16).toString('base64url')` | `system.ts:746` |
+| 1.1.5 | User model: `failedLoginAttempts`, `lockUntil`, `emailVerified`, `verificationToken` | `user-model.ts:8-13` |
 
-### 🔴 1.2 Validation Completeness — ✅ DONE
+### Phase 2 — Versioning & Scheduling — ✅ ALL COMPLETE
 
-| # | Issue | Status |
-|---|-------|--------|
-| 1.2.1 | Zod `text`: `.min(minLength).max(maxLength)` applied | ✅ `schema/engine.ts` lines 16-19 |
-| 1.2.2 | Zod `number`: `.min(min).max(max)` applied | ✅ `schema/engine.ts` lines 105-108 |
-| 1.2.3 | Zod `array`: `.min(minRows).max(maxRows)` applied | ✅ `schema/engine.ts` lines 158-159 |
-| 1.2.4 | Email: RFC-compliant regex stricter than Zod default | ✅ `schema/engine.ts` lines 89-92 |
-| 1.2.5 | AJV JSON schema validation for `json` type | ✅ `schema/engine.ts` lines 39-86 |
-| 1.2.6 | Error messages use `field.label` not `field.name` | ✅ `schema/engine.ts` throughout |
+| # | Issue | File |
+|---|-------|------|
+| 2.1 | `POST /versions/:collection/:id/:versionId/restore` endpoint | `versions.ts:116-145` |
+| 2.2 | `GET /versions/:collection/:id/:versionId/diff` endpoint | `versions.ts:80-113` |
+| 2.3 | Max version enforcement (prunes beyond 50) | `content.ts: _enforceMaxVersions()` |
+| 2.4 | Scheduled publish cron (`draft → published` when `scheduledAt <= now`) | `scheduler.ts:61-96` |
 
-### 🔴 1.3 Adapter-Safe Search — ✅ DONE (this session)
+### Phase 3 — Plugin & SDK Quality — ✅ CORE COMPLETE
 
-| # | Issue | Status |
-|---|-------|--------|
-| 1.3.1 | `query-parser.ts`: search shorthand changed from `{ $regex, $options }` to `{ $like }` (adapter-agnostic) | ✅ Fixed this session |
-| 1.3.2 | `search.ts`: already uses `adapter.search()`, no direct mongoose calls | ✅ `search.ts` line 45 |
-| 1.3.3 | `search()` in `DatabaseAdapter` interface | ✅ `database.d.ts` line 41 |
-| 1.3.4 | `MongooseAdapter.search()` with `$regex` | ✅ `MongooseAdapter.ts` lines 480-503 |
-| 1.3.5 | `PostgresDrizzleAdapter.search()` with `ILIKE` | ✅ `PostgresDrizzleAdapter.ts` lines 1657-1697 |
+| # | Issue | File |
+|---|-------|------|
+| 3.1 | `plugin.onReady(app)` called after DB connect, after routes registered | `index.ts:551-563` |
+| 3.3 | SDK uses native `fetch()`, zero dependencies | `sdk/src/index.ts:78` |
+| 3.4 | SDK meta typed as `{ totalDocs, totalPages, page }` | `sdk/src/index.ts:104-106` |
+| 3.5 | SDK `Where<T>` typed query builder | `sdk/src/index.ts:44-64` |
+| 3.6 | SDK throws typed error with status info | `sdk/src/index.ts:85-86` |
 
-### 🔴 1.4 GraphQL Auth & Adapter Coupling — ✅ DONE
+### Phase 4 — GraphQL Mutations & DataLoader — ✅ COMPLETE
 
-| # | Issue | Status |
-|---|-------|--------|
-| 1.4.1 | GraphQL `requireAuth` via Bearer token or cookie | ✅ `graphql.ts` lines 469-473 |
-| 1.4.2 | Resolvers use `ContentService` (adapter + hooks + cache), not raw mongoose | ✅ `graphql.ts` lines 315-395 |
+| # | Issue | File |
+|---|-------|------|
+| 4.1 | GraphQL `Mutation` type (createX, updateX, deleteX) | `graphql.ts:430-439` |
+| 4.2 | Blocks use proper GraphQL union types | `graphql.ts:147-166` |
+| 4.3 | Depth limiting (max 6 levels) | `graphql.ts:446-461` |
+| 4.4 | DataLoader (`SimpleDataLoader`) for relation batching | `graphql.ts:17-60` |
+| 4.5 | Resolvers handle population/relations via DataLoader | `graphql.ts:203-229` |
 
----
+### Phase 5 — New Capabilities — PARTIALLY DONE
 
-## PHASE 2 — Versioning & Scheduling — ✅ ALL COMPLETE
-
-| # | Issue | Status |
-|---|-------|--------|
-| 2.1 | `POST /versions/:collection/:id/:versionId/restore` endpoint | ✅ `versions.ts` lines 116-145 |
-| 2.2 | `GET /versions/:collection/:id/:versionId/diff` endpoint | ✅ `versions.ts` lines 80-113 |
-| 2.3 | Max version enforcement (prunes beyond `config.maxVersions` or default 50) | ✅ Added this session to `content.ts` |
-| 2.4 | Scheduled publish cron promotes `draft → published` when `scheduledAt <= now` | ✅ `scheduler.ts` lines 61-96 |
-
----
-
-## PHASE 3 — Plugin & SDK Quality — ✅ CORE ITEMS COMPLETE
-
-| # | Issue | Status |
-|---|-------|--------|
-| 3.1 | `plugin.onReady(app)` called after DB connect, after routes registered | ✅ `index.ts` lines 551-563 |
-| 3.2 | Plugin hooks/router extension — router supported; hooks P3 | ⬜ Phase 5 |
-| 3.3 | SDK uses native `fetch()`, zero dependencies | ✅ `sdk/src/index.ts` line 78 |
-| 3.4 | SDK meta typed as `{ totalDocs, totalPages, page }` | ✅ `sdk/src/index.ts` lines 104-106 |
-| 3.5 | SDK `Where<T>` typed query builder | ✅ `sdk/src/index.ts` lines 14, 44-64 |
-| 3.6 | SDK throws typed error with status info | ✅ `sdk/src/index.ts` lines 85-86 |
-| 3.7 | SDK cache strategy — stale-while-revalidate P3 | ⬜ Phase 5 |
+| # | Feature | Status | Notes |
+|---|---------|--------|-------|
+| 5.1 | Field types: code, collapsible, join, point, radio, row, ui | ✅ Done | Types, schema, admin UI, DB adapters all updated |
+| 5.2 | Bulk operations (delete/publish/unpublish) | ✅ Done | Multi-select, bulk toolbar, backend endpoints |
+| 5.4 | Image focal point / smart crop | ✅ | AI-estimated focal point stored in asset document |
+| 5.5 | Validation completeness (Zod per field type) | ✅ Complete | `schema/engine.ts` |
+| 5.6 | Adapter-safe search (`$like` not `$regex`) | ✅ Done | `query-parser.ts`, both adapters |
+| 5.7 | SDK zero-dependency | ✅ Done | `sdk/src/index.ts` uses native fetch |
+| OAuth/SSO strategies (GitHub, Google, Microsoft) | 🟢 | Routes exist; state store needs Redis | See P0-3 |
 
 ---
 
-## PHASE 4 — GraphQL Mutations & DataLoader — ✅ DONE
+## PART B — What's Needs Work
 
-| # | Issue | Status |
-|---|-------|--------|
-| 4.1 | GraphQL `Mutation` type (createX, updateX, deleteX) | ✅ `graphql.ts` lines 430-439 |
-| 4.2 | Blocks use proper GraphQL union types | ✅ `graphql.ts` lines 147-166 |
-| 4.3 | Depth limiting (max 6 levels) | ✅ `graphql.ts` lines 446-461 |
-| 4.4 | DataLoader (`SimpleDataLoader`) for relation batching | ✅ `graphql.ts` lines 17-60 |
-| 4.5 | Resolvers handle population/relations via DataLoader | ✅ `graphql.ts` lines 203-229 |
+### 🔴 P0 — Launch Blockers (must fix before any production traffic)
 
----
-
-## PHASE 5 — New Capabilities (P3) — ⬜ NOT STARTED
-
-| # | Feature | Priority | Notes |
-|---|---------|----------|-------|
-| 5.1 | OAuth/SSO strategies (GitHub, Google) | 🟡 P3 | Extra auth methods |
-| 5.2 | Username login option | 🟡 P3 | Email alternative |
-| 5.3 | Content import (CSV/JSON) | 🟡 P3 | Export exists; import missing |
-| 5.4 | Image focal point / smart crop | 🟡 P3 | Media field enhancement |
-| 5.5 | AI Vision Pipeline (auto-alt, smart-tagging) | 🟡 P3 | Media optimization |
-| 5.6 | Semantic vector search | 🟡 P3 | Advanced search capability |
-| 5.7 | Environment branching (staging → production) | 🟡 P3 | Multi-env workflow |
-| 5.8 | Plugin hooks system + admin component injection | 🟡 P3 | Extensible UI |
-| 5.9 | **Field types: code, collapsible, join, point, radio, row, ui** | 🟡 P3 | ✅ Implemented this session — types, schema, admin UI, DB adapters |
-| 5.10 | **Admin hook/endpoint configuration UI** | 🟡 P3 | Backend exists; no UI |
-| 5.11 | **Bulk operations (delete/publish/unpublish)** | 🟡 P3 | ✅ Implemented this session — multi-select checkboxes, bulk toolbar, backend endpoints |
-| 5.12 | **Auto-translation integration** | 🟡 P3 | Side-by-side editor exists |
+| # | Gap | Severity | File | Description |
+|---|-----|----------|------|-------------|
+| P0-1 | Unauthenticated media file access | 🔴 CRITICAL | `api/media.ts:145` | `router.get('/:filename')` has no `requireAuth` — any unauthenticated user can download any uploaded file by path |
+| P0-2 | Unsanitized `$regex` in admin search | 🔴 CRITICAL | `api/system.ts:426-434`, `api/trash.ts:59-63`, `api/redirects.ts:38-39` | Admin search endpoints inject user `req.query.search` directly into `$regex` — ReDoS attack surface, plus injection risk |
+| P0-3 | Email transport is a stub | 🔴 CRITICAL | `services/email.ts` | `sendWelcomeEmail`, `sendPasswordResetEmail`, `sendVerificationEmail` are no-ops — registration and password reset are completely broken in production |
+| P0-4 | In-memory OAuth state store | 🟠 HIGH | `auth/strategies/oauth.ts:64-72` | `new Map()` for OAuth state — breaks on multi-instance deployments; Redis was intended but not implemented |
+| P0-5 | No request drain in graceful shutdown | 🟠 HIGH | `index.ts:934-937` | Server force-kills in-flight requests after 10s instead of draining; violates K8s graceful shutdown pattern |
+| P0-6 | Full error stacks in production logs | 🟡 MED | `middleware/error-handler.ts:15` | `logger.error({ err, ... })` passes full Error object (with stack traces and file paths) to pino |
 
 ---
 
-## Additional Issues
+### 🟠 P1 — Should Fix Before Public Launch
 
-| Issue | Severity | Status |
-|-------|----------|--------|
-| A. Production secrets in `.env` (real site ID committed) | 🔴 | ⬜ Requires manual git cleanup + key rotation |
-| B. Test coverage insufficient (8 test files for entire monorepo) | 🔴 | ⬜ Requires new test files |
-| C. ~530+ TypeScript `any` occurrences across 110+ files | 🟠 | ⬜ Incremental cleanup needed |
-| D. Oversized components need splitting (7 files, 700-1800 lines) | 🟠 | ⬜ Refactoring backlog |
-| E. No code splitting in admin Vite build | 🟠 | ⬜ Add manualChunks + React.lazy() |
-| F. Error handling inconsistency (typed vs raw res.status) | 🟡 | ⬜ Audit all routes |
-| G. SDK missing features (batch ops, file upload, count) | 🟡 | ⬜ Phase 5 |
-| H. Admin `lib/` too thin (103 lines) | 🟡 | ⬜ Add helpers, formatters, constants |
-| I. Dead/unused code (MediaVisionPipeline, LicensingService) | 🟢 | ⬜ Clean up exports |
-| J. Missing env validation at boot | 🟢 | ✅ Fixed — `auth.ts` lines 7-16 fails fast |
+| # | Gap | Severity | File | Description |
+|---|-----|----------|------|-------------|
+| P1-1 | In-memory rate limit fallback | 🟠 HIGH | `middleware/rate-limit.ts:60-67` | Falls back to in-memory counters if Redis unavailable — bypassable across instances in production |
+| P1-2 | SQL injection in migration runner | ✅ FIXED | `database/migrator.ts:45` | Parameterized via `sql` template tag — no more string interpolation |
+| P1-3 | Migration failure halts entire boot | ✅ FIXED | `database/migrator.ts:94-95` | `Migrator.run(continueOnError?: boolean)` halts or continues per flag |
+| P1-4 | No migration rollback | 🟡 MED | `database/migrator.ts` | Failed migration leaves DB in inconsistent state; no `down()` or rollback path |
+| P1-5 | No DB-level FK cascade constraints | 🟡 MED | `model-factory.ts`, `PostgresDrizzleAdapter.ts` | Cascade delete only at app level; concurrent deletes of referenced entities can race |
+| P1-6 | CORS defaults to block-all in production | ✅ FIXED | `index.ts:326` | Production now uses localhost fallback array instead of `false` |
+| P1-7 | Password reset race condition | ✅ FIXED | `api/auth.ts:457-468` | Atomic `findOneAndUpdate` with `returnDocument: 'before'` — no TOCTOU |
+| P1-8 | Sentry SDK 8 versions behind | ✅ FIXED | `server.ts:7` | `@sentry/node` updated to 11.x |
 
 ---
 
-## Gap Analysis: Zenith vs Payload CMS Reference
+### 🟡 P2 — First 30 Days Post-Launch
 
-### Missing Field Types
-- `code` — for code snippet editing
-- `collapsible` — for collapsible form sections  
-- `join` — for joining data from other collections
-- `point` — for geolocation coordinates
-- `radio` — radio button variant of select
-- `row` — for horizontal field layouts
-- `ui` — presentational fields (no data storage)
+| # | Gap | File | Description |
+|---|-----|------|-------------|
+| P2-1 | Search is O(n) naive scan | `services/search.ts:52-75` | `.includes()` on every document; no MongoDB `$text` index or Postgres `GIN` index |
+| P2-2 | Sequential import (N+1) | `api/import-export.ts:95` | Records created one-by-one; 5000 records = 5000 sequential DB round-trips |
+| P2-3 | Assets via `express.static` — no CDN | `index.ts:401` | Media through Node process; no S3/CDN/signed-URL integration |
+| P2-4 | No retry with backoff for webhooks/emails/AI | `webhook.ts`, `email.ts` | First failure abandons operation; webhooks silently fail |
+| P2-5 | Health check doesn't check Redis | ✅ FIXED | `api/system.ts:368` | `/health` now pings Redis and includes it in `status` field |
+| P2-6 | Single health endpoint (not split for K8s) | ✅ FIXED | `api/system.ts` | New `/live` (liveness) and `/ready` (readiness) probe endpoints |
+| P2-7 | No slow-query logging | ✅ FIXED | `middleware/slow-query.ts` | `slowQueryMiddleware` logs requests exceeding `SLOW_QUERY_THRESHOLD_MS` |
+| P2-8 | Audit logs lack cryptographic integrity | `services/audit-log.ts` | No hash chain; MongoDB write access could modify audit records undetected |
+| P2-9 | Version history no diff UI | Admin pages | Versions stored but no visual diff/comparison viewer |
+| P2-10 | No live preview | Admin pages | Not found; Strapi/Payload both ship this |
+| P2-11 | API key scopes not enforced at adapter | `db-mongodb/src/model-factory.ts` | `allowedCollections` in model but not checked in queries |
+| P2-12 | No video/audio thumbnail extraction | `services/MediaVisionPipeline.ts` | Video assets handled but no thumbnail extraction (ffmpeg) |
+| P2-13 | No blurhash placeholder generation | — | Sanity has built-in; Strapi has plugin; Zenith is missing this |
 
-### Admin UI Gaps
-- Hook Configuration UI (backend exists)
-- Custom Endpoint Builder (backend exists)
-- Bulk Operations (delete/publish multiple)
-- Content Preview Modes
-- Auto-translation integration
-- Import functionality (export exists)
-- Webhook Management
-- Field-level permissions (collection-level only)
+---
+
+### 🟢 P3 — Roadmap (Nice-to-Have)
+
+| # | Feature | Description |
+|---|---------|-------------|
+| R1 | Meilisearch/Typesense integration | Replace O(n) naive search with dedicated search engine |
+| R2 | GraphQL subscriptions | Add `graphql-ws` — currently query/mutation only |
+| R3 | SAML/OIDC SSO (enterprise) | Currently only Google/GitHub/Microsoft OAuth |
+| R4 | Tenant-level usage metering | API call counting, storage quotas, AI token tracking per tenant |
+| R5 | Per-tenant custom roles | Currently global roles; should be per-site configurable |
+| R6 | Collection-specific rate limits | Current limiter is global |
+| R7 | Environment branching | Staging → production multi-env content workflow |
+| R8 | Auto-translation integration | Editor exists; translation API not wired |
+| R9 | Plugin hooks system extensibility | Only hooks-based; no custom endpoint extension mechanism |
+| R10 | Stale-while-revalidate in SDK | SWR cache for storefront performance |
+| R11 | Email notifications on workflow state changes | Authors not notified when content goes to `in_review` or `changes_requested` |
+
+---
+
+## PART C — Competitive Position
+
+### What Zenith Does Better Than Strapi/Payload/Sanity/Directus
+
+| Advantage | Details |
+|-----------|---------|
+| **Multi-tenancy architectural, not bolted on** | `siteId` enforced at every adapter query layer. Strapi/Payload/Directus need separate instances per tenant. One deployment, unlimited tenants. |
+| **Brute-force lockout built-in** | 5 failed → 15-min lockout with constant-time timing attack prevention. Strapi/Payload ship this as a plugin or not at all. |
+| **Field-level + row-level access control** | `Map<FieldName, { read, write }>` per role enforced at content service layer. Neither Sanity nor Directus have this granularity at the field level. |
+| **Document locking + ConflictError** | `PresenceService` with active user tracking and `ConflictError` on stale `_version`. Strapi/Payload don't have collaborative conflict detection. |
+| **Glassmorphic admin for agency sales** | Dark glassmorphism, framer-motion, Outfit typography. Strapi is generic MUI; Payload is utilitarian. Visual design wins agency pitches. |
+| **Visual flow automation** | `FlowBuilderPage` with drag-and-drop canvas +  `FlowEngine`. More integrated than Directus Flows because it runs inside a multi-tenant headless CMS. |
+| **TypeScript types auto-generated** | `type-synthesizer.ts` writes `generated.ts` from collection config. Matches Payload's best DX without a code-gen build step. |
+| **Dual DB adapter** | Same collection config compiles to MongoDB and PostgreSQL via `DatabaseAdapter` interface. Strapi went Mongo-only; Payload went Postgres-first; Zenith is agnostic. |
+
+### Gaps That Would Cause a Developer to Choose Strapi/Payload
+
+| Gap | Why It Matters |
+|-----|---------------|
+| O(n) search | Breaks at any real content volume; Strapi has Meilisearch plugin ecosystem |
+| Unverified PostgreSQL production deployment | Payload was built Postgres-first with thousands of production deployments |
+| No version diff/comparison UI | Payload ships this built-in; any content team will miss it immediately |
+| Media via express.static | Strapi Cloud, Sanity CDN, Contentful Images API — all have proper CDN integration |
+| No SAML/OIDC SSO | Directus and Contentful Enterprise have this |
+| No webhook retry | Strapi and Payload both have it; webhook failures are silent in Zenith |
+
+### Scores at a Glance
+
+| Feature | Strapi | Payload | Sanity | Directus | Zenith |
+|---------|--------|---------|--------|---------|-------|
+| Content modeling | 9 | 9 | 8 | 7 | 7 |
+| Content API | 8 | 9 | 9 | 8 | 7 |
+| Media/Assets | 7 | 7 | 9 | 8 | 6 |
+| Auth/Access | 7 | 8 | 6 | 9 | 8 |
+| Dev Experience | 8 | 9 | 8 | 7 | 7 |
+| Admin UI | 7 | 8 | 9 | 8 | 6 |
+| **Multi-tenancy** | **3** | **3** | **2** | **3** | **9** |
 
 ---
 
 ## Completion Summary
 
-| Phase | Status | Items Done | Items Left |
-|-------|--------|-----------|-----------|
-| Phase 1 — Robustness Hardening | ✅ COMPLETE | 15/15 (OAuth is Phase 5) | 0 P1 |
+| Section | Status | Items Done | Items Left |
+|---------|--------|-----------|-----------|
+| Phase 1 — Robustness Hardening | ✅ COMPLETE | 15/15 | 0 |
 | Phase 2 — Versioning & Scheduling | ✅ COMPLETE | 4/4 | 0 |
-| Phase 3 — Plugin & SDK Quality | ✅ CORE COMPLETE | 5/7 | 2 P3 → Phase 5 |
+| Phase 3 — Plugin & SDK Quality | ✅ CORE COMPLETE | 5/7 | 2 P3 |
 | Phase 4 — GraphQL Mutations & DataLoader | ✅ COMPLETE | 5/5 | 0 |
-| Phase 5 — New Capabilities | 🔄 IN PROGRESS | 2/12 | 10 P3 (field types + bulk ops done) |
-
-**All P1 and P2 improvements are now implemented and verified in code.**
-
-> Audit conducted 2026-05-22. Compared Zenith admin UI, backend services, and schema engine against Payload CMS reference in `internal/references/payload`. Major gaps identified in additional missing field types and admin UI configurability.
+| Phase 5 — New Capabilities | 🔄 PARTIAL | 7/12 | 5 P3 |
+| **P0 — Launch Blockers** | 🔴 IN PROGRESS | **0/6** | **6** |
+| **P1 — Should fix before launch** | 🟡 MOSTLY DONE | **5/8** | **3** |
+| **P2 — First 30 days post-launch** | 🟡 IN PROGRESS | **3/13** | **10** |
+| **P3 — Roadmap** | 🟢 TODO | **0/11** | **11** |
 
 ---
 
-## Changes Made This Session
-
-### Session 1 (earlier)
-1. **`packages/core/src/api/query-parser.ts` line 146**: Changed search shorthand from `{ $regex: ..., $options: 'i' }` (MongoDB-only) to `{ $like: ... }` (adapter-agnostic, works on both Mongo and Postgres).
-
-2. **`packages/core/src/services/content.ts`**: Added `_enforceMaxVersions()` method that prunes oldest versions beyond `config.maxVersions` (default 50) after each version creation. Called automatically from `_createVersion()`.
-
-### Session 2 (current) — Missing Field Types Implementation
-3. **`packages/types/src/index.ts`**: Added 7 new field types to `FieldType` union: `code`, `collapsible`, `join`, `point`, `radio`, `row`, `ui`. Added corresponding config interfaces (`CodeFieldConfig`, `CollapsibleFieldConfig`, `JoinFieldConfig`, `PointFieldConfig`, `RadioFieldConfig`, `RowFieldConfig`, `UIFieldConfig`) and updated `FieldConfig` union.
-
-4. **`packages/core/src/schema/engine.ts`**: Added Zod schema generation cases for all 7 new field types. `code` → string with min/max, `collapsible` → nested object, `join` → optional array, `point` → `[number, number]` tuple, `radio` → enum, `row`/`ui` → optional any.
-
-5. **`packages/core/src/services/type-synthesizer.ts`**: Added TypeScript type synthesis cases: `code` → `string`, `collapsible` → nested interface, `join` → `any[]`, `point` → `[number, number]`, `radio` → union of option literals, `row`/`ui` → `undefined`.
-
-6. **`packages/admin/src/components/fields/`**: Created/refactored field components — `CodeField.tsx`, `CollapsibleField.tsx`, `SpecialFields.tsx` (PointField, RowField, JoinField, RadioField), `TextField.tsx`, `TextareaField.tsx`, `SelectField.tsx`, `NumberField.tsx`, `BooleanField.tsx`.
-
-7. **`packages/admin/src/components/FormBuilder.tsx`**: Refactored to use dedicated field component imports. Added `code` and `collapsible` to fullWidth layout list.
-
-8. **`packages/admin/src/pages/editor/FieldRenderer.tsx`**: Added rendering cases for all 7 new field types in the editor context.
-
-9. **`packages/admin/src/pages/editor/constants.ts`**: Extended `FieldDefinition` type with new field types and added `language`, `layout`, and `admin.components` properties.
-
-10. **`packages/admin/src/lib/form-utils.ts`**: Created shared form utilities — `getFieldName`, `getFieldError`, `evaluateCondition`, `isObject`, `deepMerge`, `textCasingStyle`.
-
-11. **`packages/db-postgres/src/PostgresDrizzleAdapter.ts`**: Added `code`/`radio` → TEXT, `collapsible`/`join`/`point` → JSONB, `row`/`ui` → skip (no DB column) in both `mapFieldToDrizzleColumn` and `mapFieldToSqlType`. Added guard in `registerCollection` to skip row/ui fields.
-
-12. **`packages/db-mongodb/src/model-factory.ts`**: Added `code`/`radio` → String, `collapsible` → nested Schema, `join` → Mixed array, `point` → [Number], `row`/`ui` → skip in `mapFieldToMongoose`. Added guard in `generateSchemaFields`.
-
-13. **`packages/core/src/services/content.ts`**: Added `collapsible` to nested field processing (alongside `group`). Added `ui`/`row` to the `beforeChange` skip list (alongside `virtual`).
-
-> **Source:** Audited from `MASTER_GAP_PLAN.md`, `DEEP_ANALYSIS.md`, `INTERNAL_STRATEGIC_AUDIT.md`, `DEEP_AUDIT_REPORT.md`, and the previous `IMPROVEMENTS.md`.
+*Last updated: 2026-05-29 | Sources: competitive audit vs Strapi/Payload/Sanity/Directus/Contentful + production readiness audit (security, data integrity, performance, reliability, observability, operability)*

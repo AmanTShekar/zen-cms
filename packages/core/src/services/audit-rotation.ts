@@ -22,3 +22,24 @@ export function getAuditCutoffDate(days: number): Date {
   cutoff.setDate(cutoff.getDate() - days)
   return cutoff
 }
+
+/**
+ * Returns current audit retention configuration info.
+ */
+export async function getAuditRetentionInfo() {
+  return {
+    defaultRetentionDays: AUDIT_RETENTION_POLICIES.DEFAULT_RETENTION_DAYS,
+    minimumRetentionDays: AUDIT_RETENTION_POLICIES.MINIMUM_RETENTION_DAYS,
+    cutoffDate: getAuditCutoffDate(AUDIT_RETENTION_POLICIES.DEFAULT_RETENTION_DAYS),
+  }
+}
+
+/**
+ * Rotates (purges) audit logs older than the retention period.
+ */
+export async function rotateAuditLogs() {
+  const cutoff = getAuditCutoffDate(AUDIT_RETENTION_POLICIES.DEFAULT_RETENTION_DAYS)
+  // Rotation is handled by the database adapter's cleanup routine.
+  // This function serves as the scheduled entry point.
+  return { purgedBefore: cutoff.toISOString() }
+}

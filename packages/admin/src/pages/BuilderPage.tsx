@@ -35,7 +35,7 @@ const BuilderPage: React.FC = () => {
 
   const loadSchemas = async () => {
     try {
-      const res = await api.get('/system/schemas')
+      const res = await api.get('/schemas')
       setSchemas(res.data.data)
     } catch {
       toast.error('Failed to load schemas')
@@ -83,10 +83,10 @@ const BuilderPage: React.FC = () => {
     setSaving(true)
     try {
       if (activeSchema.id) {
-        await api.put(`/system/schemas/${activeSchema.id}`, activeSchema)
+        await api.put(`/schemas/${activeSchema.id}`, activeSchema)
         toast.success('Schema updated successfully')
       } else {
-        await api.post('/system/schemas', activeSchema)
+        await api.post('/schemas', activeSchema)
         toast.success('Schema created successfully')
       }
       loadSchemas()
@@ -179,7 +179,7 @@ const BuilderPage: React.FC = () => {
                     value={activeSchema.singular}
                     onChange={(e) => setActiveSchema({ ...activeSchema, singular: e.target.value })}
                     className={cn(
-                      'w-full border p-3 text-[11px] font-bold outline-none transition-colors',
+                      'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
                       theme === 'dark' ? 'bg-black border-white/10 focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                     )}
                     placeholder="e.g. Article"
@@ -192,7 +192,7 @@ const BuilderPage: React.FC = () => {
                     value={activeSchema.plural}
                     onChange={(e) => setActiveSchema({ ...activeSchema, plural: e.target.value })}
                     className={cn(
-                      'w-full border p-3 text-[11px] font-bold outline-none transition-colors',
+                      'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
                       theme === 'dark' ? 'bg-black border-white/10 focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                     )}
                     placeholder="e.g. Articles"
@@ -206,7 +206,7 @@ const BuilderPage: React.FC = () => {
                     onChange={(e) => setActiveSchema({ ...activeSchema, slug: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '') })}
                     disabled={!!activeSchema.id}
                     className={cn(
-                      'w-full border p-3 text-[11px] font-bold outline-none transition-colors',
+                      'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
                       theme === 'dark' ? 'bg-black border-white/10 focus:border-emerald-500 disabled:opacity-50' : 'bg-gray-50 border-gray-200 focus:border-emerald-500 disabled:opacity-50'
                     )}
                     placeholder="e.g. articles"
@@ -240,12 +240,12 @@ const BuilderPage: React.FC = () => {
                       value={field.name}
                       onChange={e => updateField(idx, 'name', e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
                       placeholder="field_name"
-                      className="flex-1 bg-transparent border-b border-transparent focus:border-emerald-500 text-[11px] font-mono outline-none py-1"
+                      className="flex-1 bg-transparent border-b border-transparent focus:border-emerald-500 text-[11px] font-mono outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1"
                     />
                     <select
                       value={field.type}
                       onChange={e => updateField(idx, 'type', e.target.value)}
-                      className="w-32 bg-transparent border-b border-transparent focus:border-emerald-500 text-[10px] font-black uppercase tracking-widest outline-none py-1"
+                      className="w-32 bg-transparent border-b border-transparent focus:border-emerald-500 text-[10px] font-black uppercase tracking-widest outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1"
                     >
                       {FIELD_TYPES.map(t => <option key={t} value={t} className="text-black">{t}</option>)}
                     </select>

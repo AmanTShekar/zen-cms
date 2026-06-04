@@ -67,7 +67,7 @@ export function assertFieldType(type: string): asserts type is FieldDefinition['
     'text', 'richtext', 'lexical', 'media', 'relation', 'number', 'boolean', 'select',
     'array', 'group', 'code', 'collapsible', 'join', 'point', 'radio', 'row', 'ui',
     'textarea', 'checkbox', 'date', 'json', 'dz', 'email', 'password', 'uid', 'color',
-    'blocks', 'tabs',
+    'blocks', 'tabs', 'link',
   ])
   if (!validTypes.has(type)) {
     throw new Error(

@@ -99,4 +99,9 @@ export function useBlockLibrary(): BlockDefinition[] {
   return blocks
 }
 
+export function clearBlockCache() {
+  cachedBlocks = null
+  fetchPromise = null
+}
+
 export { fetchBlocksFromApi, FALLBACK_BLOCKS }

@@ -284,7 +284,7 @@ const AuditLogPage: React.FC = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="Search by email, name, collection..."
-                className="bg-transparent border-none outline-none text-xs font-black italic text-gray-400 w-full placeholder:text-gray-700 uppercase tracking-tight"
+                className="bg-transparent border-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-xs font-black italic text-gray-400 w-full placeholder:text-gray-700 uppercase tracking-tight"
               />
             </div>
 

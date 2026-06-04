@@ -57,6 +57,18 @@ export interface DatabaseAdapter {
   aggregate<T = unknown>(collection: string, pipeline: unknown[], options?: BaseOptions): Promise<T[]>
 
   /**
+   * Atomically finds a single document and updates it, returning either
+   * the original (returnDocument: 'before') or updated (returnDocument: 'after') document.
+   * Returns null if no document matches the query.
+   */
+  findOneAndUpdate<T = unknown>(
+    collection: string,
+    query: Record<string, unknown>,
+    update: Record<string, unknown>,
+    options?: BaseOptions & { returnDocument?: 'before' | 'after' }
+  ): Promise<T | null>
+
+  /**
    * Executes multiple operations in a transaction.
    * If the adapter does not support transactions (e.g. standalone Mongo),
    * this will execute the function without a transaction context.

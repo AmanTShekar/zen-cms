@@ -98,6 +98,7 @@ const BlogDemo = () => {
 
         {loading ? (
           <div className="py-20 text-center text-slate-400 font-medium animate-pulse">
+            <a href="http://localhost:5175" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Admin Login</a>
             Fetching content from Zenith Engine...
           </div>
         ) : posts.length === 0 ? (

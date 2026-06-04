@@ -7,11 +7,12 @@ import type {
   Spread,
 } from 'lexical'
 import { ParagraphNode } from 'lexical'
+import type { SerializedParagraphNode } from 'lexical'
 import { $applyNodeReplacement } from 'lexical'
 
 export type SerializedHorizontalRuleNode = Spread<
   { type: 'horizontalrule'; version: 1 },
-  SerializedElementNode
+  SerializedParagraphNode
 >
 
 export class HorizontalRuleNode extends ParagraphNode {

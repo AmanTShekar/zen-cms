@@ -1,0 +1,358 @@
+[
+  {
+    "_id": "6a1c997373852e4a0250550a",
+    "name": "Blog Posts",
+    "slug": "blog-posts",
+    "labels": {
+      "singular": "Blog Posts",
+      "plural": "Blog Postss"
+    },
+    "drafts": false,
+    "timestamps": true,
+    "fields": [
+      {
+        "name": "title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "content",
+        "type": "richtext",
+        "required": true
+      }
+    ],
+    "isGlobal": false,
+    "createdAt": "2026-05-31T20:26:27.880Z",
+    "updatedAt": "2026-06-03T19:46:51.216Z",
+    "__v": 0,
+    "publicRead": true
+  },
+  {
+    "_id": "6a1c997373852e4a02505511",
+    "name": "Authors",
+    "slug": "authors",
+    "labels": {
+      "singular": "Authors",
+      "plural": "Authorss"
+    },
+    "drafts": false,
+    "timestamps": true,
+    "fields": [
+      {
+        "name": "name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "email",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "bio",
+        "type": "text"
+      },
+      {
+        "name": "role",
+        "type": "text"
+      }
+    ],
+    "isGlobal": false,
+    "createdAt": "2026-05-31T20:26:27.887Z",
+    "updatedAt": "2026-06-03T19:46:51.227Z",
+    "__v": 0,
+    "publicRead": true
+  },
+  {
+    "_id": "6a1c997473852e4a02505538",
+    "name": "Products",
+    "slug": "products",
+    "labels": {
+      "singular": "Products",
+      "plural": "Productss"
+    },
+    "drafts": false,
+    "timestamps": true,
+    "fields": [
+      {
+        "name": "name",
+        "type": "text",
+        "label": "Product Name",
+        "required": true
+      },
+      {
+        "name": "slug",
+        "type": "text",
+        "label": "Product Slug",
+        "required": true
+      },
+      {
+        "name": "price",
+        "type": "number",
+        "label": "Price ($)",
+        "required": true
+      },
+      {
+        "name": "description",
+        "type": "textarea",
+        "label": "Description"
+      },
+      {
+        "name": "gallery",
+        "type": "array",
+        "label": "Product Gallery",
+        "fields": [
+          {
+            "name": "image",
+            "type": "media"
+          }
+        ]
+      },
+      {
+        "name": "inStock",
+        "type": "checkbox",
+        "label": "In Stock",
+        "defaultValue": true
+      }
+    ],
+    "isGlobal": false,
+    "createdAt": "2026-05-31T20:26:28.047Z",
+    "updatedAt": "2026-06-03T19:46:51.570Z",
+    "__v": 0,
+    "publicRead": true
+  },
+  {
+    "_id": "6a1c997473852e4a02505555",
+    "name": "Pages",
+    "slug": "pages",
+    "labels": {
+      "singular": "Pages",
+      "plural": "Pagess"
+    },
+    "drafts": false,
+    "timestamps": true,
+    "fields": [
+      {
+        "name": "title",
+        "type": "text",
+        "label": "Page Title",
+        "required": true
+      },
+      {
+        "name": "slug",
+        "type": "text",
+        "label": "URL Slug",
+        "required": true
+      },
+      {
+        "name": "layout",
+        "type": "blocks",
+        "label": "Page Layout",
+        "blocks": [
+          "hero",
+          "features",
+          "stats",
+          "testimonials",
+          "newsletter",
+          "pricing",
+          "cta",
+          "richTextSection",
+          "gallery",
+          "team",
+          "faq"
+        ]
+      }
+    ],
+    "isGlobal": false,
+    "createdAt": "2026-05-31T20:26:28.172Z",
+    "updatedAt": "2026-06-03T19:46:51.563Z",
+    "__v": 0,
+    "publicRead": true
+  },
+  {
+    "_id": "6a1c997473852e4a02505560",
+    "name": "Categories",
+    "slug": "categories",
+    "labels": {
+      "singular": "Categories",
+      "plural": "Categoriess"
+    },
+    "drafts": false,
+    "timestamps": true,
+    "fields": [
+      {
+        "name": "title",
+        "type": "text",
+        "label": "Category Title",
+        "required": true
+      },
+      {
+        "name": "slug",
+        "type": "text",
+        "label": "Category Slug",
+        "required": true
+      }
+    ],
+    "isGlobal": false,
+    "createdAt": "2026-05-31T20:26:28.190Z",
+    "updatedAt": "2026-06-03T19:46:51.576Z",
+    "__v": 0,
+    "publicRead": true
+  },
+  {
+    "_id": "6a1c997473852e4a02505567",
+    "name": "Posts",
+    "slug": "posts",
+    "labels": {
+      "singular": "Posts",
+      "plural": "Postss"
+    },
+    "drafts": false,
+    "timestamps": true,
+    "fields": [
+      {
+        "name": "title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "coverImage",
+        "type": "media"
+      },
+      {
+        "name": "content",
+        "type": "textarea"
+      },
+      {
+        "name": "publishedAt",
+        "type": "date"
+      }
+    ],
+    "isGlobal": false,
+    "createdAt": "2026-05-31T20:26:28.196Z",
+    "updatedAt": "2026-06-03T19:46:51.582Z",
+    "__v": 0,
+    "publicRead": true
+  },
+  {
+    "_id": "6a1ca6879c244e127937d3d2",
+    "slug": "landing-page",
+    "name": "Landing Page",
+    "isGlobal": true,
+    "singleton": true,
+    "publicRead": true,
+    "fields": [
+      {
+        "name": "title",
+        "type": "text"
+      },
+      {
+        "name": "sections",
+        "type": "blocks",
+        "blocks": [
+          "hero",
+          "features",
+          "stats",
+          "testimonials",
+          "newsletter",
+          "pricing",
+          "cta",
+          "richTextSection",
+          "gallery",
+          "team",
+          "faq"
+        ]
+      }
+    ]
+  },
+  {
+    "_id": "6a1f6c98bebf4b24fb5778e7",
+    "name": "Site Settings",
+    "slug": "site-settings",
+    "labels": {
+      "singular": "Site Settings",
+      "plural": "Site Settingss"
+    },
+    "drafts": false,
+    "timestamps": true,
+    "fields": [
+      {
+        "name": "siteName",
+        "type": "text",
+        "label": "Site Name",
+        "required": true
+      },
+      {
+        "name": "supportEmail",
+        "type": "text",
+        "label": "Support Email"
+      },
+      {
+        "name": "logo",
+        "type": "media",
+        "label": "Logo Image"
+      },
+      {
+        "name": "favicon",
+        "type": "media",
+        "label": "Favicon"
+      },
+      {
+        "name": "primaryColor",
+        "type": "text",
+        "label": "Primary Color",
+        "defaultValue": "#8B5CF6"
+      },
+      {
+        "name": "metaTitle",
+        "type": "text",
+        "label": "Default Meta Title"
+      },
+      {
+        "name": "metaDescription",
+        "type": "textarea",
+        "label": "Default Meta Description"
+      },
+      {
+        "name": "ogImage",
+        "type": "media",
+        "label": "Default Social Share Image"
+      },
+      {
+        "name": "socialLinks",
+        "type": "array",
+        "label": "Social Links",
+        "fields": [
+          {
+            "name": "platform",
+            "type": "select",
+            "label": "Platform",
+            "options": [
+              "Twitter",
+              "Instagram",
+              "Facebook",
+              "LinkedIn",
+              "GitHub",
+              "YouTube"
+            ]
+          },
+          {
+            "name": "url",
+            "type": "text",
+            "label": "Profile URL"
+          }
+        ]
+      },
+      {
+        "name": "copyrightText",
+        "type": "text",
+        "label": "Copyright Text"
+      }
+    ],
+    "isGlobal": true,
+    "publicRead": false,
+    "createdAt": "2026-06-02T23:51:52.712Z",
+    "updatedAt": "2026-06-03T19:46:51.587Z",
+    "__v": 0
+  }
+]

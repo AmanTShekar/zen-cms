@@ -68,7 +68,7 @@ const CommentSchema = new Schema<IComment>(
     ],
     siteId: { type: String, index: true },
   },
-  { timestamps: true }
+  { timestamps: true, suppressReservedKeysWarning: true }
 )
 
 // Compound index for fast queries

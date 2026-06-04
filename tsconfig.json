@@ -14,7 +14,17 @@
     "baseUrl": ".",
     "paths": {
       "@zenithcms/*": ["packages/*/src"]
-    }
+    },
+    "types": []
   },
-  "exclude": ["node_modules", "**/dist"]
+  "include": [
+    "packages/core/src/**/*.ts",
+    "packages/db-mongodb/src/**/*.ts",
+    "packages/db-postgres/src/**/*.ts",
+    "packages/types/src/**/*.ts",
+    "packages/cli/src/**/*.ts",
+    "packages/sdk/src/**/*.ts",
+    "packages/create-zenithcms-app/src/**/*.ts"
+  ],
+  "exclude": ["node_modules", "**/dist", "**/*.test.ts", "internal"]
 }

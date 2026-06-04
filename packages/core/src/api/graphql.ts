@@ -152,14 +152,19 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
           processedTypes.add(`${typeName}_Block`)
           const unionTypes: string[] = []
 
-          ;(field as any).blocks?.forEach((block: any) => {
-            const blockTypeName = `${typeName}_${block.slug.charAt(0).toUpperCase() + block.slug.slice(1)}`
+          ;(field as any).blocks?.forEach((blockOrSlug: any) => {
+            const isString = typeof blockOrSlug === 'string'
+            const slug = isString ? blockOrSlug : blockOrSlug.slug
+            const blockDef = isString ? config.collections.find((c) => c.slug === slug) : blockOrSlug
+            if (!blockDef) return
+
+            const blockTypeName = `${typeName}_${slug.charAt(0).toUpperCase() + slug.slice(1)}`
             unionTypes.push(blockTypeName)
-            const blockFields = block.fields
+            const blockFields = blockDef.fields
               ?.map((f: any) => `  ${f.name}: ${fieldTypeToGraphQL(f, blockTypeName, config)}`)
               .join('\n')
             schemaSdl += `\ntype ${blockTypeName} {\n  blockType: String\n${blockFields}\n}\n`
-            buildRecursiveTypes(block.fields || [], blockTypeName)
+            buildRecursiveTypes(blockDef.fields || [], blockTypeName)
           })
 
           if (unionTypes.length > 0) {
@@ -241,7 +246,10 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
             decorated[field.name] = rawValue.map((item: any) => {
               if (!item || typeof item !== 'object') return item
               const blockSlug = item.blockType
-              const blockConfig = (field as any).blocks?.find((b: any) => b.slug === blockSlug)
+              let blockConfig = (field as any).blocks?.find((b: any) => typeof b === 'string' ? b === blockSlug : b.slug === blockSlug)
+              if (typeof blockConfig === 'string') {
+                blockConfig = collectionsConfig.find(c => c.slug === blockConfig)
+              }
               const blockTypeName = `${typeName}_${blockSlug.charAt(0).toUpperCase() + blockSlug.slice(1)}`
 
               const blockDecorator = blockConfig ? createDocumentDecorator(blockConfig.fields || [], collectionsConfig, blockTypeName) : (d: any) => d

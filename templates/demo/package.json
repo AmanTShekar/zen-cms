@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "setup:backend": "tsx backend/setup.ts",
     "dev": "vite --port 5174 --strictPort",
     "build": "vite build",
     "lint": "echo 'Lint bypassed for demo'"

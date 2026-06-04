@@ -11,6 +11,7 @@ import { MediaService } from '../services/media'
 import { validateMagicBytes } from './magic-bytes'
 import { MediaVisionPipeline } from '../services/MediaVisionPipeline'
 import { InvalidPayloadError } from '../errors'
+import { AdapterFactory } from '../database/adapters/AdapterFactory'
 
 const router: Router = Router()
 
@@ -143,7 +144,8 @@ router.post('/', requireAuth, upload.single('file'), async (req: any, res, next)
     }
 
     // 4. Persist media meta details to database adapter
-    const doc = await req.__zenithAdapter.create('media', {
+    const adapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const doc = await adapter.create('media', {
       url,
       id: fileId,
       mimetype: req.file.mimetype,

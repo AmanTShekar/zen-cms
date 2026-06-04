@@ -4,6 +4,7 @@ import { ChevronDown, Sliders, Briefcase } from 'lucide-react';
 import { motion } from 'framer-motion';
 import api from '../lib/api';
 import { useSiteStore } from '../lib/siteStore';
+import { useTenantStore } from '../lib/tenantStore';
 import { useTheme } from '../context/ThemeContext';
 import { toast } from 'react-hot-toast';
 import { cn } from '../lib/utils';
@@ -75,16 +76,24 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
         const firstSite = fetchedSites[0];
         const firstSiteId = firstSite._id || firstSite.id;
         setActiveSiteId(firstSiteId);
+        useTenantStore.getState().setActiveSiteId(firstSiteId, firstSite.name);
         localStorage.setItem('activeSiteName', firstSite.name);
         localStorage.setItem('activeSiteSlug', firstSite.slug);
         api.defaults.headers['x-zenith-site-id'] = firstSiteId;
         toast.success(`Switched to workspace: ${wsName}`);
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 500);
       } else {
         setActiveSiteId(null);
+        useTenantStore.getState().setActiveSiteId('');
         localStorage.removeItem('activeSiteName');
         localStorage.removeItem('activeSiteSlug');
         delete api.defaults.headers['x-zenith-site-id'];
         toast.success(`Switched to workspace: ${wsName} (no sites)`);
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 500);
       }
     } catch (err) {
       toast.error('Failed to switch workspace');
@@ -98,10 +107,14 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
 
     const actualId = site._id || site.id;
     setActiveSiteId(actualId);
+    useTenantStore.getState().setActiveSiteId(actualId, site.name);
     localStorage.setItem('activeSiteName', site.name);
     localStorage.setItem('activeSiteSlug', site.slug);
     api.defaults.headers['x-zenith-site-id'] = actualId;
     toast.success(`Switched to site: ${site.name}`);
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 500);
   };
 
   const activeWorkspace = workspaces.find((w) => (w._id || w.id) === activeWorkspaceId) || {

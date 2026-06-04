@@ -65,7 +65,17 @@ function normalizeFilters(
     const outKey = prefix ? `${prefix}.${key}` : key
     
     if (val && typeof val === 'object' && !Array.isArray(val)) {
-      const ops = val as Record<string, unknown>
+      const rawOps = val as Record<string, unknown>
+      const ops: Record<string, unknown> = {}
+      // Normalize un-prefixed operators to $prefixed
+      for (const [opKey, opVal] of Object.entries(rawOps)) {
+        if (['eq', 'ne', 'in', 'gt', 'lt', 'gte', 'lte', 'like', 'regex'].includes(opKey)) {
+          ops[`$${opKey}`] = opVal
+        } else {
+          ops[opKey] = opVal
+        }
+      }
+
       const isOperator = !!(
         '$eq' in ops || '$ne' in ops || '$in' in ops ||
         '$gt' in ops || '$lt' in ops || '$gte' in ops || '$lte' in ops ||

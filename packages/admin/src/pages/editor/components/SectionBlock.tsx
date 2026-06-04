@@ -327,7 +327,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="overflow-hidden"
+            className="overflow-visible"
           >
             <div className={cn('transition-all duration-300', paddingClasses, widthClasses)}>
               {/* Sub-toolbar: align + undo/redo (moved from header to reduce clutter) */}
@@ -480,75 +480,125 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
                   </table>
                 </div>
               ) : (
-                <div
-                  className={cn(
-                    'gap-8',
-                    regularFieldCount >= 4 ? 'grid grid-cols-1 md:grid-cols-2' : 'space-y-6',
-                    section.align === 'center' && 'text-center',
-                    section.align === 'right' && 'text-right'
-                  )}
-                >
-                  {fieldsToRender.map((field) => {
-                    const rawVal = section.content?.[field.name]
-                    const displayValue = i18nEnabled && getTranslatedValue
-                      ? getTranslatedValue(section.id, field.name, rawVal)
-                      : rawVal
-                    const isFullWidth = field.name === 'content' || field.name === 'description' || field.name === 'bio' || field.type === 'richtext'
-                    const errorKey = `${section.id}:${field.name}`
+                <div className="space-y-8">
+                  {/* Content Fields */}
+                  <div
+                    className={cn(
+                      'gap-8',
+                      fieldsToRender.filter(f => !['anchorId', 'theme', 'paddingY', 'containerWidth', 'bgImage'].includes(f.name) && f.name !== 'content' && f.name !== 'description' && f.name !== 'bio' && f.type !== 'richtext').length >= 4 ? 'grid grid-cols-1 md:grid-cols-2' : 'space-y-6',
+                      section.align === 'center' && 'text-center',
+                      section.align === 'right' && 'text-right'
+                    )}
+                  >
+                    {fieldsToRender.filter(f => !['anchorId', 'theme', 'paddingY', 'containerWidth', 'bgImage'].includes(f.name)).map((field) => {
+                      const rawVal = section.content?.[field.name]
+                      const displayValue = i18nEnabled && getTranslatedValue
+                        ? getTranslatedValue(section.id, field.name, rawVal)
+                        : rawVal
+                      const isFullWidth = field.name === 'content' || field.name === 'description' || field.name === 'bio' || field.type === 'richtext'
+                      const errorKey = `${section.id}:${field.name}`
 
-                    return (
-                      <div
-                        key={field.name}
-                        className={cn(
-                          'space-y-2',
-                          isFullWidth && 'md:col-span-2'
-                        )}
-                      >
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-2">
-                            <label className="text-xs font-black text-gray-500 uppercase tracking-[0.3em] italic px-1 opacity-50">
-                              {field.label || field.name}
-                            </label>
-                            <span className={cn(
-                              'px-1.5 py-0.5 text-[6px] font-black uppercase italic rounded-none',
-                              theme === 'dark'
-                                ? 'bg-white/5 text-gray-600'
-                                : 'bg-gray-100 text-gray-400'
-                            )}>
-                              {field.type}
-                            </span>
-                            {fieldErrors[errorKey] && (
-                              <span className="text-[8px] font-black text-rose-500 uppercase italic ml-auto">
-                                {fieldErrors[errorKey]}
+                      return (
+                        <div
+                          key={field.name}
+                          className={cn(
+                            'space-y-2',
+                            isFullWidth && 'md:col-span-2'
+                          )}
+                        >
+                          <div className="space-y-0.5">
+                            <div className="flex items-center gap-2">
+                              <label className="text-xs font-black text-gray-500 uppercase tracking-[0.3em] italic px-1 opacity-50">
+                                {field.label || field.name}
+                              </label>
+                              <span className={cn(
+                                'px-1.5 py-0.5 text-[6px] font-black uppercase italic rounded-none',
+                                theme === 'dark'
+                                  ? 'bg-white/5 text-gray-600'
+                                  : 'bg-gray-100 text-gray-400'
+                              )}>
+                                {field.type}
                               </span>
+                              {fieldErrors[errorKey] && (
+                                <span className="text-[8px] font-black text-rose-500 uppercase italic ml-auto">
+                                  {fieldErrors[errorKey]}
+                                </span>
+                              )}
+                            </div>
+                            {field.description && (
+                              <p className={cn('text-[10px] font-medium px-1 opacity-40', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
+                                {field.description}
+                              </p>
                             )}
                           </div>
-                          {field.description && (
-                            <p className={cn('text-[10px] font-medium px-1 opacity-40', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
-                              {field.description}
-                            </p>
-                          )}
-                        </div>
 
-                        <FieldRenderer
-                          blockId={section.id}
-                          field={field}
-                          value={displayValue}
-                          onChange={(newVal) => {
-                            if (i18nEnabled && currentLocale !== 'en' && setTranslatedValue) {
-                              setTranslatedValue(section.id, field.name, newVal)
-                            } else {
-                              handleFieldChange(field.name, newVal)
-                            }
-                          }}
-                          onFieldSelect={onFieldSelect}
-                          theme={theme}
-                          error={fieldErrors[errorKey]}
-                          isSelected={selectedField?.blockId === section.id && selectedField?.fieldKey === field.name}
-                        />
+                          <FieldRenderer
+                            blockId={section.id}
+                            field={field}
+                            value={displayValue}
+                            onChange={(newVal) => {
+                              if (i18nEnabled && currentLocale !== 'en' && setTranslatedValue) {
+                                setTranslatedValue(section.id, field.name, newVal)
+                              } else {
+                                handleFieldChange(field.name, newVal)
+                              }
+                            }}
+                            onFieldSelect={onFieldSelect}
+                            theme={theme}
+                            error={fieldErrors[errorKey]}
+                            isSelected={selectedField?.blockId === section.id && selectedField?.fieldKey === field.name}
+                          />
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Settings Fields */}
+                  {fieldsToRender.some(f => ['anchorId', 'theme', 'paddingY', 'containerWidth', 'bgImage'].includes(f.name)) && (
+                    <div className={cn(
+                      'pt-6 mt-6 border-t',
+                      theme === 'dark' ? 'border-white/10' : 'border-gray-200'
+                    )}>
+                      <h4 className="text-[10px] font-black uppercase italic tracking-widest text-emerald-500/50 mb-4 px-1">
+                        Layout & Styling
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        {fieldsToRender.filter(f => ['anchorId', 'theme', 'paddingY', 'containerWidth', 'bgImage'].includes(f.name)).map((field) => {
+                          const rawVal = section.content?.[field.name]
+                          const displayValue = i18nEnabled && getTranslatedValue
+                            ? getTranslatedValue(section.id, field.name, rawVal)
+                            : rawVal
+                          const errorKey = `${section.id}:${field.name}`
+
+                          return (
+                            <div key={field.name} className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] italic px-1 opacity-60">
+                                  {field.label || field.name}
+                                </label>
+                              </div>
+                              <FieldRenderer
+                                blockId={section.id}
+                                field={field}
+                                value={displayValue}
+                                onChange={(newVal) => {
+                                  if (i18nEnabled && currentLocale !== 'en' && setTranslatedValue) {
+                                    setTranslatedValue(section.id, field.name, newVal)
+                                  } else {
+                                    handleFieldChange(field.name, newVal)
+                                  }
+                                }}
+                                onFieldSelect={onFieldSelect}
+                                theme={theme}
+                                error={fieldErrors[errorKey]}
+                                isSelected={selectedField?.blockId === section.id && selectedField?.fieldKey === field.name}
+                              />
+                            </div>
+                          )
+                        })}
                       </div>
-                    )
-                  })}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

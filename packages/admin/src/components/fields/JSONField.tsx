@@ -59,7 +59,7 @@ const JSONField: React.FC<JSONFieldProps> = ({ value, onChange, disabled, rows =
           disabled={disabled}
           spellCheck={false}
           className={cn(
-            'w-full bg-[#0d1117] backdrop-blur-md border rounded-none px-9 py-2.5 text-xs font-mono resize-y focus:outline-none transition-colors',
+            'w-full bg-[#0d1117] backdrop-blur-md border rounded-none px-9 py-2.5 text-xs font-mono resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
             'text-[#e6edf3] placeholder:text-gray-600 disabled:opacity-60 disabled:cursor-not-allowed',
             focused
               ? 'border-emerald-500/50'

@@ -71,6 +71,18 @@ body {
       shadow-glow-sm hover:shadow-glow transition-all duration-200
       hover:scale-[1.02] active:scale-[0.98];
   }
+
+  .navbar-zenith {
+    @apply flex items-center justify-between px-8 py-4 glass-card sticky top-4 z-50 mx-4;
+  }
+  
+  .navbar-zenith .nav-links {
+    @apply flex items-center gap-8;
+  }
+  
+  .navbar-zenith .nav-links a {
+    @apply text-white/70 hover:text-white text-sm font-medium transition-colors;
+  }
 }
 
 /* ── Prose Styles ─────────────────────────────── */

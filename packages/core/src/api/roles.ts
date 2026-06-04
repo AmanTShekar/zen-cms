@@ -6,7 +6,7 @@ import { ValidationError, NotFoundError, ForbiddenError } from '../errors'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { logger } from '../services/logger'
 
-const router = Router()
+const router: import('express').Router = Router()
 
 // All routes require admin
 router.use(requireRole('admin'))
@@ -44,42 +44,50 @@ const ASSIGN_ROLE_SCHEMA = z.object({
 // ── Lifecycle: seed system roles on first boot ──────────────────────────────
 
 export async function seedSystemRoles() {
-  const adapter = AdapterFactory.getActiveAdapter()
-  const systemRoles = [
-    {
-      roleName: 'Admin',
-      roleType: 'admin',
-      description: 'Unrestricted access to all resources and settings',
-      isSystem: true,
-      permissions: [{ resource: '*', actions: ['*'] }],
-    },
-    {
-      roleName: 'Editor',
-      roleType: 'editor',
-      description: 'Can create and edit content but cannot delete or configure system settings',
-      isSystem: true,
-      permissions: [
-        { resource: '*', actions: ['create', 'read', 'update'] },
-        { resource: 'settings', actions: ['read'] },
-      ],
-    },
-    {
-      roleName: 'Viewer',
-      roleType: 'viewer',
-      description: 'Read-only access to all content',
-      isSystem: true,
-      permissions: [{ resource: '*', actions: ['read'] }],
-    },
-  ]
+  try {
+    const adapter = AdapterFactory.getActiveAdapter()
+    const systemRoles = [
+      {
+        roleName: 'Admin',
+        roleType: 'admin',
+        description: 'Unrestricted access to all resources and settings',
+        isSystem: true,
+        permissions: [{ resource: '*', actions: ['*'] }],
+      },
+      {
+        roleName: 'Editor',
+        roleType: 'editor',
+        description: 'Can create and edit content but cannot delete or configure system settings',
+        isSystem: true,
+        permissions: [
+          { resource: '*', actions: ['create', 'read', 'update'] },
+          { resource: 'settings', actions: ['read'] },
+        ],
+      },
+      {
+        roleName: 'Viewer',
+        roleType: 'viewer',
+        description: 'Read-only access to all content',
+        isSystem: true,
+        permissions: [{ resource: '*', actions: ['read'] }],
+      },
+    ]
 
-  for (const role of systemRoles) {
-    const existing = await adapter.findOne('z_roles', { roleName: role.roleName })
-    if (!existing) {
-      await adapter.create('z_roles', role)
+    for (const role of systemRoles) {
+      const existing = await adapter.findOne('z_roles', { roleName: role.roleName })
+      if (!existing) {
+        await adapter.create('z_roles', role)
+      }
+    }
+
+    logger.info('[Roles] System roles seeded')
+  } catch (err: any) {
+    if (err.code === 11000 || err.message?.includes('duplicate key error')) {
+      logger.info('[Roles] System roles already seeded (caught E11000)')
+    } else {
+      logger.error({ err: err.message }, '[Roles] Failed to seed system roles')
     }
   }
-
-  logger.info('[Roles] System roles seeded')
 }
 
 // ── Routes ────────────────────────────────────────────────────────────────────

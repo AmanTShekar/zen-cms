@@ -5,6 +5,8 @@
  * Uses Discriminated Unions for robust field-level validation and IntelliSense.
  */
 
+import type React from 'react'
+
 export type FieldType =
   | 'text'
   | 'number'

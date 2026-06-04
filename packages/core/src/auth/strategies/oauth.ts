@@ -1,10 +1,12 @@
 import { Router, Request, Response } from 'express'
 import crypto from 'crypto'
 import { AdapterFactory } from '../../database/adapters/AdapterFactory'
-import { AuthService } from '../../services/auth'
+import { AuthService, ADMIN_URL } from '../../services/auth'
 import { EmailService } from '../../services/email'
+import { redisService } from '../../services/redis'
 import { createResponse } from '../../api/utils'
 import { AuthenticationError, InvalidPayloadError } from '../../errors'
+import { logger } from '../../services/logger'
 
 /**
  * OAuth Strategy — GitHub & Google
@@ -61,19 +63,33 @@ function generateState(): string {
   return crypto.randomBytes(32).toString('hex')
 }
 
-// In-memory state store (use Redis in production for multi-instance)
-const stateStore = new Map<string, { provider: string; createdAt: number }>()
-
-// Clean expired states every 5 minutes
-setInterval(() => {
-  const now = Date.now()
-  for (const [key, val] of stateStore) {
-    if (now - val.createdAt > 10 * 60 * 1000) stateStore.delete(key)
+async function saveState(key: string, provider: string): Promise<void> {
+  const val = JSON.stringify({ provider, createdAt: Date.now() })
+  // TTL 10 minutes — matches OAuth state expiry
+  if (redisService.client) {
+    await redisService.client.setex(`oauth:state:${key}`, 600, val)
+  } else {
+    logger.warn('Redis unavailable — OAuth state not persisted across instances')
   }
-}, 5 * 60 * 1000)
+}
+
+async function getAndDeleteState(key: string): Promise<{ provider: string } | null> {
+  if (!redisService.client) {
+    // Fallback to empty — auth will reject at state check
+    return null
+  }
+  const raw = await redisService.client.get(`oauth:state:${key}`)
+  if (!raw) return null
+  await redisService.client.del(`oauth:state:${key}`) // single-use
+  try {
+    return JSON.parse(raw) as { provider: string }
+  } catch {
+    return null
+  }
+}
 
 export function createOAuthRouter(): Router {
-  const router = Router()
+  const router: Router = Router()
 
   // ── POST /api/v1/auth/oauth/:provider — Initiate OAuth flow ────────────────
   router.post('/:provider', async (req: Request, res: Response, next) => {
@@ -88,7 +104,7 @@ export function createOAuthRouter(): Router {
       }
 
       const state = generateState()
-      stateStore.set(state, { provider, createdAt: Date.now() })
+      await saveState(state, provider)
 
       const params = new URLSearchParams({
         client_id: config.clientId,
@@ -119,8 +135,10 @@ export function createOAuthRouter(): Router {
 
       if (error) throw new AuthenticationError(`OAuth provider error: ${error}`)
       if (!code) throw new InvalidPayloadError('Authorization code is required')
-      if (!state || !stateStore.has(state)) throw new AuthenticationError('Invalid or expired OAuth state')
-      stateStore.delete(state)
+      const stateData = await getAndDeleteState(state)
+      if (!stateData) throw new AuthenticationError('Invalid or expired OAuth state')
+      const storedProvider = stateData.provider
+      if (storedProvider !== provider) throw new AuthenticationError('OAuth state provider mismatch')
 
       const configFactory = OAUTH_PROVIDERS[provider]
       if (!configFactory) throw new InvalidPayloadError(`Unsupported OAuth provider: ${provider}`)
@@ -239,12 +257,10 @@ export function createOAuthRouter(): Router {
       })
 
       // Redirect to admin with success indicator
-      const redirectUrl = process.env.ADMIN_URL || 'http://localhost:5173'
-      res.redirect(`${redirectUrl}/login?oauth=success`)
+      res.redirect(`${ADMIN_URL}/login?oauth=success`)
     } catch (err) {
       // On error, redirect to login with error
-      const redirectUrl = process.env.ADMIN_URL || 'http://localhost:5173'
-      res.redirect(`${redirectUrl}/login?oauth=error&message=${encodeURIComponent((err as Error).message)}`)
+      res.redirect(`${ADMIN_URL}/login?oauth=error&message=${encodeURIComponent((err as Error).message)}`)
     }
   })
 

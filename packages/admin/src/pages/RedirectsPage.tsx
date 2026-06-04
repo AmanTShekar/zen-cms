@@ -185,7 +185,7 @@ const RedirectsPage = () => {
           onChange={(e) => { setSearch(e.target.value); setPage(1) }}
           placeholder="Search redirect paths..."
           className={cn(
-            'w-full pl-10 pr-4 py-3 text-xs font-bold tracking-wider border outline-none transition-colors',
+            'w-full pl-10 pr-4 py-3 text-xs font-bold tracking-wider border outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
             dark
               ? 'bg-white/[0.03] border-white/5 text-white placeholder:text-gray-600 focus:border-emerald-500/30'
               : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500'
@@ -415,7 +415,7 @@ const RedirectsPage = () => {
                     onChange={(e) => setFormFrom(e.target.value)}
                     placeholder="/old-path"
                     className={cn(
-                      'w-full px-4 py-3 text-xs font-mono font-bold border outline-none transition-colors',
+                      'w-full px-4 py-3 text-xs font-mono font-bold border outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
                       dark
                         ? 'bg-white/[0.03] border-white/10 text-white placeholder:text-gray-700 focus:border-emerald-500/40'
                         : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500'
@@ -436,7 +436,7 @@ const RedirectsPage = () => {
                     onChange={(e) => setFormTo(e.target.value)}
                     placeholder="https://example.com/new-path"
                     className={cn(
-                      'w-full px-4 py-3 text-xs font-mono font-bold border outline-none transition-colors',
+                      'w-full px-4 py-3 text-xs font-mono font-bold border outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
                       dark
                         ? 'bg-white/[0.03] border-white/10 text-white placeholder:text-gray-700 focus:border-emerald-500/40'
                         : 'bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500'

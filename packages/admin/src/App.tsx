@@ -53,6 +53,7 @@ import api from './lib/api'
 import { ThemeProvider } from './context/ThemeContext'
 import { BlockLibraryProvider } from './context/BlockLibraryContext'
 import { GlobalComponentPickerModal } from './components/GlobalComponentPickerModal'
+import { GlobalConfirmDialog } from './components/GlobalConfirmDialog'
 
 // ── Code-split page bundles ────────────────────────────────────────────────────
 const CollectionsPage = lazy(() => import('./pages/CollectionsPage'))
@@ -68,6 +69,7 @@ const SystemHealthPage = lazy(() => import('./pages/SystemHealthPage'))
 const AIWriterPage = lazy(() => import('./pages/AIWriterPage'))
 const PluginsPage = lazy(() => import('./pages/PluginsPage'))
 const SchemaBuilderPage = lazy(() => import('./pages/SchemaBuilderPage'))
+const BlockBuilderPage = lazy(() => import('./pages/BlockBuilderPage'))
 const DashboardBuilder = lazy(() => import('./pages/DashboardBuilder'))
 const TemplatesPage = lazy(() => import('./pages/TemplatesPage'))
 const SetupWizard = lazy(() => import('./pages/SetupWizard'))
@@ -94,6 +96,8 @@ const queryClient = new QueryClient({
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
     },
   },
 })
@@ -176,6 +180,7 @@ const App: React.FC = () => {
           />
           {/* Global component picker — available from all pages */}
           <GlobalComponentPickerModal />
+          <GlobalConfirmDialog />
           <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
@@ -288,6 +293,7 @@ const App: React.FC = () => {
                           <Route path="/templates" element={<TemplatesPage />} />
                           <Route path="/plugins" element={<PluginsPage />} />
                           <Route path="/schema-builder" element={<SchemaBuilderPage />} />
+                          <Route path="/block-builder" element={<BlockBuilderPage />} />
                           <Route path="/settings" element={<SettingsPage />} />
                           <Route path="/ai-architect" element={<AIWriterPage />} />
                           <Route path="/redirects" element={<RedirectsPage />} />

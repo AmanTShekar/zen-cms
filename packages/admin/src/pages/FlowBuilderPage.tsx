@@ -267,7 +267,7 @@ const FlowBuilderPage: React.FC = () => {
                   <input
                     value={selectedFlow.name}
                     onChange={(e) => setSelectedFlow({ ...selectedFlow, name: e.target.value })}
-                    className="bg-transparent text-xl font-black text-white uppercase italic tracking-tighter outline-none focus:text-emerald-500 transition-colors"
+                    className="bg-transparent text-xl font-black text-white uppercase italic tracking-tighter outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:text-emerald-500 transition-colors"
                   />
                   <div className="flex items-center gap-1 bg-white/5 border border-white/10 p-0.5">
                     <button
@@ -299,7 +299,7 @@ const FlowBuilderPage: React.FC = () => {
                   onChange={(e) =>
                     setSelectedFlow({ ...selectedFlow, description: e.target.value })
                   }
-                  className="bg-transparent text-[9px] text-gray-600 uppercase tracking-widest outline-none mt-1 w-96"
+                  className="bg-transparent text-[9px] text-gray-600 uppercase tracking-widest outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black mt-1 w-96"
                 />
               </div>
 
@@ -615,7 +615,7 @@ const FlowBuilderPage: React.FC = () => {
                                 )
                                 setSelectedFlow({ ...selectedFlow, steps: newSteps })
                               }}
-                              className="w-full bg-zinc-950 border border-white/10 p-4 text-[11px] text-white uppercase italic tracking-tighter outline-none focus:border-emerald-500 transition-all"
+                              className="w-full bg-zinc-950 border border-white/10 p-4 text-[11px] text-white uppercase italic tracking-tighter outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500 transition-all"
                             />
                           </div>
 
@@ -637,7 +637,7 @@ const FlowBuilderPage: React.FC = () => {
                                   )
                                   setSelectedFlow({ ...selectedFlow, steps: newSteps })
                                 }}
-                                className="flex-1 w-full bg-zinc-950 border border-white/10 p-4 text-[10px] text-emerald-500 font-mono resize-none outline-none focus:border-emerald-500 transition-all h-64 no-scrollbar"
+                                className="flex-1 w-full bg-zinc-950 border border-white/10 p-4 text-[10px] text-emerald-500 font-mono resize-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500 transition-all h-64 no-scrollbar"
                               />
                               <div className="flex items-center gap-2 text-[8px] text-gray-700 italic">
                                 <Info size={10} />
@@ -668,7 +668,7 @@ const FlowBuilderPage: React.FC = () => {
                                       )
                                       setSelectedFlow({ ...selectedFlow, steps: newSteps })
                                     }}
-                                    className="w-full bg-zinc-950 border border-white/10 p-4 text-[10px] text-white uppercase tracking-widest outline-none focus:border-emerald-500 transition-all"
+                                    className="w-full bg-zinc-950 border border-white/10 p-4 text-[10px] text-white uppercase tracking-widest outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500 transition-all"
                                   />
                                 </div>
                               ))}

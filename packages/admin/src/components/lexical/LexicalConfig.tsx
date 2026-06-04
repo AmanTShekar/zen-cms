@@ -16,23 +16,21 @@ export function onError(error: Error) {
   console.error('[Zenith Lexical]', error)
 }
 
-export function nodes(): Array<Klass<LexicalNode>> {
-  return [
-    HeadingNode,
-    ListNode,
-    ListItemNode,
-    QuoteNode,
-    CodeNode,
-    CodeHighlightNode,
-    TableNode,
-    TableCellNode,
-    TableRowNode,
-    HashtagNode,
-    AutoLinkNode,
-    LinkNode,
-    ImageNode,
-    MediaNode,
-    RelationshipNode,
-    HorizontalRuleNode,
-  ]
-}
+export const nodes: Array<Klass<LexicalNode>> = [
+  HeadingNode,
+  ListNode,
+  ListItemNode,
+  QuoteNode,
+  CodeNode,
+  CodeHighlightNode,
+  TableNode,
+  TableCellNode,
+  TableRowNode,
+  HashtagNode,
+  AutoLinkNode,
+  LinkNode,
+  ImageNode,
+  MediaNode,
+  RelationshipNode,
+  HorizontalRuleNode,
+]

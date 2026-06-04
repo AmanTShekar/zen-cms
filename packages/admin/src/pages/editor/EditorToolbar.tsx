@@ -55,9 +55,9 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
       onClose()
     } else {
       if (isGlobal) {
-        navigate(`/globals/${slug}`)
+        navigate('/')
       } else {
-        navigate(`/collections/${slug || 'pages'}/${id}`)
+        navigate(`/collections/${slug || 'pages'}`)
       }
     }
   }

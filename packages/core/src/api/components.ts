@@ -49,7 +49,7 @@ const RESERVED_SLUGS = new Set([
   'media', 'users', 'members', 'roles', 'pages', 'globals',
 ])
 
-const router = Router()
+const router: import('express').Router = Router()
 
 // ── GET /  ─────────────────────────────────────────────────────────────────────
 // Public read — frontends and admin need this without auth overhead
@@ -171,4 +171,55 @@ router.post('/:id/duplicate', requireAuth, requireRole('admin'), async (req: Req
   }
 })
 
+// ── POST /register-code  ───────────────────────────────────────────────────────
+// Allows developers and AI to register a component from a full JSON definition.
+// Accepts the same shape as POST / but with looser validation to support
+// code-generation and AI-assisted workflows.
+router.post('/register-code', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
+  try {
+    const { slug, displayName, name, category, icon, description, fields } = req.body
+
+    const resolvedName = displayName || name
+    if (!slug || typeof slug !== 'string')
+      throw new InvalidPayloadError('Component slug is required')
+    if (!resolvedName || typeof resolvedName !== 'string')
+      throw new InvalidPayloadError('Component displayName (or name) is required')
+
+    const cleanSlug = slug.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-_]/g, '')
+    if (RESERVED_SLUGS.has(cleanSlug))
+      throw new InvalidPayloadError(`Slug "${cleanSlug}" is reserved`)
+
+    const adapter = getAdapter(req)
+
+    // Upsert: if component already exists, update it (idempotent registration)
+    const existing = await adapter.find<any>(COMPONENTS_COLLECTION, { slug: cleanSlug })
+    let doc: any
+    if (existing.length > 0) {
+      doc = await adapter.update<any>(COMPONENTS_COLLECTION, String(existing[0]._id ?? existing[0].id), {
+        displayName: resolvedName,
+        category: category || existing[0].category,
+        icon: icon || existing[0].icon,
+        description: description || existing[0].description,
+        fields: fields || existing[0].fields,
+        updatedAt: new Date(),
+      })
+      return res.json(createResponse({ ...toDTO(doc), registered: 'updated' }))
+    }
+
+    doc = await adapter.create<any>(COMPONENTS_COLLECTION, {
+      slug: cleanSlug,
+      displayName: resolvedName,
+      category: category || 'General',
+      icon: icon || 'Box',
+      description: description || '',
+      fields: fields || [],
+    })
+
+    res.status(201).json(createResponse({ ...toDTO(doc), registered: 'created' }))
+  } catch (err) {
+    next(err)
+  }
+})
+
 export default router
+

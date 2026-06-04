@@ -149,7 +149,7 @@ router.get('/layout', async (req: Request, res: Response, next) => {
     const siteId = req.headers['x-zenith-site-id'] as string
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const layout = await adapter.findOne<any>('z_dashboard_layouts', { user_id: user.id, site_id: siteId || null })
+    const layout = await adapter.findOne<any>('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
 
     if (!layout) {
       // Return role-appropriate default, don't persist yet
@@ -208,7 +208,7 @@ router.put('/layout', async (req: Request, res: Response, next) => {
     // Optimistic locking — reject if client is saving stale data
     if (clientUpdatedAt) {
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const existing = await adapter.findOne<any>('z_dashboard_layouts', { user_id: user.id, site_id: siteId || null })
+      const existing = await adapter.findOne<any>('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
       if (existing && new Date(clientUpdatedAt) < new Date(existing.updated_at)) {
         throw new ConflictError('Layout was modified in another tab. Refresh to get the latest version.')
       }
@@ -230,19 +230,19 @@ router.put('/layout', async (req: Request, res: Response, next) => {
       user.role === 'admin' ? clamped : clamped.filter((w: any) => !ADMIN_ONLY_WIDGETS.has(w.type))
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    let layout = await adapter.findOne<any>('z_dashboard_layouts', { user_id: user.id, site_id: siteId || null })
+    let layout = await adapter.findOne<any>('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
     
     if (layout) {
       layout = await adapter.update('z_dashboard_layouts', (layout.id || layout._id).toString(), {
         widgets: filteredWidgets,
         columns,
-        site_id: siteId || null,
+        siteId: siteId || null,
         updated_at: new Date()
       })
     } else {
       layout = await adapter.create('z_dashboard_layouts', {
-        user_id: user.id,
-        site_id: siteId || null,
+        userId: user.id,
+        siteId: siteId || null,
         widgets: filteredWidgets,
         columns,
         updated_at: new Date()
@@ -268,7 +268,7 @@ router.post('/layout/reset', async (req: Request, res: Response, next) => {
     const user = (req as any).user
     const siteId = req.headers['x-zenith-site-id'] as string
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    await adapter.deleteMany('z_dashboard_layouts', { user_id: user.id, site_id: siteId || null })
+    await adapter.deleteMany('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
     const defaults = DEFAULT_LAYOUTS[user.role] || DEFAULT_LAYOUTS.viewer
     res.json(createResponse({ widgets: defaults, columns: 12, isDefault: true }))
   } catch (err) {

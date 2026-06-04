@@ -3,6 +3,7 @@ import { X, PlusCircle, Loader2, Shield } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import api from '../../lib/api'
 import toast from 'react-hot-toast'
+import { FocusTrap } from 'focus-trap-react'
 
 interface CreateRoleModalProps {
   onClose: () => void
@@ -37,7 +38,8 @@ const CreateRoleModal: React.FC<CreateRoleModalProps> = ({ onClose, onCreated, t
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <FocusTrap focusTrapOptions={{ initialFocus: false, escapeDeactivates: true, onDeactivate: onClose, fallbackFocus: "body" }}>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div
         className={cn(
           'w-full max-w-sm border rounded-none shadow-2xl',
@@ -71,7 +73,7 @@ const CreateRoleModal: React.FC<CreateRoleModalProps> = ({ onClose, onCreated, t
               autoFocus
               placeholder="e.g. Content Manager"
               className={cn(
-                'w-full border rounded-none py-4 px-5 text-[13px] font-black italic transition-all outline-none',
+                'w-full border rounded-none py-4 px-5 text-[13px] font-black italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                 theme === 'dark'
                   ? 'bg-white/5 border-white/10 text-white focus:border-emerald-500/50'
                   : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
@@ -115,7 +117,8 @@ const CreateRoleModal: React.FC<CreateRoleModalProps> = ({ onClose, onCreated, t
           </button>
         </form>
       </div>
-    </div>
+      </div>
+    </FocusTrap>
   )
 }
 

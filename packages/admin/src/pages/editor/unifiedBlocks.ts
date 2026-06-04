@@ -46,14 +46,16 @@ export const STANDARD_STYLE_FIELDS: FieldDefinition[] = [
     ],
     placeholder: 'Select Container Width',
     label: 'Container Width'
-  }
+  },
+  { name: 'bgImage', type: 'media', label: 'Background Image' }
 ]
 
 export const STANDARD_STYLE_DEFAULTS = {
   anchorId: '',
   theme: 'default',
   paddingY: 'medium',
-  containerWidth: 'boxed'
+  containerWidth: 'boxed',
+  bgImage: null
 }
 
 const BASE_BLOCK_LIBRARY: UnifiedBlockDefinition[] = [
@@ -529,32 +531,35 @@ const BASE_BLOCK_LIBRARY: UnifiedBlockDefinition[] = [
     }
   },
   {
-    type: 'pageTitle',
-    iconName: 'Type',
-    title: 'Page Title',
-    description: 'Page-level title field',
-    category: 'General',
+    type: 'customHtml',
+    iconName: 'Code',
+    title: 'Custom HTML',
+    description: 'Raw HTML and inline CSS code block',
+    category: 'Advanced',
     fields: [
-      { name: 'title', type: 'text', placeholder: 'Page Title' },
+      { name: 'htmlContent', type: 'code', placeholder: '<div class="custom">...</div>' }
     ],
-    defaultContent: { title: '' },
+    defaultContent: {
+      htmlContent: '<div style="padding: 2rem; text-align: center;">\n  <h3>Custom Component</h3>\n</div>'
+    }
   },
   {
-    type: 'pageDescription',
-    iconName: 'FileText',
-    title: 'Page Description',
-    description: 'Page-level description field',
-    category: 'General',
+    type: 'pageEmbed',
+    iconName: 'Copy',
+    title: 'Page Embed',
+    description: 'Embed another page or reusable component',
+    category: 'Advanced',
     fields: [
-      { name: 'description', type: 'richtext', placeholder: 'Page description...' },
       {
-        name: 'inlineWidgets',
-        type: 'dz',
-        label: 'Inline Widgets',
-        components: ['callout', 'code', 'table'],
-      },
+        name: 'reference',
+        type: 'relation',
+        relationTo: 'pages',
+        label: 'Select Page to Embed'
+      }
     ],
-    defaultContent: { description: '', inlineWidgets: [] },
+    defaultContent: {
+      reference: null
+    }
   }
 ]
 

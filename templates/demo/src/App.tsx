@@ -23,8 +23,10 @@ import {
 
 const cn = (...classes: any[]) => classes.filter(Boolean).join(' ')
 
-// API Configuration
-const API_BASE = (import.meta.env.VITE_CMS_URL || 'http://localhost:3000') + '/api/v1'
+// API Configuration (Use relative path in dev to leverage Vite proxy, avoiding CORS)
+const API_BASE = import.meta.env.PROD 
+  ? (import.meta.env.VITE_CMS_URL || 'http://localhost:3000') + '/api/v1'
+  : '/api/v1'
 
 const SkeletonCard = () => (
   <div className="glass-card animate-pulse">
@@ -40,6 +42,7 @@ const ZenithDemo = () => {
   const [products, setProducts] = useState<any[]>([])
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([])
   const [landingPage, setLandingPage] = useState<any>(null)
+  const [postPage, setPostPage] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [cartCount, setCartCount] = useState(0)
   const [error, setError] = useState<string | null>(null)
@@ -114,17 +117,35 @@ const ZenithDemo = () => {
         const params = new URLSearchParams(window.location.search)
         const collection = params.get('collection')
         
+        let targetId = event.data.data?._id || event.data.data?.id
+        
         if (collection === 'products') {
           const updatedProduct = event.data.data
           setProducts((prev) => prev.map((p) => (p._id === updatedProduct._id ? updatedProduct : p)))
           setFeaturedProducts((prev) => prev.map((p) => (p._id === updatedProduct._id ? updatedProduct : p)))
+        } else if (collection === 'posts') {
+          setPostPage(event.data.data)
         } else {
           setLandingPage(event.data.data)
+        }
+        
+        if (targetId) {
+          setTimeout(() => {
+            const el = document.getElementById(targetId)
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              el.classList.add('ring-4', 'ring-emerald-500', 'ring-offset-8', 'ring-offset-black')
+              setTimeout(() => {
+                el.classList.remove('ring-4', 'ring-emerald-500', 'ring-offset-8', 'ring-offset-black')
+              }, 2000)
+            }
+          }, 150)
         }
       }
     }
 
     window.addEventListener('message', handleParentMessage)
+    if (window.parent && window.parent !== window) window.parent.postMessage({ type: 'ZENITH_IFRAME_READY' }, '*')
 
     return () => {
       channel.close()
@@ -287,6 +308,21 @@ const ZenithDemo = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-24 space-y-64">
+        {/* Render Post Preview if present */}
+        {postPage && (
+          <section id={postPage._id || 'post-preview'} className="space-y-16">
+            <div className="glass rounded-[4rem] p-12 md:p-24 border border-white/5 relative overflow-hidden text-center">
+              <h1 className="text-5xl md:text-7xl font-black mb-8 tracking-tighter" dangerouslySetInnerHTML={{ __html: postPage.title || postPage.name || 'Untitled Post' }} />
+              {postPage.coverImage && (
+                <div className="aspect-video w-full rounded-[2rem] overflow-hidden mb-16 border border-white/10 relative">
+                   <img src={postPage.coverImage.url?.startsWith('http') ? postPage.coverImage.url : `http://localhost:3000${postPage.coverImage.url}`} className="absolute inset-0 w-full h-full object-cover" alt="" />
+                </div>
+              )}
+              <div className="prose prose-invert prose-xl md:prose-2xl max-w-4xl mx-auto prose-p:text-white/60 prose-p:font-medium" dangerouslySetInnerHTML={{ __html: postPage.content || '' }} />
+            </div>
+          </section>
+        )}
+
         {/* Featured Section (Focused items from CMS) */}
         {featuredProducts.length > 0 && (
           <section id="featured" className="space-y-16">
@@ -310,6 +346,7 @@ const ZenithDemo = () => {
               {featuredProducts.slice(0, 2).map((product, idx) => (
                 <motion.div
                   key={product._id}
+                  id={product._id}
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   className="relative group h-[500px] rounded-[3rem] overflow-hidden border border-emerald-500/20"
@@ -321,7 +358,7 @@ const ZenithDemo = () => {
                         : `http://localhost:3000${product.gallery?.[0]?.url}`
                     }
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110"
-                    alt={product.title}
+                    alt={product.title || product.name}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
 
@@ -336,7 +373,7 @@ const ZenithDemo = () => {
                     </div>
                     <h3
                       className="text-5xl font-black mb-4 tracking-tighter"
-                      dangerouslySetInnerHTML={{ __html: product.title }}
+                      dangerouslySetInnerHTML={{ __html: product.title || product.name }}
                     />
                     <div className="flex items-center justify-between">
                       <div className="text-3xl font-black text-emerald-400">${product.price}</div>
@@ -393,6 +430,7 @@ const ZenithDemo = () => {
               products.map((product, idx) => (
                 <motion.div
                   key={product._id || idx}
+                  id={product._id}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -406,7 +444,7 @@ const ZenithDemo = () => {
                           ? product.gallery[0].url
                           : `http://localhost:3000${product.gallery?.[0]?.url}`
                       }
-                      alt={product.title}
+                      alt={product.title || product.name}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       onError={(e) => {
                         ;(e.target as HTMLImageElement).src =
@@ -424,7 +462,7 @@ const ZenithDemo = () => {
                   </div>
                   <h3
                     className="text-3xl font-black mb-3 group-hover:text-emerald-400 transition-colors tracking-tight"
-                    dangerouslySetInnerHTML={{ __html: product.title }}
+                    dangerouslySetInnerHTML={{ __html: product.title || product.name }}
                   />
                   <div
                     className="text-white/40 text-sm line-clamp-2 mb-8 leading-relaxed font-medium"

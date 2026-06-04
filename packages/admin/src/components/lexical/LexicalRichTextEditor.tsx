@@ -12,7 +12,7 @@ import { HashtagPlugin } from '@lexical/react/LexicalHashtagPlugin'
 import { CodeHighlightPlugin } from './plugins/CodeHighlightPlugin'
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
-import { $getRoot, type EditorState, type LexicalEditor } from 'lexical'
+import type { EditorState, LexicalEditor } from 'lexical'
 import { SlashCommandPlugin } from './plugins/SlashCommandPlugin'
 import { MarkdownShortcutPlugin } from './plugins/MarkdownShortcutPlugin'
 import { cn } from '../../lib/utils'
@@ -51,10 +51,7 @@ function EditorStateSync({ onChange }: { onChange?: (value: string) => void }) {
   const handleChange = useCallback(
     (editorState: EditorState, _editor: LexicalEditor) => {
       if (!onChange) return
-      editorState.read(() => {
-        const root = $getRoot()
-        onChange(JSON.stringify(root))
-      })
+      onChange(JSON.stringify(editorState.toJSON()))
     },
     [onChange],
   )
@@ -85,7 +82,7 @@ function LexicalEditorInner({ mode, placeholder, disabled, autoFocus }: {
           contentEditable={
             <ContentEditable
               className={cn(
-                'outline-none focus:outline-none min-h-full',
+                'outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black min-h-full',
                 'prose prose-indigo max-w-none',
                 theme === 'dark' ? 'prose-invert text-white' : 'text-gray-900',
                 mode === 'heading'
@@ -128,11 +125,20 @@ export function LexicalRichTextEditor({
   const { theme } = useTheme()
 
   const initialConfig = useMemo(
-    () => ({
+    () => {
+      let editorState = undefined;
+      if (typeof value === 'string' && value.startsWith('{"root"')) {
+        editorState = value;
+      } else if (value !== null && typeof value === 'object' && (value as any)?.root) {
+        editorState = JSON.stringify(value);
+      }
+
+      return {
       namespace: EDITOR_NAMESPACE,
       nodes,
       onError,
       editable: !disabled,
+      editorState,
       theme: {
         ltr: 'ltr',
         rtl: 'rtl',
@@ -199,9 +205,10 @@ export function LexicalRichTextEditor({
           url: 'lexical-token-operator',
           variable: 'lexical-token-variable',
         },
-      },
-    }),
-    [disabled],
+      }
+    }
+    },
+    [disabled, value],
   )
 
   const isFull = mode === 'full'

@@ -6,7 +6,6 @@ import { ContentService } from '../services/content'
 import { CacheService } from '../services/cache'
 
 const router: Router = Router()
-router.use(requireAuth)
 
 /**
  * Bulk Operations API
@@ -20,7 +19,7 @@ router.use(requireAuth)
  * POST /api/v1/:collection/bulk/unpublish — unpublish many by IDs
  */
 
-router.post('/:collection/bulk/delete', async (req: Request, res: Response, next) => {
+router.post('/:collection/bulk/delete', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const { ids } = req.body
     const { collection } = req.params
@@ -60,7 +59,7 @@ router.post('/:collection/bulk/delete', async (req: Request, res: Response, next
   }
 })
 
-router.post('/:collection/bulk/update', async (req: Request, res: Response, next) => {
+router.post('/:collection/bulk/update', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const { ids, data } = req.body
     const { collection } = req.params
@@ -102,7 +101,7 @@ router.post('/:collection/bulk/update', async (req: Request, res: Response, next
   }
 })
 
-router.post('/:collection/bulk/publish', async (req: Request, res: Response, next) => {
+router.post('/:collection/bulk/publish', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const { ids } = req.body
     const { collection } = req.params
@@ -144,7 +143,7 @@ router.post('/:collection/bulk/publish', async (req: Request, res: Response, nex
   }
 })
 
-router.post('/:collection/bulk/unpublish', async (req: Request, res: Response, next) => {
+router.post('/:collection/bulk/unpublish', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const { ids } = req.body
     const { collection } = req.params

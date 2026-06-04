@@ -1,6 +1,7 @@
 import { Resend } from 'resend'
 import { z } from 'zod'
 import { logger } from './logger'
+import { ADMIN_URL } from './auth'
 
 const recipientSchema = z.string().email().max(254)
 
@@ -66,7 +67,7 @@ export class EmailService {
       html: `
         <h1>Welcome, ${name}!</h1>
         <p>You've been successfully added to the <strong>Zenith CMS</strong>.</p>
-        <p>Log in at <a href="${process.env.ADMIN_URL || 'http://localhost:5173'}">${process.env.ADMIN_URL || 'http://localhost:5173'}</a></p>
+        <p>Log in at <a href="${ADMIN_URL}">${ADMIN_URL}</a></p>
       `,
     })
   }

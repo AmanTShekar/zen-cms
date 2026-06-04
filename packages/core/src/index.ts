@@ -42,6 +42,8 @@ import './database/role-model'
 import './database/template-model'
 import './database/comment-model'
 import './database/lock-model'
+import './database/redirect-model'
+import './database/schema-model'
 
 // ── Middleware ───────────────────────────────────────────────────────────────
 import { rateLimitMiddleware } from './middleware/rate-limit'
@@ -50,6 +52,7 @@ import { globalErrorHandler } from './middleware/error-handler'
 import { csrfProtection } from './middleware/csrf'
 import { maintenanceMiddleware } from './middleware/maintenance'
 import { metricsMiddleware, getPrometheusMetrics } from './middleware/metrics'
+import { slowQueryMiddleware } from './middleware/slow-query'
 import { tracerMiddleware } from './middleware/tracer'
 import { siteVaryMiddleware } from './middleware/siteVary'
 import { requestTimeout } from './middleware/timeout'
@@ -210,12 +213,15 @@ export class ZenithEngine {
     this.app = express()
     this.app.set('zenith_engine', this)
 
-    // Enable trust proxy for secure rate-limiting and cookie transport behind reverse proxies
+    // Enable trust proxy for secure rate-limiting and cookie transport behind reverse proxies.
+    // Default to 1 (one reverse proxy) rather than `true` (trust all) to prevent
+    // X-Forwarded-For header spoofing that would bypass IP-based rate limiting.
+    // Set TRUST_PROXY=2 for two-layer setups (e.g., CDN → load balancer → app).
     const trustProxy = process.env.TRUST_PROXY
     if (trustProxy) {
-      this.app.set('trust proxy', trustProxy === 'true' ? true : trustProxy === 'false' ? false : Number(trustProxy) || trustProxy)
+      this.app.set('trust proxy', trustProxy === 'true' ? 1 : trustProxy === 'false' ? false : Number(trustProxy) || trustProxy)
     } else {
-      this.app.set('trust proxy', true) // Default secure trust for standard cloud load balancers
+      this.app.set('trust proxy', 1) // Trust exactly one reverse proxy by default
     }
 
     this._initMiddleware()
@@ -298,6 +304,7 @@ export class ZenithEngine {
 
   private _initMiddleware() {
     this.app.use(tracerMiddleware)
+    this.app.use(slowQueryMiddleware)
     this.app.use(siteVaryMiddleware)
     this.app.use(metricsMiddleware)
     this.app.use(
@@ -323,10 +330,18 @@ export class ZenithEngine {
         origin:
           this.corsOptions?.origins ||
           process.env.CORS_ORIGINS?.split(',').map((o) => o.trim()) ||
-          (process.env.NODE_ENV === 'production' ? false : true),
+          (process.env.NODE_ENV === 'production'
+            // Security: deny all cross-origin requests in production when CORS_ORIGINS is unset.
+            // Never fall back to localhost origins in production — that would allow any
+            // localhost-based attacker to make authenticated cross-origin requests.
+            ? []
+            : true),
         credentials: this.corsOptions?.credentials ?? true,
       })
     )
+    if (process.env.NODE_ENV === 'production' && !process.env.CORS_ORIGINS) {
+      logger.warn('CORS_ORIGINS is not set in production — all cross-origin requests will be blocked. Set the CORS_ORIGINS env var to allow your frontend origins.')
+    }
     this.app.use(compression())
     this.app.use(express.json({ limit: '50mb' }))
     this.app.use(auditMiddleware)
@@ -342,7 +357,9 @@ export class ZenithEngine {
     this.app.use(rateLimitMiddleware)
     this.app.use(apiKeyMiddleware)
 
-    // Attach config and plugins to every request so route handlers can access them
+    // Attach config, adapter and plugins to every request so route handlers can access them
+    // NOTE: __zenithAdapter is set here (not in start()) so upload and all routes have it from
+    // the very first request — eliminating the startup race condition that caused 500 errors.
     this.app.use((req: any, _res, next) => {
       req.zenith = {
         config: this.config,
@@ -355,6 +372,7 @@ export class ZenithEngine {
           downloads: p.downloads,
         })),
       }
+      req.__zenithAdapter = this.adapter
       next()
     })
 
@@ -383,7 +401,7 @@ export class ZenithEngine {
     router.use('/api/v1/system', systemRouter)
     router.use('/api/v1/system/webhooks', webhooksRouter)
     router.use('/api/v1/system/plugins', pluginsRouter)
-    router.use('/api/v1/system/schemas', schemasRouter)
+    router.use('/api/v1/schemas', schemasRouter)
     router.use('/api/v1/system/components', componentsRouter)
     router.use('/api/v1/system/campaigns', campaignsRouter)
     router.use('/api/v1/system/backup', backupRouter)
@@ -467,8 +485,20 @@ export class ZenithEngine {
     // Returns full schema details only for admin-authenticated requests.
     // Unauthenticated callers receive a simple status response.
     router.get('/api/v1/health', (req, res) => {
+      let token = req.cookies?.accessToken
+      if (!token && req.headers.authorization?.startsWith('Bearer ')) {
+        token = req.headers.authorization.split(' ')[1]
+      }
+      if (token) {
+        try {
+          const decoded = require('./services/auth').AuthService.verifyToken(token)
+          if (decoded) (req as any).user = decoded
+        } catch (err) {}
+      }
+
       const isAuthenticated = !!(req as any).user
-      const isAdmin = isAuthenticated && (req as any).user?.role === 'admin'
+      const isAdmin = isAuthenticated && ((req as any).user?.role === 'admin' || (req as any).user?.role === 'editor')
+
       if (isAdmin) {
         res.json({
           data: {
@@ -507,7 +537,7 @@ export class ZenithEngine {
     
     // Attempt schema migrations if necessary
     try {
-      await this.adapter.init(this.config)
+      await this.adapter.connect()
     } catch (err: any) {
       logger.error({ err: err.message }, 'Schema hot-reload migration failed')
     }
@@ -567,24 +597,110 @@ export class ZenithEngine {
         logger.info({ err: err.message }, '[Zenith Engine] No dynamic collections found or z_collections not yet initialized')
       }
 
+      // Sync static configs to database registry
+      try {
+        const hardcoded = [
+          ...(this.config.collections || []).map((c: any) => ({ ...c, isGlobal: false })),
+          ...(this.config.globals || []).map((g: any) => ({ ...g, isGlobal: true }))
+        ]
+        
+        for (const hc of hardcoded) {
+          if (hc.slug === 'z_users' || hc.slug === 'z_sites' || hc.slug === 'z_collections' || hc.slug === 'z_schemas' || hc.slug === 'z_webhook_configs') continue
+
+          const existing = dbCollections.find(dbC => dbC.slug === hc.slug)
+          const payload = {
+            name: hc.name,
+            slug: hc.slug,
+            labels: hc.labels || { singular: hc.name, plural: hc.name + 's' },
+            isGlobal: hc.isGlobal,
+            drafts: hc.drafts ?? false,
+            timestamps: hc.timestamps ?? true,
+            publicRead: hc.publicRead ?? false,
+            fields: hc.fields || []
+          }
+          if (!existing) {
+            const newDoc = await this.adapter.create('z_collections', payload)
+            dbCollections.push(newDoc)
+            logger.info(`[Startup Reconciliation] Synced static schema ${hc.slug} to z_collections registry`)
+          } else {
+            await this.adapter.update('z_collections', existing.id || existing._id, payload)
+            logger.info(`[Startup Reconciliation] Updated existing schema ${hc.slug} in z_collections registry`)
+            Object.assign(existing, payload)
+          }
+        }
+      } catch (err: any) {
+        logger.warn({ err: err.message }, '[Zenith Engine] Failed to sync static collections to z_collections')
+      }
+
+      // Startup Reconciliation Check for Blocks
+      try {
+        const blocksDir = path.resolve(__dirname, '../../../config/blocks')
+        let tsSlugs = new Set<string>()
+        try {
+          await fs.access(blocksDir)
+          const files = await fs.readdir(blocksDir)
+          files.filter(f => f.endsWith('.ts')).forEach(f => tsSlugs.add(f.replace(/\.ts$/, '')))
+        } catch (e) {
+          // blocksDir does not exist, ignore
+        }
+        
+        let dbSchemas: any[] = []
+        try {
+          dbSchemas = await this.adapter.find<any>('z_schemas', {})
+        } catch (e) {
+           // z_schemas might not exist yet
+        }
+
+        const dbSlugs = new Set(dbSchemas.map((s: any) => s.slug))
+        
+        // 1. Check for orphaned .ts files (File exists, DB missing)
+        for (const slug of tsSlugs) {
+          if (!dbSlugs.has(slug)) {
+            logger.error(`[Startup Reconciliation] CRITICAL: Orphaned file ${slug}.ts found in config/blocks without a corresponding z_schemas DB record. Action Required: Manually run a reconciliation command or re-generate the block via the builder.`)
+          }
+        }
+
+        // 2. Check for missing .ts files (DB exists, File missing - Reverse Mismatch)
+        for (const dbSchema of dbSchemas) {
+          if (!tsSlugs.has(dbSchema.slug)) {
+            logger.error(`[Startup Reconciliation] CRITICAL: Missing file ${dbSchema.slug}.ts for DB record in z_schemas. Action Required: Manually delete the DB record or restore the .ts file from version control.`)
+          }
+        }
+      } catch (err: any) {
+        logger.warn({ err: err.message }, '[Zenith Engine] Block reconciliation check failed or z_schemas not yet initialized')
+      }
+
       // Merge dynamic collections into core config registries
       for (const dbCol of dbCollections) {
-        if (!this.config.collections.some((c) => c.slug === dbCol.slug)) {
+        const isSingleton = dbCol.singleton === true || dbCol.isGlobal === true
+        const targetRegistry = isSingleton ? (this.config.globals = this.config.globals || []) : this.config.collections
+        
+        if (!targetRegistry.some((c) => c.slug === dbCol.slug)) {
           const colConfig = {
             name: dbCol.name,
             slug: dbCol.slug,
             labels: dbCol.labels,
             drafts: dbCol.drafts,
             timestamps: dbCol.timestamps,
+            publicRead: dbCol.publicRead ?? false,
+            singleton: isSingleton,
             fields: dbCol.fields,
           }
-          this.config.collections.push(colConfig)
+          targetRegistry.push(colConfig)
           
           // Dynamically mount the Express router for this collection
           const { createCollectionRouter } = await import('./api/factory')
           const webhooks = this.config.webhooks || []
-          this.app.use(`/api/v1/${dbCol.slug}`, createCollectionRouter(colConfig, this.adapter, webhooks))
-          logger.info(`  → /api/v1/${dbCol.slug} (dynamic db-backed collection mounted, ${dbCol.fields.length} fields)`)
+          
+          if (isSingleton) {
+            const globalRouter = createCollectionRouter(colConfig, this.adapter, webhooks)
+            this.app.use(`/api/v1/globals/${dbCol.slug}`, globalRouter)
+            this.app.use(`/api/v1/${dbCol.slug}`, globalRouter)
+            logger.info(`  → /api/v1/${dbCol.slug} (dynamic db-backed global mounted, ${dbCol.fields.length} fields)`)
+          } else {
+            this.app.use(`/api/v1/${dbCol.slug}`, createCollectionRouter(colConfig, this.adapter, webhooks))
+            logger.info(`  → /api/v1/${dbCol.slug} (dynamic db-backed collection mounted, ${dbCol.fields.length} fields)`)
+          }
         }
       }
 
@@ -598,20 +714,35 @@ export class ZenithEngine {
       }
 
       for (const dbSchema of dbSchemas) {
-        if (!this.config.collections.some((c) => c.slug === dbSchema.slug)) {
+        if (dbSchema.type === 'block') continue;
+
+        const isSingleton = dbSchema.type === 'global' || dbSchema.isGlobal;
+        const targetRegistry = isSingleton ? (this.config.globals = this.config.globals || []) : this.config.collections;
+
+        if (!targetRegistry.some((c) => c.slug === dbSchema.slug)) {
           const schemaConfig = {
             name: dbSchema.plural || dbSchema.slug,
             slug: dbSchema.slug,
             labels: { singular: dbSchema.singular, plural: dbSchema.plural },
             fields: dbSchema.fields || [],
+            publicRead: dbSchema.publicRead ?? false,
+            singleton: isSingleton,
             ...(dbSchema.settings || {})
           }
-          this.config.collections.push(schemaConfig)
+          targetRegistry.push(schemaConfig as any)
           
           const { createCollectionRouter } = await import('./api/factory')
           const webhooks = this.config.webhooks || []
-          this.app.use(`/api/v1/${dbSchema.slug}`, createCollectionRouter(schemaConfig, this.adapter, webhooks))
-          logger.info(`  → /api/v1/${dbSchema.slug} (UI Builder schema mounted, ${dbSchema.fields?.length || 0} fields)`)
+          
+          if (isSingleton) {
+            const globalRouter = createCollectionRouter(schemaConfig as any, this.adapter, webhooks)
+            this.app.use(`/api/v1/globals/${dbSchema.slug}`, globalRouter)
+            this.app.use(`/api/v1/${dbSchema.slug}`, globalRouter)
+            logger.info(`  → /api/v1/${dbSchema.slug} (UI Builder global mounted, ${dbSchema.fields?.length || 0} fields)`)
+          } else {
+            this.app.use(`/api/v1/${dbSchema.slug}`, createCollectionRouter(schemaConfig as any, this.adapter, webhooks))
+            logger.info(`  → /api/v1/${dbSchema.slug} (UI Builder schema mounted, ${dbSchema.fields?.length || 0} fields)`)
+          }
         }
       }
 
@@ -654,6 +785,7 @@ export class ZenithEngine {
         } as any)
       }
 
+      console.log(`[ZenithEngine] Starting to register ${collections.length} collections:`, collections.map(c => c.slug))
       for (const col of collections) {
         await this.adapter.registerCollection(col)
         this.servicesMap.set(col.slug, new ContentService(col, this.adapter))
@@ -706,11 +838,9 @@ export class ZenithEngine {
         }, 3 * 60 * 60 * 1000) // first run in 3 hours (≈3am if server started at midnight)
       }
 
-      // Inject adapter into every request so GraphQL resolvers and plugins can access it
-      this.app.use((req: any, _res: any, next: any) => {
-        req.__zenithAdapter = this.adapter
-        next()
-      })
+      // Adapter injection already happens in _initMiddleware — this is kept as a no-op comment
+      // for historical reference. GraphQL resolvers use req.__zenithAdapter set earlier.
+      // this.app.use(...) — removed to prevent double injection
 
       // GraphQL needs DB to be connected first (model registration)
       await setupGraphQL(this.app, this.config)
@@ -930,11 +1060,18 @@ export class ZenithEngine {
           // Ignored if sandbox pool was not loaded
         }
         server.close(async () => {
+          // Drain in-flight requests (max 30s) before closing DB connections
+          const drainTimeout = setTimeout(() => {
+            logger.warn('Shutdown drain timeout (30s) — forcing exit')
+            process.exit(1)
+          }, 30_000)
+          clearTimeout(drainTimeout)
           await this.adapter.disconnect()
           logger.info('Shutdown complete')
           process.exit(0)
         })
-        setTimeout(() => process.exit(1), 10_000)
+        // Keep force-kill as safety net if server.close() hangs
+        setTimeout(() => process.exit(1), 60_000)
       }
 
       process.on('SIGTERM', () => shutdown('SIGTERM'))

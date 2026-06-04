@@ -9,6 +9,35 @@ export default function MediaGridWidget({ theme, title }: WidgetProps) {
   const navigate = useNavigate()
   const [media, setMedia] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const blobMap = { current: {} as Record<string, string> }
+  const blobTokens = { current: new Set<string>() }
+  const [, rerender] = useState(0)
+
+  const getMediaUrl = (url: string): string => {
+    if (!url || url.startsWith('http')) return url
+    return blobMap.current[url] || url
+  }
+
+  useEffect(() => {
+    if (!media.length) return
+    const apiUrl = (import.meta.env.VITE_API_URL || '').replace('/api/v1', '')
+    media.forEach((item: any) => {
+      if (!item.url || item.url.startsWith('http') || blobMap.current[item.url]) return
+      fetch(`${apiUrl}${item.url}`, { credentials: 'include' })
+        .then((r) => r.blob())
+        .then((blob) => {
+          const objectUrl = URL.createObjectURL(blob)
+          blobTokens.current.add(objectUrl)
+          blobMap.current[item.url] = objectUrl
+          rerender((n) => n + 1)
+        })
+        .catch(() => {})
+    })
+  }, [media])
+
+  useEffect(() => {
+    return () => { blobTokens.current.forEach((url) => URL.revokeObjectURL(url)) }
+  }, [])
 
   useEffect(() => {
     api
@@ -62,7 +91,7 @@ export default function MediaGridWidget({ theme, title }: WidgetProps) {
           >
             {item.url ? (
               <img
-                src={item.url}
+                src={getMediaUrl(item.url)}
                 alt={item.alt || item.name}
                 className="w-full h-full object-cover transition-transform group-hover:scale-105"
               />

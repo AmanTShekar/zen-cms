@@ -305,7 +305,7 @@ const PluginsPage = () => {
               }
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none outline-none text-[10px] font-black italic text-gray-400 w-full placeholder:text-gray-600 uppercase tracking-tight"
+              className="bg-transparent border-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[10px] font-black italic text-gray-400 w-full placeholder:text-gray-600 uppercase tracking-tight"
             />
           </div>
 

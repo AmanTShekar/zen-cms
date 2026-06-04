@@ -6,8 +6,9 @@ import { useEditorStore } from '../../../store/editorStore'
 import { useI18nStore } from '../../../store/i18nStore'
 import { useTheme } from '../../../context/ThemeContext'
 import { cn } from '../../../lib/utils'
-import { type Section, BLOCK_LIBRARY, humanize } from '../constants'
+import { type Section, humanize } from '../constants'
 import { FieldRenderer } from '../FieldRenderer'
+import { useEditorBlocks } from '../../../context/BlockLibraryContext'
 
 interface TranslationModalProps {
   open: boolean
@@ -23,6 +24,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
   
   const [referenceLocale, setReferenceLocale] = useState('en')
   const [targetLocale, setTargetLocale] = useState('es')
+  const BLOCK_LIBRARY = useEditorBlocks()
 
   // Extract all translatable fields from the sections
   const translatableFields = useMemo(() => {
@@ -49,7 +51,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
     })
 
     return fields
-  }, [data?.sections])
+  }, [data, BLOCK_LIBRARY])
 
   // Progress calculation
   const progress = useMemo(() => {
@@ -101,7 +103,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
                   value={referenceLocale}
                   onChange={(e) => setReferenceLocale(e.target.value)}
                   className={cn(
-                    'w-32 px-3 py-1.5 text-xs font-bold border rounded-none bg-transparent outline-none transition-colors appearance-none cursor-pointer',
+                    'w-32 px-3 py-1.5 text-xs font-bold border rounded-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors appearance-none cursor-pointer',
                     dark ? 'border-white/10 hover:border-white/30 text-white' : 'border-gray-200 hover:border-gray-400 text-black'
                   )}
                 >
@@ -119,7 +121,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
                   value={targetLocale}
                   onChange={(e) => setTargetLocale(e.target.value)}
                   className={cn(
-                    'w-32 px-3 py-1.5 text-xs font-bold border rounded-none bg-emerald-500/10 outline-none transition-colors appearance-none cursor-pointer',
+                    'w-32 px-3 py-1.5 text-xs font-bold border rounded-none bg-emerald-500/10 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors appearance-none cursor-pointer',
                     dark ? 'border-emerald-500/30 hover:border-emerald-500/60 text-emerald-400' : 'border-emerald-500/30 hover:border-emerald-500/60 text-emerald-600'
                   )}
                 >
@@ -154,7 +156,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
                 <p className="text-xs font-bold uppercase tracking-widest">No text fields found to translate.</p>
               </div>
             ) : (
-              translatableFields.map((field, idx) => {
+              translatableFields.map((field, _idx) => {
                 const refValue = translations[field.sectionId]?.[field.fieldName]?.[referenceLocale] || (referenceLocale === 'en' ? field.originalValue : '') || ''
                 const targetValue = translations[field.sectionId]?.[field.fieldName]?.[targetLocale] || ''
 

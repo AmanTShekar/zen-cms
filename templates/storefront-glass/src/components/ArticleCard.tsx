@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, Calendar, Tag } from 'lucide-react'
-import { Post, stripHtml, formatDate } from '../lib/cms'
+import { Post, stripHtml, formatDate, parseLexicalToHTML } from '../lib/cms'
 
 interface ArticleCardProps {
   post: Post
@@ -19,7 +19,7 @@ export default function ArticleCard({ post, index = 0, featured = false }: Artic
   const excerpt =
     post.excerpt ||
     post.excerptPlain ||
-    (post.content ? stripHtml(post.content).slice(0, 160) + '…' : '')
+    (post.content ? stripHtml(parseLexicalToHTML(post.content)).slice(0, 160) + '...' : '')
   const imageUrl =
     typeof post.coverImage === 'string'
       ? post.coverImage

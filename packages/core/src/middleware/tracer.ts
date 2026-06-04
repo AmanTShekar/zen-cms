@@ -10,7 +10,7 @@ export function tracerMiddleware(req: Request, res: Response, next: NextFunction
   res.setHeader('x-trace-id', context.traceId)
   res.setHeader('traceparent', `00-${context.traceId}-${context.spanId}-01`)
 
-  runWithContext(context, () => {
+  runWithContext(context, `${req.method} ${req.path}`, async () => {
     next()
   })
 }

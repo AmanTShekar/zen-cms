@@ -9,6 +9,7 @@ import { cn } from '../../../lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import api from '../../../lib/api'
 import { CommentsPanel } from './CommentsPanel'
+import EmptyState from '../../../components/EmptyState'
 import toast from 'react-hot-toast'
 
 interface RightPanelProps {
@@ -69,21 +70,20 @@ export const RightPanel: React.FC<RightPanelProps> = ({
     fetchToken()
   }, [collectionSlug, documentId])
 
-  const pageSiteId = data?.siteId || tenantSiteId || ''
+  const docSiteId = data?.siteId
+  const isValidDocSiteId = docSiteId && sites.some((s) => (s._id || s.id) === docSiteId)
+  const pageSiteId = isValidDocSiteId ? docSiteId : tenantSiteId || ''
   const matchingSite = sites.find((s) => (s._id || s.id) === pageSiteId)
 
-  // Resolve dynamic storefront URL based on Zustand/localStorage configurations or current origin
-  let resolvedStorefrontUrl = storefrontUrl || ''
-  if (!resolvedStorefrontUrl) {
-    const domainToUse = matchingSite ? matchingSite.domain : siteDomain
+  const domainToUse = matchingSite ? matchingSite.domain : 'http://localhost:5177'
+  let resolvedStorefrontUrl = ''
 
-    if (domainToUse) {
-      resolvedStorefrontUrl = domainToUse.startsWith('http')
-        ? domainToUse
-        : `http://${domainToUse}`
-    } else {
-      resolvedStorefrontUrl = '' // No valid storefront configuration found
-    }
+  if (domainToUse && domainToUse.trim() !== '') {
+    resolvedStorefrontUrl = domainToUse.startsWith('http')
+      ? domainToUse
+      : `http://${domainToUse}`
+  } else if (storefrontUrl) {
+    resolvedStorefrontUrl = storefrontUrl
   }
 
   const TABS = [
@@ -227,7 +227,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                       <iframe
                         allow="clipboard-read; clipboard-write"
                         ref={iframeRef}
-                        src={`${resolvedStorefrontUrl}?preview=true&token=${previewToken || ''}&collection=${collectionSlug}&id=${documentId}&siteId=${pageSiteId}&viewport=${previewMode}`}
+                        src={`${resolvedStorefrontUrl}${collectionSlug === 'posts' ? '/post/preview' : ''}?preview=true&token=${previewToken || ''}&collection=${collectionSlug}&id=${documentId}&siteId=${pageSiteId}&viewport=${previewMode}`}
                         className="w-full h-full border-none rounded-none"
                         title="Live Preview"
                         sandbox="allow-same-origin allow-scripts allow-forms"
@@ -263,16 +263,12 @@ export const RightPanel: React.FC<RightPanelProps> = ({
               /* Versions */
               <div className="w-full h-full p-3 overflow-y-auto custom-editor-scrollbar">
                 {history.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
-                    <History size={32} className={dark ? 'text-gray-700' : 'text-gray-300'} />
-                    <div>
-                      <p className={cn('text-xs font-black uppercase italic', dark ? 'text-gray-500' : 'text-gray-400')}>
-                        No versions yet
-                      </p>
-                      <p className={cn('text-xs font-bold mt-1', dark ? 'text-gray-700' : 'text-gray-300')}>
-                        Save your page to create a version snapshot
-                      </p>
-                    </div>
+                  <div className="flex flex-col h-full justify-center">
+                    <EmptyState
+                      icon={History}
+                      title="No versions yet"
+                      message="Save your page to create a version snapshot"
+                    />
                   </div>
                 ) : (
                   <div className="space-y-2">

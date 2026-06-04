@@ -4,6 +4,7 @@ import { Cpu, Plus, Globe, LogOut, Loader2, ArrowRight, Briefcase } from 'lucide
 import toast from 'react-hot-toast'
 import api from '../lib/api'
 import { useAuthStore } from '../store/authStore'
+import { useTenantStore } from '../lib/tenantStore'
 
 interface Site {
   _id: string
@@ -28,6 +29,7 @@ interface Workspace {
 export default function SitePicker() {
   const navigate = useNavigate()
   const logout = useAuthStore((state) => state.logout)
+  const setActiveSiteId = useTenantStore((state) => state.setActiveSiteId)
   const [workspaces, setWorkspaces] = useState<Workspace[]>([])
   const [sites, setSites] = useState<Site[]>([])
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | null>(null)
@@ -91,11 +93,16 @@ export default function SitePicker() {
     localStorage.setItem('activeSiteSlug', site.slug)
     localStorage.setItem('activeSiteDomain', site.domain || '')
     
+    // Update Zustand store
+    setActiveSiteId(siteId, site.name)
+    
     // Explicitly update default headers to ensure immediate accuracy
     api.defaults.headers['x-zenith-site-id'] = siteId
     
     toast.success(`Entering site: ${site.name}`)
-    window.location.href = '/'
+    // Use navigate (not window.location.href) so the React tree stays alive
+    // and React Query handles cache invalidation and refetching
+    navigate('/')
   }
 
   const handleCreateWorkspace = async (e: React.FormEvent) => {
@@ -371,7 +378,7 @@ export default function SitePicker() {
                         }
                       }}
                       placeholder="e.g. Zenith E-Commerce"
-                      className="w-full bg-white/[0.02] border border-white/10 focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none transition-colors rounded-none placeholder:text-white/25 text-white"
+                      className="w-full bg-white/[0.02] border border-white/10 focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
                     />
                   </div>
 
@@ -387,7 +394,7 @@ export default function SitePicker() {
                         setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
                       }
                       placeholder="e.g. zenith-commerce"
-                      className="w-full bg-white/[0.02] border border-white/10 focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none transition-colors rounded-none placeholder:text-white/25 text-white"
+                      className="w-full bg-white/[0.02] border border-white/10 focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
                     />
                   </div>
 
@@ -399,7 +406,7 @@ export default function SitePicker() {
                       <select
                         value={icon}
                         onChange={(e) => setIcon(e.target.value)}
-                        className="w-full bg-white/[0.02] border border-white/10 focus:border-[#10B981]/50 px-2 py-3 text-[14px] focus:outline-none transition-colors rounded-none text-white"
+                        className="w-full bg-white/[0.02] border border-white/10 focus:border-[#10B981]/50 px-2 py-3 text-[14px] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none text-white"
                       >
                         <option value="🌐" className="bg-gray-950 text-white">🌐</option>
                         <option value="🛒" className="bg-gray-950 text-white">🛒</option>
@@ -419,7 +426,7 @@ export default function SitePicker() {
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="e.g. Storefront platform"
-                        className="w-full bg-white/[0.02] border border-white/10 focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none transition-colors rounded-none placeholder:text-white/25 text-white"
+                        className="w-full bg-white/[0.02] border border-white/10 focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
                       />
                     </div>
                   </div>
@@ -487,7 +494,7 @@ export default function SitePicker() {
                     }
                   }}
                   placeholder="e.g. Zenith Studio"
-                  className="w-full bg-white/[0.02] border border-white/10 focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none transition-colors rounded-none placeholder:text-white/25 text-white"
+                  className="w-full bg-white/[0.02] border border-white/10 focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
                 />
               </div>
 
@@ -503,7 +510,7 @@ export default function SitePicker() {
                     setWsSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
                   }
                   placeholder="e.g. zenith-studio"
-                  className="w-full bg-white/[0.02] border border-white/10 focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none transition-colors rounded-none placeholder:text-white/25 text-white"
+                  className="w-full bg-white/[0.02] border border-white/10 focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
                 />
               </div>
 

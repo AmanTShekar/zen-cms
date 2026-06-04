@@ -7,7 +7,6 @@ import {
 import { useBlockLibrary } from '../hooks/useBlockLibrary'
 import { useCustomComponents } from '../hooks/useCustomComponents'
 import {
-  BLOCK_LIBRARY as FALLBACK_BLOCKS,
   type BlockDefinition as EditorBlockDefinition,
   type FieldDefinition,
 } from '../pages/editor/constants'
@@ -18,7 +17,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   FileText, Layout, Users, AlertCircle, Code, Table, HelpCircle,
 }
 
-const EditorBlockLibraryContext = createContext<EditorBlockDefinition[]>(FALLBACK_BLOCKS)
+const EditorBlockLibraryContext = createContext<EditorBlockDefinition[]>([])
 
 function mapApiFields(fields: any[]): FieldDefinition[] {
   if (!fields) return []
@@ -40,8 +39,7 @@ function mapApiFields(fields: any[]): FieldDefinition[] {
   } satisfies FieldDefinition))
 }
 
-function normalizeDefaultContent(apiBlock: any, fallback?: EditorBlockDefinition): Record<string, any> {
-  if (fallback?.defaultContent) return { ...fallback.defaultContent }
+function normalizeDefaultContent(apiBlock: any): Record<string, any> {
   // Build minimal default content from field definitions
   const content: Record<string, any> = {}
   for (const f of apiBlock.fields || []) {
@@ -62,19 +60,15 @@ export function BlockLibraryProvider({ children }: { children: ReactNode }) {
   const customComponents = useCustomComponents()
 
   const enriched = useMemo(() => {
-    const apiSlugs = new Set(apiBlocks.map((b) => b.slug))
-    const missingFromApi = FALLBACK_BLOCKS.filter((b) => !apiSlugs.has(b.type))
-
     const merged = apiBlocks.map((apiBlock) => {
-      const existing = FALLBACK_BLOCKS.find((b) => b.type === apiBlock.slug)
       return {
         type: apiBlock.slug,
-        icon: (existing?.icon as LucideIcon) || ICON_MAP[apiBlock.admin?.icon || ''] || Box,
-        title: apiBlock.labels?.singular || existing?.title || apiBlock.slug,
-        description: apiBlock.admin?.description || existing?.description || '',
-        category: apiBlock.admin?.category || existing?.category || 'General',
+        icon: ICON_MAP[apiBlock.admin?.icon || ''] || Box,
+        title: apiBlock.labels?.singular || apiBlock.slug,
+        description: apiBlock.admin?.description || '',
+        category: apiBlock.admin?.category || 'General',
         fields: mapApiFields(apiBlock.fields),
-        defaultContent: normalizeDefaultContent(apiBlock, existing),
+        defaultContent: normalizeDefaultContent(apiBlock),
       } satisfies EditorBlockDefinition
     })
 
@@ -90,7 +84,7 @@ export function BlockLibraryProvider({ children }: { children: ReactNode }) {
       } satisfies EditorBlockDefinition
     })
 
-    return [...merged, ...missingFromApi, ...customMapped]
+    return [...merged, ...customMapped]
   }, [apiBlocks, customComponents])
 
   return (

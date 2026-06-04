@@ -3,25 +3,48 @@ import { createClient, type ZenithClient as ZenithClientType } from '@zenithcms/
 /**
  * Zenith CMS Client — Storefront Glass
  * ─────────────────────────────────────
- * Single instance initialized from environment variables.
- * Replace the workspace import with the npm package when deploying standalone:
- *   `npm install @zenithcms/sdk`
+ * Environment variables (.env):
+ *   VITE_CMS_URL      — full CMS URL for PRODUCTION (e.g. https://api.yoursite.com)
+ *                       Leave blank in dev — Vite proxy forwards /api → localhost:3000
+ *   VITE_CMS_API_KEY  — API key from Zenith Admin → Settings → API Keys
+ *   VITE_CMS_SITE_ID  — Site ID from Zenith Admin → Sites → click your site → copy ID
  *
- * Environment variables (set in .env):
- *   VITE_CMS_URL      — your Zenith core engine URL (e.g. https://api.yoursite.com)
- *   VITE_CMS_API_KEY — API key from Zenith Admin → Settings → API Keys
- *   VITE_CMS_SITE_ID — Site ID from Zenith Admin → Settings → Sites
+ * HOW TO GET YOUR SITE ID:
+ *   1. Open Zenith Admin (localhost:5175)
+ *   2. Log in and select or create a site
+ *   3. Go to Settings → General — the Site ID is shown in the header
+ *   OR: the URL ?siteId= param is set automatically when the admin previews this template
  */
 
-const CMS_URL = import.meta.env.VITE_CMS_URL as string || ''
+// In dev mode, use relative URL ('') so Vite's proxy forwards /api/v1/... to localhost:3000.
+// In production, use VITE_CMS_URL (the full backend URL).
+const isDev = import.meta.env.DEV
+const CMS_URL = isDev ? '' : ((import.meta.env.VITE_CMS_URL as string) || 'http://localhost:3000')
 const CMS_API_KEY = import.meta.env.VITE_CMS_API_KEY as string || ''
-const CMS_SITE_ID = import.meta.env.VITE_CMS_SITE_ID as string || ''
+
+// siteId priority: ?siteId= URL param → VITE_CMS_SITE_ID env → ''
+function getActiveSiteId(): string {
+  try {
+    const params = new URLSearchParams(window.location.search)
+    return params.get('siteId') || (import.meta.env.VITE_CMS_SITE_ID as string) || ''
+  } catch {
+    return (import.meta.env.VITE_CMS_SITE_ID as string) || ''
+  }
+}
 
 export const cms = createClient({
   url: CMS_URL,
   apiKey: CMS_API_KEY,
-  siteId: CMS_SITE_ID,
+  siteId: getActiveSiteId(),
 })
+
+/** Call this when the admin sends a postMessage({ type: 'UPDATE_SITE_ID', siteId }) */
+export function refreshSiteId(newSiteId: string) {
+  if (newSiteId && newSiteId !== cms['siteId']) {
+    cms.setSiteId(newSiteId)
+  }
+}
+
 
 // ── Collection Slug Config ──────────────────────────────────────────────────
 // Update these to match your Zenith CMS collection slugs.
@@ -91,6 +114,8 @@ export interface GlobalConfig {
   logo?: string
   socialLinks?: Record<string, string>
   footerText?: string
+  headerLinks?: { label: string; url: string }[]
+  footerLinks?: { label: string; url: string }[]
 }
 
 /**
@@ -118,6 +143,25 @@ export async function getPost(idOrSlug: string, by: 'id' | 'slug' = 'id') {
     return results.docs[0] || null
   }
   return cms.findById<Post>(COLLECTION.POSTS, idOrSlug)
+}
+
+/**
+ * Fetch a single page by ID or slug.
+ */
+export async function getPage(idOrSlug: string, by: 'id' | 'slug' = 'id') {
+  try {
+    if (by === 'slug') {
+      const results = await cms.find<any>(COLLECTION.PAGES, {
+        where: { slug: { equals: idOrSlug } },
+        limit: 1,
+      })
+      return results.docs[0] || null
+    }
+    return await cms.findById<any>(COLLECTION.PAGES, idOrSlug)
+  } catch (err) {
+    console.error('[cms] Failed to fetch page:', err)
+    return null
+  }
 }
 
 /**
@@ -165,3 +209,43 @@ export function formatDate(dateStr: string | undefined): string {
 }
 
 export type { ZenithClientType as ZenithClient }
+export function parseLexicalToHTML(jsonStr: string | object): string {
+  try {
+    const data = typeof jsonStr === 'string' ? JSON.parse(jsonStr) : jsonStr
+    if (!data.root) return typeof jsonStr === 'string' ? jsonStr : JSON.stringify(jsonStr)
+
+    function renderNode(node: any): string {
+      if (node.type === 'text') {
+        let text = node.text || ''
+        text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        if (node.format & 1) text = `<strong>${text}</strong>`
+        if (node.format & 2) text = `<em>${text}</em>`
+        if (node.format & 8) text = `<u>${text}</u>`
+        return text
+      }
+      if (node.type === 'paragraph') {
+        return `<p>${(node.children || []).map(renderNode).join('')}</p>`
+      }
+      if (node.type === 'heading') {
+        const tag = node.tag || 'h2'
+        return `<${tag}>${(node.children || []).map(renderNode).join('')}</${tag}>`
+      }
+      if (node.type === 'list') {
+        const tag = node.listType === 'number' ? 'ol' : 'ul'
+        return `<${tag}>${(node.children || []).map(renderNode).join('')}</${tag}>`
+      }
+      if (node.type === 'listitem') {
+        return `<li>${(node.children || []).map(renderNode).join('')}</li>`
+      }
+      if (node.children) {
+        return (node.children || []).map(renderNode).join('')
+      }
+      return ''
+    }
+
+    return renderNode(data.root)
+  } catch (e) {
+    return typeof jsonStr === 'string' ? jsonStr : JSON.stringify(jsonStr)
+  }
+}
+

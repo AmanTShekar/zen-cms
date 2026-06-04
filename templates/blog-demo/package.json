@@ -4,15 +4,17 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "setup:backend": "tsx backend/setup.ts",
     "dev": "vite --port 5176 --strictPort",
     "build": "vite build",
     "lint": "echo 'Lint bypassed for blog-demo'"
   },
   "dependencies": {
     "@zenithcms/sdk": "workspace:*",
+    "lucide-react": "^1.14.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "lucide-react": "^1.14.0"
+    "react-router-dom": "7.15.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",

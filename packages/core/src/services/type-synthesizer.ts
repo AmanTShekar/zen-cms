@@ -125,12 +125,17 @@ export class TypeSynthesizer {
     outputPath: string
   ): Promise<void> {
     try {
+      // Deduplicate collections by slug to prevent TypeScript duplicate identifier errors
+      const uniqueCollectionsMap = new Map<string, CollectionConfig>()
+      collections.forEach(c => uniqueCollectionsMap.set(c.slug, c))
+      const uniqueCollections = Array.from(uniqueCollectionsMap.values())
+
       let code = `/**\n * Zenith Auto-Generated TypeScript Definitions\n * This file is automatically re-compiled on database register & boot.\n * DO NOT MODIFY MANUALLY.\n */\n\n`
 
       code += `export interface ZenithDocument {\n  _id: string;\n  createdAt: string;\n  updatedAt: string;\n  status?: 'draft' | 'published';\n}\n\n`
 
       // 1. Generate core interfaces for each collection schema
-      for (const col of collections) {
+      for (const col of uniqueCollections) {
         const interfaceName = this.capitalize(col.slug)
         code += `export interface ${interfaceName} extends ZenithDocument {\n`
 
@@ -145,7 +150,7 @@ export class TypeSynthesizer {
 
       // 2. Generate Zenith Global Type Register mapping slugs to types
       code += `export interface ZenithCollections {\n`
-      for (const col of collections) {
+      for (const col of uniqueCollections) {
         code += `  '${col.slug}': ${this.capitalize(col.slug)};\n`
       }
       code += `}\n\n`

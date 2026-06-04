@@ -44,12 +44,12 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
 
   const availableCollections = [
     { slug: '*', label: 'All Resources' },
-    ...(healthData?.registry?.collections || []).map((c: any) => ({ slug: c.slug, label: c.label || c.slug })),
+    ...(healthData?.collections || []).map((c: any) => ({ slug: c.slug, label: c.label || c.slug })),
   ]
 
   const getCollectionFields = (collectionSlug: string): string[] => {
     if (collectionSlug === '*') return []
-    const col = healthData?.registry?.collections?.find((c: any) => c.slug === collectionSlug)
+    const col = healthData?.collections?.find((c: any) => c.slug === collectionSlug)
     const fields: string[] = []
     const collect = (arr: any[]) => {
       for (const f of arr) {
@@ -294,7 +294,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
                               updated[permIdx] = { ...perm, resource: e.target.value }
                               setEditingRole({ ...editingRole, permissions: updated })
                             }}
-                            className="bg-black border border-white/10 text-white text-[11px] font-black uppercase italic outline-none py-1.5 px-3 rounded-none focus:border-emerald-500 disabled:opacity-50"
+                            className="bg-black border border-white/10 text-white text-[11px] font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none focus:border-emerald-500 disabled:opacity-50"
                           >
                             {availableCollections.map(c => (<option key={c.slug} value={c.slug}>{c.label}</option>))}
                           </select>

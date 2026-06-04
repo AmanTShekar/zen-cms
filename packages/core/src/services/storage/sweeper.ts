@@ -101,7 +101,7 @@ export async function pruneOrphanedMedia(
       }
 
       // Check the seeded defaults as well
-      const knownCollections = ['landing-page', 'products', 'categories', 'authors', 'posts']
+      const knownCollections = ['products', 'categories', 'authors', 'posts']
       for (const slug of knownCollections) {
         try {
           const records = await adapter.find<any>(slug, {})

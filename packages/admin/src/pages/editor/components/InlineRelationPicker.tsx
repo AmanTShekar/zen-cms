@@ -98,8 +98,9 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
       next.add(itemId)
     }
     setSelected(next)
-    const newVal = hasMany ? Array.from(next) : (next.size > 0 ? Array.from(next)[0] : '')
-    onChange(newVal as string | string[])
+    const newVal = hasMany ? Array.from(next) : (next.size > 0 ? Array.from(next)[0] : null)
+    onChange(newVal as string | string[] | null)
+    if (!hasMany) setOpen(false)
   }
 
   const handleApply = () => {
@@ -109,7 +110,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
 
   const handleClear = () => {
     setSelected(new Set())
-    onChange(hasMany ? [] : '')
+    onChange(hasMany ? [] : null)
   }
 
   // ── Positioning ──────────────────────────────────────────────────────────────

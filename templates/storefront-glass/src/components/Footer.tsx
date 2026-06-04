@@ -6,14 +6,22 @@ interface FooterProps {
   siteName?: string
   description?: string
   socialLinks?: Record<string, string>
+  footerLinks?: { label: string; url: string }[]
 }
 
 export default function Footer({
   siteName = 'Zenith Storefront',
   description = 'A premium content experience powered by Zenith CMS.',
   socialLinks = {},
+  footerLinks = [],
 }: FooterProps) {
   const currentYear = new Date().getFullYear()
+
+  const navItems = footerLinks.length > 0 ? footerLinks : [
+    { url: '/', label: 'Home' },
+    { url: '/posts', label: 'All Posts' },
+    { url: '/about', label: 'About' },
+  ]
 
   return (
     <footer className="relative mt-24 border-t border-white/[0.06]">
@@ -56,14 +64,10 @@ export default function Footer({
               Navigation
             </h3>
             <nav className="flex flex-col gap-2">
-              {[
-                { to: '/', label: 'Home' },
-                { to: '/posts', label: 'All Posts' },
-                { to: '/about', label: 'About' },
-              ].map(({ to, label }) => (
+              {navItems.map(({ url, label }) => (
                 <Link
-                  key={to}
-                  to={to}
+                  key={url}
+                  to={url}
                   className="text-sm text-zenith-textMuted hover:text-white transition-colors"
                 >
                   {label}

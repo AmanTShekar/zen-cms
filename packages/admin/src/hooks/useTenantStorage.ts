@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { useSiteStore } from '../lib/siteStore'
+import { useTenantStore } from '../lib/tenantStore'
 
 /** Keys used in localStorage for tenant context */
 export const TENANT_KEYS = {
@@ -68,6 +69,7 @@ export function useTenantStorage() {
    */
   const setSite = useCallback((id: string, slug?: string, domain?: string) => {
     setActiveSiteId(id)
+    useTenantStore.getState().setActiveSiteId(id)
     if (slug) safeSet(TENANT_KEYS.siteSlug, slug)
     if (domain) safeSet(TENANT_KEYS.siteDomain, domain)
   }, [setActiveSiteId])
@@ -77,6 +79,7 @@ export function useTenantStorage() {
    */
   const clearSite = useCallback(() => {
     setActiveSiteId(null)
+    useTenantStore.getState().setActiveSiteId(null)
     safeRemove(TENANT_KEYS.siteSlug)
     safeRemove(TENANT_KEYS.siteDomain)
   }, [setActiveSiteId])

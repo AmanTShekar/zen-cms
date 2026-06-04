@@ -6,9 +6,9 @@ export function generateMongoCode(col: any): string {
 // --- Compiled MongoDB Queries for Collection: ${slug} ---
 
 export async function find${capitalized}Compiled(db: any, table: any, filters: { id?: string; siteId?: string }, options: any = {}) {
-  const model = mongoose.models['${slug}'] || (mongoose.modelNames().includes('${slug}') ? mongoose.model('${slug}') : null)
+  const model = table
   if (!model) {
-    throw new Error('Model ${slug} not registered in Mongoose schema')
+    throw new Error('Model ${slug} was not passed to AOT bridge correctly')
   }
 
   const query: Record<string, any> = {}
@@ -34,9 +34,9 @@ export async function find${capitalized}Compiled(db: any, table: any, filters: {
 }
 
 export async function create${capitalized}Compiled(db: any, table: any, data: any, options: any = {}) {
-  const model = mongoose.models['${slug}'] || (mongoose.modelNames().includes('${slug}') ? mongoose.model('${slug}') : null)
+  const model = table
   if (!model) {
-    throw new Error('Model ${slug} not registered in Mongoose schema')
+    throw new Error('Model ${slug} was not passed to AOT bridge correctly')
   }
   const doc = new model(data)
   await doc.save({ session: options.session })

@@ -11,29 +11,29 @@ interface SettingsAppearanceProps {
 
 const SettingsAppearance: React.FC<SettingsAppearanceProps> = ({ settings, setSettings, theme }) => {
   return (
-    <div className="col-span-full space-y-6">
+    <div className="col-span-full space-y-4">
       <div className="flex items-center justify-between px-1">
-        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] italic">
+        <label className="text-xs font-semibold text-gray-400">
           CSS Protocol Override
         </label>
-        <span className="text-[8px] font-black text-emerald-500 italic uppercase">
+        <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded-full">
           Global Stylesheet
         </span>
       </div>
       <div className="relative group">
-        <div className="absolute top-4 left-6 flex flex-col gap-1.5 opacity-20">
-          <div className="w-6 h-0.5 bg-emerald-500"></div>
-          <div className="w-4 h-0.5 bg-emerald-500"></div>
+        <div className="absolute top-4 left-6 flex flex-col gap-1.5 opacity-30">
+          <div className="w-4 h-0.5 bg-emerald-500 rounded-full"></div>
+          <div className="w-2 h-0.5 bg-emerald-500 rounded-full"></div>
         </div>
         <textarea
           value={settings.customCSS}
           onChange={(e) => setSettings({ ...settings, customCSS: e.target.value })}
           rows={16}
           className={cn(
-            'w-full border rounded-none py-8 pl-16 pr-8 text-[13px] font-mono font-black italic focus:ring-8 transition-all outline-none resize-none no-scrollbar',
+            'w-full border rounded-xl py-6 pl-14 pr-6 text-sm font-mono font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
             theme === 'dark'
-              ? 'bg-black border-white/5 text-emerald-100 focus:ring-emerald-500/5 focus:border-emerald-500/20'
-              : 'bg-gray-50 border-gray-100 shadow-inner'
+              ? 'bg-[#0f141f]/80 border-white/10 text-emerald-50 focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/30 shadow-inner'
+              : 'bg-gray-50 border-gray-200 shadow-inner focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/30'
           )}
           placeholder="/* Inject custom CSS protocols here... */"
         />

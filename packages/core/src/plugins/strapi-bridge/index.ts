@@ -90,7 +90,7 @@ export async function loadStrapiPlugin(app: Express, plugin: StrapiPluginConfig,
     }
 
     if (rawRoutes.length > 0) {
-      const router = Router()
+      const router: Router = Router()
 
       rawRoutes.forEach((route) => {
         const [ctrlName, actionName] = route.handler.split('.')

@@ -28,6 +28,8 @@ import { motion, AnimatePresence, Reorder } from 'framer-motion'
 import api from '../lib/api'
 import { toast } from 'react-hot-toast'
 import { SiteSelector } from '../components/SiteSelector'
+import { useTenantStore } from '../lib/tenantStore'
+import { useSystemMetadata } from '../hooks/useQueries'
 
 import Logo from '../components/Logo'
 import GlobalSearch from '../components/GlobalSearch'
@@ -52,12 +54,17 @@ interface HealthData {
 const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const { logout, user } = useAuthStore()
   const { theme, toggleTheme } = useTheme()
+  const activeSiteName = useTenantStore((state) => state.activeSiteName)
+  const activeSiteId = useTenantStore((state) => state.activeSiteId)
   const [isSidebarOpen, setSidebarOpen] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
   const [, setCommandPaletteOpen] = useState(false)
-  const [collections, setCollections] = useState<RegistryItem[]>([])
-  const [globals, setGlobals] = useState<RegistryItem[]>([])
-  const [health, setHealth] = useState<HealthData | null>(null)
+  
+  // React Query Hook for metadata
+  const { data: health, isSuccess } = useSystemMetadata()
+  const collections = health?.collections || []
+  const globals = health?.globals || []
+
   const [isCustomizing, setIsCustomizing] = useState(false)
   const [sidebarConfig, setSidebarConfig] = useState<{ name: string; path: string; visible: boolean }[]>(() => {
     try {
@@ -131,19 +138,21 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
   }, [])
 
   useEffect(() => {
-    // SYSTEM HANDSHAKE
-    const fetchMetadata = async () => {
-      try {
-        const response = await api.get('/health')
-        const data = response.data.data
-        setCollections(data.collections || data.registry?.collections || [])
-        setGlobals(data.globals || data.registry?.globals || [])
-        setHealth(data)
-      } catch {
-        console.error('System Handshake Failed')
-        toast.error('Failed to connect to server')
+    // TENANT THEME INJECTION
+    const updateTheme = () => {
+      let link = document.getElementById('theme-stylesheet') as HTMLLinkElement
+      if (!link) {
+        link = document.createElement('link')
+        link.id = 'theme-stylesheet'
+        link.rel = 'stylesheet'
+        document.head.appendChild(link)
       }
+      const timestamp = new Date().getTime()
+      const baseUrl = import.meta.env.VITE_API_URL || '/api/v1'
+      link.href = `${baseUrl}/system/settings/theme${activeSiteId ? `?siteId=${activeSiteId}&t=${timestamp}` : `?t=${timestamp}`}`
     }
+
+    updateTheme()
 
     // KEYBOARD INTERRUPTS
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -153,15 +162,12 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
       }
     }
 
-    fetchMetadata()
     window.addEventListener('keydown', handleKeyDown)
-    const interval = setInterval(fetchMetadata, 30000)
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
-      clearInterval(interval)
     }
-  }, [])
+  }, [activeSiteId])
 
   return (
     <div
@@ -394,9 +400,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     />
                     {isSidebarOpen && (
                       <span className="text-[12px] font-black uppercase tracking-widest italic truncate">
-                        {global.slug === 'landing-page'
-                          ? 'Page Editor'
-                          : global.name.replace(/-/g, ' ').replace(/_/g, ' ')}
+                        {global.name.replace(/-/g, ' ').replace(/_/g, ' ')}
                       </span>
                     )}
                   </Link>
@@ -522,6 +526,36 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                 {isSidebarOpen && (
                   <span className="text-[12px] font-black uppercase tracking-tight italic leading-none truncate">
                     Schema Builder
+                  </span>
+                )}
+              </Link>
+
+              <Link
+                to="/block-builder"
+                className={cn(
+                  'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
+                  location.pathname === '/block-builder'
+                    ? theme === 'dark'
+                      ? 'bg-white border-white text-black shadow-lg'
+                      : 'bg-gray-900 border-gray-800 text-white shadow-xl'
+                    : theme === 'dark'
+                      ? 'text-gray-450 border-white/5 hover:bg-white/[0.04] hover:text-white'
+                      : 'text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-gray-900'
+                )}
+              >
+                <div
+                  className={cn(
+                    'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
+                    location.pathname === '/block-builder'
+                      ? theme === 'dark'
+                        ? 'bg-black scale-110'
+                        : 'bg-emerald-400'
+                      : 'bg-gray-700/40 group-hover:bg-emerald-500'
+                  )}
+                />
+                {isSidebarOpen && (
+                  <span className="text-[12px] font-black uppercase tracking-tight italic leading-none truncate">
+                    Block Builder
                   </span>
                 )}
               </Link>

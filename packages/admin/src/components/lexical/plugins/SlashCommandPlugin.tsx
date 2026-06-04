@@ -7,6 +7,7 @@ import {
   COMMAND_PRIORITY_EDITOR,
   FORMAT_TEXT_COMMAND,
   createCommand,
+  $isTextNode,
   type LexicalCommand,
 } from 'lexical'
 import { $createHeadingNode, $createQuoteNode } from '@lexical/rich-text'
@@ -50,7 +51,9 @@ function $removeSlashQuery() {
   const match = before.match(/\/[\w-]*$/)
   if (match) {
     const start = offset - match[0].length
-    anchorNode.spliceText(start, match[0].length, '', true)
+    if ($isTextNode(anchorNode)) {
+      anchorNode.spliceText(start, match[0].length, '', true)
+    }
   }
 }
 

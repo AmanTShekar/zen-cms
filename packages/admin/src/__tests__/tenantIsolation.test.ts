@@ -8,7 +8,7 @@
  *  3. Tenant-exempt paths (/auth, /sites, /health, etc.) still work without a siteId.
  */
 
-import { describe, it, expect, beforeEach, beforeAll, afterAll } from 'vitest'
+import { describe, it, expect, beforeEach, beforeAll, afterAll, vi } from 'vitest'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 
@@ -16,28 +16,37 @@ import apiInstance from '../lib/api'
 import { useTenantStore } from '../lib/tenantStore'
 import { ApiError } from '../lib/ApiError'
 
+// The API base URL is configured via vite.config.ts test.env (VITE_API_URL),
+// ensuring import.meta.env.VITE_API_URL is set when api.ts is first imported.
+const TEST_API_BASE = 'http://localhost:5173'
+
 let lastRequest: Request | undefined
 
 const server = setupServer(
-  http.all('http://localhost:5173/api/*', ({ request }) => {
+  http.all(`${TEST_API_BASE}/api/*`, ({ request }) => {
     lastRequest = request
     return HttpResponse.json({ ok: true })
   })
 )
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'error' })
+})
 beforeEach(() => {
   useTenantStore.getState().setToken(null); useTenantStore.getState().setActiveSiteId(null)
   lastRequest = undefined
   server.resetHandlers()
   server.use(
-    http.all('http://localhost:5173/api/*', ({ request }) => {
+    http.all(`${TEST_API_BASE}/api/*`, ({ request }) => {
       lastRequest = request
       return HttpResponse.json({ ok: true })
     })
   )
 })
-afterAll(() => server.close())
+afterAll(() => {
+  server.close()
+  vi.unstubAllEnvs()
+})
 
 describe('Tenant isolation', () => {
   it('sends x-zenith-site-id when activeSiteId is set', async () => {
@@ -66,7 +75,7 @@ describe('Tenant isolation', () => {
   it('allows tenant-exempt paths (/auth) without a siteId', async () => {
     useTenantStore.getState().setToken(null); useTenantStore.getState().setActiveSiteId(null)
     server.use(
-      http.post('http://localhost:5173/api/v1/auth/login', ({ request }) => {
+      http.post(`${TEST_API_BASE}/api/v1/auth/login`, ({ request }) => {
         lastRequest = request
         return HttpResponse.json({ token: 'fake' })
       })

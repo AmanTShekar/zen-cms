@@ -5,12 +5,12 @@ import { Menu, X, Zap } from 'lucide-react'
 
 interface HeaderProps {
   siteName?: string
-  tagline?: string
+  headerLinks?: { label: string; url: string }[]
 }
 
 const CMS_URL = import.meta.env.VITE_CMS_URL as string
 
-export default function Header({ siteName = 'Zenith Storefront', tagline }: HeaderProps) {
+export default function Header({ siteName = 'Zenith Storefront', tagline, headerLinks = [] }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
@@ -24,6 +24,12 @@ export default function Header({ siteName = 'Zenith Storefront', tagline }: Head
   useEffect(() => {
     setMobileOpen(false)
   }, [location.pathname])
+
+  const navItems = headerLinks.length > 0 ? headerLinks : [
+    { url: '/', label: 'Home' },
+    { url: '/posts', label: 'Posts' },
+    { url: '/about', label: 'About' },
+  ]
 
   return (
     <>
@@ -57,24 +63,20 @@ export default function Header({ siteName = 'Zenith Storefront', tagline }: Head
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8">
-            {[
-              { to: '/', label: 'Home' },
-              { to: '/posts', label: 'Posts' },
-              { to: '/about', label: 'About' },
-            ].map(({ to, label }) => (
+            {navItems.map(({ url, label }) => (
               <Link
-                key={to}
-                to={to}
+                key={url}
+                to={url}
                 className={`
                   text-sm font-semibold transition-colors relative
-                  ${location.pathname === to
+                  ${location.pathname === url
                     ? 'text-white'
                     : 'text-zenith-textMuted hover:text-white'
                   }
                   after:absolute after:-bottom-0.5 after:left-0 after:right-0
                   after:h-px after:bg-indigo-500/50 after:scale-x-0 after:origin-left
                   after:transition-transform
-                  ${location.pathname === to ? 'after:scale-x-100' : ''}
+                  ${location.pathname === url ? 'after:scale-x-100' : ''}
                   hover:after:scale-x-100
                 `}
               >
@@ -118,17 +120,13 @@ export default function Header({ siteName = 'Zenith Storefront', tagline }: Head
             className="fixed top-16 left-0 right-0 z-40 bg-zenith-base/95 backdrop-blur-xl border-b border-white/[0.06] md:hidden"
           >
             <nav className="max-w-6xl mx-auto px-6 py-4 flex flex-col gap-1">
-              {[
-                { to: '/', label: 'Home' },
-                { to: '/posts', label: 'Posts' },
-                { to: '/about', label: 'About' },
-              ].map(({ to, label }) => (
+              {navItems.map(({ url, label }) => (
                 <Link
-                  key={to}
-                  to={to}
+                  key={url}
+                  to={url}
                   className={`
                     px-4 py-3 rounded-xl text-sm font-semibold transition-colors
-                    ${location.pathname === to
+                    ${location.pathname === url
                       ? 'bg-indigo-500/10 text-white'
                       : 'text-zenith-textMuted hover:bg-white/5 hover:text-white'
                     }

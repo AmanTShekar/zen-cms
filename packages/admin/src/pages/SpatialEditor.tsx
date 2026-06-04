@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { Reorder, useDragControls } from 'framer-motion'
 import { BlockContextMenu } from './editor/components/BlockContextMenu'
 import {
@@ -32,7 +32,8 @@ import { EditorErrorBoundary } from '../components/EditorErrorBoundary'
 import { DocumentDiffModal } from './editor/components/DocumentDiffModal'
 import { ConflictResolutionModal } from './editor/components/ConflictResolutionModal'
 import { EditorStatusBar } from './editor/components/EditorStatusBar'
-import { BLOCK_LIBRARY, type Section, type PageData, detectFieldType, humanize } from './editor/constants'
+import { type Section, type PageData, detectFieldType, humanize } from './editor/constants'
+import { useEditorBlocks } from '../context/BlockLibraryContext'
 import { useCollab } from '../hooks/useCollab'
 import { cn, uid } from '../lib/utils'
 
@@ -108,6 +109,7 @@ const ReorderableSectionBlock = React.memo(
     setBlockPickerOpen: any
     onOpenContextMenu: (e: React.MouseEvent, sectionId: string) => void
     broadcastCursor?: (sectionId?: string, fieldKey?: string) => void
+    collab?: any  // collaboration context — passed through but only broadcastCursor is consumed
     toggleCollapse: (id: string) => void
     moveSection: (id: string, dir: 'up' | 'down') => void
     copySection: (id: string) => void
@@ -166,7 +168,12 @@ const ReorderableSectionBlock = React.memo(
           onDelete={() => removeSection(section.id)}
           onAlign={(align) => updateAlign(section.id, align)}
           onFieldChange={(key, val) => handleFieldChange(section.id, key, val)}
-          onFieldSelect={(blockId: string, fieldKey: string) => { setSelectedField({ blockId, fieldKey }); broadcastCursor?.(blockId, fieldKey) }}
+          onFieldSelect={(blockId: string, fieldKey: string) => { 
+            setSelectedField({ blockId, fieldKey }); 
+            broadcastCursor?.(blockId, fieldKey);
+            editorSetActiveSection(blockId);
+            onMultiSelect(blockId, false);
+          }}
           i18nEnabled={i18nEnabled}
           currentLocale={currentLocale}
           getTranslatedValue={getTranslatedValue}
@@ -218,10 +225,14 @@ interface SpatialEditorProps {
 // Main Component
 const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, focusedSectionId, onClose }) => {
   const params = useParams<{ id?: string; slug?: string }>()
-  const id = propId || params.id || params.slug
+  const navigate = useNavigate()
+  const isNewDoc = !isGlobal && !params.id
+  const id = propId || params.id || (isGlobal ? params.slug : 'new')
   const { theme } = useTheme()
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
+
+  const BLOCK_LIBRARY = useEditorBlocks()
 
   // Zustand stores — useShallow prevents full re-render on unrelated state changes
   const {
@@ -290,6 +301,12 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; sectionId: string } | null>(null)
   const [diffVersion, setDiffVersion] = useState<{ id: string; num: number } | null>(null)
   const [topLevelFields, setTopLevelFields] = useState<any[]>([])
+  const hasBlocksField = React.useMemo(() => {
+    return topLevelFields.some((f: any) => f.type === 'blocks' || f.name === 'layout' || f.name === 'sections')
+  }, [topLevelFields])
+  const sectionIdsMemo = React.useMemo(() => {
+    return (dataRaw as PageData | null)?.sections?.map((s: Section) => s.id) || []
+  }, [(dataRaw as PageData | null)?.sections?.length])
   const [conflictData, setConflictData] = useState<{
     open: boolean
     message?: string
@@ -381,6 +398,20 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
   // Preview sync effects
   useEffect(() => { if (iframeRef.current?.contentWindow) iframeRef.current.contentWindow.postMessage({ type: 'SET_THEME', theme }, '*') }, [theme])
   useEffect(() => { if (iframeRef.current?.contentWindow && editorActiveSection) iframeRef.current.contentWindow.postMessage({ type: 'ZENITH_PARENT_SELECT', sectionId: editorActiveSection, id: editorActiveSection }, '*') }, [editorActiveSection])
+  
+  // Auto-scroll to top-level fields when focused
+  useEffect(() => {
+    const handleFocus = (e: FocusEvent) => {
+      const target = e.target as HTMLElement
+      // Rich text editors might use data-field or data-name, inputs use name
+      const name = target.getAttribute('name') || target.getAttribute('data-field') || target.closest('[data-field]')?.getAttribute('data-field')
+      if (name && iframeRef.current?.contentWindow) {
+        iframeRef.current.contentWindow.postMessage({ type: 'ZENITH_PARENT_SELECT', id: name }, '*')
+      }
+    }
+    document.addEventListener('focusin', handleFocus)
+    return () => document.removeEventListener('focusin', handleFocus)
+  }, [])
 
   // Task 04: iframe message handler — versioned protocol with type guard + cleanup
   useEffect(() => {
@@ -390,6 +421,11 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
       if (expectedOrigin !== '*' && event.origin !== expectedOrigin && event.origin !== window.location.origin) return
       // Versioned protocol guard
       switch (event.data?.type) {
+        case 'ZENITH_IFRAME_READY':
+          if (editorActiveSection) {
+            iframeRef.current?.contentWindow?.postMessage({ type: 'ZENITH_PARENT_SELECT', sectionId: editorActiveSection, id: editorActiveSection }, '*')
+          }
+          break
         case 'ZENITH_SECTION_SELECT': {
           const sectionId = event.data.sectionId || event.data.id
           if (sectionId) { editorSetActiveSection(sectionId); setSelectedSections(new Set([sectionId])) }
@@ -484,8 +520,17 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
             }) || [],
             _status: s.publishStatus, workflowStatus: s.workflowStatus, reviewers: s.workflowReviewers, comments: s.workflowComments, scheduledAt: s.scheduledAt || undefined, publishedAt: s.publishStatus === 'published' ? (s.data.publishedAt || new Date().toISOString()) : null, i18n: s.translations, _fieldSettings: s.fieldSettings
           }
-          if (isGlobal) await api.patch(`/globals/${id}`, payload)
-          else await api.patch(`/${params.slug || 'pages'}/${id}`, payload)
+          if (isGlobal) {
+            await api.patch(`/globals/${id}`, payload)
+          } else if (isNewDoc) {
+            const res = await api.post(`/${params.slug || 'pages'}`, payload)
+            const newId = res.data?.data?._id || res.data?.data?.id
+            if (newId) {
+              navigate(`/collections/${params.slug || 'pages'}/${newId}`, { replace: true })
+            }
+          } else {
+            await api.patch(`/${params.slug || 'pages'}/${id}`, payload)
+          }
           editorSetHasUnsavedChanges(false)
           useEditorStore.getState().setLastSavedAt(new Date().toISOString())
         } catch { toast.error('Auto-save failed', { icon: '⚠️', duration: 3000 }) } finally { editorSetSaving(false) }
@@ -516,20 +561,28 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
       editorSetLoading(true)
       try {
         const collectionSlug = params.slug || 'pages'
-        const res = isGlobal ? await api.get(`/globals/${id}`) : await api.get(`/${collectionSlug}/${id}`)
+        let serverData: any = { sections: [] };
+        if (!isNewDoc) {
+          const res = isGlobal ? await api.get(`/globals/${id}`) : await api.get(`/${collectionSlug}/${id}`)
+          if (res.data?.data) {
+            serverData = res.data.data;
+          }
+        }
         if (isCancelledRef.current) return
-        const pageData = res.data.data || { sections: [] }
-        const migratedSections = (pageData.sections || []).map((s: any) => ({ ...s, id: s.id || uid(), content: s.content || s.blockData || {} }))
-
-        // Migrate legacy root title/heroDescription into pageTitle/pageDescription sections
-        const hasPageTitle = migratedSections.some((s: any) => s.blockType === 'pageTitle')
-        const hasPageDesc = migratedSections.some((s: any) => s.blockType === 'pageDescription')
-        if (!hasPageTitle && pageData.title) {
-          migratedSections.unshift({ id: uid(), blockType: 'pageTitle', title: 'Page Title', content: { title: pageData.title, anchorId: '', theme: 'default', paddingY: 'medium', containerWidth: 'boxed' } })
-        }
-        if (!hasPageDesc && pageData.heroDescription) {
-          migratedSections.unshift({ id: uid(), blockType: 'pageDescription', title: 'Page Description', content: { description: pageData.heroDescription, inlineWidgets: [], anchorId: '', theme: 'default', paddingY: 'medium', containerWidth: 'boxed' } })
-        }
+        const pageData = serverData
+        const migratedSections = (pageData.sections || []).map((s: any) => {
+          const { id, blockType, align, blockName, collapsed, content, blockData, ...restProps } = s
+          const hasContent = content && Object.keys(content).length > 0
+          const hasBlockData = blockData && Object.keys(blockData).length > 0
+          return {
+            id: id || uid(),
+            blockType,
+            align,
+            blockName,
+            collapsed,
+            content: hasContent ? content : (hasBlockData ? blockData : restProps)
+          }
+        })
 
         editorSetData({ ...pageData, sections: migratedSections })
         if (isCancelledRef.current) return
@@ -537,9 +590,12 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
 
         const collection = isGlobal ? 'globals' : (params.slug || 'pages')
         const docId = id
-        const historyRes = await api.get(`/versions/${collection}/${docId}`)
-        if (isCancelledRef.current) return
-        setHistory(historyRes.data.data || [])
+        if (!isNewDoc) {
+          const historyRes = await api.get(`/versions/${collection}/${docId}`)
+          if (!isCancelledRef.current) {
+            setHistory(historyRes.data.data || [])
+          }
+        }
 
         setPublishStatus(pageData._status || pageData.status || 'draft')
         setWorkflowStatus(pageData.workflowStatus || 'draft')
@@ -554,8 +610,8 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
           const colsRes = await api.get('/health'); 
           if (isCancelledRef.current) return; 
           const healthData = colsRes?.data?.data || {};
-          setAvailableCollections(healthData.collections || healthData.registry?.collections || []);
-          const colList = isGlobal ? (healthData.globals || healthData.registry?.globals || []) : (healthData.collections || healthData.registry?.collections || []);
+          setAvailableCollections(healthData.collections || []);
+          const colList = isGlobal ? (healthData.globals || []) : (healthData.collections || []);
           const col = colList.find((c: any) => c.slug === (params.slug || 'pages'));
           setTopLevelFields(col?.fields || []);
         } catch { if (!isCancelledRef.current) toast.error('Failed to load collections') }
@@ -581,13 +637,30 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
     fetchData()
   }, [id, isGlobal, siteId])
 
-  // ── Focus a specific section when navigated directly (e.g. from collection detail) ──
+  const initialFocusDoneRef = useRef(false)
+    
+  // Reset initial focus when document ID changes
   useEffect(() => {
-    if (!focusedSectionId || !data?.sections?.length) return
-    const exists = data.sections.some((s: Section) => s.id === focusedSectionId)
-    if (exists) {
-      editorSetActiveSection(focusedSectionId)
-      setSelectedSections(new Set([focusedSectionId]))
+     initialFocusDoneRef.current = false;
+  }, [id])
+
+  // 🧲 Focus a specific section when navigated directly (e.g. from collection detail) 🧲
+  useEffect(() => {
+    if (!data?.sections?.length) return
+    if (initialFocusDoneRef.current) return
+
+    if (focusedSectionId) {
+      const exists = data.sections.some((s: Section) => s.id === focusedSectionId)
+      if (exists) {
+        editorSetActiveSection(focusedSectionId)
+        setSelectedSections(new Set([focusedSectionId]))
+        initialFocusDoneRef.current = true
+      }
+    } else {
+      const firstSectionId = data.sections[0].id
+      editorSetActiveSection(firstSectionId)
+      setSelectedSections(new Set([firstSectionId]))
+      initialFocusDoneRef.current = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusedSectionId, data?.sections?.length])
@@ -597,7 +670,14 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
   useEffect(() => {
     if (!editorActiveSection) return
     const el = document.getElementById(editorActiveSection)
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      // Add a visual flash effect to the selected block in the left panel
+      el.classList.add('ring-2', 'ring-[#8B5CF6]', 'ring-offset-2', 'ring-offset-[#0B0F19]', 'transition-all', 'duration-500')
+      setTimeout(() => {
+        el.classList.remove('ring-2', 'ring-[#8B5CF6]', 'ring-offset-2', 'ring-offset-[#0B0F19]')
+      }, 1000)
+    }
   }, [editorActiveSection])
 
   useEffect(() => {
@@ -652,13 +732,23 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
         }) || [],
         _status: pStatus, workflowStatus: workflowStatusRef.current, reviewers: workflowReviewersRef.current, comments: workflowCommentsRef.current, scheduledAt: scheduledAtRef.current || undefined, publishedAt: pStatus === 'published' ? (latest.publishedAt || new Date().toISOString()) : null, i18n: translationsRef.current, _fieldSettings: fieldSettingsRef.current
       }
-      const res = isGlobal
-        ? await api.patch(`/globals/${id}`, payload)
-        : await api.patch(`/${params.slug || 'pages'}/${id}`, payload)
+      let res;
+      if (isGlobal) {
+        res = await api.patch(`/globals/${id}`, payload)
+      } else if (isNewDoc) {
+        res = await api.post(`/${params.slug || 'pages'}`, payload)
+      } else {
+        res = await api.patch(`/${params.slug || 'pages'}/${id}`, payload)
+      }
       savedVersion = res.data.data?._version
+      const newId = res.data?.data?._id || res.data?.data?.id
       editorSetHasUnsavedChanges(false)
       useEditorStore.getState().setLastSavedAt(new Date().toISOString())
-      toast.success(pStatus === 'published' ? '🚀 Published!' : '💾 Saved as Draft', {})
+      toast.success(pStatus === 'published' ? '✨ Published!' : '📝 Saved as Draft', {})
+      
+      if (isNewDoc && newId) {
+        navigate(`/collections/${params.slug || 'pages'}/${newId}`, { replace: true })
+      }
     } catch (err: any) {
       if (err?.response?.status === 409) {
         const serverMsg = err?.response?.data?.error?.message || ''
@@ -730,17 +820,28 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
           const { id, content, ...rest } = s;
           return { ...rest, ...sanitizeContent(content || {}) };
         }) || [],
+        _version: conflictData.serverVersion !== undefined ? conflictData.serverVersion : latest._version,
         _status: publishStatusRef.current, workflowStatus: workflowStatusRef.current, reviewers: workflowReviewersRef.current, comments: workflowCommentsRef.current, scheduledAt: scheduledAtRef.current || undefined, publishedAt: publishStatusRef.current === 'published' ? (latest.publishedAt || new Date().toISOString()) : null, i18n: translationsRef.current, _fieldSettings: fieldSettingsRef.current
       }
-      const res = isGlobal
-        ? await api.patch(`/globals/${id}`, payload)
-        : await api.patch(`/${params.slug || 'pages'}/${id}`, payload)
+      let res;
+      if (isGlobal) {
+        res = await api.patch(`/globals/${id}`, payload)
+      } else if (isNewDoc) {
+        res = await api.post(`/${params.slug || 'pages'}`, payload)
+      } else {
+        res = await api.patch(`/${params.slug || 'pages'}/${id}`, payload)
+      }
       const newVersion = res.data.data?._version
+      const newId = res.data?.data?._id || res.data?.data?.id
       if (newVersion !== undefined) editorSetData({ ...latest, _version: newVersion })
       editorSetHasUnsavedChanges(false)
       useEditorStore.getState().setLastSavedAt(new Date().toISOString())
       setConflictData({ open: false })
       toast.success('Force-saved your version', { id: 'conflict' })
+      
+      if (isNewDoc && newId) {
+        navigate(`/collections/${params.slug || 'pages'}/${newId}`, { replace: true })
+      }
     } catch (err: any) {
       const serverMsg = err?.response?.data?.error?.message || err?.response?.data?.message || 'Force-save failed'
       toast.error(serverMsg, { id: 'conflict' })
@@ -754,7 +855,14 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
   const addBlock = (blockType: string) => {
     const block = BLOCK_LIBRARY.find((b) => b.type === blockType)
     if (!block) return
-    const newSection: Section = { id: uid(), blockType: block.type, title: block.title, content: { ...block.defaultContent } }
+    const newId = uid()
+    const anchorId = `${block.type}-${newId.slice(0, 4)}`
+    const newSection: Section = { 
+      id: newId, 
+      blockType: block.type, 
+      title: block.title, 
+      content: { ...block.defaultContent, anchorId } 
+    }
     editorUpdateData((prev) => {
       const sections = prev?.sections || []
       const newSections = [...sections]
@@ -768,7 +876,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
     editorSetActiveSection(newSection.id)
     setBlockPickerOpen(false)
     setInjectionIndex(null)
-    toast.success(`Section added: ${blockType.toUpperCase()}`, { icon: '⚡' })
+    toast.success(`Section added: ${blockType.toUpperCase()}`, { icon: '✨' })
   }
 
   const duplicateSection = (sectionId: string) => {
@@ -776,7 +884,14 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
     if (!latest) return
     const sectionToDuplicate = latest.sections.find((s) => s.id === sectionId)
     if (!sectionToDuplicate) return
-    const duplicatedSection: Section = { ...sectionToDuplicate, id: uid(), title: `${sectionToDuplicate.title} (Copy)`, content: safeDeepClone(sectionToDuplicate.content) }
+    const newId = uid()
+    const anchorId = `${sectionToDuplicate.blockType}-${newId.slice(0, 4)}`
+    const duplicatedSection: Section = { 
+      ...sectionToDuplicate, 
+      id: newId, 
+      title: `${sectionToDuplicate.title} (Copy)`, 
+      content: { ...safeDeepClone(sectionToDuplicate.content), anchorId } 
+    }
     editorUpdateData((prev) => { const idx = prev.sections.findIndex((s) => s.id === sectionId); const newSections = [...prev.sections]; newSections.splice(idx + 1, 0, duplicatedSection); return { ...prev, sections: newSections } })
     editorSetActiveSection(duplicatedSection.id)
     toast.success('Section duplicated', { icon: '📋' })
@@ -1063,14 +1178,17 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
       {/* ── Main Layout ── */}
       <div className="flex-1 flex overflow-hidden relative">
         {/* Left Panel */}
-        <LeftPanel
-          isGlobal={isGlobal}
-          resizingSide={resizingSide}
-          startResizing={startResizing}
-          addBlock={addBlock}
-          setInjectionIndex={setInjectionIndex}
-          setBlockPickerOpen={setBlockPickerOpen}
-        />
+        {hasBlocksField && (
+          <LeftPanel
+            isGlobal={isGlobal}
+            resizingSide={resizingSide}
+            startResizing={startResizing}
+            addBlock={addBlock}
+            removeSection={removeSection}
+            setInjectionIndex={setInjectionIndex}
+            setBlockPickerOpen={setBlockPickerOpen}
+          />
+        )}
 
         {/* Canvas */}
         <main className={cn('flex-1 relative flex flex-col overflow-hidden transition-colors', theme === 'dark' ? 'bg-[#030303]' : 'bg-gray-50')}>
@@ -1105,6 +1223,68 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
                     </div>
 
                   </div>
+
+                  {hasBlocksField && (
+                    <>
+                      <Reorder.Group axis="y" values={sectionIdsMemo} onReorder={handleReorder} className="space-y-8">
+                        {data?.sections?.map((section: Section, index: number) => (
+                          <ReorderableSectionBlock
+                            key={section.id}
+                            section={section}
+                            index={index}
+                            totalSections={data?.sections?.length || 0}
+                            theme={theme}
+                            showFieldIndicators={showFieldIndicators || false}
+                            editorSelectedField={editorSelectedField}
+                            editorSchemaFields={editorSchemaFields}
+                            editorFieldErrors={editorFieldErrors}
+                            editorActiveSection={editorActiveSection}
+                            editorSetActiveSection={editorSetActiveSection}
+                            duplicateSection={duplicateSection}
+                            removeSection={removeSection}
+                            updateAlign={updateAlign}
+                            handleFieldChange={handleFieldChange}
+                            setSelectedField={setSelectedField}
+                            i18nEnabled={i18nEnabled}
+                            currentLocale={currentLocale}
+                            getTranslatedValue={getTranslatedValue}
+                            setTranslatedValue={setTranslatedValue}
+                            setActiveDynamicZone={setActiveDynamicZone}
+                            setDynamicZoneModalOpen={setDynamicZoneModalOpen}
+                            setInjectionIndex={setInjectionIndex}
+                            setBlockPickerOpen={setBlockPickerOpen}
+                            onOpenContextMenu={handleOpenContextMenu}
+                            collab={collab}
+                            broadcastCursor={collab.broadcastCursor}
+                            toggleCollapse={toggleCollapse}
+                            moveSection={moveSection}
+                            copySection={copySection}
+                            pasteSection={pasteSection}
+                            handleBlockNameChange={handleBlockNameChange}
+                            selectedSections={selectedSections}
+                            onMultiSelect={(id, multi) => {
+                              if (multi) {
+                                setSelectedSections((prev) => {
+                                  const next = new Set(prev)
+                                  if (next.has(id)) next.delete(id); else next.add(id)
+                                  return next
+                                })
+                              } else {
+                                editorSetActiveSection(id)
+                                setSelectedSections(new Set([id]))
+                              }
+                            }}
+                          />
+                        ))}
+                      </Reorder.Group>
+
+                      {/* Add Section Button */}
+                      <button onClick={() => { setInjectionIndex(null); setBlockPickerOpen(true) }} className={cn('w-full py-10 rounded-none border-2 border-dashed transition-all flex flex-col items-center gap-4 group', theme === 'dark' ? 'border-white/10 hover:border-emerald-500/40 hover:bg-emerald-500/5' : 'border-gray-200 hover:border-emerald-400 hover:bg-emerald-50')}>
+                        <div className={cn('w-12 h-12 rounded-none border-2 border-dashed flex items-center justify-center group-hover:scale-110 transition-all', theme === 'dark' ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-emerald-300 bg-emerald-50/50')}><Plus size={22} className="text-emerald-500" /></div>
+                        <p className="text-[11px] font-black uppercase tracking-[0.3em] italic text-gray-500 group-hover:text-emerald-400 transition-colors">Append Section</p>
+                      </button>
+                    </>
+                  )}
 
                   {topLevelFields.length > 0 && (
                       <div className={cn("border rounded-none p-10 shadow-sm relative overflow-hidden transition-colors", theme === 'dark' ? 'bg-[#080808] border-white/5' : 'bg-white border-gray-100')}>

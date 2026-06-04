@@ -22,6 +22,7 @@ import { cn } from '../lib/utils'
 import api from '../lib/api'
 import toast from 'react-hot-toast'
 import { useTheme } from '../context/ThemeContext'
+import { useSystemMetadata } from '../hooks/useQueries'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -95,7 +96,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ value, onChange, theme, height 
       onChange={(e) => onChange(e.target.value)}
       spellCheck={false}
       className={cn(
-        'w-full border rounded-none px-4 py-3 font-mono text-[11px] leading-relaxed resize-y outline-none transition-all',
+        'w-full border rounded-none px-4 py-3 font-mono text-[11px] leading-relaxed resize-y outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
         theme === 'dark'
           ? 'bg-black border-white/10 text-emerald-300 focus:border-emerald-500/50'
           : 'bg-gray-900 border-gray-600 text-emerald-300 focus:border-emerald-500'
@@ -139,13 +140,14 @@ const CollectionHooksPage: React.FC = () => {
 
   const [fields, setFields] = useState<Array<{ name: string; type: string; label?: string }>>([])
 
+  const { data: healthData, isLoading: healthLoading } = useSystemMetadata()
+
   const fetchCollectionConfig = useCallback(async () => {
+    if (!healthData) return
     setLoading(true)
     try {
-      // Fetch health to get collection config
-      const healthRes = await api.get('/system/health')
-      const healthData = healthRes?.data?.data
-      const cols = healthData?.registry?.collections || healthData?.collections || []
+      // Use healthData which comes from the tenant-isolated useSystemMetadata hook
+      const cols = healthData.collections || []
       const col = cols.find((c: any) => c.slug === slug)
 
       if (!col) {
@@ -187,11 +189,13 @@ const CollectionHooksPage: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }, [slug, navigate])
+  }, [slug, navigate, healthData])
 
   useEffect(() => {
-    fetchCollectionConfig()
-  }, [fetchCollectionConfig])
+    if (!healthLoading) {
+      fetchCollectionConfig()
+    }
+  }, [fetchCollectionConfig, healthData, healthLoading])
 
   const handleSave = async () => {
     if (!isDirty()) return
@@ -526,7 +530,7 @@ const CollectionHooksPage: React.FC = () => {
                         value={ep.method}
                         onChange={(e) => handleUpdateEndpoint(idx, 'method', e.target.value)}
                         className={cn(
-                          'bg-black border text-[9px] font-black uppercase italic outline-none py-1.5 px-3 rounded-none focus:border-emerald-500',
+                          'bg-black border text-[9px] font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none focus:border-emerald-500',
                           theme === 'dark' ? 'border-white/10 text-emerald-400' : 'border-gray-200 text-emerald-600'
                         )}
                       >
@@ -540,7 +544,7 @@ const CollectionHooksPage: React.FC = () => {
                         onChange={(e) => handleUpdateEndpoint(idx, 'path', e.target.value)}
                         placeholder="/custom-path"
                         className={cn(
-                          'flex-1 border rounded-none py-2 px-3 text-[11px] font-mono italic transition-all outline-none',
+                          'flex-1 border rounded-none py-2 px-3 text-[11px] font-mono italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                           theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                         )}
                       />
@@ -557,7 +561,7 @@ const CollectionHooksPage: React.FC = () => {
                       onChange={(e) => handleUpdateEndpoint(idx, 'description', e.target.value)}
                       placeholder="Brief description of this endpoint..."
                       className={cn(
-                        'w-full border rounded-none py-2 px-3 text-[10px] transition-all outline-none',
+                        'w-full border rounded-none py-2 px-3 text-[10px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                         theme === 'dark' ? 'bg-black border-white/10 text-gray-300 focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                       )}
                     />

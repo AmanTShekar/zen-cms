@@ -7,7 +7,7 @@ import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { JWT_SECRET } from '../services/auth'
 
-const router = Router()
+const router: import('express').Router = Router()
 
 // JWT_SECRET imported from services/auth with production guard
 

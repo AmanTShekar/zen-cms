@@ -146,6 +146,7 @@ export const FocalPointCropper: React.FC<FocalPointCropperProps> = ({
           </span>
         </div>
         <button
+          type="button"
           onClick={triggerSave}
           style={{
             backgroundColor: '#10B981',

@@ -15,6 +15,7 @@ import {
   CreditCard,
   Webhook,
   Puzzle,
+  Image,
 } from 'lucide-react'
 import { cn } from '../lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -23,6 +24,7 @@ import { useTheme } from '../context/ThemeContext'
 import api from '../lib/api'
 
 import SettingsGeneral from './settings/SettingsGeneral'
+import SettingsMedia from './settings/SettingsMedia'
 import SettingsBilling from './settings/SettingsBilling'
 import SettingsSecurity from './settings/SettingsSecurity'
 import SettingsNotifications from './settings/SettingsNotifications'
@@ -38,10 +40,18 @@ import SettingsApiKeyModal from './settings/SettingsApiKeyModal'
 
 interface Settings {
   siteName: string
+  siteDescription: string
+  logoUrl: string
+  faviconUrl: string
   publicUrl: string
   maintenanceMode: boolean
+  defaultLocale: string
+  supportedLocales: string[]
+  mediaProvider: string
+  maxUploadSize: number
   jwtExpiresIn: string
   passwordMinLength: number
+  allowRegistration: boolean
   customCSS: string
   smtpHost: string
   smtpPort: number
@@ -98,10 +108,18 @@ const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState(queryParams.get('tab') || 'general')
   const [settings, setSettings] = useState<Settings>({
     siteName: '',
+    siteDescription: '',
+    logoUrl: '',
+    faviconUrl: '',
     publicUrl: '',
     maintenanceMode: false,
+    defaultLocale: 'en',
+    supportedLocales: ['en'],
+    mediaProvider: 'local',
+    maxUploadSize: 5242880,
     jwtExpiresIn: '7d',
     passwordMinLength: 8,
+    allowRegistration: false,
     customCSS: '',
     smtpHost: '',
     smtpPort: 587,
@@ -195,25 +213,45 @@ const SettingsPage = () => {
     }
   }
 
-  const tabs = [
-    { id: 'general', label: 'General', icon: Globe, sub: 'Site Profile' },
-    { id: 'billing', label: 'Plans & Paywalls', icon: CreditCard, sub: 'Site Monetization' },
-    { id: 'security', label: 'Security', icon: Shield, sub: 'Access Control' },
-    { id: 'roles', label: 'Roles & Permissions', icon: Shield, sub: 'Granular Access' },
-    { id: 'notifications', label: 'Email', icon: Mail, sub: 'SMTP Relay' },
-    { id: 'users', label: 'Users', icon: Users, sub: 'Admin Registry' },
-    { id: 'keys', label: 'API Keys', icon: Key, sub: 'Access Tokens' },
-    { id: 'database', label: 'Database', icon: Database, sub: 'Storage Stats' },
-    { id: 'ai', label: 'AI Engine', icon: Sparkles, sub: 'Model Settings' },
-    { id: 'appearance', label: 'Styles', icon: Palette, sub: 'Custom CSS' },
-    { id: 'webhooks', label: 'Webhooks', icon: Webhook, sub: 'HTTP Callbacks' },
-    { id: 'plugins', label: 'Plugins', icon: Puzzle, sub: 'Extensions' },
+  const tabGroups = [
+    {
+      label: 'Project',
+      tabs: [
+        { id: 'general', label: 'General', icon: Globe, sub: 'Site Profile' },
+        { id: 'media', label: 'Media & Uploads', icon: Image, sub: 'Storage Config' },
+        { id: 'billing', label: 'Plans & Paywalls', icon: CreditCard, sub: 'Site Monetization' },
+        { id: 'appearance', label: 'Styles', icon: Palette, sub: 'Custom CSS' },
+      ]
+    },
+    {
+      label: 'Access Control',
+      tabs: [
+        { id: 'users', label: 'Users', icon: Users, sub: 'Admin Registry' },
+        { id: 'roles', label: 'Roles & Permissions', icon: Shield, sub: 'Granular Access' },
+        { id: 'keys', label: 'API Keys', icon: Key, sub: 'Access Tokens' },
+      ]
+    },
+    {
+      label: 'System & Integrations',
+      tabs: [
+        { id: 'security', label: 'Security', icon: Shield, sub: 'Access Control' },
+        { id: 'database', label: 'Database', icon: Database, sub: 'Storage Stats' },
+        { id: 'notifications', label: 'Email', icon: Mail, sub: 'SMTP Relay' },
+        { id: 'webhooks', label: 'Webhooks', icon: Webhook, sub: 'HTTP Callbacks' },
+        { id: 'ai', label: 'AI Engine', icon: Sparkles, sub: 'Model Settings' },
+        { id: 'plugins', label: 'Plugins', icon: Puzzle, sub: 'Extensions' },
+      ]
+    }
   ]
+
+  const activeTabDetails = tabGroups.flatMap(g => g.tabs).find(t => t.id === activeTab)
 
   const renderTab = () => {
     switch (activeTab) {
       case 'general':
         return <SettingsGeneral settings={settings} setSettings={setSettings} theme={theme} />
+      case 'media':
+        return <SettingsMedia settings={settings} setSettings={setSettings} theme={theme} />
       case 'billing':
         return <SettingsBilling activeSite={activeSite} setActiveSite={setActiveSite} healthData={healthData} theme={theme} />
       case 'security':
@@ -250,18 +288,18 @@ const SettingsPage = () => {
   }
 
   return (
-    <div className="max-w-[1400px] mx-auto space-y-12">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8">
+    <div className="max-w-[1400px] mx-auto space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
+          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
             <SettingsIcon size={24} />
           </div>
           <div>
-            <h1 className="text-3xl font-black uppercase italic leading-none tracking-tight">
-              System Parameters
+            <h1 className="text-2xl font-black text-white tracking-tight">
+              Settings
             </h1>
-            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-2">
-              Adjust core configurations and security layers
+            <p className="text-xs text-gray-400 font-medium mt-1">
+              Configure project preferences, integrations, and access control.
             </p>
           </div>
         </div>
@@ -269,61 +307,78 @@ const SettingsPage = () => {
           onClick={handleSave}
           disabled={saving}
           className={cn(
-            'flex items-center justify-center gap-3 px-8 py-4 rounded-none text-[10px] font-black uppercase tracking-widest italic transition-all shadow-xl shadow-emerald-500/10 active:scale-95 disabled:opacity-50',
-            theme === 'dark' ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : 'bg-gray-900 text-white hover:bg-gray-800'
+            'flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-50',
+            theme === 'dark' ? 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'bg-gray-900 text-white hover:bg-gray-800'
           )}
         >
           {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-          Save Settings
+          Save Changes
         </button>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-7 gap-8">
-        <div className="xl:col-span-2 space-y-px border border-white/5 bg-white/[0.01] backdrop-blur-3xl h-fit">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                'w-full flex items-center justify-between px-5 py-4 rounded-none transition-all group relative border',
-                activeTab === tab.id
-                  ? theme === 'dark' ? 'bg-white/[0.04] border-white/10 text-white' : 'bg-white border-gray-100 shadow-md text-gray-900'
-                  : theme === 'dark' ? 'text-gray-500 border-transparent hover:bg-white/[0.02] hover:text-gray-300' : 'text-gray-500 border-transparent hover:bg-gray-50'
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <tab.icon size={16} className={activeTab === tab.id ? 'text-emerald-500' : 'opacity-30 group-hover:opacity-60'} />
-                <div className="flex flex-col items-start leading-none">
-                  <span className="text-[12px] font-black uppercase tracking-tight italic">{tab.label}</span>
-                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1 opacity-60">{tab.sub}</span>
-                </div>
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-8 items-start">
+        <div className="xl:col-span-1 space-y-8 h-fit">
+          {tabGroups.map((group) => (
+            <div key={group.label}>
+              <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-3">
+                {group.label}
+              </h3>
+              <div className="space-y-1">
+                {group.tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group border',
+                      activeTab === tab.id
+                        ? theme === 'dark' ? 'bg-white/[0.06] border-white/10 text-white shadow-sm' : 'bg-white border-gray-100 shadow-sm text-gray-900'
+                        : theme === 'dark' ? 'text-gray-400 border-transparent hover:bg-white/[0.02] hover:text-gray-200' : 'text-gray-500 border-transparent hover:bg-gray-50'
+                    )}
+                  >
+                    <div className={cn(
+                      "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
+                      activeTab === tab.id ? "bg-emerald-500/10 text-emerald-500" : "bg-white/5 text-gray-400 group-hover:text-gray-300"
+                    )}>
+                      <tab.icon size={16} />
+                    </div>
+                    <div className="flex flex-col items-start leading-tight">
+                      <span className="text-sm font-semibold">{tab.label}</span>
+                    </div>
+                  </button>
+                ))}
               </div>
-              {activeTab === tab.id && <div className="w-1 h-3 bg-emerald-500 rounded-none shadow-[0_0_8px_#10b981]" />}
-            </button>
+            </div>
           ))}
         </div>
 
-        <div className="xl:col-span-5">
+        <div className="xl:col-span-3">
           <div className={cn(
-            'border rounded-none p-8 shadow-xl relative overflow-hidden transition-colors backdrop-blur-3xl min-h-[600px]',
-            theme === 'dark' ? 'bg-[#080808] border-white/5' : 'bg-white border-gray-100 shadow-sm'
+            'p-8 min-h-[600px] transition-colors',
+            theme === 'dark' 
+              ? 'bg-[#111827]/65 backdrop-blur-[12px] border border-white/[0.08] rounded-xl shadow-[0_4px_30px_rgba(0,0,0,0.1)]' 
+              : 'bg-white border border-gray-100 shadow-sm rounded-xl'
           )}>
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
                 className="space-y-8 relative z-10"
               >
-                <div className="flex items-center gap-6 border-b border-white/5 pb-8">
-                  <h2 className="text-2xl font-black uppercase italic leading-none tracking-tight">
-                    {tabs.find((t) => t.id === activeTab)?.label}
-                  </h2>
-                  <div className="w-px h-6 bg-white/10" />
-                  <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] italic">Config Active</span>
+                <div className="flex items-center gap-4 border-b border-white/[0.05] pb-6">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                    {activeTabDetails?.icon && <activeTabDetails.icon size={20} />}
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-white tracking-tight">
+                      {activeTabDetails?.label}
+                    </h2>
+                    <p className="text-xs text-gray-400 mt-1">{activeTabDetails?.sub}</p>
+                  </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                
+                <div className="space-y-6 w-full">
                   {renderTab()}
                 </div>
               </motion.div>

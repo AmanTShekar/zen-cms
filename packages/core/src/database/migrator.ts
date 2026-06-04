@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { AdapterFactory } from './adapters/AdapterFactory'
 import { logger } from '../services/logger'
+import { sql } from 'drizzle-orm'
 
 /**
  * Zenith CMS — Database Migration Runner
@@ -42,7 +43,7 @@ export class Migrator {
 
   private static async markMigrationExecuted(adapter: any, name: string) {
     if (adapter.name === 'postgres-drizzle' || adapter.name === 'PostgresDrizzle') {
-      await adapter.db.execute(`INSERT INTO z_migrations (name) VALUES ('${name}')`)
+      await adapter.db.execute(sql`INSERT INTO z_migrations (name) VALUES (${name})`)
     } else {
       await adapter.create('z_migrations', { name, executedAt: new Date() })
     }
@@ -50,8 +51,9 @@ export class Migrator {
 
   /**
    * Discovers and runs pending migrations in order.
+   * @param continueOnError If true, halts on individual migration failures and keeps going.
    */
-  public static async run() {
+  public static async run(continueOnError = false) {
     logger.info('Migrator: Initializing migration runner...')
     const adapter = AdapterFactory.getActiveAdapter()
 
@@ -91,11 +93,19 @@ export class Migrator {
           logger.warn(`Migrator: Skipping ${file} (no 'up' function exported)`)
         }
       } catch (err: any) {
-        logger.error({ err }, `Migrator: Failed to execute migration ${file}. Halting.`)
-        throw new Error(`Migration Failed: ${file} - ${err.message}`)
+        logger.error({ err }, `Migrator: Migration ${file} failed.`)
+        if (continueOnError) {
+          logger.warn(`Migrator: Continuing to next migration (continueOnError=true).`)
+        } else {
+          throw new Error(`Migration Failed: ${file} - ${err.message}`)
+        }
       }
     }
 
-    logger.info('Migrator: All migrations applied successfully.')
+    if (continueOnError) {
+      logger.info('Migrator: All migrations processed with errors logged.')
+    } else {
+      logger.info('Migrator: All migrations applied successfully.')
+    }
   }
 }

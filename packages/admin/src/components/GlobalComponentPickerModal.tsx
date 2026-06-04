@@ -172,7 +172,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search components..."
                   className={cn(
-                    'w-full pl-10 pr-10 py-2.5 text-sm rounded-none border transition-all outline-none',
+                    'w-full pl-10 pr-10 py-2.5 text-sm rounded-none border transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                     isDark
                       ? 'bg-white/[0.04] border-white/10 text-white placeholder-gray-600 focus:border-emerald-500/40 focus:bg-white/[0.06]'
                       : 'bg-gray-50 border-gray-200 text-black placeholder-gray-400 focus:border-emerald-400'

@@ -205,6 +205,20 @@ export class MongooseAdapter implements DatabaseAdapter {
       )
       mongoose.model('z_collections', schema)
     }
+    if (!mongoose.models['z_components']) {
+      const schema = new mongoose.Schema(
+        {
+          slug: { type: String, required: true, unique: true, index: true },
+          displayName: { type: String, required: true },
+          category: { type: String, default: 'General' },
+          icon: { type: String, default: 'Box' },
+          description: { type: String },
+          fields: { type: mongoose.Schema.Types.Mixed, default: [] },
+        },
+        { timestamps: true, strict: false }
+      )
+      mongoose.model('z_components', schema)
+    }
     if (!mongoose.models['z_presence']) {
       const schema = new mongoose.Schema(
         {
@@ -237,7 +251,9 @@ export class MongooseAdapter implements DatabaseAdapter {
   }
 
   async registerCollection(config: CollectionConfig): Promise<void> {
+    console.log(`[MongooseAdapter] Registering collection: ${config.slug}`)
     const model = getModelForCollection(config)
+    console.log(`[MongooseAdapter] Successfully registered model: ${model.modelName}`)
     this.models[config.slug] = model
   }
 
@@ -259,6 +275,7 @@ export class MongooseAdapter implements DatabaseAdapter {
     if (collection === 'z_api_keys') resolvedCollection = 'z_api_keys'
     if (collection === 'z_migrations') resolvedCollection = 'z_migrations'
     if (collection === 'z_collections') resolvedCollection = 'z_collections'
+    if (collection === 'z_components') resolvedCollection = 'z_components'
     if (collection === 'z_presence') resolvedCollection = 'z_presence'
     if (collection === 'z_locks' || collection === 'locks') resolvedCollection = 'Lock'
     if (collection === 'z_webhook_configs') resolvedCollection = 'WebhookConfig'
@@ -301,7 +318,8 @@ export class MongooseAdapter implements DatabaseAdapter {
     }
 
     const model = this.getModel(collection)
-    const q = model.find(this._normalizeQuery(query, options))
+    const normalizedQuery = this._normalizeQuery(query, options);
+    const q = model.find(normalizedQuery)
 
     if (options.select) q.select(options.select)
     if (options.populate) {
@@ -414,6 +432,30 @@ export class MongooseAdapter implements DatabaseAdapter {
       normalized.siteId = siteId
     }
     return normalized
+  }
+
+  async findOneAndUpdate<T = unknown>(
+    collection: string,
+    query: Record<string, unknown>,
+    update: Record<string, unknown>,
+    options?: BaseOptions & { returnDocument?: 'before' | 'after' }
+  ): Promise<T | null> {
+    const model = this.getModel(collection)
+    const normalized = this._normalizeQuery(query, options)
+    const returnDoc = options?.returnDocument === 'after' ? true : false
+    const doc = await model
+      .findOneAndUpdate(
+        normalized,
+        { $set: update },
+        {
+          new: returnDoc,
+          session: options?.session as any,
+          runValidators: true,
+        }
+      )
+      .lean()
+      .exec()
+    return doc as T | null
   }
 
   async updateMany(

@@ -61,8 +61,28 @@ export function usePreviewSync<T>(
     }
   }, [delayMs, iframeRef])
 
+  const dataRef = useRef(data)
+  useEffect(() => {
+    dataRef.current = data
+  }, [data])
+
   useEffect(() => {
     const sync = syncRef.current
     if (data && sync) sync(data)
   }, [data])
+
+  // Attach load event listener to the iframe to send data immediately upon load
+  useEffect(() => {
+    const iframe = iframeRef.current
+    if (!iframe) return
+
+    const handleLoad = () => {
+      lastHashRef.current = '' // Force sync
+      const sync = syncRef.current
+      if (sync && dataRef.current) sync(dataRef.current)
+    }
+
+    iframe.addEventListener('load', handleLoad)
+    return () => iframe.removeEventListener('load', handleLoad)
+  }, [iframeRef])
 }

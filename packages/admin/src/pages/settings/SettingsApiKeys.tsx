@@ -3,7 +3,9 @@ import { Key, Shield, Loader2 } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import api from '../../lib/api'
 import toast from 'react-hot-toast'
+import EmptyState from '../../components/EmptyState'
 import GenerateKeyModal from './GenerateKeyModal'
+import ApiIntegrationGuide from './ApiIntegrationGuide'
 
 interface ApiKey {
   _id: string
@@ -52,7 +54,24 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
           </button>
         </div>
         <div className="grid grid-cols-1 gap-4">
-          {apiKeys.map((key) => (
+          {apiKeys.length === 0 ? (
+            <div className="py-6 border border-dashed rounded-none border-white/5">
+              <EmptyState
+                icon={Key}
+                title="No API keys"
+                message="Generate an API key to authenticate external applications"
+                action={
+                  <button
+                    onClick={() => setGenerateOpen(true)}
+                    className="text-[10px] font-black uppercase italic border border-white/10 px-8 py-3 rounded-none hover:bg-white/5 transition-all"
+                  >
+                    Generate Token
+                  </button>
+                }
+              />
+            </div>
+          ) : (
+            apiKeys.map((key) => (
             <div
               key={key._id}
               className={cn(
@@ -89,9 +108,11 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
                 )}
               </button>
             </div>
-          ))}
+          )))}
         </div>
       </div>
+      
+      <ApiIntegrationGuide theme={theme} apiKeys={apiKeys} />
 
       {generateOpen && (
         <GenerateKeyModal

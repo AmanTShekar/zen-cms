@@ -7,6 +7,7 @@ import type {
   Spread,
 } from 'lexical'
 import { ParagraphNode, $applyNodeReplacement } from 'lexical'
+import type { SerializedParagraphNode } from 'lexical'
 
 export interface ImagePayload {
   alt: string
@@ -25,7 +26,7 @@ export type SerializedImageNode = Spread<
     type: 'image'
     version: 1
   },
-  SerializedElementNode
+  SerializedParagraphNode
 >
 
 function $domToImageAttributes(dom: HTMLImageElement): ImagePayload {

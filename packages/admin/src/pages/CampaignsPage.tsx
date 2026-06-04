@@ -128,7 +128,7 @@ const CampaignsPage: React.FC = () => {
                     value={activeCampaign.subject || ''}
                     onChange={(e) => setActiveCampaign({ ...activeCampaign, subject: e.target.value })}
                     className={cn(
-                      'w-full border p-3 text-[11px] font-bold outline-none transition-colors',
+                      'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
                       theme === 'dark' ? 'bg-black border-white/10 focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                     )}
                     placeholder="Exciting News from Zenith"
@@ -140,7 +140,7 @@ const CampaignsPage: React.FC = () => {
                     value={activeCampaign.audience || 'all'}
                     onChange={(e) => setActiveCampaign({ ...activeCampaign, audience: e.target.value })}
                     className={cn(
-                      'w-full border p-3 text-[11px] font-bold outline-none transition-colors',
+                      'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
                       theme === 'dark' ? 'bg-black border-white/10 focus:border-emerald-500 text-white' : 'bg-gray-50 border-gray-200 focus:border-emerald-500 text-black'
                     )}
                   >
@@ -156,7 +156,7 @@ const CampaignsPage: React.FC = () => {
                     onChange={(e) => setActiveCampaign({ ...activeCampaign, body: e.target.value })}
                     rows={10}
                     className={cn(
-                      'w-full border p-3 text-[11px] font-mono outline-none transition-colors',
+                      'w-full border p-3 text-[11px] font-mono outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
                       theme === 'dark' ? 'bg-black border-white/10 focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                     )}
                     placeholder="Hello {{name}}, we have some exciting news..."

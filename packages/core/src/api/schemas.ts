@@ -14,22 +14,27 @@ const getAdapter = (req: Request): DatabaseAdapter =>
 const toSchemaDTO = (d: any) => ({
   id: String(d._id ?? d.id),
   slug: d.slug,
+  name: d.title || d.name || d.slug,
   singular: d.singular,
   plural: d.plural,
   fields: d.fields,
   settings: d.settings,
+  isGlobal: d.isGlobal || d.type === 'global',
   createdAt: d.createdAt?.toISOString?.() || d.createdAt,
   updatedAt: d.updatedAt?.toISOString?.() || d.updatedAt,
 })
 
-const router = Router()
+const router: import('express').Router = Router()
 
-// ── List all schemas ─────────────────────────────────────────────────────────
 router.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
+    const siteId = req.headers['x-zenith-site-id'] as string
     const adapter = getAdapter(req)
-    const docs = await adapter.find<any>(SCHEMAS_COLLECTION, {})
-    res.json(createResponse(docs.map(toSchemaDTO)))
+    const docs = await adapter.find<any>(SCHEMAS_COLLECTION, {}, { siteId })
+    // Ensure blocks do not leak into the collections list
+    const filteredDocs = docs.filter((d: any) => d.type !== 'block')
+    console.log(`[/schemas] Called with siteId: ${siteId}. Returning ${filteredDocs.length} schemas.`)
+    res.json(createResponse(filteredDocs.map(toSchemaDTO)))
   } catch (err) {
     next(err)
   }
@@ -38,8 +43,9 @@ router.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Res
 // ── Get schema by ID ─────────────────────────────────────────────────────────
 router.get('/:id', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
+    const siteId = req.headers['x-zenith-site-id'] as string
     const adapter = getAdapter(req)
-    const docs = await adapter.find<any>(SCHEMAS_COLLECTION, { id: req.params.id })
+    const docs = await adapter.find<any>(SCHEMAS_COLLECTION, { id: req.params.id }, { siteId })
     const doc = docs[0]
     if (!doc) throw new NotFoundError(`Schema "${req.params.id}" not found`)
     res.json(createResponse(toSchemaDTO(doc)))
@@ -56,10 +62,11 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
     if (!singular) throw new InvalidPayloadError('Schema singular name is required')
     if (!plural) throw new InvalidPayloadError('Schema plural name is required')
 
+    const siteId = req.headers['x-zenith-site-id'] as string
     const adapter = getAdapter(req)
     
     // Check if slug already exists
-    const existing = await adapter.find<any>(SCHEMAS_COLLECTION, { slug })
+    const existing = await adapter.find<any>(SCHEMAS_COLLECTION, { slug }, { siteId })
     if (existing && existing.length > 0) {
       throw new InvalidPayloadError(`Schema with slug "${slug}" already exists`)
     }
@@ -70,7 +77,7 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
       plural,
       fields: fields || [],
       settings: settings || {}
-    })
+    }, { siteId })
 
     // In a real implementation, we would need to trigger the CMS engine to merge this hybrid schema
     // and potentially create the table in PostgreSQL via Adapter's _ensureTable or similar method.
@@ -87,6 +94,7 @@ router.put('/:id', requireAuth, requireRole('admin'), async (req: Request, res: 
   try {
     const { id } = req.params
     const { singular, plural, fields, settings } = req.body
+    const siteId = req.headers['x-zenith-site-id'] as string
     const adapter = getAdapter(req)
 
     const update: Record<string, unknown> = { updatedAt: new Date() }
@@ -95,7 +103,7 @@ router.put('/:id', requireAuth, requireRole('admin'), async (req: Request, res: 
     if (fields !== undefined) update.fields = fields
     if (settings !== undefined) update.settings = settings
 
-    const doc = await adapter.update<any>(SCHEMAS_COLLECTION, id, update)
+    const doc = await adapter.update<any>(SCHEMAS_COLLECTION, id, update, { siteId })
     if (!doc) throw new NotFoundError(`Schema "${id}" not found`)
 
     logger.info(`Schema "${doc.slug}" updated.`)
@@ -110,9 +118,10 @@ router.put('/:id', requireAuth, requireRole('admin'), async (req: Request, res: 
 router.delete('/:id', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const { id } = req.params
+    const siteId = req.headers['x-zenith-site-id'] as string
     const adapter = getAdapter(req)
 
-    const deleted = await adapter.delete(SCHEMAS_COLLECTION, id)
+    const deleted = await adapter.delete(SCHEMAS_COLLECTION, id, { siteId })
     if (!deleted) throw new NotFoundError(`Schema "${id}" not found`)
 
     logger.info(`Schema "${id}" deleted. System restart may be required to unmount routes.`)

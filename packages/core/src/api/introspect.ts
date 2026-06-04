@@ -3,7 +3,7 @@ import { Client } from 'pg'
 import { requireAuth } from '../middleware/auth'
 import { CollectionConfig, FieldConfig } from '@zenithcms/types'
 
-const router = Router()
+const router: import('express').Router = Router()
 
 /**
  * Maps Postgres data types to Zenith CMS field types.

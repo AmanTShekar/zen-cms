@@ -347,7 +347,7 @@ const AIWriterPage = () => {
                         : 'Define schema structure...'
                   }
                   className={cn(
-                    'w-full h-48 bg-transparent border rounded-none p-6 text-[11px] font-black italic outline-none transition-all resize-none placeholder:text-gray-700 mb-6',
+                    'w-full h-48 bg-transparent border rounded-none p-6 text-[11px] font-black italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all resize-none placeholder:text-gray-700 mb-6',
                     theme === 'dark'
                       ? 'border-white/10 text-white focus:border-emerald-500/30'
                       : 'border-gray-100 text-gray-900 focus:border-emerald-500/20'

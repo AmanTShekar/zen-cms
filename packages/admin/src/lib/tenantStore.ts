@@ -4,15 +4,13 @@ import { persist } from 'zustand/middleware'
 /**
  * Central store for authentication and multi‑tenant context.
  * It persists to localStorage so the values survive page reloads.
- *
- * Migration: on first load it reads legacy `token` and `activeSiteId`
- * keys from localStorage so existing sessions are not lost.
  */
 interface TenantState {
   token: string | null
   activeSiteId: string | null
+  activeSiteName: string | null
   setToken: (token: string | null) => void
-  setActiveSiteId: (siteId: string | null) => void
+  setActiveSiteId: (siteId: string | null, siteName?: string | null) => void
 }
 
 function getLegacyToken(): string | null {
@@ -31,14 +29,27 @@ function getLegacySiteId(): string | null {
   }
 }
 
+function getLegacySiteName(): string | null {
+  try {
+    return localStorage.getItem('activeSiteName')
+  } catch {
+    return null
+  }
+}
+
 export const useTenantStore = create<TenantState>()(
   persist(
     (set) => ({
       // First try the persisted store; fall back to legacy localStorage keys
       token: getLegacyToken(),
       activeSiteId: getLegacySiteId(),
+      activeSiteName: getLegacySiteName(),
       setToken: (token) => set({ token }),
-      setActiveSiteId: (siteId) => set({ activeSiteId: siteId }),
+      setActiveSiteId: (siteId, siteName) =>
+        set((state) => ({
+          activeSiteId: siteId,
+          activeSiteName: siteName ?? state.activeSiteName,
+        })),
     }),
     {
       name: 'zenith-tenant-store',

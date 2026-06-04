@@ -11,7 +11,7 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "drizzle-orm": "^0.30.0",
+    "drizzle-orm": "^0.45.2",
     "pg": "^8.11.0",
     "node-cache": "^5.1.2",
     "pino": "^9.0.0",

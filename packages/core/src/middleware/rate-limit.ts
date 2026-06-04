@@ -64,6 +64,11 @@ if (redisService.client) {
   } catch {
     logger.warn('Redis unavailable for rate limiting — falling back to in-memory store')
   }
+} else {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('FATAL: Redis is required in production for rate limiting. Set the REDIS_URL environment variable. Running without Redis in production allows clients to bypass rate limits across instances.')
+  }
+  logger.warn('Rate limiter: Redis unavailable — using in-memory store (not safe for horizontally scaled deployments)')
 }
 
 /**

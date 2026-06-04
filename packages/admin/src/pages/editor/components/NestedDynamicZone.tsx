@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { motion, AnimatePresence, Reorder } from 'framer-motion'
+import { motion, AnimatePresence, Reorder, useDragControls } from 'framer-motion'
 import { Layers, ChevronDown, ChevronUp, Plus, Trash2, GripVertical, Layout } from 'lucide-react'
 import { useEditorBlocks } from '../../../context/BlockLibraryContext'
 import { useModalStore } from '../../../store/modalStore'
@@ -13,10 +13,107 @@ interface NestedDynamicZoneProps {
   value: any[]
   onChange: (items: any[]) => void
   theme: 'light' | 'dark'
-  /** Available component types (e.g. ['hero','pricing','faq']) */
   components?: string[]
   onOpenDynamicZone?: (componentType: string) => void
 }
+
+const DraggableZoneItem = ({ 
+  item, idx, theme, dzId, isExpanded, toggleExpand, removeItem, def, blockId, fieldName, updateItem 
+}: any) => {
+  const dragControls = useDragControls()
+  const componentLabel = def?.title || humanize((item.__component || '').replace(/^content\./, ''))
+  const BlockIcon = def?.icon || Layout
+
+  return (
+    <Reorder.Item
+      value={item}
+      dragListener={false}
+      dragControls={dragControls}
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: 'auto' }}
+      exit={{ opacity: 0, height: 0 }}
+      transition={{ duration: 0.15 }}
+      as="div"
+      className={cn(
+        'border rounded-none overflow-hidden',
+        theme === 'dark' ? 'bg-white/[0.02] border-white/8' : 'bg-gray-50 border-gray-200'
+      )}
+    >
+      <div
+        className={cn(
+          'flex items-center gap-2 px-3 py-2.5 cursor-pointer select-none',
+          theme === 'dark' ? 'bg-white/[0.02] hover:bg-white/[0.04]' : 'bg-gray-100/50 hover:bg-gray-100'
+        )}
+        onClick={() => toggleExpand(dzId)}
+      >
+        <div 
+          onPointerDown={(e) => dragControls.start(e)}
+          className="shrink-0 cursor-grab active:cursor-grabbing p-1"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <GripVertical size={12} className="text-gray-500" />
+        </div>
+        <div className={cn(
+          'w-5 h-5 rounded-none flex items-center justify-center shrink-0',
+          theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50'
+        )}>
+          <BlockIcon size={10} className="text-emerald-400" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-black uppercase italic text-emerald-300 truncate">
+            {componentLabel}
+          </p>
+        </div>
+        <span className={cn('text-[8px] font-black shrink-0', theme === 'dark' ? 'text-gray-600' : 'text-gray-400')}>
+          #{idx + 1}
+        </span>
+        <div className="flex items-center gap-0.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => removeItem(dzId)}
+            className="p-1 text-gray-500 hover:text-rose-500 transition-colors"
+          >
+            <Trash2 size={12} />
+          </button>
+          <button
+            onClick={() => toggleExpand(dzId)}
+            className="p-1 text-gray-500 hover:text-emerald-400 transition-colors"
+          >
+            {isExpanded ? <ChevronUp size={12} className="text-emerald-400" /> : <ChevronDown size={12} className="text-gray-400" />}
+          </button>
+        </div>
+      </div>
+      <AnimatePresence initial={false}>
+        {isExpanded && def && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="overflow-hidden"
+          >
+            <div className={cn('px-4 py-4 space-y-4 border-t', theme === 'dark' ? 'border-white/5' : 'border-gray-200')}>
+              {def.fields.map((field: any) => (
+                <div key={field.name} className="space-y-1">
+                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest italic block">
+                    {field.label || humanize(field.name)}
+                  </label>
+                  <FieldRenderer
+                    blockId={`${blockId}:${fieldName}:${dzId}`}
+                    field={field}
+                    value={item[field.name]}
+                    onChange={(val) => updateItem(dzId, field.name, val)}
+                    theme={theme}
+                  />
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </Reorder.Item>
+  )
+}
+
 
 export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
   blockId,
@@ -111,109 +208,21 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
               const dzId = item._dzId || `dz_${idx}`
               const isExpanded = expandedIds.has(dzId)
               const def = getBlockDefForItem(item)
-              const componentLabel = def?.title || componentTypeLabel(item.__component || 'Unknown')
-              const BlockIcon = def?.icon || Layout
-
               return (
-                <Reorder.Item
+                <DraggableZoneItem
                   key={dzId}
-                  value={item}
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.15 }}
-                  as="div"
-                  className={cn(
-                    'border rounded-none overflow-hidden',
-                    theme === 'dark'
-                      ? 'bg-white/[0.02] border-white/8'
-                      : 'bg-gray-50 border-gray-200'
-                  )}
-                >
-                  {/* Card Header */}
-                  <div
-                    className={cn(
-                      'flex items-center gap-2 px-3 py-2.5 cursor-pointer select-none',
-                      theme === 'dark'
-                        ? 'bg-white/[0.02] hover:bg-white/[0.04]'
-                        : 'bg-gray-100/50 hover:bg-gray-100'
-                    )}
-                    onClick={() => toggleExpand(dzId)}
-                  >
-                    <GripVertical size={12} className="text-gray-500 shrink-0 cursor-grab active:cursor-grabbing" />
-                    <div className={cn(
-                      'w-5 h-5 rounded-none flex items-center justify-center shrink-0',
-                      theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50'
-                    )}>
-                      <BlockIcon size={10} className="text-emerald-400" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-black uppercase italic text-emerald-300 truncate">
-                        {componentLabel}
-                      </p>
-                    </div>
-                    <span className={cn(
-                      'text-[8px] font-black shrink-0',
-                      theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
-                    )}>
-                      #{idx + 1}
-                    </span>
-
-                    {/* Controls */}
-                    <div className="flex items-center gap-0.5 shrink-0" onClick={(e) => e.stopPropagation()}>
-                      <button
-                        onClick={() => removeItem(dzId)}
-                        aria-label="Remove component"
-                        className="p-1 text-gray-500 hover:text-rose-500 transition-colors"
-                      >
-                        <Trash2 size={12} aria-hidden="true" />
-                      </button>
-                      <button
-                        onClick={() => toggleExpand(dzId)}
-                        aria-label={isExpanded ? 'Collapse component' : 'Expand component'}
-                        className="p-1 text-gray-500 hover:text-emerald-400 transition-colors"
-                      >
-                        {isExpanded
-                          ? <ChevronUp size={12} aria-hidden="true" className="text-emerald-400" />
-                          : <ChevronDown size={12} aria-hidden="true" className="text-gray-400" />
-                        }
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Expanded Fields */}
-                  <AnimatePresence initial={false}>
-                    {isExpanded && def && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.15 }}
-                        className="overflow-hidden"
-                      >
-                        <div className={cn(
-                          'px-4 py-4 space-y-4 border-t',
-                          theme === 'dark' ? 'border-white/5' : 'border-gray-200'
-                        )}>
-                          {def.fields.map((field: FieldDefinition) => (
-                            <div key={field.name} className="space-y-1">
-                              <label className="text-xs font-black text-gray-400 uppercase tracking-widest italic block">
-                                {field.label || humanize(field.name)}
-                              </label>
-                              <FieldRenderer
-                                blockId={`${blockId}:${fieldName}:${dzId}`}
-                                field={field}
-                                value={item[field.name]}
-                                onChange={(val) => updateItem(dzId, field.name, val)}
-                                theme={theme}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </Reorder.Item>
+                  item={item}
+                  idx={idx}
+                  theme={theme}
+                  dzId={dzId}
+                  isExpanded={isExpanded}
+                  toggleExpand={toggleExpand}
+                  removeItem={removeItem}
+                  def={def}
+                  blockId={blockId}
+                  fieldName={fieldName}
+                  updateItem={updateItem}
+                />
               )
             })}
           </AnimatePresence>

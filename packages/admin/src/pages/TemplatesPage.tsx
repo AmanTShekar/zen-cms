@@ -324,7 +324,7 @@ const TemplatesPage: React.FC = () => {
             placeholder="Filter by tech or tags..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-transparent border-none outline-none text-[10px] font-black italic text-gray-400 w-full placeholder:text-gray-600 uppercase tracking-tight"
+            className="bg-transparent border-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[10px] font-black italic text-gray-400 w-full placeholder:text-gray-600 uppercase tracking-tight"
           />
         </div>
       </div>
@@ -403,7 +403,7 @@ const TemplatesPage: React.FC = () => {
                       </span>
                     </div>
                     <div className="w-9 h-9 rounded-none border border-emerald-500/20 bg-emerald-500/5 flex items-center justify-center text-emerald-500 font-bold text-xs italic">
-                      99
+                      {template.performanceScore}
                     </div>
                   </div>
                 </div>
@@ -445,7 +445,7 @@ const TemplatesPage: React.FC = () => {
 
                     <div className="flex justify-between items-center pt-2 border-t border-white/5">
                       <div className="flex items-center gap-1 text-gray-500 text-[6px] font-black uppercase">
-                        <Layers size={8} /> Space UI
+                        <Layers size={8} /> {template.id === 'storefront-glass' ? 'Glassmorphism' : template.id === 'storefront-editorial' ? 'Editorial' : template.id === 'blog-demo' ? 'Dev Blog' : 'E-Commerce'}
                       </div>
                       <div className="w-8 h-3 bg-white/10 rounded-none" />
                     </div>

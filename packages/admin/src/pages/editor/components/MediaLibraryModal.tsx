@@ -8,11 +8,13 @@ import { cn } from '../../../lib/utils'
 import { useFocusTrap } from '../../../hooks/useFocusTrap'
 import api from '../../../lib/api'
 import toast from 'react-hot-toast'
+import { registerMediaBlob } from '../../../components/lexical/nodes/MediaNode'
 
-const fileFullUrl = (file: any) =>
-  file.url.startsWith('http')
-    ? file.url
-    : `${(import.meta.env.VITE_API_URL || '').replace('/api/v1', '')}${file.url}`
+const fileFullUrl = (file: any, blobMap: Record<string, string>): string => {
+  if (!file.url) return ''
+  if (file.url.startsWith('http')) return file.url
+  return blobMap[file.url] || `${(import.meta.env.VITE_API_URL || '').replace('/api/v1', '')}${file.url}`
+}
 
 export const MediaLibraryModal: React.FC = () => {
   const { theme } = useTheme()
@@ -27,6 +29,31 @@ export const MediaLibraryModal: React.FC = () => {
     mediaLoading,
     setMediaLoading,
   } = useEditorStore()
+
+  const [blobMap, setBlobMap] = React.useState<Record<string, string>>({})
+  const blobTokens = useRef<Set<string>>(new Set())
+
+  // Pre-fetch media assets with credentials when modal opens
+  React.useEffect(() => {
+    if (!mediaLibraryOpen || !mediaAssets.length) return
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace('/api/v1', '')
+    const uncached = mediaAssets.filter((f: any) => f.url && !f.url.startsWith('http') && !blobMap[f.url])
+    uncached.forEach((file: any) => {
+      fetch(`${apiBase}${file.url}`, { credentials: 'include' })
+        .then((r) => r.blob())
+        .then((blob) => {
+          const objectUrl = URL.createObjectURL(blob)
+          blobTokens.current.add(objectUrl)
+          setBlobMap(prev => ({ ...prev, [file.url]: objectUrl }))
+          registerMediaBlob(file.url, objectUrl)
+        })
+        .catch(() => {})
+    })
+  }, [mediaLibraryOpen, mediaAssets])
+
+  React.useEffect(() => {
+    return () => { blobTokens.current.forEach((u) => URL.revokeObjectURL(u)) }
+  }, [])
 
   React.useEffect(() => {
     if (!mediaLibraryOpen) return
@@ -255,7 +282,7 @@ export const MediaLibraryModal: React.FC = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
                       {filteredAssets.map((file, i) => {
                         const isImage = (file.mimetype || '').startsWith('image/')
-                        const url = fileFullUrl(file)
+                        const url = fileFullUrl(file, blobMap)
                         return (
                           <motion.div
                             key={file._id || i}

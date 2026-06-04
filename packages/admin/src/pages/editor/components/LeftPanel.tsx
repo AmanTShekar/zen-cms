@@ -5,6 +5,7 @@ import {
   Layout,
   Search,
   X,
+  Trash2,
 } from 'lucide-react'
 import { useTheme } from '../../../context/ThemeContext'
 import { useEditorStore } from '../../../store/editorStore'
@@ -13,21 +14,26 @@ import { cn } from '../../../lib/utils'
 import { AnimatePresence, motion, Reorder } from 'framer-motion'
 import { type Section, humanize } from '../constants'
 import { useEditorBlocks } from '../../../context/BlockLibraryContext'
+import EmptyState from '../../../components/EmptyState'
 
 interface LeftPanelProps {
   isGlobal?: boolean
   resizingSide: 'left' | 'right' | null
   startResizing: (side: 'left' | 'right') => (e: React.MouseEvent) => void
-  addBlock: (blockType: string) => void
-  setInjectionIndex: (idx: number | null) => void
+  addBlock: (type: string, data?: any) => void
+  setInjectionIndex: (index: number | null) => void
   setBlockPickerOpen: (open: boolean) => void
+  removeSection: (id: string) => void
 }
 
 export const LeftPanel: React.FC<LeftPanelProps> = ({
+  isGlobal,
   resizingSide,
   startResizing,
+  addBlock,
   setInjectionIndex,
   setBlockPickerOpen,
+  removeSection,
 }) => {
   const { theme } = useTheme()
   const BLOCK_LIBRARY = useEditorBlocks()
@@ -185,29 +191,17 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
               {filteredSections.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-4">
                   {data?.sections?.length === 0 ? (
-                    <>
-                      <Layout size={32} className={dark ? 'text-gray-700' : 'text-gray-300'} />
-                      <div>
-                        <p className={cn('text-xs font-black uppercase italic', dark ? 'text-gray-500' : 'text-gray-400')}>
-                          No sections yet
-                        </p>
-                        <p className={cn('text-xs font-bold mt-1', dark ? 'text-gray-700' : 'text-gray-300')}>
-                          Add your first section to start building
-                        </p>
-                      </div>
-                    </>
+                    <EmptyState
+                      icon={Layout}
+                      title="No sections yet"
+                      message="Add your first section to start building"
+                    />
                   ) : (
-                    <>
-                      <Search size={32} className={dark ? 'text-gray-700' : 'text-gray-300'} />
-                      <div>
-                        <p className={cn('text-xs font-black uppercase italic', dark ? 'text-gray-500' : 'text-gray-400')}>
-                          No matches
-                        </p>
-                        <p className={cn('text-xs font-bold mt-1', dark ? 'text-gray-700' : 'text-gray-300')}>
-                          Try a different search term
-                        </p>
-                      </div>
-                    </>
+                    <EmptyState
+                      icon={Search}
+                      title="No matches"
+                      message="Try a different search term"
+                    />
                   )}
                 </div>
               ) : searchActive ? (
@@ -266,10 +260,10 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                     return (
                       <Reorder.Item key={section.id} value={section} as="div">
                         <div className="w-full flex items-center gap-0">
-                          <button
+                          <div
                             onClick={() => editorSetActiveSection(section.id)}
                             className={cn(
-                              'flex-1 flex items-center gap-2.5 px-2.5 py-2 rounded-none border text-left transition-all',
+                              'flex-1 flex items-center gap-2.5 px-2.5 py-2 rounded-none border text-left transition-all cursor-pointer',
                               activeSection === section.id
                                 ? dark
                                   ? 'bg-white border-white text-black'
@@ -298,13 +292,28 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                               <span className={cn(
                                 'text-[8px] font-black uppercase tracking-wider shrink-0',
                                 activeSection === section.id
-                                  ? 'opacity-60'
-                                  : dark ? 'text-gray-600' : 'text-gray-400'
+                                  ? dark ? 'text-emerald-400/80' : 'text-emerald-600/80'
+                                  : 'text-gray-400'
                               )}>
                                 {humanize(section.blockType)}
                               </span>
                             )}
-                          </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                removeSection(section.id)
+                              }}
+                              className={cn(
+                                'p-1 shrink-0 rounded opacity-0 group-hover:opacity-100 transition-opacity ml-1',
+                                dark
+                                  ? 'hover:bg-rose-500/20 text-rose-500/70 hover:text-rose-500'
+                                  : 'hover:bg-rose-100 text-rose-500/70 hover:text-rose-600'
+                              )}
+                              aria-label="Delete layer"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
                         </div>
                       </Reorder.Item>
                     )

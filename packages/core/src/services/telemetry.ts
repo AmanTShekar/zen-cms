@@ -18,7 +18,7 @@ export function initTelemetry() {
       resource: new Resource({
         [SemanticResourceAttributes.SERVICE_NAME]: 'zenith-cms-core',
         [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
-      }),
+      }) as any,
     })
 
     // Use OTLP Exporter if endpoint is set, else default to console (for debugging)
@@ -26,7 +26,7 @@ export function initTelemetry() {
       ? new OTLPTraceExporter({ url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT })
       : new ConsoleSpanExporter()
 
-    provider.addSpanProcessor(new SimpleSpanProcessor(exporter))
+    ;(provider as any).addSpanProcessor(new SimpleSpanProcessor(exporter))
     provider.register()
 
     registerInstrumentations({

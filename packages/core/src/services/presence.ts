@@ -67,19 +67,17 @@ export class PresenceService {
     if (!this.adapter) return []
 
     try {
+      // Fetch all presence records for this document, filter by TTL in JS
+      // (avoids MongoDB-specific $gt operator that breaks on Postgres adapter)
       const minLastActive = Date.now() - this.TTL
-      const query = {
+      const records = await this.adapter.find<ActiveUser>('z_presence', {
         collectionName: collection,
         documentId,
-        lastActive: { $gt: minLastActive }
-      }
+      })
 
-      const records = await this.adapter.find<ActiveUser>('z_presence', query)
-
-      return records.map((r) => ({
-        id: r.userId,
-        email: r.email
-      }))
+      return records
+        .filter((r) => (r.lastActive as unknown as number) > minLastActive)
+        .map((r) => ({ id: r.userId, email: r.email }))
     } catch {
       return []
     }
@@ -89,19 +87,17 @@ export class PresenceService {
     if (!this.adapter) return []
 
     try {
+      // Fetch all presence records and filter by TTL in JS
+      // (avoids MongoDB-specific $gt operator that breaks on Postgres adapter)
       const minLastActive = Date.now() - this.TTL
-      const query = {
-        lastActive: { $gt: minLastActive }
-      }
+      const records = await this.adapter.find<ActiveUser>('z_presence', {})
 
-      const records = await this.adapter.find<ActiveUser>('z_presence', query)
-
-      // Deduplicate by user ID
+      // Deduplicate by user ID and apply TTL filter
       const users: { id: string; email: string }[] = []
       const seenIds = new Set<string>()
 
       for (const r of records) {
-        if (!seenIds.has(r.userId)) {
+        if ((r.lastActive as unknown as number) > minLastActive && !seenIds.has(r.userId)) {
           seenIds.add(r.userId)
           users.push({ id: r.userId, email: r.email })
         }

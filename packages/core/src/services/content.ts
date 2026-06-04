@@ -124,7 +124,7 @@ export class ContentService<T = unknown> {
         const existingBlocks = Array.isArray(existingDoc?.[field.name]) ? existingDoc[field.name] : []
         cleanData[field.name] = await Promise.all(
           cleanData[field.name].map((block: any, idx: number) => {
-            const blockDef = field.blocks.find((b) => b.slug === block.blockType)
+            const blockDef = (field.blocks || []).find((b: any) => b.slug === block.blockType)
             return blockDef ? this.processFields(block, options, action, blockDef.fields, existingBlocks[idx]) : block
           })
         )
@@ -336,8 +336,14 @@ export class ContentService<T = unknown> {
         }
       }
 
-      const oldDoc = await this.adapter.findOne(this.config.slug, query, opts)
-      if (!oldDoc) throw new NotFoundError(this.config.name, id)
+      let oldDoc = await this.adapter.findOne(this.config.slug, query, opts)
+      if (!oldDoc) {
+        if (this.config.singleton) {
+          oldDoc = await this.adapter.create(this.config.slug, { ...query, ...data, _status: 'published' }, opts)
+        } else {
+          throw new NotFoundError(this.config.name, id)
+        }
+      }
 
       // Optimistic locking: reject stale saves
       if (options.expectedVersion !== undefined) {

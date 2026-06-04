@@ -10,7 +10,7 @@ const PLUGINS_COLLECTION = 'z_plugins'
 const getAdapter = (req: Request): DatabaseAdapter =>
   (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-const router = Router()
+const router: import('express').Router = Router()
 
 // ── List all installed plugins ────────────────────────────────────────────────
 router.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {

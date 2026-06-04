@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
-  Plus, Search, ChevronLeft, ChevronRight, Loader2, Edit, Trash2,
+  Plus, Search, ChevronLeft, ChevronRight, Loader2, Edit, Trash2, Send, Archive,
   Database, Download, Layers, Fingerprint, Activity as ActivityIcon,
   ShieldCheck, CheckSquare, Square, Upload, LayoutList, LayoutGrid, Kanban
 } from 'lucide-react'
@@ -13,18 +13,48 @@ import toast from 'react-hot-toast'
 import { useTheme } from '../context/ThemeContext'
 import CollectionListBulkToolbar from './CollectionListBulkToolbar'
 import CollectionListImportModal from './CollectionListImportModal'
+import { useSystemMetadata, useCollectionItems } from '../hooks/useQueries'
+import { useTenantStore } from '../lib/tenantStore'
+import { useQueryClient } from '@tanstack/react-query'
+
+const EmptyCollectionState = ({ slug, theme }: { slug: string, theme: string }) => {
+  return (
+    <div className={cn("py-24 px-6 text-center border-dashed border-2 rounded-xl flex flex-col items-center justify-center gap-6 my-10 mx-auto max-w-2xl", theme === 'dark' ? 'border-white/10 bg-white/[0.02]' : 'border-emerald-500/20 bg-emerald-50/50')}>
+      <div className={cn("w-16 h-16 rounded-full flex items-center justify-center", theme === 'dark' ? 'bg-white/5 text-emerald-400' : 'bg-emerald-100 text-emerald-600')}>
+        <Database size={28} />
+      </div>
+      <div>
+        <h3 className="text-lg font-black tracking-tighter uppercase italic mb-2">Collection is Empty</h3>
+        <p className={cn("text-sm max-w-sm mx-auto font-medium", theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+          This collection doesn't have any records yet. Initialize the first record to launch the page builder.
+        </p>
+      </div>
+      <Link 
+        to={`/collections/${slug}/new`}
+        className={cn("px-8 py-4 rounded-full font-black text-[11px] uppercase tracking-widest shadow-xl transition-all italic leading-none flex items-center gap-3", theme === 'dark' ? 'bg-emerald-500 text-white hover:bg-emerald-400 hover:shadow-emerald-500/20' : 'bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-emerald-600/20')}
+      >
+        <Plus size={16} strokeWidth={3} /> Launch Page Builder
+      </Link>
+    </div>
+  )
+}
 
 const CollectionList: React.FC = () => {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const { theme } = useTheme()
+  const queryClient = useQueryClient()
+  const activeSiteId = useTenantStore((s) => s.activeSiteId)
+  
   const [data, setData] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [, setError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
-  const [searchQuery, setSearchQuery] = useState('')
   const [viewMode, setViewMode] = useState<'active' | 'trash'>('active')
+  
+  const { data: health, isLoading: isHealthLoading } = useSystemMetadata()
+  const { data: collectionData, isLoading: isItemsLoading } = useCollectionItems(slug || '', page, viewMode)
+  const loading = isHealthLoading || isItemsLoading
+  const [searchQuery, setSearchQuery] = useState('')
   const [layout, setLayout] = useState<'table' | 'cards' | 'kanban'>('table')
   const [config, setConfig] = useState<any>(null)
   const filteredData = data.filter((item) => {
@@ -39,39 +69,30 @@ const CollectionList: React.FC = () => {
   const [importModalOpen, setImportModalOpen] = useState(false)
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        const healthRes = await api.get('/health')
-        const globals = healthRes.data.data?.globals || []
-        const collections = healthRes.data.data?.collections || []
-        const isGlobal = globals.some((g: any) => g.slug === slug)
-        const colConfig = collections.find((c: any) => c.slug === slug)
-        setConfig(colConfig)
-        const isSingleton = colConfig?.singleton || isGlobal
-        if (isSingleton) {
-          navigate(isGlobal ? `/globals/${slug}` : `/collections/${slug}/singleton`)
-          return
-        }
-        
-        const endpoint = viewMode === 'trash' ? `/${slug}/trash?page=${page}` : `/${slug}?page=${page}`
-        const res = await api.get(endpoint)
-        
-        const items = res.data.data || []
-        setData(items)
-        setTotal(res.data.meta?.pagination?.total || items.length || 0)
-        if (items.length > 0) {
-          const keys = Array.from(new Set(items.flatMap((item: any) => Object.keys(item)))).filter(
-            (k) => typeof k === 'string' && !k.startsWith('_') && k !== 'id' && k !== '__v'
-          ) as string[]
-          setAvailableColumns(keys)
-        }
-      } catch { setError('SYNCHRONIZATION_FAILED') }
-      finally { setTimeout(() => setLoading(false), 300) }
+    if (!health || !slug) return
+    const globals = health.globals || []
+    const collections = health.collections || []
+    const isGlobal = globals.some((g: any) => g.slug === slug)
+    const colConfig = collections.find((c: any) => c.slug === slug)
+    setConfig(colConfig)
+    const isSingleton = colConfig?.singleton || isGlobal
+    if (isSingleton) {
+      navigate(isGlobal ? `/globals/${slug}` : `/collections/${slug}/singleton`)
     }
-    if (slug) fetchData()
-  }, [slug, page, navigate, viewMode])
+  }, [health, slug, navigate])
+
+  useEffect(() => {
+    if (collectionData) {
+      setData(collectionData.items)
+      setTotal(collectionData.total)
+      if (collectionData.items.length > 0) {
+        const keys = Array.from(new Set(collectionData.items.flatMap((item: any) => Object.keys(item)))).filter(
+          (k) => typeof k === 'string' && !k.startsWith('_') && k !== 'id' && k !== '__v'
+        ) as string[]
+        setAvailableColumns(keys)
+      }
+    }
+  }, [collectionData])
 
   const handleDelete = async (id: string, hard = false) => {
     if (!await confirm({ message: hard ? 'Permanently delete this record? This cannot be undone.' : 'Confirm deletion?' })) return
@@ -85,6 +106,7 @@ const CollectionList: React.FC = () => {
       }
       setData(data.filter((item) => (item._id || item.id) !== id))
       setTotal((prev) => prev - 1)
+      queryClient.invalidateQueries({ queryKey: ['collectionItems', activeSiteId, slug] })
     } catch { toast.error('Purge failure') }
   }
 
@@ -95,6 +117,7 @@ const CollectionList: React.FC = () => {
       toast.success('Record restored')
       setData(data.filter((item) => (item._id || item.id) !== id))
       setTotal((prev) => prev - 1)
+      queryClient.invalidateQueries({ queryKey: ['collectionItems', activeSiteId, slug] })
     } catch { toast.error('Restore failure') }
   }
 
@@ -143,8 +166,27 @@ const CollectionList: React.FC = () => {
         setData((prev) => prev.map((item) => selectedIds.has(item._id || item.id) ? { ...item, _status: 'draft' } : item))
       }
       setSelectedIds(new Set())
+      queryClient.invalidateQueries({ queryKey: ['collectionItems', activeSiteId, slug] })
     } catch { toast.error(`Bulk ${action} failed`) }
     finally { setBulkProcessing(false) }
+  }
+
+  const handleQuickStatusToggle = async (itemId: string, currentStatus: string) => {
+    const action = currentStatus === 'draft' ? 'publish' : 'unpublish'
+    const originalItem = data.find((item) => (item._id || item.id) === itemId)
+    if (!originalItem) return
+
+    // Optimistic UI update
+    setData((prev) => prev.map((item) => (item._id || item.id) === itemId ? { ...item, _status: action === 'publish' ? 'published' : 'draft' } : item))
+
+    try {
+      await api.post(`/${slug}/bulk/${action}`, { ids: [itemId] })
+      toast.success(`Record ${action}ed`)
+    } catch {
+      toast.error(`Failed to ${action} record`)
+      // Revert optimistic update
+      setData((prev) => prev.map((item) => (item._id || item.id) === itemId ? { ...item, _status: currentStatus } : item))
+    }
   }
 
   const exportCSV = () => {
@@ -170,9 +212,7 @@ const CollectionList: React.FC = () => {
   }
 
   const handleImportRefreshed = async () => {
-    const refreshRes = await api.get(`/${slug}?page=${page}`)
-    setData(refreshRes.data.data || [])
-    setTotal(refreshRes.data.meta?.pagination?.total || 0)
+    queryClient.invalidateQueries({ queryKey: ['collectionItems', activeSiteId, slug] })
   }
 
   return (
@@ -193,7 +233,7 @@ const CollectionList: React.FC = () => {
         </div>
         <div className="flex items-center gap-6">
           <Link to={`/collections/${slug}/new`} className={cn('px-8 py-4 rounded-none font-black text-[11px] uppercase tracking-widest shadow-xl transition-all italic leading-none flex items-center gap-3', theme === 'dark' ? 'bg-white text-black hover:bg-gray-200' : 'bg-emerald-600 text-white shadow-emerald-600/10')}>
-            <Plus size={16} strokeWidth={3} /> Initialize_Record
+            <Plus size={16} strokeWidth={3} /> {hasSpatialEditor ? 'Launch Page Builder' : 'New Record'}
           </Link>
         </div>
       </header>
@@ -254,7 +294,7 @@ const CollectionList: React.FC = () => {
           <div className="relative w-full max-w-sm">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={14} />
             <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="NEURAL_SEARCH_KERNEL..."
-              className={cn('w-full border rounded-none py-2.5 pl-10 pr-4 text-[9px] font-black italic focus:ring-4 transition-all outline-none uppercase tracking-widest', theme === 'dark' ? 'bg-black border-white/10 text-white focus:ring-emerald-500/20' : 'bg-white border-gray-100 focus:ring-emerald-500/10')}
+              className={cn('w-full border rounded-none py-2.5 pl-10 pr-4 text-[9px] font-black italic focus:ring-4 transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black uppercase tracking-widest', theme === 'dark' ? 'bg-black border-white/10 text-white focus:ring-emerald-500/20' : 'bg-white border-gray-100 focus:ring-emerald-500/10')}
             />
           </div>
           <div className="flex items-center gap-2 relative">
@@ -315,7 +355,7 @@ const CollectionList: React.FC = () => {
                 {loading ? (
                   <tr><td colSpan={visibleColumns.length + 3} className="py-20 text-center"><Loader2 size={24} className="animate-spin mx-auto text-emerald-500 opacity-20" /></td></tr>
                 ) : filteredData.length === 0 ? (
-                  <tr><td colSpan={visibleColumns.length + 3} className="py-20 text-center opacity-20 text-[9px] font-black uppercase italic tracking-[0.4em]">No_Records_Found</td></tr>
+                  <tr><td colSpan={visibleColumns.length + 3} className="py-10"><EmptyCollectionState slug={slug || ''} theme={theme} /></td></tr>
                 ) : filteredData.map((item: any) => {
                   const itemId = item._id || item.id
                   const isSelected = selectedIds.has(itemId)
@@ -345,7 +385,16 @@ const CollectionList: React.FC = () => {
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
                           {viewMode === 'active' ? (
                             <>
-                              <button onClick={(e) => { e.stopPropagation(); }} className="p-2 rounded-none border hover:text-emerald-500"><Edit size={12} /></button>
+                              {item._status && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleQuickStatusToggle(itemId, item._status); }}
+                                  className={cn('p-2 rounded-none border', item._status === 'draft' ? 'hover:text-emerald-500 hover:border-emerald-500' : 'hover:text-amber-500 hover:border-amber-500')}
+                                  title={item._status === 'draft' ? 'Publish' : 'Unpublish'}
+                                >
+                                  {item._status === 'draft' ? <Send size={12} /> : <Archive size={12} />}
+                                </button>
+                              )}
+                              <button onClick={(e) => { e.stopPropagation(); navigate(`/collections/${slug}/${itemId}`) }} className="p-2 rounded-none border hover:text-emerald-500"><Edit size={12} /></button>
                               <button onClick={(e) => { e.stopPropagation(); handleDelete(itemId); }} className="p-2 rounded-none border hover:text-red-500"><Trash2 size={12} /></button>
                             </>
                           ) : (
@@ -387,7 +436,16 @@ const CollectionList: React.FC = () => {
                         <div className="flex gap-2">
                           {viewMode === 'active' ? (
                             <>
-                              <button onClick={(e) => { e.stopPropagation(); }} className="text-gray-400 hover:text-emerald-500"><Edit size={12} /></button>
+                              {item._status && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleQuickStatusToggle(itemId, item._status); }}
+                                  className={item._status === 'draft' ? 'text-gray-400 hover:text-emerald-500' : 'text-gray-400 hover:text-amber-500'}
+                                  title={item._status === 'draft' ? 'Publish' : 'Unpublish'}
+                                >
+                                  {item._status === 'draft' ? <Send size={12} /> : <Archive size={12} />}
+                                </button>
+                              )}
+                              <button onClick={(e) => { e.stopPropagation(); navigate(`/collections/${slug}/${itemId}`) }} className="text-gray-400 hover:text-emerald-500"><Edit size={12} /></button>
                               <button onClick={(e) => { e.stopPropagation(); handleDelete(itemId); }} className="text-gray-400 hover:text-red-500"><Trash2 size={12} /></button>
                             </>
                           ) : (

@@ -26,6 +26,10 @@ function getDocTitle(doc: any): string {
   return doc.title || doc.name || doc.heading || doc.label || doc.slug || String(doc._id || doc.id)
 }
 
+function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 // ── GET /api/v1/trash ──────────────────────────────────────────────────────────
 router.get('/', async (req: Request, res: Response, next) => {
   try {
@@ -52,17 +56,11 @@ router.get('/', async (req: Request, res: Response, next) => {
     const perColLimit = skip + limit // max items needed from any single collection
     const results = await Promise.allSettled(
       softDeleteCollections.map(async (col: any) => {
+        // Adapter-agnostic filter: only the deletedAt check goes to the DB.
+        // Free-text search is applied as a JS post-filter below to avoid
+        // MongoDB-specific $regex/$or operators that break on Postgres.
         const filter: Record<string, any> = { deletedAt: { $ne: null } }
         if (siteId) filter.siteId = siteId
-        if (search) {
-          filter.$or = [
-            { title: { $regex: search, $options: 'i' } },
-            { name: { $regex: search, $options: 'i' } },
-            { heading: { $regex: search, $options: 'i' } },
-            { label: { $regex: search, $options: 'i' } },
-            { slug: { $regex: search, $options: 'i' } },
-          ]
-        }
 
         const [total, docs] = await Promise.all([
           adapter.count(col.slug, filter),
@@ -72,10 +70,20 @@ router.get('/', async (req: Request, res: Response, next) => {
           }),
         ])
 
+        // Apply search as a JS-level post-filter (adapter-agnostic)
+        const lowerSearch = search ? search.toLowerCase() : null
+        const filteredDocs = lowerSearch
+          ? docs.filter((doc: any) =>
+              ['title', 'name', 'heading', 'label', 'slug'].some((f) =>
+                typeof doc[f] === 'string' && doc[f].toLowerCase().includes(lowerSearch)
+              )
+            )
+          : docs
+
         return {
           slug: col.slug,
-          total,
-          items: docs.map((doc: any) => ({
+          total: lowerSearch ? filteredDocs.length : total,
+          items: filteredDocs.map((doc: any) => ({
             _id: doc._id,
             collectionSlug: col.slug,
             collectionName: col.name || col.slug,
@@ -176,12 +184,11 @@ router.post('/purge', async (req: Request, res: Response, next) => {
       throw new NotFoundError('collection', collection)
     }
 
-    // Verify site scoping
-    const query: Record<string, any> = { _id: id, deletedAt: { $ne: null } }
-    if (siteId) query.siteId = siteId
-
-    const doc = await adapter.findOne(collection, query)
-    if (!doc) throw new NotFoundError(collection, id)
+    // Adapter-agnostic lookup: try `id` first (Postgres), fall back to `_id` (MongoDB)
+    // Also verify the document is actually soft-deleted (deletedAt non-null) in JS
+    let doc: any = await adapter.findOne(collection, { id, siteId: siteId || undefined }).catch(() => null)
+    if (!doc) doc = await adapter.findOne(collection, { _id: id, siteId: siteId || undefined }).catch(() => null)
+    if (!doc || !doc.deletedAt) throw new NotFoundError(collection, id)
 
     await adapter.delete(collection, id)
     res.json(createResponse({ purged: true, collection, id }))

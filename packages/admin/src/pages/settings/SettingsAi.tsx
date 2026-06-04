@@ -47,8 +47,13 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
 
   return (
     <>
-      <div className="space-y-4">
-        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] italic px-1">
+      <div
+        className={cn(
+          'p-5 rounded-xl border transition-all space-y-3 col-span-1 md:col-span-2',
+          theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+        )}
+      >
+        <label className="text-xs font-semibold text-gray-400 px-1">
           AI Model Context
         </label>
         <div className="relative group">
@@ -56,10 +61,10 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
             value={settings.aiModel}
             onChange={(e) => setSettings({ ...settings, aiModel: e.target.value })}
             className={cn(
-              'w-full border rounded-none py-5 px-8 text-[12px] font-black italic transition-all outline-none appearance-none cursor-pointer',
+              'w-full border rounded-lg py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black appearance-none cursor-pointer',
               theme === 'dark'
-                ? 'bg-white/5 border-white/5 text-white hover:border-emerald-500/20'
-                : 'bg-gray-50 border-gray-100 hover:border-emerald-500/20'
+                ? 'bg-[#0f141f] border-white/10 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+                : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
             )}
           >
             {AI_MODELS.map((m) => (
@@ -68,12 +73,17 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
           </select>
           <ChevronDown
             size={18}
-            className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none group-hover:text-emerald-500 transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none group-hover:text-emerald-500 transition-colors"
           />
         </div>
       </div>
-      <div className="space-y-4">
-        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] italic px-1">
+      <div
+        className={cn(
+          'p-5 rounded-xl border transition-all space-y-3 col-span-1 md:col-span-2',
+          theme === 'dark' ? 'bg-white/[0.02] border-white/5 hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+        )}
+      >
+        <label className="text-xs font-semibold text-gray-400 px-1">
           AI Key (Encrypted)
         </label>
         <div className="relative">
@@ -82,34 +92,40 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
             value={settings.aiApiKey}
             onChange={(e) => setSettings({ ...settings, aiApiKey: e.target.value })}
             className={cn(
-              'w-full border rounded-none py-5 px-8 text-[12px] font-black italic focus:ring-4 transition-all outline-none pr-16',
+              'w-full border rounded-lg py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black pr-12',
               theme === 'dark'
-                ? 'bg-white/5 border-white/5 text-white focus:border-emerald-500/20'
-                : 'bg-gray-50 border-gray-100'
+                ? 'bg-[#0f141f] border-white/10 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+                : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
             )}
             placeholder="sk-..."
           />
-          <Lock size={18} className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600" />
+          <Lock size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" />
         </div>
       </div>
-      <div className="col-span-full p-6 border rounded-none flex items-center justify-between">
+      
+      <div
+        className={cn(
+          'col-span-1 md:col-span-2 p-6 rounded-xl border flex items-center justify-between transition-all',
+          theme === 'dark' ? 'bg-white/[0.02] border-white/5' : 'bg-gray-50/50 border-gray-100'
+        )}
+      >
         <div className="flex items-center gap-4">
           <div className={cn(
-            'w-14 h-14 rounded-none border flex items-center justify-center',
+            'w-12 h-12 rounded-xl flex items-center justify-center transition-colors',
             isConfigured
-              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
-              : 'bg-white/5 border-white/10 text-gray-600'
+              ? 'bg-emerald-500/10 text-emerald-500'
+              : 'bg-white/5 text-gray-500'
           )}>
             <Terminal size={24} />
           </div>
           <div className="flex flex-col">
             <span className={cn(
-              'text-[10px] font-black uppercase italic leading-none',
+              'text-sm font-bold',
               isConfigured ? 'text-emerald-500' : 'text-gray-500'
             )}>
               Neural Bridge: {isConfigured ? 'ACTIVE' : 'INACTIVE'}
             </span>
-            <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-2">
+            <span className="text-xs text-gray-500 mt-1">
               {isConfigured ? `${settings.aiModel} · Mode: Production` : 'Configure API key to enable'}
             </span>
           </div>
@@ -118,12 +134,12 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
           onClick={handleValidate}
           disabled={validating}
           className={cn(
-            'px-8 py-3.5 rounded-none text-[10px] font-black uppercase tracking-widest italic shadow-lg active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50',
+            'px-6 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 disabled:opacity-50 border',
             isConfigured
-              ? 'bg-emerald-500 text-white hover:bg-emerald-600 shadow-emerald-500/20'
+              ? 'bg-emerald-600 text-white hover:bg-emerald-500 border-transparent shadow-[0_0_15px_rgba(16,185,129,0.2)]'
               : theme === 'dark'
-              ? 'bg-white/10 text-gray-400 hover:bg-white/15'
-              : 'bg-gray-200 text-gray-500 hover:bg-gray-300'
+              ? 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+              : 'bg-gray-100 border-transparent text-gray-600 hover:bg-gray-200'
           )}
         >
           {validating ? <Loader2 size={14} className="animate-spin" /> : null}

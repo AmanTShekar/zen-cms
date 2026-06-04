@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events'
 import { logger } from './logger'
+import { redisService } from './redis'
 
 export type ZenithEventListener = (...args: any[]) => Promise<void> | void
 
@@ -66,7 +67,6 @@ class RedisEventBackend implements EventHubBackend {
 
   private async init(): Promise<void> {
     try {
-      const { redisService } = require('./redis')
       const { pubClient, subClient } = redisService.getPubSubClients()
       
       if (!pubClient || !subClient) {
@@ -154,7 +154,6 @@ class ZenithEventHub {
   private backend: EventHubBackend
 
   constructor() {
-    const { redisService } = require('./redis')
     if (redisService.client) {
       logger.info('Zenith Event Hub: Initializing pluggable Distributed Redis event bus backend')
       this.backend = new RedisEventBackend()

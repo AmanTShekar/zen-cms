@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Glassmorphism storefront template for Zenith CMS — dark theme, premium feel, zero-config deploy",
   "scripts": {
+    "setup:backend": "tsx backend/setup.ts",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",

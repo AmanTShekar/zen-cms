@@ -103,7 +103,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
                 autoFocus
                 placeholder="operator@example.com"
                 className={cn(
-                  'w-full border rounded-none py-4 px-5 text-[13px] font-black italic transition-all outline-none',
+                  'w-full border rounded-none py-4 px-5 text-[13px] font-black italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                   theme === 'dark'
                     ? 'bg-white/5 border-white/10 text-white focus:border-emerald-500/50'
                     : 'bg-gray-50 border-gray-200 focus:border-emerald-500'

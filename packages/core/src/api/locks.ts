@@ -45,11 +45,17 @@ router.get('/:collection/:id', async (req: Request, res: Response, next) => {
     const filter: Record<string, any> = { collectionName, documentId }
     if (siteId) filter.siteId = siteId
 
-    // Expire stale locks
-    await adapter.deleteMany('z_locks', {
-      ...filter,
-      lockExpiresAt: { $lt: new Date() }
-    })
+    // Expire stale locks — fetch and delete individually for adapter-agnostic compatibility
+    // ($lt is MongoDB-specific and breaks on the Postgres adapter)
+    try {
+      const allLocks = await adapter.find('z_locks', filter)
+      const now = new Date()
+      await Promise.all(
+        allLocks
+          .filter((l: any) => new Date(l.lockExpiresAt) < now)
+          .map((l: any) => adapter.delete('z_locks', String(l.id || l._id)))
+      )
+    } catch { /* non-critical — stale locks will just be ignored */ }
 
     const lock = await adapter.findOne('z_locks', filter) as any
 
@@ -64,7 +70,7 @@ router.get('/:collection/:id', async (req: Request, res: Response, next) => {
       lockedBy: lock.lockedBy,
       lockedByEmail: lock.lockedByEmail,
       lockedAt: lock.lockedAt,
-      lockExpiresAt: lock.lockedExpiresAt,
+      lockExpiresAt: lock.lockExpiresAt,  // Fix: was lock.lockedExpiresAt (typo)
       isOwner,
     }))
   } catch (err) {
@@ -96,11 +102,16 @@ router.post('/:collection/:id/lock', async (req: Request, res: Response, next) =
     const baseFilter: Record<string, any> = { collectionName, documentId }
     if (siteId) baseFilter.siteId = siteId
 
-    // Expire any stale locks first
-    await adapter.deleteMany('z_locks', {
-      ...baseFilter,
-      lockExpiresAt: { $lt: new Date() }
-    })
+    // Expire any stale locks first — fetch and delete individually (adapter-agnostic)
+    try {
+      const allLocks = await adapter.find('z_locks', baseFilter)
+      const now = new Date()
+      await Promise.all(
+        allLocks
+          .filter((l: any) => new Date(l.lockExpiresAt) < now)
+          .map((l: any) => adapter.delete('z_locks', String(l.id || l._id)))
+      )
+    } catch { /* non-critical */ }
 
     const { force } = req.body || {}
 
@@ -113,12 +124,13 @@ router.post('/:collection/:id/lock', async (req: Request, res: Response, next) =
           throw new ConflictError(`Document is already locked by ${existing.lockedByEmail}`)
         }
         
-        // Force acquire: override the lock
+        // Force acquire: override the lock using adapter-agnostic update by ID
         const renewedExpiresAt = new Date(Date.now() + LOCK_TTL_MS)
         const lockedBy = user.id || user._id
         const lockedByEmail = user.email
+        const lockId = String(existing.id || existing._id)
 
-        await adapter.updateMany('z_locks', { _id: existing._id }, {
+        await adapter.update('z_locks', lockId, {
           lockedBy,
           lockedByEmail,
           lockedAt: new Date(),
@@ -134,9 +146,9 @@ router.post('/:collection/:id/lock', async (req: Request, res: Response, next) =
           message: 'Lock force acquired',
         }))
       }
-      // Owner re-acquiring: update lock timestamp
+      // Owner re-acquiring: update lock timestamp using adapter-agnostic update by ID
       const renewedExpiresAt = new Date(Date.now() + LOCK_TTL_MS)
-      await adapter.updateMany('z_locks', { _id: existing._id }, {
+      await adapter.update('z_locks', String(existing.id || existing._id), {
         lockedAt: new Date(),
         lockExpiresAt: renewedExpiresAt,
       })
@@ -216,7 +228,8 @@ router.post('/:collection/:id/unlock', async (req: Request, res: Response, next)
       throw new ForbiddenError('Only the lock holder can release the lock')
     }
 
-    await adapter.deleteMany('z_locks', { _id: existing._id })
+    // Release lock by ID (adapter-agnostic)
+    await adapter.delete('z_locks', String(existing.id || existing._id))
     res.json(createResponse({ message: 'Lock released' }))
   } catch (err) {
     next(err)
@@ -256,7 +269,8 @@ router.post('/:collection/:id/heartbeat', async (req: Request, res: Response, ne
       throw new ForbiddenError('You do not hold this lock')
     }
 
-    await adapter.updateMany('z_locks', { _id: existing._id }, {
+    // Renew lock by ID (adapter-agnostic)
+    await adapter.update('z_locks', String(existing.id || existing._id), {
       lockExpiresAt: new Date(Date.now() + LOCK_TTL_MS),
     })
     res.json(createResponse({ message: 'Lock renewed' }))

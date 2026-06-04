@@ -214,7 +214,7 @@ const ForgotPasswordPage: React.FC = () => {
                     type="email"
                     placeholder="Enter your email"
                     className={cn(
-                      'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none transition-all',
+                      'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
                       theme === 'dark'
                         ? 'bg-white/5 border-white/10 text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
                         : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'

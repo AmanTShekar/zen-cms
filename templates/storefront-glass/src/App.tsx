@@ -1,33 +1,34 @@
-import React, { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Toaster } from 'react-hot-toast'
 import {
-  Grid,
-  Mail,
-  Image as ImageIcon,
-  Users,
-  Plus,
-  Minus,
   ArrowRight,
+  Grid,
+  Image as ImageIcon,
+  Mail,
+  Minus,
+  Plus,
   Sparkles,
+  Users,
 } from 'lucide-react'
-import Header from './components/Header'
-import Footer from './components/Footer'
+import React, { useEffect, useState } from 'react'
+import { Toaster } from 'react-hot-toast'
+import { BrowserRouter, Route, Routes, useParams } from 'react-router-dom'
 import ArticleCard from './components/ArticleCard'
-import PostDetail from './components/PostDetail'
+import Footer from './components/Footer'
+import Header from './components/Header'
 import NotFound from './components/NotFound'
-import { GridSkeleton, ArticleDetailSkeleton } from './components/Skeleton'
-import { getPosts, getPost, getGlobals, Post, cms } from './lib/cms'
-
+import PostDetail from './components/PostDetail'
+import { ArticleDetailSkeleton, GridSkeleton } from './components/Skeleton'
+import { cms, getPage, getPost, getPosts, Post, refreshSiteId, parseLexicalToHTML, getGlobals } from './lib/cms'
 
 // ── Shared Page Wrapper ─────────────────────────
-function PageWrapper({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return (
-    <main className={`pt-20 pb-8 min-h-screen ${className}`}>
-      {children}
-    </main>
-  )
+function PageWrapper({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
+  return <main className={`pt-20 pb-8 min-h-screen ${className}`}>{children}</main>
 }
 
 // ── Section Container (Handles Preview Highlight, Click Selection, and Hover Rings) ─────────────────────────
@@ -35,15 +36,17 @@ function SectionContainer({
   id,
   children,
   blockType,
-  title
+  title,
+  content,
 }: {
   id: string
   children: React.ReactNode
   blockType: string
   title: string
+  content?: any
 }) {
   const isPreview = new URLSearchParams(window.location.search).get('preview') === 'true'
-  
+
   const handleClick = (e: React.MouseEvent) => {
     if (isPreview) {
       e.stopPropagation()
@@ -51,35 +54,100 @@ function SectionContainer({
     }
   }
 
+  const anchorId = content?.anchorId || `section-${id}`
+  const theme = content?.theme || 'default'
+  const paddingY = content?.paddingY || 'medium'
+  const containerWidth = content?.containerWidth || 'boxed'
+  const bgImage = content?.bgImage?.url || null
+
+  const themeClasses = {
+    default: '',
+    light: 'bg-white/90 text-black border-y border-gray-200 shadow-sm',
+    dark: 'bg-[#0B0F19]/90 text-white border-y border-white/10 shadow-lg',
+    'cyber-emerald': 'bg-gradient-to-br from-emerald-950/70 via-emerald-900/50 to-black/80 text-white border-y border-emerald-500/20 shadow-[inset_0_0_80px_rgba(16,185,129,0.05)]',
+    glassmorphic: 'bg-gray-900/65 backdrop-blur-[12px] border-y border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)] text-white'
+  }[theme as 'default' | 'light' | 'dark' | 'cyber-emerald' | 'glassmorphic'] || ''
+
+  const paddingClasses = {
+    none: 'py-0',
+    small: 'py-6',
+    medium: 'py-12',
+    large: 'py-24'
+  }[paddingY as 'none' | 'small' | 'medium' | 'large'] || 'py-12'
+
   return (
     <section
-      id={`section-${id}`}
+      id={anchorId}
       onClick={handleClick}
-      className={`relative py-12 px-6 transition-all duration-300 ${
+      className={`relative ${paddingClasses} px-6 transition-all duration-300 ${themeClasses} overflow-hidden ${
         isPreview
           ? 'cursor-pointer hover:ring-2 hover:ring-[#8B5CF6]/50 hover:bg-[#8B5CF6]/[0.02] rounded-xl'
           : ''
       }`}
     >
+      {bgImage && (
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <img src={bgImage} alt="" className="w-full h-full object-cover opacity-30 mix-blend-overlay" />
+          <div className="absolute inset-0 bg-black/40" />
+        </div>
+      )}
       {isPreview && (
         <div className="absolute top-2 left-2 z-20 flex items-center gap-1.5 px-2 py-0.5 bg-[#8B5CF6]/20 text-[#8B5CF6] border border-[#8B5CF6]/30 text-[8px] font-black uppercase tracking-wider italic leading-none pointer-events-none select-none rounded">
           <Sparkles size={8} />
           {title || blockType}
         </div>
       )}
-      {children}
+      <div className={`relative z-10 ${containerWidth === 'full-width' ? 'w-full' : 'max-w-7xl mx-auto'}`}>
+        {children}
+      </div>
     </section>
+  )
+}
+
+// ── Navbar Section ──────────────────────────────────
+function NavbarSection({ id, content }: { id: string; content: any }) {
+  const logo = content?.logo?.url || ''
+  const links = content?.links || []
+  const ctaText = content?.ctaText || 'Get Started'
+  const ctaUrl = content?.ctaUrl || '#'
+
+  return (
+    <SectionContainer id={id} blockType="navbar" title="Navigation" content={content}>
+      <nav className="navbar-zenith">
+        <div className="flex items-center gap-4">
+          {logo ? (
+            <img src={logo} alt="Logo" className="h-8 object-contain" />
+          ) : (
+            <div className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center font-black italic">
+              Z
+            </div>
+          )}
+        </div>
+        <div className="nav-links hidden md:flex">
+          {links.map((link: any, idx: number) => (
+            <a key={idx} href={link.url}>
+              {link.label}
+            </a>
+          ))}
+        </div>
+        <div className="nav-cta">
+          <a href={ctaUrl} className="zenith-btn-primary">
+            {ctaText}
+          </a>
+        </div>
+      </nav>
+    </SectionContainer>
   )
 }
 
 // ── Hero Section ───────────────────────────────────
 function HeroSection({ id, content }: { id: string; content: any }) {
-  const headline = content?.headline || 'Future Engine'
-  const subheadline = content?.subheadline || 'Modular architecture for visionaries.'
+  const headline = content?.headline || content?.title || 'Future Engine'
+  const subheadline = content?.subheadline || content?.subtitle || 'Modular architecture for visionaries.'
   const callToAction = content?.callToAction || 'Launch Protocol'
 
   return (
-    <SectionContainer id={id} blockType="hero" title="Hero Module">
+    <SectionContainer id={id} blockType="hero" title="Hero Module" content={content}>
       <div className="max-w-4xl mx-auto text-center py-16 relative">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-48 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-bold text-[#818cf8] uppercase tracking-[0.15em] mb-8 animate-pulse">
@@ -104,11 +172,11 @@ function HeroSection({ id, content }: { id: string; content: any }) {
 
 // ── Features Section ───────────────────────────────
 function FeaturesSection({ id, content }: { id: string; content: any }) {
-  const heading = content?.heading || 'Core Capabilities'
-  const features = content?.featureList || []
+  const heading = content?.heading || content?.title || 'Core Capabilities'
+  const features = content?.featureList || content?.features || []
 
   return (
-    <SectionContainer id={id} blockType="features" title="Neural Features">
+    <SectionContainer id={id} blockType="features" title="Neural Features" content={content}>
       <div className="max-w-6xl mx-auto">
         <h2 className="text-2xl sm:text-3xl font-black text-white text-center mb-12">{heading}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -137,7 +205,7 @@ function StatsSection({ id, content }: { id: string; content: any }) {
   const items = content?.items || []
 
   return (
-    <SectionContainer id={id} blockType="stats" title="Metric Rails">
+    <SectionContainer id={id} blockType="stats" title="Metric Rails" content={content}>
       <div className="max-w-5xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {items.map((item: any, idx: number) => (
@@ -165,7 +233,7 @@ function TestimonialsSection({ id, content }: { id: string; content: any }) {
   const items = content?.items || []
 
   return (
-    <SectionContainer id={id} blockType="testimonials" title="Audience Proof">
+    <SectionContainer id={id} blockType="testimonials" title="Audience Proof" content={content}>
       <div className="max-w-5xl mx-auto">
         <h2 className="text-2xl sm:text-3xl font-black text-white text-center mb-12">{heading}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -203,7 +271,7 @@ function NewsletterSection({ id, content }: { id: string; content: any }) {
   const buttonText = content?.buttonText || 'Subscribe'
 
   return (
-    <SectionContainer id={id} blockType="newsletter" title="Signal Capture">
+    <SectionContainer id={id} blockType="newsletter" title="Signal Capture" content={content}>
       <div className="max-w-3xl mx-auto">
         <div className="glass-card p-8 md:p-12 text-center relative overflow-hidden">
           <div className="absolute -top-12 -right-12 w-40 h-40 bg-[#8B5CF6]/5 rounded-full blur-[60px] pointer-events-none" />
@@ -236,7 +304,7 @@ function PricingSection({ id, content }: { id: string; content: any }) {
   const plans = content?.plans || []
 
   return (
-    <SectionContainer id={id} blockType="pricing" title="Revenue Matrix">
+    <SectionContainer id={id} blockType="pricing" title="Revenue Matrix" content={content}>
       <div className="max-w-5xl mx-auto">
         <h2 className="text-2xl sm:text-3xl font-black text-white text-center mb-12">{heading}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -251,7 +319,9 @@ function PricingSection({ id, content }: { id: string; content: any }) {
               >
                 <div>
                   <div className="flex justify-between items-start mb-6">
-                    <h3 className="text-lg font-black text-white uppercase tracking-wider">{plan.name || 'Tier'}</h3>
+                    <h3 className="text-lg font-black text-white uppercase tracking-wider">
+                      {plan.name || 'Tier'}
+                    </h3>
                     {isFeatured && (
                       <span className="px-2 py-0.5 bg-[#8B5CF6]/10 text-[#8B5CF6] border border-[#8B5CF6]/20 text-[8px] font-black uppercase tracking-widest rounded-full">
                         Popular
@@ -259,7 +329,9 @@ function PricingSection({ id, content }: { id: string; content: any }) {
                     )}
                   </div>
                   <div className="flex items-baseline gap-1 mb-6">
-                    <span className="text-3xl sm:text-4xl font-black text-white tracking-tight">{plan.price || '$0'}</span>
+                    <span className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+                      {plan.price || '$0'}
+                    </span>
                   </div>
                   <ul className="space-y-3 mb-8">
                     {plan.features?.split(',').map((f: string, i: number) => (
@@ -295,14 +367,16 @@ function CtaSection({ id, content }: { id: string; content: any }) {
   const buttonText = content?.buttonText || 'Connect Now'
 
   return (
-    <SectionContainer id={id} blockType="cta" title="Action Nexus">
+    <SectionContainer id={id} blockType="cta" title="Action Nexus" content={content}>
       <div className="max-w-5xl mx-auto">
         <div className="glass-card p-8 md:p-12 relative overflow-hidden bg-gradient-to-r from-white/[0.03] to-[#8B5CF6]/[0.05] border-[#8B5CF6]/20 shadow-glow-sm">
           <div className="absolute top-0 right-0 w-80 h-80 bg-[#8B5CF6]/5 blur-[100px] pointer-events-none rounded-full" />
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
             <div className="space-y-3">
               <h2 className="text-2xl sm:text-3xl font-black text-white">{title}</h2>
-              <p className="text-sm text-zenith-textMuted max-w-xl leading-relaxed">{description}</p>
+              <p className="text-sm text-zenith-textMuted max-w-xl leading-relaxed">
+                {description}
+              </p>
             </div>
             <button className="zenith-btn-primary shrink-0 self-start md:self-auto hover:shadow-[#8B5CF6]/20">
               {buttonText} <ArrowRight size={14} />
@@ -316,10 +390,10 @@ function CtaSection({ id, content }: { id: string; content: any }) {
 
 // ── Rich Text Section ──────────────────────────────
 function RichTextSection({ id, content }: { id: string; content: any }) {
-  const prose = content?.content || '<p>Default text.</p>'
+  const prose = content?.content ? parseLexicalToHTML(content.content) : '<p>Default text.</p>'
 
   return (
-    <SectionContainer id={id} blockType="richTextSection" title="Prose Engine">
+    <SectionContainer id={id} blockType="richTextSection" title="Prose Engine" content={content}>
       <div className="max-w-3xl mx-auto">
         <div
           className="prose prose-invert prose-zenith text-zenith-text leading-relaxed text-sm md:text-base space-y-4"
@@ -336,7 +410,7 @@ function GallerySection({ id, content }: { id: string; content: any }) {
   const items = content?.items || []
 
   return (
-    <SectionContainer id={id} blockType="gallery" title="Visual Vault">
+    <SectionContainer id={id} blockType="gallery" title="Visual Vault" content={content}>
       <div className="max-w-6xl mx-auto">
         <h2 className="text-2xl sm:text-3xl font-black text-white text-center mb-12">{heading}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -351,7 +425,10 @@ function GallerySection({ id, content }: { id: string; content: any }) {
                   />
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-tr from-[#0B0F19] to-indigo-950/40 flex flex-col items-center justify-center gap-2">
-                    <ImageIcon size={32} className="text-[#8B5CF6]/30 group-hover:scale-110 transition-transform" />
+                    <ImageIcon
+                      size={32}
+                      className="text-[#8B5CF6]/30 group-hover:scale-110 transition-transform"
+                    />
                     <span className="text-[10px] font-bold text-zenith-textDim uppercase tracking-widest">
                       Visual Asset Placeholder
                     </span>
@@ -377,7 +454,7 @@ function TeamSection({ id, content }: { id: string; content: any }) {
   const members = content?.members || []
 
   return (
-    <SectionContainer id={id} blockType="team" title="Architect Registry">
+    <SectionContainer id={id} blockType="team" title="Architect Registry" content={content}>
       <div className="max-w-6xl mx-auto">
         <h2 className="text-2xl sm:text-3xl font-black text-white text-center mb-12">{heading}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -407,7 +484,7 @@ function FAQSection({ id, content }: { id: string; content: any }) {
   const items = content?.items || []
 
   return (
-    <SectionContainer id={id} blockType="faq" title="Knowledge Base">
+    <SectionContainer id={id} blockType="faq" title="Knowledge Base" content={content}>
       <div className="max-w-4xl mx-auto">
         <h2 className="text-2xl sm:text-3xl font-black text-white text-center mb-12">{heading}</h2>
         <div className="space-y-4">
@@ -430,7 +507,11 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
         className="w-full px-6 py-4 flex items-center justify-between text-left text-sm font-bold text-white hover:bg-white/[0.02]"
       >
         <span>{question || 'Question?'}</span>
-        {isOpen ? <Minus size={14} className="text-[#8B5CF6]" /> : <Plus size={14} className="text-[#8B5CF6]" />}
+        {isOpen ? (
+          <Minus size={14} className="text-[#8B5CF6]" />
+        ) : (
+          <Plus size={14} className="text-[#8B5CF6]" />
+        )}
       </button>
       <AnimatePresence initial={false}>
         {isOpen && (
@@ -450,6 +531,71 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
   )
 }
 
+// ── Latest Posts Section ─────────────────────────────
+function LatestPostsSection({ id, content, posts }: { id: string; content: any; posts: Post[] }) {
+  const heading = content?.heading || 'Latest Transmissions'
+  const subheadline = content?.subheadline || 'Insights from the architecture.'
+  
+  return (
+    <SectionContainer id={id} blockType="latestPosts" title="Feed Registry" content={content}>
+      <div className="max-w-6xl mx-auto mb-12 flex justify-between items-end">
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-black text-white">{heading}</h2>
+          <p className="text-sm text-zenith-textMuted mt-2">{subheadline}</p>
+        </div>
+        <button className="zenith-btn-secondary hidden sm:flex">
+          View All <ArrowRight size={14} />
+        </button>
+      </div>
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {posts.map((post) => (
+          <ArticleCard key={post._id} post={post} />
+        ))}
+      </div>
+    </SectionContainer>
+  )
+}
+
+// ── Advanced Sections ─────────────────────────────
+function CustomHtmlSection({ id, content }: { id: string; content: any }) {
+  return (
+    <SectionContainer id={id} blockType="customHtml" title="Custom HTML" content={content}>
+      <div 
+        className="w-full h-full"
+        dangerouslySetInnerHTML={{ __html: content?.htmlContent || '' }} 
+      />
+    </SectionContainer>
+  )
+}
+
+function PageEmbedSection({ id, content }: { id: string; content: any }) {
+  const [embeddedPage, setEmbeddedPage] = useState<any>(null)
+  
+  useEffect(() => {
+    async function loadEmbed() {
+      if (content?.reference) {
+        try {
+          const page = await getPage(content.reference, 'id')
+          if (page) setEmbeddedPage(page)
+        } catch (e) {
+          console.error('Failed to load embedded page', e)
+        }
+      }
+    }
+    loadEmbed()
+  }, [content?.reference])
+
+  return (
+    <SectionContainer id={id} blockType="pageEmbed" title="Embedded Component" content={content}>
+      {embeddedPage ? (
+        <SectionsRenderer sections={embeddedPage.sections} />
+      ) : (
+        <div className="text-center py-8 text-gray-500 text-[10px] uppercase font-black tracking-widest italic animate-pulse">Loading Reference...</div>
+      )}
+    </SectionContainer>
+  )
+}
+
 // ── Dynamic Sections Renderer ──────────────────────
 function SectionsRenderer({ sections }: { sections: any[] }) {
   if (!sections || !Array.isArray(sections)) return null
@@ -463,8 +609,10 @@ function SectionsRenderer({ sections }: { sections: any[] }) {
         const key = id ? `${id}-${index}` : `section-${index}`
         switch (type) {
           case 'hero':
+          case 'heroSection':
             return <HeroSection key={key} id={section.id || key} content={data} />
           case 'features':
+          case 'featureGrid':
             return <FeaturesSection key={key} id={section.id || key} content={data} />
           case 'stats':
             return <StatsSection key={key} id={section.id || key} content={data} />
@@ -484,9 +632,23 @@ function SectionsRenderer({ sections }: { sections: any[] }) {
             return <TeamSection key={key} id={section.id || key} content={data} />
           case 'faq':
             return <FAQSection key={key} id={section.id || key} content={data} />
+          case 'latestPosts':
+            // Pass the fetched posts down to the dynamic section!
+            return <div key={key} data-type="latestPosts" data-id={id} data-content={JSON.stringify(data)} />
+          case 'pageTitle':
+          case 'pageDescription':
+          case 'navbar':
+            return null
+          case 'customHtml':
+            return <CustomHtmlSection key={key} id={section.id || key} content={data} />
+          case 'pageEmbed':
+            return <PageEmbedSection key={key} id={section.id || key} content={data} />
           default:
             return (
-              <div key={key} className="max-w-xl mx-auto p-4 glass-card text-center text-xs text-red-400">
+              <div
+                key={key}
+                className="max-w-xl mx-auto p-4 glass-card text-center text-xs text-red-400"
+              >
                 Unknown section block type: {type}
               </div>
             )
@@ -512,10 +674,10 @@ function HomePage() {
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === 'ZENITH_DATA_UPDATE') {
         const payload = event.data.data
-        if (payload && (payload.sections || payload.title)) {
-          setPageData(payload)
-          setLoading(false)
-        }
+          if (payload && (payload.sections || payload.title)) {
+            setPageData(payload)
+            setLoading(false)
+          }
       } else if (event.data?.type === 'ZENITH_PARENT_SELECT') {
         const sectionId = event.data.sectionId
         if (sectionId) {
@@ -523,15 +685,31 @@ function HomePage() {
           if (element) {
             element.scrollIntoView({ behavior: 'smooth', block: 'center' })
             // Add a visual flash/highlight effect
-            element.classList.add('ring-2', 'ring-[#8B5CF6]', 'ring-offset-2', 'ring-offset-[#0B0F19]', 'scale-[1.01]')
+            element.classList.add(
+              'ring-2',
+              'ring-[#8B5CF6]',
+              'ring-offset-2',
+              'ring-offset-[#0B0F19]',
+              'scale-[1.01]'
+            )
             setTimeout(() => {
-              element.classList.remove('ring-2', 'ring-[#8B5CF6]', 'ring-offset-2', 'ring-offset-[#0B0F19]', 'scale-[1.01]')
+              element.classList.remove(
+                'ring-2',
+                'ring-[#8B5CF6]',
+                'ring-offset-2',
+                'ring-offset-[#0B0F19]',
+                'scale-[1.01]'
+              )
             }, 2000)
           }
         }
+      } else if (event.data?.type === 'UPDATE_SITE_ID' && event.data.siteId) {
+        // Admin switched tenant � flush SDK cache and re-render
+        refreshSiteId(event.data.siteId)
       }
     }
     window.addEventListener('message', handleMessage)
+    if (window.parent && window.parent !== window) window.parent.postMessage({ type: 'ZENITH_IFRAME_READY' }, '*')
     return () => window.removeEventListener('message', handleMessage)
   }, [])
 
@@ -541,21 +719,25 @@ function HomePage() {
         if (isPreview && urlSiteId) {
           cms.setSiteId(urlSiteId)
         }
-        if (isPreview && pageId && pageId !== 'landing-page') {
+        if (isPreview && pageId && pageId !== 'home') {
           // In page preview mode, fetch the specific page content initially
-          const page = await getPost(pageId, 'id') // Using SDK findById / getPost equivalent
+          const page = await getPage(pageId, 'id') // Using SDK findById / getPost equivalent
           if (page) setPageData(page)
         } else {
           // Normal mode: Fetch posts first
           const data = await getPosts({ limit: 6 })
           setPosts(data)
 
-          // Also try loading landing-page sections if present
+          // Also try loading home sections if present
           try {
-            const landingPage = await getGlobals('landing-page')
-            if (landingPage) setPageData(landingPage)
+            const landingPage = await getPage('home', 'slug')
+            if (landingPage) {
+              setPageData(landingPage)
+            } else {
+              console.warn('No landing page found')
+            }
           } catch {
-            // No landing-page found, standard blog list layout fallback
+            // No home page found
           }
         }
         setError(null)
@@ -573,8 +755,57 @@ function HomePage() {
 
   if (loading && isPreview) {
     return (
-      <PageWrapper className="max-w-6xl mx-auto px-6 py-20 text-center animate-pulse text-zenith-textMuted text-sm font-bold">
-        Loading preview environment...
+      <PageWrapper className="max-w-6xl mx-auto px-6 py-20 min-h-[60vh] flex flex-col items-center justify-center">
+        <div className="relative w-12 h-12 mb-6">
+          <div className="absolute inset-0 border-2 border-[#8B5CF6]/20 rounded-full"></div>
+          <div className="absolute inset-0 border-2 border-[#8B5CF6] rounded-full border-t-transparent animate-spin"></div>
+        </div>
+        <div className="text-[#8B5CF6] text-[10px] font-black uppercase tracking-widest animate-pulse">Initializing Zenith Engine</div>
+      </PageWrapper>
+    )
+  }
+
+  // If in preview mode, and we have pageData, but no sections, just render a generic preview
+  // This ensures custom collections (like Products) show their data instead of the fallback theme
+  if (isPreview && pageData && (!pageData.sections || pageData.sections.length === 0)) {
+    return (
+      <PageWrapper className="max-w-6xl mx-auto px-6 py-20 text-center">
+        <motion.div
+          id={pageData._id || pageData.id || 'preview-json'}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-3xl mx-auto"
+        >
+          {pageData.title || pageData.name ? (
+            <div className="bg-glass-gradient border border-white/10 rounded-2xl p-8 backdrop-blur-xl shadow-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-[10px] font-bold text-indigo-300 uppercase tracking-widest mb-6">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                Generic Item Preview
+              </div>
+              <h1 className="text-3xl font-black text-white mb-6 text-left">
+                {pageData.title || pageData.name}
+              </h1>
+              <div className="bg-black/40 border border-white/5 rounded-xl p-5 text-left overflow-auto space-y-4">
+                {Object.entries(pageData).filter(([key]) => !key.startsWith('_')).map(([key, value]) => (
+                  <div key={key} id={key} className="p-4 bg-white/5 rounded-xl border border-white/10 transition-all">
+                    <div className="text-indigo-400 font-bold text-xs uppercase tracking-widest mb-2">{key}</div>
+                    {typeof value === 'string' && value.startsWith('http') ? (
+                       <img src={value} className="max-w-full h-auto rounded border border-white/10" alt={key} />
+                    ) : (
+                       <pre className="text-xs text-zenith-textMuted font-mono whitespace-pre-wrap">
+                         {JSON.stringify(value, null, 2)}
+                       </pre>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="animate-pulse text-zenith-textMuted text-sm font-bold">
+              Empty Preview Canvas
+            </div>
+          )}
+        </motion.div>
       </PageWrapper>
     )
   }
@@ -583,94 +814,38 @@ function HomePage() {
   if (pageData && pageData.sections && pageData.sections.length > 0) {
     return (
       <PageWrapper className="max-w-6xl mx-auto px-6">
-        <SectionsRenderer sections={pageData.sections} />
+        <div className="space-y-8 pb-16">
+          {pageData.sections.map((section: any, index: number) => {
+            if (section.blockType === 'latestPosts') {
+              const id = section.id || section._id
+              const key = id ? `${id}-${index}` : `section-${index}`
+              return <LatestPostsSection key={key} id={id || key} content={section.content || section} posts={posts} />
+            }
+            return <SectionsRenderer key={index} sections={[section]} />
+          })}
+        </div>
+      </PageWrapper>
+    )
+  }
+
+  if (isPreview && !pageData) {
+    return (
+      <PageWrapper className="max-w-6xl mx-auto px-6 py-20 min-h-[60vh] flex flex-col items-center justify-center">
+        <div className="relative w-12 h-12 mb-6">
+          <div className="absolute inset-0 border-2 border-[#8B5CF6]/20 rounded-full"></div>
+          <div className="absolute inset-0 border-2 border-[#8B5CF6] rounded-full border-t-transparent animate-spin"></div>
+        </div>
+        <div className="text-[#8B5CF6] text-[10px] font-black uppercase tracking-widest animate-pulse">Initializing Zenith Engine</div>
       </PageWrapper>
     )
   }
 
   return (
-    <PageWrapper className="max-w-6xl mx-auto px-6">
-      {/* Hero */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center py-20 relative"
-      >
-        {/* Ambient glow */}
-        <div className="absolute inset-0 bg-zenith-gradient pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-48 bg-indigo-500/5 rounded-full blur-[100px] pointer-events-none" />
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="relative"
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-bold text-indigo-300 uppercase tracking-[0.15em] mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-            Powered by Zenith CMS
-          </div>
-
-          <h1 className="text-5xl sm:text-7xl font-black text-white tracking-tight leading-[1.05] mb-6">
-            Content that
-            <br />
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              shines
-            </span>
-          </h1>
-
-          <p className="text-base sm:text-lg text-zenith-textMuted max-w-xl mx-auto leading-relaxed">
-            A premium storefront experience — fully dynamic, zero code changes needed to publish.
-          </p>
-        </motion.div>
-      </motion.div>
-
-      {/* Latest Posts */}
-      <section>
-        <div className="flex items-end justify-between mb-10">
-          <div>
-            <h2 className="text-2xl font-black text-white">Latest Articles</h2>
-            <p className="text-sm text-zenith-textMuted mt-1">
-              Fresh from the CMS engine
-            </p>
-          </div>
-          <a
-            href="/posts"
-            className="text-sm font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
-          >
-            View all →
-          </a>
-        </div>
-
-        {error && (
-          <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-300">
-            {error}
-          </div>
-        )}
-
-        {loading ? (
-          <GridSkeleton count={3} />
-        ) : posts.length === 0 ? (
-          <div className="py-20 text-center rounded-2xl bg-glass-gradient border border-white/[0.05]">
-            <p className="text-zenith-textDim mb-3 font-medium">No posts published yet.</p>
-            <p className="text-xs text-zenith-textDim">
-              Create a post in Zenith Admin — it appears here instantly.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.slice(0, 3).map((post, i) => (
-              <ArticleCard
-                key={post._id || post.id || i}
-                post={post}
-                index={i}
-                featured={i === 0}
-              />
-            ))}
-          </div>
-        )}
-      </section>
+    <PageWrapper className="max-w-6xl mx-auto px-6 py-20 text-center text-zenith-textMuted">
+      <div className="p-8 glass-card border border-white/5 rounded-2xl max-w-lg mx-auto">
+        <h2 className="text-xl font-bold text-white mb-2">Home Page Not Configured</h2>
+        <p className="text-sm">Please create a page with slug "home" in the CMS and add sections to it.</p>
+      </div>
     </PageWrapper>
   )
 }
@@ -723,11 +898,7 @@ function PostsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map((post, i) => (
-            <ArticleCard
-              key={post._id || post.id || i}
-              post={post}
-              index={i}
-            />
+            <ArticleCard key={post._id || post.id || i} post={post} index={i} />
           ))}
         </div>
       )}
@@ -741,21 +912,49 @@ function PostPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
+  const isPreview = new URLSearchParams(window.location.search).get('preview') === 'true'
+
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === 'ZENITH_DATA_UPDATE') {
         const payload = event.data.data
-        if (payload && (payload.title || payload.content)) {
+        if (payload) {
           setPost(payload)
+          setLoading(false)
         }
+      } else if (event.data?.type === 'ZENITH_PARENT_SELECT') {
+        const id = event.data.id || event.data.sectionId
+        
+        const tryScroll = (attempts = 0) => {
+          const element = id ? document.getElementById(id) : null
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            element.classList.add('ring-2', 'ring-[#8B5CF6]', 'ring-offset-4', 'ring-offset-[#0B0F19]', 'transition-all', 'rounded-xl')
+            setTimeout(() => {
+              element.classList.remove('ring-2', 'ring-[#8B5CF6]', 'ring-offset-4', 'ring-offset-[#0B0F19]')
+            }, 1000)
+          } else if (attempts < 10) {
+            setTimeout(() => tryScroll(attempts + 1), 100)
+          }
+        }
+        
+        tryScroll()
       }
     }
     window.addEventListener('message', handleMessage)
+    if (window.parent && window.parent !== window) window.parent.postMessage({ type: 'ZENITH_IFRAME_READY' }, '*')
     return () => window.removeEventListener('message', handleMessage)
   }, [])
 
   useEffect(() => {
     const slug = window.location.pathname.split('/post/')[1] || ''
+    
+    // In preview mode, we rely purely on ZENITH_DATA_UPDATE
+    // We don't fetch from the API because the user might be editing unsaved changes.
+    if (isPreview && slug === 'preview') {
+      return
+    }
+
     if (!slug) {
       setLoading(false)
       return
@@ -772,12 +971,25 @@ function PostPage() {
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [])
+  }, [isPreview])
 
   if (loading) {
     return (
       <PageWrapper className="max-w-3xl mx-auto px-6 pb-20">
         <ArticleDetailSkeleton />
+      </PageWrapper>
+    )
+  }
+
+  // If in preview mode, don't show a 404 until we actually fail
+  if (!post && isPreview) {
+    return (
+      <PageWrapper className="max-w-6xl mx-auto px-6 py-20 min-h-[60vh] flex flex-col items-center justify-center">
+        <div className="relative w-12 h-12 mb-6">
+          <div className="absolute inset-0 border-2 border-[#8B5CF6]/20 rounded-full"></div>
+          <div className="absolute inset-0 border-2 border-[#8B5CF6] rounded-full border-t-transparent animate-spin"></div>
+        </div>
+        <div className="text-[#8B5CF6] text-[10px] font-black uppercase tracking-widest animate-pulse">Initializing Zenith Engine</div>
       </PageWrapper>
     )
   }
@@ -801,67 +1013,63 @@ function PostPage() {
   )
 }
 
-// ── About Page ─────────────────────────────────
-function AboutPage() {
-  return (
-    <PageWrapper className="max-w-3xl mx-auto px-6 pb-20">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="py-8"
-      >
-        <h1 className="text-4xl font-black text-white mb-2">About</h1>
-        <p className="text-sm text-zenith-textMuted mb-10">The Zenith Storefront Template</p>
+// ── Dynamic Page ─────────────────────────
+function DynamicPage() {
+  const { slug } = useParams()
+  const [pageData, setPageData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
-        <div className="space-y-6 text-sm sm:text-base text-zenith-textMuted leading-[1.85]">
-          <p>
-            This storefront is powered by <strong className="text-white">Zenith CMS</strong> — an
-            enterprise-grade, multi-tenant headless CMS. Every piece of content you see is fetched
-            dynamically from the Zenith API and rendered here.
-          </p>
-          <p>
-            The connection is simple — set three environment variables in your <code className="font-mono text-xs bg-white/[0.05] px-1.5 py-0.5 rounded border border-white/[0.06]">.env</code> file:
-          </p>
+  const isPreview = new URLSearchParams(window.location.search).get('preview') === 'true'
 
-          <div className="rounded-xl overflow-hidden bg-white/[0.02] border border-white/[0.06]">
-            <div className="px-5 py-3 bg-white/[0.02] border-b border-white/[0.05]">
-              <span className="text-xs font-mono text-indigo-400">.env</span>
-            </div>
-            <div className="p-5 font-mono text-xs space-y-2">
-              <div><span className="text-green-400">VITE_CMS_URL</span>=<span className="text-amber-300">https://api.yoursite.com</span></div>
-              <div><span className="text-green-400">VITE_CMS_API_KEY</span>=<span className="text-amber-300">your-api-key-here</span></div>
-              <div><span className="text-green-400">VITE_CMS_SITE_ID</span>=<span className="text-amber-300">your-site-id-here</span></div>
-            </div>
-          </div>
+  useEffect(() => {
+    if (isPreview && window.location.pathname.includes('/preview')) return
 
-          <p>
-            Get your credentials from the <strong className="text-white">Zenith Admin Dashboard</strong> →
-            Settings → API Keys & Sites.
-          </p>
+    if (!slug) {
+      setLoading(false)
+      return
+    }
 
-          <div className="rounded-xl bg-glass-gradient border border-white/[0.05] p-6 mt-8">
-            <h3 className="text-base font-bold text-white mb-4">What's built in</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {[
-                'Vite build',
-                'TypeScript throughout',
-                'Glassmorphism dark theme',
-                'Reading progress bar',
-                'Zero dependency SDK client',
-                'Vercel & Netlify ready',
-                'PWA with auto-update',
-                'Framer Motion animations',
-              ].map((f) => (
-                <div key={f} className="flex items-center gap-2 text-xs text-zenith-textMuted">
-                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 flex-shrink-0" />
-                  {f}
-                </div>
-              ))}
-            </div>
-          </div>
+    getPage(slug, 'slug')
+      .then((data) => {
+        if (!data) {
+          setError(true)
+          return
+        }
+        setPageData(data)
+        document.title = `${data.title} — Zenith Storefront`
+      })
+      .catch(() => setError(true))
+      .finally(() => setLoading(false))
+  }, [slug, isPreview])
+
+  if (loading) {
+    return (
+      <PageWrapper className="max-w-6xl mx-auto px-6 py-20 min-h-[60vh] flex flex-col items-center justify-center">
+        <div className="relative w-12 h-12 mb-6">
+          <div className="absolute inset-0 border-2 border-[#8B5CF6]/20 rounded-full"></div>
+          <div className="absolute inset-0 border-2 border-[#8B5CF6] rounded-full border-t-transparent animate-spin"></div>
         </div>
-      </motion.div>
+        <div className="text-[#8B5CF6] text-[10px] font-black uppercase tracking-widest animate-pulse">Loading Page</div>
+      </PageWrapper>
+    )
+  }
+
+  if (error || !pageData) {
+    return (
+      <PageWrapper className="max-w-3xl mx-auto px-6">
+        <NotFound
+          title="Page not found"
+          description="This page may have been removed or the URL is incorrect."
+          action={{ label: '← Back Home', to: '/' }}
+        />
+      </PageWrapper>
+    )
+  }
+
+  return (
+    <PageWrapper className="pb-20">
+      <SectionsRenderer sections={pageData.sections} />
     </PageWrapper>
   )
 }
@@ -869,6 +1077,7 @@ function AboutPage() {
 // ── App Shell ───────────────────────────────────
 export default function App() {
   const [themeState, setThemeState] = useState<'dark' | 'light'>('dark')
+  const [siteConfig, setSiteConfig] = useState<any>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -876,6 +1085,11 @@ export default function App() {
     if (urlSiteId) {
       cms.setSiteId(urlSiteId)
     }
+
+    // Fetch global site settings
+    getGlobals('site-settings').then(data => {
+      if (data) setSiteConfig(data)
+    }).catch(err => console.error("Failed to load site settings", err))
   }, [])
 
   useEffect(() => {
@@ -883,9 +1097,16 @@ export default function App() {
       if (event.data?.type === 'SET_THEME') {
         const theme = event.data.theme
         setThemeState(theme)
+      } else if (event.data?.type === 'UPDATE_SITE_ID' && event.data.siteId) {
+        cms.setSiteId(event.data.siteId)
+        getGlobals('site-settings').then(data => data && setSiteConfig(data))
+      } else if (event.data?.type === 'ZENITH_DATA_UPDATE' && event.data.slug === 'site-settings') {
+        // Live preview of site settings
+        setSiteConfig(event.data.data)
       }
     }
     window.addEventListener('message', handleMessage)
+    if (window.parent && window.parent !== window) window.parent.postMessage({ type: 'ZENITH_IFRAME_READY' }, '*')
     return () => window.removeEventListener('message', handleMessage)
   }, [])
 
@@ -901,27 +1122,32 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <div className={`min-h-screen relative transition-colors duration-300 ${
-        themeState === 'dark' ? 'bg-zenith-base bg-zenith-gradient text-white' : 'bg-[#fafafa] text-gray-900'
-      }`}>
+      <div
+        className={`min-h-screen relative transition-colors duration-300 ${
+          themeState === 'dark'
+            ? 'bg-zenith-base bg-zenith-gradient text-white'
+            : 'bg-[#fafafa] text-gray-900'
+        }`}
+      >
         {/* Radial noise overlay */}
-        <div className="fixed inset-0 pointer-events-none opacity-[0.015]"
+        <div
+          className="fixed inset-0 pointer-events-none opacity-[0.015]"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
           }}
         />
 
-        <Header />
+        <Header siteName={siteConfig?.siteName} headerLinks={siteConfig?.headerLinks} tagline={siteConfig?.tagline} />
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/posts" element={<PostsPage />} />
             <Route path="/post/:slug" element={<PostPage />} />
-            <Route path="/about" element={<AboutPage />} />
+            <Route path="/:slug" element={<DynamicPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>
-        <Footer />
+        <Footer siteName={siteConfig?.siteName} description={siteConfig?.description} socialLinks={siteConfig?.socialLinks} footerLinks={siteConfig?.footerLinks} />
 
         <Toaster
           position="bottom-right"

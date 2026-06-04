@@ -4,6 +4,7 @@ import { cn } from '../../lib/utils'
 import { confirm } from '../../store/confirmStore'
 import api from '../../lib/api'
 import toast from 'react-hot-toast'
+import EmptyState from '../../components/EmptyState'
 
 interface WebhookTarget {
   id: string
@@ -264,7 +265,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                 onChange={(e) => setFormUrl(e.target.value)}
                 placeholder="https://example.com/api/webhooks/zenith"
                 className={cn(
-                  'w-full border rounded-none py-3 px-4 text-[12px] font-mono italic transition-all outline-none',
+                  'w-full border rounded-none py-3 px-4 text-[12px] font-mono italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                   theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                 )}
               />
@@ -278,7 +279,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                 onChange={(e) => setFormSecret(e.target.value)}
                 placeholder="whsec_..."
                 className={cn(
-                  'w-full border rounded-none py-3 px-4 text-[12px] font-mono italic transition-all outline-none',
+                  'w-full border rounded-none py-3 px-4 text-[12px] font-mono italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                   theme === 'dark' ? 'bg-black border-white/10 text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                 )}
               />
@@ -331,17 +332,22 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
           <Loader2 size={24} className="text-emerald-500 animate-spin" />
         </div>
       ) : webhooks.length === 0 ? (
-        <div className={cn(
-          'p-12 border border-dashed rounded-none text-center space-y-4',
-          theme === 'dark' ? 'border-white/10' : 'border-gray-200'
-        )}>
-          <Webhook size={40} className="mx-auto text-gray-600" />
-          <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
-            No webhooks configured
-          </p>
-          <p className="text-[9px] text-gray-600 uppercase tracking-wider">
-            Add a webhook to receive HTTP callbacks when content events occur
-          </p>
+        <div className="py-6">
+          <EmptyState
+            icon={Webhook}
+            title="No webhooks configured"
+            message="Add a webhook to receive HTTP callbacks when content events occur"
+            action={
+              <button
+                type="button"
+                onClick={() => setShowForm(true)}
+                className="flex items-center gap-2 px-4 py-2 border border-emerald-500/30 hover:border-emerald-500 hover:bg-emerald-500/10 text-[10px] font-black uppercase italic transition-all text-emerald-400 hover:text-white"
+              >
+                <Plus size={12} />
+                Add Webhook
+              </button>
+            }
+          />
         </div>
       ) : (
         <div className="space-y-3">
@@ -480,17 +486,12 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
                       <Loader2 size={16} className="text-emerald-500 animate-spin" />
                     </div>
                   ) : !deliveries[wh.url] || deliveries[wh.url].length === 0 ? (
-                    <div className={cn(
-                      'py-6 text-center border border-dashed rounded-none',
-                      theme === 'dark' ? 'border-white/5' : 'border-gray-200'
-                    )}>
-                      <Clock size={24} className="mx-auto text-gray-600 mb-2" />
-                      <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">
-                        No deliveries yet
-                      </p>
-                      <p className="text-[8px] text-gray-600 uppercase tracking-wider mt-1">
-                        Send a test event or wait for a content event to trigger this webhook
-                      </p>
+                    <div className="py-2">
+                      <EmptyState
+                        icon={Clock}
+                        title="No deliveries yet"
+                        message="Send a test event or wait for a content event to trigger this webhook"
+                      />
                     </div>
                   ) : (
                     <div className="space-y-2 max-h-80 overflow-y-auto">

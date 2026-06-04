@@ -2,7 +2,7 @@ import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { Loader2, Lock } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
-import RichTextEditor from './RichTextEditor'
+import { LexicalRichTextEditor } from './lexical'
 import MediaPicker from './MediaPicker'
 import RelationPicker from './RelationPicker'
 import {
@@ -160,7 +160,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
     // ── Complex fields with their own internal state ────────────────────────
     if (field.type === 'richtext' || field.type === 'lexical') {
       return (
-        <RichTextEditor
+        <LexicalRichTextEditor
           mode={field.type === 'lexical' ? 'full' : undefined}
           value={value}
           onChange={onChange}
@@ -313,7 +313,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
         }
 
         return (
-          <div key={field.name} className={`space-y-2 ${isFullWidth ? 'col-span-2' : ''}`}>
+          <div key={field.name} data-field={fieldName} className={`space-y-2 ${isFullWidth ? 'col-span-2' : ''}`}>
             <div className="flex items-center justify-between">
               <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] italic flex items-center gap-2">
                 {field.label || field.name.replace(/([A-Z])/g, ' $1')}

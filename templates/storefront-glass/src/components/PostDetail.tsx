@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Calendar, User, Tag } from 'lucide-react'
-import { Post, formatDate } from '../lib/cms'
+import { Post, formatDate, parseLexicalToHTML } from '../lib/cms'
 
 interface PostDetailProps {
   post: Post
@@ -13,7 +13,12 @@ export default function PostDetail({ post }: PostDetailProps) {
   const [readingProgress, setReadingProgress] = React.useState(0)
 
   const title = post.title || 'Untitled'
-  const content = post.content || ''
+  let content = post.content || ''
+  
+  if (typeof content === 'object' || (typeof content === 'string' && content.startsWith('{'))) {
+    content = parseLexicalToHTML(content)
+  }
+
   const imageUrl =
     typeof post.coverImage === 'string'
       ? post.coverImage
@@ -42,7 +47,7 @@ export default function PostDetail({ post }: PostDetailProps) {
         transition={{ duration: 0.05 }}
       />
 
-      <article className="max-w-3xl mx-auto">
+      <article id={post._id || post.id} className="max-w-3xl mx-auto">
         {/* Back link */}
         <motion.div
           initial={{ opacity: 0, x: -16 }}
@@ -79,6 +84,7 @@ export default function PostDetail({ post }: PostDetailProps) {
 
         {/* Title */}
         <motion.h1
+          id="title"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
@@ -89,6 +95,7 @@ export default function PostDetail({ post }: PostDetailProps) {
 
         {/* Cover */}
         <motion.div
+          id="coverImage"
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.15 }}
@@ -119,8 +126,16 @@ export default function PostDetail({ post }: PostDetailProps) {
           className="flex flex-wrap items-center gap-4 pb-8 mb-10 border-b border-white/[0.06]"
         >
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <User size={16} className="text-white" />
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden">
+              {post.author?.avatar ? (
+                <img 
+                  src={typeof post.author.avatar === 'string' ? post.author.avatar : post.author.avatar.url?.startsWith('http') ? post.author.avatar.url : `http://localhost:3000${post.author.avatar.url}`} 
+                  alt={post.author?.name || 'Author'} 
+                  className="w-full h-full object-cover" 
+                />
+              ) : (
+                <User size={16} className="text-white" />
+              )}
             </div>
             <span className="text-sm font-semibold text-white">
               {post.author?.name || 'Zenith Author'}
@@ -136,6 +151,7 @@ export default function PostDetail({ post }: PostDetailProps) {
 
         {/* Content */}
         <motion.div
+          id="content"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.25 }}

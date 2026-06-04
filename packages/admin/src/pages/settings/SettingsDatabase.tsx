@@ -136,7 +136,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
               onChange={(e) => setDbUri(e.target.value)}
               placeholder="postgres://... or mongodb://..."
               className={cn(
-                'w-full border rounded-none py-3 px-4 text-[11px] font-mono italic transition-all outline-none',
+                'w-full border rounded-none py-3 px-4 text-[11px] font-mono italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                 theme === 'dark'
                   ? 'bg-white/5 border-white/10 text-white focus:border-emerald-500/50'
                   : 'bg-white border-gray-200 focus:border-emerald-500'

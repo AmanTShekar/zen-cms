@@ -149,7 +149,7 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
               onChange={(e) => { setImportText(e.target.value); setImportFile(null); setImportResult(null); }}
               rows={6}
               className={cn(
-                'w-full border rounded-none px-4 py-3 text-xs font-mono outline-none transition-all resize-y',
+                'w-full border rounded-none px-4 py-3 text-xs font-mono outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all resize-y',
                 theme === 'dark' ? 'bg-white/[0.03] border-white/10 text-white focus:border-emerald-500/50' : 'bg-gray-50 border-gray-200 focus:border-emerald-400'
               )}
               placeholder={importFormat === 'csv'

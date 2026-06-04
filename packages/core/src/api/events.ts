@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express'
 import { requireAuth } from '../middleware/auth'
 import { eventHub } from '../services/event-hub'
 
-const router = Router()
+const router: import('express').Router = Router()
 router.use(requireAuth)
 
 /**

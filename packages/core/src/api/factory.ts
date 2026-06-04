@@ -12,6 +12,7 @@ import { NotFoundError, ForbiddenError, ValidationError, InvalidPayloadError } f
 import { eventHub } from '../services/event-hub'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { PreviewService } from '../services/preview'
+import { logger } from '../services/logger'
 
 /**
  * Helper to dynamically query and verify granular role permissions in the database.
@@ -111,9 +112,18 @@ async function resolveRelations(
         const idsArray = Array.from(idsToFetch)
         let relatedDocs: any[] = []
         try {
-          relatedDocs = await adapter.find(relationTo, { _id: { $in: idsArray } })
+          // Use adapter-agnostic per-ID fetching instead of MongoDB-specific $in operator.
+          // This works correctly with both Mongoose and Postgres adapters.
+          const fetched = await Promise.all(
+            idsArray.map((id) =>
+              adapter.findOne(relationTo, { id }).catch(() =>
+                adapter.findOne(relationTo, { _id: id }).catch(() => null)
+              )
+            )
+          )
+          relatedDocs = fetched.filter(Boolean) as any[]
         } catch (err) {
-          console.error(`Failed to fetch relations from ${relationTo}`, err)
+          logger.error({ err, collection: relationTo }, `Failed to fetch relations from ${relationTo}`)
         }
 
         const relatedMap = new Map<string, any>()
@@ -273,6 +283,8 @@ function applySelectToDocs(docs: any | any[], selectStr: string) {
   if (Array.isArray(docs)) {
     return docs.map((doc) => applySelect(doc, selectStr))
   }
+  // Fix: handle single-document (singleton) responses — previously returned undefined
+  return applySelect(docs, selectStr)
 }
 
 function applyFieldLevelReadAccess(doc: any, fields: FieldConfig[], user: any) {
@@ -489,7 +501,16 @@ export function createCollectionRouter(
   adapter: DatabaseAdapter,
   webhooks: WebhookTarget[] = []
 ): Router {
-  const router = Router()
+  const router: Router = Router()
+
+  if (!config.access || (!config.access.read && !config.access.create && !config.access.update && !config.access.delete)) {
+    console.warn(`[WARNING] Collection "${config.slug}" is missing explicit access hooks. Falling back to default tenant-scoped role enforcement.`)
+  }
+
+  router.use((req, res, next) => {
+    logger.debug({ slug: config.slug, path: req.path, method: req.method }, '[Collection Top]')
+    next()
+  })
 
   /**
    * LAZY CONTEXT INITIALIZATION
@@ -575,6 +596,7 @@ export function createCollectionRouter(
   // ── Authentication & Role Middleware ──────────────────────────────────────────
 
   router.use((req, res, next) => {
+    logger.debug({ slug: config.slug, method: req.method, publicRead: config.publicRead, path: req.path }, '[Collection Router]')
     // Public read: allow GET without auth if configured
     if (config.publicRead && req.method === 'GET') return next()
     return requireAuth(req, res, next)
@@ -651,7 +673,7 @@ export function createCollectionRouter(
       const { contentService, cachePrefix } = getContext()
       const user = (req as any).user
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
-      const siteId = req.headers['x-zenith-site-id'] as string
+      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'read')
 
       if (config.singleton) {
@@ -680,6 +702,7 @@ export function createCollectionRouter(
 
       const skip = (pagination.page - 1) * pagination.pageSize
       const findFilter = siteId ? { ...filter, siteId } : filter
+
       const [docs, total] = await Promise.all([
         contentService.find(filter, {
           user,
@@ -722,7 +745,7 @@ export function createCollectionRouter(
       const { contentService } = getContext()
       const user = (req as any).user
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
-      const siteId = req.headers['x-zenith-site-id'] as string
+      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'read')
 
       const { select, populate, depth } = parseQueryParams(req.query, config, req.body)
@@ -766,7 +789,7 @@ export function createCollectionRouter(
     try {
       const { schema, contentService } = getContext()
       const user = (req as any).user
-      const siteId = req.headers['x-zenith-site-id'] as string
+      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       await verifyAccess(user, 'create')
 
@@ -796,7 +819,7 @@ export function createCollectionRouter(
       if (!config.singleton) return next()
       const { schema, contentService } = getContext()
       const user = (req as any).user
-      const siteId = req.headers['x-zenith-site-id'] as string
+      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       await verifyAccess(user, 'update')
 
@@ -830,7 +853,7 @@ export function createCollectionRouter(
     try {
       const { schema, contentService } = getContext()
       const user = (req as any).user
-      const siteId = req.headers['x-zenith-site-id'] as string
+      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       await verifyAccess(user, 'update')
 
@@ -868,7 +891,7 @@ export function createCollectionRouter(
     try {
       const { contentService } = getContext()
       const user = (req as any).user
-      const siteId = req.headers['x-zenith-site-id'] as string
+      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'delete')
 
       await contentService.delete(req.params.id, { user, siteId })
@@ -890,7 +913,7 @@ export function createCollectionRouter(
       if (!config.softDelete) throw new NotFoundError('Trash not enabled for this collection', 'trash')
       const { contentService, cachePrefix } = getContext()
       const user = (req as any).user
-      const siteId = req.headers['x-zenith-site-id'] as string
+      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       await verifyAccess(user, 'read')
 
@@ -928,7 +951,7 @@ export function createCollectionRouter(
       if (!config.softDelete) throw new NotFoundError('Trash not enabled for this collection', req.params.id)
       const { contentService } = getContext()
       const user = (req as any).user
-      const siteId = req.headers['x-zenith-site-id'] as string
+      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'update')
 
       const { doc } = await contentService.update(req.params.id, { deletedAt: null }, { user, siteId, includeDeleted: true })
@@ -943,7 +966,7 @@ export function createCollectionRouter(
     try {
       const { contentService } = getContext()
       const user = (req as any).user
-      const siteId = req.headers['x-zenith-site-id'] as string
+      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'delete')
 
       await contentService.delete(req.params.id, { user, siteId, includeDeleted: true })
@@ -965,7 +988,7 @@ export function createCollectionRouter(
     try {
       const { schema, contentService } = getContext()
       const user = (req as any).user
-      const siteId = req.headers['x-zenith-site-id'] as string
+      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'create')
 
       const records = req.body
@@ -1047,7 +1070,7 @@ export function createCollectionRouter(
     try {
       const { contentService } = getContext()
       const user = (req as any).user
-      const siteId = req.headers['x-zenith-site-id'] as string
+      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'read')
 
       // Cap at 1000 records per export request to prevent V8 heap exhaustion.
@@ -1082,7 +1105,7 @@ export function createCollectionRouter(
     try {
       const { contentService } = getContext()
       const user = (req as any).user
-      const siteId = req.headers['x-zenith-site-id'] as string
+      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'read')
 
       const filter: Record<string, any> = {}

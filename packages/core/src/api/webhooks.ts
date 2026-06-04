@@ -26,7 +26,7 @@ const syncEngineConfig = async (req: Request, adapter: DatabaseAdapter) => {
   engine.config.webhooks = allDocs.map(toWebhookDTO)
 }
 
-const router = Router()
+const router: import('express').Router = Router()
 
 // ── List all webhooks ─────────────────────────────────────────────────────────
 router.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {

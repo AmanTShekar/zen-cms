@@ -14,7 +14,7 @@ export async function migrateLegacySiteIds() {
     return;
   }
   const siteId = (defaultSite._id ?? defaultSite.id)?.toString();
-  const collections = ['posts', 'pages', 'products', 'authors', 'members', 'landing-page'];
+  const collections = ['posts', 'pages', 'products', 'authors', 'members'];
 
   for (const coll of collections) {
     // Find docs without a siteId field

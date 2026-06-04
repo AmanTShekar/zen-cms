@@ -32,7 +32,10 @@ export async function verifySiteAccess(user: AuthUser, siteId: string): Promise<
   }
 
   const adapter = AdapterFactory.getActiveAdapter()
-  const sites = await adapter.find<any>('sites', { id: siteId })
+  let sites = await adapter.find<any>('sites', { slug: siteId })
+  if (sites.length === 0 && /^[0-9a-fA-F]{24}$/.test(siteId)) {
+    sites = await adapter.find<any>('sites', { id: siteId })
+  }
   const site = sites[0] || null
 
   if (!site) return false
@@ -85,12 +88,28 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     }
 
     req.user = decoded
+    
+    // ── Extract Tenant Identity from Header ──
+    const headerSiteId = req.headers['x-zenith-site-id'] as string
+    if (headerSiteId) {
+      req.siteId = headerSiteId
+    }
 
     // ── Secure Tenant Resolution (IDOR Protection) ──
     if (req.siteId) {
+      const isGlobalRoute = req.originalUrl.startsWith('/api/v1/auth') || 
+                            req.originalUrl.startsWith('/api/v1/system') ||
+                            req.originalUrl.startsWith('/api/v1/sites') ||
+                            req.originalUrl.startsWith('/api/v1/workspaces')
+                            
       const hasAccess = await verifySiteAccess(req.user as AuthUser, req.siteId)
       if (!hasAccess) {
-        return res.status(403).json(createErrorResponse(403, 'Access denied to this site', undefined, 'ForbiddenError'))
+        if (isGlobalRoute) {
+          // Stale site ID from frontend, ignore it for global routes
+          delete req.siteId
+        } else {
+          return res.status(403).json(createErrorResponse(403, 'Access denied to this site', undefined, 'ForbiddenError'))
+        }
       }
     }
 

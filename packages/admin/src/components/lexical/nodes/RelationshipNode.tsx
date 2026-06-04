@@ -8,6 +8,7 @@ import type {
   Spread,
 } from 'lexical'
 import { $applyNodeReplacement, ParagraphNode } from 'lexical'
+import type { SerializedParagraphNode } from 'lexical'
 
 export interface RelationshipPayload {
   collectionSlug: string
@@ -26,7 +27,7 @@ export type SerializedRelationshipNode = Spread<
     type: 'relationship'
     version: 1
   },
-  SerializedElementNode
+  SerializedParagraphNode
 >
 
 export class RelationshipNode extends ParagraphNode {
@@ -47,6 +48,27 @@ export class RelationshipNode extends ParagraphNode {
       node.__status,
       node.__key,
     )
+  }
+
+  static importDOM(): import('lexical').DOMConversionMap | null {
+    return {
+      span: (node: Node) => ({
+        conversion: (element: HTMLElement) => {
+          if (element.getAttribute('data-rel-collection')) {
+            return {
+              node: $createRelationshipNode({
+                collectionSlug: element.getAttribute('data-rel-collection') || '',
+                documentId: element.getAttribute('data-rel-id') || '',
+                label: element.getAttribute('data-rel-label') || undefined,
+                status: (element.getAttribute('data-rel-status') as 'draft' | 'published') || undefined,
+              }),
+            }
+          }
+          return null
+        },
+        priority: 1,
+      }),
+    }
   }
 
   static importJSON(serialized: SerializedRelationshipNode): RelationshipNode {
@@ -83,13 +105,13 @@ export class RelationshipNode extends ParagraphNode {
 
   exportJSON(): SerializedRelationshipNode {
     return {
+      ...super.exportJSON(),
       collectionSlug: this.__collectionSlug,
       documentId: this.__documentId,
       label: this.__label,
       status: this.__status,
       type: 'relationship',
       version: 1,
-      ...super.exportJSON(),
     }
   }
 

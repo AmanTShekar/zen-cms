@@ -115,13 +115,16 @@ function mapFieldToMongoose(field: any): unknown {
     )
   }
 
-  return {
+  const mongooseField: any = {
     type,
     required: field.required || false,
-    unique: field.unique || false,
-    index: field.index || false,
     default: field.defaultValue,
   }
+  
+  if (field.unique !== undefined) mongooseField.unique = field.unique;
+  if (field.index !== undefined) mongooseField.index = field.index;
+  
+  return mongooseField;
 }
 
 function generateSchemaFields(fields: FieldConfig[]) {

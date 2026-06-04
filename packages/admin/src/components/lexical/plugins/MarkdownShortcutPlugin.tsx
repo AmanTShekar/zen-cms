@@ -6,6 +6,7 @@ import {
   $createParagraphNode,
   KEY_DOWN_COMMAND,
   COMMAND_PRIORITY_HIGH,
+  $isTextNode,
   type ElementNode,
   type LexicalNode,
 } from 'lexical'
@@ -102,7 +103,9 @@ function replaceWithBlock(
   blockNode: ElementNode,
   charsToRemove: number,
 ) {
-  anchorNode.spliceText(0, charsToRemove, '', true)
+  if ($isTextNode(anchorNode)) {
+    anchorNode.spliceText(0, charsToRemove, '', true)
+  }
   const parent = anchorNode.getParent()
   if (parent) {
     parent.replace(blockNode)
@@ -115,7 +118,9 @@ function replaceWithList(
   type: 'bullet' | 'number',
   charsToRemove: number,
 ) {
-  anchorNode.spliceText(0, charsToRemove, '', true)
+  if ($isTextNode(anchorNode)) {
+    anchorNode.spliceText(0, charsToRemove, '', true)
+  }
   const list = $createListNode(type)
   const item = $createListItemNode()
   list.append(item)

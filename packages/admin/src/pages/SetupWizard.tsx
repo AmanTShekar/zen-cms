@@ -212,7 +212,7 @@ export default function SetupWizard() {
               onChange={(e) => patch({ projectName: e.target.value })}
               placeholder="e.g. Acme Corp CMS"
               className={cn(
-                'w-full px-4 py-3 border rounded-none outline-none text-[13px] font-medium transition-colors',
+                'w-full px-4 py-3 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[13px] font-medium transition-colors',
                 input
               )}
             />
@@ -227,7 +227,7 @@ export default function SetupWizard() {
               onChange={(e) => patch({ publicUrl: e.target.value })}
               placeholder="https://mywebsite.com"
               className={cn(
-                'w-full px-4 py-3 border rounded-none outline-none text-[13px] font-medium transition-colors',
+                'w-full px-4 py-3 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[13px] font-medium transition-colors',
                 input
               )}
             />
@@ -366,7 +366,7 @@ export default function SetupWizard() {
                   : 'postgresql://postgres:postgres@localhost:5432/zenith'
               }
               className={cn(
-                'w-full px-4 py-3 border rounded-none outline-none text-[12px] font-mono transition-colors',
+                'w-full px-4 py-3 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[12px] font-mono transition-colors',
                 input
               )}
             />
@@ -448,7 +448,7 @@ export default function SetupWizard() {
                 onChange={(e) => patch({ openRouterApiKey: e.target.value })}
                 placeholder="sk-or-..."
                 className={cn(
-                  'w-full px-3 py-2.5 border rounded-none outline-none text-[11px] font-mono transition-colors',
+                  'w-full px-3 py-2.5 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
                   input
                 )}
               />
@@ -474,7 +474,7 @@ export default function SetupWizard() {
                 onChange={(e) => patch({ openaiApiKey: e.target.value })}
                 placeholder="sk-proj-..."
                 className={cn(
-                  'w-full px-3 py-2.5 border rounded-none outline-none text-[11px] font-mono transition-colors',
+                  'w-full px-3 py-2.5 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
                   input
                 )}
               />
@@ -500,7 +500,7 @@ export default function SetupWizard() {
                 onChange={(e) => patch({ anthropicApiKey: e.target.value })}
                 placeholder="sk-ant-..."
                 className={cn(
-                  'w-full px-3 py-2.5 border rounded-none outline-none text-[11px] font-mono transition-colors',
+                  'w-full px-3 py-2.5 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
                   input
                 )}
               />
@@ -526,7 +526,7 @@ export default function SetupWizard() {
                 onChange={(e) => patch({ xaiApiKey: e.target.value })}
                 placeholder="xai-..."
                 className={cn(
-                  'w-full px-3 py-2.5 border rounded-none outline-none text-[11px] font-mono transition-colors',
+                  'w-full px-3 py-2.5 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
                   input
                 )}
               />
@@ -613,7 +613,7 @@ export default function SetupWizard() {
                   onChange={(e) => patch({ keyName: e.target.value })}
                   placeholder="My Website"
                   className={cn(
-                    'w-full px-4 py-3 border rounded-none outline-none text-[13px] font-medium transition-colors',
+                    'w-full px-4 py-3 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[13px] font-medium transition-colors',
                     input
                   )}
                 />

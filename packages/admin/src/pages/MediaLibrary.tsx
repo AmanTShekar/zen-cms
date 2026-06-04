@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import {
   Search,
   Trash2,
@@ -152,11 +152,39 @@ const MediaLibrary = () => {
   }
 
 
-  const getFullUrl = (url: string) => {
+  // Blob URL cache for authenticated media — prevents bare URLs that skip auth cookies
+  const blobMap = React.useRef<Record<string, string>>({})
+  const blobTokens = React.useRef<Set<string>>(new Set())
+  const [, rerender] = React.useState(0)
+
+  const getFullUrl = (url: string): string => {
     if (!url) return ''
     if (url.startsWith('http')) return url
-    return `${import.meta.env.VITE_API_URL || ''}${url}`
+    return blobMap.current[url] || `${import.meta.env.VITE_API_URL || ''}${url}`
   }
+
+  // Pre-fetch internal media URLs with credentials when files load
+  React.useEffect(() => {
+    if (!files.length && !selectedFile) return
+    const items = [...files, selectedFile].filter((f: any) => f?.url && !f.url.startsWith('http') && !blobMap.current[f.url])
+    if (!items.length) return
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace('/api/v1', '')
+    items.forEach((item: any) => {
+      fetch(`${apiBase}${item.url}`, { credentials: 'include' })
+        .then((r) => r.blob())
+        .then((blob) => {
+          const objectUrl = URL.createObjectURL(blob)
+          blobTokens.current.add(objectUrl)
+          blobMap.current[item.url] = objectUrl
+          rerender((n) => n + 1)
+        })
+        .catch(() => {})
+    })
+  }, [files, selectedFile])
+
+  React.useEffect(() => {
+    return () => { blobTokens.current.forEach((u) => URL.revokeObjectURL(u)) }
+  }, [])
 
   const resetTransform = () => {
     setRotation(0)
@@ -451,7 +479,7 @@ const MediaLibrary = () => {
               placeholder="SCAN_REGISTRY_INDICES..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-transparent py-5 text-[11px] font-black tracking-widest outline-none placeholder:text-gray-700 uppercase italic transition-all"
+              className="w-full bg-transparent py-5 text-[11px] font-black tracking-widest outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black placeholder:text-gray-700 uppercase italic transition-all"
             />
             <button
               onClick={fetchFiles}
@@ -744,7 +772,7 @@ const MediaLibrary = () => {
                         step="100"
                         value={previewWidth}
                         onChange={(e) => setPreviewWidth(parseInt(e.target.value))}
-                        className="w-full appearance-none bg-emerald-500/10 h-1 rounded-none outline-none cursor-pointer accent-emerald-500"
+                        className="w-full appearance-none bg-emerald-500/10 h-1 rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black cursor-pointer accent-emerald-500"
                       />
                     </div>
 
@@ -835,7 +863,7 @@ const MediaLibrary = () => {
                               onChange={(e) => setSaveName(e.target.value)}
                               placeholder="transformed_filename.ext"
                               className={cn(
-                                'flex-1 px-3 py-3 text-[9px] font-mono border rounded-none outline-none bg-transparent',
+                                'flex-1 px-3 py-3 text-[9px] font-mono border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black bg-transparent',
                                 theme === 'dark' ? 'border-white/10 text-white' : 'border-gray-100'
                               )}
                             />

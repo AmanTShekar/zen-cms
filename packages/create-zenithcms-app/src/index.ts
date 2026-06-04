@@ -126,15 +126,14 @@ const config: CMSConfig = {
         { name: 'name', type: 'text', required: true },
         { name: 'slug', type: 'text', required: true, unique: true }
       ]
-    }
-  ],
-  globals: [
+    },
     {
-      name: 'Landing Page',
-      slug: 'landing-page',
+      name: 'Page',
+      slug: 'pages',
       fields: [
         { name: 'title', type: 'text', required: true },
-        { name: 'heroDescription', type: 'text' }
+        { name: 'slug', type: 'text', required: true, unique: true },
+        { name: 'sections', type: 'blocks' }
       ]
     }
   ]

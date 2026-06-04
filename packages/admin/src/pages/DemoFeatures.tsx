@@ -153,7 +153,7 @@ const DemoFeatures = () => {
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="COMMAND_ZENITH_AI_TO_SYNTHESIZE..."
-                className="w-full bg-app border border-border rounded-none p-8 text-[16px] font-black tracking-tight text-primary outline-none transition-all focus:border-primary/20 placeholder:text-primary/10 uppercase italic h-40 shadow-inner resize-none"
+                className="w-full bg-app border border-border rounded-none p-8 text-[16px] font-black tracking-tight text-primary outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all focus:border-primary/20 placeholder:text-primary/10 uppercase italic h-40 shadow-inner resize-none"
               />
             </div>
 

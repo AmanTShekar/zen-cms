@@ -59,7 +59,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
             value={activeSite.currency || 'USD'}
             onChange={(e) => setActiveSite({ ...activeSite, currency: e.target.value })}
             className={cn(
-              'border rounded-none py-1.5 px-3 text-[11px] font-black uppercase italic outline-none',
+              'border rounded-none py-1.5 px-3 text-[11px] font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
               theme === 'dark' ? 'bg-black border-white/10 text-white' : 'bg-white border-gray-200 text-gray-800'
             )}
           >
@@ -106,7 +106,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                   value={activeSite[input.field] || ''}
                   onChange={(e) => setActiveSite({ ...activeSite, [input.field]: e.target.value })}
                   className={cn(
-                    'w-full border rounded-none py-3 px-4 text-[12px] font-black italic transition-all outline-none',
+                    'w-full border rounded-none py-3 px-4 text-[12px] font-black italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                     theme === 'dark'
                       ? 'bg-black border-white/10 text-white focus:border-emerald-500'
                       : 'bg-white border-gray-200 focus:border-emerald-500'
@@ -175,7 +175,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                           setActiveSite({ ...activeSite, pricingPlans: plans })
                         }}
                         className={cn(
-                          'text-sm font-black uppercase italic outline-none border-b border-transparent focus:border-emerald-500 bg-transparent w-full mr-4',
+                          'text-sm font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black border-b border-transparent focus:border-emerald-500 bg-transparent w-full mr-4',
                           theme === 'dark' ? 'text-white' : 'text-gray-900'
                         )}
                       />
@@ -203,7 +203,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                             setActiveSite({ ...activeSite, pricingPlans: plans })
                           }}
                           className={cn(
-                            'w-full border rounded-none py-1.5 px-3 text-[10px] font-black italic transition-all outline-none',
+                            'w-full border rounded-none py-1.5 px-3 text-[10px] font-black italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                             theme === 'dark' ? 'bg-black border-white/10 text-white' : 'bg-white border-gray-200'
                           )}
                         />
@@ -220,7 +220,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                               setActiveSite({ ...activeSite, pricingPlans: plans })
                             }}
                             className={cn(
-                              'w-full border rounded-none py-1.5 px-3 text-[10px] font-black italic transition-all outline-none',
+                              'w-full border rounded-none py-1.5 px-3 text-[10px] font-black italic transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                               theme === 'dark' ? 'bg-black border-white/10 text-white' : 'bg-white border-gray-200'
                             )}
                           />
@@ -232,7 +232,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                               setActiveSite({ ...activeSite, pricingPlans: plans })
                             }}
                             className={cn(
-                              'border rounded-none py-1.5 px-2 text-[9px] font-black uppercase italic outline-none',
+                              'border rounded-none py-1.5 px-2 text-[9px] font-black uppercase italic outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                               theme === 'dark' ? 'bg-black border-white/10 text-white' : 'bg-white border-gray-200'
                             )}
                           >
@@ -247,14 +247,13 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                     {/* Paywalled Collections */}
                     <div className="space-y-2">
                       <label className="text-[8px] font-black text-gray-500 uppercase tracking-wider block">Paywall Restricted Collections</label>
-                      <div className={cn(
-                        'p-3 border rounded-none flex flex-wrap gap-3 max-h-32 overflow-y-auto',
-                        theme === 'dark' ? 'bg-black border-white/5' : 'bg-gray-50 border-gray-200'
-                      )}>
-                        {(healthData?.registry?.collections || []).length === 0 ? (
-                          <span className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">No active collections defined</span>
+                      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 mt-4">
+                        {(healthData?.collections || []).length === 0 ? (
+                          <div className="col-span-full py-4 text-center border border-dashed border-gray-200 dark:border-white/10 rounded-xl">
+                            <span className="text-[10px] font-black uppercase tracking-widest italic text-gray-500">No collections available to monetize</span>
+                          </div>
                         ) : (
-                          (healthData?.registry?.collections || []).map((col: any) => {
+                          (healthData?.collections || []).map((col: any) => {
                             const checked = (plan.paywalledCollections || []).includes(col.slug)
                             return (
                               <label key={col.slug} className="flex items-center gap-2 cursor-pointer group">
@@ -301,7 +300,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
                                 setActiveSite({ ...activeSite, pricingPlans: plans })
                               }}
                               className={cn(
-                                'flex-1 border-b border-transparent focus:border-white/20 bg-transparent text-[10px] font-bold outline-none py-0.5',
+                                'flex-1 border-b border-transparent focus:border-white/20 bg-transparent text-[10px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-0.5',
                                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                               )}
                             />

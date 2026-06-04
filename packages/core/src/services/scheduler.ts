@@ -74,18 +74,28 @@ export class SchedulerService {
         try {
           const now = new Date()
 
-          const modifiedCount = await this.adapter.updateMany(
+          // Adapter-agnostic: fetch due docs, then update each by ID
+          // (avoids $lte which is MongoDB-specific and breaks on Postgres)
+          const dueDocs = await this.adapter.find(
             config.slug,
-            {
-              _status: 'draft',
-              scheduledAt: { $lte: now },
-            },
-            {
-              _status: 'published',
-              scheduledAt: null,
-            }
+            { _status: 'draft' }
           )
 
+          const toPublish = dueDocs.filter((doc: any) => {
+            const scheduledAt = doc.scheduledAt ? new Date(doc.scheduledAt) : null
+            return scheduledAt !== null && scheduledAt <= now
+          })
+
+          await Promise.all(
+            toPublish.map((doc: any) =>
+              this.adapter.update(config.slug, String(doc.id || doc._id), {
+                _status: 'published',
+                scheduledAt: null,
+              })
+            )
+          )
+
+          const modifiedCount = toPublish.length
           if (modifiedCount > 0) {
             logger.info(
               { collection: config.slug, count: modifiedCount },
@@ -100,9 +110,12 @@ export class SchedulerService {
       // 3. Process Scheduled Releases
       try {
         const now = new Date()
-        const pendingReleases = await this.adapter.find('z_releases', {
-          status: 'pending',
-          scheduledAt: { $lte: now.toISOString() },
+        // Adapter-agnostic: fetch all pending releases and filter by date in JS
+        // (avoids $lte which is MongoDB-specific)
+        const allPending = await this.adapter.find('z_releases', { status: 'pending' })
+        const pendingReleases = allPending.filter((r: any) => {
+          const scheduledAt = r.scheduledAt ? new Date(r.scheduledAt) : null
+          return scheduledAt !== null && scheduledAt <= now
         })
 
         for (const release of pendingReleases) {
@@ -121,11 +134,13 @@ export class SchedulerService {
             siteId
           )
 
+          // Use adapter-agnostic id/id_id resolution
+          const releaseId = String((release as any).id || (release as any)._id)
           if (result.success) {
-            await this.adapter.update('z_releases', (release as any)._id, { status: 'published' })
+            await this.adapter.update('z_releases', releaseId, { status: 'published' })
             logger.info(`[Scheduler] Successfully published release: ${(release as any).name}`)
           } else {
-            await this.adapter.update('z_releases', (release as any)._id, { status: 'failed', failureReason: result.error })
+            await this.adapter.update('z_releases', releaseId, { status: 'failed', failureReason: result.error })
             logger.error({ error: result.error }, `[Scheduler] Failed to publish release: ${(release as any).name}`)
           }
         }

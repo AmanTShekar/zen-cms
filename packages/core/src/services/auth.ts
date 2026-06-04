@@ -13,7 +13,18 @@ if (process.env.NODE_ENV === 'production') {
       '[Zenith] FATAL: JWT_REFRESH_SECRET environment variable must be set in production.'
     )
   }
+  if (!process.env.ADMIN_URL) {
+    throw new Error(
+      '[Zenith] FATAL: ADMIN_URL environment variable must be set in production. ' +
+      'Email verification and password reset links will otherwise point to localhost.'
+    )
+  }
 }
+
+// ADMIN_URL — exported so all email-link builders use the same value.
+// In dev, falls back to localhost:5173 (acceptable; production guard above enforces it).
+export const ADMIN_URL = process.env.ADMIN_URL || 'http://localhost:5173'
+
 
 // In dev, these fallbacks are acceptable because the production guard above
 // throws if either secret is missing when NODE_ENV=production.
@@ -185,11 +196,9 @@ export const AuthService = {
    */
   async verifyEmailToken(token: string): Promise<string | null> {
     const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<any>('users', {
-      verificationToken: token,
-      verificationTokenExpiry: { $gt: new Date() },
-    })
-    const user = users[0] || null
+    // Fetch by token only — filter expiry in JS to avoid MongoDB-specific $gt
+    const users = await adapter.find<any>('users', { verificationToken: token })
+    const user = users.find((u: any) => u.verificationTokenExpiry && new Date(u.verificationTokenExpiry) > new Date())
     if (!user) return null
     const id = (user.id || user._id).toString()
     await adapter.update('users', id, {

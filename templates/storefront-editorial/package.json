@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Editorial magazine-style storefront template for Zenith CMS. Bold typography, wide hero images, news/blog layout.",
   "scripts": {
-    "dev": "vite",
+    "setup:backend": "tsx backend/setup.ts",
+    "dev": "vite --port 5178",
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",

@@ -15,6 +15,7 @@ import {
 import { $wrapNodes } from '@lexical/selection'
 import { $getNearestNodeOfType, mergeRegister } from '@lexical/utils'
 import {
+  ListNode,
   $isListNode,
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,
@@ -74,7 +75,7 @@ function ToolbarButton({ onClick, isActive, disabled, title, children }: Toolbar
         disabled && 'opacity-30 pointer-events-none',
       )}
     >
-      {React.cloneElement(children, { size: 16 })}
+      {React.cloneElement(children as React.ReactElement<any>, { size: 16 })}
     </button>
   )
 }
@@ -192,8 +193,8 @@ export function Toolbar({ disabled }: { disabled?: boolean }) {
 
       if (elementDOM !== null) {
         if ($isListNode(element)) {
-          const parentList = $getNearestNodeOfType(anchorNode, $isListNode)
-          const type = parentList ? parentList.getListType() : element.getListType()
+          const parentList = $getNearestNodeOfType(anchorNode, ListNode)
+          const type = parentList ? parentList.getListType() : (element as ListNode).getListType()
           setBlockType(type === 'bullet' ? 'ul' : 'ol')
         } else if ($isHeadingNode(element)) {
           setBlockType(element.getTag())

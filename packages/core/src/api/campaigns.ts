@@ -22,7 +22,7 @@ const toCampaignDTO = (d: any) => ({
   updatedAt: d.updatedAt?.toISOString?.() || d.updated_at?.toISOString?.() || d.updatedAt || d.updated_at,
 })
 
-const router = Router()
+const router: import('express').Router = Router()
 
 // ── List all campaigns ─────────────────────────────────────────────────────────
 router.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { FieldConfig } from '@flowcms/types'
+import { FieldConfig } from '@zenithcms/types'
 import { createZodSchema } from './engine'
 
 describe('Zod Schema Engine', () => {
@@ -98,7 +98,7 @@ describe('Zod Schema Engine', () => {
       },
     }
     expect(schema.parse(validMedia)).toEqual(validMedia)
-    expect(() => schema.parse({ image: { url: 'invalid-url' } })).toThrow()
+    expect(() => schema.parse({ image: { url: 123 } })).toThrow()
   })
 
   it('should handle select fields with options', () => {

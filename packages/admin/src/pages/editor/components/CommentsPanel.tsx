@@ -314,7 +314,7 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
           placeholder="Add a comment... (Cmd+Enter to submit)"
           rows={2}
           className={cn(
-            'w-full px-2 py-1.5 text-xs rounded-none border-none bg-transparent resize-none focus:outline-none focus:ring-0 placeholder-gray-500',
+            'w-full px-2 py-1.5 text-xs rounded-none border-none bg-transparent resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:ring-0 placeholder-gray-500',
             theme === 'dark' ? 'text-gray-300 placeholder-gray-600' : 'text-gray-700 placeholder-gray-400'
           )}
         />

@@ -4,7 +4,7 @@ import { logger } from '../services/logger'
 import { z } from 'zod'
 import { InvalidPayloadError, NotFoundError, DuplicateError, AuthenticationError, isZenithError } from '../errors'
 
-const router = Router()
+const router: import('express').Router = Router()
 
 const CreateTemplateSchema = z.object({
   name: z.string().min(1),

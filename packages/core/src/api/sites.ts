@@ -5,7 +5,7 @@ import { InvalidPayloadError, NotFoundError, ForbiddenError } from '../errors'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 
-const router = Router()
+const router: import('express').Router = Router()
 
 // Require auth for all site workspace operations
 router.use(requireAuth)
@@ -16,15 +16,17 @@ router.get('/', async (req: Request, res: Response, next) => {
   try {
     const user = (req as any).user
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    
-    const query: any = {
-      $or: [{ ownerId: user.id }, { 'members.userId': user.id }],
-    }
-    if (req.query.workspaceId) {
-      query.workspaceId = req.query.workspaceId
-    }
 
-    const sites = await adapter.find<any>('z_sites', query, { sort: { updatedAt: -1 } })
+    // Adapter-agnostic: fetch all sites owned by user OR containing user as member
+    // $or with dot-notation `members.userId` is Mongo-specific; use JS filter instead
+    const allSites = await adapter.find<any>('z_sites', {}, { sort: { updatedAt: -1 } })
+    let sites = allSites.filter((s: any) =>
+      s.ownerId === user.id ||
+      (Array.isArray(s.members) && s.members.some((m: any) => m.userId === user.id))
+    )
+    if (req.query.workspaceId) {
+      sites = sites.filter((s: any) => s.workspaceId === req.query.workspaceId)
+    }
 
     res.json(createResponse(sites))
   } catch (err) {
@@ -84,14 +86,19 @@ router.get('/:id', async (req: Request, res: Response, next) => {
     const user = (req as any).user
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-    const site = await adapter.findOne<any>('z_sites', {
-      _id: id,
-      $or: [{ ownerId: user.id }, { 'members.userId': user.id }],
-    })
-
+    // Adapter-agnostic: fetch by id or _id, then JS-verify membership
+    const allById = await adapter.find<any>('z_sites', { id })
+    let site: any = allById[0] || null
     if (!site) {
-      throw new NotFoundError('Site workspace', id)
+      const allByMongoId = await adapter.find<any>('z_sites', { _id: id })
+      site = allByMongoId[0] || null
     }
+
+    const isMember = site && (
+      site.ownerId === user.id ||
+      (Array.isArray(site.members) && site.members.some((m: any) => m.userId === user.id))
+    )
+    if (!isMember) throw new NotFoundError('Site workspace', id)
 
     res.json(createResponse(site))
   } catch (err) {
@@ -106,11 +113,14 @@ router.patch('/:id', async (req: Request, res: Response, next) => {
     const user = (req as any).user
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-    // Only allow owner or admin members to update the site
-    const site = await adapter.findOne<any>('z_sites', { _id: id })
+    // Adapter-agnostic lookup
+    const allById = await adapter.find<any>('z_sites', { id })
+    let site: any = allById[0] || null
     if (!site) {
-      throw new NotFoundError('Site workspace', id)
+      const allByMongoId = await adapter.find<any>('z_sites', { _id: id })
+      site = allByMongoId[0] || null
     }
+    if (!site) throw new NotFoundError('Site workspace', id)
 
     const member = site.members.find((m: any) => m.userId === user.id)
     const isAdmin = member?.role === 'admin' || site.ownerId === user.id
@@ -138,11 +148,14 @@ router.delete('/:id', async (req: Request, res: Response, next) => {
     const user = (req as any).user
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-    // Only the owner can delete the site workspace entirely
-    const site = await adapter.findOne<any>('z_sites', { _id: id })
+    // Adapter-agnostic lookup
+    const allById = await adapter.find<any>('z_sites', { id })
+    let site: any = allById[0] || null
     if (!site) {
-      throw new NotFoundError('Site workspace', id)
+      const allByMongoId = await adapter.find<any>('z_sites', { _id: id })
+      site = allByMongoId[0] || null
     }
+    if (!site) throw new NotFoundError('Site workspace', id)
 
     if (site.ownerId !== user.id) {
       throw new ForbiddenError('Only the site owner can permanently delete this site workspace.')
@@ -168,10 +181,14 @@ router.post('/:id/members', async (req: Request, res: Response, next) => {
       throw new InvalidPayloadError('userId and role are required fields.')
     }
 
-    const site = await adapter.findOne<any>('z_sites', { _id: id })
+    // Adapter-agnostic lookup
+    const allById = await adapter.find<any>('z_sites', { id })
+    let site: any = allById[0] || null
     if (!site) {
-      throw new NotFoundError('Site workspace', id)
+      const allByMongoId = await adapter.find<any>('z_sites', { _id: id })
+      site = allByMongoId[0] || null
     }
+    if (!site) throw new NotFoundError('Site workspace', id)
 
     // Only admin or owner can invite members
     const member = site.members.find((m: any) => m.userId === user.id)
@@ -204,10 +221,14 @@ router.delete('/:id/members/:userId', async (req: Request, res: Response, next) 
     const user = (req as any).user
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-    const site = await adapter.findOne<any>('z_sites', { _id: id })
+    // Adapter-agnostic lookup
+    const allById = await adapter.find<any>('z_sites', { id })
+    let site: any = allById[0] || null
     if (!site) {
-      throw new NotFoundError('Site workspace', id)
+      const allByMongoId = await adapter.find<any>('z_sites', { _id: id })
+      site = allByMongoId[0] || null
     }
+    if (!site) throw new NotFoundError('Site workspace', id)
 
     // Only admin, owner, or the user themselves (leaving the site) can remove a member
     const member = site.members.find((m: any) => m.userId === user.id)
