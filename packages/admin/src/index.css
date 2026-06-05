@@ -93,13 +93,13 @@
  width: 100vw;
  height: 100vh;
  overflow: hidden;
- background: #000000;
+ background-color: var(--bg-app);
  }
 
  #root {
  width: 100%;
  height: 100%;
- background-color: var(--background-color, #000000);
+ background-color: var(--bg-app);
  }
 
  body {
