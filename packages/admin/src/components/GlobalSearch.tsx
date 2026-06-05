@@ -108,133 +108,135 @@ const GlobalSearch: React.FC = () => {
  )
 
  return (
- <div ref={containerRef} className="relative z-[100]">
- <motion.div
- animate={{ width: isFocused ? 360 : 240 }}
- className={cn(
- 'flex items-center gap-2 px-4 py-2 rounded-none transition-all border',
- isFocused
- ? 'bg-white border-emerald-500 shadow-lg text-black'
- : 'bg-white/5 border-white/[0.08] text-gray-500 hover:bg-white/10'
- )}
- >
- <Search
- size={18}
- className={cn('transition-colors', isFocused ? 'text-emerald-600 dark:text-emerald-500' : 'text-gray-500')}
- />
- <input
- type="text"
- value={query}
- onChange={(e) => setQuery(e.target.value)}
- onFocus={() => setIsFocused(true)}
- placeholder="Search collections & commands..."
- className="bg-transparent border-none text-[13px] font-black uppercase tracking-widest flex-1 placeholder:text-gray-700 focus-visible:ring-2 focus-visible:ring-emerald-500 rounded px-1"
- />
- {query && (
- <button onClick={() => setQuery('')} className="p-1 hover:bg-black/5 rounded-none">
- <X size={14} />
- </button>
- )}
- {!isFocused && (
- <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-none border border-white/[0.08] bg-black/20 text-[9px] font-black text-gray-600">
- <span>⌘</span>
- <span>K</span>
- </div>
- )}
- </motion.div>
+  <div ref={containerRef} className="relative z-[100]">
+  <motion.div
+  animate={{ width: isFocused ? 360 : 280 }}
+  className={cn(
+  'flex items-center gap-2 px-4 py-2.5 rounded-none transition-all border',
+  isFocused
+  ? 'bg-white border-emerald-500 text-gray-900 shadow-md ring-4 ring-emerald-500/10 dark:bg-black dark:border-emerald-500 dark:text-gray-100 dark:ring-emerald-500/20'
+  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 shadow-sm dark:bg-black/50 dark:border-white/[0.08] dark:text-gray-400 dark:hover:bg-white/5'
+  )}
+  >
+  <Search
+  size={16}
+  className={cn('transition-colors', isFocused ? 'text-emerald-600 dark:text-emerald-500' : 'text-gray-400 dark:text-gray-500')}
+  />
+  <input
+  type="text"
+  value={query}
+  onChange={(e) => setQuery(e.target.value)}
+  onFocus={() => setIsFocused(true)}
+  placeholder="SEARCH SYSTEM..."
+  className="bg-transparent border-none text-[12px] font-black uppercase tracking-widest flex-1 placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:ring-0 rounded-none px-1"
+  />
+  {query && (
+  <button onClick={() => setQuery('')} className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-none transition-colors">
+  <X size={14} className="text-gray-500" />
+  </button>
+  )}
+  {!isFocused && !query && (
+  <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-none border border-gray-200 dark:border-white/[0.08] bg-gray-50 dark:bg-black/40 text-[9px] font-black text-gray-500 dark:text-gray-500">
+  <span>⌘</span>
+  <span>K</span>
+  </div>
+  )}
+  </motion.div>
 
- <AnimatePresence>
- {isFocused && (query.length > 0 || results.length > 0) && (
- <motion.div
- initial={{ opacity: 0, y: 5, scale: 0.99 }}
- animate={{ opacity: 1, y: 0, scale: 1 }}
- exit={{ opacity: 0, y: 5, scale: 0.99 }}
- className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-none shadow-2xl overflow-hidden flex flex-col text-black"
- >
- <div className="max-h-[400px] overflow-y-auto p-3 no-scrollbar">
- {results.length > 0 && (
- <div className="space-y-1">
- <div className="px-3 py-1.5 text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 ">
- Database Nodes
- </div>
- {results.map((res: any) => (
- <button
- key={res.id}
- onClick={() => handleSelect(`/collections/${res.collection}/${res.id}`)}
- className="w-full flex items-center gap-3 p-2.5 rounded-none hover:bg-gray-50 transition-all text-left group"
- >
- <div className="w-7 h-7 rounded-none bg-emerald-50 flex items-center justify-center text-emerald-600 dark:text-emerald-500 flex-shrink-0">
- <FileText size={14} />
- </div>
- <div className="flex flex-col min-w-0">
- <span className="text-[11px] font-black uppercase tracking-tight truncate">
- {highlightMatch(res.title, query)}
- </span>
- <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">
- {res.collectionLabel}
- </span>
- </div>
- </button>
- ))}
- </div>
- )}
+  <AnimatePresence>
+  {isFocused && (query.length > 0 || results.length > 0) && (
+  <motion.div
+  initial={{ opacity: 0, y: 10, scale: 0.98 }}
+  animate={{ opacity: 1, y: 0, scale: 1 }}
+  exit={{ opacity: 0, y: 10, scale: 0.98 }}
+  transition={{ duration: 0.2, ease: "easeOut" }}
+  className="absolute top-full left-0 right-0 mt-3 bg-white border border-gray-200 dark:bg-[#0a0a0a] dark:border-white/[0.08] rounded-none shadow-2xl overflow-hidden flex flex-col text-gray-900 dark:text-gray-100"
+  >
+  <div className="max-h-[400px] overflow-y-auto p-2 no-scrollbar">
+  {results.length > 0 && (
+  <div className="space-y-0.5 mb-2">
+  <div className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
+  Database Nodes
+  </div>
+  {results.map((res: any) => (
+  <button
+  key={res.id}
+  onClick={() => handleSelect(`/collections/${res.collection}/${res.id}`)}
+  className="w-full flex items-center gap-3 p-2.5 rounded-none hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-left group"
+  >
+  <div className="w-8 h-8 rounded-none bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-500 flex-shrink-0 border border-emerald-100 dark:border-emerald-500/20 group-hover:scale-105 transition-transform">
+  <FileText size={14} />
+  </div>
+  <div className="flex flex-col min-w-0">
+  <span className="text-[12px] font-black uppercase tracking-tight truncate text-gray-900 dark:text-gray-100">
+  {highlightMatch(res.title, query)}
+  </span>
+  <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+  {res.collectionLabel}
+  </span>
+  </div>
+  </button>
+  ))}
+  </div>
+  )}
 
- {/* System Protocols & Settings Deep Search */}
- <div className="mt-1 pt-1 border-t border-gray-200 shadow-sm space-y-1">
- <div className="px-3 py-1.5 text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 ">
- System Protocols
- </div>
- {(() => {
- if (
- results.length === 0 &&
- filteredCommands.length === 0 &&
- query.length >= 2 &&
- !isSearching
- ) {
- return (
- <div className="py-8 text-center">
- <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">
- No matching records found
- </span>
- </div>
- )
- }
+  {/* System Protocols & Settings Deep Search */}
+  <div className="pt-2 border-t border-gray-100 dark:border-white/[0.05] space-y-0.5">
+  <div className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
+  System Protocols
+  </div>
+  {(() => {
+  if (
+  results.length === 0 &&
+  filteredCommands.length === 0 &&
+  query.length >= 2 &&
+  !isSearching
+  ) {
+  return (
+  <div className="py-10 text-center flex flex-col items-center justify-center gap-2">
+  <Search size={20} className="text-gray-300 dark:text-gray-700" />
+  <span className="text-[11px] font-black uppercase text-gray-400 dark:text-gray-600 tracking-widest">
+  No matching records found
+  </span>
+  </div>
+  )
+  }
 
- return filteredCommands.map((cmd) => (
- <button
- key={cmd.label}
- onClick={() => handleSelect(cmd.path)}
- className="w-full flex items-center gap-3 p-2.5 rounded-none hover:bg-gray-50 transition-all text-left group"
- >
- <div className="w-7 h-7 rounded-none bg-gray-100 flex items-center justify-center text-gray-500 flex-shrink-0 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
- <cmd.icon size={14} />
- </div>
- <div className="flex flex-col min-w-0">
- <span className="text-[11px] font-black uppercase tracking-tight truncate">
- {highlightMatch(cmd.label, query)}
- </span>
- <span className="text-[7px] font-bold text-gray-400 uppercase tracking-widest truncate">
- {highlightMatch(cmd.sub, query)}
- </span>
- </div>
- </button>
- ))
- })()}
- </div>
- </div>
+  return filteredCommands.map((cmd) => (
+  <button
+  key={cmd.label}
+  onClick={() => handleSelect(cmd.path)}
+  className="w-full flex items-center gap-3 p-2.5 rounded-none hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-left group"
+  >
+  <div className="w-8 h-8 rounded-none bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-500 dark:text-gray-400 flex-shrink-0 group-hover:bg-emerald-500 group-hover:text-white dark:group-hover:bg-emerald-500 dark:group-hover:text-white transition-all group-hover:scale-105 border border-transparent dark:border-white/[0.05]">
+  <cmd.icon size={14} />
+  </div>
+  <div className="flex flex-col min-w-0">
+  <span className="text-[12px] font-black uppercase tracking-tight truncate text-gray-900 dark:text-gray-100">
+  {highlightMatch(cmd.label, query)}
+  </span>
+  <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest truncate">
+  {highlightMatch(cmd.sub, query)}
+  </span>
+  </div>
+  </button>
+  ))
+  })()}
+  </div>
+  </div>
 
- <div className="px-4 py-2 bg-gray-900 border-t border-white/[0.08] flex items-center justify-between">
- <span className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-500 ">
- Core_Intelligence_Stream
- </span>
- <div className="flex items-center gap-2">
- <div className="w-1 h-1 bg-emerald-500 rounded-none animate-pulse" />
- <span className="text-[8px] font-black uppercase text-emerald-600 dark:text-emerald-500 ">
- Sync_Active
- </span>
- </div>
- </div>
- </motion.div>
+  <div className="px-4 py-2.5 bg-gray-50 dark:bg-black border-t border-gray-200 dark:border-white/[0.08] flex items-center justify-between">
+  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 dark:text-gray-500">
+  Core_Intelligence_Stream
+  </span>
+  <div className="flex items-center gap-2">
+  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-none animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+  <span className="text-[9px] font-black uppercase text-emerald-600 dark:text-emerald-500">
+  Sync_Active
+  </span>
+  </div>
+  </div>
+  </motion.div>
  )}
  </AnimatePresence>
  </div>
