@@ -97,7 +97,7 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
  onClick={() => setEditItemId(item._id)}
  className="flex items-center gap-3 px-4 py-2 bg-emerald-50/30 border border-emerald-100 rounded-none group transition-all hover:border-emerald-300 cursor-pointer hover:bg-emerald-50"
  >
- <Link2 size={12} className="text-emerald-500" />
+ <Link2 size={12} className="text-emerald-600 dark:text-emerald-500" />
  <span className="text-[11px] font-bold text-gray-700">{getDisplayValue(item)}</span>
  {!disabled && (
  <button
@@ -117,7 +117,7 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
  <button
  type="button"
  onClick={() => setIsOpen(true)}
- className="flex items-center gap-2.5 px-4 py-2 rounded-none border-2 border-dashed border-gray-100 text-gray-400 hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50/20 transition-all group"
+ className="flex items-center gap-2.5 px-4 py-2 rounded-none border-2 border-dashed border-gray-200 shadow-sm text-gray-400 hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50/20 transition-all group"
  >
  <Plus size={14} strokeWidth={3} />
  <span className="text-[9px] font-black uppercase tracking-widest ">
@@ -148,11 +148,11 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
  initial={{ opacity: 0, scale: 0.98, y: 10 }}
  animate={{ opacity: 1, scale: 1, y: 0 }}
  exit={{ opacity: 0, scale: 0.98, y: 10 }}
- className="bg-white border border-gray-100 rounded-none w-full max-w-2xl h-[70vh] flex flex-col shadow-2xl overflow-hidden"
+ className="bg-white border border-gray-200 shadow-sm rounded-none w-full max-w-2xl h-[70vh] flex flex-col shadow-2xl overflow-hidden"
  >
  <div className="p-8 border-b border-gray-50 flex items-center justify-between">
  <div className="flex items-center gap-4">
- <div className="w-10 h-10 bg-emerald-600 rounded-none flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+ <div className="w-10 h-10 bg-emerald-600 dark:bg-emerald-600 rounded-none flex items-center justify-center text-white shadow-lg shadow-emerald-200">
  <Database size={20} />
  </div>
  <div className="flex flex-col">
@@ -183,14 +183,14 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
  placeholder="Search records..."
  value={search}
  onChange={(e) => setSearch(e.target.value)}
- className="w-full bg-gray-50 border border-gray-100 rounded-none pl-12 pr-4 py-3 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:bg-white focus:ring-4 focus:ring-emerald-50"
+ className="w-full bg-gray-50 border border-gray-200 shadow-sm rounded-none pl-12 pr-4 py-3 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:bg-white focus:ring-4 focus:ring-emerald-50"
  />
  </div>
 
  <div className="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
  {loading ? (
  <div className="h-full flex flex-col items-center justify-center gap-4">
- <Loader2 className="animate-spin text-emerald-500" size={24} />
+ <Loader2 className="animate-spin text-emerald-600 dark:text-emerald-500" size={24} />
  <span className="text-[9px] font-black uppercase tracking-widest text-gray-300 animate-pulse">
  Syncing_Records...
  </span>
@@ -216,7 +216,7 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
  className={cn(
  'flex items-center justify-between p-4 rounded-none border transition-all cursor-pointer group',
  isSelected
- ? 'bg-emerald-600 border-emerald-600 text-white shadow-xl shadow-emerald-200'
+ ? 'bg-emerald-600 dark:bg-emerald-600 border-emerald-600 text-white shadow-xl shadow-emerald-200'
  : 'bg-white border-gray-50 hover:border-emerald-100 hover:bg-emerald-50/10'
  )}
  >

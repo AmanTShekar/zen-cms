@@ -55,17 +55,17 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  <div
  className={cn(
  'p-6 border-b flex items-center justify-between',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center gap-3">
- <div className="w-8 h-8 rounded-none bg-emerald-600 flex items-center justify-center text-white">
+ <div className="w-8 h-8 rounded-none bg-emerald-600 dark:bg-emerald-600 flex items-center justify-center text-white">
  <Layout size={16} />
  </div>
  <div>
  <h3
  id={modalTitleId}
- className="text-lg font-black uppercase leading-none text-emerald-500"
+ className="text-lg font-black uppercase leading-none text-emerald-600 dark:text-emerald-500"
  >
  Block Templates
  </h3>
@@ -77,7 +77,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  <button
  onClick={() => setTemplatesOpen(false)}
  aria-label="Close"
- className="p-1 hover:text-emerald-500 transition-colors"
+ className="p-1 hover:text-emerald-600 dark:text-emerald-500 transition-colors"
  style={{ color: theme === 'dark' ? '#fff' : '#000' }}
  >
  <X size={18} />
@@ -108,7 +108,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  )}
  >
  <div className="flex items-center justify-between">
- <span className="text-xs font-black uppercase text-emerald-400">
+ <span className="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400">
  {template.name}
  </span>
  <span className="text-xs text-gray-500">
@@ -118,7 +118,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  <div className="flex gap-2">
  <button
  onClick={() => applyTemplate(template)}
- className="flex-1 py-2 bg-emerald-600 text-white text-xs font-black uppercase rounded-none hover:bg-emerald-500 transition-colors"
+ className="flex-1 py-2 bg-emerald-600 dark:bg-emerald-600 text-white text-xs font-black uppercase rounded-none hover:bg-emerald-500 transition-colors"
  >
  Apply
  </button>
@@ -149,7 +149,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  {selectedSections.size > 0 && (
  <div className={cn(
  'p-4 border-t flex items-center justify-between',
- theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-100 bg-gray-50/50'
+ theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-200 shadow-sm bg-gray-50/50'
  )}>
  <span className="text-xs text-gray-500 font-black uppercase tracking-widest ">
  {selectedSections.size} block{selectedSections.size > 1 ? 's' : ''} selected
@@ -160,7 +160,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  setSelectedSections(new Set())
  }}
  aria-label="Save selection as template"
- className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-xs font-black uppercase rounded-none hover:bg-emerald-500 transition-colors"
+ className="flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-emerald-600 text-white text-xs font-black uppercase rounded-none hover:bg-emerald-500 transition-colors"
  >
  <Download size={12} aria-hidden="true" />
  Save as Template

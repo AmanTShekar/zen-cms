@@ -46,7 +46,7 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  <div className="mt-12 pt-12 border-t border-white/[0.08] space-y-8">
  <div className="flex flex-col gap-2">
  <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-3">
- <Terminal className="text-emerald-500" size={24} />
+ <Terminal className="text-emerald-600 dark:text-emerald-500" size={24} />
  Developer Integration Guide
  </h3>
  <p className="text-[12px] text-gray-500 font-bold uppercase tracking-widest max-w-2xl">
@@ -62,7 +62,7 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
  <Server size={48} />
  </div>
- <div className="w-10 h-10 bg-emerald-500/20 text-emerald-500 flex items-center justify-center rounded-none mb-4 font-black">1</div>
+ <div className="w-10 h-10 bg-emerald-500/20 text-emerald-600 dark:text-emerald-500 flex items-center justify-center rounded-none mb-4 font-black">1</div>
  <h4 className="text-[14px] font-black uppercase mb-2">Generate a Key</h4>
  <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
  Create an API key above. Make sure to copy the secret key immediately, as it will only be shown once for security reasons.
@@ -76,10 +76,10 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
  <Info size={48} />
  </div>
- <div className="w-10 h-10 bg-emerald-500/20 text-emerald-500 flex items-center justify-center rounded-none mb-4 font-black">2</div>
+ <div className="w-10 h-10 bg-emerald-500/20 text-emerald-600 dark:text-emerald-500 flex items-center justify-center rounded-none mb-4 font-black">2</div>
  <h4 className="text-[14px] font-black uppercase mb-2">Site Identification</h4>
  <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
- Include the <strong>X-Zenith-Site-Id</strong> header in all your requests. Your current site ID is <code className="bg-black/20 px-1 py-0.5 rounded text-emerald-500">{activeSiteId}</code>.
+ Include the <strong>X-Zenith-Site-Id</strong> header in all your requests. Your current site ID is <code className="bg-black/20 px-1 py-0.5 rounded text-emerald-600 dark:text-emerald-500">{activeSiteId}</code>.
  </p>
  </div>
 
@@ -90,7 +90,7 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
  <Database size={48} />
  </div>
- <div className="w-10 h-10 bg-emerald-500/20 text-emerald-500 flex items-center justify-center rounded-none mb-4 font-black">3</div>
+ <div className="w-10 h-10 bg-emerald-500/20 text-emerald-600 dark:text-emerald-500 flex items-center justify-center rounded-none mb-4 font-black">3</div>
  <h4 className="text-[14px] font-black uppercase mb-2">Fetch Collections</h4>
  <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
  Query the endpoints to retrieve your data. Replace <code>posts</code> in the URL with the name of your specific collection.
@@ -111,7 +111,7 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  className={cn(
  "px-4 py-1.5 text-[11px] font-black uppercase tracking-wider rounded-none transition-all",
  activeLang === lang 
- ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" 
+ ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30" 
  : "text-gray-500 hover:text-gray-300 border border-transparent"
  )}
  >
@@ -123,7 +123,7 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  onClick={handleCopy}
  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-[11px] font-bold uppercase"
  >
- {copied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+ {copied ? <Check size={14} className="text-emerald-600 dark:text-emerald-500" /> : <Copy size={14} />}
  {copied ? 'Copied!' : 'Copy Code'}
  </button>
  </div>
@@ -145,7 +145,7 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  "p-6 border-l-4 border-emerald-500 bg-emerald-500/5 mt-6",
  theme === 'dark' ? "text-emerald-100" : "text-gray-800"
  )}>
- <h4 className="flex items-center gap-2 text-[14px] font-black uppercase mb-2 text-emerald-500">
+ <h4 className="flex items-center gap-2 text-[14px] font-black uppercase mb-2 text-emerald-600 dark:text-emerald-500">
  <Sparkles size={16} />
  Pro Tip for Next.js / React Users
  </h4>

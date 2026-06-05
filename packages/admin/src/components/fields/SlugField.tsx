@@ -53,7 +53,7 @@ const SlugField: React.FC<SlugFieldProps> = ({ value, onChange, disabled, source
  onClick={handleGenerate}
  disabled={disabled}
  title={`Generate from ${sourceField}`}
- className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-emerald-400 disabled:opacity-30 transition-colors"
+ className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-emerald-600 dark:text-emerald-400 disabled:opacity-30 transition-colors"
  >
  <RefreshCw size={13} />
  </button>

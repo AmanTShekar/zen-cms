@@ -67,7 +67,7 @@ const GlobalSearch: React.FC = () => {
  part.toLowerCase() === match.toLowerCase() ? (
  <span
  key={i}
- className="text-emerald-500 font-black underline decoration-2 underline-offset-2"
+ className="text-emerald-600 dark:text-emerald-500 font-black underline decoration-2 underline-offset-2"
  >
  {part}
  </span>
@@ -120,7 +120,7 @@ const GlobalSearch: React.FC = () => {
  >
  <Search
  size={18}
- className={cn('transition-colors', isFocused ? 'text-emerald-500' : 'text-gray-500')}
+ className={cn('transition-colors', isFocused ? 'text-emerald-600 dark:text-emerald-500' : 'text-gray-500')}
  />
  <input
  type="text"
@@ -163,7 +163,7 @@ const GlobalSearch: React.FC = () => {
  onClick={() => handleSelect(`/collections/${res.collection}/${res.id}`)}
  className="w-full flex items-center gap-3 p-2.5 rounded-none hover:bg-gray-50 transition-all text-left group"
  >
- <div className="w-7 h-7 rounded-none bg-emerald-50 flex items-center justify-center text-emerald-500 flex-shrink-0">
+ <div className="w-7 h-7 rounded-none bg-emerald-50 flex items-center justify-center text-emerald-600 dark:text-emerald-500 flex-shrink-0">
  <FileText size={14} />
  </div>
  <div className="flex flex-col min-w-0">
@@ -180,7 +180,7 @@ const GlobalSearch: React.FC = () => {
  )}
 
  {/* System Protocols & Settings Deep Search */}
- <div className="mt-1 pt-1 border-t border-gray-100 space-y-1">
+ <div className="mt-1 pt-1 border-t border-gray-200 shadow-sm space-y-1">
  <div className="px-3 py-1.5 text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 ">
  System Protocols
  </div>
@@ -229,7 +229,7 @@ const GlobalSearch: React.FC = () => {
  </span>
  <div className="flex items-center gap-2">
  <div className="w-1 h-1 bg-emerald-500 rounded-none animate-pulse" />
- <span className="text-[8px] font-black uppercase text-emerald-500 ">
+ <span className="text-[8px] font-black uppercase text-emerald-600 dark:text-emerald-500 ">
  Sync_Active
  </span>
  </div>

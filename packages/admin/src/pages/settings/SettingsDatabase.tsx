@@ -58,19 +58,19 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
  label: 'Cluster Scale',
  value: `${sizeMB} MB`,
  icon: HardDrive,
- color: 'text-emerald-500',
+ color: 'text-emerald-600 dark:text-emerald-500',
  },
  {
  label: 'Registry Map',
  value: String(collections),
  icon: Layers,
- color: 'text-emerald-500',
+ color: 'text-emerald-600 dark:text-emerald-500',
  },
  {
  label: 'Pulse Health',
  value: 'OPTIMAL',
  icon: Activity,
- color: 'text-emerald-500',
+ color: 'text-emerald-600 dark:text-emerald-500',
  },
  ]
 
@@ -85,7 +85,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
  'p-8 border rounded-none flex flex-col gap-6 relative overflow-hidden group transition-all',
  theme === 'dark'
  ? 'bg-white/[0.01] border-white/[0.08] hover:border-emerald-500/20'
- : 'bg-gray-50 border-gray-100 shadow-sm'
+ : 'bg-gray-50 border-gray-200 shadow-sm shadow-sm'
  )}
  >
  <div className="flex items-center justify-between">
@@ -95,7 +95,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
  theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-white'
  )}
  >
- <stat.icon size={22} className="text-gray-400 group-hover:text-emerald-500 transition-colors" />
+ <stat.icon size={22} className="text-gray-400 group-hover:text-emerald-600 dark:text-emerald-500 transition-colors" />
  </div>
  <span className={cn('text-[10px] font-black uppercase tracking-widest ', stat.color)}>
  Synchronized
@@ -119,7 +119,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
  'p-6 border rounded-none',
  theme === 'dark'
  ? 'bg-white/[0.01] border-white/[0.08]'
- : 'bg-gray-50 border-gray-100'
+ : 'bg-gray-50 border-gray-200 shadow-sm'
  )}
  >
  <p className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 mb-4">
@@ -156,7 +156,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
  className={cn(
  'px-4 py-3 text-[9px] font-black uppercase border rounded-none transition-all',
  dbDialect === d
- ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
+ ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
  : theme === 'dark'
  ? 'border-white/[0.08] text-gray-500'
  : 'border-gray-200 text-gray-400'
@@ -207,7 +207,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
  <button
  onClick={handleMediaSweep}
  disabled={sweeping}
- className="flex items-center gap-3 px-8 py-4 rounded-none bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-[10px] font-black uppercase hover:bg-emerald-500/20 transition-all active:scale-95 disabled:opacity-40"
+ className="flex items-center gap-3 px-8 py-4 rounded-none bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border border-emerald-500/20 text-[10px] font-black uppercase hover:bg-emerald-500/20 transition-all active:scale-95 disabled:opacity-40"
  >
  {sweeping ? <Loader2 size={14} className="animate-spin" /> : <Scan size={14} />}
  Sweep Orphan Media

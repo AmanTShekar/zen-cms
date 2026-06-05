@@ -73,12 +73,12 @@ export default function MediaGridWidget({ theme, title }: WidgetProps) {
  return (
  <div className="h-full flex flex-col gap-3">
  <div className="flex items-center justify-between">
- <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest ">
+ <p className="text-[9px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest ">
  {title || 'Media Library'}
  </p>
  <button
  onClick={() => navigate('/media')}
- className="text-[8px] text-gray-500 hover:text-emerald-500 uppercase font-black transition-colors"
+ className="text-[8px] text-gray-500 hover:text-emerald-600 dark:text-emerald-500 uppercase font-black transition-colors"
  >
  View All
  </button>

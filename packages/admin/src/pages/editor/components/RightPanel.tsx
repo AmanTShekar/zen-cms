@@ -131,7 +131,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  <div
  className={cn(
  'px-3 py-2 border-b flex items-center justify-between shrink-0',
- dark ? 'border-white/[0.08]' : 'border-gray-100'
+ dark ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center gap-4">
@@ -149,7 +149,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  className={cn(
  'text-xs font-black uppercase tracking-[0.2em] ',
  activeRightTab === tab.id
- ? dark ? 'text-emerald-400' : 'text-emerald-600'
+ ? dark ? 'text-emerald-600 dark:text-emerald-400' : 'text-emerald-600'
  : dark ? 'text-white' : 'text-black'
  )}
  >
@@ -164,7 +164,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  </button>
  ))}
  </div>
- <button onClick={() => setRightOpen(false)} className="p-1 hover:text-emerald-500 transition-colors" aria-label="Close panel">
+ <button onClick={() => setRightOpen(false)} className="p-1 hover:text-emerald-600 dark:text-emerald-500 transition-colors" aria-label="Close panel">
  <X size={16} />
  </button>
  </div>
@@ -176,7 +176,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  {/* Viewport size toggles */}
  <div className={cn(
  'flex items-center justify-center gap-1 px-3 py-2 border-b shrink-0',
- dark ? 'border-white/[0.08]' : 'border-gray-100'
+ dark ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  {(['desktop', 'tablet', 'mobile'] as const).map((vp) => {
  const vpConfig = VIEWPORT_SIZES[vp]
@@ -190,7 +190,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  'flex items-center gap-1.5 px-2.5 py-1 rounded-none border text-[10px] font-black uppercase tracking-wider transition-all',
  isActive
  ? dark
- ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+ ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
  : 'bg-emerald-50 border-emerald-200 text-emerald-600'
  : dark
  ? 'bg-white/5 border-white/[0.08] text-gray-500 hover:text-gray-300'
@@ -308,7 +308,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  </button>
  <button
  onClick={(e) => { e.stopPropagation(); handleRestore(v._id) }}
- className="flex-1 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black uppercase tracking-widest text-center transition-all"
+ className="flex-1 py-1 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black uppercase tracking-widest text-center transition-all"
  >
  Restore
  </button>

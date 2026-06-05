@@ -138,7 +138,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  className={cn(
  'px-4 py-2 text-[9px] font-black uppercase tracking-widest border-b-2 -mb-px transition-all',
  tab === t.id
- ? 'border-emerald-500 text-emerald-400'
+ ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400'
  : 'border-transparent text-gray-500 hover:text-gray-300'
  )}
  >
@@ -162,7 +162,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  className={cn(
  'absolute top-3 right-3 p-2 border rounded-none text-[9px] font-black uppercase transition-all',
  copied
- ? 'border-emerald-500 text-emerald-500 bg-emerald-500/10'
+ ? 'border-emerald-500 text-emerald-600 dark:text-emerald-500 bg-emerald-500/10'
  : 'border-white/[0.08] text-gray-400 hover:border-white/30 bg-black/40'
  )}
  >
@@ -178,7 +178,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  className={cn(
  'flex items-center gap-2 px-5 py-2.5 border text-[9px] font-black uppercase rounded-none transition-all',
  isDark
- ? 'border-white/[0.08] text-gray-400 hover:border-emerald-500/40 hover:text-emerald-400'
+ ? 'border-white/[0.08] text-gray-400 hover:border-emerald-500/40 hover:text-emerald-600 dark:text-emerald-400'
  : 'border-gray-200 text-gray-600 hover:border-emerald-300'
  )}
  >
@@ -187,7 +187,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  </button>
 
  {testResult === 'ok' && (
- <span className="flex items-center gap-2 text-[9px] font-black uppercase text-emerald-500">
+ <span className="flex items-center gap-2 text-[9px] font-black uppercase text-emerald-600 dark:text-emerald-500">
  <CheckCircle2 size={13} /> Connected successfully
  </span>
  )}

@@ -67,7 +67,7 @@ function ToolbarButton({ onClick, isActive, disabled, title, children }: Toolbar
  'w-9 h-9 flex items-center justify-center transition-all relative active:scale-90',
  isActive
  ? theme === 'dark'
- ? 'bg-emerald-500/20 text-emerald-400'
+ ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
  : 'bg-emerald-50 text-emerald-600'
  : theme === 'dark'
  ? 'text-gray-500 hover:bg-white/5 hover:text-white'
@@ -143,7 +143,7 @@ function BlockTypeDropdown({ blockType, onBlockTypeChange }: {
  'w-full text-left px-3 py-2 text-[10px] font-black uppercase transition-all',
  blockType === opt.value
  ? theme === 'dark'
- ? 'text-emerald-400 bg-emerald-500/10'
+ ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10'
  : 'text-emerald-600 bg-emerald-50'
  : theme === 'dark'
  ? 'text-gray-400 hover:bg-white/5 hover:text-white'
@@ -286,7 +286,7 @@ export function Toolbar({ disabled }: { disabled?: boolean }) {
  'flex items-center h-12 border-b px-3 gap-0.5 backdrop-blur-xl z-[100] flex-wrap',
  theme === 'dark'
  ? 'bg-black/60 border-white/[0.08]'
- : 'bg-white/95 border-gray-100 shadow-sm',
+ : 'bg-white/95 border-gray-200 shadow-sm shadow-sm',
  disabled && 'opacity-50 pointer-events-none',
  )}
  >

@@ -114,11 +114,11 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  {/* Header */}
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2.5">
- <Layers size={16} strokeWidth={2} className="text-emerald-500" />
+ <Layers size={16} strokeWidth={2} className="text-emerald-600 dark:text-emerald-500" />
  <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">
  {label}
  </span>
- <span className="px-1.5 py-0.5 text-[9px] font-black bg-emerald-500/15 text-emerald-500 border border-emerald-500/25 rounded-none">
+ <span className="px-1.5 py-0.5 text-[9px] font-black bg-emerald-500/15 text-emerald-600 dark:text-emerald-500 border border-emerald-500/25 rounded-none">
  {value.length}
  </span>
  </div>
@@ -135,7 +135,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  <button
  type="button"
  onClick={addItem}
- className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider hover:bg-emerald-500 transition-all shadow-sm shadow-emerald-900/20 rounded-none"
+ className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 dark:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider hover:bg-emerald-500 transition-all shadow-sm shadow-emerald-900/20 rounded-none"
  >
  <Plus size={11} strokeWidth={2} /> Add Component
  </button>
@@ -182,7 +182,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-none flex items-center justify-center text-[8px] font-black border z-10 transition-all',
  isExpanded
  ? 'bg-emerald-500 text-white border-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]'
- : 'bg-app text-gray-400 border-border group-hover:border-emerald-500/40 group-hover:text-emerald-500'
+ : 'bg-app text-gray-400 border-border group-hover:border-emerald-500/40 group-hover:text-emerald-600 dark:text-emerald-500'
  )}>
  {index + 1}
  </div>
@@ -213,7 +213,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  <>
  <button type="button" onClick={() => moveItem(index, 'up')} disabled={index === 0} title="Move Up" className="p-1.5 text-gray-400 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowUp size={11} /></button>
  <button type="button" onClick={() => moveItem(index, 'down')} disabled={index === items.length - 1} title="Move Down" className="p-1.5 text-gray-400 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowDown size={11} /></button>
- <button type="button" onClick={() => duplicateItem(index)} title="Duplicate" className="p-1.5 text-gray-400 hover:text-emerald-500 transition-colors"><Copy size={11} /></button>
+ <button type="button" onClick={() => duplicateItem(index)} title="Duplicate" className="p-1.5 text-gray-400 hover:text-emerald-600 dark:text-emerald-500 transition-colors"><Copy size={11} /></button>
  <button type="button" onClick={() => removeItem(index)} title="Remove" className="p-1.5 text-gray-400 hover:text-danger transition-colors"><Trash2 size={11} /></button>
  </>
  )}
@@ -265,7 +265,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  layout
  type="button"
  onClick={addItem}
- className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-gray-400/60 text-[10px] font-black uppercase tracking-wider hover:border-emerald-500/50 hover:text-emerald-500 hover:bg-emerald-500/5 transition-all rounded-none"
+ className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-gray-400/60 text-[10px] font-black uppercase tracking-wider hover:border-emerald-500/50 hover:text-emerald-600 dark:text-emerald-500 hover:bg-emerald-500/5 transition-all rounded-none"
  >
  <Plus size={11} strokeWidth={2} /> Add {label}
  </motion.button>

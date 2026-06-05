@@ -135,16 +135,16 @@ export const RelationsModal: React.FC = () => {
  {/* Header */}
  <div className={cn(
  'p-6 border-b flex items-start justify-between shrink-0',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-none bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
- <Link2 size={18} className="text-emerald-400" />
+ <Link2 size={18} className="text-emerald-600 dark:text-emerald-400" />
  </div>
  <div>
  <h2
  id={modalTitleId}
- className="text-lg font-black uppercase text-emerald-400"
+ className="text-lg font-black uppercase text-emerald-600 dark:text-emerald-400"
  >
  Content Relations
  </h2>
@@ -175,7 +175,7 @@ export const RelationsModal: React.FC = () => {
  {/* Collection Selector */}
  <div className={cn(
  'p-4 border-b flex gap-2 overflow-x-auto',
- theme === 'dark' ? 'border-white/[0.08] bg-white/[0.01]' : 'border-gray-100 bg-gray-55'
+ theme === 'dark' ? 'border-white/[0.08] bg-white/[0.01]' : 'border-gray-200 shadow-sm bg-gray-55'
  )}>
  {availableCollections.map((col) => {
  const isActive = activeCollection === col.slug
@@ -187,10 +187,10 @@ export const RelationsModal: React.FC = () => {
  'px-3 py-1.5 text-xs font-black uppercase rounded-none border shrink-0 transition-all',
  isActive
  ? theme === 'dark'
- ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+ ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
  : 'bg-emerald-50 border-emerald-300 text-emerald-600'
  : theme === 'dark'
- ? 'border-white/[0.08] text-gray-400 hover:border-emerald-500/30 hover:text-emerald-400'
+ ? 'border-white/[0.08] text-gray-400 hover:border-emerald-500/30 hover:text-emerald-600 dark:text-emerald-400'
  : 'border-gray-200 text-gray-600 hover:border-emerald-300 hover:text-emerald-600'
  )}
  >
@@ -256,7 +256,7 @@ export const RelationsModal: React.FC = () => {
  <div className={cn(
  'w-5 h-5 rounded-none border-2 flex items-center justify-center shrink-0 transition-all',
  selectedRelations.has(item.id || item._id)
- ? 'bg-emerald-600 border-emerald-600'
+ ? 'bg-emerald-600 dark:bg-emerald-600 border-emerald-600'
  : theme === 'dark'
  ? 'border-white/[0.08]'
  : 'border-gray-300'
@@ -283,7 +283,7 @@ export const RelationsModal: React.FC = () => {
  {/* Footer */}
  <div className={cn(
  'p-4 border-t flex items-center justify-between',
- theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-100 bg-gray-50'
+ theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-200 shadow-sm bg-gray-50'
  )}>
  <span className="text-xs text-gray-500 font-bold ">
  Click entries to select/deselect for relation
@@ -303,7 +303,7 @@ export const RelationsModal: React.FC = () => {
  <button
  onClick={applyRelations}
  disabled={selectedRelations.size === 0}
- className="px-4 py-2 bg-emerald-600 text-white text-xs font-black uppercase rounded-none hover:bg-emerald-500 transition-all disabled:opacity-50"
+ className="px-4 py-2 bg-emerald-600 dark:bg-emerald-600 text-white text-xs font-black uppercase rounded-none hover:bg-emerald-500 transition-all disabled:opacity-50"
  >
  Link {selectedRelations.size} items
  </button>

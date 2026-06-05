@@ -57,7 +57,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
  'p-5 rounded-none border flex items-center justify-between transition-all group col-span-1 md:col-span-2',
  theme === 'dark'
  ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20'
- : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+ : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
  )}
  >
  <div className="flex flex-col">
@@ -82,7 +82,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -107,7 +107,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -129,11 +129,11 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
  <div
  className={cn(
  'col-span-1 md:col-span-2 p-6 rounded-none border transition-all space-y-6',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/50 border-gray-100'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/50 border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center gap-4 border-b border-gray-200 dark:border-white/[0.08] pb-5">
- <div className="p-3 bg-emerald-500/10 text-emerald-500 rounded-none">
+ <div className="p-3 bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 rounded-none">
  {enabled ? <ShieldCheck size={24} /> : <ShieldAlert size={24} />}
  </div>
  <div>
@@ -143,18 +143,18 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
  </div>
 
  {enabled ? (
- <div className="text-sm font-semibold text-emerald-500 flex items-center gap-2">
+ <div className="text-sm font-semibold text-emerald-600 dark:text-emerald-500 flex items-center gap-2">
  <ShieldCheck size={18} /> 2FA is Active
  </div>
  ) : setupState === 'idle' ? (
  <button
  onClick={handleSetup}
- className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none transition-colors flex items-center gap-2"
+ className="px-6 py-2.5 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-none transition-colors flex items-center gap-2"
  >
  Configure 2FA
  </button>
  ) : setupState === 'loading' ? (
- <Loader2 className="animate-spin text-emerald-500" size={24} />
+ <Loader2 className="animate-spin text-emerald-600 dark:text-emerald-500" size={24} />
  ) : (
  <div className="space-y-4">
  <p className="text-xs font-medium text-gray-400">1. Scan the QR code with your authenticator app.</p>
@@ -177,7 +177,7 @@ const SettingsSecurity: React.FC<SettingsSecurityProps> = ({ settings, setSettin
  <button
  onClick={handleVerify}
  disabled={token.length !== 6 || verifying}
- className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-bold rounded-none transition-colors flex items-center gap-2"
+ className="px-6 py-3 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-bold rounded-none transition-colors flex items-center gap-2"
  >
  {verifying ? <Loader2 size={14} className="animate-spin" /> : 'Verify & Enable'}
  </button>

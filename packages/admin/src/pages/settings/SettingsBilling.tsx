@@ -18,10 +18,10 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  'p-8 rounded-none border text-center space-y-4',
  theme === 'dark'
  ? 'bg-white/[0.01] border-white/[0.08] text-gray-400'
- : 'bg-gray-50 border-gray-100 text-gray-500'
+ : 'bg-gray-50 border-gray-200 shadow-sm text-gray-500'
  )}
  >
- <CreditCard size={48} className="mx-auto text-emerald-500 animate-pulse" />
+ <CreditCard size={48} className="mx-auto text-emerald-600 dark:text-emerald-500 animate-pulse" />
  <h3 className="text-lg font-black uppercase tracking-wider">
  No Active Workspace Selected
  </h3>
@@ -42,12 +42,12 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  'p-6 rounded-none border flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all group',
  theme === 'dark'
  ? 'bg-white/[0.01] border-white/[0.08] hover:border-emerald-500/20'
- : 'bg-white border-gray-100 shadow-sm'
+ : 'bg-white border-gray-200 shadow-sm shadow-sm'
  )}
  >
  <div className="flex flex-col">
  <span className="text-[12px] font-black uppercase leading-none flex items-center gap-2">
- <Sparkles size={14} className="text-emerald-400" />
+ <Sparkles size={14} className="text-emerald-600 dark:text-emerald-400" />
  Enable Custom Pricing Plans & Monetization
  </span>
  <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1.5 leading-relaxed">
@@ -76,7 +76,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  onChange={(e) => setActiveSite({ ...activeSite, billingEnabled: e.target.checked })}
  className="sr-only peer"
  />
- <div className="w-12 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-none after:h-4 after:w-5 after:transition-all peer-checked:bg-emerald-600 shadow-inner border border-white/[0.08]"></div>
+ <div className="w-12 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-none after:h-4 after:w-5 after:transition-all peer-checked:bg-emerald-600 dark:bg-emerald-600 shadow-inner border border-white/[0.08]"></div>
  </label>
  </div>
  </div>
@@ -94,7 +94,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  key={input.field}
  className={cn(
  'p-4 rounded-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50/50 border-gray-100'
+ theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50/50 border-gray-200 shadow-sm'
  )}
  >
  <label className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">
@@ -142,7 +142,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  }
  setActiveSite({ ...activeSite, pricingPlans: [...(activeSite.pricingPlans || []), newPlan] })
  }}
- className="flex items-center gap-2 px-4 py-2 border border-emerald-500/30 hover:border-emerald-500 hover:bg-emerald-500/10 text-[10px] font-black uppercase transition-all text-emerald-400 hover:text-white"
+ className="flex items-center gap-2 px-4 py-2 border border-emerald-500/30 hover:border-emerald-500 hover:bg-emerald-500/10 text-[10px] font-black uppercase transition-all text-emerald-600 dark:text-emerald-400 hover:text-white"
  >
  <PlusCircle size={12} />
  Add Plan
@@ -161,7 +161,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  : 'bg-emerald-50 border-emerald-200'
  : theme === 'dark'
  ? 'bg-white/[0.01] border-white/[0.08]'
- : 'bg-white border-gray-100 shadow-sm'
+ : 'bg-white border-gray-200 shadow-sm shadow-sm'
  )}
  >
  <div className="space-y-4">
@@ -271,7 +271,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  />
  <span className={cn(
  'text-[9px] font-black uppercase tracking-widest transition-colors',
- checked ? 'text-emerald-400' : 'text-gray-500 group-hover:text-gray-400'
+ checked ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 group-hover:text-gray-400'
  )}>
  {col.label || col.slug}
  </span>
@@ -288,7 +288,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  <div className="space-y-1.5">
  {(plan.features || []).map((feat: string, featIdx: number) => (
  <div key={featIdx} className="flex items-center gap-2">
- <span className="text-emerald-500 text-[10px] font-black">•</span>
+ <span className="text-emerald-600 dark:text-emerald-500 text-[10px] font-black">•</span>
  <input
  type="text"
  value={feat}
@@ -326,7 +326,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  plans[planIndex] = { ...plan, features: feats }
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
- className="text-[9px] font-black text-emerald-400 hover:text-emerald-300 uppercase tracking-widest flex items-center gap-1 mt-1 shrink-0"
+ className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 hover:text-emerald-300 uppercase tracking-widest flex items-center gap-1 mt-1 shrink-0"
  >
  <PlusCircleIcon size={10} />
  Add Feature bullet
@@ -349,7 +349,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  }}
  className="sr-only peer"
  />
- <div className="w-9 h-4 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-3 after:w-3.5 after:transition-all peer-checked:bg-emerald-600 shadow-inner border border-white/[0.08]"></div>
+ <div className="w-9 h-4 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-3 after:w-3.5 after:transition-all peer-checked:bg-emerald-600 dark:bg-emerald-600 shadow-inner border border-white/[0.08]"></div>
  </label>
  </div>
  </div>

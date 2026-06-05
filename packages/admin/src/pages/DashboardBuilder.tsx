@@ -129,7 +129,7 @@ function SortableWidget({
  style={widgetStyle}
  className={cn(
  'relative rounded-none border overflow-hidden transition-all duration-200 flex flex-col',
- theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm',
+ theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm',
  isEditing && 'ring-1 ring-inset ring-emerald-500/20',
  isDragging && 'z-50 shadow-2xl shadow-black/40'
  )}
@@ -139,14 +139,14 @@ function SortableWidget({
  <div
  className={cn(
  'absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-3 py-2 border-b',
- theme === 'dark' ? 'bg-[#0d0d0d] border-white/[0.08]' : 'bg-gray-50 border-gray-100'
+ theme === 'dark' ? 'bg-[#0d0d0d] border-white/[0.08]' : 'bg-gray-50 border-gray-200 shadow-sm'
  )}
  >
  {/* Drag handle */}
  <button
  {...attributes}
  {...listeners}
- className="p-1 cursor-grab active:cursor-grabbing text-gray-500 hover:text-emerald-400 transition-colors touch-none"
+ className="p-1 cursor-grab active:cursor-grabbing text-gray-500 hover:text-emerald-600 dark:text-emerald-400 transition-colors touch-none"
  >
  <GripVertical size={14} />
  </button>
@@ -275,7 +275,7 @@ function WidgetPreviewMock({ type, theme }: { type: string; theme: 'dark' | 'lig
  isDark ? 'bg-white/5' : 'bg-emerald-50'
  )}
  >
- <Database size={10} className="text-emerald-500" />
+ <Database size={10} className="text-emerald-600 dark:text-emerald-500" />
  </div>
  <div>
  <div className={cn('h-1.5 w-12 mb-1.5 rounded-none', lineBg)} />
@@ -398,7 +398,7 @@ function WidgetPicker({
  transition={{ type: 'spring', damping: 30, stiffness: 300 }}
  className={cn(
  'fixed right-0 top-0 bottom-0 z-[100] w-[460px] flex flex-col border-l shadow-2xl',
- theme === 'dark' ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-[#fcfcfc] border-gray-100'
+ theme === 'dark' ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-[#fcfcfc] border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center justify-between p-6 border-b border-white/[0.08] bg-gradient-to-r from-transparent to-emerald-500/5">
@@ -443,7 +443,7 @@ function WidgetPicker({
  <div className="flex-1 overflow-y-auto p-5 space-y-8 custom-editor-scrollbar">
  {grouped.map(({ cat, widgets }) => (
  <div key={cat}>
- <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+ <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
  {cat}{' '}
  <span className="h-px flex-1 bg-gradient-to-r from-emerald-500/20 to-transparent" />
  </p>
@@ -478,7 +478,7 @@ function WidgetPicker({
  size={12}
  className={
  theme === 'dark'
- ? 'text-gray-400 group-hover:text-emerald-400'
+ ? 'text-gray-400 group-hover:text-emerald-600 dark:text-emerald-400'
  : 'text-gray-500 group-hover:text-emerald-600'
  }
  />
@@ -568,7 +568,7 @@ function WidgetConfigModal({
  'fixed right-0 top-0 bottom-0 z-[100] w-[460px] flex flex-col border-l shadow-2xl',
  isDark
  ? 'bg-[#0a0a0a] border-white/[0.08] text-white'
- : 'bg-[#fcfcfc] border-gray-100 text-gray-900'
+ : 'bg-[#fcfcfc] border-gray-200 shadow-sm text-gray-900'
  )}
  >
  <div className="flex items-center justify-between p-6 border-b border-white/[0.08] bg-gradient-to-r from-transparent to-emerald-500/5">
@@ -662,7 +662,7 @@ function WidgetConfigModal({
  {/* Dynamic Type Configs */}
  {widget.type === 'stat-card' && (
  <div className="space-y-4 pt-4 border-t border-white/[0.08]">
- <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest ">
+ <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest ">
  Metric Settings
  </p>
 
@@ -691,7 +691,7 @@ function WidgetConfigModal({
 
  {widget.type === 'custom-html' && (
  <div className="space-y-4 pt-4 border-t border-white/[0.08]">
- <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest ">
+ <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest ">
  HTML Configuration
  </p>
 
@@ -719,7 +719,7 @@ function WidgetConfigModal({
  <div
  className={cn(
  'p-6 border-t flex items-center justify-end gap-3',
- isDark ? 'border-white/[0.08]' : 'border-gray-100'
+ isDark ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}
  >
  <button
@@ -735,7 +735,7 @@ function WidgetConfigModal({
  </button>
  <button
  onClick={handleSave}
- className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-black uppercase tracking-widest rounded-none transition-colors shadow-lg shadow-emerald-600/20"
+ className="px-5 py-2.5 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-black uppercase tracking-widest rounded-none transition-colors shadow-lg shadow-emerald-600/20"
  >
  Save Changes
  </button>
@@ -890,7 +890,7 @@ export default function DashboardBuilder() {
  theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]'
  )}
  >
- <Loader2 size={32} className="animate-spin text-emerald-500" strokeWidth={1.5} />
+ <Loader2 size={32} className="animate-spin text-emerald-600 dark:text-emerald-500" strokeWidth={1.5} />
  <p className="text-[10px] font-black uppercase tracking-[0.6em] text-gray-400 animate-pulse ">
  Loading Dashboard...
  </p>
@@ -908,7 +908,7 @@ export default function DashboardBuilder() {
  <header
  className={cn(
  'sticky top-0 z-30 flex items-center justify-between px-6 py-4 border-b backdrop-blur-md transition-colors',
- theme === 'dark' ? 'bg-black/90 border-white/[0.08]' : 'bg-white/90 border-gray-100'
+ theme === 'dark' ? 'bg-black/90 border-white/[0.08]' : 'bg-white/90 border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center gap-4">
@@ -922,7 +922,7 @@ export default function DashboardBuilder() {
  </div>
  <div>
  <div className="flex items-center gap-2">
- <span className="text-[9px] font-black text-emerald-500 uppercase tracking-[0.4em] ">
+ <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.4em] ">
  Zenith Command Center
  </span>
  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-none shadow-[0_0_8px_#10b981]" />
@@ -958,7 +958,7 @@ export default function DashboardBuilder() {
  className={cn(
  'flex items-center gap-2 px-4 py-2 border text-[9px] font-black uppercase rounded-none transition-all',
  theme === 'dark'
- ? 'border-emerald-500/30 text-emerald-400 hover:bg-emerald-50/10'
+ ? 'border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50/10'
  : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
  )}
  >
@@ -970,7 +970,7 @@ export default function DashboardBuilder() {
  setIsEditing(false)
  }}
  disabled={saving}
- className="flex items-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-black uppercase rounded-none transition-all shadow-lg shadow-emerald-600/20"
+ className="flex items-center gap-2 px-5 py-2 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-black uppercase rounded-none transition-all shadow-lg shadow-emerald-600/20"
  >
  {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
  {saving ? 'Saving...' : 'Save Layout'}
@@ -1022,7 +1022,7 @@ export default function DashboardBuilder() {
  exit={{ height: 0, opacity: 0 }}
  className="bg-emerald-600/10 border-b border-emerald-500/20 px-6 py-3 flex items-center gap-3"
  >
- <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+ <CheckCircle2 size={14} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
  <p className="text-[10px] font-black text-emerald-300 uppercase tracking-wider">
  Edit mode active — drag widgets to reorder, click <strong>+ Add Widget</strong> to add
  new ones, click <strong>✕</strong> to remove.
@@ -1051,7 +1051,7 @@ export default function DashboardBuilder() {
  </div>
  <button
  onClick={() => setIsEditing(true)}
- className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase rounded-none shadow-lg shadow-emerald-600/20"
+ className="flex items-center gap-2 px-6 py-3 bg-emerald-600 dark:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-none shadow-lg shadow-emerald-600/20"
  >
  <Plus size={14} /> Get Started
  </button>

@@ -175,7 +175,7 @@ function FieldAdvancedPanel({
  <button
  type="button"
  onClick={() => setOpen(!open)}
- className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-gray-500 hover:text-emerald-500 transition-colors"
+ className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-gray-500 hover:text-emerald-600 dark:text-emerald-500 transition-colors"
  >
  {open ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
  Advanced Options
@@ -188,7 +188,7 @@ function FieldAdvancedPanel({
  exit={{ height: 0, opacity: 0 }}
  className="overflow-hidden"
  >
- <div className={cn('mt-3 p-4 border space-y-4', theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-gray-50/50 border-gray-100')}>
+ <div className={cn('mt-3 p-4 border space-y-4', theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-gray-50/50 border-gray-200 shadow-sm')}>
  {/* Flags */}
  <div className="flex flex-wrap gap-x-6 gap-y-2">
  {[
@@ -327,7 +327,7 @@ function FieldAdvancedPanel({
  <button
  type="button"
  onClick={() => onUpdate('options', [...(field.options || []), { label: '', value: '' }])}
- className="flex items-center gap-1 text-[9px] font-black text-emerald-500 hover:text-emerald-400 uppercase tracking-widest"
+ className="flex items-center gap-1 text-[9px] font-black text-emerald-600 dark:text-emerald-500 hover:text-emerald-600 dark:text-emerald-400 uppercase tracking-widest"
  >
  <Plus size={10} /> Add Option
  </button>
@@ -575,11 +575,11 @@ ${fieldsCode}
  <div className={cn('w-64 flex-shrink-0 border-r flex flex-col', dark ? 'border-white/[0.08] bg-black' : 'border-gray-200 bg-white')}>
  <div className="p-4 border-b border-inherit flex items-center justify-between">
  <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
- <Database size={14} className="text-emerald-500" /> Schemas
+ <Database size={14} className="text-emerald-600 dark:text-emerald-500" /> Schemas
  </h2>
  <button
  onClick={resetEditor}
- className="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 rounded transition-colors"
+ className="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-500 rounded transition-colors"
  title="New Schema"
  >
  <Plus size={14} />
@@ -680,8 +680,8 @@ ${fieldsCode}
  )}
 
  {/* Collection Meta */}
- <div className={cn('rounded-none border p-6 space-y-4', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
- <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2">
+ <div className={cn('rounded-none border p-6 space-y-4', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
+ <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 flex items-center gap-2">
  <Settings size={12} /> Collection Settings
  </h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -745,15 +745,15 @@ ${fieldsCode}
  </div>
 
  {/* Fields */}
- <div className={cn('rounded-none border', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
+ <div className={cn('rounded-none border', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
  <div className="px-6 py-4 border-b border-inherit flex items-center justify-between">
- <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2">
+ <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 flex items-center gap-2">
  <Layers size={12} /> Fields ({fields.length})
  </h3>
  {!isCodeFirst && (
  <button
  onClick={addField}
- className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest rounded-none transition-all"
+ className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-500 text-[10px] font-black uppercase tracking-widest rounded-none transition-all"
  >
  <Plus size={12} /> Add Field
  </button>
@@ -769,7 +769,7 @@ ${fieldsCode}
  initial={{ opacity: 0, y: 8 }}
  animate={{ opacity: 1, y: 0 }}
  exit={{ opacity: 0, scale: 0.97 }}
- className={cn('p-4 border rounded-none relative group', dark ? 'bg-black/40 border-white/[0.08]' : 'bg-gray-50 border-gray-100', isCodeFirst && 'opacity-70')}
+ className={cn('p-4 border rounded-none relative group', dark ? 'bg-black/40 border-white/[0.08]' : 'bg-gray-50 border-gray-200 shadow-sm', isCodeFirst && 'opacity-70')}
  >
  {/* Delete button */}
  {!isCodeFirst && (
@@ -874,9 +874,9 @@ ${fieldsCode}
  <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-3xl border rounded-none shadow-2xl p-6 relative flex flex-col h-[80vh] bg-black border-white/[0.08]">
  <button onClick={() => setShowCode(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X size={20} /></button>
  <h2 className="text-xl font-black tracking-tight uppercase mb-4 flex items-center gap-3">
- <Code className="text-emerald-500" /> Generated TypeScript
+ <Code className="text-emerald-600 dark:text-emerald-500" /> Generated TypeScript
  </h2>
- <div className="flex-1 bg-[#1E1E1E] border border-white/[0.08] p-5 overflow-auto text-sm font-mono text-emerald-400 relative rounded-none">
+ <div className="flex-1 bg-[#1E1E1E] border border-white/[0.08] p-5 overflow-auto text-sm font-mono text-emerald-600 dark:text-emerald-400 relative rounded-none">
  <button
  onClick={() => { navigator.clipboard.writeText(generateCode()); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
  className="absolute top-3 right-3 p-2 bg-white/10 hover:bg-white/20 text-white transition-colors rounded-none"
@@ -928,7 +928,7 @@ ${fieldsCode}
  <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none shadow-2xl p-6 relative bg-black border-white/[0.08]">
  <button onClick={() => setShowIntrospect(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X size={20} /></button>
  <h2 className="text-xl font-black tracking-tight uppercase mb-2 flex items-center gap-3">
- <Database className="text-emerald-500" /> DB Introspection
+ <Database className="text-emerald-600 dark:text-emerald-500" /> DB Introspection
  </h2>
  <p className="text-[11px] text-gray-400 mb-5 font-medium">
  Connect to a Postgres database to reverse-engineer tables into Zenith schema fields.

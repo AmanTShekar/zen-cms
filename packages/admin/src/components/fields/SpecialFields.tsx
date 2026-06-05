@@ -81,7 +81,7 @@ const RowField: React.FC<RowFieldProps> = ({ field, value, onChange, renderField
 
 const JoinField: React.FC<{ field: { collection?: string } }> = ({ field }) => (
  <div className="w-full bg-white/[0.03] border border-white/[0.08] rounded-none px-4 py-3 text-sm text-gray-400 flex items-center gap-2">
- <span className="text-emerald-400">⧉</span>
+ <span className="text-emerald-600 dark:text-emerald-400">⧉</span>
  Joined data from{' '}
  <span className="font-mono text-emerald-300 text-xs">{field.collection}</span> — read-only
  </div>
@@ -111,7 +111,7 @@ const RadioField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
  checked={value === optVal}
  onChange={(e) => onChange(e.target.value)}
  disabled={disabled}
- className="w-4 h-4 border border-white/[0.08] text-emerald-500 focus:ring-emerald-500 disabled:opacity-60 accent-emerald-500"
+ className="w-4 h-4 border border-white/[0.08] text-emerald-600 dark:text-emerald-500 focus:ring-emerald-500 disabled:opacity-60 accent-emerald-500"
  />
  <span className="text-sm text-gray-300 group-hover:text-white transition-colors">
  {String(optLabel)}

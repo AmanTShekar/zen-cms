@@ -282,7 +282,7 @@ const SettingsPage = () => {
  if (loading) {
  return (
  <div className="min-h-[80vh] flex items-center justify-center">
- <Loader2 size={32} className="text-emerald-500 animate-spin" />
+ <Loader2 size={32} className="text-emerald-600 dark:text-emerald-500 animate-spin" />
  </div>
  )
  }
@@ -291,7 +291,7 @@ const SettingsPage = () => {
  <div className="max-w-[1400px] mx-auto space-y-8">
  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
  <div className="flex items-center gap-4">
- <div className="w-12 h-12 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
+ <div className="w-12 h-12 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-500">
  <SettingsIcon size={24} />
  </div>
  <div>
@@ -331,13 +331,13 @@ const SettingsPage = () => {
  className={cn(
  'w-full flex items-center gap-3 px-3 py-2.5 rounded-none transition-all group border',
  activeTab === tab.id
- ? theme === 'dark' ? 'bg-white/[0.06] border-white/[0.08] text-white shadow-sm' : 'bg-white border-gray-100 shadow-sm text-gray-900'
+ ? theme === 'dark' ? 'bg-white/[0.06] border-white/[0.08] text-white shadow-sm' : 'bg-white border-gray-200 shadow-sm shadow-sm text-gray-900'
  : theme === 'dark' ? 'text-gray-400 border-transparent hover:bg-white/[0.02] hover:text-gray-200' : 'text-gray-500 border-transparent hover:bg-gray-50'
  )}
  >
  <div className={cn(
  "w-8 h-8 rounded-none flex items-center justify-center transition-colors",
- activeTab === tab.id ? "bg-emerald-500/10 text-emerald-500" : "bg-white/5 text-gray-400 group-hover:text-gray-300"
+ activeTab === tab.id ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-500" : "bg-white/5 text-gray-400 group-hover:text-gray-300"
  )}>
  <tab.icon size={16} />
  </div>
@@ -356,7 +356,7 @@ const SettingsPage = () => {
  'p-8 min-h-[600px] transition-colors',
  theme === 'dark' 
  ? 'bg-black/65 backdrop-blur-[12px] border border-white/[0.08] rounded-none shadow-[0_4px_30px_rgba(0,0,0,0.1)]' 
- : 'bg-white border border-gray-100 shadow-sm rounded-none'
+ : 'bg-white border border-gray-200 shadow-sm shadow-sm rounded-none'
  )}>
  <AnimatePresence mode="wait">
  <motion.div
@@ -367,7 +367,7 @@ const SettingsPage = () => {
  className="space-y-8 relative z-10"
  >
  <div className="flex items-center gap-4 border-b border-white/[0.05] pb-6">
- <div className="w-10 h-10 rounded-none bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+ <div className="w-10 h-10 rounded-none bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-500">
  {activeTabDetails?.icon && <activeTabDetails.icon size={20} />}
  </div>
  <div>

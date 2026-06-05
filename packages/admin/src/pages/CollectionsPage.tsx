@@ -185,7 +185,7 @@ const CollectionsPage: React.FC = () => {
  if (loading) {
  return (
  <div className="flex items-center justify-center min-h-screen">
- <Loader2 className="animate-spin text-emerald-500" size={32} />
+ <Loader2 className="animate-spin text-emerald-600 dark:text-emerald-500" size={32} />
  </div>
  )
  }
@@ -210,7 +210,7 @@ const CollectionsPage: React.FC = () => {
  </div>
  <div className="flex flex-col">
  <div className="flex items-center gap-3 mb-1">
- <span className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.4em] ">
+ <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.4em] ">
  Data_Architect
  </span>
  <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 shadow-[0_0_8px_#10b981]" />
@@ -224,7 +224,7 @@ const CollectionsPage: React.FC = () => {
  <div className="flex items-center gap-4 w-full md:w-auto flex-wrap">
  <button
  onClick={() => setIsVisualModalOpen(true)}
- className="flex items-center gap-2 px-6 py-4 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-900/10"
+ className="flex items-center gap-2 px-6 py-4 bg-emerald-600 dark:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-900/10"
  >
  <Plus size={14} />
  Create Collection
@@ -232,7 +232,7 @@ const CollectionsPage: React.FC = () => {
 
  <button
  onClick={() => setIsAIModalOpen(true)}
- className="flex items-center gap-2 px-6 py-4 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-colors"
+ className="flex items-center gap-2 px-6 py-4 bg-emerald-600 dark:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-colors"
  >
  <Zap size={14} />
  AI Architect
@@ -274,7 +274,7 @@ const CollectionsPage: React.FC = () => {
  'p-8 border rounded-none flex flex-col gap-4 transition-all relative overflow-hidden group',
  theme === 'dark'
  ? 'bg-white/[0.02] border-white/[0.08]'
- : 'bg-white border-gray-100 shadow-sm'
+ : 'bg-white border-gray-200 shadow-sm shadow-sm'
  )}
  >
  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -287,7 +287,7 @@ const CollectionsPage: React.FC = () => {
  <span className="text-4xl font-black tracking-tighter">
  {item.value}
  </span>
- <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">
+ <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-500 uppercase tracking-widest">
  {item.sub}
  </span>
  </div>
@@ -310,7 +310,7 @@ const CollectionsPage: React.FC = () => {
  'group p-6 border rounded-none flex flex-col gap-6 transition-all hover:-translate-y-1 relative',
  theme === 'dark'
  ? 'bg-black border-white/[0.08] hover:border-emerald-500/50'
- : 'bg-white border-gray-100 hover:border-emerald-500 shadow-sm'
+ : 'bg-white border-gray-200 shadow-sm hover:border-emerald-500 shadow-sm'
  )}
  >
  <div className="flex items-start justify-between">
@@ -325,7 +325,7 @@ const CollectionsPage: React.FC = () => {
  <Layers size={20} />
  </div>
  <div className="flex flex-col items-end">
- <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest ">
+ <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest ">
  Registry_Node
  </span>
  <span className="text-lg font-black tracking-tighter">
@@ -335,7 +335,7 @@ const CollectionsPage: React.FC = () => {
  </div>
 
  <div>
- <h3 className="text-xl font-black uppercase tracking-tighter leading-none mb-2 group-hover:text-emerald-500 transition-colors">
+ <h3 className="text-xl font-black uppercase tracking-tighter leading-none mb-2 group-hover:text-emerald-600 dark:text-emerald-500 transition-colors">
  {col.label.replace(/-/g, ' ')}
  </h3>
  <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest leading-relaxed">
@@ -347,14 +347,14 @@ const CollectionsPage: React.FC = () => {
  <Link
  to={`/collections/${col.slug}/hooks`}
  onClick={(e) => e.stopPropagation()}
- className="flex items-center gap-1.5 text-[8px] font-black text-gray-500 hover:text-emerald-400 uppercase tracking-[0.2em] transition-colors"
+ className="flex items-center gap-1.5 text-[8px] font-black text-gray-500 hover:text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em] transition-colors"
  >
  <Code2 size={10} />
  Hooks
  </Link>
  <ArrowRight
  size={14}
- className="text-emerald-500 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all"
+ className="text-emerald-600 dark:text-emerald-500 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all"
  />
  </div>
  </Link>
@@ -379,7 +379,7 @@ const CollectionsPage: React.FC = () => {
  ✕
  </button>
  <h2 className="text-2xl font-black uppercase tracking-tighter mb-4 flex items-center gap-2">
- <Zap className="text-emerald-500" /> AI Schema Architect
+ <Zap className="text-emerald-600 dark:text-emerald-500" /> AI Schema Architect
  </h2>
  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-6">
  Describe the collection you want to create and let AI build the schema configuration.
@@ -398,7 +398,7 @@ const CollectionsPage: React.FC = () => {
  <button
  onClick={handleAIGenerate}
  disabled={aiLoading}
- className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-widest flex items-center justify-center gap-2"
+ className="w-full py-4 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-widest flex items-center justify-center gap-2"
  >
  {aiLoading ? <Loader2 className="animate-spin" size={16} /> : <Database size={16} />}
  {aiLoading ? 'Synthesizing Architecture...' : 'Generate Schema'}
@@ -410,7 +410,7 @@ const CollectionsPage: React.FC = () => {
  Generated Schema Configuration (Copy to cms.config.ts)
  </p>
  <div className="relative">
- <pre className="p-4 bg-black text-emerald-400 text-xs font-mono overflow-auto max-h-64 border border-white/[0.08]">
+ <pre className="p-4 bg-black text-emerald-600 dark:text-emerald-400 text-xs font-mono overflow-auto max-h-64 border border-white/[0.08]">
  {JSON.stringify(aiResult, null, 2)}
  </pre>
  <button
@@ -442,7 +442,7 @@ const CollectionsPage: React.FC = () => {
  ✕
  </button>
  <h2 className="text-3xl font-black uppercase tracking-tighter mb-4 flex items-center gap-3">
- <Database className="text-emerald-500 animate-pulse" /> Visual Schema Builder
+ <Database className="text-emerald-600 dark:text-emerald-500 animate-pulse" /> Visual Schema Builder
  </h2>
  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-8 border-b border-white/[0.08] pb-4 ">
  Define collection specifications, fields, types, and constraints visually without
@@ -451,7 +451,7 @@ const CollectionsPage: React.FC = () => {
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
  <div className="space-y-2">
- <label className="text-[10px] font-black uppercase tracking-widest text-emerald-500 block">
+ <label className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 block">
  Collection Name
  </label>
  <input
@@ -470,7 +470,7 @@ const CollectionsPage: React.FC = () => {
  </div>
 
  <div className="space-y-2">
- <label className="text-[10px] font-black uppercase tracking-widest text-emerald-500 block">
+ <label className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 block">
  Slug
  </label>
  <input
@@ -512,7 +512,7 @@ const CollectionsPage: React.FC = () => {
  </h3>
  <button
  onClick={handleAddField}
- className="px-4 py-2 border border-dashed border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/5 text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-2"
+ className="px-4 py-2 border border-dashed border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/5 text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-2"
  >
  <Plus size={12} /> Add Field
  </button>
@@ -526,11 +526,11 @@ const CollectionsPage: React.FC = () => {
  'p-5 border rounded-none grid grid-cols-1 md:grid-cols-4 gap-4 items-center relative group/field',
  theme === 'dark'
  ? 'bg-black border-white/[0.08]'
- : 'bg-gray-50 border-gray-100'
+ : 'bg-gray-50 border-gray-200 shadow-sm'
  )}
  >
  <div className="space-y-2">
- <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500 block">
+ <label className="text-[8px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 block">
  Field Name
  </label>
  <input
@@ -549,7 +549,7 @@ const CollectionsPage: React.FC = () => {
  </div>
 
  <div className="space-y-2">
- <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500 block">
+ <label className="text-[8px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 block">
  Type
  </label>
  <select
@@ -574,7 +574,7 @@ const CollectionsPage: React.FC = () => {
 
  {field.type === 'select' ? (
  <div className="space-y-2">
- <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500 block">
+ <label className="text-[8px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 block">
  Options (Comma separated)
  </label>
  <input
@@ -592,7 +592,7 @@ const CollectionsPage: React.FC = () => {
  </div>
  ) : field.type === 'relationship' ? (
  <div className="space-y-2">
- <label className="text-[8px] font-black uppercase tracking-widest text-emerald-500 block">
+ <label className="text-[8px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 block">
  Relate To Collection
  </label>
  <select
@@ -661,7 +661,7 @@ const CollectionsPage: React.FC = () => {
  <button
  onClick={handleCreateCollection}
  disabled={visualLoading}
- className="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-none text-[9px] font-black uppercase tracking-widest shadow-xl shadow-emerald-600/20 transition-all flex items-center gap-2 leading-none"
+ className="px-8 py-3 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-700 text-white rounded-none text-[9px] font-black uppercase tracking-widest shadow-xl shadow-emerald-600/20 transition-all flex items-center gap-2 leading-none"
  >
  {visualLoading ? (
  <Loader2 size={12} className="animate-spin" />

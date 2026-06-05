@@ -34,7 +34,7 @@ export default function TeamPresenceWidget({ theme, title }: WidgetProps) {
  return (
  <div className="h-full flex flex-col gap-3">
  <div className="flex items-center justify-between">
- <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest ">
+ <p className="text-[9px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest ">
  {title || 'Online Now'}
  </p>
  <span className="text-[8px] font-black text-gray-500">{members.length} active</span>

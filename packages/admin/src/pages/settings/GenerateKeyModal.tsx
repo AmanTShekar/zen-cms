@@ -45,14 +45,14 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
  <div
  className={cn(
  'w-full max-w-md border rounded-none shadow-2xl',
- theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100'
+ theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
  {/* Header */}
  <div className="flex items-center justify-between px-8 py-6 border-b border-white/[0.08]">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
- <Key size={18} className="text-emerald-500" />
+ <Key size={18} className="text-emerald-600 dark:text-emerald-500" />
  </div>
  <span className="text-[12px] font-black uppercase tracking-wide">
  Generate Access Token
@@ -99,7 +99,7 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
  className={cn(
  'py-3 text-[9px] font-black uppercase tracking-wider border rounded-none transition-all',
  role === r
- ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
+ ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
  : theme === 'dark'
  ? 'border-white/[0.08] text-gray-500 hover:border-white/[0.08]'
  : 'border-gray-200 text-gray-400 hover:border-gray-300'
@@ -125,7 +125,7 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
  className={cn(
  'py-3 text-[9px] font-black border rounded-none transition-all',
  expiresDays === d
- ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
+ ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
  : theme === 'dark'
  ? 'border-white/[0.08] text-gray-500 hover:border-white/[0.08]'
  : 'border-gray-200 text-gray-400 hover:border-gray-300'
@@ -149,7 +149,7 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
  className={cn(
  'w-full py-4 rounded-none text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 disabled:opacity-40',
  theme === 'dark'
- ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
+ ? 'bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 text-white'
  : 'bg-gray-900 hover:bg-gray-800 text-white'
  )}
  >

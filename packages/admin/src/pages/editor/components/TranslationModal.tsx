@@ -76,13 +76,13 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  exit={{ opacity: 0, scale: 0.98, y: 15 }}
  className={cn(
  'border rounded-none w-full max-w-6xl shadow-2xl flex flex-col overflow-hidden max-h-[90vh]',
- dark ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-100 text-gray-900'
+ dark ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200 shadow-sm text-gray-900'
  )}
  >
  {/* Header */}
  <div className="p-6 border-b border-gray-50 dark:border-white/[0.08] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
  <div className="flex items-center gap-4">
- <div className="w-10 h-10 bg-emerald-600 rounded-none flex items-center justify-center text-white shadow-lg shrink-0">
+ <div className="w-10 h-10 bg-emerald-600 dark:bg-emerald-600 rounded-none flex items-center justify-center text-white shadow-lg shrink-0">
  <Languages size={18} />
  </div>
  <div className="flex flex-col">
@@ -116,13 +116,13 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  <div className="text-gray-400"><Globe size={14} /></div>
  
  <div className="flex items-center gap-2 flex-1 sm:flex-none">
- <span className="text-[10px] font-bold text-emerald-500 uppercase">Target:</span>
+ <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 uppercase">Target:</span>
  <select
  value={targetLocale}
  onChange={(e) => setTargetLocale(e.target.value)}
  className={cn(
  'w-32 px-3 py-1.5 text-xs font-bold border rounded-none bg-emerald-500/10 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors appearance-none cursor-pointer',
- dark ? 'border-emerald-500/30 hover:border-emerald-500/60 text-emerald-400' : 'border-emerald-500/30 hover:border-emerald-500/60 text-emerald-600'
+ dark ? 'border-emerald-500/30 hover:border-emerald-500/60 text-emerald-600 dark:text-emerald-400' : 'border-emerald-500/30 hover:border-emerald-500/60 text-emerald-600'
  )}
  >
  {availableLocales.map(l => (
@@ -164,7 +164,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  <div key={`${field.sectionId}-${field.fieldName}`} className="space-y-4 relative">
  <div className="flex items-center gap-2">
  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-none" />
- <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-400">
+ <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
  {field.sectionName} <span className="text-gray-500 mx-1">&gt;</span> {humanize(field.fieldName)}
  </h4>
  </div>
@@ -185,8 +185,8 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  
  {/* Right: Target (Editable) */}
  <div className="relative border border-emerald-500/20 p-4 -m-4 bg-emerald-500/5">
- <div className="absolute top-0 right-0 p-2 text-[8px] font-black uppercase tracking-widest text-emerald-400 z-10 bg-black/50 backdrop-blur-md flex items-center gap-1.5">
- {targetValue ? <Check size={10} className="text-emerald-400" /> : null}
+ <div className="absolute top-0 right-0 p-2 text-[8px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 z-10 bg-black/50 backdrop-blur-md flex items-center gap-1.5">
+ {targetValue ? <Check size={10} className="text-emerald-600 dark:text-emerald-400" /> : null}
  Target ({targetLocale})
  </div>
  <FieldRenderer

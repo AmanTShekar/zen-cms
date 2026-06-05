@@ -161,7 +161,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
  <div className="flex flex-col">
  <h3 className="text-sm font-black uppercase tracking-wider flex items-center gap-3">
- <Puzzle size={16} className="text-emerald-400" />
+ <Puzzle size={16} className="text-emerald-600 dark:text-emerald-400" />
  Plugin Registry
  </h3>
  <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1">
@@ -171,7 +171,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <button
  type="button"
  onClick={() => setShowInstallForm(!showInstallForm)}
- className="flex items-center gap-2 px-4 py-2 border border-emerald-500/30 hover:border-emerald-500 hover:bg-emerald-500/10 text-[10px] font-black uppercase transition-all text-emerald-400 hover:text-white"
+ className="flex items-center gap-2 px-4 py-2 border border-emerald-500/30 hover:border-emerald-500 hover:bg-emerald-500/10 text-[10px] font-black uppercase transition-all text-emerald-600 dark:text-emerald-400 hover:text-white"
  >
  <Plus size={12} />
  Install Plugin
@@ -192,7 +192,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  >
  <div className="p-6 space-y-4">
  <div className="flex items-center justify-between">
- <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">
+ <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
  Register New Plugin
  </span>
  <button onClick={() => setShowInstallForm(false)} className="text-gray-500 hover:text-white text-[10px] font-black uppercase">
@@ -299,7 +299,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <button
  onClick={handleInstall}
  disabled={saving === 'install'}
- className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-40"
+ className="flex items-center gap-2 px-6 py-3 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-40"
  >
  {saving === 'install' ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
  Install Plugin
@@ -328,7 +328,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  {/* Plugin list */}
  {loading ? (
  <div className="flex items-center justify-center py-12">
- <Loader2 size={24} className="text-emerald-500 animate-spin" />
+ <Loader2 size={24} className="text-emerald-600 dark:text-emerald-500 animate-spin" />
  </div>
  ) : filteredPlugins.length === 0 ? (
  <div className={cn(
@@ -357,8 +357,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  className={cn(
  'border rounded-none overflow-hidden transition-all',
  plugin.enabled
- ? theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-100'
- : theme === 'dark' ? 'bg-white/[0.005] border-white/[0.03] opacity-60' : 'bg-gray-50 border-gray-100 opacity-60'
+ ? theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
+ : theme === 'dark' ? 'bg-white/[0.005] border-white/[0.03] opacity-60' : 'bg-gray-50 border-gray-200 shadow-sm opacity-60'
  )}
  >
  {/* Plugin header */}
@@ -367,7 +367,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <div className={cn(
  'w-10 h-10 rounded-none border flex items-center justify-center',
  plugin.enabled
- ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+ ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
  : theme === 'dark' ? 'bg-white/5 border-white/[0.08] text-gray-600' : 'bg-gray-100 border-gray-200 text-gray-400'
  )}>
  <Puzzle size={18} />
@@ -377,7 +377,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <span className="text-[12px] font-black uppercase tracking-tight text-white">{plugin.name}</span>
  <span className="text-[8px] font-black text-gray-500 font-mono">v{plugin.version}</span>
  {plugin.enabled
- ? <CheckCircle2 size={12} className="text-emerald-500" />
+ ? <CheckCircle2 size={12} className="text-emerald-600 dark:text-emerald-500" />
  : <XCircle size={12} className="text-gray-600" />
  }
  </div>
@@ -404,7 +404,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  rel="noopener noreferrer"
  className={cn(
  'p-2 border rounded-none transition-colors',
- theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-emerald-400' : 'border-gray-200 text-gray-400 hover:text-emerald-600'
+ theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-emerald-600 dark:text-emerald-400' : 'border-gray-200 text-gray-400 hover:text-emerald-600'
  )}
  title="Plugin homepage"
  >
@@ -418,7 +418,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  'p-2 border rounded-none transition-colors',
  plugin.enabled
  ? 'border-amber-500/20 text-amber-500 hover:text-amber-400'
- : theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-emerald-400' : 'border-gray-200 text-gray-400 hover:text-emerald-600'
+ : theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-emerald-600 dark:text-emerald-400' : 'border-gray-200 text-gray-400 hover:text-emerald-600'
  )}
  title={plugin.enabled ? 'Disable' : 'Enable'}
  >
@@ -433,7 +433,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  className={cn(
  'p-2 border rounded-none transition-colors',
  isExpanded
- ? 'border-emerald-500/30 text-emerald-400'
+ ? 'border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
  : theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-white' : 'border-gray-200 text-gray-400 hover:text-gray-600'
  )}
  title="Configure"
@@ -464,7 +464,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  exit={{ opacity: 0, height: 0 }}
  className={cn(
  'border-t px-5 py-4 space-y-4',
- theme === 'dark' ? 'border-white/[0.08] bg-black/20' : 'border-gray-100 bg-gray-50/50'
+ theme === 'dark' ? 'border-white/[0.08] bg-black/20' : 'border-gray-200 shadow-sm bg-gray-50/50'
  )}
  >
  <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Plugin Settings</span>
@@ -483,7 +483,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  className={cn(
  'flex items-center gap-2 px-3 py-2 border rounded-none transition-colors',
  plugin.config?.[key]
- ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+ ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
  : theme === 'dark' ? 'border-white/[0.08] text-gray-500' : 'border-gray-200 text-gray-400'
  )}
  >
@@ -531,7 +531,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <button
  onClick={() => handleSaveConfig(plugin)}
  disabled={saving === plugin.id}
- className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-black uppercase tracking-wider transition-all disabled:opacity-40"
+ className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-black uppercase tracking-wider transition-all disabled:opacity-40"
  >
  {saving === plugin.id ? <Loader2 size={10} className="animate-spin" /> : null}
  Save Settings
@@ -558,8 +558,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <ul className="space-y-1.5 text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-relaxed">
  <li>• Plugins are registered in the database and managed via this UI</li>
  <li>• Plugin code must be loaded at engine startup via cms.config.ts</li>
- <li>• Community plugins should be published as <code className="text-emerald-400 font-mono">zenith-plugin-*</code> on npm</li>
- <li>• Use <code className="text-emerald-400 font-mono">configSchema</code> to expose settings that admins can configure here</li>
+ <li>• Community plugins should be published as <code className="text-emerald-600 dark:text-emerald-400 font-mono">zenith-plugin-*</code> on npm</li>
+ <li>• Use <code className="text-emerald-600 dark:text-emerald-400 font-mono">configSchema</code> to expose settings that admins can configure here</li>
  <li>• Disabled plugins are not applied but remain installed for easy re-enabling</li>
  </ul>
  </div>

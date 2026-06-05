@@ -79,7 +79,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  {/* Header */}
  <div className={cn(
  'px-6 py-5 border-b flex items-start gap-4',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <div className={cn(
  'w-10 h-10 rounded-none border flex items-center justify-center shrink-0',
@@ -96,7 +96,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  <p className="text-xs font-bold text-gray-500 mt-1 leading-relaxed">
  Another editor saved changes to this document while you were editing.
  <br />
- Version mismatch: you had <span className="font-black text-emerald-400">v{localVersion ?? '?'}</span>, server now at <span className="font-black text-amber-400">v{serverVersion ?? '?'}</span>.
+ Version mismatch: you had <span className="font-black text-emerald-600 dark:text-emerald-400">v{localVersion ?? '?'}</span>, server now at <span className="font-black text-amber-400">v{serverVersion ?? '?'}</span>.
  </p>
  {conflictMessage && (
  <p className="text-xs font-bold text-rose-400/70 mt-1.5 tracking-wide">
@@ -121,7 +121,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  'p-4 border rounded-none text-xs font-bold tracking-wide leading-relaxed',
  theme === 'dark'
  ? 'bg-white/3 border-white/[0.08] text-gray-400'
- : 'bg-gray-50 border-gray-100 text-gray-600'
+ : 'bg-gray-50 border-gray-200 shadow-sm text-gray-600'
  )}>
  <p>Choose <span className="font-black text-white">"Use Their Version"</span> to discard your unsaved changes and reload the server's latest content.</p>
  <p className="mt-2">Choose <span className="font-black text-white">"Keep My Changes"</span> to overwrite the server's changes with yours (the server will update its version to match).</p>
@@ -134,7 +134,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  )}>
  <div className="text-center">
  <p className="text-[7px] font-black uppercase text-gray-600 tracking-widest mb-1">Your Version</p>
- <p className="text-lg font-black text-emerald-400">v{localVersion ?? '?'}</p>
+ <p className="text-lg font-black text-emerald-600 dark:text-emerald-400">v{localVersion ?? '?'}</p>
  </div>
  <div className="text-center">
  <p className="text-[7px] font-black uppercase text-gray-600 tracking-widest mb-1">Server Version</p>
@@ -146,7 +146,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  {/* Actions */}
  <div className={cn(
  'px-6 py-4 border-t flex gap-3',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <button
  type="button"
@@ -168,7 +168,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  disabled={loading}
  onClick={handleForceSave}
  className={cn(
- 'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-black uppercase tracking-widest rounded-none transition-all bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-600',
+ 'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-black uppercase tracking-widest rounded-none transition-all bg-emerald-600 dark:bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-600',
  loading && 'opacity-50 cursor-not-allowed'
  )}
  >

@@ -193,7 +193,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  className={cn(
  'rounded-none border transition-all duration-500 relative cursor-pointer',
  calloutClasses,
- themeClasses || (theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08] hover:border-white/[0.08]' : 'bg-white border-gray-100 hover:border-gray-200'),
+ themeClasses || (theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08] hover:border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm hover:border-gray-200'),
  isActive && 'ring-2 ring-emerald-500/50 scale-[1.005]',
  isMultiSelected && !isActive && 'ring-2 ring-amber-500/40'
  )}
@@ -203,7 +203,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  className={cn(
  'flex items-center justify-between px-6 py-3 border-b select-none',
  isCollapsed ? 'border-b-0' : '',
- theme === 'dark' ? 'border-white/[0.03] bg-white/[0.02]' : 'border-gray-100 bg-gray-50/50'
+ theme === 'dark' ? 'border-white/[0.03] bg-white/[0.02]' : 'border-gray-200 shadow-sm bg-gray-50/50'
  )}
  >
  <div className="flex items-center gap-3 min-w-0">
@@ -216,7 +216,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  className={cn(
  'w-7 h-7 rounded-none border flex items-center justify-center cursor-grab active:cursor-grabbing shrink-0 transition-all',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-emerald-400/60 hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-400'
+ ? 'bg-white/5 border-white/[0.08] text-emerald-400/60 hover:bg-emerald-500/10 hover:border-emerald-500/30 hover:text-emerald-600 dark:text-emerald-400'
  : 'bg-gray-100 border-gray-200 text-emerald-500/60 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-600'
  )}
  >
@@ -234,7 +234,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  {/* Block type pill — human-readable */}
  <span className={cn(
  'px-2 py-0.5 text-[8px] font-black uppercase tracking-wider border shrink-0',
- theme === 'dark' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+ theme === 'dark' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700'
  )}>
  {humanize(section.blockType)}
  </span>
@@ -288,7 +288,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  onClick={(e) => { e.stopPropagation(); onToggleCollapse() }}
  className={cn(
  'p-1.5 rounded-none border transition-all',
- theme === 'dark' ? 'text-gray-500 border-transparent hover:text-emerald-400' : 'text-gray-400 border-transparent hover:text-emerald-500'
+ theme === 'dark' ? 'text-gray-500 border-transparent hover:text-emerald-600 dark:text-emerald-400' : 'text-gray-400 border-transparent hover:text-emerald-600 dark:text-emerald-500'
  )}
  title={isCollapsed ? 'Expand' : 'Collapse'}
  >
@@ -309,8 +309,8 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  className={cn(
  'p-1.5 rounded-none border transition-all',
  menuOpen
- ? theme === 'dark' ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' : 'bg-emerald-100 border-emerald-200 text-emerald-600'
- : theme === 'dark' ? 'text-gray-500 border-transparent hover:text-emerald-400' : 'text-gray-400 border-transparent hover:text-emerald-500'
+ ? theme === 'dark' ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-600 dark:text-emerald-400' : 'bg-emerald-100 border-emerald-200 text-emerald-600'
+ : theme === 'dark' ? 'text-gray-500 border-transparent hover:text-emerald-600 dark:text-emerald-400' : 'text-gray-400 border-transparent hover:text-emerald-600 dark:text-emerald-500'
  )}
  title="Actions"
  >
@@ -333,7 +333,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  {/* Sub-toolbar: align + undo/redo (moved from header to reduce clutter) */}
  <div className={cn(
  'flex items-center justify-between -mx-6 -mt-6 mb-6 px-4 py-2 border-b',
- theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50/50 border-gray-100'
+ theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50/50 border-gray-200 shadow-sm'
  )}>
  <div className={cn(
  'flex items-center gap-0.5 p-0.5 rounded-none border',
@@ -348,7 +348,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  'p-1 transition-all',
  section.align === align || (!section.align && align === 'left')
  ? theme === 'dark' ? 'bg-white/10 text-white' : 'bg-black text-white shadow-sm'
- : 'text-gray-400 hover:text-emerald-500'
+ : 'text-gray-400 hover:text-emerald-600 dark:text-emerald-500'
  )}
  >
  {align === 'left' && <AlignLeft size={10} />}
@@ -418,7 +418,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  }))
  handleFieldChange('rows', rows)
  }}
- className="text-xs text-emerald-400 font-bold hover:text-emerald-300"
+ className="text-xs text-emerald-600 dark:text-emerald-400 font-bold hover:text-emerald-300"
  >
  + Col
  </button>
@@ -470,7 +470,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  rows.push({ cells: newCells })
  handleFieldChange('rows', rows)
  }}
- className="text-xs text-emerald-400 font-bold hover:text-emerald-300 flex items-center gap-1"
+ className="text-xs text-emerald-600 dark:text-emerald-400 font-bold hover:text-emerald-300 flex items-center gap-1"
  >
  + Add Row
  </button>
@@ -627,7 +627,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  <ActionItem icon={<Copy size={12} />} label="Duplicate" onClick={() => { onDuplicate(); setMenuOpen(false) }} theme={theme} />
  <ActionItem icon={<Clipboard size={12} />} label="Copy" onClick={() => { onCopy(); setMenuOpen(false) }} theme={theme} />
  <ActionItem icon={<ClipboardPaste size={12} />} label="Paste" onClick={() => { onPaste(); setMenuOpen(false) }} theme={theme} />
- <div className={cn('border-t my-1', theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100')} />
+ <div className={cn('border-t my-1', theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm')} />
  <ActionItem icon={<Trash2 size={12} />} label="Remove" onClick={() => { onDelete(); setMenuOpen(false) }} theme={theme} danger />
  </div>
  </div>,

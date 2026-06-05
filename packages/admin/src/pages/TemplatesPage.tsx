@@ -242,7 +242,7 @@ const TemplatesPage: React.FC = () => {
  </div>
  <div className="flex flex-col">
  <div className="flex items-center gap-3 mb-1">
- <span className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.3em] ">
+ <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.3em] ">
  Storefront Hub
  </span>
  <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 shadow-[0_0_8px_#10b981]" />
@@ -257,7 +257,7 @@ const TemplatesPage: React.FC = () => {
  <div
  className={cn(
  'p-1 rounded-none border flex items-center shadow-sm backdrop-blur-xl self-start md:self-auto overflow-x-auto max-w-full no-scrollbar',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-100'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
  {categories.map((cat) => (
@@ -285,14 +285,14 @@ const TemplatesPage: React.FC = () => {
  'relative p-6 md:p-8 overflow-hidden border backdrop-blur-xl shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-6 transition-all',
  theme === 'dark'
  ? 'bg-gradient-to-r from-zinc-950 via-neutral-900 to-zinc-950 border-white/[0.08] shadow-white/5'
- : 'bg-gradient-to-r from-gray-50 via-white to-gray-50 border-gray-100'
+ : 'bg-gradient-to-r from-gray-50 via-white to-gray-50 border-gray-200 shadow-sm'
  )}
  >
  <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 blur-[100px] pointer-events-none rounded-none" />
  <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-500/5 blur-[100px] pointer-events-none rounded-none" />
 
  <div className="flex-1 space-y-3 z-10">
- <div className="flex items-center gap-2 text-emerald-500">
+ <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-500">
  <Sparkles size={16} className="animate-pulse" />
  <span className="text-[10px] font-black uppercase tracking-widest ">
  Pre-integrated Storefront Ecosystem
@@ -312,12 +312,12 @@ const TemplatesPage: React.FC = () => {
  <div
  className={cn(
  'flex items-center gap-4 px-5 py-3 rounded-none border shadow-inner w-full md:max-w-xs transition-all group z-10 shrink-0 self-start md:self-auto',
- theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm'
+ theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm'
  )}
  >
  <Search
  size={14}
- className="text-gray-500 group-focus-within:text-emerald-500 transition-colors"
+ className="text-gray-500 group-focus-within:text-emerald-600 dark:text-emerald-500 transition-colors"
  />
  <input
  type="text"
@@ -352,7 +352,7 @@ const TemplatesPage: React.FC = () => {
  'border rounded-none p-6 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col gap-6 relative group backdrop-blur-xl',
  theme === 'dark'
  ? 'bg-gradient-to-br from-zinc-950 via-[#111827]/65 to-zinc-950 border-white/[0.08] hover:border-white/[0.08]'
- : 'bg-white border-gray-100 hover:border-gray-300'
+ : 'bg-white border-gray-200 shadow-sm hover:border-gray-300'
  )}
  style={{
  boxShadow:
@@ -377,17 +377,17 @@ const TemplatesPage: React.FC = () => {
  {template.category}
  </span>
  <span className="w-1 h-1 bg-gray-500 rounded-none" />
- <span className="text-[8px] font-mono font-black text-emerald-400">
+ <span className="text-[8px] font-mono font-black text-emerald-600 dark:text-emerald-400">
  v{template.version}
  </span>
  {template.slug === activeSiteSlug && (
- <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[7px] font-black uppercase tracking-wider leading-none">
+ <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[7px] font-black uppercase tracking-wider leading-none">
  <Activity size={8} />
  Active Workspace / Site
  </div>
  )}
  </div>
- <h3 className="text-xl font-black tracking-tight uppercase leading-none group-hover:text-emerald-400 transition-colors mt-1.5">
+ <h3 className="text-xl font-black tracking-tight uppercase leading-none group-hover:text-emerald-600 dark:text-emerald-400 transition-colors mt-1.5">
  {template.name}
  </h3>
  </div>
@@ -398,11 +398,11 @@ const TemplatesPage: React.FC = () => {
  <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest leading-none">
  Lighthouse
  </span>
- <span className="text-lg font-black text-emerald-500 mt-1">
+ <span className="text-lg font-black text-emerald-600 dark:text-emerald-500 mt-1">
  {template.performanceScore}%
  </span>
  </div>
- <div className="w-9 h-9 rounded-none border border-emerald-500/20 bg-emerald-500/5 flex items-center justify-center text-emerald-500 font-bold text-xs ">
+ <div className="w-9 h-9 rounded-none border border-emerald-500/20 bg-emerald-500/5 flex items-center justify-center text-emerald-600 dark:text-emerald-500 font-bold text-xs ">
  {template.performanceScore}
  </div>
  </div>
@@ -412,7 +412,7 @@ const TemplatesPage: React.FC = () => {
  <div
  className={cn(
  'w-full h-40 rounded-none relative overflow-hidden border transition-all duration-500 flex items-center justify-center group-hover:scale-[1.01]',
- theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-gray-50 border-gray-100'
+ theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-gray-50 border-gray-200 shadow-sm'
  )}
  >
  {/* Glass Card Vector Grid Backdrop */}
@@ -495,7 +495,7 @@ const TemplatesPage: React.FC = () => {
  theme === 'dark' ? 'bg-black border-white/[0.08] text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-600'
  )}>
  <div className="flex items-center gap-1.5 truncate">
- <Terminal size={10} className="text-emerald-400" />
+ <Terminal size={10} className="text-emerald-600 dark:text-emerald-400" />
  <span className="truncate select-all">git clone {template.gitUrl}.git</span>
  </div>
  <div className="flex items-center gap-2 shrink-0">
@@ -631,7 +631,7 @@ const TemplatesPage: React.FC = () => {
  <Server size={18} />
  </div>
  <div>
- <span className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.25em] block">
+ <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.25em] block">
  Zero-Config Handshake
  </span>
  <h3 className="text-xl font-black uppercase tracking-tight leading-none mt-1">
@@ -707,7 +707,7 @@ const TemplatesPage: React.FC = () => {
  className={cn(
  'text-[7px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded-none border',
  provider === prov.id
- ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/5'
+ ? 'border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5'
  : 'border-white/[0.08] text-gray-600 bg-white/5'
  )}
  >
@@ -722,11 +722,11 @@ const TemplatesPage: React.FC = () => {
  <div
  className={cn(
  'p-4 border rounded-none flex items-center justify-between gap-4',
- theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50 border-gray-100'
+ theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50 border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center gap-3">
- <GitBranch size={16} className="text-emerald-400" />
+ <GitBranch size={16} className="text-emerald-600 dark:text-emerald-400" />
  <div className="flex flex-col">
  <span className="text-[10px] font-black uppercase tracking-tight leading-none text-white">
  AmanTShekar/{selectedTemplate.slug}
@@ -736,7 +736,7 @@ const TemplatesPage: React.FC = () => {
  </span>
  </div>
  </div>
- <div className="flex items-center gap-1 text-[8px] font-mono text-emerald-400 px-2 py-1 bg-emerald-500/5 border border-emerald-500/20">
+ <div className="flex items-center gap-1 text-[8px] font-mono text-emerald-600 dark:text-emerald-400 px-2 py-1 bg-emerald-500/5 border border-emerald-500/20">
  ● CONNECTED
  </div>
  </div>
@@ -762,7 +762,7 @@ const TemplatesPage: React.FC = () => {
  <div className="space-y-4 flex-1 flex flex-col">
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2.5">
- <Terminal size={14} className="text-emerald-400" />
+ <Terminal size={14} className="text-emerald-600 dark:text-emerald-400" />
  <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">
  Simulated Edge Console Output
  </span>
@@ -815,7 +815,7 @@ const TemplatesPage: React.FC = () => {
  initial={{ scale: 0.5, opacity: 0 }}
  animate={{ scale: 1, opacity: 1 }}
  transition={{ type: 'spring', stiffness: 200, damping: 15 }}
- className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/30 rounded-none flex items-center justify-center mx-auto text-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.25)]"
+ className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/30 rounded-none flex items-center justify-center mx-auto text-emerald-600 dark:text-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.25)]"
  >
  <CheckCircle2 size={32} strokeWidth={2.5} />
  </motion.div>
@@ -834,11 +834,11 @@ const TemplatesPage: React.FC = () => {
  <div
  className={cn(
  'max-w-md mx-auto p-4 border rounded-none flex items-center justify-between gap-4 bg-black/40',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center gap-3 min-w-0">
- <Globe size={16} className="text-emerald-400 shrink-0" />
+ <Globe size={16} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
  <span className="text-[10px] font-black tracking-tight text-white uppercase truncate font-mono">
  {liveUrl}
  </span>
@@ -848,7 +848,7 @@ const TemplatesPage: React.FC = () => {
  className={cn(
  'p-2.5 rounded-none border transition-all flex items-center justify-center shrink-0',
  copied
- ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+ ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
  : 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-white'
  )}
  >

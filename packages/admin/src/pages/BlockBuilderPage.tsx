@@ -202,9 +202,9 @@ export default function BlockBuilderPage() {
  <div className={cn('w-64 flex-shrink-0 border-r flex flex-col', dark ? 'border-white/[0.08] bg-black' : 'border-gray-200 bg-white')}>
  <div className="p-4 border-b border-inherit flex items-center justify-between">
  <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
- <Database size={14} className="text-emerald-500" /> Blocks
+ <Database size={14} className="text-emerald-600 dark:text-emerald-500" /> Blocks
  </h2>
- <button onClick={resetEditor} className="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 rounded transition-colors" title="New Block">
+ <button onClick={resetEditor} className="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-500 rounded transition-colors" title="New Block">
  <Plus size={14} />
  </button>
  </div>
@@ -252,8 +252,8 @@ export default function BlockBuilderPage() {
  </div>
 
  <div className="flex-1 overflow-auto p-6 space-y-6">
- <div className={cn('rounded-none border p-6 space-y-4', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
- <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2"><Settings size={12} /> Component Settings</h3>
+ <div className={cn('rounded-none border p-6 space-y-4', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
+ <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 flex items-center gap-2"><Settings size={12} /> Component Settings</h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Display Name</label>
@@ -274,10 +274,10 @@ export default function BlockBuilderPage() {
  </div>
  </div>
 
- <div className={cn('rounded-none border', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
+ <div className={cn('rounded-none border', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
  <div className="px-6 py-4 border-b border-inherit flex items-center justify-between">
- <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2"><Layers size={12} /> Fields ({fields.length})</h3>
- <button onClick={() => { setModalStep('TYPE'); setActiveField({}); setEditingFieldIndex(null); setSettingsTab('BASIC'); setIsFieldModalOpen(true) }} className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest rounded-none transition-all">
+ <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 flex items-center gap-2"><Layers size={12} /> Fields ({fields.length})</h3>
+ <button onClick={() => { setModalStep('TYPE'); setActiveField({}); setEditingFieldIndex(null); setSettingsTab('BASIC'); setIsFieldModalOpen(true) }} className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-500 text-[10px] font-black uppercase tracking-widest rounded-none transition-all">
  <Plus size={12} /> Add new field
  </button>
  </div>
@@ -294,7 +294,7 @@ export default function BlockBuilderPage() {
  onClick={() => { setActiveField(field); setEditingFieldIndex(i); setModalStep('SETTINGS'); setSettingsTab('BASIC'); setIsFieldModalOpen(true) }}>
  <div className="flex items-center gap-4">
  <div className="w-8 h-8 rounded-none bg-emerald-500/10 flex items-center justify-center">
- {(() => { const ft = FIELD_TYPES.find(t => t.value === field.type); const Icon = ft ? ft.icon : Box; return <Icon size={14} className="text-emerald-500" /> })()}
+ {(() => { const ft = FIELD_TYPES.find(t => t.value === field.type); const Icon = ft ? ft.icon : Box; return <Icon size={14} className="text-emerald-600 dark:text-emerald-500" /> })()}
  </div>
  <div>
  <div className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -347,7 +347,7 @@ export default function BlockBuilderPage() {
  <div className="flex flex-col flex-1 overflow-hidden">
  <div className="flex border-b border-white/[0.08] px-6 pt-4 gap-6 bg-black/20">
  {['BASIC', 'VALIDATION', 'ADMIN'].map(tab => (
- <button key={tab} onClick={() => setSettingsTab(tab as any)} className={cn("pb-3 text-[10px] font-black uppercase tracking-widest transition-colors relative", settingsTab === tab ? "text-emerald-500" : "text-gray-500 hover:text-white")}>
+ <button key={tab} onClick={() => setSettingsTab(tab as any)} className={cn("pb-3 text-[10px] font-black uppercase tracking-widest transition-colors relative", settingsTab === tab ? "text-emerald-600 dark:text-emerald-500" : "text-gray-500 hover:text-white")}>
  {tab}
  {settingsTab === tab && <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500" />}
  </button>
@@ -375,7 +375,7 @@ export default function BlockBuilderPage() {
  
  {activeField?.type === 'relation' && (
  <div className="col-span-2 pt-4 border-t border-white/[0.08] space-y-4">
- <label className="text-[9px] font-black uppercase tracking-widest text-emerald-500 block">Relation Options</label>
+ <label className="text-[9px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 block">Relation Options</label>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div>
  <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-1.5">Relates To</label>

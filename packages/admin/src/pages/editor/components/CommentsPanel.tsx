@@ -61,7 +61,7 @@ const CommentItem: React.FC<{
  'w-7 h-7 rounded-none flex items-center justify-center shrink-0 mt-0.5',
  theme === 'dark' ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-emerald-50 border border-emerald-100'
  )}>
- <span className="text-xs font-black text-emerald-400 uppercase">
+ <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 uppercase">
  {comment.author?.[0] || '?'}
  </span>
  </div>
@@ -76,7 +76,7 @@ const CommentItem: React.FC<{
  {comment.resolved && (
  <span className={cn(
  'text-[7px] font-black uppercase px-1.5 py-0.5 rounded-none',
- theme === 'dark' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-emerald-100 text-emerald-600'
+ theme === 'dark' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-emerald-100 text-emerald-600'
  )}>
  Resolved
  </span>
@@ -103,7 +103,7 @@ const CommentItem: React.FC<{
  {comment.replies?.length > 0 && (
  <div className={cn(
  'border-t',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <button
  onClick={() => setRepliesOpen((v) => !v)}
@@ -151,7 +151,7 @@ const CommentItem: React.FC<{
  {/* Actions */}
  <div className={cn(
  'px-3 py-1.5 border-t flex items-center gap-3',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <button
  onClick={() => setReplyOpen((v) => !v)}
@@ -169,8 +169,8 @@ const CommentItem: React.FC<{
  className={cn(
  'flex items-center gap-1 text-xs font-black uppercase tracking-wider transition-colors',
  comment.resolved
- ? theme === 'dark' ? 'text-emerald-400 hover:text-emerald-300' : 'text-emerald-500 hover:text-emerald-600'
- : theme === 'dark' ? 'text-emerald-400/50 hover:text-emerald-300' : 'text-emerald-300 hover:text-emerald-500'
+ ? theme === 'dark' ? 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 dark:text-emerald-500 hover:text-emerald-600'
+ : theme === 'dark' ? 'text-emerald-400/50 hover:text-emerald-300' : 'text-emerald-300 hover:text-emerald-600 dark:text-emerald-500'
  )}
  >
  {comment.resolved ? <CheckCheck size={9} /> : <Check size={9} />}
@@ -203,7 +203,7 @@ const CommentItem: React.FC<{
  >
  <div className={cn(
  'px-3 py-2 border-t flex gap-2',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <input
  autoFocus
@@ -278,8 +278,8 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  {/* Panel header */}
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2">
- <MessageSquare size={11} className="text-emerald-400" />
- <span className="text-xs font-black uppercase tracking-widest text-emerald-400">
+ <MessageSquare size={11} className="text-emerald-600 dark:text-emerald-400" />
+ <span className="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
  Review
  </span>
  <span className={cn(

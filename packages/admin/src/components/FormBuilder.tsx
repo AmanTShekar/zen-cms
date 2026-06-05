@@ -319,7 +319,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
  {field.label || field.name.replace(/([A-Z])/g, ' $1')}
  {field.required && <span className="text-rose-500">*</span>}
  {field.localized && (
- <span className="px-1.5 py-0.5 text-[8px] font-black tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-none uppercase">
+ <span className="px-1.5 py-0.5 text-[8px] font-black tracking-widest text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-none uppercase">
  {isFieldDisabled ? readOnlyLocale || currentLocale : currentLocale}
  </span>
  )}
@@ -368,7 +368,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
 
  {/* Submit Button */}
  {!hideSubmitButton && (
- <div className="mt-10 pt-6 border-t border-gray-100 flex items-center justify-between">
+ <div className="mt-10 pt-6 border-t border-gray-200 shadow-sm flex items-center justify-between">
  <p className="text-xs text-gray-400">
  Fields marked with <span className="text-danger">*</span> are required.
  </p>

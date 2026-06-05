@@ -486,7 +486,7 @@ export function SlashCommandPlugin() {
  <div
  className={cn(
  'px-3 py-2 border-b flex items-center justify-between',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100',
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm',
  )}
  >
  <span
@@ -501,8 +501,8 @@ export function SlashCommandPlugin() {
  className={cn(
  'text-[7px] font-bold px-1.5 py-0.5 border rounded uppercase',
  theme === 'dark'
- ? 'text-emerald-400 border-emerald-500/20'
- : 'text-emerald-500 border-emerald-200',
+ ? 'text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+ : 'text-emerald-600 dark:text-emerald-500 border-emerald-200',
  )}
  >
  ↑↓ Enter
@@ -524,7 +524,7 @@ export function SlashCommandPlugin() {
  'w-full text-left px-3 py-2.5 flex items-start gap-3 transition-all duration-100 relative',
  isSelected
  ? theme === 'dark'
- ? 'bg-emerald-500/20 text-emerald-400 border-l-2 border-emerald-500'
+ ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-l-2 border-emerald-500'
  : 'bg-emerald-50 text-emerald-600 border-l-2 border-emerald-500'
  : 'border-l-2 border-transparent hover:bg-white/5',
  )}
@@ -534,7 +534,7 @@ export function SlashCommandPlugin() {
  'w-7 h-7 rounded flex items-center justify-center border shrink-0',
  isSelected
  ? theme === 'dark'
- ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+ ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
  : 'bg-emerald-100 border-emerald-200 text-emerald-600'
  : theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-400'

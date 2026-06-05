@@ -296,7 +296,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
  <div
  className={cn(
  'p-6 border-b flex items-center justify-between shrink-0',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100',
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm',
  )}
  >
  <h3
@@ -312,7 +312,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
  aria-label="Close"
  className={cn(
  'p-1 transition-colors',
- theme === 'dark' ? 'text-gray-400 hover:text-emerald-500' : 'text-gray-500 hover:text-emerald-600'
+ theme === 'dark' ? 'text-gray-400 hover:text-emerald-600 dark:text-emerald-500' : 'text-gray-500 hover:text-emerald-600'
  )}
  >
  <X size={18} />
@@ -366,7 +366,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
  'flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-wider transition-all border rounded-none whitespace-nowrap',
  activeCategory === cat
  ? theme === 'dark'
- ? 'bg-emerald-600/20 border-emerald-500/30 text-emerald-400'
+ ? 'bg-emerald-600/20 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
  : 'bg-emerald-100 border-emerald-200 text-emerald-600 shadow-sm'
  : theme === 'dark'
  ? 'bg-transparent border-transparent text-gray-500 hover:bg-white/5'
@@ -568,7 +568,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
  onClick={() => setShowPreview(!showPreview)}
  className={cn(
  "flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all rounded-none border",
- showPreview ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : "bg-white/[0.02] text-gray-400 border-white/[0.08] hover:text-white"
+ showPreview ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30" : "bg-white/[0.02] text-gray-400 border-white/[0.08] hover:text-white"
  )}
  >
  {showPreview ? <EyeOff size={12} /> : <Eye size={12} />}
@@ -667,7 +667,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
  {showPreview && (
  <div className="w-full h-full min-h-[700px] border border-white/[0.08] rounded-none overflow-hidden sticky top-4 bg-black shadow-2xl flex flex-col">
  <div className="px-4 py-2 border-b border-white/[0.08] flex items-center justify-between shrink-0">
- <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-400 flex items-center gap-2">
+ <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
  <div className="w-2 h-2 rounded-none bg-emerald-500 animate-pulse shadow-[0_0_10px_#10B981]" />
  Live Preview Connected
  </span>

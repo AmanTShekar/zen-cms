@@ -25,14 +25,11 @@ test.describe('Collection Management', () => {
     await page.fill('input[name="field-name-0"]', 'title');
     
     // Save collection
-    await page.getByText('Create Content Type').click();
-    
-    try {
-      await expect(page.locator('text=successfully').first()).toBeVisible({ timeout: 10000 });
-    } catch (e) {
-      await page.screenshot({ path: 'test-results/collections-failed-1.png', fullPage: true });
-      throw e;
-    }
+    const [response] = await Promise.all([
+      page.waitForResponse(res => res.url().includes('/system/collections') && res.request().method() === 'POST'),
+      page.getByText('Create Content Type').click()
+    ]);
+    expect(response.status()).toBe(201);
   });
 
   test('Duplicate slug validation', async ({ page }) => {

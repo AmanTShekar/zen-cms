@@ -255,7 +255,7 @@ const TrashPage = () => {
  'text-[10px] font-black uppercase tracking-widest border-b',
  dark
  ? 'text-gray-500 border-white/[0.08]'
- : 'text-gray-400 border-gray-100'
+ : 'text-gray-400 border-gray-200 shadow-sm'
  )}
  >
  <th className="px-5 py-4 font-normal">Title</th>
@@ -319,7 +319,7 @@ const TrashPage = () => {
  className={cn(
  'p-1.5 border transition-all',
  dark
- ? 'border-white/[0.08] text-gray-600 hover:text-emerald-400 hover:border-emerald-500/30'
+ ? 'border-white/[0.08] text-gray-600 hover:text-emerald-600 dark:text-emerald-400 hover:border-emerald-500/30'
  : 'border-gray-200 text-gray-400 hover:text-emerald-600'
  )}
  title="Restore"
@@ -347,7 +347,7 @@ const TrashPage = () => {
  <div
  className={cn(
  'flex items-center justify-between px-5 py-4 border-t',
- dark ? 'border-white/[0.08]' : 'border-gray-100'
+ dark ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}
  >
  <span
@@ -408,7 +408,7 @@ const TrashPage = () => {
  : 'bg-white border-gray-200'
  )}
  >
- <RotateCcw size={32} className="mx-auto mb-4 text-emerald-500" />
+ <RotateCcw size={32} className="mx-auto mb-4 text-emerald-600 dark:text-emerald-500" />
  <h3
  className={cn(
  'text-sm font-black uppercase tracking-wider mb-2',
@@ -449,7 +449,7 @@ const TrashPage = () => {
  <button
  onClick={handleRestore}
  disabled={restoreLoading}
- className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest transition-all border-0 flex items-center gap-2"
+ className="px-5 py-2.5 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest transition-all border-0 flex items-center gap-2"
  >
  {restoreLoading && (
  <Loader2 size={12} className="animate-spin" />

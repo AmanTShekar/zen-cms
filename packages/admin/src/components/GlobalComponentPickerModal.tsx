@@ -131,10 +131,10 @@ export const GlobalComponentPickerModal: React.FC = () => {
  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/70 to-transparent" />
 
  {/* Header */}
- <div className={cn('px-6 pt-6 pb-4 border-b flex-shrink-0', isDark ? 'border-white/[0.08]' : 'border-gray-100')}>
+ <div className={cn('px-6 pt-6 pb-4 border-b flex-shrink-0', isDark ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm')}>
  <div className="flex items-start justify-between mb-5">
  <div>
- <p className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.4em] mb-1.5">
+ <p className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.4em] mb-1.5">
  Zenith Page Builder
  </p>
  <h3 className={cn('text-2xl font-black', isDark ? 'text-white' : 'text-black')}>
@@ -291,7 +291,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
  </div>
 
  {/* Footer */}
- <div className={cn('px-6 py-3 border-t flex items-center justify-between flex-shrink-0', isDark ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-100 bg-gray-50/50')}>
+ <div className={cn('px-6 py-3 border-t flex items-center justify-between flex-shrink-0', isDark ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-200 shadow-sm bg-gray-50/50')}>
  <p className={cn('text-[9px]', isDark ? 'text-gray-500' : 'text-gray-400')}>
  {filtered.length} component{filtered.length !== 1 ? 's' : ''} available
  </p>

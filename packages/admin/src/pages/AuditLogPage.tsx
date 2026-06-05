@@ -160,8 +160,8 @@ const AuditLogPage: React.FC = () => {
 
  const getActionColor = (action: string) => {
  const upper = action?.toUpperCase()
- if (upper === 'CREATE') return 'bg-emerald-500/5 text-emerald-500 border-emerald-500/10'
- if (upper === 'UPDATE') return 'bg-emerald-500/5 text-emerald-500 border-emerald-500/10'
+ if (upper === 'CREATE') return 'bg-emerald-500/5 text-emerald-600 dark:text-emerald-500 border-emerald-500/10'
+ if (upper === 'UPDATE') return 'bg-emerald-500/5 text-emerald-600 dark:text-emerald-500 border-emerald-500/10'
  if (upper === 'DELETE') return 'bg-red-500/5 text-red-500 border-red-500/10'
  return 'bg-amber-500/5 text-amber-500 border-amber-500/10'
  }
@@ -189,7 +189,7 @@ const AuditLogPage: React.FC = () => {
  </div>
  <div className="flex flex-col">
  <div className="flex items-center gap-3 mb-1">
- <span className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.3em] ">
+ <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.3em] ">
  System History
  </span>
  <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 shadow-[0_0_8px_#10b981]" />
@@ -204,14 +204,14 @@ const AuditLogPage: React.FC = () => {
  <div
  className={cn(
  'px-6 py-3 border rounded-none flex items-center gap-8 shadow-sm backdrop-blur-xl',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-100'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
  <div className="flex flex-col items-end">
  <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest opacity-60">
  Total Logs
  </span>
- <span className="text-xl font-black tracking-tighter leading-none text-emerald-500">
+ <span className="text-xl font-black tracking-tighter leading-none text-emerald-600 dark:text-emerald-500">
  {total.toLocaleString()}
  </span>
  </div>
@@ -231,7 +231,7 @@ const AuditLogPage: React.FC = () => {
  <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest opacity-60">
  Status
  </span>
- <span className="text-xs font-black text-emerald-500 tracking-tighter uppercase leading-none">
+ <span className="text-xs font-black text-emerald-600 dark:text-emerald-500 tracking-tighter uppercase leading-none">
  Stable
  </span>
  </div>
@@ -245,7 +245,7 @@ const AuditLogPage: React.FC = () => {
  'w-12 h-12 border rounded-none flex items-center justify-center transition-all hover:scale-105 active:scale-95',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-400'
- : 'bg-white border-gray-100 text-gray-400'
+ : 'bg-white border-gray-200 shadow-sm text-gray-400'
  )}
  >
  <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
@@ -257,26 +257,26 @@ const AuditLogPage: React.FC = () => {
  <div
  className={cn(
  'border rounded-none shadow-sm flex flex-col relative transition-colors backdrop-blur-3xl overflow-hidden',
- theme === 'dark' ? 'bg-black/80 border-white/[0.08]' : 'bg-white border-gray-100'
+ theme === 'dark' ? 'bg-black/80 border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
  {/* Control Bar */}
  <div
  className={cn(
  'px-8 py-5 border-b flex items-center justify-between gap-6 transition-colors',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/30 border-gray-100'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/30 border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center gap-4 flex-1">
  <div
  className={cn(
  'flex items-center gap-4 border px-6 py-3 rounded-none w-full max-w-md shadow-inner transition-all group relative overflow-hidden',
- theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100'
+ theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
  <Search
  size={16}
- className="text-gray-500 group-focus-within:text-emerald-500 transition-colors"
+ className="text-gray-500 group-focus-within:text-emerald-600 dark:text-emerald-500 transition-colors"
  />
  <input
  type="text"
@@ -293,7 +293,7 @@ const AuditLogPage: React.FC = () => {
  onChange={(e) => { setFilterAction(e.target.value); setPage(1) }}
  className={cn(
  'px-4 py-3 border rounded-none text-[9px] font-black uppercase tracking-widest ',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-gray-400' : 'bg-white border-gray-100 text-gray-400'
+ theme === 'dark' ? 'bg-black border-white/[0.08] text-gray-400' : 'bg-white border-gray-200 shadow-sm text-gray-400'
  )}
  >
  <option value="">All Actions</option>
@@ -314,7 +314,7 @@ const AuditLogPage: React.FC = () => {
  'flex items-center gap-3 px-6 py-3 border rounded-none text-[9px] font-black uppercase tracking-widest transition-all hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/20',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-400'
- : 'bg-white border-gray-100 text-gray-400'
+ : 'bg-white border-gray-200 shadow-sm text-gray-400'
  )}
  >
  <Trash2 size={14} />
@@ -377,7 +377,7 @@ const AuditLogPage: React.FC = () => {
  <td colSpan={5} className="py-20 text-center">
  <Loader2
  size={24}
- className="animate-spin text-emerald-500 mx-auto opacity-40"
+ className="animate-spin text-emerald-600 dark:text-emerald-500 mx-auto opacity-40"
  />
  </td>
  </tr>
@@ -405,7 +405,7 @@ const AuditLogPage: React.FC = () => {
  'w-8 h-8 rounded-none border flex items-center justify-center text-gray-500',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08]'
- : 'bg-gray-50 border-gray-100'
+ : 'bg-gray-50 border-gray-200 shadow-sm'
  )}
  >
  <Fingerprint size={16} />
@@ -450,7 +450,7 @@ const AuditLogPage: React.FC = () => {
  <span
  className={cn(
  'text-[8px] font-black uppercase tracking-widest ',
- log.status === 'failed' ? 'text-red-500' : 'text-emerald-500'
+ log.status === 'failed' ? 'text-red-500' : 'text-emerald-600 dark:text-emerald-500'
  )}
  >
  {log.status || 'success'}
@@ -481,7 +481,7 @@ const AuditLogPage: React.FC = () => {
  <div
  className={cn(
  'px-8 py-6 border-t transition-colors',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/30 border-gray-100'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/30 border-gray-200 shadow-sm'
  )}
  >
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-[10px] font-mono">
@@ -521,7 +521,7 @@ const AuditLogPage: React.FC = () => {
  <div className="text-[7px] font-black uppercase tracking-widest text-gray-500 mb-2">Changes</div>
  <pre className={cn(
  'p-4 rounded-none text-[10px] font-mono max-h-48 overflow-auto border',
- theme === 'dark' ? 'bg-black/50 border-white/[0.08] text-gray-400' : 'bg-gray-50 border-gray-100 text-gray-600'
+ theme === 'dark' ? 'bg-black/50 border-white/[0.08] text-gray-400' : 'bg-gray-50 border-gray-200 shadow-sm text-gray-600'
  )}>
  {JSON.stringify(log.changes, null, 2)}
  </pre>
@@ -535,7 +535,7 @@ const AuditLogPage: React.FC = () => {
  <div
  className={cn(
  'px-8 py-6 border-t flex items-center justify-between transition-colors',
- theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50/20 border-gray-100'
+ theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50/20 border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center gap-4">
@@ -565,7 +565,7 @@ const AuditLogPage: React.FC = () => {
  'w-10 h-10 border rounded-none flex items-center justify-center transition-all disabled:opacity-20',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-400'
- : 'bg-white border-gray-100 text-gray-400'
+ : 'bg-white border-gray-200 shadow-sm text-gray-400'
  )}
  >
  <ChevronLeft size={18} />
@@ -589,7 +589,7 @@ const AuditLogPage: React.FC = () => {
  'w-10 h-10 border rounded-none flex items-center justify-center transition-all disabled:opacity-20',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-400'
- : 'bg-white border-gray-100 text-gray-400'
+ : 'bg-white border-gray-200 shadow-sm text-gray-400'
  )}
  >
  <ChevronRight size={18} />

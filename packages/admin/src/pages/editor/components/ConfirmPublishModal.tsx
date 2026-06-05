@@ -71,7 +71,7 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
  </button>
  <button
  onClick={onConfirm}
- className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-emerald-600 text-white text-xs font-black uppercase tracking-widest rounded-none hover:bg-emerald-500 transition-all"
+ className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-emerald-600 dark:bg-emerald-600 text-white text-xs font-black uppercase tracking-widest rounded-none hover:bg-emerald-500 transition-all"
  >
  <Rocket size={12} />
  Publish Now

@@ -24,7 +24,7 @@ export const AutoSaveIndicator: React.FC = () => {
  className={cn(
  'px-2.5 py-1 flex items-center gap-1.5 border text-xs font-black uppercase tracking-wider rounded-none',
  theme === 'dark'
- ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+ ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
  : 'bg-emerald-50 border-emerald-200 text-emerald-600'
  )}
  >
@@ -60,11 +60,11 @@ export const AutoSaveIndicator: React.FC = () => {
  className={cn(
  'px-2.5 py-1 flex items-center gap-1.5 border text-xs font-black uppercase tracking-wider rounded-none',
  theme === 'dark'
- ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+ ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
  : 'bg-emerald-50 border-emerald-200 text-emerald-600'
  )}
  >
- <Check size={11} className="text-emerald-500" />
+ <Check size={11} className="text-emerald-600 dark:text-emerald-500" />
  <span>Saved</span>
  </motion.div>
  )}

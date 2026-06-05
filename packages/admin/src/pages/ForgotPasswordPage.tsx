@@ -51,7 +51,7 @@ const ForgotPasswordPage: React.FC = () => {
  return (
  <div
  className={cn(
- 'min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-sans antialiased selection:bg-emerald-600 selection:text-white transition-colors duration-500',
+ 'min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-sans antialiased selection:bg-emerald-600 dark:bg-emerald-600 selection:text-white transition-colors duration-500',
  theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-[#111827]'
  )}
  >
@@ -103,7 +103,7 @@ const ForgotPasswordPage: React.FC = () => {
  animate={{ opacity: 1, scale: 1 }}
  className={cn(
  'border rounded-none p-8 shadow-2xl relative transition-all duration-500',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-100'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center justify-between mb-8">
@@ -156,7 +156,7 @@ const ForgotPasswordPage: React.FC = () => {
  {success ? (
  <div className="space-y-6 text-center">
  <div className="flex justify-center">
- <CheckCircle className="text-emerald-500 w-12 h-12" />
+ <CheckCircle className="text-emerald-600 dark:text-emerald-500 w-12 h-12" />
  </div>
  <p
  className={cn(
@@ -204,7 +204,7 @@ const ForgotPasswordPage: React.FC = () => {
  className={cn(
  'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
  theme === 'dark'
- ? 'text-white/20 group-focus-within:text-emerald-400'
+ ? 'text-white/20 group-focus-within:text-emerald-600 dark:text-emerald-400'
  : 'text-gray-300 group-focus-within:text-emerald-600'
  )}
  size={16}
@@ -217,7 +217,7 @@ const ForgotPasswordPage: React.FC = () => {
  'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
- : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
+ : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
  )}
  />
  </div>
@@ -257,7 +257,7 @@ const ForgotPasswordPage: React.FC = () => {
  className={cn(
  'text-[9px] font-black uppercase tracking-widest hover:underline flex items-center justify-center gap-2 transition-colors',
  theme === 'dark'
- ? 'text-emerald-400 hover:text-emerald-300'
+ ? 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-300'
  : 'text-emerald-600 hover:text-emerald-700'
  )}
  >

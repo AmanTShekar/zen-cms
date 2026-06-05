@@ -50,7 +50,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3 col-span-1 md:col-span-2',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -73,14 +73,14 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
  </select>
  <ChevronDown
  size={18}
- className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none group-hover:text-emerald-500 transition-colors"
+ className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none group-hover:text-emerald-600 dark:text-emerald-500 transition-colors"
  />
  </div>
  </div>
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3 col-span-1 md:col-span-2',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -106,14 +106,14 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
  <div
  className={cn(
  'col-span-1 md:col-span-2 p-6 rounded-none border flex items-center justify-between transition-all',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/50 border-gray-100'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/50 border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center gap-4">
  <div className={cn(
  'w-12 h-12 rounded-none flex items-center justify-center transition-colors',
  isConfigured
- ? 'bg-emerald-500/10 text-emerald-500'
+ ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-500'
  : 'bg-white/5 text-gray-500'
  )}>
  <Terminal size={24} />
@@ -121,7 +121,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
  <div className="flex flex-col">
  <span className={cn(
  'text-sm font-bold',
- isConfigured ? 'text-emerald-500' : 'text-gray-500'
+ isConfigured ? 'text-emerald-600 dark:text-emerald-500' : 'text-gray-500'
  )}>
  Neural Bridge: {isConfigured ? 'ACTIVE' : 'INACTIVE'}
  </span>
@@ -136,7 +136,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
  className={cn(
  'px-6 py-2.5 rounded-none text-xs font-bold transition-all flex items-center gap-2 disabled:opacity-50 border',
  isConfigured
- ? 'bg-emerald-600 text-white hover:bg-emerald-500 border-transparent shadow-[0_0_15px_rgba(16,185,129,0.2)]'
+ ? 'bg-emerald-600 dark:bg-emerald-600 text-white hover:bg-emerald-500 border-transparent shadow-[0_0_15px_rgba(16,185,129,0.2)]'
  : theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:bg-white/10'
  : 'bg-gray-100 border-transparent text-gray-600 hover:bg-gray-200'

@@ -44,8 +44,8 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  )}
  >
  <div className="flex items-center gap-2 mb-1">
- <Link2 size={13} className="text-emerald-500" />
- <span className="text-xs font-bold text-emerald-500 uppercase tracking-widest">
+ <Link2 size={13} className="text-emerald-600 dark:text-emerald-500" />
+ <span className="text-xs font-bold text-emerald-600 dark:text-emerald-500 uppercase tracking-widest">
  Site Identifier
  </span>
  </div>
@@ -84,7 +84,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -106,7 +106,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -128,7 +128,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -151,7 +151,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -174,7 +174,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -196,7 +196,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -220,7 +220,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  'p-5 rounded-none border flex items-center justify-between transition-all group col-span-1 md:col-span-2',
  theme === 'dark'
  ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20'
- : 'bg-gray-50/50 border-gray-100 hover:border-emerald-500/30'
+ : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
  )}
  >
  <div className="flex flex-col">

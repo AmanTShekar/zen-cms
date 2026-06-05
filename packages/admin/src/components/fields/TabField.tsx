@@ -44,7 +44,7 @@ const TabField: React.FC<TabFieldProps> = ({ field, value, onChange, disabled, r
  className={cn(
  'px-4 py-2.5 text-[10px] font-black uppercase tracking-wider transition-colors',
  activeTab === idx
- ? 'text-emerald-400 border-b-2 border-emerald-500 bg-white/[0.03]'
+ ? 'text-emerald-600 dark:text-emerald-400 border-b-2 border-emerald-500 bg-white/[0.03]'
  : 'text-gray-500 hover:text-gray-300'
  )}
  >

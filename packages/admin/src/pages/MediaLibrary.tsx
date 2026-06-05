@@ -300,7 +300,7 @@ const MediaLibrary = () => {
  <div className="absolute inset-0 bg-emerald-500/20 blur-[100px] rounded-none animate-pulse" />
  <Cpu
  size={48}
- className="text-emerald-500 animate-spin transition-all duration-1000"
+ className="text-emerald-600 dark:text-emerald-500 animate-spin transition-all duration-1000"
  strokeWidth={1}
  />
  </div>
@@ -331,7 +331,7 @@ const MediaLibrary = () => {
  </div>
  <div className="flex flex-col">
  <div className="flex items-center gap-3 mb-2">
- <span className="text-[9px] font-black text-emerald-500 uppercase tracking-[0.4em] leading-none border px-2 py-1 rounded-none border-emerald-500/10 bg-emerald-500/5">
+ <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.4em] leading-none border px-2 py-1 rounded-none border-emerald-500/10 bg-emerald-500/5">
  OPERATIONAL_STORAGE
  </span>
  <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 shadow-[0_0_8px_#10b981]" />
@@ -346,7 +346,7 @@ const MediaLibrary = () => {
  <div
  className={cn(
  'hidden md:flex px-6 py-3 border rounded-none items-center gap-8 transition-colors',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-100'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
  <div className="flex flex-col items-end leading-none">
@@ -360,7 +360,7 @@ const MediaLibrary = () => {
  <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-1.5">
  Status
  </span>
- <span className="text-[11px] font-black text-emerald-500 uppercase ">
+ <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-500 uppercase ">
  HARDENED
  </span>
  </div>
@@ -391,7 +391,7 @@ const MediaLibrary = () => {
  activeFolder === null
  ? theme === 'dark'
  ? 'bg-white/[0.03] border-white/[0.08] text-white shadow-lg'
- : 'bg-white border-gray-100 shadow-lg text-gray-900'
+ : 'bg-white border-gray-200 shadow-sm shadow-lg text-gray-900'
  : 'text-gray-500 hover:text-gray-700 hover:bg-white/[0.02]'
  )}
  >
@@ -399,7 +399,7 @@ const MediaLibrary = () => {
  <Database
  size={16}
  className={
- activeFolder === null ? 'text-emerald-500' : 'opacity-30 group-hover:opacity-60'
+ activeFolder === null ? 'text-emerald-600 dark:text-emerald-500' : 'opacity-30 group-hover:opacity-60'
  }
  />
  <div className="flex flex-col items-start">
@@ -425,7 +425,7 @@ const MediaLibrary = () => {
  activeFolder === folder
  ? theme === 'dark'
  ? 'bg-white/[0.03] border-white/[0.08] text-white shadow-lg'
- : 'bg-white border-gray-100 shadow-lg text-gray-900'
+ : 'bg-white border-gray-200 shadow-sm shadow-lg text-gray-900'
  : 'text-gray-500 hover:text-gray-700 hover:bg-white/[0.02]'
  )}
  >
@@ -434,7 +434,7 @@ const MediaLibrary = () => {
  size={16}
  className={
  activeFolder === folder
- ? 'text-emerald-500'
+ ? 'text-emerald-600 dark:text-emerald-500'
  : 'opacity-30 group-hover:opacity-60'
  }
  />
@@ -459,18 +459,18 @@ const MediaLibrary = () => {
  <div
  className={cn(
  'flex items-center gap-4 px-6 border rounded-none shadow-sm relative transition-all group overflow-hidden backdrop-blur-3xl',
- theme === 'dark' ? 'bg-black/80 border-white/[0.08]' : 'bg-white border-gray-100'
+ theme === 'dark' ? 'bg-black/80 border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
  <button
  onClick={toggleSelectAll}
- className="p-1 text-gray-500 hover:text-emerald-400 transition-colors shrink-0"
+ className="p-1 text-gray-500 hover:text-emerald-600 dark:text-emerald-400 transition-colors shrink-0"
  title={selectedIds.size === filteredFiles.length ? 'Deselect all' : 'Select all visible'}
  >
  {selectedIds.size > 0 ? <CheckSquare size={18} /> : <Square size={18} />}
  </button>
  <Search
- className="text-gray-500 group-focus-within:text-emerald-500 transition-colors"
+ className="text-gray-500 group-focus-within:text-emerald-600 dark:text-emerald-500 transition-colors"
  size={20}
  strokeWidth={1.5}
  />
@@ -510,7 +510,7 @@ const MediaLibrary = () => {
  )}
  >
  <span className="text-[10px] font-black uppercase tracking-widest flex items-center gap-3">
- <CheckSquare size={14} className="text-emerald-500" />
+ <CheckSquare size={14} className="text-emerald-600 dark:text-emerald-500" />
  {selectedIds.size} asset{selectedIds.size !== 1 ? 's' : ''} selected
  </span>
  <div className="flex items-center gap-3">
@@ -546,7 +546,7 @@ const MediaLibrary = () => {
  'group relative border rounded-none overflow-hidden cursor-pointer transition-all duration-300 shadow-sm hover:shadow-2xl hover:scale-[1.03]',
  theme === 'dark'
  ? 'bg-black border-white/[0.08] hover:border-emerald-500/40'
- : 'bg-white border-gray-100 hover:border-emerald-200',
+ : 'bg-white border-gray-200 shadow-sm hover:border-emerald-200',
  selectedIds.has(file._id) && (theme === 'dark' ? 'border-emerald-500/60 ring-1 ring-emerald-500/30' : 'border-emerald-400 ring-1 ring-emerald-400/40')
  )}
  >
@@ -639,7 +639,7 @@ const MediaLibrary = () => {
  exit={{ opacity: 0, scale: 0.98, y: 30 }}
  className={cn(
  'w-full max-w-[1200px] h-full max-h-[800px] rounded-none overflow-hidden border shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col xl:row relative z-10',
- theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100'
+ theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
  <div className="flex flex-col xl:flex-row h-full">
@@ -687,7 +687,7 @@ const MediaLibrary = () => {
  <div className="p-12 rounded-none bg-emerald-500/5 border border-emerald-500/10 shadow-2xl">
  <Binary
  size={80}
- className="text-emerald-500 opacity-20"
+ className="text-emerald-600 dark:text-emerald-500 opacity-20"
  strokeWidth={0.5}
  />
  </div>
@@ -714,7 +714,7 @@ const MediaLibrary = () => {
  </p>
  <div className="flex items-center gap-2">
  <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
- <span className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.4em] ">
+ <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.4em] ">
  NODE_SYNC_ACTIVE
  </span>
  </div>
@@ -726,7 +726,7 @@ const MediaLibrary = () => {
  <div
  className={cn(
  'w-full xl:w-[400px] border-l p-10 space-y-10 overflow-y-auto no-scrollbar transition-colors',
- theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-gray-50 border-gray-100'
+ theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-gray-50 border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center justify-between">
@@ -734,7 +734,7 @@ const MediaLibrary = () => {
  <h3 className="text-[24px] font-black uppercase tracking-tighter leading-none">
  Metadata
  </h3>
- <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] ">
+ <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.3em] ">
  Structural_Signature
  </p>
  </div>
@@ -744,7 +744,7 @@ const MediaLibrary = () => {
  'w-12 h-12 rounded-none transition-all flex items-center justify-center border shadow-lg group hover:rotate-90',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-white'
- : 'bg-white border-gray-100 text-gray-400 hover:text-gray-900'
+ : 'bg-white border-gray-200 shadow-sm text-gray-400 hover:text-gray-900'
  )}
  >
  <X size={20} />
@@ -761,7 +761,7 @@ const MediaLibrary = () => {
  Simulation_Scale
  </span>
  </div>
- <span className="text-[18px] font-black text-emerald-500 tracking-tighter">
+ <span className="text-[18px] font-black text-emerald-600 dark:text-emerald-500 tracking-tighter">
  {previewWidth}PX
  </span>
  </div>
@@ -790,7 +790,7 @@ const MediaLibrary = () => {
  onClick={() => setRotation((r) => (r + 270) % 360)}
  className={cn(
  'p-3 rounded-none border flex items-center justify-center transition-all',
- theme === 'dark' ? 'border-white/[0.08] hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
+ theme === 'dark' ? 'border-white/[0.08] hover:border-white/30 text-gray-400' : 'border-gray-200 shadow-sm hover:border-gray-300'
  )}
  title="Rotate 90° CCW"
  >
@@ -800,7 +800,7 @@ const MediaLibrary = () => {
  onClick={() => setRotation((r) => (r + 90) % 360)}
  className={cn(
  'p-3 rounded-none border flex items-center justify-center transition-all',
- theme === 'dark' ? 'border-white/[0.08] hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
+ theme === 'dark' ? 'border-white/[0.08] hover:border-white/30 text-gray-400' : 'border-gray-200 shadow-sm hover:border-gray-300'
  )}
  title="Rotate 90° CW"
  >
@@ -811,8 +811,8 @@ const MediaLibrary = () => {
  className={cn(
  'p-3 rounded-none border flex items-center justify-center transition-all',
  flipX
- ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-500'
- : theme === 'dark' ? 'border-white/[0.08] hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
+ ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-600 dark:text-emerald-500'
+ : theme === 'dark' ? 'border-white/[0.08] hover:border-white/30 text-gray-400' : 'border-gray-200 shadow-sm hover:border-gray-300'
  )}
  title="Flip horizontal"
  >
@@ -823,8 +823,8 @@ const MediaLibrary = () => {
  className={cn(
  'p-3 rounded-none border flex items-center justify-center transition-all',
  flipY
- ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-500'
- : theme === 'dark' ? 'border-white/[0.08] hover:border-white/30 text-gray-400' : 'border-gray-100 hover:border-gray-300'
+ ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-600 dark:text-emerald-500'
+ : theme === 'dark' ? 'border-white/[0.08] hover:border-white/30 text-gray-400' : 'border-gray-200 shadow-sm hover:border-gray-300'
  )}
  title="Flip vertical"
  >
@@ -837,8 +837,8 @@ const MediaLibrary = () => {
  className={cn(
  'flex-1 py-3 rounded-none text-[9px] font-black uppercase tracking-widest transition-all leading-none flex items-center justify-center gap-2 border',
  isCropMode
- ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-500'
- : theme === 'dark' ? 'border-white/[0.08] text-gray-400 hover:border-white/30' : 'border-gray-100 hover:border-gray-300'
+ ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-600 dark:text-emerald-500'
+ : theme === 'dark' ? 'border-white/[0.08] text-gray-400 hover:border-white/30' : 'border-gray-200 shadow-sm hover:border-gray-300'
  )}
  >
  <Crop size={12} /> {isCropMode ? 'CROP_ACTIVE' : 'CROP'}
@@ -848,7 +848,7 @@ const MediaLibrary = () => {
  onClick={resetTransform}
  className={cn(
  'py-3 px-4 rounded-none text-[9px] font-black uppercase tracking-widest transition-all leading-none flex items-center justify-center gap-2 border',
- theme === 'dark' ? 'border-white/[0.08] text-gray-400 hover:text-red-400 hover:border-red-400/30' : 'border-gray-100 hover:text-red-500 hover:border-red-300'
+ theme === 'dark' ? 'border-white/[0.08] text-gray-400 hover:text-red-400 hover:border-red-400/30' : 'border-gray-200 shadow-sm hover:text-red-500 hover:border-red-300'
  )}
  >
  <Undo2 size={12} /> RESET
@@ -864,7 +864,7 @@ const MediaLibrary = () => {
  placeholder="transformed_filename.ext"
  className={cn(
  'flex-1 px-3 py-3 text-[9px] font-mono border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black bg-transparent',
- theme === 'dark' ? 'border-white/[0.08] text-white' : 'border-gray-100'
+ theme === 'dark' ? 'border-white/[0.08] text-white' : 'border-gray-200 shadow-sm'
  )}
  />
  <button
@@ -874,7 +874,7 @@ const MediaLibrary = () => {
  'px-6 py-3 rounded-none text-[9px] font-black uppercase tracking-widest transition-all leading-none flex items-center justify-center gap-2',
  isProcessing
  ? 'bg-gray-500 text-gray-300'
- : 'bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg'
+ : 'bg-emerald-500 text-white hover:bg-emerald-600 dark:bg-emerald-600 shadow-lg'
  )}
  >
  <Save size={12} /> {isProcessing ? 'SAVING...' : 'SAVE'}
@@ -914,13 +914,13 @@ const MediaLibrary = () => {
  'p-4 border rounded-none flex items-center justify-between group transition-all',
  theme === 'dark'
  ? 'bg-white/[0.01] border-white/[0.08] hover:bg-white/[0.03]'
- : 'bg-white border-gray-100'
+ : 'bg-white border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center gap-4">
  <item.icon
  size={14}
- className="text-gray-500 group-hover:text-emerald-500 transition-colors"
+ className="text-gray-500 group-hover:text-emerald-600 dark:text-emerald-500 transition-colors"
  />
  <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest leading-none">
  {item.label}
@@ -971,7 +971,7 @@ const MediaLibrary = () => {
  'w-14 h-14 rounded-none border flex items-center justify-center transition-all hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-500',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-500'
- : 'bg-white border-gray-100 text-gray-400'
+ : 'bg-white border-gray-200 shadow-sm text-gray-400'
  )}
  >
  <Trash2 size={20} />

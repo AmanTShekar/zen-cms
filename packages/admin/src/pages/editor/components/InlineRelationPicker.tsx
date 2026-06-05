@@ -144,7 +144,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  className={cn(
  'w-full px-4 py-3 flex items-center justify-between border text-xs font-bold transition-all rounded-none',
  theme === 'dark'
- ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
+ ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20'
  : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100'
  )}
  >
@@ -176,14 +176,14 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  {/* Header */}
  <div className={cn(
  'px-4 py-3 border-b flex items-center justify-between shrink-0',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
- <span className="text-xs font-black uppercase tracking-widest text-emerald-400">
+ <span className="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
  Content Relations
  </span>
  <div className="flex items-center gap-1.5">
  {selectedCount > 0 && (
- <span className="text-xs font-black text-emerald-400 uppercase ">
+ <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 uppercase ">
  {selectedCount} selected
  </span>
  )}
@@ -212,7 +212,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
 
  {!collection ? (
  <div className="p-6 text-center">
- <p className="text-xs font-black uppercase text-emerald-400 mb-1">No collection configured</p>
+ <p className="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400 mb-1">No collection configured</p>
  <p className="text-xs text-gray-500">Set <code className="text-xs">relationTo</code> on the field to enable inline relation picker.</p>
  </div>
  ) : (
@@ -244,7 +244,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  <div className="flex-1 overflow-y-auto max-h-56 custom-editor-scrollbar px-2 pb-2 space-y-0.5">
  {loading ? (
  <div className="flex items-center justify-center py-8 gap-2">
- <Loader2 size={14} className="animate-spin text-emerald-500" />
+ <Loader2 size={14} className="animate-spin text-emerald-600 dark:text-emerald-500" />
  <span className="text-xs font-bold text-gray-500 uppercase animate-pulse">Searching...</span>
  </div>
  ) : results.length === 0 ? (
@@ -270,7 +270,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  : 'bg-emerald-50 border-emerald-200 text-emerald-700'
  : theme === 'dark'
  ? 'border-white/0 text-gray-300 hover:bg-white/5 hover:border-white/[0.08]'
- : 'border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-100'
+ : 'border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-200 shadow-sm'
  )}
  >
  {/* Selection indicator */}
@@ -294,7 +294,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  <span className={cn(
  'text-[7px] font-bold uppercase ',
  item._status === 'published'
- ? 'text-emerald-500'
+ ? 'text-emerald-600 dark:text-emerald-500'
  : 'text-amber-500'
  )}>
  {item._status}
@@ -305,7 +305,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  {/* +/- for hasMany */}
  {hasMany && isSelected && (
  <div className="shrink-0 ml-1">
- <Minus size={10} className="text-emerald-400" />
+ <Minus size={10} className="text-emerald-600 dark:text-emerald-400" />
  </div>
  )}
  
@@ -336,7 +336,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  {/* Footer */}
  <div className={cn(
  'px-3 py-2.5 border-t flex items-center gap-2 shrink-0',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <button
  onClick={handleClear}
@@ -352,7 +352,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  <button
  onClick={handleApply}
  className={cn(
- 'flex-1 py-1.5 text-xs font-black uppercase rounded-none transition-all bg-emerald-600 text-white hover:bg-emerald-500'
+ 'flex-1 py-1.5 text-xs font-black uppercase rounded-none transition-all bg-emerald-600 dark:bg-emerald-600 text-white hover:bg-emerald-500'
  )}
  >
  Done

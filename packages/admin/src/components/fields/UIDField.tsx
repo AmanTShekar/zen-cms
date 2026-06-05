@@ -40,7 +40,7 @@ const UIDField: React.FC<UIDFieldProps> = ({ value, onChange, disabled }) => {
  onClick={handleRegenerate}
  disabled={disabled}
  title="Regenerate UID"
- className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-emerald-400 disabled:opacity-30 transition-colors"
+ className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-emerald-600 dark:text-emerald-400 disabled:opacity-30 transition-colors"
  >
  <RefreshCw size={13} />
  </button>

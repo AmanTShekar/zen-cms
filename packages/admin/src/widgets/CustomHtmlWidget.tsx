@@ -34,7 +34,7 @@ export default function CustomHtmlWidget({
  onConfigChange({ ...config, html: draft })
  setEditing(false)
  }}
- className="px-4 py-2 bg-emerald-600 text-white text-[9px] font-black uppercase tracking-widest rounded-none"
+ className="px-4 py-2 bg-emerald-600 dark:bg-emerald-600 text-white text-[9px] font-black uppercase tracking-widest rounded-none"
  >
  Save
  </button>

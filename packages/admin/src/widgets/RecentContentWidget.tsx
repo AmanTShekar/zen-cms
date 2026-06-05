@@ -20,7 +20,7 @@ export default function RecentContentWidget({ config = {}, theme, title }: Widge
 
  return (
  <div className="h-full flex flex-col gap-3">
- <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest ">
+ <p className="text-[9px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest ">
  {title || config.title || 'Recently Edited'}
  </p>
  {loading && <p className="text-[9px] text-gray-500 ">Loading...</p>}
@@ -42,7 +42,7 @@ export default function RecentContentWidget({ config = {}, theme, title }: Widge
  'w-full flex items-center justify-between p-3 border rounded-none group transition-all text-left',
  theme === 'dark'
  ? 'bg-white/[0.01] border-white/[0.08] hover:border-emerald-500/20'
- : 'bg-gray-50 border-gray-100 hover:border-emerald-100'
+ : 'bg-gray-50 border-gray-200 shadow-sm hover:border-emerald-100'
  )}
  >
  <div>
@@ -55,7 +55,7 @@ export default function RecentContentWidget({ config = {}, theme, title }: Widge
  </div>
  <ArrowRight
  size={12}
- className="text-gray-500 group-hover:text-emerald-500 transition-colors shrink-0"
+ className="text-gray-500 group-hover:text-emerald-600 dark:text-emerald-500 transition-colors shrink-0"
  />
  </button>
  ))}

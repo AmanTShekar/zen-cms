@@ -263,7 +263,7 @@ export const VisualGraphPage = () => {
  const totalFields = nodes.reduce((acc, n) => acc + n.fields.length, 0)
 
  return (
- <div className={cn('w-full h-[calc(100vh-4rem)] flex relative overflow-hidden', dark ? 'bg-[#030507]' : 'bg-gray-50')}>
+ <div className={cn('-m-6 md:-m-10 h-[calc(100vh-73px)] flex relative overflow-hidden', 'bg-[#fafafa] dark:bg-black')}>
 
  {/* ── Top HUD Bar ──────────────────────────────────────────────── */}
  <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 hidden md:flex items-center gap-6 pointer-events-none">
@@ -273,7 +273,7 @@ export const VisualGraphPage = () => {
  )}>
  <div className="flex items-center gap-2.5">
  <div className="w-8 h-8 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
- <Network size={16} className="text-emerald-400" />
+ <Network size={16} className="text-emerald-600 dark:text-emerald-400" />
  </div>
  <div>
  <p className={cn('text-xs font-black uppercase tracking-widest', dark ? 'text-white' : 'text-black')}>Schema Graph</p>
@@ -346,7 +346,7 @@ export const VisualGraphPage = () => {
  >
  {loading ? (
  <div className="absolute inset-0 flex items-center justify-center">
- <Activity className="animate-spin text-emerald-500" size={32} />
+ <Activity className="animate-spin text-emerald-600 dark:text-emerald-500" size={32} />
  </div>
  ) : (
  <svg
@@ -575,7 +575,7 @@ export const VisualGraphPage = () => {
  `GET /api/v1/${selectedNode.id}/:id`,
  `PUT /api/v1/${selectedNode.id}/:id`,
  ].map(ep => (
- <code key={ep} className={cn('block text-[9px] font-mono px-2 py-1 rounded', dark ? 'bg-white/5 text-emerald-400' : 'bg-gray-50 text-emerald-600')}>{ep}</code>
+ <code key={ep} className={cn('block text-[9px] font-mono px-2 py-1 rounded', dark ? 'bg-white/5 text-emerald-600 dark:text-emerald-400' : 'bg-gray-50 text-emerald-600')}>{ep}</code>
  ))}
  </div>
  </div>
@@ -585,7 +585,7 @@ export const VisualGraphPage = () => {
  <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-3">Field Schema</p>
  <div className="space-y-2">
  {selectedNode.fields.map((field, i) => (
- <div key={i} className={cn('p-3 rounded-none border', dark ? 'bg-white/[0.03] border-white/[0.06]' : 'bg-gray-50 border-gray-100')}>
+ <div key={i} className={cn('p-3 rounded-none border', dark ? 'bg-white/[0.03] border-white/[0.06]' : 'bg-gray-50 border-gray-200 shadow-sm')}>
  <div className="flex items-center justify-between gap-2 mb-1">
  <span className={cn('text-[11px] font-bold font-mono', dark ? 'text-white' : 'text-black')}>
  {field.required && <span className="text-red-400 mr-1">*</span>}
@@ -615,7 +615,7 @@ export const VisualGraphPage = () => {
  onClick={() => setSelectedNode(nodes.find(n => n.id === e.target) || null)}
  className="w-full text-left px-2.5 py-1.5 rounded-none bg-emerald-500/10 hover:bg-emerald-500/20 transition-colors text-[10px]"
  >
- <span className="text-emerald-400 font-black">.{e.fieldName}</span>
+ <span className="text-emerald-600 dark:text-emerald-400 font-black">.{e.fieldName}</span>
  <span className="text-gray-400 mx-1">→</span>
  <span className="text-gray-300 font-mono">{e.target}</span>
  {e.hasMany && <span className="text-[8px] text-gray-500 ml-1">[many]</span>}

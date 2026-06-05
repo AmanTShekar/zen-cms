@@ -132,8 +132,8 @@ const RedirectsPage = () => {
  switch (t) {
  case '301': return 'text-amber-500 border-amber-500/30'
  case '302': return 'text-blue-500 border-blue-500/30'
- case '307': return 'text-emerald-500 border-emerald-500/30'
- case '308': return 'text-emerald-500 border-emerald-500/30'
+ case '307': return 'text-emerald-600 dark:text-emerald-500 border-emerald-500/30'
+ case '308': return 'text-emerald-600 dark:text-emerald-500 border-emerald-500/30'
  default: return 'text-gray-500 border-gray-500/30'
  }
  }
@@ -147,7 +147,7 @@ const RedirectsPage = () => {
  'w-10 h-10 flex items-center justify-center border',
  dark ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-100 border-gray-200'
  )}>
- <ArrowLeftRight size={20} className="text-emerald-500" />
+ <ArrowLeftRight size={20} className="text-emerald-600 dark:text-emerald-500" />
  </div>
  <div>
  <h1 className={cn(
@@ -166,7 +166,7 @@ const RedirectsPage = () => {
  </div>
  <button
  onClick={openCreate}
- className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black uppercase tracking-widest transition-all border-0"
+ className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black uppercase tracking-widest transition-all border-0"
  >
  <Plus size={14} />
  Add Redirect
@@ -197,7 +197,7 @@ const RedirectsPage = () => {
  <div className={cn('border', dark ? 'border-white/[0.08]' : 'border-gray-200')}>
  {loading ? (
  <div className="flex items-center justify-center py-20 gap-3">
- <Loader2 size={20} className="animate-spin text-emerald-500" />
+ <Loader2 size={20} className="animate-spin text-emerald-600 dark:text-emerald-500" />
  <span className={cn('text-xs font-black uppercase tracking-widest', dark ? 'text-gray-500' : 'text-gray-400')}>
  Loading...
  </span>
@@ -220,7 +220,7 @@ const RedirectsPage = () => {
  <thead>
  <tr className={cn(
  'text-[10px] font-black uppercase tracking-widest border-b',
- dark ? 'text-gray-500 border-white/[0.08]' : 'text-gray-400 border-gray-100'
+ dark ? 'text-gray-500 border-white/[0.08]' : 'text-gray-400 border-gray-200 shadow-sm'
  )}>
  <th className="px-5 py-4 font-normal">From</th>
  <th className="px-5 py-4 font-normal hidden md:table-cell">To</th>
@@ -245,7 +245,7 @@ const RedirectsPage = () => {
  <td className="px-5 py-4">
  <code className={cn(
  'px-2 py-1 text-xs font-mono font-bold',
- dark ? 'bg-white/5 text-emerald-400' : 'bg-gray-100 text-emerald-600'
+ dark ? 'bg-white/5 text-emerald-600 dark:text-emerald-400' : 'bg-gray-100 text-emerald-600'
  )}>
  {rule.from}
  </code>
@@ -324,7 +324,7 @@ const RedirectsPage = () => {
  {totalPages > 1 && (
  <div className={cn(
  'flex items-center justify-between px-5 py-4 border-t',
- dark ? 'border-white/[0.08]' : 'border-gray-100'
+ dark ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <span className={cn(
  'text-[10px] font-bold',
@@ -382,7 +382,7 @@ const RedirectsPage = () => {
  >
  <div className={cn(
  'px-6 py-5 border-b flex items-center justify-between',
- dark ? 'border-white/[0.08]' : 'border-gray-100'
+ dark ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <h2 className={cn(
  'text-sm font-black uppercase tracking-wider',
@@ -483,7 +483,7 @@ const RedirectsPage = () => {
 
  <div className={cn(
  'px-6 py-4 border-t flex items-center justify-end gap-3',
- dark ? 'border-white/[0.08]' : 'border-gray-100'
+ dark ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <button
  onClick={() => setShowEditor(false)}
@@ -499,7 +499,7 @@ const RedirectsPage = () => {
  <button
  onClick={handleSave}
  disabled={saving || !formFrom || !formTo}
- className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800/50 disabled:cursor-not-allowed text-white text-[10px] font-black uppercase tracking-widest transition-all border-0 flex items-center gap-2"
+ className="px-5 py-2.5 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800/50 disabled:cursor-not-allowed text-white text-[10px] font-black uppercase tracking-widest transition-all border-0 flex items-center gap-2"
  >
  {saving && <Loader2 size={12} className="animate-spin" />}
  {editing ? 'Update' : 'Create'}

@@ -125,7 +125,7 @@ export const MediaLibraryModal: React.FC = () => {
  <div
  className={cn(
  'p-6 border-b flex items-center justify-between shrink-0',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100',
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm',
  )}
  >
  <h3
@@ -142,7 +142,7 @@ export const MediaLibraryModal: React.FC = () => {
  aria-label="Close"
  className={cn(
  'p-1 transition-colors',
- theme === 'dark' ? 'text-gray-400 hover:text-emerald-500' : 'text-gray-500 hover:text-emerald-600'
+ theme === 'dark' ? 'text-gray-400 hover:text-emerald-600 dark:text-emerald-500' : 'text-gray-500 hover:text-emerald-600'
  )}
  >
  <X size={18} />
@@ -152,13 +152,13 @@ export const MediaLibraryModal: React.FC = () => {
  {/* Toolbar: search, filters, upload */}
  <div className={cn(
  'flex items-center gap-4 px-8 py-4 border-b shrink-0',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <div className="relative group flex-1">
  <Search
  className={cn(
  'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
- theme === 'dark' ? 'text-gray-555 group-focus-within:text-emerald-400' : 'text-gray-400 group-focus-within:text-emerald-600'
+ theme === 'dark' ? 'text-gray-555 group-focus-within:text-emerald-600 dark:text-emerald-400' : 'text-gray-400 group-focus-within:text-emerald-600'
  )}
  size={15}
  />
@@ -232,8 +232,8 @@ export const MediaLibraryModal: React.FC = () => {
  <div className="flex-1 overflow-y-auto p-6">
  {mediaLoading ? (
  <div className="flex flex-col items-center justify-center h-full gap-5">
- <Loader2 size={36} className="animate-spin text-emerald-500" />
- <span className="text-xs font-black uppercase text-emerald-400 tracking-[0.3em] animate-pulse">
+ <Loader2 size={36} className="animate-spin text-emerald-600 dark:text-emerald-500" />
+ <span className="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-[0.3em] animate-pulse">
  Loading Registry...
  </span>
  </div>
@@ -375,7 +375,7 @@ export const MediaLibraryModal: React.FC = () => {
  }}
  className={cn(
  'mt-1 px-2 py-1 rounded-none border text-xs font-black uppercase transition-all',
- 'border-emerald-500/40 text-emerald-400 hover:border-emerald-500 hover:text-emerald-300 bg-emerald-500/10'
+ 'border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:border-emerald-500 hover:text-emerald-300 bg-emerald-500/10'
  )}
  >
  Select
@@ -402,7 +402,7 @@ export const MediaLibraryModal: React.FC = () => {
  {/* Footer */}
  <div className={cn(
  'flex items-center justify-between px-8 py-3 border-t shrink-0',
- theme === 'dark' ? 'border-white/[0.08] bg-white/[0.015]' : 'border-gray-100 bg-gray-50'
+ theme === 'dark' ? 'border-white/[0.08] bg-white/[0.015]' : 'border-gray-200 shadow-sm bg-gray-50'
  )}>
  <span className={cn(
  'text-xs font-bold uppercase tracking-widest',

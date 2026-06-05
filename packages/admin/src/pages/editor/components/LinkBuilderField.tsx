@@ -94,7 +94,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  )}
  >
  <span className="flex items-center gap-2 truncate">
- <Link2 size={13} className="text-emerald-500 shrink-0" />
+ <Link2 size={13} className="text-emerald-600 dark:text-emerald-500 shrink-0" />
  <span className="truncate">{value || 'Select link...'}</span>
  </span>
  <ChevronDown size={13} className="opacity-50 shrink-0" />
@@ -117,7 +117,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  >
  <div className={cn(
  'flex items-center border-b p-1.5 gap-1 shrink-0',
- theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-100 bg-gray-50'
+ theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-200 shadow-sm bg-gray-50'
  )}>
  {[
  { id: 'pages', label: 'Pages', icon: FileText },
@@ -133,7 +133,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  className={cn(
  'flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-none transition-all',
  isActive
- ? theme === 'dark' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
+ ? theme === 'dark' ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-emerald-100 text-emerald-700'
  : theme === 'dark' ? 'text-gray-500 hover:text-gray-300 hover:bg-white/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
  )}
  >
@@ -164,7 +164,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  {activeTab === 'anchors' && (
  <div className="flex flex-col h-56">
  <div className="p-3 pb-1 border-b border-white/[0.08]">
- <p className="text-[10px] uppercase font-black tracking-widest text-emerald-500 mb-2">On this page</p>
+ <p className="text-[10px] uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-500 mb-2">On this page</p>
  </div>
  <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-editor-scrollbar">
  {anchors.length === 0 ? (
@@ -182,7 +182,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  theme === 'dark' ? 'hover:bg-emerald-500/10 text-gray-300' : 'hover:bg-emerald-50 text-gray-700'
  )}
  >
- <Hash size={12} className="text-emerald-500" />
+ <Hash size={12} className="text-emerald-600 dark:text-emerald-500" />
  {anchor}
  </button>
  ))
@@ -210,7 +210,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  </div>
  <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-editor-scrollbar">
  {loading ? (
- <p className="text-[10px] uppercase font-black tracking-widest text-emerald-500 text-center py-6 animate-pulse">Searching...</p>
+ <p className="text-[10px] uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-500 text-center py-6 animate-pulse">Searching...</p>
  ) : pages.length === 0 ? (
  <p className="text-[10px] uppercase font-black tracking-widest text-gray-500 text-center py-6">No pages found</p>
  ) : (
@@ -230,7 +230,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  )}
  >
  <span className={cn("text-xs font-bold", theme === 'dark' ? 'text-gray-200' : 'text-gray-800')}>{page.title}</span>
- <span className="text-[10px] font-mono text-emerald-500">/{page.slug}</span>
+ <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-500">/{page.slug}</span>
  </button>
  ))
  )}
@@ -241,11 +241,11 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  
  <div className={cn(
  'p-2 border-t flex justify-end shrink-0',
- theme === 'dark' ? 'border-white/[0.08] bg-black/20' : 'border-gray-100 bg-gray-50'
+ theme === 'dark' ? 'border-white/[0.08] bg-black/20' : 'border-gray-200 shadow-sm bg-gray-50'
  )}>
  <button
  onClick={() => setOpen(false)}
- className="px-4 py-1.5 text-[10px] uppercase font-black tracking-widest bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+ className="px-4 py-1.5 text-[10px] uppercase font-black tracking-widest bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
  >
  Done
  </button>

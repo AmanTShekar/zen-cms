@@ -115,7 +115,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
  disabled={!scheduleInput}
  className={cn(
  'flex-1 py-1.5 text-xs font-black uppercase text-center transition-all disabled:opacity-40',
- theme === 'dark' ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+ theme === 'dark' ? 'bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 text-white'
  )}
  >
  Apply

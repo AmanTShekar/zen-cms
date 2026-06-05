@@ -98,7 +98,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  onClick={onReset}
  className={cn(
  'flex items-center gap-2 px-4 py-2 text-xs font-black uppercase border rounded-none transition-all',
- 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-600'
+ 'bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-600'
  )}
  >
  <RefreshCw size={12} />

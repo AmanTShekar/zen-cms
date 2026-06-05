@@ -121,7 +121,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <div
  className={cn(
  'p-6 border-b flex items-center justify-between',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100',
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm',
  )}
  >
  <h3
@@ -136,7 +136,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <button
  onClick={() => setSeoOpen(false)}
  aria-label="Close"
- className="p-1 hover:text-emerald-500 transition-colors"
+ className="p-1 hover:text-emerald-600 dark:text-emerald-500 transition-colors"
  >
  <X size={18} />
  </button>
@@ -398,7 +398,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  'p-4 border-t flex items-center justify-between shrink-0',
  theme === 'dark'
  ? 'border-white/[0.08] bg-white/[0.02]'
- : 'border-gray-100 bg-gray-50',
+ : 'border-gray-200 shadow-sm bg-gray-50',
  )}
  >
  <button
@@ -430,7 +430,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <button
  onClick={commitAndClose}
  aria-label="Save SEO and close"
- className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-xs font-black uppercase rounded-none hover:bg-emerald-500 transition-all"
+ className="flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-emerald-600 text-white text-xs font-black uppercase rounded-none hover:bg-emerald-500 transition-all"
  >
  <Save size={12} aria-hidden="true" />
  Save & Close

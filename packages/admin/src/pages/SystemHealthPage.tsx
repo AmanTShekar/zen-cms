@@ -48,7 +48,7 @@ const TelemetryCard = ({
  'p-8 border rounded-none transition-all duration-500 relative group overflow-hidden',
  theme === 'dark'
  ? 'bg-white/[0.02] border-white/[0.05] hover:border-white/[0.08]'
- : 'bg-white border-gray-100 hover:border-gray-300 shadow-sm'
+ : 'bg-white border-gray-200 shadow-sm hover:border-gray-300 shadow-sm'
  )}
  >
  <div className="absolute top-0 right-0 p-8 text-emerald-500/[0.02] pointer-events-none group-hover:text-emerald-500/[0.05] transition-colors">
@@ -68,7 +68,7 @@ const TelemetryCard = ({
  className={cn(
  'flex items-center gap-3 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] border',
  status === 'healthy' || status === 'up' || status === 'ok'
- ? 'bg-emerald-500/5 text-emerald-500 border-emerald-500/10'
+ ? 'bg-emerald-500/5 text-emerald-600 dark:text-emerald-500 border-emerald-500/10'
  : 'bg-amber-500/5 text-amber-500 border-amber-500/10'
  )}
  >
@@ -96,7 +96,7 @@ const TelemetryCard = ({
  {subdetail}
  </p>
  {trend && (
- <span className="text-[9px] font-black text-emerald-500 uppercase tracking-tighter flex items-center gap-1">
+ <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-tighter flex items-center gap-1">
  <Zap size={10} /> Optimal
  </span>
  )}
@@ -185,7 +185,7 @@ const SystemHealthPage = () => {
  <div className="relative w-24 h-24">
  <Loader2
  size={32}
- className="absolute inset-0 m-auto animate-spin text-emerald-500"
+ className="absolute inset-0 m-auto animate-spin text-emerald-600 dark:text-emerald-500"
  strokeWidth={1.5}
  />
  <motion.div
@@ -225,7 +225,7 @@ const SystemHealthPage = () => {
  </div>
  <div className="flex flex-col">
  <div className="flex items-center gap-2 mb-1">
- <span className="text-[9px] font-black text-emerald-500 uppercase tracking-[0.4em] ">
+ <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.4em] ">
  Telemetry Stream
  </span>
  <div className="w-1.5 h-1.5 bg-emerald-500 shadow-[0_0_8px_#10b981] animate-pulse" />
@@ -299,7 +299,7 @@ const SystemHealthPage = () => {
  'p-10 border rounded-none relative group overflow-hidden',
  theme === 'dark'
  ? 'bg-white/[0.02] border-white/[0.05]'
- : 'bg-white border-gray-100 shadow-sm'
+ : 'bg-white border-gray-200 shadow-sm shadow-sm'
  )}
  >
  <div className="absolute top-0 right-0 p-12 text-emerald-500/[0.01] pointer-events-none group-hover:text-emerald-500/[0.03] transition-colors">
@@ -307,7 +307,7 @@ const SystemHealthPage = () => {
  </div>
 
  <div className="flex items-center gap-6 mb-12 relative z-10">
- <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 font-black text-xl">
+ <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-500 font-black text-xl">
  C
  </div>
  <div>
@@ -402,7 +402,7 @@ const SystemHealthPage = () => {
  'p-10 border rounded-none relative group overflow-hidden',
  theme === 'dark'
  ? 'bg-white/[0.02] border-white/[0.05]'
- : 'bg-white border-gray-100 shadow-sm'
+ : 'bg-white border-gray-200 shadow-sm shadow-sm'
  )}
  >
  <div className="absolute top-0 right-0 p-12 text-emerald-500/[0.01] pointer-events-none group-hover:text-emerald-500/[0.03] transition-colors">
@@ -410,7 +410,7 @@ const SystemHealthPage = () => {
  </div>
 
  <div className="flex items-center gap-6 mb-12 relative z-10">
- <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
+ <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-500">
  <ShieldCheck size={24} />
  </div>
  <div>
@@ -461,7 +461,7 @@ const SystemHealthPage = () => {
  'p-6 border transition-all hover:bg-white/[0.02] group block',
  theme === 'dark'
  ? 'bg-black/40 border-white/[0.08] hover:border-emerald-500/20'
- : 'bg-white border-gray-100 hover:border-emerald-500/10 shadow-sm'
+ : 'bg-white border-gray-200 shadow-sm hover:border-emerald-500/10 shadow-sm'
  )}
  >
  <div className="flex items-start justify-between">
@@ -471,12 +471,12 @@ const SystemHealthPage = () => {
  'w-12 h-12 rounded-none flex items-center justify-center border transition-colors',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] group-hover:bg-emerald-500/10 group-hover:border-emerald-500/20'
- : 'bg-gray-50 border-gray-100 group-hover:bg-emerald-50 group-hover:border-emerald-200'
+ : 'bg-gray-50 border-gray-200 shadow-sm group-hover:bg-emerald-50 group-hover:border-emerald-200'
  )}
  >
  <svc.icon
  size={20}
- className="text-gray-400 group-hover:text-emerald-500 transition-colors"
+ className="text-gray-400 group-hover:text-emerald-600 dark:text-emerald-500 transition-colors"
  />
  </div>
  <div className="flex flex-col leading-none">
@@ -493,13 +493,13 @@ const SystemHealthPage = () => {
  className={cn(
  'text-[9px] font-black uppercase px-3 py-1 border rounded-none ',
  svc.status === 'Active'
- ? 'text-emerald-500 border-emerald-500/20 bg-emerald-500/5'
+ ? 'text-emerald-600 dark:text-emerald-500 border-emerald-500/20 bg-emerald-500/5'
  : 'text-amber-500 border-amber-500/20 bg-amber-500/5'
  )}
  >
  {svc.status}
  </span>
- <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+ <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
  Configure →
  </span>
  </div>
@@ -518,11 +518,11 @@ const SystemHealthPage = () => {
  'p-8 border rounded-none flex items-center justify-between group cursor-pointer transition-all',
  theme === 'dark'
  ? 'bg-white/[0.02] border-white/[0.05] hover:bg-white/5'
- : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm'
+ : 'bg-white border-gray-200 shadow-sm hover:border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center gap-8">
- <div className="w-12 h-12 bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+ <div className="w-12 h-12 bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-500">
  <Terminal size={24} />
  </div>
  <div>
@@ -534,7 +534,7 @@ const SystemHealthPage = () => {
  </p>
  </div>
  </div>
- <div className="w-12 h-12 border border-emerald-500/20 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+ <div className="w-12 h-12 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
  <Zap size={20} />
  </div>
  </motion.div>

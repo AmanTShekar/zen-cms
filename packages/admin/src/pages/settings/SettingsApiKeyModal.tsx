@@ -22,7 +22,7 @@ const SettingsApiKeyModal: React.FC<SettingsApiKeyModalProps> = ({ newKey, setNe
  } as any)}
  className={cn(
  'w-full max-w-md rounded-none p-6 border shadow-2xl relative overflow-hidden',
- theme === 'dark' ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-white border-gray-100'
+ theme === 'dark' ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
  <div className="absolute top-0 right-0 p-6 text-emerald-500/10 pointer-events-none">
@@ -30,7 +30,7 @@ const SettingsApiKeyModal: React.FC<SettingsApiKeyModalProps> = ({ newKey, setNe
  </div>
 
  <div className="flex items-center gap-4 mb-8">
- <div className="w-12 h-12 rounded-none bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/20">
+ <div className="w-12 h-12 rounded-none bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-500 border border-emerald-500/20">
  <CheckCircle2 size={24} />
  </div>
  <div>
@@ -48,7 +48,7 @@ const SettingsApiKeyModal: React.FC<SettingsApiKeyModalProps> = ({ newKey, setNe
  <div
  className={cn(
  'p-4 rounded-none border flex items-center justify-between gap-4 font-mono text-[10px] font-bold break-all transition-colors',
- theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-50 border-gray-100'
+ theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-50 border-gray-200 shadow-sm'
  )}
  >
  {newKey.key}
@@ -68,7 +68,7 @@ const SettingsApiKeyModal: React.FC<SettingsApiKeyModalProps> = ({ newKey, setNe
  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
  Frontend .env Integration:
  </p>
- <div className={cn('p-4 rounded-none border font-mono text-[9px] whitespace-pre transition-colors text-emerald-400', theme === 'dark' ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-gray-900 border-gray-800')}>
+ <div className={cn('p-4 rounded-none border font-mono text-[9px] whitespace-pre transition-colors text-emerald-600 dark:text-emerald-400', theme === 'dark' ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-gray-900 border-gray-800')}>
 {`VITE_CMS_URL=${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/api/v1
 VITE_CMS_API_KEY=${newKey.key}
 VITE_CMS_SITE_ID=your_tenant_id`}

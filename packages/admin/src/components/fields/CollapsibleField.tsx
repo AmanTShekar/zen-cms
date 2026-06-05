@@ -34,7 +34,7 @@ const CollapsibleField: React.FC<Props> = ({
  >
  <span className="flex items-center gap-2">
  <span
- className={`transition-transform duration-200 text-emerald-400 ${
+ className={`transition-transform duration-200 text-emerald-600 dark:text-emerald-400 ${
  isOpen ? 'rotate-90' : ''
  }`}
  >

@@ -120,7 +120,7 @@ export const GlassDropdown = <T,>({
  {selectedOption?.icon && (
  <div className={cn(
  "rounded-none flex items-center justify-center text-lg flex-shrink-0 transition-colors duration-300",
- theme === 'dark' ? "bg-emerald-500/10 text-emerald-400" : "bg-emerald-50 text-emerald-600",
+ theme === 'dark' ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-emerald-50 text-emerald-600",
  isSidebarOpen ? "w-8 h-8" : "w-10 h-10"
  )}>
  {selectedOption.icon}
@@ -130,7 +130,7 @@ export const GlassDropdown = <T,>({
  {isSidebarOpen && (
  <div className="flex flex-col min-w-0">
  {selectedOption?.description && (
- <span className="text-[8px] font-black text-emerald-400 dark:text-emerald-400 uppercase tracking-[0.2em] font-mono leading-none mb-1">
+ <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-400 dark:text-emerald-400 uppercase tracking-[0.2em] font-mono leading-none mb-1">
  {selectedOption.description}
  </span>
  )}
@@ -214,7 +214,7 @@ export const GlassDropdown = <T,>({
  className={cn(
  "w-full px-4 py-2.5 flex items-center justify-between text-left transition-colors duration-200",
  theme === 'dark' ? "hover:bg-white/[0.04]" : "hover:bg-black/[0.02]",
- isSelected && (theme === 'dark' ? "bg-emerald-500/10 text-emerald-400" : "bg-emerald-50 text-emerald-600")
+ isSelected && (theme === 'dark' ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-emerald-50 text-emerald-600")
  )}
  >
  <div className="flex items-center gap-3 min-w-0">

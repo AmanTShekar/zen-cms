@@ -122,7 +122,7 @@ const LoginPage: React.FC = () => {
  return (
  <div
  className={cn(
- 'min-h-screen flex items-center justify-center p-4 md:p-6 relative overflow-auto font-sans antialiased selection:bg-emerald-600 selection:text-white transition-colors duration-500',
+ 'min-h-screen flex items-center justify-center p-4 md:p-6 relative overflow-auto font-sans antialiased selection:bg-emerald-600 dark:bg-emerald-600 selection:text-white transition-colors duration-500',
  theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-[#111827]'
  )}
  >
@@ -174,7 +174,7 @@ const LoginPage: React.FC = () => {
  animate={{ opacity: 1, scale: 1 }}
  className={cn(
  'border rounded-none p-8 shadow-2xl relative transition-all duration-500',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-100'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center justify-between mb-8">
@@ -303,7 +303,7 @@ const LoginPage: React.FC = () => {
  </AnimatePresence>
 
  {needsSetup && (
- <div className="p-3 border border-emerald-500/20 bg-emerald-500/[0.03] text-[9.5px] leading-relaxed text-emerald-400 font-bold uppercase tracking-wider ">
+ <div className="p-3 border border-emerald-500/20 bg-emerald-500/[0.03] text-[9.5px] leading-relaxed text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider ">
  No administrative users detected. Create your root administrator account below to provision this Zenith workstation.
  </div>
  )}
@@ -331,7 +331,7 @@ const LoginPage: React.FC = () => {
  'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all tracking-widest text-center',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
- : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
+ : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
  )}
  />
  </div>
@@ -347,7 +347,7 @@ const LoginPage: React.FC = () => {
  className={cn(
  'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
  theme === 'dark'
- ? 'text-white/20 group-focus-within:text-emerald-400'
+ ? 'text-white/20 group-focus-within:text-emerald-600 dark:text-emerald-400'
  : 'text-gray-300 group-focus-within:text-emerald-600'
  )}
  size={16}
@@ -361,7 +361,7 @@ const LoginPage: React.FC = () => {
  'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
- : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
+ : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
  )}
  />
  </div>
@@ -383,7 +383,7 @@ const LoginPage: React.FC = () => {
  className={cn(
  'text-[9px] font-black uppercase tracking-widest hover:underline',
  theme === 'dark'
- ? 'text-emerald-400 hover:text-emerald-300'
+ ? 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-300'
  : 'text-emerald-600 hover:text-emerald-700'
  )}
  >
@@ -396,7 +396,7 @@ const LoginPage: React.FC = () => {
  className={cn(
  'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
  theme === 'dark'
- ? 'text-white/20 group-focus-within:text-emerald-400'
+ ? 'text-white/20 group-focus-within:text-emerald-600 dark:text-emerald-400'
  : 'text-gray-300 group-focus-within:text-emerald-600'
  )}
  size={16}
@@ -410,7 +410,7 @@ const LoginPage: React.FC = () => {
  'w-full border rounded-none py-3 pl-12 pr-12 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
- : 'bg-gray-50 border-gray-100 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
+ : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
  )}
  />
  <button
@@ -491,7 +491,7 @@ const LoginPage: React.FC = () => {
  'border rounded-none py-2 px-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02]',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-white hover:bg-white/10'
- : 'bg-gray-50 border-gray-100 text-gray-900 hover:bg-gray-100'
+ : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 hover:bg-gray-100'
  )}
  >
  <span>SAML Okta</span>
@@ -515,7 +515,7 @@ const LoginPage: React.FC = () => {
  'border rounded-none py-2 px-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02]',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-white hover:bg-white/10'
- : 'bg-gray-50 border-gray-100 text-gray-900 hover:bg-gray-100'
+ : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 hover:bg-gray-100'
  )}
  >
  <span>Google OAuth</span>
@@ -536,13 +536,13 @@ const LoginPage: React.FC = () => {
  )}
  >
  <div className="flex items-center justify-between">
- <div className="flex items-center gap-2 text-emerald-500">
+ <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-500">
  <Info size={12} />
  <span className="text-[8px] font-black uppercase tracking-widest ">
  Dev_Credentials
  </span>
  </div>
- <div className="flex items-center gap-2 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
+ <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
  <span className="text-[7px] font-black uppercase">Auto_Fill</span>
  <MousePointer2 size={10} />
  </div>

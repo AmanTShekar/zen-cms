@@ -57,7 +57,7 @@ const DraggableZoneItem = ({
  'w-5 h-5 rounded-none flex items-center justify-center shrink-0',
  theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50'
  )}>
- <BlockIcon size={10} className="text-emerald-400" />
+ <BlockIcon size={10} className="text-emerald-600 dark:text-emerald-400" />
  </div>
  <div className="flex-1 min-w-0">
  <p className="text-xs font-black uppercase text-emerald-300 truncate">
@@ -76,9 +76,9 @@ const DraggableZoneItem = ({
  </button>
  <button
  onClick={() => toggleExpand(dzId)}
- className="p-1 text-gray-500 hover:text-emerald-400 transition-colors"
+ className="p-1 text-gray-500 hover:text-emerald-600 dark:text-emerald-400 transition-colors"
  >
- {isExpanded ? <ChevronUp size={12} className="text-emerald-400" /> : <ChevronDown size={12} className="text-gray-400" />}
+ {isExpanded ? <ChevronUp size={12} className="text-emerald-600 dark:text-emerald-400" /> : <ChevronDown size={12} className="text-gray-400" />}
  </button>
  </div>
  </div>
@@ -186,8 +186,8 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
  <div className="space-y-3">
  {/* Zone label */}
  <div className="flex items-center gap-2 px-1">
- <Layers size={10} className="text-emerald-400" />
- <span className="text-xs font-black uppercase tracking-widest text-emerald-400">
+ <Layers size={10} className="text-emerald-600 dark:text-emerald-400" />
+ <span className="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
  Dynamic Zone
  </span>
  <span className="text-xs text-gray-500">— {value.length} component{value.length !== 1 ? 's' : ''}</span>
@@ -236,7 +236,7 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
  className={cn(
  'w-full flex items-center justify-center gap-2 py-2.5 border border-dashed rounded-none transition-all text-xs font-black uppercase tracking-widest',
  theme === 'dark'
- ? 'border-white/[0.08] text-gray-500 hover:border-emerald-500/40 hover:text-emerald-400 hover:bg-emerald-500/5'
+ ? 'border-white/[0.08] text-gray-500 hover:border-emerald-500/40 hover:text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/5'
  : 'border-gray-200 text-gray-400 hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50/50'
  )}
  >

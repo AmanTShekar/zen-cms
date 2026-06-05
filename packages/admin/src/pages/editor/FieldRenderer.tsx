@@ -272,9 +272,9 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'px-2.5 py-2.5 text-[9px] font-black uppercase border rounded-none transition-all shrink-0',
  isAuto
- ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+ ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
  : theme === 'dark'
- ? 'border-white/[0.08] text-gray-500 hover:text-emerald-400'
+ ? 'border-white/[0.08] text-gray-500 hover:text-emerald-600 dark:text-emerald-400'
  : 'border-gray-200 text-gray-400 hover:text-emerald-600'
  )}
  title={isAuto ? 'Auto-generation enabled' : 'Enable auto-generation'}
@@ -659,7 +659,7 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'w-full text-left px-3 py-2 text-xs flex items-center gap-2 transition-colors',
  isSelected
- ? theme === 'dark' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-emerald-50 text-emerald-600'
+ ? theme === 'dark' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-emerald-50 text-emerald-600'
  : theme === 'dark' ? 'text-gray-300 hover:bg-white/5' : 'text-gray-700 hover:bg-gray-50'
  )}
  >
@@ -730,7 +730,7 @@ export const FieldRenderer = React.memo(({
  return (
  <div className="space-y-4">
  <div className="flex items-center justify-between">
- <span className="text-xs font-black tracking-widest text-emerald-400 uppercase ">
+ <span className="text-xs font-black tracking-widest text-emerald-600 dark:text-emerald-400 uppercase ">
  {items.length} {items.length === 1 ? 'Item' : 'Items'}
  </span>
  <button
@@ -739,7 +739,7 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'flex items-center gap-1 px-2.5 py-1 text-xs font-black uppercase tracking-wider transition-all border',
  theme === 'dark'
- ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
+ ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20'
  : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100'
  )}
  >
@@ -851,7 +851,7 @@ export const FieldRenderer = React.memo(({
  )}>
  <span className={cn(
  'text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 border rounded-none',
- theme === 'dark' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+ theme === 'dark' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700'
  )}>
  {blockDef?.labels?.singular || humanize(blockType || 'block')}
  </span>
@@ -904,7 +904,7 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'w-full py-2.5 border-2 border-dashed flex flex-col items-center justify-center gap-1.5 transition-all group rounded-none',
  theme === 'dark'
- ? 'border-white/[0.08] hover:border-emerald-500/50 hover:bg-emerald-500/5 text-gray-400 hover:text-emerald-400'
+ ? 'border-white/[0.08] hover:border-emerald-500/50 hover:bg-emerald-500/5 text-gray-400 hover:text-emerald-600 dark:text-emerald-400'
  : 'border-gray-300 hover:border-emerald-400 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600'
  )}
  >

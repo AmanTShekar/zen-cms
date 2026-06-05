@@ -220,7 +220,7 @@ export function LexicalRichTextEditor({
  isFull
  ? theme === 'dark'
  ? 'bg-black border border-white/[0.08] shadow-2xl'
- : 'bg-white border border-gray-100 shadow-xl'
+ : 'bg-white border border-gray-200 shadow-sm shadow-xl'
  : 'bg-transparent',
  className,
  )}

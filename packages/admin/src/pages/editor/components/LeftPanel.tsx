@@ -122,7 +122,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
 
  {/* Header */}
  <div className={cn('px-3 py-3 border-b flex items-center justify-between',
- dark ? 'border-white/[0.08]' : 'border-gray-100'
+ dark ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 ">
  Layers
@@ -131,7 +131,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  <button
  onClick={() => { setInjectionIndex(0); setBlockPickerOpen(true); }}
  className={cn(
- 'p-1 rounded-none border transition-all text-gray-400 hover:text-emerald-500',
+ 'p-1 rounded-none border transition-all text-gray-400 hover:text-emerald-600 dark:text-emerald-500',
  dark ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-50 border-gray-200'
  )}
  aria-label="Add new section"

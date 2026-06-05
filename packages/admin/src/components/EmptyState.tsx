@@ -22,7 +22,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
  return (
  <div className={cn(
  "w-full flex flex-col items-center justify-center p-12 text-center",
- theme === 'dark' ? "bg-white/[0.02] border border-white/[0.08]" : "bg-gray-50 border border-gray-100",
+ theme === 'dark' ? "bg-white/[0.02] border border-white/[0.08]" : "bg-gray-50 border border-gray-200 shadow-sm",
  className
  )}>
  <div className={cn(

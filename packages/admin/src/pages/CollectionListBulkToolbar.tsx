@@ -26,7 +26,7 @@ const CollectionListBulkToolbar: React.FC<CollectionListBulkToolbarProps> = ({
  )}
  >
  <div className="flex items-center gap-3">
- <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 ">
+ <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 ">
  {selectedIds.size} Selected
  </span>
  <button onClick={onClearSelection} className="p-1 text-gray-500 hover:text-white transition-colors" title="Clear selection">
@@ -39,7 +39,7 @@ const CollectionListBulkToolbar: React.FC<CollectionListBulkToolbarProps> = ({
  disabled={bulkProcessing}
  className={cn(
  'px-4 py-2 rounded-none font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2 border',
- theme === 'dark' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20' : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100'
+ theme === 'dark' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20' : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100'
  )}
  >
  <Send size={11} /> Publish

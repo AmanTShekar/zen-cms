@@ -46,7 +46,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item, idx, theme, removeF
  <GripVertical size={12} className="text-gray-500" />
  </div>
  <div className="w-6 h-6 rounded-none bg-emerald-500/10 flex items-center justify-center shrink-0">
- <Layout size={12} className="text-emerald-400" />
+ <Layout size={12} className="text-emerald-600 dark:text-emerald-400" />
  </div>
  <div className="flex-1 min-w-0">
  <p className="text-xs font-black uppercase truncate">
@@ -121,16 +121,16 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  >
  <div className={cn(
  'p-6 border-b flex items-center justify-between',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-100'
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <div className="flex items-center gap-3">
  <div className="w-8 h-8 rounded-none bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
- <Layers size={16} className="text-emerald-400" />
+ <Layers size={16} className="text-emerald-600 dark:text-emerald-400" />
  </div>
  <div>
  <h2
  id={modalTitleId}
- className="text-base font-black uppercase text-emerald-400 leading-none"
+ className="text-base font-black uppercase text-emerald-600 dark:text-emerald-400 leading-none"
  >
  Dynamic Zone
  </h2>
@@ -236,7 +236,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  )}
  >
  <div className="w-8 h-8 rounded-none bg-emerald-500/10 flex items-center justify-center shrink-0">
- <Icon size={14} className="text-emerald-400" />
+ <Icon size={14} className="text-emerald-600 dark:text-emerald-400" />
  </div>
  <div className="flex-1 min-w-0">
  <p className="text-xs font-black uppercase truncate">{block.title}</p>
@@ -244,7 +244,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  {block.description}
  </p>
  </div>
- <PlusCircle size={14} aria-hidden="true" className="text-emerald-500 opacity-50 shrink-0" />
+ <PlusCircle size={14} aria-hidden="true" className="text-emerald-600 dark:text-emerald-500 opacity-50 shrink-0" />
  </button>
  )
  })

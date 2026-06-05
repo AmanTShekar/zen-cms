@@ -274,11 +274,11 @@ const ComponentBuilderPage: React.FC = () => {
  <div className={cn('w-64 border-r shrink-0 flex flex-col', dark ? 'border-white/[0.08] bg-black' : 'border-gray-200 bg-white')}>
  <div className="p-4 border-b border-inherit flex items-center justify-between">
  <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
- <Box size={14} className="text-emerald-500" /> Components
+ <Box size={14} className="text-emerald-600 dark:text-emerald-500" /> Components
  </h2>
  <button
  onClick={handleCreateNew}
- className="p-1.5 hover:bg-emerald-500/10 text-emerald-500 rounded transition-colors"
+ className="p-1.5 hover:bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 rounded transition-colors"
  >
  <Plus size={14} />
  </button>
@@ -302,7 +302,7 @@ const ComponentBuilderPage: React.FC = () => {
  <div className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
  <button
  onClick={(e) => { e.stopPropagation(); handleDuplicate(c.id) }}
- className="p-1 text-gray-400 hover:text-emerald-400 transition-colors"
+ className="p-1 text-gray-400 hover:text-emerald-600 dark:text-emerald-400 transition-colors"
  title="Duplicate"
  >
  <Copy size={12} />
@@ -390,8 +390,8 @@ const ComponentBuilderPage: React.FC = () => {
  {activeTab === 'visual' && (
  <motion.div key="visual" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
  {/* General info */}
- <div className={cn('p-6 border rounded-none space-y-4', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
- <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 border-b border-emerald-500/20 pb-2">General Info</h3>
+ <div className={cn('p-6 border rounded-none space-y-4', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
+ <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 border-b border-emerald-500/20 pb-2">General Info</h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-1.5">
  <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block">Display Name</label>
@@ -415,10 +415,10 @@ const ComponentBuilderPage: React.FC = () => {
  </div>
 
  {/* Fields */}
- <div className={cn('p-6 border rounded-none', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
+ <div className={cn('p-6 border rounded-none', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
  <div className="flex items-center justify-between mb-5 border-b border-emerald-500/20 pb-2">
- <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Fields Configuration</h3>
- <button onClick={addField} className="flex items-center gap-1.5 text-[9px] font-black text-emerald-400 hover:text-emerald-300 uppercase tracking-widest px-3 py-1.5 bg-emerald-500/10 rounded-none">
+ <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500">Fields Configuration</h3>
+ <button onClick={addField} className="flex items-center gap-1.5 text-[9px] font-black text-emerald-600 dark:text-emerald-400 hover:text-emerald-300 uppercase tracking-widest px-3 py-1.5 bg-emerald-500/10 rounded-none">
  <Plus size={12} /> Add Field
  </button>
  </div>
@@ -431,7 +431,7 @@ const ComponentBuilderPage: React.FC = () => {
  initial={{ opacity: 0, y: 8 }}
  animate={{ opacity: 1, y: 0 }}
  exit={{ opacity: 0 }}
- className={cn('flex items-center gap-3 p-3.5 border rounded-none group', dark ? 'bg-black border-white/[0.06]' : 'bg-gray-50 border-gray-100')}
+ className={cn('flex items-center gap-3 p-3.5 border rounded-none group', dark ? 'bg-black border-white/[0.06]' : 'bg-gray-50 border-gray-200 shadow-sm')}
  >
  <input
  type="text"
@@ -468,7 +468,7 @@ const ComponentBuilderPage: React.FC = () => {
 
  {/* JSON Preview */}
  {showPreview && (
- <div className={cn('p-6 border rounded-none', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
+ <div className={cn('p-6 border rounded-none', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
  <div className="flex items-center justify-between mb-4">
  <h3 className="text-[10px] font-black uppercase tracking-widest text-blue-400 flex items-center gap-2">
  <Braces size={12} /> Live JSON Preview
@@ -478,7 +478,7 @@ const ComponentBuilderPage: React.FC = () => {
  onClick={() => { navigator.clipboard.writeText(generateJSON()); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
  className={cn('flex items-center gap-1.5 px-3 py-1.5 border text-[9px] font-black uppercase tracking-widest rounded-none transition-all', dark ? 'border-white/[0.08] hover:bg-white/5' : 'border-gray-200 hover:bg-gray-50')}
  >
- {copied ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />} Copy JSON
+ {copied ? <Check size={12} className="text-emerald-600 dark:text-emerald-500" /> : <Copy size={12} />} Copy JSON
  </button>
  <button
  onClick={() => { const blob = new Blob([generateTS()], { type: 'text/typescript' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `${activeComponent.slug || 'component'}.ts`; a.click() }}
@@ -488,7 +488,7 @@ const ComponentBuilderPage: React.FC = () => {
  </button>
  </div>
  </div>
- <pre className={cn('text-[11px] font-mono overflow-auto max-h-64 p-4 rounded-none text-emerald-400', dark ? 'bg-black' : 'bg-gray-900')}>{generateJSON()}</pre>
+ <pre className={cn('text-[11px] font-mono overflow-auto max-h-64 p-4 rounded-none text-emerald-600 dark:text-emerald-400', dark ? 'bg-black' : 'bg-gray-900')}>{generateJSON()}</pre>
  </div>
  )}
  </motion.div>
@@ -497,7 +497,7 @@ const ComponentBuilderPage: React.FC = () => {
  {/* ── Code / JSON Import Tab ───────────────────────────────── */}
  {activeTab === 'code' && (
  <motion.div key="code" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
- <div className={cn('p-6 border rounded-none', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
+ <div className={cn('p-6 border rounded-none', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
  <h3 className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-1 flex items-center gap-2">
  <Code size={12} /> Import from Code / JSON
  </h3>
@@ -506,7 +506,7 @@ const ComponentBuilderPage: React.FC = () => {
  </p>
 
  {/* Format examples */}
- <div className={cn('p-4 rounded-none text-[10px] font-mono mb-4 text-emerald-400 border', dark ? 'bg-black border-white/[0.08]' : 'bg-gray-900 border-gray-700')}>
+ <div className={cn('p-4 rounded-none text-[10px] font-mono mb-4 text-emerald-600 dark:text-emerald-400 border', dark ? 'bg-black border-white/[0.08]' : 'bg-gray-900 border-gray-700')}>
  <p className="text-gray-500 mb-2">// JSON format (recommended)</p>
  {`{
  "slug": "hero-section",
@@ -561,7 +561,7 @@ const ComponentBuilderPage: React.FC = () => {
  {/* ── AI Generate Tab ─────────────────────────────────────── */}
  {activeTab === 'ai' && (
  <motion.div key="ai" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
- <div className={cn('p-6 border rounded-none', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100 shadow-sm')}>
+ <div className={cn('p-6 border rounded-none', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
  <h3 className="text-[10px] font-black uppercase tracking-widest text-purple-400 mb-1 flex items-center gap-2">
  <Sparkles size={12} /> AI Component Architect
  </h3>
@@ -619,7 +619,7 @@ const ComponentBuilderPage: React.FC = () => {
  <div className="h-full flex items-center justify-center">
  <div className="text-center space-y-5 max-w-md px-8">
  <div className="w-16 h-16 mx-auto rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
- <Box size={28} className="text-emerald-400" strokeWidth={1.5} />
+ <Box size={28} className="text-emerald-600 dark:text-emerald-400" strokeWidth={1.5} />
  </div>
  <div>
  <p className="text-[14px] font-black uppercase tracking-[0.2em] ">Component Builder</p>

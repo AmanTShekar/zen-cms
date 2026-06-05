@@ -16,7 +16,7 @@ const SettingsAppearance: React.FC<SettingsAppearanceProps> = ({ settings, setSe
  <label className="text-xs font-semibold text-gray-400">
  CSS Protocol Override
  </label>
- <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded-none">
+ <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded-none">
  Global Stylesheet
  </span>
  </div>

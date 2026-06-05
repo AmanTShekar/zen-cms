@@ -148,7 +148,7 @@ const ReorderableSectionBlock = React.memo(
  'text-[9px] font-black uppercase flex items-center gap-1.5 tracking-wider',
  theme === 'dark' ? 'text-white/70' : 'text-black/70'
  )}>
- <Plus size={10} className="text-emerald-500" /> Insert
+ <Plus size={10} className="text-emerald-600 dark:text-emerald-500" /> Insert
  </span>
  </button>
  </div>
@@ -1153,7 +1153,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  if (loading)
  return (
  <div className={cn('h-screen w-full flex flex-col items-center justify-center gap-8', theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]')}>
- <Cpu size={48} className="text-emerald-500 animate-spin" />
+ <Cpu size={48} className="text-emerald-600 dark:text-emerald-500 animate-spin" />
  <p className="text-[10px] font-black uppercase tracking-[0.8em] text-gray-500 animate-pulse ">Initializing Canvas...</p>
  </div>
  )
@@ -1202,7 +1202,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  <div className="flex items-center justify-between">
  <div className={cn('flex items-center gap-0.5 p-0.5 rounded-none border', theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-100 border-gray-200')}>
  {(['left', 'center', 'right'] as const).map((align) => (
- <button key={align} onClick={() => data && editorSetData({ ...data, align })} className={cn('p-1 transition-all', data?.align === align || (!data?.align && align === 'left') ? theme === 'dark' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-emerald-500')}>
+ <button key={align} onClick={() => data && editorSetData({ ...data, align })} className={cn('p-1 transition-all', data?.align === align || (!data?.align && align === 'left') ? theme === 'dark' ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-emerald-600 dark:text-emerald-500')}>
  {align === 'left' && <AlignLeft size={12} />} {align === 'center' && <AlignCenter size={12} />} {align === 'right' && <AlignRight size={12} />}
  </button>
  ))}
@@ -1212,7 +1212,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  className={cn(
  'flex items-center gap-1.5 px-2 py-1 text-[8px] font-black uppercase rounded-none border transition-all',
  theme === 'dark'
- ? 'border-white/[0.08] text-gray-500 hover:text-emerald-400 hover:border-emerald-500/20'
+ ? 'border-white/[0.08] text-gray-500 hover:text-emerald-600 dark:text-emerald-400 hover:border-emerald-500/20'
  : 'border-gray-200 text-gray-400 hover:text-emerald-600 hover:border-emerald-200'
  )}
  title="Collapse / Expand All"
@@ -1280,14 +1280,14 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
 
  {/* Add Section Button */}
  <button onClick={() => { setInjectionIndex(null); setBlockPickerOpen(true) }} className={cn('w-full py-10 rounded-none border-2 border-dashed transition-all flex flex-col items-center gap-4 group', theme === 'dark' ? 'border-white/[0.08] hover:border-emerald-500/40 hover:bg-emerald-500/5' : 'border-gray-200 hover:border-emerald-400 hover:bg-emerald-50')}>
- <div className={cn('w-12 h-12 rounded-none border-2 border-dashed flex items-center justify-center group-hover:scale-110 transition-all', theme === 'dark' ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-emerald-300 bg-emerald-50/50')}><Plus size={22} className="text-emerald-500" /></div>
- <p className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-500 group-hover:text-emerald-400 transition-colors">Append Section</p>
+ <div className={cn('w-12 h-12 rounded-none border-2 border-dashed flex items-center justify-center group-hover:scale-110 transition-all', theme === 'dark' ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-emerald-300 bg-emerald-50/50')}><Plus size={22} className="text-emerald-600 dark:text-emerald-500" /></div>
+ <p className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-500 group-hover:text-emerald-600 dark:text-emerald-400 transition-colors">Append Section</p>
  </button>
  </>
  )}
 
  {topLevelFields.length > 0 && (
- <div className={cn("border rounded-none p-10 shadow-sm relative overflow-hidden transition-colors", theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-100')}>
+ <div className={cn("border rounded-none p-10 shadow-sm relative overflow-hidden transition-colors", theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm')}>
  <div className="absolute top-0 right-0 p-10 opacity-[0.01] pointer-events-none">
  <Terminal size={180} strokeWidth={0.5} />
  </div>

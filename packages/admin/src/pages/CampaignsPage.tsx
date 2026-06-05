@@ -92,7 +92,7 @@ const CampaignsPage: React.FC = () => {
  </div>
  <button
  onClick={() => setActiveCampaign({ subject: '', body: '', audience: 'all' })}
- className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest shadow-lg transition-all"
+ className="flex items-center gap-2 px-6 py-3 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest shadow-lg transition-all"
  >
  <Plus size={14} />
  New Campaign
@@ -108,10 +108,10 @@ const CampaignsPage: React.FC = () => {
  >
  <div className={cn(
  'p-6 border space-y-4',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-100'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}>
  <div className="flex justify-between items-center mb-4">
- <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 border-b border-emerald-500/20 pb-2">Campaign Details</h3>
+ <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 border-b border-emerald-500/20 pb-2">Campaign Details</h3>
  <button
  onClick={() => setActiveCampaign(null)}
  className="text-[9px] font-bold text-gray-500 uppercase hover:text-white"
@@ -167,7 +167,7 @@ const CampaignsPage: React.FC = () => {
  <button
  onClick={handleSave}
  disabled={saving}
- className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest shadow-lg transition-all"
+ className="flex items-center gap-2 px-6 py-3 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest shadow-lg transition-all"
  >
  {saving ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />}
  Save Draft
@@ -188,13 +188,13 @@ const CampaignsPage: React.FC = () => {
  campaigns.map(c => (
  <div key={c.id} className={cn(
  'flex items-center justify-between p-5 border transition-colors',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:bg-white/[0.04]' : 'bg-white border-gray-100 hover:bg-gray-50'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:bg-white/[0.04]' : 'bg-white border-gray-200 shadow-sm hover:bg-gray-50'
  )}>
  <div>
  <h4 className="text-[12px] font-black uppercase tracking-widest flex items-center gap-2">
  {c.subject}
  {c.status === 'draft' && <span className="px-2 py-0.5 bg-gray-500/20 text-gray-400 text-[8px] rounded-none">Draft</span>}
- {c.status === 'sent' && <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[8px] rounded-none">Sent</span>}
+ {c.status === 'sent' && <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[8px] rounded-none">Sent</span>}
  </h4>
  <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">
  Audience: {c.audience} • Created: {new Date(c.createdAt).toLocaleDateString()}
@@ -205,14 +205,14 @@ const CampaignsPage: React.FC = () => {
  <>
  <button
  onClick={() => setActiveCampaign(c)}
- className="p-2 text-emerald-400 hover:bg-emerald-400/10 transition-colors"
+ className="p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-400/10 transition-colors"
  title="Edit"
  >
  <Edit size={14} />
  </button>
  <button
  onClick={() => handleSend(c.id)}
- className="p-2 text-emerald-400 hover:bg-emerald-400/10 transition-colors"
+ className="p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-400/10 transition-colors"
  title="Send Now"
  >
  <Send size={14} />

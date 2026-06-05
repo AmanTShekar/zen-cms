@@ -39,7 +39,7 @@ const SettingsUsers: React.FC<SettingsUsersProps> = ({ users, theme, fetchData }
  <>
  <div className="col-span-full space-y-4">
  <div className="flex items-center justify-between mb-4 px-2">
- <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500">
+ <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-500">
  {users.length} Active Operators
  </span>
  <button
@@ -57,11 +57,11 @@ const SettingsUsers: React.FC<SettingsUsersProps> = ({ users, theme, fetchData }
  'flex items-center justify-between p-4 border rounded-none transition-all group',
  theme === 'dark'
  ? 'bg-black/40 border-white/[0.08] hover:border-red-500/10'
- : 'bg-gray-50 border-gray-100'
+ : 'bg-gray-50 border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center gap-5">
- <div className="w-12 h-12 rounded-none bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/20">
+ <div className="w-12 h-12 rounded-none bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-500 border border-emerald-500/20">
  <Users size={20} />
  </div>
  <div className="flex flex-col leading-none">
