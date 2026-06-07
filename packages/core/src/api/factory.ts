@@ -1,18 +1,16 @@
-import { Router } from 'express'
-import { CollectionConfig, WebhookTarget, FieldConfig, RelationFieldConfig } from '@zenithcms/types'
+import { Router, Request, Response, NextFunction } from 'express'
+import { CollectionConfig, WebhookTarget } from '@zenithcms/types'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { getCompiledZodSchema } from '../schema/engine'
 import { createResponse } from './utils'
-import { requireAuth, requireRole } from '../middleware/auth'
+import { requireAuth } from '../middleware/auth'
 import { WebhookService } from '../services/webhook'
 import { CacheService } from '../services/cache'
 import { ContentService } from '../services/content'
 import { parseQueryParams } from './query-parser'
-import { NotFoundError, ForbiddenError, ValidationError, InvalidPayloadError } from '../errors'
+import { NotFoundError, ForbiddenError, ValidationError } from '../errors'
 import { eventHub } from '../services/event-hub'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
-import { PreviewService } from '../services/preview'
-import { logger } from '../services/logger'
 
 /**
  * Helper to dynamically query and verify granular role permissions in the database.
@@ -51,358 +49,6 @@ async function verifyGranularAccess(
   }
 }
 
-async function resolveRelations(
-  docs: any[],
-  fields: FieldConfig[],
-  populate: string[],
-  depth: number,
-  adapter: DatabaseAdapter,
-  currentDepth = 0,
-  configRegistry?: any
-) {
-  if (currentDepth >= depth || !docs || docs.length === 0) return
-
-  const popByFirstSegment: Record<string, string[]> = {}
-  for (const path of populate) {
-    const parts = path.split('.')
-    const first = parts[0]
-    const rest = parts.slice(1).join('.')
-    if (!popByFirstSegment[first]) {
-      popByFirstSegment[first] = []
-    }
-    if (rest) {
-      popByFirstSegment[first].push(rest)
-    }
-  }
-
-  for (const field of fields) {
-    const fieldName = field.name
-    const hasWildcard = populate.includes('*') || popByFirstSegment['*'] !== undefined
-    const isExplicitlyPopulated = fieldName in popByFirstSegment || hasWildcard
-    const shouldResolveRelation =
-      isExplicitlyPopulated ||
-      (depth > 0 &&
-        ((field.type as string) === 'relation' || (field.type as string) === 'relationship' || field.type === 'media'))
-
-    if (
-      shouldResolveRelation &&
-      ((field.type as string) === 'relation' || (field.type as string) === 'relationship' || field.type === 'media')
-    ) {
-      const relationTo = field.type === 'media' ? 'media' : (field as any).relationTo
-      if (!relationTo) continue
-
-      const idsToFetch = new Set<string>()
-      for (const doc of docs) {
-        if (!doc) continue
-        const val = doc[fieldName]
-        if (Array.isArray(val)) {
-          val.forEach((id: any) => {
-            if (id && typeof id === 'string') idsToFetch.add(id)
-            else if (id && typeof id === 'object' && id._id) idsToFetch.add(id._id.toString())
-            else if (id && typeof id === 'object' && id.id) idsToFetch.add(id.id.toString())
-          })
-        } else if (val) {
-          if (typeof val === 'string') idsToFetch.add(val)
-          else if (typeof val === 'object' && val._id) idsToFetch.add(val._id.toString())
-          else if (typeof val === 'object' && val.id) idsToFetch.add(val.id.toString())
-        }
-      }
-
-      if (idsToFetch.size > 0) {
-        const idsArray = Array.from(idsToFetch)
-        let relatedDocs: any[] = []
-        try {
-          // Use adapter-agnostic per-ID fetching instead of MongoDB-specific $in operator.
-          // This works correctly with both Mongoose and Postgres adapters.
-          const fetched = await Promise.all(
-            idsArray.map((id) =>
-              adapter.findOne(relationTo, { id }).catch(() =>
-                adapter.findOne(relationTo, { _id: id }).catch(() => null)
-              )
-            )
-          )
-          relatedDocs = fetched.filter(Boolean) as any[]
-        } catch (err) {
-          logger.error({ err, collection: relationTo }, `Failed to fetch relations from ${relationTo}`)
-        }
-
-        const relatedMap = new Map<string, any>()
-        for (const rDoc of relatedDocs) {
-          const idStr = rDoc._id?.toString() || rDoc.id?.toString()
-          if (idStr) relatedMap.set(idStr, rDoc)
-        }
-
-        const nestedPopulate = hasWildcard ? ['*'] : (popByFirstSegment[fieldName] || [])
-        const targetCol =
-          configRegistry?.collections?.find((c: any) => c.slug === relationTo) ||
-          (relationTo === 'media'
-            ? {
-                slug: 'media',
-                fields: [
-                  { name: 'name', type: 'text' },
-                  { name: 'url', type: 'text' },
-                  { name: 'alt', type: 'text' },
-                  { name: 'folder', type: 'text' },
-                  { name: 'mimetype', type: 'text' },
-                  { name: 'size', type: 'number' },
-                ],
-              }
-            : null)
-
-        if (targetCol && relatedDocs.length > 0) {
-          await resolveRelations(
-            relatedDocs,
-            targetCol.fields,
-            nestedPopulate,
-            depth,
-            adapter,
-            currentDepth + 1,
-            configRegistry
-          )
-        }
-
-        for (const doc of docs) {
-          if (!doc) continue
-          const val = doc[fieldName]
-          if (Array.isArray(val)) {
-            doc[fieldName] = val
-              .map((id: any) => {
-                const idStr = typeof id === 'string' ? id : (id?._id?.toString() || id?.id?.toString())
-                return relatedMap.get(idStr) || id
-              })
-              .filter(Boolean)
-          } else if (val) {
-            const idStr = typeof val === 'string' ? val : (val?._id?.toString() || val?.id?.toString())
-            doc[fieldName] = relatedMap.get(idStr) || val
-          }
-        }
-      }
-    }
-
-    if ((field.type === 'group' || field.type === 'collapsible') && docs) {
-      const nestedDocs: any[] = []
-      for (const doc of docs) {
-        if (doc && doc[fieldName] && typeof doc[fieldName] === 'object') {
-          nestedDocs.push(doc[fieldName])
-        }
-      }
-      const nestedPopulate = hasWildcard
-        ? ['*']
-        : popByFirstSegment[fieldName] ||
-          populate.filter((p) => p.startsWith(fieldName + '.')).map((p) => p.slice(fieldName.length + 1))
-      await resolveRelations(
-        nestedDocs,
-        (field as any).fields || [],
-        nestedPopulate,
-        depth,
-        adapter,
-        currentDepth,
-        configRegistry
-      )
-    } else if (field.type === 'array' && docs) {
-      const nestedDocs: any[] = []
-      for (const doc of docs) {
-        if (doc && Array.isArray(doc[fieldName])) {
-          nestedDocs.push(...doc[fieldName])
-        }
-      }
-      const nestedPopulate = hasWildcard
-        ? ['*']
-        : popByFirstSegment[fieldName] ||
-          populate.filter((p) => p.startsWith(fieldName + '.')).map((p) => p.slice(fieldName.length + 1))
-      await resolveRelations(
-        nestedDocs,
-        (field as any).fields || [],
-        nestedPopulate,
-        depth,
-        adapter,
-        currentDepth,
-        configRegistry
-      )
-    } else if (field.type === 'blocks' && docs) {
-      const nestedPopulate = hasWildcard
-        ? ['*']
-        : popByFirstSegment[fieldName] ||
-          populate.filter((p) => p.startsWith(fieldName + '.')).map((p) => p.slice(fieldName.length + 1))
-      const blocksList = (field as any).blocks || []
-      for (const blockDef of blocksList) {
-        const nestedDocsForBlock: any[] = []
-        for (const doc of docs) {
-          if (doc && Array.isArray(doc[fieldName])) {
-            for (const item of doc[fieldName]) {
-              if (item && item.blockType === blockDef.slug) {
-                nestedDocsForBlock.push(item)
-              }
-            }
-          }
-        }
-        if (nestedDocsForBlock.length > 0) {
-          await resolveRelations(
-            nestedDocsForBlock,
-            blockDef.fields || [],
-            nestedPopulate,
-            depth,
-            adapter,
-            currentDepth,
-            configRegistry
-          )
-        }
-      }
-    }
-  }
-}
-
-function applySelect(doc: any, selectStr: string) {
-  if (!doc || !selectStr) return doc
-  const selectedFields = selectStr
-    .split(' ')
-    .map((s) => s.trim())
-    .filter(Boolean)
-  if (selectedFields.length === 0) return doc
-
-  const keysToKeep = new Set([
-    ...selectedFields,
-    'id',
-    '_id',
-    '_status',
-    'createdAt',
-    'updatedAt',
-    'siteId',
-  ])
-  const cleaned: any = {}
-  for (const key of Object.keys(doc)) {
-    if (keysToKeep.has(key)) {
-      cleaned[key] = doc[key]
-    }
-  }
-  return cleaned
-}
-
-function applySelectToDocs(docs: any | any[], selectStr: string) {
-  if (!selectStr) return docs
-  if (Array.isArray(docs)) {
-    return docs.map((doc) => applySelect(doc, selectStr))
-  }
-  // Fix: handle single-document (singleton) responses — previously returned undefined
-  return applySelect(docs, selectStr)
-}
-
-function applyFieldLevelReadAccess(doc: any, fields: FieldConfig[], user: any) {
-  if (!doc || typeof doc !== 'object') return doc
-  if (user?.role === 'admin') return doc
-
-  for (const field of fields) {
-    const readAccessRoles = (field.admin as any)?.readAccess
-    if (readAccessRoles && readAccessRoles.length > 0) {
-      if (!user || !user.role || !readAccessRoles.includes(user.role)) {
-        delete doc[field.name]
-        continue
-      }
-    }
-    const val = doc[field.name]
-    if (val == null) continue
-
-    if ((field as any).type === 'tab' && Array.isArray((field as any).tabs)) {
-      for (const tab of (field as any).tabs) {
-        applyFieldLevelReadAccess(val, tab.fields || [], user)
-      }
-    } else if ((field.type === 'group' || field.type === 'collapsible') && typeof val === 'object') {
-       applyFieldLevelReadAccess(val, (field as any).fields || [], user)
-    } else if ((field.type === 'array' || field.type === 'row') && Array.isArray(val)) {
-       for (const item of val) {
-         applyFieldLevelReadAccess(item, (field as any).fields || [], user)
-       }
-    } else if (field.type === 'blocks' && Array.isArray(val)) {
-       for (const item of val) {
-         const blockDef = (field as any).blocks?.find((b: any) => b.slug === item.blockType)
-         if (blockDef && blockDef.fields) {
-           applyFieldLevelReadAccess(item, blockDef.fields, user)
-         }
-       }
-    }
-  }
-  return doc
-}
-
-function applyFieldLevelWriteAccess(data: any, fields: FieldConfig[], user: any) {
-  if (!data || typeof data !== 'object') return data
-  if (user?.role === 'admin') return data
-
-  for (const field of fields) {
-    const writeAccessRoles = (field.admin as any)?.writeAccess
-    if (writeAccessRoles && writeAccessRoles.length > 0) {
-      if (!user || !user.role || !writeAccessRoles.includes(user.role)) {
-        delete data[field.name]
-        continue
-      }
-    }
-    const val = data[field.name]
-    if (val == null) continue
-
-    if ((field as any).type === 'tab' && Array.isArray((field as any).tabs)) {
-      for (const tab of (field as any).tabs) {
-        applyFieldLevelWriteAccess(val, tab.fields || [], user)
-      }
-    } else if ((field.type === 'group' || field.type === 'collapsible') && typeof val === 'object') {
-       applyFieldLevelWriteAccess(val, (field as any).fields || [], user)
-    } else if ((field.type === 'array' || field.type === 'row') && Array.isArray(val)) {
-       for (const item of val) {
-         applyFieldLevelWriteAccess(item, (field as any).fields || [], user)
-       }
-    } else if (field.type === 'blocks' && Array.isArray(val)) {
-       for (const item of val) {
-         const blockDef = (field as any).blocks?.find((b: any) => b.slug === item.blockType)
-         if (blockDef && blockDef.fields) {
-           applyFieldLevelWriteAccess(item, blockDef.fields, user)
-         }
-       }
-    }
-  }
-  return data
-}
-
-function applyFieldLevelReadAccessToDocs(docs: any | any[], fields: FieldConfig[], user: any) {
-  if (Array.isArray(docs)) {
-    return docs.map(doc => applyFieldLevelReadAccess(doc, fields, user))
-  }
-  return applyFieldLevelReadAccess(docs, fields, user)
-}
-
-function serializeBlocks(doc: any, fields: FieldConfig[]) {
-  if (!doc || typeof doc !== 'object') return
-  for (const field of fields) {
-    const val = doc[field.name]
-    if (val === undefined || val === null) continue
-
-    if ((field.type as string) === 'blocks' || (field.type as string) === 'dz') {
-      if (Array.isArray(val)) {
-        doc[field.name] = val.map((block: any) => {
-          if (block && typeof block === 'object') {
-            const blockType = block.blockType || (block.__component ? block.__component.split('.').pop() : undefined)
-            const __component = block.__component || (block.blockType ? `sections.${block.blockType}` : undefined)
-            return {
-              ...block,
-              blockType,
-              __component,
-            }
-          }
-          return block
-        })
-      }
-    } else if (field.type === 'array' || field.type === 'group' || field.type === 'collapsible') {
-      if (Array.isArray(val)) {
-        val.forEach((item: any) => {
-          if (item && typeof item === 'object') {
-            serializeBlocks(item, (field as any).fields || [])
-          }
-        })
-      } else if (typeof val === 'object') {
-        serializeBlocks(val, (field as any).fields || [])
-      }
-    }
-  }
-}
-
 /**
  * ZENITH ROUTER FACTORY: DYNAMIC ENDPOINT GENERATOR
  * ────────────────────────────────────────────────
@@ -410,107 +56,12 @@ function serializeBlocks(doc: any, fields: FieldConfig[]) {
  * endpoints. This is the primary bridge between the Schema Engine and
  * the HTTP pipeline.
  */
-export { resolveRelations, applySelect, applySelectToDocs, serializeBlocks }
-
-/**
- * Cascade Delete Handler
- * ──────────────────────
- * After a document is deleted, scans all other collections for relation fields
- * that reference the deleted collection and takes action per the `onDelete` policy:
- *   - SET_NULL (default): Nullify the reference on related documents
- *   - CASCADE: Delete related documents
- *   - RESTRICT: Throw if related documents exist (should be called before delete)
- *   - NO_ACTION: Leave references as-is
- */
-async function handleCascadeDeletes(
-  adapter: DatabaseAdapter,
-  collectionSlug: string,
-  deletedDocId: string,
-  collections: CollectionConfig[]
-): Promise<void> {
-  for (const col of collections) {
-    if (col.slug === collectionSlug) continue
-    if (!col.fields) continue
-
-    for (const field of col.fields) {
-      if (field.type !== 'relation') continue
-      const relField = field as RelationFieldConfig
-      const targets = Array.isArray(relField.relationTo) ? relField.relationTo : [relField.relationTo]
-
-      if (!targets.includes(collectionSlug)) continue
-
-      const onDelete = relField.onDelete || 'SET_NULL'
-
-      if (relField.hasMany) {
-        // Find docs whose array field contains the deleted ID
-        const relatedDocs = await adapter.find(col.slug, { [field.name]: deletedDocId })
-        for (const doc of relatedDocs) {
-          const docId = (doc as any)._id?.toString() || (doc as any).id?.toString()
-          if (!docId) continue
-
-          switch (onDelete) {
-            case 'CASCADE':
-              await adapter.delete(col.slug, docId, {})
-              break
-            case 'SET_NULL': {
-              const current = Array.isArray((doc as any)[field.name]) ? (doc as any)[field.name] : []
-              await adapter.update(col.slug, docId, {
-                [field.name]: current.filter((id: any) => {
-                  const idStr = typeof id === 'object' ? id?.id || id?._id : id
-                  return idStr?.toString() !== deletedDocId
-                }),
-              })
-              break
-            }
-            case 'RESTRICT':
-              throw new Error(
-                `Cannot delete: "${col.name}" has a "${field.name}" reference to this document (RESTRICT policy)`
-              )
-            case 'NO_ACTION':
-              break
-          }
-        }
-      } else {
-        // Single relation — find docs pointing to the deleted ID
-        const relatedDoc = await adapter.findOne(col.slug, { [field.name]: deletedDocId })
-        if (!relatedDoc) continue
-        const docId = (relatedDoc as any)._id?.toString() || (relatedDoc as any).id?.toString()
-        if (!docId) continue
-
-        switch (onDelete) {
-          case 'CASCADE':
-            await adapter.delete(col.slug, docId, {})
-            break
-          case 'SET_NULL':
-            await adapter.update(col.slug, docId, { [field.name]: null })
-            break
-          case 'RESTRICT':
-            throw new Error(
-              `Cannot delete: "${col.name}" has a "${field.name}" reference to this document (RESTRICT policy)`
-            )
-          case 'NO_ACTION':
-            break
-        }
-      }
-    }
-  }
-}
-
 export function createCollectionRouter(
   config: CollectionConfig,
   adapter: DatabaseAdapter,
   webhooks: WebhookTarget[] = []
 ): Router {
-  const router: Router = Router()
-
-  if (!config.access || (!config.access.read && !config.access.create && !config.access.update && !config.access.delete)) {
-    console.warn(`[WARNING] Collection "${config.slug}" is missing explicit access hooks. Falling back to default tenant-scoped role enforcement.`)
-  }
-
-  router.use((req, res, next) => {
-    logger.debug({ slug: config.slug, path: req.path, method: req.method }, '[Collection Top]')
-    next()
-  })
+  const router = Router()
 
   /**
    * LAZY CONTEXT INITIALIZATION
@@ -557,46 +108,16 @@ export function createCollectionRouter(
     if (!doc) return doc
     const sanitized = { ...doc }
     config.fields.forEach((field) => {
-      if ((field as any).access?.[action] && !(field as any).access[action]!(user)) {
+      if (field.access?.[action] && !field.access[action]!(user)) {
         delete sanitized[field.name]
       }
     })
-    
-    // Apply static role-based Field-Level Security
-    if (action === 'read') {
-      applyFieldLevelReadAccess(sanitized, config.fields, user)
-      serializeBlocks(sanitized, config.fields)
-    } else {
-      applyFieldLevelWriteAccess(sanitized, config.fields, user)
-    }
-    
     return sanitized
-  }
-
-  /** Strip fields the user is not allowed to set on create/update. */
-  const restrictInputFields = (data: any, user: any, action: 'create' | 'update') => {
-    if (!data || typeof data !== 'object') return data
-    let restricted = { ...data }
-    for (const field of config.fields) {
-      const fieldAccess = (field as any).access
-      if (fieldAccess && fieldAccess[action] && !fieldAccess[action]!(user)) {
-        delete restricted[field.name]
-      }
-      // Also strip read-only fields (access.update === false) on create to prevent
-      // privilege escalation — a user could set fields they shouldn't have write access to.
-      if (action === 'create' && fieldAccess?.update && !fieldAccess.update(user)) {
-        delete restricted[field.name]
-      }
-    }
-    
-    restricted = applyFieldLevelWriteAccess(restricted, config.fields, user)
-    return restricted
   }
 
   // ── Authentication & Role Middleware ──────────────────────────────────────────
 
   router.use((req, res, next) => {
-    logger.debug({ slug: config.slug, method: req.method, publicRead: config.publicRead, path: req.path }, '[Collection Router]')
     // Public read: allow GET without auth if configured
     if (config.publicRead && req.method === 'GET') return next()
     return requireAuth(req, res, next)
@@ -605,11 +126,6 @@ export function createCollectionRouter(
   // Role enforcement per verb — delegates to schema access functions first,
   // then falls back to safe defaults so the framework never hardcodes role names.
   router.use(async (req, res, next) => {
-    // Skip general CRUD verb checks for non-CRUD sub-routes like /preview-token or /aggregate
-    if (req.path.endsWith('/preview-token') || req.path === '/aggregate') {
-      return next()
-    }
-
     if (req.method === 'GET') return next() // read handled per-route via verifyAccess
 
     const user = (req as any).user
@@ -624,43 +140,46 @@ export function createCollectionRouter(
       const granularAccess = await verifyGranularAccess(user, config.slug, action, adapter)
       if (granularAccess === true) return next()
       if (granularAccess === false) {
-        throw new ForbiddenError(`Role permissions deny "${action}" on resource "${config.slug}".`)
+        return res.status(403).json({ error: { message: `Access Denied: Role permissions deny "${action}" on resource "${config.slug}".` } })
       }
 
       if (req.method === 'DELETE') {
+        // If the schema defines an explicit delete access function, use it.
         if (config.access?.delete) {
           if ((await config.access.delete(user)) === false) {
-            throw new ForbiddenError('Access denied: delete not permitted.')
+            return res.status(403).json({ error: { message: 'Access denied: delete not permitted.' } })
           }
         } else {
+          // Safe default: only admin-role users may delete when no access fn is provided.
           if (user.role !== 'admin') {
-            throw new ForbiddenError('Only administrators can delete documents.')
+            return res.status(403).json({ error: { message: 'Only administrators can delete documents.' } })
           }
         }
       } else if (req.method === 'POST') {
         if (config.access?.create) {
           if ((await config.access.create(user)) === false) {
-            throw new ForbiddenError('Access denied: create not permitted.')
+            return res.status(403).json({ error: { message: 'Access denied: create not permitted.' } })
           }
         } else {
+          // Safe default: viewers cannot create.
           if (user.role === 'viewer') {
-            throw new ForbiddenError('Read-only access: viewers cannot create content.')
+            return res.status(403).json({ error: { message: 'Read-only access: viewers cannot create content.' } })
           }
         }
       } else if (req.method === 'PATCH' || req.method === 'PUT') {
         if (config.access?.update) {
           if ((await config.access.update(user)) === false) {
-            throw new ForbiddenError('Access denied: update not permitted.')
+            return res.status(403).json({ error: { message: 'Access denied: update not permitted.' } })
           }
         } else {
+          // Safe default: viewers cannot update.
           if (user.role === 'viewer') {
-            throw new ForbiddenError('Read-only access: viewers cannot modify content.')
+            return res.status(403).json({ error: { message: 'Read-only access: viewers cannot modify content.' } })
           }
         }
       }
-    } catch (err) {
-      next(err)
-      return
+    } catch (err: any) {
+      return res.status(403).json({ error: { message: 'Access control evaluation failed.' } })
     }
 
     next()
@@ -673,28 +192,15 @@ export function createCollectionRouter(
       const { contentService, cachePrefix } = getContext()
       const user = (req as any).user
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
-      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
+      const siteId = req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'read')
 
       if (config.singleton) {
         const doc = await contentService.findById('singleton', { user, locale, siteId })
-        const { select, populate, depth } = parseQueryParams(req.query, config, req.body)
-        if (doc) {
-          const configRegistry = (req as any).zenith?.config
-          const effectiveDepth = depth !== undefined ? depth : (populate.length > 0 ? 5 : 0)
-          if (effectiveDepth > 0 || populate.length > 0) {
-            await resolveRelations([doc], config.fields, populate, effectiveDepth, adapter, 0, configRegistry)
-          }
-          let sanitizedDoc = sanitizeFields(doc, user, 'read')
-          if (select) {
-            sanitizedDoc = applySelect(sanitizedDoc, select)
-          }
-          return res.json(createResponse(sanitizedDoc))
-        }
-        return res.json(createResponse(null))
+        return res.json(createResponse(sanitizeFields(doc, user, 'read')))
       }
 
-      const { filter, sort, pagination, select, populate, depth } = parseQueryParams(req.query, config, req.body)
+      const { filter, sort, pagination, select, populate } = parseQueryParams(req.query, config)
       const cacheKey = `${cachePrefix}:list:${JSON.stringify(req.query)}:loc:${locale || 'en'}:site:${siteId || ''}`
 
       const cached = CacheService.get(cacheKey)
@@ -702,7 +208,6 @@ export function createCollectionRouter(
 
       const skip = (pagination.page - 1) * pagination.pageSize
       const findFilter = siteId ? { ...filter, siteId } : filter
-
       const [docs, total] = await Promise.all([
         contentService.find(filter, {
           user,
@@ -717,19 +222,8 @@ export function createCollectionRouter(
         adapter.count(config.slug, findFilter),
       ])
 
-      const configRegistry = (req as any).zenith?.config
-      const effectiveDepth = depth !== undefined ? depth : (populate.length > 0 ? 5 : 0)
-      if (effectiveDepth > 0 || populate.length > 0) {
-        await resolveRelations(docs, config.fields, populate, effectiveDepth, adapter, 0, configRegistry)
-      }
-
-      let sanitizedDocs = docs.map((d) => sanitizeFields(d, user, 'read'))
-      if (select) {
-        sanitizedDocs = applySelectToDocs(sanitizedDocs, select)
-      }
-
       const response = createResponse(
-        sanitizedDocs,
+        docs.map((d) => sanitizeFields(d, user, 'read')),
         { pagination: { ...pagination, total, totalPages: Math.ceil(total / pagination.pageSize) } }
       )
 
@@ -745,41 +239,13 @@ export function createCollectionRouter(
       const { contentService } = getContext()
       const user = (req as any).user
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
-      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
+      const siteId = req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'read')
 
-      const { select, populate, depth } = parseQueryParams(req.query, config, req.body)
-      // For singletons, always use 'singleton' as the id so the content service
-      // looks up the document without requiring a specific _id match.
-      const docId = config.singleton ? 'singleton' : req.params.id
-      const doc = await contentService.findById(docId, { user, locale, siteId })
-      if (!doc) throw new NotFoundError(config.name, docId)
+      const doc = await contentService.findById(req.params.id, { user, locale, siteId })
+      if (!doc) throw new NotFoundError(config.name, req.params.id)
 
-      const configRegistry = (req as any).zenith?.config
-      const effectiveDepth = depth !== undefined ? depth : (populate.length > 0 ? 5 : 0)
-      if (effectiveDepth > 0 || populate.length > 0) {
-        await resolveRelations([doc], config.fields, populate, effectiveDepth, adapter, 0, configRegistry)
-      }
-
-      let sanitizedDoc = sanitizeFields(doc, user, 'read')
-      if (select) {
-        sanitizedDoc = applySelect(sanitizedDoc, select)
-      }
-
-      res.json(createResponse(sanitizedDoc))
-    } catch (err) {
-      next(err)
-    }
-  })
-
-  // ── Preview Token ──────────────────────────────────────────────────────────
-  router.post('/:id/preview-token', async (req, res, next) => {
-    try {
-      const user = (req as any).user
-      await verifyAccess(user, 'read')
-      const previewId = config.singleton ? 'singleton' : req.params.id
-      const token = PreviewService.generatePreviewToken(config.slug, previewId)
-      res.json(createResponse({ token, collection: config.slug, id: previewId }))
+      res.json(createResponse(sanitizeFields(doc, user, 'read')))
     } catch (err) {
       next(err)
     }
@@ -789,12 +255,11 @@ export function createCollectionRouter(
     try {
       const { schema, contentService } = getContext()
       const user = (req as any).user
-      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
+      const siteId = req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       await verifyAccess(user, 'create')
 
-      const body = restrictInputFields(req.body, user, 'create')
-      const validation = schema.safeParse(body)
+      const validation = schema.safeParse(req.body)
       if (!validation.success) {
         throw new ValidationError(
           Object.entries(validation.error.flatten().fieldErrors).map(([f, m]) => ({
@@ -819,12 +284,11 @@ export function createCollectionRouter(
       if (!config.singleton) return next()
       const { schema, contentService } = getContext()
       const user = (req as any).user
-      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
+      const siteId = req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       await verifyAccess(user, 'update')
 
-      const body = restrictInputFields(req.body, user, 'update')
-      const validation = schema.partial().safeParse(body)
+      const validation = schema.partial().safeParse(req.body)
       if (!validation.success) {
         throw new ValidationError(
           Object.entries(validation.error.flatten().fieldErrors).map(([f, m]) => ({
@@ -838,7 +302,6 @@ export function createCollectionRouter(
         user,
         siteId,
         locale,
-        expectedVersion: req.body._version,
       })
 
       CacheService.invalidateTag(config.slug)
@@ -853,12 +316,11 @@ export function createCollectionRouter(
     try {
       const { schema, contentService } = getContext()
       const user = (req as any).user
-      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
+      const siteId = req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       await verifyAccess(user, 'update')
 
-      const body = restrictInputFields(req.body, user, 'update')
-      const validation = schema.partial().safeParse(body)
+      const validation = schema.partial().safeParse(req.body)
       if (!validation.success) {
         throw new ValidationError(
           Object.entries(validation.error.flatten().fieldErrors).map(([f, m]) => ({
@@ -868,15 +330,10 @@ export function createCollectionRouter(
         )
       }
 
-      // For singletons, always use 'singleton' as the id so the content service
-      // looks up the document without requiring a specific _id match.
-      const docId = config.singleton ? 'singleton' : req.params.id
-
-      const { doc } = await contentService.update(docId, validation.data, {
+      const { doc } = await contentService.update(req.params.id, validation.data, {
         user,
         siteId,
         locale,
-        expectedVersion: req.body._version,
       })
 
       CacheService.invalidateTag(config.slug)
@@ -891,91 +348,11 @@ export function createCollectionRouter(
     try {
       const { contentService } = getContext()
       const user = (req as any).user
-      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
+      const siteId = req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'delete')
 
       await contentService.delete(req.params.id, { user, siteId })
       CacheService.invalidateTag(config.slug)
-
-      // Cascade delete: clean up relation references in other collections
-      const allCollections = (req as any).zenith?.config?.collections || []
-      await handleCascadeDeletes(adapter, config.slug, req.params.id, allCollections)
-
-      res.json(createResponse({ success: true }))
-    } catch (err) {
-      next(err)
-    }
-  })
-
-  // ── Soft Delete Endpoints ──────────────────────────────────────────────────
-  router.get('/trash', async (req, res, next) => {
-    try {
-      if (!config.softDelete) throw new NotFoundError('Trash not enabled for this collection', 'trash')
-      const { contentService, cachePrefix } = getContext()
-      const user = (req as any).user
-      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
-      const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
-      await verifyAccess(user, 'read')
-
-      const { filter, sort, pagination, select, populate, depth } = parseQueryParams(req.query, config, req.body)
-      const skip = (pagination.page - 1) * pagination.pageSize
-      const findFilter = siteId ? { ...filter, siteId } : filter
-      
-      // Override to explicitly fetch only deleted items
-      const trashFilter = { ...findFilter, deletedAt: { $ne: null } }
-
-      const [docs, total] = await Promise.all([
-        contentService.find(trashFilter, {
-          user, locale, sort, skip, limit: pagination.pageSize, select, populate, siteId, includeDeleted: true
-        } as any),
-        adapter.count(config.slug, trashFilter),
-      ])
-
-      const configRegistry = (req as any).zenith?.config
-      const effectiveDepth = depth !== undefined ? depth : (populate.length > 0 ? 5 : 0)
-      if (effectiveDepth > 0 || populate.length > 0) {
-        await resolveRelations(docs, config.fields, populate, effectiveDepth, adapter, 0, configRegistry)
-      }
-
-      let sanitizedDocs = docs.map((d) => sanitizeFields(d, user, 'read'))
-      if (select) sanitizedDocs = applySelectToDocs(sanitizedDocs, select)
-
-      res.json(createResponse(sanitizedDocs, { pagination: { ...pagination, total, totalPages: Math.ceil(total / pagination.pageSize) } }))
-    } catch (err) {
-      next(err)
-    }
-  })
-
-  router.post('/:id/restore', async (req, res, next) => {
-    try {
-      if (!config.softDelete) throw new NotFoundError('Trash not enabled for this collection', req.params.id)
-      const { contentService } = getContext()
-      const user = (req as any).user
-      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
-      await verifyAccess(user, 'update')
-
-      const { doc } = await contentService.update(req.params.id, { deletedAt: null }, { user, siteId, includeDeleted: true })
-      CacheService.invalidateTag(config.slug)
-      res.json(createResponse(sanitizeFields(doc, user, 'read')))
-    } catch (err) {
-      next(err)
-    }
-  })
-
-  router.delete('/:id/hard', async (req, res, next) => {
-    try {
-      const { contentService } = getContext()
-      const user = (req as any).user
-      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
-      await verifyAccess(user, 'delete')
-
-      await contentService.delete(req.params.id, { user, siteId, includeDeleted: true })
-      CacheService.invalidateTag(config.slug)
-
-      // Cascade delete: clean up relation references in other collections
-      const allCollections = (req as any).zenith?.config?.collections || []
-      await handleCascadeDeletes(adapter, config.slug, req.params.id, allCollections)
-
       res.json(createResponse({ success: true }))
     } catch (err) {
       next(err)
@@ -988,17 +365,22 @@ export function createCollectionRouter(
     try {
       const { schema, contentService } = getContext()
       const user = (req as any).user
-      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
+      const siteId = req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'create')
 
       const records = req.body
       if (!Array.isArray(records)) {
-        throw new InvalidPayloadError('Import payload must be an array of records.')
+        return res
+          .status(400)
+          .json({ error: { message: 'Import payload must be an array of records.' } })
       }
 
+      // Hard cap: prevent accidental multi-GB uploads from hanging the server.
       const MAX_IMPORT = 5000
       if (records.length > MAX_IMPORT) {
-        throw new InvalidPayloadError(`Import is capped at ${MAX_IMPORT} records per request. Split your data into smaller batches.`)
+        return res.status(400).json({
+          error: { message: `Import is capped at ${MAX_IMPORT} records per request. Split your data into smaller batches.` },
+        })
       }
 
       const importedDocs: any[] = []
@@ -1070,7 +452,7 @@ export function createCollectionRouter(
     try {
       const { contentService } = getContext()
       const user = (req as any).user
-      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
+      const siteId = req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'read')
 
       // Cap at 1000 records per export request to prevent V8 heap exhaustion.
@@ -1098,67 +480,6 @@ export function createCollectionRouter(
     }
   })
 
-
-  // ── Count ───────────────────────────────────────────────────────────────────
-
-  router.get('/count', async (req, res, next) => {
-    try {
-      const { contentService } = getContext()
-      const user = (req as any).user
-      const siteId = req.siteId || req.headers['x-zenith-site-id'] as string
-      await verifyAccess(user, 'read')
-
-      const filter: Record<string, any> = {}
-      if (siteId) filter.siteId = siteId
-      // Parse where params from query string
-      for (const [key, value] of Object.entries(req.query)) {
-        if (key.startsWith('where[') && key.endsWith(']')) {
-          const fieldName = key.slice(6, -1)
-          filter[fieldName] = value
-        }
-      }
-
-      const count = await adapter.count(config.slug, filter)
-      res.json(createResponse({ count }))
-    } catch (err) {
-      next(err)
-    }
-  })
-
-  // ── Aggregate ────────────────────────────────────────────────────────────────
-
-  router.post('/aggregate', async (req, res, next) => {
-    try {
-      const user = (req as any).user
-      await verifyAccess(user, 'read')
-      if (!user || user.role !== 'admin') {
-        throw new ForbiddenError('Aggregate operations are strictly reserved for administrators.')
-      }
-      const { pipeline } = req.body
-      if (!Array.isArray(pipeline)) {
-        throw new InvalidPayloadError('pipeline must be an array')
-      }
-
-      // Security: Whitelist allowed operators
-      const allowedOperators = new Set(['$match', '$group', '$sort', '$limit', '$skip', '$project', '$count'])
-      for (const stage of pipeline) {
-        if (typeof stage !== 'object' || stage === null) {
-          throw new InvalidPayloadError('Invalid pipeline stage')
-        }
-        const operators = Object.keys(stage)
-        for (const op of operators) {
-          if (!allowedOperators.has(op)) {
-            throw new InvalidPayloadError(`Aggregate operator ${op} is not permitted.`)
-          }
-        }
-      }
-
-      const results = await adapter.aggregate(config.slug, pipeline, { siteId: (req as any).siteId })
-      res.json(createResponse({ results }))
-    } catch (err) {
-      next(err)
-    }
-  })
 
   // ── Versioning & History ────────────────────────────────────────────────────
 
