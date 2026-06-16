@@ -517,7 +517,7 @@ const AIWriterPage = () => {
  {[
  { label: 'Node_ID', value: 'GLOBAL' },
  { label: 'Latency', value: '42ms' },
- { label: 'Kernel', value: 'V6.0_STABLE' },
+ { label: 'Kernel', value: 'V1.0_BETA' },
  { label: 'Engine', value: 'Refinement' },
  ].map((stat, i) => (
  <div key={i} className="p-3 rounded-none bg-white/5 border border-white/[0.08]">

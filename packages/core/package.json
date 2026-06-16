@@ -1,6 +1,6 @@
 {
   "name": "@zenith-open/zenithcms-core",
-  "version": "6.0.0",
+  "version": "1.0.0-beta",
   "publishConfig": {
     "access": "public"
   },

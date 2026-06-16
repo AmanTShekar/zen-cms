@@ -179,7 +179,7 @@ const TemplatesPage: React.FC = () => {
  `[system] Installing workspace dependencies via pnpm...`,
  `[build] Resolving node modules: 173 packages successfully installed.`,
  `[build] Starting project compile step: "pnpm run build"...`,
- `[build] vite v6.0.0 building for production...`,
+ `[build] vite v1.0.0-beta building for production...`,
  `[build] ✓ 42 modules transformed.`,
  `[build] dist/assets/index-D8g9sK.js 142.64 kB │ gzip: 43.12 kB`,
  `[build] dist/assets/index-C1h8aD.css 31.42 kB │ gzip: 8.94 kB`,

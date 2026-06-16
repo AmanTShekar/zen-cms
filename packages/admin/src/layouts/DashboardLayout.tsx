@@ -291,7 +291,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <div className="w-1 h-1 bg-gray-500 rounded-none animate-pulse" />
  </div>
  <span className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-wider leading-none mt-1.5">
- v6.0 Stable
+ v1.0 Beta
  </span>
  </motion.div>
  )}
