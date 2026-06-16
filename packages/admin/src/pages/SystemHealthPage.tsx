@@ -260,7 +260,7 @@ const SystemHealthPage = () => {
  title="Engine Build"
  status="up"
  icon={Zap}
- detail={health?.version || 'v6.0.45'}
+ detail={health?.version || 'v6.0 Stable'}
  subdetail="Production Stable"
  trend={true}
  theme={theme}

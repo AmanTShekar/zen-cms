@@ -1,7 +1,7 @@
 {
   "name": "@zenith-open/zenithcms-admin",
   "private": true,
-  "version": "1.0.0-beta",
+  "version": "6.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

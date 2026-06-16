@@ -115,11 +115,6 @@ const LoginPage: React.FC = () => {
  }
  }
 
- const fillCredentials = () => {
- setValue('email', 'admin@zenith.com')
- setValue('password', 'Zenith2024!')
- }
-
  return (
  <div className="min-h-screen flex items-center justify-center p-4 md:p-6 relative overflow-auto font-sans antialiased selection:bg-white selection:text-black bg-black text-white">
  {/* Background elements */}
@@ -403,60 +398,6 @@ const LoginPage: React.FC = () => {
  >
  <span>Google OAuth</span>
  </button>
- </div>
- </div>
- )}
-
- {/* 🔑 Credentials Hint Module — DEV ONLY, never shown in production */}
- {import.meta.env.DEV && !needsSetup && (
- <div
- onClick={fillCredentials}
- className={cn(
- 'mt-8 p-4 border rounded-none space-y-3 cursor-pointer group hover:scale-[1.02] active:scale-[0.98] transition-all',
- theme === 'dark'
- ? 'bg-gray-500/5 border-gray-500/10'
- : 'bg-gray-50/50 border-gray-100'
- )}
- >
- <div className="flex items-center justify-between">
- <div className="flex items-center gap-2 text-gray-600 dark:text-gray-500">
- <Info size={12} />
- <span className="text-[8px] font-black uppercase tracking-widest ">
- Dev_Credentials
- </span>
- </div>
- <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
- <span className="text-[7px] font-black uppercase">Auto_Fill</span>
- <MousePointer2 size={10} />
- </div>
- </div>
- <div className="flex flex-col gap-1.5">
- <div className="flex items-center justify-between">
- <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest ">
- User_UID
- </span>
- <code
- className={cn(
- 'text-[9px] font-black transition-colors',
- theme === 'dark' ? 'text-white/60' : 'text-gray-900'
- )}
- >
- admin@zenith.com
- </code>
- </div>
- <div className="flex items-center justify-between">
- <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest ">
- Password
- </span>
- <code
- className={cn(
- 'text-[9px] font-black transition-colors',
- theme === 'dark' ? 'text-white/60' : 'text-gray-900'
- )}
- >
- Zenith2024!
- </code>
- </div>
  </div>
  </div>
  )}
