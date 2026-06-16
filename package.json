@@ -1,9 +1,8 @@
 {
   "name": "zenith-cms",
-  "version": "0.2.0",
+  "version": "1.0.0-beta",
   "description": "Zenith CMS — The Industrial Operational Platform for High-Fidelity Digital Ecosystems.",
   "private": true,
-  "type": "module",
   "workspaces": [
     "packages/*"
   ],

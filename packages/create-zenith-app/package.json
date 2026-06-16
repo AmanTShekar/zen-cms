@@ -1,6 +1,6 @@
 {
   "name": "create-zenith-app",
-  "version": "1.0.0",
+  "version": "1.0.0-beta",
   "description": "CLI tool to bootstrap a new Zenith CMS project",
   "bin": {
     "create-zenith-app": "./index.js"

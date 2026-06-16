@@ -1,6 +1,6 @@
 {
   "name": "@zenithcms/storefront-editorial",
-  "version": "1.0.0",
+  "version": "1.0.0-beta",
   "private": true,
   "type": "module",
   "description": "Editorial magazine-style storefront template for Zenith CMS. Bold typography, wide hero images, news/blog layout.",

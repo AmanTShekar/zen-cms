@@ -12,7 +12,7 @@ The core maintainers monitor, patch, and release security updates according to t
 |---|---|---|
 | **v0.2.x** (Active Develop) | Supported | Continuous (Immediate hotfixes for verified CVEs) |
 | **v0.1.x** (Early Alpha) | Maintenance | Critical vulnerabilities only |
-| **< v0.1.0** (Deprecated) | Unsupported | None (Upgrade to current stable release required) |
+| **< v1.0.0-beta** (Deprecated) | Unsupported | None (Upgrade to current stable release required) |
 
 ---
 

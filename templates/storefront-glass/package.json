@@ -1,6 +1,6 @@
 {
   "name": "@zenithcms/storefront-glass",
-  "version": "1.0.0",
+  "version": "1.0.0-beta",
   "private": true,
   "type": "module",
   "description": "Glassmorphism storefront template for Zenith CMS — dark theme, premium feel, zero-config deploy",

@@ -2,6 +2,9 @@
   <img src="https://raw.githubusercontent.com/AmanTShekar/Zenith-CMS/main/logo.png" width="200" alt="Zenith CMS Logo" />
   <h1>Zenith CMS</h1>
   <p><strong>The enterprise-grade, headless CMS built for performance, security, and developer experience.</strong></p>
+  <p align="center">
+    <a href="https://github.com/AmanTShekar/Zenith-CMS"><img alt="Version" src="https://img.shields.io/badge/version-v1.0.0--beta-black?style=flat-square" /></a>
+  </p>
 </div>
 
 ---
