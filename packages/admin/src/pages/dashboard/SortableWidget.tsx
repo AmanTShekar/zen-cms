@@ -45,30 +45,46 @@ export function SortableWidget({
   if (!def) return null;
   const Component = def.component;
 
+  const colSpanClass = {
+    1: 'col-span-1',
+    2: 'col-span-2',
+    3: 'col-span-3',
+    4: 'col-span-4 md:col-span-4',
+    5: 'col-span-5 md:col-span-5',
+    6: 'col-span-12 md:col-span-6',
+    7: 'col-span-12 md:col-span-7',
+    8: 'col-span-12 md:col-span-8',
+    9: 'col-span-12 md:col-span-9',
+    10: 'col-span-12 md:col-span-10',
+    11: 'col-span-12 md:col-span-11',
+    12: 'col-span-12',
+  }[widget.position?.w || def.defaultSize.w] || 'col-span-12 md:col-span-4';
+
   return (
     <div
       ref={setNodeRef}
       style={style}
+      {...(isEditing ? attributes : {})}
+      {...(isEditing ? listeners : {})}
       className={cn(
-        "relative rounded-none border transition-all duration-200 group h-full flex flex-col",
+        "relative rounded-none-none border transition-all duration-200 group flex flex-col",
+        colSpanClass,
         theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200',
-        isDragging && "opacity-50 ring-2 ring-emerald-500 shadow-2xl scale-[1.02]",
-        isEditing && "hover:border-emerald-500/50"
+        isDragging && "opacity-50 ring-2 ring-emerald-500 shadow-2xl scale-[1.02] z-50",
+        isEditing && "hover:border-emerald-500/50 cursor-grab active:cursor-grabbing"
       )}
     >
       {/* Widget Header */}
-      <div className={cn(
+      <div 
+        className={cn(
         "flex items-center justify-between px-3 py-2 border-b transition-colors",
         theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-100 bg-gray-50/50'
       )}>
-        <div className="flex items-center gap-2 overflow-hidden flex-1">
+        <div className="flex items-center gap-2 overflow-hidden flex-1 pointer-events-none">
           {isEditing && (
             <div
-              {...attributes}
-              {...listeners}
               className={cn(
-                "cursor-grab active:cursor-grabbing p-1 -ml-1 transition-colors hover:text-emerald-500",
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+                "p-1 -ml-1 transition-colors text-emerald-500"
               )}
             >
               <GripVertical size={14} />
@@ -130,11 +146,6 @@ export function SortableWidget({
             onRemove={() => onRemove(widget.id)}
           />
         </WidgetErrorBoundary>
-        
-        {/* Overlay block during editing so user doesn't interact with content */}
-        {isEditing && (
-          <div className="absolute inset-0 z-10" />
-        )}
       </div>
     </div>
   );

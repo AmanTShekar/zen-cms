@@ -53,14 +53,14 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  animate={{ opacity: 1, scale: 1, y: 0 }}
  exit={{ opacity: 0, scale: 0.98, y: 15 }}
  className={cn(
- 'border rounded-none w-full max-w-2xl shadow-2xl flex flex-col overflow-hidden',
+ 'border rounded-none-none w-full max-w-2xl shadow-2xl flex flex-col overflow-hidden',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200 shadow-sm text-gray-900'
  )}
  >
  {/* Header */}
  <div className="px-8 py-6 border-b flex justify-between items-center" style={{ borderColor: theme === 'dark' ? 'rgba(255,255,255,0.05)' : '#f3f4f6' }}>
  <div className="flex items-center gap-4">
- <div className="w-9 h-9 bg-gray-600 dark:bg-gray-600 rounded-none flex items-center justify-center text-white shadow-lg">
+ <div className="w-9 h-9 bg-gray-600 dark:bg-gray-600 rounded-none-none flex items-center justify-center text-white shadow-lg">
  <Upload size={16} />
  </div>
  <div className="flex flex-col">
@@ -68,7 +68,7 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-1">{slug} collection</p>
  </div>
  </div>
- <button onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-gray-50 hover:bg-gray-100 dark:bg-white/5 dark:hover:bg-white/10 rounded-none transition-colors">
+ <button onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-gray-50 hover:bg-gray-100 dark:bg-white/5 dark:hover:bg-white/10 rounded-none-none transition-colors">
  <X size={14} className="text-gray-400" />
  </button>
  </div>
@@ -81,7 +81,7 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  <button
  onClick={() => { setImportFormat('csv'); setImportResult(null); }}
  className={cn(
- 'px-4 py-2 rounded-none font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2 border',
+ 'px-4 py-2 rounded-none-none font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2 border',
  importFormat === 'csv' ? 'bg-gray-600 dark:bg-gray-600 border-gray-500 text-white' :
  theme === 'dark' ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-white' : 'bg-white border-gray-200 text-gray-500 hover:text-gray-900'
  )}
@@ -91,7 +91,7 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  <button
  onClick={() => { setImportFormat('json'); setImportResult(null); }}
  className={cn(
- 'px-4 py-2 rounded-none font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2 border',
+ 'px-4 py-2 rounded-none-none font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2 border',
  importFormat === 'json' ? 'bg-gray-600 dark:bg-gray-600 border-gray-500 text-white' :
  theme === 'dark' ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-white' : 'bg-white border-gray-200 text-gray-500 hover:text-gray-900'
  )}
@@ -111,7 +111,7 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  if (file) { setImportFile(file); setImportText(''); setImportResult(null) }
  }}
  className={cn(
- 'border-2 border-dashed rounded-none p-8 text-center transition-all cursor-pointer',
+ 'border-2 border-dashed rounded-none-none p-8 text-center transition-all cursor-pointer',
  dragOver ? 'border-gray-500 bg-gray-500/5' :
  theme === 'dark' ? 'border-white/[0.08] hover:border-white/[0.08]' : 'border-gray-200 hover:border-gray-300'
  )}
@@ -149,7 +149,7 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  onChange={(e) => { setImportText(e.target.value); setImportFile(null); setImportResult(null); }}
  rows={6}
  className={cn(
- 'w-full border rounded-none px-4 py-3 text-xs font-mono outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all resize-y',
+ 'w-full border rounded-none-none px-4 py-3 text-xs font-mono outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all resize-y',
  theme === 'dark' ? 'bg-white/[0.03] border-white/[0.08] text-white focus:border-gray-500/50' : 'bg-gray-50 border-gray-200 focus:border-gray-400'
  )}
  placeholder={importFormat === 'csv'
@@ -162,7 +162,7 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  {/* Result */}
  {importResult && (
  <div className={cn(
- 'border rounded-none p-5 space-y-3',
+ 'border rounded-none-none p-5 space-y-3',
  importResult.errors.length === 0
  ? theme === 'dark' ? 'bg-gray-500/5 border-gray-500/20' : 'bg-gray-50 border-gray-200'
  : theme === 'dark' ? 'bg-amber-500/5 border-amber-500/20' : 'bg-amber-50 border-amber-200'
@@ -191,7 +191,7 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  <button
  onClick={handleImport}
  disabled={importing || (!importFile && !importText.trim())}
- className={cn('px-8 py-3 rounded-none font-black text-[9px] uppercase tracking-widest shadow-xl transition-all flex items-center gap-2 disabled:opacity-40', theme === 'dark' ? 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white shadow-gray-600/20' : 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white')}
+ className={cn('px-8 py-3 rounded-none-none font-black text-[9px] uppercase tracking-widest shadow-xl transition-all flex items-center gap-2 disabled:opacity-40', theme === 'dark' ? 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white shadow-gray-600/20' : 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white')}
  >
  {importing ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
  {importing ? 'Importing...' : 'Import'}

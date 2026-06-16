@@ -25,6 +25,10 @@ import toast from 'react-hot-toast'
 import { useTheme } from '../context/ThemeContext'
 import api from '../lib/api'
 
+import { PageHeader } from '../components/ui/PageHeader'
+import { ActionPanel } from '../components/ui/ActionPanel'
+import { Card, CardContent } from '../components/ui/Card'
+
 import SettingsGeneral from './settings/SettingsGeneral'
 import SettingsMedia from './settings/SettingsMedia'
 import SettingsBilling from './settings/SettingsBilling'
@@ -302,120 +306,96 @@ case 'plugins':
  )
  }
 
- return (
- <div className="max-w-[1400px] mx-auto space-y-8">
- <div className={cn(
- "flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 mb-8 border-b transition-colors",
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
- )}>
- <div className="flex items-center gap-4">
- <div className="w-12 h-12 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)] shrink-0">
- <SettingsIcon size={24} />
- </div>
- <div>
- <div className="flex items-center gap-2 mb-1.5">
- <span className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em]">
- System Configuration
- </span>
- <div className="w-1.5 h-1.5 bg-emerald-500 rounded-none shadow-[0_0_10px_#10b981]" />
- </div>
- <h1 className={cn(
- "text-2xl font-black tracking-tighter uppercase leading-none",
- theme === 'dark' ? 'text-white' : 'text-gray-900'
- )}>
- Settings
- </h1>
- <p className={cn(
- "text-xs font-medium mt-2",
- theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
- )}>
- Configure environment preferences, integrations, and access control.
- </p>
- </div>
- </div>
- <button
- onClick={handleSave}
- disabled={saving}
- className={cn(
- 'flex items-center justify-center gap-2 px-6 py-2.5 rounded-none text-sm font-bold transition-all disabled:opacity-50',
- theme === 'dark' ? 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'bg-emerald-600 text-white hover:bg-emerald-500'
- )}
- >
- {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
- Save Settings
- </button>
- </div>
+  return (
+  <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden">
+ <PageHeader 
+   title="Settings"
+   description="Configure environment preferences, integrations, and access control."
+   icon={<SettingsIcon size={24} />}
+   actions={
+     <button
+       onClick={handleSave}
+       disabled={saving}
+       className={cn(
+         'flex items-center justify-center gap-2 px-6 py-2.5 rounded-none-none text-sm font-bold transition-all disabled:opacity-50',
+         theme === 'dark' ? 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'bg-emerald-600 text-white hover:bg-emerald-500'
+       )}
+     >
+       {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+       Save Settings
+     </button>
+   }
+ />
 
- <div className="grid grid-cols-1 xl:grid-cols-4 gap-8 items-start">
- <div className="xl:col-span-1 space-y-8 h-fit">
- {tabGroups.map((group) => (
- <div key={group.label}>
- <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-3">
- {group.label}
- </h3>
- <div className="space-y-1">
- {group.tabs.map((tab) => (
- <button
- key={tab.id}
- onClick={() => setActiveTab(tab.id)}
- className={cn(
- 'w-full flex items-center gap-3 px-3 py-2.5 rounded-none transition-all group border',
- activeTab === tab.id
- ? theme === 'dark' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]' : 'bg-emerald-50 border-emerald-500/20 shadow-sm text-emerald-700'
- : theme === 'dark' ? 'text-gray-400 border-transparent hover:bg-white/[0.02] hover:text-gray-200' : 'text-gray-500 border-transparent hover:bg-gray-50'
- )}
+ <ActionPanel
+   sidebarPosition="left"
+   sidebarWidth="w-full lg:w-[320px]"
+   sidebar={
+     <div className="p-6 space-y-8 h-[calc(100vh-140px)] overflow-y-auto">
+       {tabGroups.map((group) => (
+         <div key={group.label}>
+           <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-3">
+             {group.label}
+           </h3>
+           <div className="space-y-1">
+             {group.tabs.map((tab) => (
+               <button
+                 key={tab.id}
+                 onClick={() => setActiveTab(tab.id)}
+                 className={cn(
+                   'w-full flex items-center gap-3 px-3 py-2.5 rounded-none-none transition-all group border',
+                   activeTab === tab.id
+                     ? theme === 'dark' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]' : 'bg-emerald-50 border-emerald-500/20 shadow-sm text-emerald-700'
+                     : theme === 'dark' ? 'text-gray-400 border-transparent hover:bg-white/[0.02] hover:text-gray-200' : 'text-gray-500 border-transparent hover:bg-gray-50'
+                 )}
+               >
+                 <div className={cn(
+                   "w-8 h-8 rounded-none-none flex items-center justify-center transition-colors",
+                   activeTab === tab.id ? "bg-emerald-400 scale-110 text-black shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "bg-white/5 text-gray-400 group-hover:text-gray-300"
+                 )}>
+                   <tab.icon size={16} />
+                 </div>
+                 <div className="flex flex-col items-start leading-tight">
+                   <span className="text-sm font-semibold">{tab.label}</span>
+                 </div>
+               </button>
+             ))}
+           </div>
+         </div>
+       ))}
+     </div>
+   }
  >
- <div className={cn(
- "w-8 h-8 rounded-none flex items-center justify-center transition-colors",
- activeTab === tab.id ? "bg-emerald-400 scale-110 text-black shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "bg-white/5 text-gray-400 group-hover:text-gray-300"
- )}>
- <tab.icon size={16} />
- </div>
- <div className="flex flex-col items-start leading-tight">
- <span className="text-sm font-semibold">{tab.label}</span>
- </div>
- </button>
- ))}
- </div>
- </div>
- ))}
- </div>
-
- <div className="xl:col-span-3">
- <div className={cn(
- 'p-8 min-h-[600px] transition-colors',
- theme === 'dark' 
- ? 'bg-black/65 backdrop-blur-[12px] border border-white/[0.08] rounded-none shadow-[0_4px_30px_rgba(0,0,0,0.1)]' 
- : 'bg-white border border-gray-200 shadow-sm shadow-sm rounded-none'
- )}>
- <AnimatePresence mode="wait">
- <motion.div
- key={activeTab}
- initial={{ opacity: 0, y: 10 }}
- animate={{ opacity: 1, y: 0 }}
- exit={{ opacity: 0, y: -10 }}
- className="space-y-8 relative z-10"
- >
- <div className="flex items-center gap-4 border-b border-white/[0.05] pb-6">
- <div className="w-10 h-10 rounded-none bg-emerald-500/10 flex items-center justify-center text-emerald-400">
- {activeTabDetails?.icon && <activeTabDetails.icon size={20} />}
- </div>
- <div>
- <h2 className="text-xl font-bold text-white tracking-tight">
- {activeTabDetails?.label}
- </h2>
- <p className="text-xs text-gray-400 mt-1">{activeTabDetails?.sub}</p>
- </div>
- </div>
- 
- <div className="space-y-6 w-full">
- {renderTab()}
- </div>
- </motion.div>
- </AnimatePresence>
- </div>
- </div>
- </div>
+   <div className="flex-1 overflow-y-auto p-6 lg:p-10">
+     <Card padding="lg" className="min-h-[600px]">
+       <AnimatePresence mode="wait">
+         <motion.div
+           key={activeTab}
+           initial={{ opacity: 0, y: 10 }}
+           animate={{ opacity: 1, y: 0 }}
+           exit={{ opacity: 0, y: -10 }}
+           className="space-y-8 relative z-10"
+         >
+           <div className="flex items-center gap-4 border-b pb-6" style={{ borderColor: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}>
+             <div className="w-10 h-10 rounded-none-none bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+               {activeTabDetails?.icon && <activeTabDetails.icon size={20} />}
+             </div>
+             <div>
+               <h2 className={cn("text-xl font-bold tracking-tight", theme === 'dark' ? 'text-white' : 'text-gray-900')}>
+                 {activeTabDetails?.label}
+               </h2>
+               <p className={cn("text-xs mt-1", theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>{activeTabDetails?.sub}</p>
+             </div>
+           </div>
+           
+           <div className="space-y-6 w-full">
+             {renderTab()}
+           </div>
+         </motion.div>
+       </AnimatePresence>
+     </Card>
+   </div>
+ </ActionPanel>
 
  <AnimatePresence>
  {newKey && <SettingsApiKeyModal newKey={newKey} setNewKey={setNewKey} theme={theme} />}

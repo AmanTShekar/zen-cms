@@ -34,7 +34,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item, idx, theme, removeF
  dragControls={dragControls}
  as="div"
  className={cn(
- 'flex items-center gap-3 p-3 rounded-none border group',
+ 'flex items-center gap-3 p-3 rounded-none-none border group',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] hover:border-gray-500/20'
  : 'bg-gray-50 border-gray-200 hover:border-gray-200'
@@ -46,7 +46,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item, idx, theme, removeF
  >
  <GripVertical size={12} className="text-gray-500" />
  </div>
- <div className="w-6 h-6 rounded-none bg-gray-500/10 flex items-center justify-center shrink-0">
+ <div className="w-6 h-6 rounded-none-none bg-gray-500/10 flex items-center justify-center shrink-0">
  <Layout size={12} className="text-gray-600 dark:text-gray-400" />
  </div>
  <div className="flex-1 min-w-0">
@@ -125,7 +125,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <div className="flex items-center gap-3">
- <div className="w-8 h-8 rounded-none bg-gray-600/20 border border-gray-500/30 flex items-center justify-center">
+ <div className="w-8 h-8 rounded-none-none bg-gray-600/20 border border-gray-500/30 flex items-center justify-center">
  <Layers size={16} className="text-gray-600 dark:text-gray-400" />
  </div>
  <div>
@@ -144,7 +144,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  onClick={() => setDynamicZoneModalOpen(false)}
  aria-label="Close"
  className={cn(
- 'p-1.5 rounded-none border transition-all',
+ 'p-1.5 rounded-none-none border transition-all',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] hover:bg-white hover:text-black'
  : 'bg-gray-100 border-gray-200 hover:bg-black hover:text-white'
@@ -209,7 +209,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  onChange={(e) => setComponentSearch(e.target.value)}
  placeholder="Search components..."
  className={cn(
- 'w-full pl-8 pr-3 py-2 text-xs font-bold border rounded-none bg-transparent',
+ 'w-full pl-8 pr-3 py-2 text-xs font-bold border rounded-none-none bg-transparent',
  theme === 'dark'
  ? 'border-white/[0.08] text-white placeholder-gray-600 focus:border-gray-500/30'
  : 'border-gray-200 text-black placeholder-gray-400 focus:border-gray-500/30'
@@ -230,13 +230,13 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  onClick={() => addToDynamicZone(block.type)}
  aria-label={`Add ${block.title} to dynamic zone`}
  className={cn(
- 'w-full flex items-center gap-3 p-3 rounded-none border transition-all text-left',
+ 'w-full flex items-center gap-3 p-3 rounded-none-none border transition-all text-left',
  theme === 'dark'
  ? 'bg-white/[0.01] border-white/[0.08] hover:border-gray-500/30 hover:bg-gray-500/5'
  : 'bg-gray-50 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
  )}
  >
- <div className="w-8 h-8 rounded-none bg-gray-500/10 flex items-center justify-center shrink-0">
+ <div className="w-8 h-8 rounded-none-none bg-gray-500/10 flex items-center justify-center shrink-0">
  <Icon size={14} className="text-gray-600 dark:text-gray-400" />
  </div>
  <div className="flex-1 min-w-0">

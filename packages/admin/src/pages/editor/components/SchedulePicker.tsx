@@ -95,7 +95,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
  value={scheduleInput}
  onChange={(e) => setScheduleInput(e.target.value)}
  className={cn(
- 'w-full px-2 py-1.5 rounded-none border text-xs font-mono',
+ 'w-full px-2 py-1.5 rounded-none-none border text-xs font-mono',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-white'
  : 'bg-gray-50 border-gray-200 text-black'

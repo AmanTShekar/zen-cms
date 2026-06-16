@@ -18,9 +18,12 @@ import {
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import api from '../lib/api'
-import { cn } from '../lib/utils'
 import { useTheme } from '../context/ThemeContext'
+import { cn } from '../lib/utils'
 import { toast } from 'react-hot-toast'
+import { PageHeader } from '../components/ui/PageHeader'
+import { Card, CardContent } from '../components/ui/Card'
+import { Badge } from '../components/ui/Badge'
 
 interface TelemetryCardProps {
  title: string
@@ -41,15 +44,8 @@ const TelemetryCard = ({
  trend,
  theme,
 }: TelemetryCardProps) => (
- <motion.div
- initial={{ opacity: 0, y: 10 }}
- animate={{ opacity: 1, y: 0 }}
- className={cn(
- 'p-8 border rounded-none transition-all duration-500 relative group overflow-hidden',
- theme === 'dark'
- ? 'bg-white/[0.02] border-white/[0.05] hover:border-white/[0.08]'
- : 'bg-white border-gray-200 shadow-sm hover:border-gray-300 shadow-sm'
- )}
+ <Card
+ className="relative group p-8"
  >
  <div className="absolute top-0 right-0 p-8 text-gray-500/[0.02] pointer-events-none group-hover:text-gray-500/[0.05] transition-colors">
  <Icon size={100} strokeWidth={0.5} />
@@ -74,7 +70,7 @@ const TelemetryCard = ({
  >
  <div
  className={cn(
- 'w-1.5 h-1.5 rounded-none',
+ 'w-1.5 h-1.5 rounded-none-none',
  status === 'healthy' || status === 'up' || status === 'ok'
  ? 'bg-gray-500 shadow-[0_0_8px_#10b981]'
  : 'bg-amber-500'
@@ -102,7 +98,7 @@ const TelemetryCard = ({
  )}
  </div>
  </div>
- </motion.div>
+ </Card>
 )
 
 interface HealthData {
@@ -206,53 +202,32 @@ const SystemHealthPage = () => {
  )
 
  return (
- <div
- className={cn(
- 'p-6 space-y-12 animate-fade-in transition-colors duration-500',
- theme === 'dark' ? 'text-white' : 'text-gray-900'
- )}
- >
- {/* 👑 Tactical Header */}
- <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
- <div className="flex items-center gap-4">
- <div
- className={cn(
- 'w-12 h-12 flex items-center justify-center shadow-lg transition-all',
- theme === 'dark' ? 'bg-white text-black' : 'bg-gray-900 text-white'
- )}
- >
- <Radio size={24} className="animate-pulse" />
- </div>
- <div className="flex flex-col">
- <div className="flex items-center gap-2 mb-1">
- <span className="text-[9px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-[0.4em] ">
- Telemetry Stream
- </span>
- <div className="w-1.5 h-1.5 bg-gray-500 shadow-[0_0_8px_#10b981] animate-pulse" />
- </div>
- <h1 className="text-4xl font-black tracking-tighter uppercase leading-none">
- System Health
- </h1>
- <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2 opacity-60">
- Real-time performance audit and infrastructure heartbeat.
- </p>
- </div>
- </div>
+  <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden">
+    <PageHeader 
+      title="System Health"
+      description="Real-time performance audit and infrastructure heartbeat."
+      icon={<Radio size={24} className="animate-pulse" />}
+      actions={
+        <button
+          onClick={() => fetchHealth()}
+          disabled={isRefreshing}
+          className={cn(
+            'px-8 py-3 rounded-none-none font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all active:scale-95 shadow-xl',
+            theme === 'dark'
+              ? 'bg-white text-black hover:bg-gray-200'
+              : 'bg-gray-900 text-white hover:bg-black'
+          )}
+        >
+          <RefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} />
+          <span>Sync Telemetry</span>
+        </button>
+      }
+    />
 
- <button
- onClick={() => fetchHealth()}
- disabled={isRefreshing}
- className={cn(
- 'px-8 py-3 rounded-none font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all active:scale-95',
- theme === 'dark'
- ? 'bg-white text-black hover:bg-gray-200'
- : 'bg-gray-900 text-white hover:bg-black'
- )}
- >
- <RefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} />
- <span>Sync Telemetry</span>
- </button>
- </header>
+    <div className={cn(
+      'flex-1 overflow-y-auto p-10 space-y-12 transition-colors duration-500',
+      theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
+    )}>
 
  {/* 📊 High-Level Metrics */}
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -294,14 +269,7 @@ const SystemHealthPage = () => {
 
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
  {/* 🧠 Neural Load / Resources */}
- <div
- className={cn(
- 'p-10 border rounded-none relative group overflow-hidden',
- theme === 'dark'
- ? 'bg-white/[0.02] border-white/[0.05]'
- : 'bg-white border-gray-200 shadow-sm shadow-sm'
- )}
- >
+ <Card className="p-10 group relative">
  <div className="absolute top-0 right-0 p-12 text-gray-500/[0.01] pointer-events-none group-hover:text-gray-500/[0.03] transition-colors">
  <Cpu size={200} strokeWidth={0.5} />
  </div>
@@ -347,7 +315,7 @@ const SystemHealthPage = () => {
  %
  </span>
  </div>
- <div className="h-2 w-full bg-gray-500/5 rounded-none overflow-hidden p-[2px] border border-gray-500/10">
+ <div className="h-2 w-full bg-gray-500/5 rounded-none-none overflow-hidden p-[2px] border border-gray-500/10">
  <motion.div
  initial={{ width: 0 }}
  animate={{
@@ -385,7 +353,7 @@ const SystemHealthPage = () => {
  {health?.cpu?.usage || '0%'}
  </span>
  </div>
- <div className="h-2 w-full bg-gray-500/5 rounded-none overflow-hidden p-[2px] border border-gray-500/10">
+ <div className="h-2 w-full bg-gray-500/5 rounded-none-none overflow-hidden p-[2px] border border-gray-500/10">
  <motion.div
  initial={{ width: 0 }}
  animate={{ width: health?.cpu?.usage || '0%' }}
@@ -394,17 +362,10 @@ const SystemHealthPage = () => {
  </div>
  </div>
  </div>
- </div>
+ </Card>
 
  {/* 🔐 Security / Integrity */}
- <div
- className={cn(
- 'p-10 border rounded-none relative group overflow-hidden',
- theme === 'dark'
- ? 'bg-white/[0.02] border-white/[0.05]'
- : 'bg-white border-gray-200 shadow-sm shadow-sm'
- )}
- >
+ <Card className="p-10 group relative">
  <div className="absolute top-0 right-0 p-12 text-gray-500/[0.01] pointer-events-none group-hover:text-gray-500/[0.03] transition-colors">
  <Lock size={200} strokeWidth={0.5} />
  </div>
@@ -468,7 +429,7 @@ const SystemHealthPage = () => {
  <div className="flex items-center gap-4">
  <div
  className={cn(
- 'w-12 h-12 rounded-none flex items-center justify-center border transition-colors',
+ 'w-12 h-12 rounded-none-none flex items-center justify-center border transition-colors',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] group-hover:bg-gray-500/10 group-hover:border-gray-500/20'
  : 'bg-gray-50 border-gray-200 shadow-sm group-hover:bg-gray-50 group-hover:border-gray-200'
@@ -491,7 +452,7 @@ const SystemHealthPage = () => {
  <div className="flex flex-col items-end gap-2">
  <span
  className={cn(
- 'text-[9px] font-black uppercase px-3 py-1 border rounded-none ',
+ 'text-[9px] font-black uppercase px-3 py-1 border rounded-none-none ',
  svc.status === 'Active'
  ? 'text-gray-600 dark:text-gray-500 border-gray-500/20 bg-gray-500/5'
  : 'text-amber-500 border-amber-500/20 bg-amber-500/5'
@@ -507,11 +468,11 @@ const SystemHealthPage = () => {
  </Link>
  ))}
  </div>
- </div>
+ </Card>
  </div>
 
   {/* 🚨 Security Alert for Metrics */}
-  <div className={cn("p-6 border rounded-none mb-8", theme === 'dark' ? 'bg-amber-500/10 border-amber-500/20' : 'bg-amber-50 border-amber-200')}>
+  <div className={cn("p-6 border rounded-none-none mb-8", theme === 'dark' ? 'bg-amber-500/10 border-amber-500/20' : 'bg-amber-50 border-amber-200')}>
     <div className="flex items-center gap-4">
       <div className="w-10 h-10 bg-amber-500/20 flex items-center justify-center text-amber-500">
         <ShieldCheck size={20} />
@@ -527,16 +488,10 @@ const SystemHealthPage = () => {
     </div>
   </div>
 
- {/* 📜 Audit History Shortcut */}
- <motion.div
- whileHover={{ x: 5 }}
+ <Card
+ className="flex items-center justify-between cursor-pointer p-8 group transition-all"
+ interactive
  onClick={() => toast.success('Redirecting to Audit Logs')}
- className={cn(
- 'p-8 border rounded-none flex items-center justify-between group cursor-pointer transition-all',
- theme === 'dark'
- ? 'bg-white/[0.02] border-white/[0.05] hover:bg-white/5'
- : 'bg-white border-gray-200 shadow-sm hover:border-gray-200 shadow-sm'
- )}
  >
  <div className="flex items-center gap-8">
  <div className="w-12 h-12 bg-gray-500/10 flex items-center justify-center text-gray-600 dark:text-gray-500">
@@ -554,7 +509,8 @@ const SystemHealthPage = () => {
  <div className="w-12 h-12 border border-gray-500/20 flex items-center justify-center text-gray-600 dark:text-gray-500 group-hover:bg-gray-500 group-hover:text-white transition-all">
  <Zap size={20} />
  </div>
- </motion.div>
+ </Card>
+ </div>
  </div>
  )
 }

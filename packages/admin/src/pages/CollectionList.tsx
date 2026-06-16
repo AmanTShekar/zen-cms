@@ -16,11 +16,14 @@ import CollectionListImportModal from './CollectionListImportModal'
 import { useSystemMetadata, useCollectionItems } from '../hooks/useQueries'
 import { useTenantStore } from '../lib/tenantStore'
 import { useQueryClient } from '@tanstack/react-query'
+import { PageHeader } from '../components/ui/PageHeader'
+import { Card, CardContent } from '../components/ui/Card'
+import { Badge } from '../components/ui/Badge'
 
 const EmptyCollectionState = ({ slug, theme }: { slug: string, theme: string }) => {
  return (
- <div className={cn("py-24 px-6 text-center border-dashed border-2 rounded-none flex flex-col items-center justify-center gap-6 my-10 mx-auto max-w-2xl", theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-500/20 bg-gray-50/50')}>
- <div className={cn("w-16 h-16 rounded-none flex items-center justify-center", theme === 'dark' ? 'bg-white/5 text-gray-600 dark:text-gray-400' : 'bg-gray-100 text-gray-600')}>
+ <div className={cn("py-24 px-6 text-center border-dashed border-2 rounded-none-none flex flex-col items-center justify-center gap-6 my-10 mx-auto max-w-2xl", theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-500/20 bg-gray-50/50')}>
+ <div className={cn("w-16 h-16 rounded-none-none flex items-center justify-center", theme === 'dark' ? 'bg-white/5 text-gray-600 dark:text-gray-400' : 'bg-gray-100 text-gray-600')}>
  <Database size={28} />
  </div>
  <div>
@@ -31,7 +34,7 @@ const EmptyCollectionState = ({ slug, theme }: { slug: string, theme: string }) 
  </div>
  <Link 
  to={`/collections/${slug}/new`}
- className={cn("px-8 py-4 rounded-none font-black text-[11px] uppercase tracking-widest shadow-xl transition-all leading-none flex items-center gap-3", theme === 'dark' ? 'bg-gray-500 text-white hover:bg-gray-400 hover:shadow-gray-500/20' : 'bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-700 hover:shadow-gray-600/20')}
+ className={cn("px-8 py-4 rounded-none-none font-black text-[11px] uppercase tracking-widest shadow-xl transition-all leading-none flex items-center gap-3", theme === 'dark' ? 'bg-gray-500 text-white hover:bg-gray-400 hover:shadow-gray-500/20' : 'bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-700 hover:shadow-gray-600/20')}
  >
  <Plus size={16} strokeWidth={3} /> Launch Page Builder
  </Link>
@@ -216,45 +219,41 @@ const CollectionList: React.FC = () => {
  }
 
  return (
- <div className={cn('p-10 space-y-10 min-h-screen transition-colors duration-500', theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900')}>
+ <div className={cn('pb-10 min-h-screen transition-colors duration-500', theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900')}>
  {/* Header */}
- <header className="flex items-center justify-between">
- <div className="flex items-center gap-6">
- <div className={cn('w-12 h-12 rounded-none flex items-center justify-center shadow-lg transition-all', theme === 'dark' ? 'bg-white text-black' : 'bg-gray-900 text-white')}>
- <Layers size={24} />
- </div>
- <div className="flex flex-col">
- <div className="flex items-center gap-3 mb-1">
- <span className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-[0.4em] ">REGISTRY_COLLECTION</span>
- <div className="w-1.5 h-1.5 rounded-none bg-gray-500 shadow-[0_0_8px_#10b981]" />
- </div>
- <h1 className="text-4xl font-black tracking-tighter uppercase leading-none">{slug?.replace(/-/g, '_')}</h1>
- </div>
- </div>
- <div className="flex items-center gap-6">
- <Link to={`/collections/${slug}/new`} className={cn('px-8 py-4 rounded-none font-black text-[11px] uppercase tracking-widest shadow-xl transition-all leading-none flex items-center gap-3', theme === 'dark' ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-600 dark:bg-gray-600 text-white shadow-gray-600/10')}>
- <Plus size={16} strokeWidth={3} /> {hasSpatialEditor ? 'Launch Page Builder' : 'New Record'}
- </Link>
- </div>
- </header>
+ <PageHeader 
+   title={slug?.replace(/-/g, '_')}
+   description={`Registry Collection • ${total} Total Records`}
+   icon={<Layers size={24} />}
+   actions={
+     <div className="flex items-center gap-6">
+       <Link to={`/collections/${slug}/new`} className={cn('px-8 py-4 rounded-none-none font-black text-[11px] uppercase tracking-widest shadow-xl transition-all leading-none flex items-center gap-3', theme === 'dark' ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-600 dark:bg-gray-600 text-white shadow-gray-600/10')}>
+         <Plus size={16} strokeWidth={3} /> {hasSpatialEditor ? 'Launch Page Builder' : 'New Record'}
+       </Link>
+     </div>
+   }
+ />
 
- {/* Stats Rail */}
- <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-4 gap-y-6">
- {[
- { label: 'Total Units', value: total, icon: Database },
- { label: 'Registry ID', value: slug?.toUpperCase().slice(0, 8), icon: Fingerprint },
- { label: 'Status', value: 'OPTIMAL', icon: ActivityIcon },
- { label: 'Security', value: 'HARDENED', icon: ShieldCheck },
- ].map((stat) => (
- <div key={stat.label} className={cn('border rounded-none p-6 flex flex-col transition-all', theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
- <div className="flex items-center justify-between mb-4">
- <stat.icon size={14} className="text-gray-500" />
- <span className="text-[8px] font-black uppercase text-gray-600 dark:text-gray-500 tracking-[0.2em] ">Operational</span>
- </div>
- <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest leading-none mb-2">{stat.label}</span>
- <span className="text-3xl font-black tracking-tighter leading-none">{stat.value}</span>
- </div>
- ))}
+ <div className="p-10 space-y-10">
+
+ {/* Compact Dynamic Stats Bar */}
+ <div className={cn("grid grid-cols-2 md:grid-cols-4 gap-4 p-4 border transition-all", theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/50 border-gray-200')}>
+   <div className="flex flex-col gap-1">
+     <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2"><Database size={10} /> Total Units</span>
+     <span className="text-sm font-black">{total}</span>
+   </div>
+   <div className="flex flex-col gap-1">
+     <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2"><Fingerprint size={10} /> Registry ID</span>
+     <span className="text-sm font-black uppercase">{slug?.substring(0, 8)}</span>
+   </div>
+   <div className="flex flex-col gap-1">
+     <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2"><Search size={10} /> Search Filter</span>
+     <span className="text-sm font-black">{searchQuery ? 'Active' : 'None'}</span>
+   </div>
+   <div className="flex flex-col gap-1">
+     <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest flex items-center gap-2"><Layers size={10} /> View Mode</span>
+     <span className="text-sm font-black uppercase">{viewMode}</span>
+   </div>
  </div>
 
  {/* Bulk Toolbar */}
@@ -289,12 +288,12 @@ const CollectionList: React.FC = () => {
  )}
 
  {/* Data Registry */}
- <div className={cn('border rounded-none overflow-hidden shadow-sm backdrop-blur-3xl transition-all', theme === 'dark' ? 'bg-black/80 border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm')}>
+ <Card padding="none">
  <div className={cn('px-6 py-4 border-b flex items-center justify-between', theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/20')}>
  <div className="relative w-full max-w-sm">
  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={14} />
  <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="NEURAL_SEARCH_KERNEL..."
- className={cn('w-full border rounded-none py-2.5 pl-10 pr-4 text-[9px] font-black focus:ring-4 transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black uppercase tracking-widest', theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:ring-gray-500/20' : 'bg-white border-gray-200 shadow-sm focus:ring-gray-500/10')}
+ className={cn('w-full border rounded-none-none py-2.5 pl-10 pr-4 text-[9px] font-black focus:ring-4 transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black uppercase tracking-widest', theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:ring-gray-500/20' : 'bg-white border-gray-200 shadow-sm focus:ring-gray-500/10')}
  />
  </div>
  <div className="flex items-center gap-2 relative">
@@ -302,22 +301,22 @@ const CollectionList: React.FC = () => {
  <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest ">{filteredData.length} Matches</span>
  </div>
  <div className="relative">
- <button onClick={() => setColumnMenuOpen(!columnMenuOpen)} className="p-2.5 border rounded-none text-gray-500 hover:text-gray-600 dark:text-gray-500 transition-colors">
+ <button onClick={() => setColumnMenuOpen(!columnMenuOpen)} className="p-2.5 border rounded-none-none text-gray-500 hover:text-gray-600 dark:text-gray-500 transition-colors">
  <Layers size={14} />
  </button>
  <AnimatePresence>
  {columnMenuOpen && (
  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
- className={cn('absolute right-0 top-full mt-2 w-64 border rounded-none shadow-2xl z-50 p-4 backdrop-blur-3xl', theme === 'dark' ? 'bg-black/90 border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm')}
+ className={cn('absolute right-0 top-full mt-2 w-64 border rounded-none-none shadow-2xl z-50 p-4 backdrop-blur-3xl', theme === 'dark' ? 'bg-black/90 border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm')}
  >
  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-gray-600 dark:text-gray-500">Column_Orchestration</h4>
  <div className="space-y-2 max-h-64 overflow-y-auto ">
  {availableColumns.map((col) => (
  <button key={col} onClick={() => setVisibleColumns((prev) => prev.includes(col) ? prev.filter((c) => c !== col) : [...prev, col])}
- className="w-full flex items-center justify-between p-2 rounded-none hover:bg-white/5 transition-all group"
+ className="w-full flex items-center justify-between p-2 rounded-none-none hover:bg-white/5 transition-all group"
  >
  <span className="text-[9px] font-bold uppercase tracking-widest text-gray-500 group-hover:text-white">{col.replace(/_/g, ' ')}</span>
- <div className={cn('w-3 h-3 rounded-none border transition-all', visibleColumns.includes(col) ? 'bg-gray-500 border-gray-500' : 'border-white/[0.08]')} />
+ <div className={cn('w-3 h-3 rounded-none-none border transition-all', visibleColumns.includes(col) ? 'bg-gray-500 border-gray-500' : 'border-white/[0.08]')} />
  </button>
  ))}
  </div>
@@ -325,10 +324,10 @@ const CollectionList: React.FC = () => {
  )}
  </AnimatePresence>
  </div>
- <button onClick={exportCSV} className="p-2.5 border rounded-none text-gray-500 hover:text-gray-600 dark:text-gray-500 transition-colors" title="Export"><Download size={14} /></button>
- <button onClick={() => setImportModalOpen(true)} className="p-2.5 border rounded-none text-gray-500 hover:text-gray-600 dark:text-gray-500 transition-colors" title="Import"><Upload size={14} /></button>
+ <button onClick={exportCSV} className="p-2.5 border rounded-none-none text-gray-500 hover:text-gray-600 dark:text-gray-500 transition-colors" title="Export"><Download size={14} /></button>
+ <button onClick={() => setImportModalOpen(true)} className="p-2.5 border rounded-none-none text-gray-500 hover:text-gray-600 dark:text-gray-500 transition-colors" title="Import"><Upload size={14} /></button>
  <div className="w-px h-6 bg-gray-200 dark:bg-white/10 mx-2" />
- <div className="flex bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/[0.08] rounded-none p-0.5">
+ <div className="flex bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/[0.08] rounded-none-none p-0.5">
  <button onClick={() => setLayout('table')} className={cn('p-2 transition-all', layout === 'table' ? 'bg-white dark:bg-black shadow-sm text-gray-600 dark:text-gray-500' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white')} title="Table View"><LayoutList size={14} /></button>
  <button onClick={() => setLayout('cards')} className={cn('p-2 transition-all', layout === 'cards' ? 'bg-white dark:bg-black shadow-sm text-gray-600 dark:text-gray-500' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white')} title="Cards View"><LayoutGrid size={14} /></button>
  <button onClick={() => setLayout('kanban')} className={cn('p-2 transition-all', layout === 'kanban' ? 'bg-white dark:bg-black shadow-sm text-gray-600 dark:text-gray-500' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white')} title="Kanban View"><Kanban size={14} /></button>
@@ -370,7 +369,7 @@ const CollectionList: React.FC = () => {
  </td>
  <td className="px-6 py-4">
  <div className="flex items-center gap-2">
- <div className={cn("w-1.5 h-1.5 rounded-none", isSelected ? 'bg-gray-400' : 'bg-gray-500')} />
+ <div className={cn("w-1.5 h-1.5 rounded-none-none", isSelected ? 'bg-gray-400' : 'bg-gray-500')} />
  <span className="text-[9px] font-black text-gray-600 dark:text-gray-500 uppercase ">#{String(itemId).slice(-6)}</span>
  </div>
  </td>
@@ -388,19 +387,19 @@ const CollectionList: React.FC = () => {
  {item._status && (
  <button
  onClick={(e) => { e.stopPropagation(); handleQuickStatusToggle(itemId, item._status); }}
- className={cn('p-2 rounded-none border', item._status === 'draft' ? 'hover:text-gray-600 dark:text-gray-500 hover:border-gray-500' : 'hover:text-amber-500 hover:border-amber-500')}
+ className={cn('p-2 rounded-none-none border', item._status === 'draft' ? 'hover:text-gray-600 dark:text-gray-500 hover:border-gray-500' : 'hover:text-amber-500 hover:border-amber-500')}
  title={item._status === 'draft' ? 'Publish' : 'Unpublish'}
  >
  {item._status === 'draft' ? <Send size={12} /> : <Archive size={12} />}
  </button>
  )}
- <button onClick={(e) => { e.stopPropagation(); navigate(`/collections/${slug}/${itemId}`) }} className="p-2 rounded-none border hover:text-gray-600 dark:text-gray-500"><Edit size={12} /></button>
- <button onClick={(e) => { e.stopPropagation(); handleDelete(itemId); }} className="p-2 rounded-none border hover:text-red-500"><Trash2 size={12} /></button>
+ <button onClick={(e) => { e.stopPropagation(); navigate(`/collections/${slug}/${itemId}`) }} className="p-2 rounded-none-none border hover:text-gray-600 dark:text-gray-500"><Edit size={12} /></button>
+ <button onClick={(e) => { e.stopPropagation(); handleDelete(itemId); }} className="p-2 rounded-none-none border hover:text-red-500"><Trash2 size={12} /></button>
  </>
  ) : (
  <>
- <button onClick={(e) => { e.stopPropagation(); handleRestore(itemId); }} className="px-3 py-1 rounded-none border hover:bg-gray-500 hover:text-white hover:border-gray-500 text-[9px] uppercase font-bold tracking-widest transition-all">Restore</button>
- <button onClick={(e) => { e.stopPropagation(); handleDelete(itemId, true); }} className="px-3 py-1 rounded-none border hover:bg-red-500 hover:text-white hover:border-red-500 text-[9px] uppercase font-bold tracking-widest transition-all">Delete Forever</button>
+ <button onClick={(e) => { e.stopPropagation(); handleRestore(itemId); }} className="px-3 py-1 rounded-none-none border hover:bg-gray-500 hover:text-white hover:border-gray-500 text-[9px] uppercase font-bold tracking-widest transition-all">Restore</button>
+ <button onClick={(e) => { e.stopPropagation(); handleDelete(itemId, true); }} className="px-3 py-1 rounded-none-none border hover:bg-red-500 hover:text-white hover:border-red-500 text-[9px] uppercase font-bold tracking-widest transition-all">Delete Forever</button>
  </>
  )}
  </div>
@@ -425,7 +424,7 @@ const CollectionList: React.FC = () => {
  const itemId = item._id || item.id
  const isSelected = selectedIds.has(itemId)
  return (
- <div key={itemId} onClick={() => navigate(`/collections/${slug}/${itemId}`)} className={cn("border rounded-none p-5 flex flex-col gap-4 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-xl", theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm hover:border-gray-500/20', isSelected && (theme === 'dark' ? 'border-gray-500/50 bg-gray-500/5' : 'border-gray-500/50 bg-gray-50'))}>
+ <div key={itemId} onClick={() => navigate(`/collections/${slug}/${itemId}`)} className={cn("border rounded-none-none p-5 flex flex-col gap-4 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-xl", theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm hover:border-gray-500/20', isSelected && (theme === 'dark' ? 'border-gray-500/50 bg-gray-500/5' : 'border-gray-500/50 bg-gray-50'))}>
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-3">
  <button onClick={(e) => { e.stopPropagation(); toggleSelect(itemId); }}>
@@ -495,20 +494,20 @@ const CollectionList: React.FC = () => {
  }
 
  return Object.entries(groups).map(([status, items]) => (
- <div key={status} className={cn("w-80 flex flex-col border rounded-none", theme === 'dark' ? 'bg-black/50 border-white/[0.08]' : 'bg-gray-50 border-gray-200 shadow-sm')}>
+ <div key={status} className={cn("w-80 flex flex-col border rounded-none-none", theme === 'dark' ? 'bg-black/50 border-white/[0.08]' : 'bg-gray-50 border-gray-200 shadow-sm')}>
  <div className="p-4 flex items-center justify-between border-b border-inherit">
  <span className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
- <div className={cn("w-2 h-2 rounded-none shadow-[0_0_8px_currentColor]", status === 'published' ? 'bg-gray-500 text-gray-600 dark:text-gray-500' : status === 'draft' ? 'bg-amber-500 text-amber-500' : 'bg-gray-500 text-gray-500')} />
+ <div className={cn("w-2 h-2 rounded-none-none shadow-[0_0_8px_currentColor]", status === 'published' ? 'bg-gray-500 text-gray-600 dark:text-gray-500' : status === 'draft' ? 'bg-amber-500 text-amber-500' : 'bg-gray-500 text-gray-500')} />
  {status}
  </span>
- <span className="text-[9px] font-bold text-gray-500 bg-white/5 px-2 py-0.5 rounded-none">{items.length}</span>
+ <span className="text-[9px] font-bold text-gray-500 bg-white/5 px-2 py-0.5 rounded-none-none">{items.length}</span>
  </div>
  <div className="p-4 flex flex-col gap-3 h-full max-h-[60vh] overflow-y-auto ">
  {items.map(item => {
  const itemId = item._id || item.id
  const isSelected = selectedIds.has(itemId)
  return (
- <div key={itemId} onClick={() => navigate(`/collections/${slug}/${itemId}`)} className={cn("p-4 border rounded-none cursor-pointer transition-all hover:shadow-lg", theme === 'dark' ? 'bg-[#0a0a0a] border-white/[0.08] hover:border-white/[0.08]' : 'bg-white border-gray-200 hover:border-gray-500/30', isSelected && 'ring-1 ring-gray-500')}>
+ <div key={itemId} onClick={() => navigate(`/collections/${slug}/${itemId}`)} className={cn("p-4 border rounded-none-none cursor-pointer transition-all hover:shadow-lg", theme === 'dark' ? 'bg-[#0a0a0a] border-white/[0.08] hover:border-white/[0.08]' : 'bg-white border-gray-200 hover:border-gray-500/30', isSelected && 'ring-1 ring-gray-500')}>
  <div className="flex items-center justify-between mb-3">
  <span className="text-[9px] font-black text-gray-500 ">#{String(itemId).slice(-6)}</span>
  <button onClick={(e) => { e.stopPropagation(); toggleSelect(itemId); }}>
@@ -536,11 +535,12 @@ const CollectionList: React.FC = () => {
  <div className={cn('p-4 border-t flex items-center justify-between text-[8px] font-black text-gray-500 uppercase ', theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-50')}>
  <div className="flex items-center gap-2"><Fingerprint size={10} /><span>REG_0x{slug?.length}•STABLE</span></div>
  <div className="flex items-center gap-3">
- <button disabled={page === 1} onClick={() => setPage(page - 1)} className="p-1.5 border rounded-none disabled:opacity-20"><ChevronLeft size={14} /></button>
- <span className={cn('px-3 py-1 rounded-none text-white', theme === 'dark' ? 'bg-white/10' : 'bg-gray-900')}>{page}</span>
- <button disabled={data.length < 10} onClick={() => setPage(page + 1)} className="p-1.5 border rounded-none disabled:opacity-20"><ChevronRight size={14} /></button>
+ <button disabled={page === 1} onClick={() => setPage(page - 1)} className="p-1.5 border rounded-none-none disabled:opacity-20"><ChevronLeft size={14} /></button>
+ <span className={cn('px-3 py-1 rounded-none-none text-white', theme === 'dark' ? 'bg-white/10' : 'bg-gray-900')}>{page}</span>
+ <button disabled={data.length < 10} onClick={() => setPage(page + 1)} className="p-1.5 border rounded-none-none disabled:opacity-20"><ChevronRight size={14} /></button>
  </div>
  </div>
+ </Card>
  </div>
 
  {/* Import Modal */}

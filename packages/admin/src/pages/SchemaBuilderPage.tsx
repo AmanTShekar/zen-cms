@@ -6,10 +6,11 @@ import {
  Image, Link2, ToggleLeft, AlignLeft, Braces, Tag
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '../lib/utils'
 import { useTheme } from '../context/ThemeContext'
 import toast from 'react-hot-toast'
 import api from '../lib/api'
+import { PageHeader } from '../components/ui/PageHeader'
+import { cn } from '../lib/utils'
 
 // ── Full field type catalogue ────────────────────────────────────────────────
 const FIELD_TYPES = [
@@ -579,7 +580,7 @@ ${fieldsCode}
  </h2>
  <button
  onClick={resetEditor}
- className="p-1.5 bg-gray-500/10 hover:bg-gray-500/20 text-gray-600 dark:text-gray-500 rounded transition-colors"
+ className="p-1.5 bg-gray-500/10 hover:bg-gray-500/20 text-gray-600 dark:text-gray-500 rounded-none transition-colors"
  title="New Schema"
  >
  <Plus size={14} />
@@ -600,7 +601,7 @@ ${fieldsCode}
  <button
  onClick={() => loadSchema(schema)}
  className={cn(
- 'flex-1 flex items-center justify-between text-left px-3 py-2.5 text-[10px] font-bold uppercase tracking-widest transition-colors rounded truncate',
+ 'flex-1 flex items-center justify-between text-left px-3 py-2.5 text-[10px] font-bold uppercase tracking-widest transition-colors rounded-none truncate',
  isActive ? 'bg-gray-500 text-white' : dark ? 'text-gray-400 hover:bg-white/5 hover:text-white' : 'text-gray-600 hover:bg-gray-50'
  )}
  >
@@ -623,52 +624,45 @@ ${fieldsCode}
 
  {/* ── Main Editor ─────────────────────────────────────────────────── */}
  <div className="flex-1 flex flex-col overflow-hidden">
- {/* Header toolbar */}
- <div className={cn('px-6 py-4 border-b flex items-center justify-between gap-4 shrink-0', dark ? 'border-white/[0.08] bg-black' : 'border-gray-200 bg-white')}>
- <div className="flex items-center gap-4">
- <div className={cn('w-10 h-10 rounded-none flex items-center justify-center', dark ? 'bg-white text-black' : 'bg-gray-900 text-white')}>
- <Layers size={20} />
- </div>
- <div>
- <h1 className="text-lg font-black uppercase tracking-tight">Schema Builder</h1>
- <p className="text-[10px] text-gray-500 font-bold">
- {fields.length} fields · {activeSchemaId ? 'Editing existing' : 'New schema'}
- </p>
- </div>
- </div>
- <div className="flex items-center gap-2">
- <button
- onClick={() => setShowAI(true)}
- className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black uppercase tracking-widest rounded-none transition-all shadow-lg shadow-purple-900/30"
- >
- <Sparkles size={14} /> AI Generate
- </button>
- <button
- onClick={() => setShowIntrospect(true)}
- className={cn('flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-none transition-all border', dark ? 'border-white/[0.08] hover:bg-white/5' : 'border-gray-200 hover:bg-gray-50')}
- >
- <Database size={14} /> Introspect DB
- </button>
- <button
- onClick={() => setShowCode(true)}
- className={cn('flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-none transition-all border', dark ? 'border-white/[0.08] hover:bg-white/5' : 'border-gray-200 hover:bg-gray-50')}
- >
- <Code size={14} /> View Code
- </button>
- <button
- onClick={handleSave}
- disabled={saving || isCodeFirst}
- className="flex items-center gap-2 px-4 py-2 bg-gray-500 hover:bg-gray-400 text-white text-[10px] font-black uppercase tracking-widest rounded-none transition-all shadow-lg shadow-gray-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
- >
- {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
- {isCodeFirst ? 'Locked' : 'Save Schema'}
- </button>
- </div>
- </div>
+  {/* Header toolbar */}
+  <PageHeader
+    title="Visual Schema Architect"
+    description="Construct, mutate, and compile robust data topologies in real-time."
+    actions={
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setShowAI(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all shadow-lg shadow-purple-900/30"
+        >
+          <Sparkles size={14} /> AI Generate
+        </button>
+        <button
+          onClick={() => setShowIntrospect(true)}
+          className={cn('flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all border', dark ? 'border-white/[0.08] hover:bg-white/5' : 'border-gray-200 hover:bg-gray-50')}
+        >
+          <Database size={14} /> Introspect DB
+        </button>
+        <button
+          onClick={() => setShowCode(true)}
+          className={cn('flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all border', dark ? 'border-white/[0.08] hover:bg-white/5' : 'border-gray-200 hover:bg-gray-50')}
+        >
+          <Code size={14} /> View Code
+        </button>
+        <button
+          onClick={handleSave}
+          disabled={saving || isCodeFirst}
+          className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+          {isCodeFirst ? 'Locked' : 'Save Schema'}
+        </button>
+      </div>
+    }
+  />
 
- <div className="flex-1 overflow-auto p-6 space-y-6 custom-editor-scrollbar">
+  <div className="flex-1 overflow-auto p-6 space-y-6 custom-editor-scrollbar">
  {isCodeFirst && (
- <div className="p-4 rounded-none border border-amber-500/30 bg-amber-500/10 flex items-start gap-3">
+ <div className="p-4 rounded-none-none border border-amber-500/30 bg-amber-500/10 flex items-start gap-3">
  <Lock className="text-amber-500 mt-0.5 shrink-0" size={16} />
  <div>
  <h4 className="text-[11px] font-black uppercase tracking-widest text-amber-500 mb-1">Code-First Schema</h4>
@@ -680,7 +674,7 @@ ${fieldsCode}
  )}
 
  {/* Collection Meta */}
- <div className={cn('rounded-none border p-6 space-y-4', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
+ <div className={cn('rounded-none-none border p-6 space-y-4', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
  <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-500 flex items-center gap-2">
  <Settings size={12} /> Collection Settings
  </h3>
@@ -696,7 +690,7 @@ ${fieldsCode}
  setCollectionName(e.target.value)
  setSlug(makeSlug(e.target.value))
  }}
- className={cn(inputClass, 'w-full rounded-none', isCodeFirst && 'opacity-70 cursor-not-allowed')}
+ className={cn(inputClass, 'w-full rounded-none-none', isCodeFirst && 'opacity-70 cursor-not-allowed')}
  placeholder="e.g. Blog Posts"
  />
  </div>
@@ -710,7 +704,7 @@ ${fieldsCode}
  if (isCodeFirst) return
  setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))
  }}
- className={cn(inputClass, 'w-full rounded-none font-mono', isCodeFirst && 'opacity-70 cursor-not-allowed')}
+ className={cn(inputClass, 'w-full rounded-none-none font-mono', isCodeFirst && 'opacity-70 cursor-not-allowed')}
  placeholder="e.g. blog-posts"
  />
  </div>
@@ -726,13 +720,13 @@ ${fieldsCode}
  setSettings(prev => ({ ...prev, [key]: !prev[key] }))
  }}
  className={cn(
- 'w-8 h-4 rounded-none relative transition-all cursor-pointer',
+ 'w-8 h-4 rounded-none-none relative transition-all cursor-pointer',
  settings[key] ? 'bg-gray-500' : dark ? 'bg-white/10' : 'bg-gray-200',
  isCodeFirst && 'opacity-50 cursor-not-allowed'
  )}
  >
  <div className={cn(
- 'absolute top-0.5 w-3 h-3 rounded-none bg-white shadow transition-all',
+ 'absolute top-0.5 w-3 h-3 rounded-none-none bg-white shadow transition-all',
  settings[key] ? 'left-4' : 'left-0.5'
  )} />
  </div>
@@ -745,7 +739,7 @@ ${fieldsCode}
  </div>
 
  {/* Fields */}
- <div className={cn('rounded-none border', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
+ <div className={cn('rounded-none-none border', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
  <div className="px-6 py-4 border-b border-inherit flex items-center justify-between">
  <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-500 flex items-center gap-2">
  <Layers size={12} /> Fields ({fields.length})
@@ -753,7 +747,7 @@ ${fieldsCode}
  {!isCodeFirst && (
  <button
  onClick={addField}
- className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-500/10 hover:bg-gray-500/20 text-gray-600 dark:text-gray-500 text-[10px] font-black uppercase tracking-widest rounded-none transition-all"
+ className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-500/10 hover:bg-gray-500/20 text-gray-600 dark:text-gray-500 text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all"
  >
  <Plus size={12} /> Add Field
  </button>
@@ -769,13 +763,13 @@ ${fieldsCode}
  initial={{ opacity: 0, y: 8 }}
  animate={{ opacity: 1, y: 0 }}
  exit={{ opacity: 0, scale: 0.97 }}
- className={cn('p-4 border rounded-none relative group', dark ? 'bg-black/40 border-white/[0.08]' : 'bg-gray-50 border-gray-200 shadow-sm', isCodeFirst && 'opacity-70')}
+ className={cn('p-4 border rounded-none-none relative group', dark ? 'bg-black/40 border-white/[0.08]' : 'bg-gray-50 border-gray-200 shadow-sm', isCodeFirst && 'opacity-70')}
  >
  {/* Delete button */}
  {!isCodeFirst && (
  <button
  onClick={() => removeField(i)}
- className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 p-1.5 text-red-500/50 hover:text-red-500 transition-all rounded-none hover:bg-red-500/10"
+ className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 p-1.5 text-red-500/50 hover:text-red-500 transition-all rounded-none-none hover:bg-red-500/10"
  >
  <Trash2 size={14} />
  </button>
@@ -793,7 +787,7 @@ ${fieldsCode}
  if (isCodeFirst) return
  updateField(i, 'name', e.target.value.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, ''))
  }}
- className={cn(inputClass, 'w-full rounded-none font-mono text-[11px]', isCodeFirst && 'cursor-not-allowed')}
+ className={cn(inputClass, 'w-full rounded-none-none font-mono text-[11px]', isCodeFirst && 'cursor-not-allowed')}
  placeholder="fieldName"
  />
  </div>
@@ -817,7 +811,7 @@ ${fieldsCode}
  if (isCodeFirst) return
  updateField(i, 'label', e.target.value)
  }}
- className={cn(inputClass, 'w-full rounded-none', isCodeFirst && 'cursor-not-allowed')}
+ className={cn(inputClass, 'w-full rounded-none-none', isCodeFirst && 'cursor-not-allowed')}
  placeholder="Human readable label"
  />
  </div>
@@ -871,15 +865,15 @@ ${fieldsCode}
  <AnimatePresence>
  {showCode && (
  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
- <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-3xl border rounded-none shadow-2xl p-6 relative flex flex-col h-[80vh] bg-black border-white/[0.08]">
+ <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-3xl border rounded-none-none shadow-2xl p-6 relative flex flex-col h-[80vh] bg-black border-white/[0.08]">
  <button onClick={() => setShowCode(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X size={20} /></button>
  <h2 className="text-xl font-black tracking-tight uppercase mb-4 flex items-center gap-3">
  <Code className="text-gray-600 dark:text-gray-500" /> Generated TypeScript
  </h2>
- <div className="flex-1 bg-[#1E1E1E] border border-white/[0.08] p-5 overflow-auto text-sm font-mono text-gray-600 dark:text-gray-400 relative rounded-none">
+ <div className="flex-1 bg-[#1E1E1E] border border-white/[0.08] p-5 overflow-auto text-sm font-mono text-gray-600 dark:text-gray-400 relative rounded-none-none">
  <button
  onClick={() => { navigator.clipboard.writeText(generateCode()); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
- className="absolute top-3 right-3 p-2 bg-white/10 hover:bg-white/20 text-white transition-colors rounded-none"
+ className="absolute top-3 right-3 p-2 bg-white/10 hover:bg-white/20 text-white transition-colors rounded-none-none"
  >
  {copied ? <Check size={14} /> : <Copy size={14} />}
  </button>
@@ -894,7 +888,7 @@ ${fieldsCode}
  <AnimatePresence>
  {showAI && (
  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
- <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none shadow-2xl p-6 relative bg-black border-white/[0.08]">
+ <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none-none shadow-2xl p-6 relative bg-black border-white/[0.08]">
  <button onClick={() => setShowAI(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X size={20} /></button>
  <h2 className="text-xl font-black tracking-tight uppercase mb-2 flex items-center gap-3">
  <Sparkles className="text-purple-400" /> AI Schema Architect
@@ -907,12 +901,12 @@ ${fieldsCode}
  value={aiPrompt}
  onChange={e => setAiPrompt(e.target.value)}
  placeholder='e.g. "A blog post collection with title, slug, content, featured image, author relation to users, published date, and category select field with options."'
- className="w-full bg-black border border-white/[0.08] focus:border-purple-500/50 p-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none placeholder:text-gray-600 text-white resize-none mb-4"
+ className="w-full bg-black border border-white/[0.08] focus:border-purple-500/50 p-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none-none placeholder:text-gray-600 text-white resize-none mb-4"
  />
  <button
  disabled={isAIGenerating || !aiPrompt}
  onClick={handleAIGenerate}
- className="w-full py-3.5 bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black uppercase tracking-widest flex justify-center items-center gap-2 transition-all rounded-none disabled:opacity-50"
+ className="w-full py-3.5 bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black uppercase tracking-widest flex justify-center items-center gap-2 transition-all rounded-none-none disabled:opacity-50"
  >
  {isAIGenerating ? <><Loader2 size={14} className="animate-spin" /> Generating...</> : <><Sparkles size={14} /> Generate Schema</>}
  </button>
@@ -925,7 +919,7 @@ ${fieldsCode}
  <AnimatePresence>
  {showIntrospect && (
  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
- <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none shadow-2xl p-6 relative bg-black border-white/[0.08]">
+ <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none-none shadow-2xl p-6 relative bg-black border-white/[0.08]">
  <button onClick={() => setShowIntrospect(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X size={20} /></button>
  <h2 className="text-xl font-black tracking-tight uppercase mb-2 flex items-center gap-3">
  <Database className="text-gray-600 dark:text-gray-500" /> DB Introspection
@@ -938,12 +932,12 @@ ${fieldsCode}
  placeholder="postgresql://user:password@localhost:5432/mydb"
  value={dbUri}
  onChange={e => setDbUri(e.target.value)}
- className="w-full bg-black border border-white/[0.08] focus:border-gray-500/50 p-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none placeholder:text-gray-600 text-white mb-4 font-mono"
+ className="w-full bg-black border border-white/[0.08] focus:border-gray-500/50 p-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none-none placeholder:text-gray-600 text-white mb-4 font-mono"
  />
  <button
  disabled={isIntrospecting}
  onClick={handleIntrospect}
- className="w-full py-3.5 bg-gray-500 hover:bg-gray-400 text-white text-[10px] font-black uppercase tracking-widest flex justify-center items-center gap-2 transition-all rounded-none"
+ className="w-full py-3.5 bg-gray-500 hover:bg-gray-400 text-white text-[10px] font-black uppercase tracking-widest flex justify-center items-center gap-2 transition-all rounded-none-none"
  >
  {isIntrospecting ? <><Loader2 size={14} className="animate-spin" /> Scanning...</> : <><RefreshCw size={14} /> Analyze Database</>}
  </button>

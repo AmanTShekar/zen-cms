@@ -26,7 +26,7 @@ const CollapsibleField: React.FC<Props> = ({
   const collapsibleFields = cfField.fields || []
 
   return (
-    <div className="border border-white/10 rounded-none overflow-hidden">
+    <div className="border border-white/10 rounded-none-none overflow-hidden">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}

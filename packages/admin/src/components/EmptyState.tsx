@@ -26,7 +26,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
  className
  )}>
  <div className={cn(
- "w-12 h-12 mb-4 rounded-none flex items-center justify-center",
+ "w-12 h-12 mb-4 rounded-none-none flex items-center justify-center",
  theme === 'dark' ? "bg-white/5 text-white/40" : "bg-gray-200 text-gray-500"
  )}>
  <Icon size={24} />

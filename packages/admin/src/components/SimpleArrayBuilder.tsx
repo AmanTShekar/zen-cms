@@ -118,14 +118,14 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">
  {label}
  </span>
- <span className="px-1.5 py-0.5 text-[9px] font-black bg-gray-500/15 text-gray-600 dark:text-gray-500 border border-gray-500/25 rounded-none">
+ <span className="px-1.5 py-0.5 text-[9px] font-black bg-gray-500/15 text-gray-600 dark:text-gray-500 border border-gray-500/25 rounded-none-none">
  {value.length}
  </span>
  </div>
  
  <div className="flex items-center gap-2">
  {value.length > 0 && (
- <div className="flex items-center gap-1.5 border border-white/[0.08] bg-white/[0.02] p-0.5 rounded-none mr-2">
+ <div className="flex items-center gap-1.5 border border-white/[0.08] bg-white/[0.02] p-0.5 rounded-none-none mr-2">
  <button type="button" onClick={expandAll} className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-white transition-all hover:bg-white/[0.05]">Expand All</button>
  <div className="w-px h-3 bg-white/10" />
  <button type="button" onClick={collapseAll} className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-white transition-all hover:bg-white/[0.05]">Collapse All</button>
@@ -135,7 +135,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  <button
  type="button"
  onClick={addItem}
- className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-600 dark:bg-gray-600 text-white text-[10px] font-black uppercase tracking-wider hover:bg-gray-500 transition-all shadow-sm shadow-gray-900/20 rounded-none"
+ className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-600 dark:bg-gray-600 text-white text-[10px] font-black uppercase tracking-wider hover:bg-gray-500 transition-all shadow-sm shadow-gray-900/20 rounded-none-none"
  >
  <Plus size={11} strokeWidth={2} /> Add Component
  </button>
@@ -173,13 +173,13 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  drag={!disabled ? 'y' : false}
  whileDrag={{ scale: 1.01, zIndex: 50, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
  className={cn(
- 'group relative bg-app border rounded-none overflow-visible shadow-sm transition-colors duration-150',
+ 'group relative bg-app border rounded-none-none overflow-visible shadow-sm transition-colors duration-150',
  isExpanded ? 'border-gray-500/60 shadow-[0_0_0_3px_rgba(16,185,129,0.08)]' : 'border-border hover:border-white/[0.08]'
  )}
  >
  {/* Index Badge */}
  <div className={cn(
- 'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-none flex items-center justify-center text-[8px] font-black border z-10 transition-all',
+ 'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-none-none flex items-center justify-center text-[8px] font-black border z-10 transition-all',
  isExpanded
  ? 'bg-gray-500 text-white border-gray-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]'
  : 'bg-app text-gray-400 border-border group-hover:border-gray-500/40 group-hover:text-gray-600 dark:text-gray-500'
@@ -188,7 +188,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  </div>
 
  {/* Accent bar when expanded */}
- {isExpanded && <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gray-500 rounded-l" />}
+ {isExpanded && <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gray-500 rounded-none-l" />}
 
  {/* Header Row */}
  <div className="flex items-center gap-2.5 px-4 py-3 cursor-pointer" onClick={() => toggleItem(itemKey)}>
@@ -265,7 +265,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  layout
  type="button"
  onClick={addItem}
- className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-gray-400/60 text-[10px] font-black uppercase tracking-wider hover:border-gray-500/50 hover:text-gray-600 dark:text-gray-500 hover:bg-gray-500/5 transition-all rounded-none"
+ className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-gray-400/60 text-[10px] font-black uppercase tracking-wider hover:border-gray-500/50 hover:text-gray-600 dark:text-gray-500 hover:bg-gray-500/5 transition-all rounded-none-none"
  >
  <Plus size={11} strokeWidth={2} /> Add {label}
  </motion.button>

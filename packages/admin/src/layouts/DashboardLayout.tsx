@@ -248,8 +248,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <motion.aside
  initial={false}
  animate={{ 
- width: isMobile ? 260 : (isSidebarOpen ? 260 : 90),
- x: isMobile ? (isSidebarOpen ? 0 : -260) : 0
+ width: isMobile ? 220 : (isSidebarOpen ? 220 : 70),
+ x: isMobile ? (isSidebarOpen ? 0 : -220) : 0
  }}
  transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
  className={cn(
@@ -265,7 +265,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <div className="flex items-center gap-3 min-w-0">
  <div
  className={cn(
- 'w-9 h-9 rounded-none flex items-center justify-center flex-shrink-0 transition-all relative overflow-hidden',
+ 'w-9 h-9 rounded-none-none flex items-center justify-center flex-shrink-0 transition-all relative overflow-hidden',
  theme === 'dark' ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-emerald-600 text-white'
  )}
  >
@@ -288,7 +288,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <span className="text-lg font-black tracking-tight uppercase leading-none">
  Zenith
  </span>
- <div className="w-1 h-1 bg-gray-500 rounded-none animate-pulse" />
+ <div className="w-1 h-1 bg-gray-500 rounded-none-none animate-pulse" />
  </div>
  <span className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-wider leading-none mt-1.5">
  v1.0 Beta
@@ -319,7 +319,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <button
  onClick={() => setIsCustomizing(!isCustomizing)}
  className={cn(
- 'p-1 border rounded-none transition-all',
+ 'p-1 border rounded-none-none transition-all',
  isCustomizing
  ? 'bg-gray-500/20 border-gray-500/40 text-gray-600 dark:text-gray-400'
  : 'border-transparent text-gray-500 hover:text-gray-300'
@@ -342,7 +342,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  value={item}
  as="div"
  className={cn(
- 'flex items-center gap-4 px-4 py-3 rounded-none border group cursor-grab active:cursor-grabbing',
+ 'flex items-center gap-4 px-4 py-3 rounded-none-none border group cursor-grab active:cursor-grabbing',
  theme === 'dark'
  ? 'border-white/[0.08] text-gray-400 hover:bg-white/[0.03]'
  : 'border-gray-200 shadow-sm text-gray-500 hover:bg-gray-50'
@@ -376,7 +376,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  key={item.name}
  to={item.path}
  className={cn(
- 'flex items-center gap-4 px-4 py-3 rounded-none transition-all group relative border',
+ 'flex items-center gap-4 px-4 py-3 rounded-none-none transition-all group relative border',
  isActive
  ? theme === 'dark'
  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
@@ -402,7 +402,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  {isActive && !isSidebarOpen && (
  <motion.div
  layoutId="nav-glow-mini"
- className="absolute left-0 w-1 h-4 bg-emerald-500 rounded-none shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+ className="absolute left-0 w-1 h-4 bg-emerald-500 rounded-none-none shadow-[0_0_10px_rgba(16,185,129,0.5)]"
  />
  )}
  </Link>
@@ -416,14 +416,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  </nav>
 
  <nav className="space-y-1.5 pt-4 border-t border-white/[0.03]">
- <div className="px-3 mb-4 flex items-center justify-between">
- {isSidebarOpen && (
- <span className="text-[12px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-wider leading-none">
- Global Settings
- </span>
- )}
- <ShieldCheck size={10} className="text-gray-600 dark:text-gray-500" />
- </div>
+  <div className="px-3 mb-2 flex items-center justify-end">
+  <ShieldCheck size={10} className="text-gray-600 dark:text-gray-500 opacity-50" />
+  </div>
 
  <div className="space-y-0.5">
  {globals.map((global) => {
@@ -433,7 +428,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  key={global.slug}
  to={`/globals/${global.slug}`}
  className={cn(
- 'flex items-center gap-4 px-4 py-3 rounded-none transition-all duration-300 group relative border',
+ 'flex items-center gap-4 px-4 py-3 rounded-none-none transition-all duration-300 group relative border',
  isActive
  ? theme === 'dark'
  ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.1)]'
@@ -445,7 +440,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  >
  <div
  className={cn(
- 'w-2 h-2 rounded-none transition-all shadow-[0_0_10px_currentColor]',
+ 'w-2 h-2 rounded-none-none transition-all shadow-[0_0_10px_currentColor]',
  isActive
  ? theme === 'dark'
  ? 'bg-emerald-400'
@@ -465,14 +460,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  </nav>
 
  <nav className="space-y-1.5">
- <div className="px-3 mb-4 flex items-center justify-between">
- {isSidebarOpen && (
- <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider leading-none">
- Collections
- </span>
- )}
- <Database size={10} className="text-gray-500" />
- </div>
+  <div className="px-3 mb-2 flex items-center justify-end">
+  <Database size={10} className="text-gray-500 opacity-50" />
+  </div>
 
  <div className="space-y-0.5">
  {collections.map((col) => {
@@ -482,7 +472,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  key={col.slug}
  to={`/collections/${col.slug}`}
  className={cn(
- 'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
+ 'flex items-center gap-4 px-4 py-3 rounded-none-none transition-all group border relative overflow-hidden',
  isActive
  ? theme === 'dark'
  ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.1)]'
@@ -494,7 +484,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  >
  <div
  className={cn(
- 'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
+ 'w-2 h-2 rounded-none-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  isActive
  ? theme === 'dark'
  ? 'bg-emerald-400 scale-110'
@@ -515,20 +505,15 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
 
  {/* 🖥️ System Administration Category */}
  <nav className="space-y-1.5 pt-4 border-t border-white/[0.03]">
- <div className="px-3 mb-4 flex items-center justify-between">
- {isSidebarOpen && (
- <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider leading-none">
- System Administration
- </span>
- )}
- <Settings size={10} className="text-gray-500" />
- </div>
+  <div className="px-3 mb-2 flex items-center justify-end">
+  <Settings size={10} className="text-gray-500 opacity-50" />
+  </div>
 
  <div className="space-y-0.5">
  <Link
  to="/audit-log"
  className={cn(
- 'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
+ 'flex items-center gap-4 px-4 py-3 rounded-none-none transition-all group border relative overflow-hidden',
  location.pathname === '/audit-log'
  ? theme === 'dark'
  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
@@ -540,7 +525,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  >
  <div
  className={cn(
- 'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
+ 'w-2 h-2 rounded-none-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  location.pathname === '/audit-log'
  ? theme === 'dark'
  ? 'bg-emerald-400 scale-110'
@@ -558,7 +543,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <Link
  to="/schema-builder"
  className={cn(
- 'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
+ 'flex items-center gap-4 px-4 py-3 rounded-none-none transition-all group border relative overflow-hidden',
  location.pathname === '/schema-builder'
  ? theme === 'dark'
  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
@@ -570,7 +555,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  >
  <div
  className={cn(
- 'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
+ 'w-2 h-2 rounded-none-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  location.pathname === '/schema-builder'
  ? theme === 'dark'
  ? 'bg-emerald-400 scale-110'
@@ -588,7 +573,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <Link
  to="/block-builder"
  className={cn(
- 'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
+ 'flex items-center gap-4 px-4 py-3 rounded-none-none transition-all group border relative overflow-hidden',
  location.pathname === '/block-builder'
  ? theme === 'dark'
  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
@@ -600,7 +585,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  >
  <div
  className={cn(
- 'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
+ 'w-2 h-2 rounded-none-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  location.pathname === '/block-builder'
  ? theme === 'dark'
  ? 'bg-emerald-400 scale-110'
@@ -618,7 +603,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <Link
  to="/component-builder"
  className={cn(
- 'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
+ 'flex items-center gap-4 px-4 py-3 rounded-none-none transition-all group border relative overflow-hidden',
  location.pathname === '/component-builder'
  ? theme === 'dark'
  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
@@ -630,7 +615,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  >
  <div
  className={cn(
- 'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
+ 'w-2 h-2 rounded-none-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  location.pathname === '/component-builder'
  ? theme === 'dark'
  ? 'bg-emerald-400 scale-110'
@@ -645,40 +630,11 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  )}
  </Link>
 
- <Link
- to="/collections/members"
- className={cn(
- 'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
- location.pathname.startsWith('/collections/members')
- ? theme === 'dark'
- ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
- : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 shadow-sm'
- : theme === 'dark'
- ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-gray-100'
- : 'text-gray-600 border-gray-200 shadow-sm hover:bg-gray-100 hover:text-gray-900'
- )}
- >
- <div
- className={cn(
- 'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
- location.pathname.startsWith('/collections/members')
- ? theme === 'dark'
- ? 'bg-emerald-400 scale-110'
- : 'bg-emerald-500'
- : 'bg-gray-700/40 group-hover:bg-gray-500'
- )}
- />
- {isSidebarOpen && (
- <span className="text-[12px] font-black uppercase tracking-tight leading-none truncate">
- Members
- </span>
- )}
- </Link>
 
  <Link
  to="/redirects"
  className={cn(
- 'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
+ 'flex items-center gap-4 px-4 py-3 rounded-none-none transition-all group border relative overflow-hidden',
  location.pathname === '/redirects'
  ? theme === 'dark'
  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
@@ -690,7 +646,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  >
  <div
  className={cn(
- 'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
+ 'w-2 h-2 rounded-none-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  location.pathname === '/redirects'
  ? theme === 'dark'
  ? 'bg-emerald-400 scale-110'
@@ -708,7 +664,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <Link
  to="/trash"
  className={cn(
- 'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
+ 'flex items-center gap-4 px-4 py-3 rounded-none-none transition-all group border relative overflow-hidden',
  location.pathname === '/trash'
  ? theme === 'dark'
  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
@@ -720,7 +676,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  >
  <div
  className={cn(
- 'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
+ 'w-2 h-2 rounded-none-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  location.pathname === '/trash'
  ? theme === 'dark'
  ? 'bg-emerald-400 scale-110'
@@ -738,7 +694,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <Link
  to="/system"
  className={cn(
- 'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
+ 'flex items-center gap-4 px-4 py-3 rounded-none-none transition-all group border relative overflow-hidden',
  location.pathname === '/system'
  ? theme === 'dark'
  ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.1)]'
@@ -750,7 +706,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  >
  <div
  className={cn(
- 'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
+ 'w-2 h-2 rounded-none-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  location.pathname === '/system'
  ? theme === 'dark'
  ? 'bg-emerald-400 scale-110'
@@ -773,7 +729,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <button
  onClick={logout}
  className={cn(
- 'w-full flex items-center justify-center gap-4 py-3.5 rounded-none transition-all group border border-transparent hover:border-red-500/20',
+ 'w-full flex items-center justify-center gap-4 py-3.5 rounded-none-none transition-all group border border-transparent hover:border-red-500/20',
  theme === 'dark'
  ? 'bg-red-500/5 text-red-400 hover:bg-red-500/10'
  : 'bg-red-50 text-red-600 hover:bg-red-100 shadow-sm'
@@ -808,7 +764,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  onClick={() => setSidebarOpen(!isSidebarOpen)}
  title={isSidebarOpen ? 'Collapse Sidebar' : 'Expand Sidebar'}
  className={cn(
- 'p-2 rounded-none transition-all border',
+ 'p-2 rounded-none-none transition-all border',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-400'
  : 'bg-gray-50 border-gray-200 shadow-sm text-gray-400'
@@ -828,8 +784,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  </span>
  </div>
 
- <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-none border", envConfig.bg, envConfig.border)}>
- <div className={cn("w-1 h-1 rounded-none animate-pulse", envConfig.dot, envConfig.shadow)} />
+ <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-none-none border", envConfig.bg, envConfig.border)}>
+ <div className={cn("w-1 h-1 rounded-none-none animate-pulse", envConfig.dot, envConfig.shadow)} />
  <span className={cn("text-[8px] font-black uppercase tracking-widest", envConfig.text)}>
  {envMode}
  </span>
@@ -839,7 +795,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  to="/settings"
  title="System Settings"
  className={cn(
- 'p-2 rounded-none border transition-all',
+ 'p-2 rounded-none-none border transition-all',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-400'
  : 'bg-gray-50 border-gray-200 shadow-sm text-gray-600'
@@ -852,7 +808,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  onClick={toggleTheme}
  title="Switch Visual Mode (Light/Dark)"
  className={cn(
- 'p-2 rounded-none border transition-all',
+ 'p-2 rounded-none-none border transition-all',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-amber-400'
  : 'bg-gray-50 border-gray-200 shadow-sm text-gray-600'
@@ -872,7 +828,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  </div>
  <div
  className={cn(
- 'w-8 h-8 rounded-none flex items-center justify-center text-[10px] font-black shadow-xl transition-all',
+ 'w-8 h-8 rounded-none-none flex items-center justify-center text-[10px] font-black shadow-xl transition-all',
  theme === 'dark' ? 'bg-white text-black' : 'bg-gray-900 text-gray-100'
  )}
  >

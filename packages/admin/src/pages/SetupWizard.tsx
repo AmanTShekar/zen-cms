@@ -212,7 +212,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ projectName: e.target.value })}
  placeholder="e.g. Acme Corp CMS"
  className={cn(
- 'w-full px-4 py-3 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[13px] font-medium transition-colors',
+ 'w-full px-4 py-3 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[13px] font-medium transition-colors',
  input
  )}
  />
@@ -227,7 +227,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ publicUrl: e.target.value })}
  placeholder="https://mywebsite.com"
  className={cn(
- 'w-full px-4 py-3 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[13px] font-medium transition-colors',
+ 'w-full px-4 py-3 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[13px] font-medium transition-colors',
  input
  )}
  />
@@ -252,7 +252,7 @@ export default function SetupWizard() {
  patch({ projectType: pt.id, selectedCollections: pt.collections })
  }}
  className={cn(
- 'flex flex-col items-center gap-3 p-5 border rounded-none transition-all text-center',
+ 'flex flex-col items-center gap-3 p-5 border rounded-none-none transition-all text-center',
  state.projectType === pt.id
  ? 'border-gray-500 bg-gray-500/10'
  : isDark
@@ -288,7 +288,7 @@ export default function SetupWizard() {
  })
  }}
  className={cn(
- 'flex items-center gap-3 px-4 py-3 border rounded-none text-left transition-all',
+ 'flex items-center gap-3 px-4 py-3 border rounded-none-none text-left transition-all',
  selected
  ? 'border-gray-500 bg-gray-500/10'
  : isDark
@@ -341,7 +341,7 @@ export default function SetupWizard() {
  })
  }}
  className={cn(
- 'flex-1 py-3 border text-[10px] font-black uppercase tracking-widest rounded-none transition-all',
+ 'flex-1 py-3 border text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all',
  state.dbDialect === dialect
  ? 'border-gray-500 bg-gray-500/10 text-white'
  : 'border-white/[0.08] hover:border-white/[0.08] text-gray-400'
@@ -366,7 +366,7 @@ export default function SetupWizard() {
  : 'postgresql://postgres:postgres@localhost:5432/zenith'
  }
  className={cn(
- 'w-full px-4 py-3 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[12px] font-mono transition-colors',
+ 'w-full px-4 py-3 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[12px] font-mono transition-colors',
  input
  )}
  />
@@ -377,7 +377,7 @@ export default function SetupWizard() {
  type="button"
  onClick={testDbConnection}
  disabled={state.dbTestStatus === 'testing'}
- className="flex-1 py-3 border border-white/[0.08] hover:border-white/30 text-[10px] font-black uppercase tracking-widest rounded-none transition-all flex items-center justify-center gap-2"
+ className="flex-1 py-3 border border-white/[0.08] hover:border-white/30 text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all flex items-center justify-center gap-2"
  >
  {state.dbTestStatus === 'testing' ? (
  <Loader2 size={12} className="animate-spin" />
@@ -391,7 +391,7 @@ export default function SetupWizard() {
  onClick={saveDbConnection}
  disabled={state.dbTestStatus !== 'success' || state.dbSaved}
  className={cn(
- 'flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-none transition-all flex items-center justify-center gap-2',
+ 'flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all flex items-center justify-center gap-2',
  state.dbTestStatus === 'success' && !state.dbSaved
  ? 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white shadow-lg shadow-gray-600/20'
  : 'bg-white/5 border border-white/[0.08] text-gray-500 cursor-not-allowed'
@@ -404,7 +404,7 @@ export default function SetupWizard() {
  {state.dbTestStatus !== 'idle' && (
  <div
  className={cn(
- 'p-4 border rounded-none text-[10px] font-bold uppercase tracking-wide ',
+ 'p-4 border rounded-none-none text-[10px] font-bold uppercase tracking-wide ',
  state.dbTestStatus === 'success'
  ? 'bg-gray-500/5 border-gray-500/20 text-gray-600 dark:text-gray-400'
  : state.dbTestStatus === 'testing'
@@ -448,7 +448,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ openRouterApiKey: e.target.value })}
  placeholder="sk-or-..."
  className={cn(
- 'w-full px-3 py-2.5 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
+ 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
  input
  )}
  />
@@ -474,7 +474,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ openaiApiKey: e.target.value })}
  placeholder="sk-proj-..."
  className={cn(
- 'w-full px-3 py-2.5 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
+ 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
  input
  )}
  />
@@ -500,7 +500,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ anthropicApiKey: e.target.value })}
  placeholder="sk-ant-..."
  className={cn(
- 'w-full px-3 py-2.5 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
+ 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
  input
  )}
  />
@@ -526,14 +526,14 @@ export default function SetupWizard() {
  onChange={(e) => patch({ xaiApiKey: e.target.value })}
  placeholder="xai-..."
  className={cn(
- 'w-full px-3 py-2.5 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
+ 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
  input
  )}
  />
  </div>
  </div>
 
- <div className="p-3 border border-gray-500/20 bg-gray-500/[0.03] rounded-none flex items-start gap-2.5">
+ <div className="p-3 border border-gray-500/20 bg-gray-500/[0.03] rounded-none-none flex items-start gap-2.5">
  <Info size={14} className="text-gray-600 dark:text-gray-400 shrink-0 mt-0.5" />
  <div>
  <p className="text-[9px] font-black uppercase text-gray-600 dark:text-gray-400 ">
@@ -582,7 +582,7 @@ export default function SetupWizard() {
  icon: '📝',
  },
  ].map((feat, i) => (
- <div key={i} className="p-2.5 border border-white/[0.08] bg-white/[0.01] rounded-none flex gap-2">
+ <div key={i} className="p-2.5 border border-white/[0.08] bg-white/[0.01] rounded-none-none flex gap-2">
  <span className="text-base">{feat.icon}</span>
  <div>
  <p className="text-[9px] font-black uppercase leading-none">{feat.title}</p>
@@ -613,7 +613,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ keyName: e.target.value })}
  placeholder="My Website"
  className={cn(
- 'w-full px-4 py-3 border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[13px] font-medium transition-colors',
+ 'w-full px-4 py-3 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[13px] font-medium transition-colors',
  input
  )}
  />
@@ -624,7 +624,7 @@ export default function SetupWizard() {
  <button
  onClick={handleComplete}
  disabled={loading}
- className="w-full flex items-center justify-center gap-3 py-4 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-[11px] font-black uppercase rounded-none transition-all shadow-lg shadow-gray-600/20"
+ className="w-full flex items-center justify-center gap-3 py-4 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-[11px] font-black uppercase rounded-none-none transition-all shadow-lg shadow-gray-600/20"
  >
  {loading ? <Loader2 size={16} className="animate-spin" /> : <Key size={16} />}
  {loading ? 'Generating...' : 'Generate API Key'}
@@ -634,7 +634,7 @@ export default function SetupWizard() {
  <div className="space-y-4">
  <div
  className={cn(
- 'p-4 border rounded-none space-y-3',
+ 'p-4 border rounded-none-none space-y-3',
  isDark
  ? 'bg-gray-500/5 border-gray-500/20'
  : 'bg-gray-50 border-gray-100'
@@ -645,7 +645,7 @@ export default function SetupWizard() {
  </p>
  <div
  className={cn(
- 'flex items-center gap-3 p-3 border rounded-none font-mono text-[11px] break-all',
+ 'flex items-center gap-3 p-3 border rounded-none-none font-mono text-[11px] break-all',
  isDark ? 'bg-black border-white/[0.08]' : 'bg-gray-100 border-gray-200'
  )}
  >
@@ -653,7 +653,7 @@ export default function SetupWizard() {
  <button
  onClick={copyKey}
  className={cn(
- 'shrink-0 px-3 py-1.5 border rounded-none text-[9px] font-black uppercase transition-all',
+ 'shrink-0 px-3 py-1.5 border rounded-none-none text-[9px] font-black uppercase transition-all',
  state.keyCopied
  ? 'border-gray-50 text-gray-600 dark:text-gray-500'
  : isDark
@@ -704,7 +704,7 @@ export default function SetupWizard() {
  </div>
 
  {/* Card */}
- <div className={cn('w-full max-w-2xl border rounded-none overflow-hidden', card)}>
+ <div className={cn('w-full max-w-2xl border rounded-none-none overflow-hidden', card)}>
  {/* Progress bar */}
  <div
  className={cn('h-1 transition-all duration-500 bg-gray-600 dark:bg-gray-600')}
@@ -726,7 +726,7 @@ export default function SetupWizard() {
  <div
  key={i}
  className={cn(
- 'w-6 h-1 rounded-none transition-all',
+ 'w-6 h-1 rounded-none-none transition-all',
  i <= step ? 'bg-gray-500' : isDark ? 'bg-white/10' : 'bg-gray-200'
  )}
  />
@@ -747,7 +747,7 @@ export default function SetupWizard() {
  <div className="flex items-center gap-4">
  <div
  className={cn(
- 'w-14 h-14 rounded-none flex items-center justify-center shrink-0',
+ 'w-14 h-14 rounded-none-none flex items-center justify-center shrink-0',
  isDark ? 'bg-gray-500/10' : 'bg-gray-50'
  )}
  >
@@ -775,7 +775,7 @@ export default function SetupWizard() {
  onClick={back}
  disabled={step === 0}
  className={cn(
- 'flex items-center gap-2 px-5 py-2.5 border text-[10px] font-black uppercase rounded-none transition-all',
+ 'flex items-center gap-2 px-5 py-2.5 border text-[10px] font-black uppercase rounded-none-none transition-all',
  step === 0
  ? 'opacity-30 cursor-not-allowed'
  : isDark
@@ -788,7 +788,7 @@ export default function SetupWizard() {
  {step === TOTAL_STEPS - 1 ? (
  <button
  onClick={() => navigate('/')}
- className="flex items-center gap-2 px-8 py-2.5 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-[10px] font-black uppercase rounded-none transition-all shadow-lg shadow-gray-600/20"
+ className="flex items-center gap-2 px-8 py-2.5 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-[10px] font-black uppercase rounded-none-none transition-all shadow-lg shadow-gray-600/20"
  >
  <CheckCircle2 size={14} /> Go to Dashboard
  </button>
@@ -797,7 +797,7 @@ export default function SetupWizard() {
  onClick={next}
  disabled={!current.canNext}
  className={cn(
- 'flex items-center gap-2 px-8 py-2.5 text-[10px] font-black uppercase rounded-none transition-all',
+ 'flex items-center gap-2 px-8 py-2.5 text-[10px] font-black uppercase rounded-none-none transition-all',
  current.canNext
  ? 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white shadow-lg shadow-gray-600/20'
  : 'opacity-30 cursor-not-allowed bg-gray-600 text-gray-300'

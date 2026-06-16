@@ -499,7 +499,7 @@ export function SlashCommandPlugin() {
         </span>
         <span
           className={cn(
-            'text-[7px] font-bold px-1.5 py-0.5 border rounded uppercase',
+            'text-[7px] font-bold px-1.5 py-0.5 border rounded-none uppercase',
             theme === 'dark'
               ? 'text-emerald-400 border-emerald-500/20'
               : 'text-emerald-500 border-emerald-200',
@@ -531,7 +531,7 @@ export function SlashCommandPlugin() {
             >
               <div
                 className={cn(
-                  'w-7 h-7 rounded flex items-center justify-center border shrink-0',
+                  'w-7 h-7 rounded-none flex items-center justify-center border shrink-0',
                   isSelected
                     ? theme === 'dark'
                       ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'

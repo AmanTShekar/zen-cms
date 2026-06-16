@@ -39,7 +39,7 @@ export default function RecentContentWidget({ config = {}, theme, title }: Widge
  navigate(`/collections/${log.collection}/${log.documentId}`)
  }
  className={cn(
- 'w-full flex items-center justify-between p-3 border rounded-none group transition-all text-left',
+ 'w-full flex items-center justify-between p-3 border rounded-none-none group transition-all text-left',
  theme === 'dark'
  ? 'bg-white/[0.01] border-white/[0.08] hover:border-gray-500/20'
  : 'bg-gray-50 border-gray-200 shadow-sm hover:border-gray-100'

@@ -21,6 +21,9 @@ import { cn } from '../lib/utils'
 import { motion } from 'framer-motion'
 import { useTheme } from '../context/ThemeContext'
 import toast from 'react-hot-toast'
+import { PageHeader } from '../components/ui/PageHeader'
+import { Card } from '../components/ui/Card'
+import { Badge } from '../components/ui/Badge'
 
 interface AuditLogEntry {
  _id?: string
@@ -170,96 +173,75 @@ const AuditLogPage: React.FC = () => {
  log.userName || log.userEmail || 'System'
 
  return (
- <div
- className={cn(
- 'flex flex-col min-h-screen p-6 space-y-6 transition-colors duration-500',
- theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
- )}
- >
+ <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden">
  {/* Header */}
- <header className="flex items-center justify-between">
- <div className="flex items-center gap-5">
- <div
- className={cn(
- 'w-12 h-12 rounded-none flex items-center justify-center shadow-lg transition-all',
- theme === 'dark' ? 'bg-white text-black' : 'bg-gray-900 text-white'
- )}
- >
- <History size={24} />
- </div>
- <div className="flex flex-col">
- <div className="flex items-center gap-3 mb-1">
- <span className="text-[8px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-[0.3em] ">
- System History
- </span>
- <div className="w-1.5 h-1.5 rounded-none bg-gray-500 shadow-[0_0_8px_#10b981]" />
- </div>
- <h1 className="text-3xl font-black tracking-tighter uppercase leading-none">
- Audit Logs
- </h1>
- </div>
- </div>
+ <PageHeader 
+   title="Audit Logs"
+   description="System History"
+   icon={<History size={24} />}
+   actions={
+     <div className="flex items-center gap-4">
+       <div
+         className={cn(
+           'px-6 py-3 border rounded-none-none flex items-center gap-8 shadow-sm backdrop-blur-xl',
+           theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
+         )}
+       >
+         <div className="flex flex-col items-end">
+           <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest opacity-60">
+             Total Logs
+           </span>
+           <span className="text-xl font-black tracking-tighter leading-none text-gray-600 dark:text-gray-500">
+             {total.toLocaleString()}
+           </span>
+         </div>
+         {stats && (
+           <>
+             <div className={cn('w-px h-8', theme === 'dark' ? 'bg-white/5' : 'bg-gray-100')} />
+             <div className="flex flex-col items-end">
+               <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest opacity-60">
+                 Failed
+               </span>
+               <span className="text-xl font-black tracking-tighter leading-none text-red-500">
+                 {stats.failed}
+               </span>
+             </div>
+             <div className={cn('w-px h-8', theme === 'dark' ? 'bg-white/5' : 'bg-gray-100')} />
+             <div className="flex flex-col items-end">
+               <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest opacity-60">
+                 Status
+               </span>
+               <span className="text-xs font-black text-gray-600 dark:text-gray-500 tracking-tighter uppercase leading-none">
+                 Stable
+               </span>
+             </div>
+           </>
+         )}
+       </div>
 
- <div className="flex items-center gap-4">
- <div
- className={cn(
- 'px-6 py-3 border rounded-none flex items-center gap-8 shadow-sm backdrop-blur-xl',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
- )}
- >
- <div className="flex flex-col items-end">
- <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest opacity-60">
- Total Logs
- </span>
- <span className="text-xl font-black tracking-tighter leading-none text-gray-600 dark:text-gray-500">
- {total.toLocaleString()}
- </span>
- </div>
- {stats && (
- <>
- <div className={cn('w-px h-8', theme === 'dark' ? 'bg-white/5' : 'bg-gray-100')} />
- <div className="flex flex-col items-end">
- <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest opacity-60">
- Failed
- </span>
- <span className="text-xl font-black tracking-tighter leading-none text-red-500">
- {stats.failed}
- </span>
- </div>
- <div className={cn('w-px h-8', theme === 'dark' ? 'bg-white/5' : 'bg-gray-100')} />
- <div className="flex flex-col items-end">
- <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest opacity-60">
- Status
- </span>
- <span className="text-xs font-black text-gray-600 dark:text-gray-500 tracking-tighter uppercase leading-none">
- Stable
- </span>
- </div>
- </>
- )}
- </div>
+       <button
+         onClick={() => { setPage(1); fetchLogs() }}
+         className={cn(
+           'w-12 h-12 border rounded-none-none flex items-center justify-center transition-all hover:scale-105 active:scale-95',
+           theme === 'dark'
+             ? 'bg-white/5 border-white/[0.08] text-gray-400'
+             : 'bg-white border-gray-200 shadow-sm text-gray-400'
+         )}
+       >
+         <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
+       </button>
+     </div>
+   }
+ />
 
- <button
- onClick={() => { setPage(1); fetchLogs() }}
- className={cn(
- 'w-12 h-12 border rounded-none flex items-center justify-center transition-all hover:scale-105 active:scale-95',
- theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-gray-400'
- : 'bg-white border-gray-200 shadow-sm text-gray-400'
- )}
- >
- <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
- </button>
- </div>
- </header>
+ <div className={cn(
+  'flex-1 overflow-y-auto p-10 space-y-6 transition-colors duration-500',
+  theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
+ )}>
 
  {/* Table Card */}
- <div
- className={cn(
- 'border rounded-none shadow-sm flex flex-col relative transition-colors backdrop-blur-3xl overflow-hidden',
- theme === 'dark' ? 'bg-black/80 border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
- )}
- >
+ {/* Table Card */}
+ <Card padding="none" className="flex flex-col">
  {/* Control Bar */}
  <div
  className={cn(
@@ -270,7 +252,7 @@ const AuditLogPage: React.FC = () => {
  <div className="flex items-center gap-4 flex-1">
  <div
  className={cn(
- 'flex items-center gap-4 border px-6 py-3 rounded-none w-full max-w-md shadow-inner transition-all group relative overflow-hidden',
+ 'flex items-center gap-4 border px-6 py-3 rounded-none-none w-full max-w-md shadow-inner transition-all group relative overflow-hidden',
  theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
@@ -292,7 +274,7 @@ const AuditLogPage: React.FC = () => {
  value={filterAction}
  onChange={(e) => { setFilterAction(e.target.value); setPage(1) }}
  className={cn(
- 'px-4 py-3 border rounded-none text-[9px] font-black uppercase tracking-widest ',
+ 'px-4 py-3 border rounded-none-none text-[9px] font-black uppercase tracking-widest ',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-gray-400' : 'bg-white border-gray-200 shadow-sm text-gray-400'
  )}
  >
@@ -311,7 +293,7 @@ const AuditLogPage: React.FC = () => {
  onClick={handlePurge}
  disabled={purging}
  className={cn(
- 'flex items-center gap-3 px-6 py-3 border rounded-none text-[9px] font-black uppercase tracking-widest transition-all hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/20',
+ 'flex items-center gap-3 px-6 py-3 border rounded-none-none text-[9px] font-black uppercase tracking-widest transition-all hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/20',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-400'
  : 'bg-white border-gray-200 shadow-sm text-gray-400'
@@ -324,7 +306,7 @@ const AuditLogPage: React.FC = () => {
  onClick={handleExport}
  disabled={exporting}
  className={cn(
- 'flex items-center gap-3 px-8 py-3 rounded-none font-black text-[9px] uppercase tracking-[0.2em] transition-all shadow-lg leading-none active:scale-95',
+ 'flex items-center gap-3 px-8 py-3 rounded-none-none font-black text-[9px] uppercase tracking-[0.2em] transition-all shadow-lg leading-none active:scale-95',
  theme === 'dark'
  ? 'bg-white text-black hover:bg-gray-200'
  : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
@@ -402,7 +384,7 @@ const AuditLogPage: React.FC = () => {
  <div className="flex items-center gap-3">
  <div
  className={cn(
- 'w-8 h-8 rounded-none border flex items-center justify-center text-gray-500',
+ 'w-8 h-8 rounded-none-none border flex items-center justify-center text-gray-500',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08]'
  : 'bg-gray-50 border-gray-200 shadow-sm'
@@ -423,7 +405,7 @@ const AuditLogPage: React.FC = () => {
  <td className="px-8 py-4">
  <div
  className={cn(
- 'px-3 py-1 rounded-none text-[8px] font-black uppercase tracking-widest inline-flex items-center gap-2 border',
+ 'px-3 py-1 rounded-none-none text-[8px] font-black uppercase tracking-widest inline-flex items-center gap-2 border',
  getActionColor(log.action)
  )}
  >
@@ -520,7 +502,7 @@ const AuditLogPage: React.FC = () => {
  <div className="mt-4">
  <div className="text-[7px] font-black uppercase tracking-widest text-gray-500 mb-2">Changes</div>
  <pre className={cn(
- 'p-4 rounded-none text-[10px] font-mono max-h-48 overflow-auto border',
+ 'p-4 rounded-none-none text-[10px] font-mono max-h-48 overflow-auto border',
  theme === 'dark' ? 'bg-black/50 border-white/[0.08] text-gray-400' : 'bg-gray-50 border-gray-200 shadow-sm text-gray-600'
  )}>
  {JSON.stringify(log.changes, null, 2)}
@@ -562,7 +544,7 @@ const AuditLogPage: React.FC = () => {
  disabled={page === 1}
  onClick={() => setPage(page - 1)}
  className={cn(
- 'w-10 h-10 border rounded-none flex items-center justify-center transition-all disabled:opacity-20',
+ 'w-10 h-10 border rounded-none-none flex items-center justify-center transition-all disabled:opacity-20',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-400'
  : 'bg-white border-gray-200 shadow-sm text-gray-400'
@@ -573,7 +555,7 @@ const AuditLogPage: React.FC = () => {
 
  <div
  className={cn(
- 'px-4 py-2 rounded-none text-[11px] font-black border shadow-sm',
+ 'px-4 py-2 rounded-none-none text-[11px] font-black border shadow-sm',
  theme === 'dark'
  ? 'bg-white border-white text-black'
  : 'bg-gray-900 border-gray-800 text-white'
@@ -586,7 +568,7 @@ const AuditLogPage: React.FC = () => {
  disabled={page >= totalPages}
  onClick={() => setPage(page + 1)}
  className={cn(
- 'w-10 h-10 border rounded-none flex items-center justify-center transition-all disabled:opacity-20',
+ 'w-10 h-10 border rounded-none-none flex items-center justify-center transition-all disabled:opacity-20',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-400'
  : 'bg-white border-gray-200 shadow-sm text-gray-400'
@@ -596,6 +578,7 @@ const AuditLogPage: React.FC = () => {
  </button>
  </div>
  </div>
+ </Card>
  </div>
  </div>
  )

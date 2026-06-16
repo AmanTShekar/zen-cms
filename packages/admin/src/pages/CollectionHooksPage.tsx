@@ -23,6 +23,7 @@ import api from '../lib/api'
 import toast from 'react-hot-toast'
 import { useTheme } from '../context/ThemeContext'
 import { useSystemMetadata } from '../hooks/useQueries'
+import { PageHeader } from '../components/ui/PageHeader'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -96,7 +97,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ value, onChange, theme, height 
  onChange={(e) => onChange(e.target.value)}
  spellCheck={false}
  className={cn(
- 'w-full border rounded-none px-4 py-3 font-mono text-[11px] leading-relaxed resize-y outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
+ 'w-full border rounded-none-none px-4 py-3 font-mono text-[11px] leading-relaxed resize-y outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
  theme === 'dark'
  ? 'bg-black border-white/[0.08] text-gray-300 focus:border-gray-500/50'
  : 'bg-gray-900 border-gray-600 text-gray-300 focus:border-gray-500'
@@ -262,52 +263,31 @@ const CollectionHooksPage: React.FC = () => {
  }
 
  return (
- <div className="max-w-[1400px] mx-auto space-y-8">
- {/* Header */}
- <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/[0.08] pb-8">
- <div className="flex items-center gap-4">
- <Link
- to={`/collections/${slug}`}
- className={cn(
- 'w-10 h-10 rounded-none border flex items-center justify-center transition-colors',
- theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-white hover:border-white/[0.08]' : 'border-gray-200 text-gray-400 hover:text-gray-600'
- )}
- >
- <ArrowLeft size={18} />
- </Link>
- <div className="flex items-center gap-3">
- <div className="w-12 h-12 rounded-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center text-gray-600 dark:text-gray-500">
- <Code2 size={22} />
- </div>
- <div>
- <h1 className="text-2xl font-black uppercase leading-none tracking-tight">
- Hooks & Endpoints
- </h1>
- <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">
- {collection?.name || slug} · Lifecycle hooks and custom API endpoints
- </p>
- </div>
- </div>
- </div>
- <button
- onClick={handleSave}
- disabled={saving || !isDirty()}
- className={cn(
- 'flex items-center justify-center gap-3 px-8 py-4 rounded-none text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-gray-500/10 active:scale-95 disabled:opacity-50',
- theme === 'dark' ? 'bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 text-white' : 'bg-gray-900 text-white hover:bg-gray-800'
- )}
- >
- {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
- Save Configuration
- </button>
- </div>
-
- <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+    <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden">
+      <PageHeader
+        title={`${slug} hooks`}
+        actions={
+          <button
+            onClick={handleSave}
+            disabled={saving || !isDirty()}
+            className="flex items-center justify-center gap-3 px-8 py-4 rounded-none-none text-[10px] font-black uppercase tracking-widest transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] active:scale-95 disabled:opacity-50 bg-emerald-500 text-white hover:bg-emerald-600"
+          >
+            {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+            Save Configuration
+          </button>
+        }
+      />
+      <div className={cn(
+        'flex-1 overflow-y-auto p-6 md:p-10 space-y-8 transition-colors duration-500',
+        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
+      )}>
+        <div className="max-w-[1400px] mx-auto space-y-8">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
  {/* Sidebar: Available hooks + Settings */}
  <div className="xl:col-span-1 space-y-6">
  {/* Public Read Toggle */}
  <div className={cn(
- 'p-5 border rounded-none',
+ 'p-5 border rounded-none-none',
  theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}>
  <div className="flex items-center justify-between">
@@ -329,7 +309,7 @@ const CollectionHooksPage: React.FC = () => {
 
  {/* Available hooks to add */}
  <div className={cn(
- 'border rounded-none overflow-hidden',
+ 'border rounded-none-none overflow-hidden',
  theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}>
  <div className="px-5 py-3 border-b border-white/[0.08]">
@@ -349,7 +329,7 @@ const CollectionHooksPage: React.FC = () => {
  )}
  >
  <div className="flex items-center gap-2">
- {isActive && <div className="w-1.5 h-1.5 rounded-none bg-gray-500" />}
+ {isActive && <div className="w-1.5 h-1.5 rounded-none-none bg-gray-500" />}
  <span className={cn(
  'text-[10px] font-black uppercase tracking-widest',
  isActive ? 'text-gray-600 dark:text-gray-400' : theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
@@ -374,7 +354,7 @@ const CollectionHooksPage: React.FC = () => {
 
  {/* Quick info */}
  <div className={cn(
- 'p-5 border rounded-none space-y-3',
+ 'p-5 border rounded-none-none space-y-3',
  theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}>
  <div className="flex items-center gap-2">
@@ -412,7 +392,7 @@ const CollectionHooksPage: React.FC = () => {
 
  {activeHooks.length === 0 ? (
  <div className={cn(
- 'p-8 border border-dashed rounded-none text-center space-y-3',
+ 'p-8 border border-dashed rounded-none-none text-center space-y-3',
  theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
  )}>
  <Code2 size={32} className="mx-auto text-gray-600" />
@@ -434,7 +414,7 @@ const CollectionHooksPage: React.FC = () => {
  animate={{ opacity: 1, y: 0 }}
  exit={{ opacity: 0, y: -8 }}
  className={cn(
- 'border rounded-none overflow-hidden',
+ 'border rounded-none-none overflow-hidden',
  theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
@@ -504,7 +484,7 @@ const CollectionHooksPage: React.FC = () => {
 
  {endpoints.length === 0 ? (
  <div className={cn(
- 'p-8 border border-dashed rounded-none text-center space-y-3',
+ 'p-8 border border-dashed rounded-none-none text-center space-y-3',
  theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
  )}>
  <Globe size={32} className="mx-auto text-gray-600" />
@@ -521,7 +501,7 @@ const CollectionHooksPage: React.FC = () => {
  <div
  key={idx}
  className={cn(
- 'p-5 border rounded-none space-y-4',
+ 'p-5 border rounded-none-none space-y-4',
  theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
@@ -530,7 +510,7 @@ const CollectionHooksPage: React.FC = () => {
  value={ep.method}
  onChange={(e) => handleUpdateEndpoint(idx, 'method', e.target.value)}
  className={cn(
- 'bg-black border text-[9px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none focus:border-gray-500',
+ 'bg-black border text-[9px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none-none focus:border-gray-500',
  theme === 'dark' ? 'border-white/[0.08] text-gray-600 dark:text-gray-400' : 'border-gray-200 text-gray-600'
  )}
  >
@@ -544,7 +524,7 @@ const CollectionHooksPage: React.FC = () => {
  onChange={(e) => handleUpdateEndpoint(idx, 'path', e.target.value)}
  placeholder="/custom-path"
  className={cn(
- 'flex-1 border rounded-none py-2 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'flex-1 border rounded-none-none py-2 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-gray-50 border-gray-200 focus:border-gray-500'
  )}
  />
@@ -561,7 +541,7 @@ const CollectionHooksPage: React.FC = () => {
  onChange={(e) => handleUpdateEndpoint(idx, 'description', e.target.value)}
  placeholder="Brief description of this endpoint..."
  className={cn(
- 'w-full border rounded-none py-2 px-3 text-[10px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2 px-3 text-[10px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-gray-300 focus:border-gray-500' : 'bg-gray-50 border-gray-200 focus:border-gray-500'
  )}
  />
@@ -573,7 +553,7 @@ const CollectionHooksPage: React.FC = () => {
 
  {/* Info card */}
  <div className={cn(
- 'p-6 border rounded-none space-y-4',
+ 'p-6 border rounded-none-none space-y-4',
  theme === 'dark' ? 'bg-gray-500/5 border-gray-500/10' : 'bg-gray-50 border-gray-100'
  )}>
  <div className="flex items-center gap-3">
@@ -591,6 +571,8 @@ const CollectionHooksPage: React.FC = () => {
  </div>
  </div>
  </div>
+      </div>
+    </div>
  )
 }
 

@@ -188,9 +188,9 @@ export default function SitePicker() {
  {/* 🚀 Sleek Minimal Top Navigation Header */}
  <header className="border-b border-white/[0.04] px-8 py-6 flex items-center justify-between backdrop-blur-md bg-black/50 sticky top-0 z-50">
  <div className="flex items-center gap-4">
- <div className="relative flex items-center justify-center w-8 h-8 rounded-none border border-white/[0.08] bg-white/5">
+ <div className="relative flex items-center justify-center w-8 h-8 rounded-none-none border border-white/[0.08] bg-white/5">
  <Cpu size={16} className="text-white animate-pulse" />
- <div className="absolute inset-0 blur-lg bg-white/10 rounded-none"></div>
+ <div className="absolute inset-0 blur-lg bg-white/10 rounded-none-none"></div>
  </div>
  <div>
  <span className="text-[12px] font-black tracking-[0.4em] uppercase text-white">
@@ -214,7 +214,7 @@ export default function SitePicker() {
  {/* 🔮 Cosmic Launchpad Core */}
  <main className="max-w-6xl w-full mx-auto px-6 py-12 flex-grow flex flex-col justify-center">
  <div className="max-w-2xl mb-12">
- <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.08] bg-white/[0.03] text-[9px] font-black uppercase tracking-widest text-white/50 mb-4 rounded-none font-mono">
+ <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.08] bg-white/[0.03] text-[9px] font-black uppercase tracking-widest text-white/50 mb-4 rounded-none-none font-mono">
  <Globe size={10} className="animate-spin-slow" /> Hierarchical Workspace & Tenant Select
  </div>
  <h1 className="text-4xl md:text-5xl font-black uppercase tracking-[0.05em] leading-[1.1] mb-4">
@@ -236,7 +236,7 @@ export default function SitePicker() {
  ) : (
  <div className="flex flex-col gap-8">
  {/* 📁 Workspace Selector Tabs */}
- <div className="border border-white/[0.06] bg-white/[0.01] p-6 rounded-none backdrop-blur-[12px]">
+ <div className="border border-white/[0.06] bg-white/[0.01] p-6 rounded-none-none backdrop-blur-[12px]">
  <div className="flex items-center justify-between mb-4">
  <span className="text-[9px] font-black uppercase tracking-widest text-white/40 font-mono">
  Workspaces
@@ -259,7 +259,7 @@ export default function SitePicker() {
  isActive
  ? 'border-[#10B981] bg-[#10B981]/10 text-white shadow-[0_0_15px_rgba(16,185,129,0.25)]'
  : 'border-white/[0.06] bg-white/[0.02] text-white/60 hover:border-white/[0.08] hover:text-white'
- } rounded-none`}
+ } rounded-none-none`}
  >
  <Briefcase size={14} className={isActive ? 'text-[#10B981]' : 'text-white/40'} />
  <div className="text-left">
@@ -276,7 +276,7 @@ export default function SitePicker() {
 
  <button
  onClick={() => setShowNewWorkspaceModal(true)}
- className="flex items-center gap-2 px-5 py-3 border border-dashed border-white/[0.08] hover:border-[#10B981]/50 text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-[#10B981] transition-all duration-300 font-mono rounded-none"
+ className="flex items-center gap-2 px-5 py-3 border border-dashed border-white/[0.08] hover:border-[#10B981]/50 text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-[#10B981] transition-all duration-300 font-mono rounded-none-none"
  >
  <Plus size={14} />
  New Workspace
@@ -294,11 +294,11 @@ export default function SitePicker() {
  <div
  key={siteId}
  onClick={() => handleSelectSite(site)}
- className="group relative border border-white/[0.06] bg-gradient-to-br from-white/[0.01] to-white/[0.03] hover:border-[#10B981]/50 p-6 flex flex-col justify-between h-full min-h-[12rem] cursor-pointer transition-all duration-500 overflow-hidden rounded-none shadow-[0_4px_30px_rgba(0,0,0,0.1)]"
+ className="group relative border border-white/[0.06] bg-gradient-to-br from-white/[0.01] to-white/[0.03] hover:border-[#10B981]/50 p-6 flex flex-col justify-between h-full min-h-[12rem] cursor-pointer transition-all duration-500 overflow-hidden rounded-none-none shadow-[0_4px_30px_rgba(0,0,0,0.1)]"
  >
  {/* Glassmorph glow on hover */}
  <div className="absolute inset-0 bg-white/[0.01] group-hover:bg-white/[0.04] transition-colors duration-500"></div>
- <div className="absolute -right-16 -bottom-16 w-32 h-32 bg-white/5 rounded-none blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+ <div className="absolute -right-16 -bottom-16 w-32 h-32 bg-white/5 rounded-none-none blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
  <div className="relative z-10 flex items-start justify-between gap-4">
  <span className="text-3xl filter saturate-50 group-hover:saturate-100 transition-all duration-300 flex-shrink-0">
@@ -332,7 +332,7 @@ export default function SitePicker() {
  })}
 
  {filteredSites.length === 0 && (
- <div className="col-span-2 border border-dashed border-white/[0.08] p-12 text-center flex flex-col items-center justify-center gap-4 rounded-none">
+ <div className="col-span-2 border border-dashed border-white/[0.08] p-12 text-center flex flex-col items-center justify-center gap-4 rounded-none-none">
  <Globe size={40} className="text-white/20" />
  <div>
  <h3 className="text-[12px] font-black uppercase tracking-widest">
@@ -378,7 +378,7 @@ export default function SitePicker() {
  }
  }}
  placeholder="e.g. Zenith E-Commerce"
- className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
+ className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none placeholder:text-white/25 text-white"
  />
  </div>
 
@@ -394,7 +394,7 @@ export default function SitePicker() {
  setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
  }
  placeholder="e.g. zenith-commerce"
- className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
+ className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none placeholder:text-white/25 text-white"
  />
  </div>
 
@@ -406,7 +406,7 @@ export default function SitePicker() {
  <select
  value={icon}
  onChange={(e) => setIcon(e.target.value)}
- className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-2 py-3 text-[14px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none text-white"
+ className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-2 py-3 text-[14px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none text-white"
  >
  <option value="🌐" className="bg-gray-950 text-white">🌐</option>
  <option value="🛒" className="bg-gray-950 text-white">🛒</option>
@@ -426,7 +426,7 @@ export default function SitePicker() {
  value={description}
  onChange={(e) => setDescription(e.target.value)}
  placeholder="e.g. Storefront platform"
- className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
+ className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none placeholder:text-white/25 text-white"
  />
  </div>
  </div>
@@ -494,7 +494,7 @@ export default function SitePicker() {
  }
  }}
  placeholder="e.g. Zenith Studio"
- className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
+ className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none placeholder:text-white/25 text-white"
  />
  </div>
 
@@ -510,7 +510,7 @@ export default function SitePicker() {
  setWsSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
  }
  placeholder="e.g. zenith-studio"
- className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
+ className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none placeholder:text-white/25 text-white"
  />
  </div>
 

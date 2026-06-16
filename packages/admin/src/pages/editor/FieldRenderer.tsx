@@ -71,7 +71,7 @@ const ReorderableArrayItem = React.memo(({ item, idx, theme, onRemove, onChange,
  <Reorder.Item key={item._id || idx} value={item._id || idx} dragListener={false} dragControls={dragControls} as="div">
  <div
  className={cn(
- 'p-3 border rounded-none relative transition-all group/item',
+ 'p-3 border rounded-none-none relative transition-all group/item',
  theme === 'dark'
  ? 'bg-white/[0.02] border-white/[0.08] hover:border-white/[0.08]'
  : 'bg-gray-50 border-gray-155 hover:border-gray-300 shadow-sm'
@@ -225,7 +225,7 @@ export const FieldRenderer = React.memo(({
  placeholder={field.placeholder || 'Enter email address...'}
  autoComplete="email"
  className={cn(
- "w-full px-4 py-2.5 text-xs transition-all rounded-none",
+ "w-full px-4 py-2.5 text-xs transition-all rounded-none-none",
  theme === 'dark'
  ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
  : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
@@ -242,7 +242,7 @@ export const FieldRenderer = React.memo(({
  placeholder={field.placeholder || 'Enter password...'}
  autoComplete="new-password"
  className={cn(
- "w-full px-4 py-2.5 text-xs transition-all rounded-none",
+ "w-full px-4 py-2.5 text-xs transition-all rounded-none-none",
  theme === 'dark'
  ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
  : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
@@ -262,7 +262,7 @@ export const FieldRenderer = React.memo(({
  onChange={(e) => { onChange(e.target.value); setIsAuto(false) }}
  placeholder={field.placeholder || `Auto-generated from ${sourceField}...`}
  className={cn(
- "flex-1 px-4 py-2.5 text-xs transition-all rounded-none font-mono",
+ "flex-1 px-4 py-2.5 text-xs transition-all rounded-none-none font-mono",
  theme === 'dark'
  ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
  : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
@@ -272,7 +272,7 @@ export const FieldRenderer = React.memo(({
  type="button"
  onClick={() => setIsAuto(!isAuto)}
  className={cn(
- 'px-2.5 py-2.5 text-[9px] font-black uppercase border rounded-none transition-all shrink-0',
+ 'px-2.5 py-2.5 text-[9px] font-black uppercase border rounded-none-none transition-all shrink-0',
  isAuto
  ? 'bg-gray-500/10 border-gray-500/30 text-gray-600 dark:text-gray-400'
  : theme === 'dark'
@@ -303,7 +303,7 @@ export const FieldRenderer = React.memo(({
  type="color"
  value={value || '#000000'}
  onChange={(e) => onChange(e.target.value)}
- className="w-10 h-10 rounded-none border cursor-pointer p-0.5"
+ className="w-10 h-10 rounded-none-none border cursor-pointer p-0.5"
  style={{ background: 'transparent' }}
  />
  </div>
@@ -313,7 +313,7 @@ export const FieldRenderer = React.memo(({
  onChange={(e) => onChange(e.target.value)}
  placeholder="#000000"
  className={cn(
- "flex-1 px-4 py-2.5 text-xs font-mono transition-all rounded-none uppercase",
+ "flex-1 px-4 py-2.5 text-xs font-mono transition-all rounded-none-none uppercase",
  theme === 'dark'
  ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
  : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
@@ -331,7 +331,7 @@ export const FieldRenderer = React.memo(({
  type="button"
  onClick={() => onChange(colorVal)}
  className={cn(
- 'w-6 h-6 rounded-none border-2 transition-all',
+ 'w-6 h-6 rounded-none-none border-2 transition-all',
  value === colorVal
  ? 'border-gray-500 scale-110'
  : theme === 'dark' ? 'border-white/[0.08] hover:border-white/30' : 'border-gray-200 hover:border-gray-400'
@@ -355,7 +355,7 @@ export const FieldRenderer = React.memo(({
  onChange={(e) => onChange(e.target.value)}
  placeholder={field.placeholder || `Enter ${humanize(field.name)}...`}
  className={cn(
- "w-full px-4 py-2.5 text-xs transition-all rounded-none",
+ "w-full px-4 py-2.5 text-xs transition-all rounded-none-none",
  theme === 'dark'
  ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
  : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
@@ -371,7 +371,7 @@ export const FieldRenderer = React.memo(({
  placeholder={field.placeholder || `Enter ${humanize(field.name)}...`}
  rows={4}
  className={cn(
- "w-full px-4 py-2.5 text-xs transition-all rounded-none resize-y",
+ "w-full px-4 py-2.5 text-xs transition-all rounded-none-none resize-y",
  theme === 'dark'
  ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
  : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
@@ -388,7 +388,7 @@ export const FieldRenderer = React.memo(({
  rows={8}
  spellCheck={false}
  className={cn(
- "w-full px-4 py-2.5 text-xs font-mono transition-all rounded-none resize-y",
+ "w-full px-4 py-2.5 text-xs font-mono transition-all rounded-none-none resize-y",
  theme === 'dark'
  ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-[#e6edf3]"
  : "bg-gray-900 border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-gray-100"
@@ -425,7 +425,7 @@ export const FieldRenderer = React.memo(({
  case 'join':
  return (
  <div className={cn(
- "w-full px-4 py-3 border text-xs rounded-none",
+ "w-full px-4 py-3 border text-xs rounded-none-none",
  theme === 'dark'
  ? "bg-gray-500/5 border-gray-500/20 text-gray-300"
  : "bg-gray-50 border-gray-200 text-gray-600"
@@ -448,7 +448,7 @@ export const FieldRenderer = React.memo(({
  onChange={(e) => onChange([Number(e.target.value), coords[1]])}
  step="any"
  className={cn(
- "w-full px-3 py-2 text-xs transition-all rounded-none",
+ "w-full px-3 py-2 text-xs transition-all rounded-none-none",
  theme === 'dark'
  ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
  : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
@@ -463,7 +463,7 @@ export const FieldRenderer = React.memo(({
  onChange={(e) => onChange([coords[0], Number(e.target.value)])}
  step="any"
  className={cn(
- "w-full px-3 py-2 text-xs transition-all rounded-none",
+ "w-full px-3 py-2 text-xs transition-all rounded-none-none",
  theme === 'dark'
  ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
  : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
@@ -551,7 +551,7 @@ export const FieldRenderer = React.memo(({
  }}
  placeholder={field.placeholder || `Enter ${humanize(field.name)}...`}
  className={cn(
- "w-full px-4 py-2.5 text-xs transition-all rounded-none",
+ "w-full px-4 py-2.5 text-xs transition-all rounded-none-none",
  theme === 'dark'
  ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
  : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
@@ -567,7 +567,7 @@ export const FieldRenderer = React.memo(({
  type="checkbox"
  checked={!!value}
  onChange={(e) => onChange(e.target.checked)}
- className="w-4 h-4 rounded-none border border-white/[0.08] bg-white/5 checked:bg-gray-50 checked:border-gray-50 transition-all accent-gray-500"
+ className="w-4 h-4 rounded-none-none border border-white/[0.08] bg-white/5 checked:bg-gray-50 checked:border-gray-50 transition-all accent-gray-500"
  />
  <span className={cn(
  "text-xs font-medium",
@@ -624,7 +624,7 @@ export const FieldRenderer = React.memo(({
  type="button"
  onClick={() => setDropdownOpen(!dropdownOpen)}
  className={cn(
- 'w-full px-4 py-2.5 text-xs transition-all rounded-none flex items-center justify-between gap-2',
+ 'w-full px-4 py-2.5 text-xs transition-all rounded-none-none flex items-center justify-between gap-2',
  theme === 'dark'
  ? 'bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white'
  : 'bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black'
@@ -666,7 +666,7 @@ export const FieldRenderer = React.memo(({
  )}
  >
  <span className={cn(
- 'w-3.5 h-3.5 border shrink-0 flex items-center justify-center transition-all rounded-none',
+ 'w-3.5 h-3.5 border shrink-0 flex items-center justify-center transition-all rounded-none-none',
  isSelected
  ? 'bg-gray-500 border-gray-500'
  : theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-300'
@@ -708,7 +708,7 @@ export const FieldRenderer = React.memo(({
  value={value ? formatDateForInput(value, dateFormat) : ''}
  onChange={(e) => onChange(e.target.value ? parseInputDate(e.target.value, dateFormat) : '')}
  className={cn(
- "w-full px-4 py-2.5 text-xs transition-all rounded-none",
+ "w-full px-4 py-2.5 text-xs transition-all rounded-none-none",
  theme === 'dark'
  ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
  : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
@@ -809,7 +809,7 @@ export const FieldRenderer = React.memo(({
  rows={8}
  spellCheck={false}
  className={cn(
- "w-full px-4 py-2.5 text-xs font-mono transition-all rounded-none resize-y",
+ "w-full px-4 py-2.5 text-xs font-mono transition-all rounded-none-none resize-y",
  theme === 'dark'
  ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-[#e6edf3]"
  : "bg-gray-900 border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-gray-100"
@@ -817,7 +817,7 @@ export const FieldRenderer = React.memo(({
  />
  <div className="flex items-center gap-2">
  <span className={cn(
- "inline-block w-1.5 h-1.5 rounded-none",
+ "inline-block w-1.5 h-1.5 rounded-none-none",
  jsonValid === true ? "bg-gray-500 shadow-[0_0_6px_#10b981]" : jsonValid === false ? "bg-red-500 shadow-[0_0_6px_#ef4444]" : "bg-gray-600"
  )} />
  <span className="text-xs font-bold uppercase tracking-widest " style={{ color: jsonValid === true ? '#10b981' : jsonValid === false ? '#ef4444' : '#6b7280' }}>
@@ -843,7 +843,7 @@ export const FieldRenderer = React.memo(({
  <div
  key={block._id || idx}
  className={cn(
- 'border rounded-none overflow-hidden',
+ 'border rounded-none-none overflow-hidden',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50 border-gray-200'
  )}
  >
@@ -852,7 +852,7 @@ export const FieldRenderer = React.memo(({
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-100/50 border-gray-200'
  )}>
  <span className={cn(
- 'text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 border rounded-none',
+ 'text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 border rounded-none-none',
  theme === 'dark' ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-700'
  )}>
  {blockDef?.labels?.singular || humanize(blockType || 'block')}
@@ -904,14 +904,14 @@ export const FieldRenderer = React.memo(({
  }, availableBlocks.length > 0 ? availableBlocks : undefined)
  }}
  className={cn(
- 'w-full py-2.5 border-2 border-dashed flex flex-col items-center justify-center gap-1.5 transition-all group rounded-none',
+ 'w-full py-2.5 border-2 border-dashed flex flex-col items-center justify-center gap-1.5 transition-all group rounded-none-none',
  theme === 'dark'
  ? 'border-white/[0.08] hover:border-gray-500/50 hover:bg-gray-500/5 text-gray-400 hover:text-gray-600 dark:text-gray-400'
  : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-500 hover:text-gray-600'
  )}
  >
  <div className={cn(
- 'p-1.5 rounded-none transition-colors',
+ 'p-1.5 rounded-none-none transition-colors',
  theme === 'dark' ? 'bg-white/5 group-hover:bg-gray-500/20' : 'bg-gray-100 group-hover:bg-gray-100'
  )}>
  <Plus size={14} className="stroke-[3]" />
@@ -933,7 +933,7 @@ export const FieldRenderer = React.memo(({
  <div className="space-y-3">
  {tabs.length > 1 && (
  <div className={cn(
- 'flex gap-0.5 p-0.5 rounded-none border',
+ 'flex gap-0.5 p-0.5 rounded-none-none border',
  theme === 'dark' ? 'bg-black/20 border-white/[0.08]' : 'bg-gray-100 border-gray-200'
  )}>
  {tabs.map((tab: any, idx: number) => (

@@ -119,7 +119,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
 
  // Common button class for toolbar icon buttons
  const iconBtn = cn(
- 'w-8 h-8 rounded-none flex items-center justify-center border transition-all',
+ 'w-8 h-8 rounded-none-none flex items-center justify-center border transition-all',
  dark ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-100 border-gray-200'
  )
 
@@ -159,7 +159,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <button
  onClick={() => setSeoOpen(!seoOpen)}
  className={cn(
- 'px-2.5 py-1.5 rounded-none border text-xs font-black uppercase flex items-center gap-1.5 transition-all',
+ 'px-2.5 py-1.5 rounded-none-none border text-xs font-black uppercase flex items-center gap-1.5 transition-all',
  seoOpen
  ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400'
  : dark ? 'bg-white/5 border-white/[0.08] text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
@@ -185,7 +185,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <Undo2 size={15} />
  {undoStack.length > 0 && (
  <span
- className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[8px] font-black tabular-nums rounded-none bg-gray-600 dark:bg-gray-600 text-white leading-none"
+ className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[8px] font-black tabular-nums rounded-none-none bg-gray-600 dark:bg-gray-600 text-white leading-none"
  aria-hidden="true"
  >
  {undoStack.length > 99 ? '99+' : undoStack.length}
@@ -202,7 +202,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <Redo2 size={15} />
  {redoStack.length > 0 && (
  <span
- className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[8px] font-black tabular-nums rounded-none bg-gray-600/80 text-white leading-none"
+ className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[8px] font-black tabular-nums rounded-none-none bg-gray-600/80 text-white leading-none"
  aria-hidden="true"
  >
  {redoStack.length > 99 ? '99+' : redoStack.length}
@@ -270,7 +270,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  onClick={() => setShowLocaleDropdown(!showLocaleDropdown)}
  aria-label={`Current language: ${currentLocale.toUpperCase()}. Click to change.`}
  className={cn(
- 'h-8 px-2 rounded-none border flex items-center gap-1.5 text-xs font-black uppercase transition-all',
+ 'h-8 px-2 rounded-none-none border flex items-center gap-1.5 text-xs font-black uppercase transition-all',
  dark ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-white' : 'bg-gray-100 border-gray-200 text-gray-500 hover:text-black'
  )}
  >
@@ -280,7 +280,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  {showLocaleDropdown && (
  <div
  className={cn(
- 'absolute top-full mt-2 w-36 border rounded-none shadow-2xl z-50 overflow-hidden',
+ 'absolute top-full mt-2 w-36 border rounded-none-none shadow-2xl z-50 overflow-hidden',
  dark ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-white border-gray-200'
  )}
  >
@@ -307,11 +307,11 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <div className="w-px h-6 bg-white/5 mx-1" />
 
  {/* Visual / JSON toggle */}
- <div className={cn('flex items-center gap-0.5 p-0.5 rounded-none border', dark ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-100 border-gray-200')}>
+ <div className={cn('flex items-center gap-0.5 p-0.5 rounded-none-none border', dark ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-100 border-gray-200')}>
  <button
  onClick={() => setViewMode('visual')}
  className={cn(
- 'px-2.5 py-1 rounded-none text-xs font-black uppercase transition-all',
+ 'px-2.5 py-1 rounded-none-none text-xs font-black uppercase transition-all',
  viewMode === 'visual'
  ? dark ? 'bg-white text-black' : 'bg-black text-white'
  : dark ? 'text-white/50 hover:text-white' : 'text-gray-600 hover:text-black'
@@ -322,7 +322,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <button
  onClick={() => setViewMode('code')}
  className={cn(
- 'px-2.5 py-1 rounded-none text-xs font-black uppercase transition-all',
+ 'px-2.5 py-1 rounded-none-none text-xs font-black uppercase transition-all',
  viewMode === 'code'
  ? dark ? 'bg-white text-black' : 'bg-black text-white'
  : dark ? 'text-white/50 hover:text-white' : 'text-gray-600 hover:text-black'
@@ -341,7 +341,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  onClick={handleUnpublish}
  disabled={publishStatus === 'draft'}
  className={cn(
- 'flex items-center gap-1 px-2.5 py-1.5 rounded-none border text-xs font-black uppercase transition-all',
+ 'flex items-center gap-1 px-2.5 py-1.5 rounded-none-none border text-xs font-black uppercase transition-all',
  publishStatus === 'draft' && workflowStatus !== 'scheduled'
  ? dark ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-600'
  : dark ? 'bg-white/5 border-white/[0.08] text-gray-500' : 'bg-gray-50 border-gray-200 text-gray-400'
@@ -355,7 +355,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  onClick={() => setShowPublishConfirm(true)}
  disabled={publishStatus === 'published'}
  className={cn(
- 'flex items-center gap-1 px-2.5 py-1.5 rounded-none border text-xs font-black uppercase transition-all',
+ 'flex items-center gap-1 px-2.5 py-1.5 rounded-none-none border text-xs font-black uppercase transition-all',
  publishStatus === 'published'
  ? dark ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-green-50 border-green-200 text-green-600'
  : dark ? 'bg-white/5 border-white/[0.08] text-gray-500 hover:text-white' : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-black'
@@ -381,7 +381,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <button
  onClick={() => setShowSchedulePicker(!showSchedulePicker)}
  className={cn(
- 'h-8 px-2.5 rounded-none border flex items-center gap-1.5 text-xs font-black uppercase transition-all',
+ 'h-8 px-2.5 rounded-none-none border flex items-center gap-1.5 text-xs font-black uppercase transition-all',
  scheduledAt
  ? dark ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-600'
  : dark ? 'bg-white/5 border-white/[0.08] text-gray-500 hover:text-white' : 'bg-gray-100 border-gray-200 text-gray-400 hover:text-black'
@@ -413,7 +413,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <button
  onClick={handleSave}
  disabled={saving}
- className="flex items-center gap-1.5 px-4 py-1.5 rounded-none text-xs font-black uppercase bg-gray-600 dark:bg-gray-600 text-white shadow-[0_0_16px_rgba(79,70,229,0.3)] hover:bg-gray-500 transition-all active:scale-95 disabled:opacity-50"
+ className="flex items-center gap-1.5 px-4 py-1.5 rounded-none-none text-xs font-black uppercase bg-gray-600 dark:bg-gray-600 text-white shadow-[0_0_16px_rgba(79,70,229,0.3)] hover:bg-gray-500 transition-all active:scale-95 disabled:opacity-50"
  aria-label="Save document"
  >
  {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}

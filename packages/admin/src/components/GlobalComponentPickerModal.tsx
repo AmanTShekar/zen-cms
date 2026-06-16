@@ -10,8 +10,8 @@ import { cn } from '../lib/utils'
 // ── Category gradient accents ─────────────────────────────────────────────────
 const CATEGORY_GRADIENTS: Record<string, string> = {
   Layout:   'from-emerald-900/70 to-emerald-900/40',
-  Content:  'from-blue-900/70 to-cyan-900/40',
-  Commerce: 'from-teal-900/70 to-emerald-900/40',
+  Content:  'from-emerald-900/70 to-emerald-900/40',
+  Commerce: 'from-emerald-900/70 to-emerald-900/40',
   Media:    'from-rose-900/70 to-pink-900/40',
   Social:   'from-amber-900/70 to-orange-900/40',
   General:  'from-[#1a1a2e]/80 to-[#16213e]/60',
@@ -117,7 +117,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
             exit={{ opacity: 0, scale: 0.96, y: 16 }}
             transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
             className={cn(
-              'relative w-full max-w-3xl flex flex-col overflow-hidden rounded-none shadow-[0_40px_100px_rgba(0,0,0,0.8)] max-h-[90vh] border',
+              'relative w-full max-w-3xl flex flex-col overflow-hidden rounded-none-none shadow-[0_40px_100px_rgba(0,0,0,0.8)] max-h-[90vh] border',
               isDark
                 ? 'bg-[#08080a] border-white/10'
                 : 'bg-white border-gray-200'
@@ -149,7 +149,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
                   onClick={closeComponentPicker}
                   aria-label="Close component picker"
                   className={cn(
-                    'w-9 h-9 flex items-center justify-center border rounded-none transition-all flex-shrink-0 mt-0.5',
+                    'w-9 h-9 flex items-center justify-center border rounded-none-none transition-all flex-shrink-0 mt-0.5',
                     isDark
                       ? 'bg-white/5 border-white/10 text-white hover:bg-white hover:text-black'
                       : 'bg-gray-100 border-gray-200 text-black hover:bg-black hover:text-white'
@@ -172,7 +172,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search components..."
                   className={cn(
-                    'w-full pl-10 pr-10 py-2.5 text-sm rounded-none border transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+                    'w-full pl-10 pr-10 py-2.5 text-sm rounded-none-none border transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                     isDark
                       ? 'bg-white/[0.04] border-white/10 text-white placeholder-gray-600 focus:border-emerald-500/40 focus:bg-white/[0.06]'
                       : 'bg-gray-50 border-gray-200 text-black placeholder-gray-400 focus:border-emerald-400'
@@ -199,7 +199,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
                     type="button"
                     onClick={() => setCategory(cat)}
                     className={cn(
-                      'px-3 py-1.5 text-[9px] font-black uppercase tracking-wider whitespace-nowrap flex-shrink-0 transition-all rounded-none border',
+                      'px-3 py-1.5 text-[9px] font-black uppercase tracking-wider whitespace-nowrap flex-shrink-0 transition-all rounded-none-none border',
                       activeCategory === cat
                         ? 'bg-emerald-500 border-emerald-500 text-white shadow-[0_0_12px_rgba(16,185,129,0.3)]'
                         : isDark
@@ -249,7 +249,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
                             whileTap={{ scale: 0.97 }}
                             onClick={() => handleSelect(block.type)}
                             className={cn(
-                              'flex flex-col text-left group border overflow-hidden rounded-none transition-all',
+                              'flex flex-col text-left group border overflow-hidden rounded-none-none transition-all',
                               isDark
                                 ? 'bg-white/[0.02] border-white/8 hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.12)]'
                                 : 'bg-white border-gray-200 hover:border-emerald-400 hover:shadow-[0_4px_20px_rgba(16,185,129,0.1)]'
@@ -261,12 +261,12 @@ export const GlobalComponentPickerModal: React.FC = () => {
                                 <Icon size={16} />
                               </div>
                               {block.category && (
-                                <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-black/50 backdrop-blur text-white/80 rounded-sm">
+                                <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-black/50 backdrop-blur text-white/80 rounded-none-none">
                                   {block.category}
                                 </span>
                               )}
                               <div className="absolute bottom-0 right-0 p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <div className="w-5 h-5 bg-emerald-500 flex items-center justify-center rounded-sm">
+                                <div className="w-5 h-5 bg-emerald-500 flex items-center justify-center rounded-none-none">
                                   <Plus size={10} className="text-white" />
                                 </div>
                               </div>
@@ -297,7 +297,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
               </p>
               <p className={cn('text-[9px]', isDark ? 'text-gray-500' : 'text-gray-400')}>
                 Press{' '}
-                <kbd className={cn('px-1.5 py-0.5 font-mono rounded-sm text-[8px] border', isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200')}>
+                <kbd className={cn('px-1.5 py-0.5 font-mono rounded-none-none text-[8px] border', isDark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200')}>
                   Esc
                 </kbd>{' '}
                 to close

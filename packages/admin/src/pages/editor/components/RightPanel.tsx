@@ -188,7 +188,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  key={vp}
  onClick={() => setPreviewMode(vp)}
  className={cn(
- 'flex items-center gap-1.5 px-2.5 py-1 rounded-none border text-[10px] font-black uppercase tracking-wider transition-all',
+ 'flex items-center gap-1.5 px-2.5 py-1 rounded-none-none border text-[10px] font-black uppercase tracking-wider transition-all',
  isActive
  ? dark
  ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400'
@@ -214,7 +214,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  className={cn(
  'transition-all duration-300 border overflow-hidden bg-white',
  dark ? 'border-white/[0.08] shadow-[0_0_40px_rgba(0,0,0,0.5)]' : 'border-gray-200 shadow-2xl',
- isDesktop ? 'w-full h-full' : 'rounded-none'
+ isDesktop ? 'w-full h-full' : 'rounded-none-none'
  )}
  style={
  isDesktop
@@ -229,7 +229,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  allow="clipboard-read; clipboard-write"
  ref={iframeRef}
  src={`${resolvedStorefrontUrl}${collectionSlug === 'posts' ? '/post/preview' : ''}?preview=true&token=${previewToken || ''}&collection=${collectionSlug}&id=${documentId}&siteId=${pageSiteId}&viewport=${previewMode}`}
- className="w-full h-full border-none rounded-none"
+ className="w-full h-full border-none rounded-none-none"
  title="Live Preview"
  sandbox="allow-same-origin allow-scripts allow-forms"
  />
@@ -277,7 +277,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  <div
  key={v._id || v.id}
  className={cn(
- 'group p-3 rounded-none border transition-all cursor-pointer space-y-1',
+ 'group p-3 rounded-none-none border transition-all cursor-pointer space-y-1',
  dark
  ? 'bg-white/[0.02] border-white/[0.08] hover:bg-white/[0.04]'
  : 'bg-gray-50 border-gray-200 hover:bg-gray-100'

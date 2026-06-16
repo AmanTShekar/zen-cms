@@ -28,7 +28,7 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
  exit={{ opacity: 0, scale: 0.95, y: 10 }}
  transition={{ duration: 0.15 }}
  className={cn(
- 'w-full max-w-sm border rounded-none shadow-2xl p-6',
+ 'w-full max-w-sm border rounded-none-none shadow-2xl p-6',
  theme === 'dark'
  ? 'bg-black border-white/[0.08] text-white'
  : 'bg-white border-gray-200 text-gray-900'
@@ -36,7 +36,7 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
  >
  <div className="flex items-start gap-4">
  <div className={cn(
- 'w-10 h-10 rounded-none border flex items-center justify-center shrink-0',
+ 'w-10 h-10 rounded-none-none border flex items-center justify-center shrink-0',
  theme === 'dark'
  ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
  : 'bg-amber-50 border-amber-200 text-amber-500'
@@ -61,7 +61,7 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
  <button
  onClick={onCancel}
  className={cn(
- 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest border rounded-none transition-all',
+ 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest border rounded-none-none transition-all',
  theme === 'dark'
  ? 'border-white/[0.08] text-gray-400 hover:border-white/[0.08] hover:text-white'
  : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:text-black'
@@ -71,7 +71,7 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
  </button>
  <button
  onClick={onConfirm}
- className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-600 dark:bg-gray-600 text-white text-xs font-black uppercase tracking-widest rounded-none hover:bg-gray-500 transition-all"
+ className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-600 dark:bg-gray-600 text-white text-xs font-black uppercase tracking-widest rounded-none-none hover:bg-gray-500 transition-all"
  >
  <Rocket size={12} />
  Publish Now

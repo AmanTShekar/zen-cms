@@ -76,14 +76,14 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  animate={{ opacity: 1, scale: 1, y: 0 }}
  exit={{ opacity: 0, scale: 0.98, y: 15 }}
  className={cn(
- 'border rounded-none w-full max-w-6xl shadow-2xl flex flex-col overflow-hidden max-h-[90vh]',
+ 'border rounded-none-none w-full max-w-6xl shadow-2xl flex flex-col overflow-hidden max-h-[90vh]',
  dark ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200 shadow-sm text-gray-900'
  )}
  >
  {/* Header */}
  <div className="p-6 border-b border-gray-50 dark:border-white/[0.08] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
  <div className="flex items-center gap-4">
- <div className="w-10 h-10 bg-gray-600 dark:bg-gray-600 rounded-none flex items-center justify-center text-white shadow-lg shrink-0">
+ <div className="w-10 h-10 bg-gray-600 dark:bg-gray-600 rounded-none-none flex items-center justify-center text-white shadow-lg shrink-0">
  <Languages size={18} />
  </div>
  <div className="flex flex-col">
@@ -104,7 +104,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  value={referenceLocale}
  onChange={(e) => setReferenceLocale(e.target.value)}
  className={cn(
- 'w-32 px-3 py-1.5 text-xs font-bold border rounded-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors appearance-none cursor-pointer',
+ 'w-32 px-3 py-1.5 text-xs font-bold border rounded-none-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors appearance-none cursor-pointer',
  dark ? 'border-white/[0.08] hover:border-white/30 text-white' : 'border-gray-200 hover:border-gray-400 text-black'
  )}
  >
@@ -122,7 +122,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  value={targetLocale}
  onChange={(e) => setTargetLocale(e.target.value)}
  className={cn(
- 'w-32 px-3 py-1.5 text-xs font-bold border rounded-none bg-gray-500/10 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors appearance-none cursor-pointer',
+ 'w-32 px-3 py-1.5 text-xs font-bold border rounded-none-none bg-gray-500/10 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors appearance-none cursor-pointer',
  dark ? 'border-gray-500/30 hover:border-gray-500/60 text-gray-600 dark:text-gray-400' : 'border-gray-500/30 hover:border-gray-500/60 text-gray-600'
  )}
  >
@@ -164,7 +164,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  return (
  <div key={`${field.sectionId}-${field.fieldName}`} className="space-y-4 relative">
  <div className="flex items-center gap-2">
- <div className="w-1.5 h-1.5 bg-gray-500 rounded-none" />
+ <div className="w-1.5 h-1.5 bg-gray-500 rounded-none-none" />
  <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-400">
  {field.sectionName} <span className="text-gray-500 mx-1">&gt;</span> {humanize(field.fieldName)}
  </h4>

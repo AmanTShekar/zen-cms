@@ -30,6 +30,7 @@ export interface WidgetProps {
  onRemove: () => void
  theme: 'dark' | 'light'
  title?: string
+ isPreview?: boolean
 }
 
 export interface WidgetDefinition {

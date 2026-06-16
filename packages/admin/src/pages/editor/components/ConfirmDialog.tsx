@@ -47,7 +47,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
  exit={{ opacity: 0, scale: 0.95, y: 10 }}
  transition={{ duration: 0.15 }}
  className={cn(
- 'w-full max-w-sm border rounded-none shadow-2xl p-5',
+ 'w-full max-w-sm border rounded-none-none shadow-2xl p-5',
  dark
  ? 'bg-black border-white/[0.08] text-white'
  : 'bg-white border-gray-200 text-gray-900'
@@ -55,7 +55,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
  >
  <div className="flex items-start gap-3">
  <div className={cn(
- 'w-9 h-9 rounded-none border flex items-center justify-center shrink-0',
+ 'w-9 h-9 rounded-none-none border flex items-center justify-center shrink-0',
  danger
  ? dark ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' : 'bg-rose-50 border-rose-200 text-rose-500'
  : dark ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-500'
@@ -81,7 +81,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
  onClick={onCancel}
  aria-label="Cancel action"
  className={cn(
- 'flex-1 py-2 text-xs font-black uppercase tracking-widest border rounded-none transition-all',
+ 'flex-1 py-2 text-xs font-black uppercase tracking-widest border rounded-none-none transition-all',
  dark
  ? 'border-white/[0.08] text-gray-400 hover:border-white/[0.08] hover:text-white'
  : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:text-black'
@@ -93,7 +93,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
  onClick={onConfirm}
  aria-label={confirmLabel}
  className={cn(
- 'flex-1 py-2 text-xs font-black uppercase tracking-widest rounded-none transition-all',
+ 'flex-1 py-2 text-xs font-black uppercase tracking-widest rounded-none-none transition-all',
  danger
  ? 'bg-rose-600 hover:bg-rose-500 text-white'
  : 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white'

@@ -1,65 +1,87 @@
 import { useEffect, useState } from 'react'
-import { Activity, CheckCircle2, XCircle } from 'lucide-react'
+import { Activity, CheckCircle2, AlertTriangle, Clock } from 'lucide-react'
 import api from '../lib/api'
 import { cn } from '../lib/utils'
 import type { WidgetProps } from './registry'
 
-export default function ApiStatusWidget({ theme, title }: WidgetProps) {
- const [status, setStatus] = useState<'checking' | 'ok' | 'degraded'>('checking')
- const [latency, setLatency] = useState<number | null>(null)
- const [version, setVersion] = useState('—')
+export default function ApiStatusWidget({ theme, title, isPreview }: WidgetProps) {
+  const [status, setStatus] = useState<'checking' | 'ok' | 'degraded'>(isPreview ? 'ok' : 'checking')
+  const [latency, setLatency] = useState<number | null>(isPreview ? 45 : null)
+  const [version, setVersion] = useState(isPreview ? 'v1.0.0-beta' : '—')
+  const [lastChecked, setLastChecked] = useState<Date>(new Date())
 
- useEffect(() => {
- const check = async () => {
- const t0 = performance.now()
- try {
- const r = await api.get('/system/health')
- setLatency(Math.round(performance.now() - t0))
- setVersion(r.data?.data?.version || '—')
- setStatus(r.data?.data?.status === 'ok' ? 'ok' : 'degraded')
- } catch {
- setStatus('degraded')
- }
- }
- check()
- const t = setInterval(check, 15000)
- return () => clearInterval(t)
- }, [])
+  useEffect(() => {
+    if (isPreview) return;
+    const check = async () => {
+      const t0 = performance.now()
+      try {
+        const r = await api.get('/system/health')
+        setLatency(Math.round(performance.now() - t0))
+        setVersion(r.data?.data?.version || '—')
+        setStatus(r.data?.data?.status === 'ok' ? 'ok' : 'degraded')
+      } catch {
+        setStatus('degraded')
+      }
+      setLastChecked(new Date())
+    }
+    check()
+    const t = setInterval(check, 15000)
+    return () => clearInterval(t)
+  }, [isPreview])
 
- const isOk = status === 'ok'
+  const isOk = status === 'ok'
+  const isChecking = status === 'checking'
 
- return (
- <div className="h-full flex flex-col gap-3">
- <p className="text-[9px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest ">
- {title || 'API Health'}
- </p>
- <div
- className={cn(
- 'flex-1 flex flex-col items-center justify-center gap-3 border rounded-none',
- theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50 border-gray-200 shadow-sm'
- )}
- >
- {status === 'checking' ? (
- <Activity size={24} className="text-gray-500 animate-pulse" />
- ) : isOk ? (
- <CheckCircle2 size={24} className="text-gray-600 dark:text-gray-500" />
- ) : (
- <XCircle size={24} className="text-red-500" />
- )}
- <span
- className={cn(
- 'text-[11px] font-black uppercase ',
- isOk ? 'text-gray-600 dark:text-gray-500' : 'text-red-500'
- )}
- >
- {status === 'checking' ? 'Checking...' : isOk ? 'Operational' : 'Degraded'}
- </span>
- {latency !== null && (
- <span className="text-[8px] text-gray-500 uppercase tracking-widest">
- {latency}ms · v{version}
- </span>
- )}
- </div>
- </div>
- )
+  return (
+    <div className="flex flex-col justify-between gap-4">
+      <div className="flex items-center justify-between">
+        <p className="text-[12px] font-bold text-gray-800 dark:text-gray-200 uppercase tracking-tight flex items-center gap-2">
+          <Activity size={14} className={isOk ? "text-emerald-500" : "text-gray-400"} /> 
+          {title || 'API Health & Connectivity'}
+        </p>
+        <span className="text-[10px] text-gray-500 flex items-center gap-1 font-medium">
+          <Clock size={10} /> {lastChecked.toLocaleTimeString()}
+        </span>
+      </div>
+      
+      <div
+        className={cn(
+          'flex-1 flex items-center justify-between p-4 border rounded-none-none transition-colors',
+          theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
+        )}
+      >
+        <div className="flex items-center gap-4">
+          <div className={cn(
+            "w-12 h-12 rounded-none-none flex items-center justify-center border",
+            isChecking ? "bg-gray-100 border-gray-200 text-gray-400 dark:bg-gray-800 dark:border-gray-700" :
+            isOk ? "bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-500/10 dark:border-emerald-500/20 dark:text-emerald-400" : 
+            "bg-red-50 border-red-200 text-red-600 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
+          )}>
+            {isChecking ? <Activity size={24} /> : isOk ? <CheckCircle2 size={24} /> : <AlertTriangle size={24} />}
+          </div>
+          <div className="flex flex-col">
+            <span className={cn(
+                'text-[15px] font-black uppercase tracking-tight leading-none mb-1',
+                isChecking ? 'text-gray-500' : isOk ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'
+              )}
+            >
+              {isChecking ? 'Verifying...' : isOk ? 'All Systems Operational' : 'API Degraded'}
+            </span>
+            <span className="text-[11px] text-gray-500 font-medium">
+              Core Engine v{version}
+            </span>
+          </div>
+        </div>
+
+        {latency !== null && !isChecking && (
+          <div className="flex flex-col items-end border-l pl-4 border-gray-200 dark:border-gray-800">
+            <span className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-1">Latency</span>
+            <span className="text-xl font-black tabular-nums tracking-tighter text-gray-800 dark:text-gray-100 leading-none">
+              {latency}<span className="text-sm font-medium text-gray-400 ml-0.5">ms</span>
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
 }

@@ -49,7 +49,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
  <>
  <div
  className={cn(
- 'p-5 rounded-none border transition-all space-y-3 col-span-1 md:col-span-2',
+ 'p-5 rounded-none-none border transition-all space-y-3 col-span-1 md:col-span-2',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
@@ -61,7 +61,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
  value={settings.aiModel}
  onChange={(e) => setSettings({ ...settings, aiModel: e.target.value })}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black appearance-none cursor-pointer',
+ 'w-full border rounded-none-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black appearance-none cursor-pointer',
  theme === 'dark'
  ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
@@ -79,7 +79,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
  </div>
  <div
  className={cn(
- 'p-5 rounded-none border transition-all space-y-3 col-span-1 md:col-span-2',
+ 'p-5 rounded-none-none border transition-all space-y-3 col-span-1 md:col-span-2',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
@@ -92,7 +92,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
  value={settings.aiApiKey}
  onChange={(e) => setSettings({ ...settings, aiApiKey: e.target.value })}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black pr-12',
+ 'w-full border rounded-none-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black pr-12',
  theme === 'dark'
  ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
@@ -105,13 +105,13 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
  
  <div
  className={cn(
- 'col-span-1 md:col-span-2 p-6 rounded-none border flex items-center justify-between transition-all',
+ 'col-span-1 md:col-span-2 p-6 rounded-none-none border flex items-center justify-between transition-all',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50/50 border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center gap-4">
  <div className={cn(
- 'w-12 h-12 rounded-none flex items-center justify-center transition-colors',
+ 'w-12 h-12 rounded-none-none flex items-center justify-center transition-colors',
  isConfigured
  ? 'bg-gray-500/10 text-gray-600 dark:text-gray-500'
  : 'bg-white/5 text-gray-500'
@@ -134,7 +134,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
  onClick={handleValidate}
  disabled={validating}
  className={cn(
- 'px-6 py-2.5 rounded-none text-xs font-bold transition-all flex items-center gap-2 disabled:opacity-50 border',
+ 'px-6 py-2.5 rounded-none-none text-xs font-bold transition-all flex items-center gap-2 disabled:opacity-50 border',
  isConfigured
  ? 'bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-500 border-transparent shadow-[0_0_15px_rgba(16,185,129,0.2)]'
  : theme === 'dark'

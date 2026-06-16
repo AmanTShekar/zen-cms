@@ -150,7 +150,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  {/* Code block */}
  <div
  className={cn(
- 'relative rounded-none border overflow-hidden',
+ 'relative rounded-none-none border overflow-hidden',
  isDark ? 'bg-black border-white/[0.08]' : 'bg-gray-900 border-gray-700'
  )}
  >
@@ -160,7 +160,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  <button
  onClick={copySnippet}
  className={cn(
- 'absolute top-3 right-3 p-2 border rounded-none text-[9px] font-black uppercase transition-all',
+ 'absolute top-3 right-3 p-2 border rounded-none-none text-[9px] font-black uppercase transition-all',
  copied
  ? 'border-gray-500 text-gray-600 dark:text-gray-500 bg-gray-500/10'
  : 'border-white/[0.08] text-gray-400 hover:border-white/30 bg-black/40'
@@ -176,7 +176,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  onClick={testConnection}
  disabled={testing || !apiKey}
  className={cn(
- 'flex items-center gap-2 px-5 py-2.5 border text-[9px] font-black uppercase rounded-none transition-all',
+ 'flex items-center gap-2 px-5 py-2.5 border text-[9px] font-black uppercase rounded-none-none transition-all',
  isDark
  ? 'border-white/[0.08] text-gray-400 hover:border-gray-500/40 hover:text-gray-600 dark:text-gray-400'
  : 'border-gray-200 text-gray-600 hover:border-gray-300'

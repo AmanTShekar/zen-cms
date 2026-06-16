@@ -142,7 +142,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  type="button"
  onClick={() => setOpen(!open)}
  className={cn(
- 'w-full px-4 py-3 flex items-center justify-between border text-xs font-bold transition-all rounded-none',
+ 'w-full px-4 py-3 flex items-center justify-between border text-xs font-bold transition-all rounded-none-none',
  theme === 'dark'
  ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400 hover:bg-gray-500/20'
  : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
@@ -167,7 +167,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  transition={{ duration: 0.15 }}
  style={{ top: pos.top, left: pos.left }}
  className={cn(
- 'fixed z-[900] w-80 border rounded-none shadow-2xl overflow-hidden flex flex-col',
+ 'fixed z-[900] w-80 border rounded-none-none shadow-2xl overflow-hidden flex flex-col',
  theme === 'dark'
  ? 'bg-black/98 backdrop-blur-xl border-white/8 text-white'
  : 'bg-white/98 backdrop-blur-xl border-gray-200 text-gray-900'
@@ -231,7 +231,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  fetchResults(collection, e.target.value)
  }}
  className={cn(
- 'w-full rounded-none py-2 pl-9 pr-3 text-xs font-bold border transition-all',
+ 'w-full rounded-none-none py-2 pl-9 pr-3 text-xs font-bold border transition-all',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-white placeholder-gray-600'
  : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
@@ -263,7 +263,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  key={id}
  onClick={() => toggleItem(id)}
  className={cn(
- 'w-full flex items-center gap-2.5 px-3 py-2 rounded-none text-left text-xs font-semibold transition-all border',
+ 'w-full flex items-center gap-2.5 px-3 py-2 rounded-none-none text-left text-xs font-semibold transition-all border',
  isSelected
  ? theme === 'dark'
  ? 'bg-gray-500/15 border-gray-500/20 text-gray-300'
@@ -275,7 +275,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  >
  {/* Selection indicator */}
  <div className={cn(
- 'w-4 h-4 rounded-none border flex items-center justify-center shrink-0 transition-all',
+ 'w-4 h-4 rounded-none-none border flex items-center justify-center shrink-0 transition-all',
  isSelected
  ? 'bg-gray-500 border-gray-500 text-white'
  : theme === 'dark'
@@ -341,7 +341,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  <button
  onClick={handleClear}
  className={cn(
- 'flex-1 py-1.5 text-xs font-black uppercase border rounded-none transition-all',
+ 'flex-1 py-1.5 text-xs font-black uppercase border rounded-none-none transition-all',
  theme === 'dark'
  ? 'border-white/[0.08] text-gray-500 hover:border-rose-500/20 hover:text-rose-400'
  : 'border-gray-200 text-gray-400 hover:border-rose-200 hover:text-rose-500'
@@ -352,7 +352,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  <button
  onClick={handleApply}
  className={cn(
- 'flex-1 py-1.5 text-xs font-black uppercase rounded-none transition-all bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-500'
+ 'flex-1 py-1.5 text-xs font-black uppercase rounded-none-none transition-all bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-500'
  )}
  >
  Done

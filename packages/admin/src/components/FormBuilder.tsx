@@ -320,7 +320,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
  {field.label || field.name.replace(/([A-Z])/g, ' $1')}
  {field.required && <span className="text-rose-500">*</span>}
  {field.localized && (
- <span className="px-1.5 py-0.5 text-[8px] font-black tracking-widest text-gray-600 dark:text-gray-400 bg-gray-500/10 border border-gray-500/20 rounded-none uppercase">
+ <span className="px-1.5 py-0.5 text-[8px] font-black tracking-widest text-gray-600 dark:text-gray-400 bg-gray-500/10 border border-gray-500/20 rounded-none-none uppercase">
  {isFieldDisabled ? readOnlyLocale || currentLocale : currentLocale}
  </span>
  )}

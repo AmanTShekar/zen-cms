@@ -16,7 +16,7 @@ const BooleanField: React.FC<Props> = ({ field: _field, value, onChange, disable
         checked={!!value}
         onChange={(e) => onChange(e.target.checked)}
         disabled={disabled}
-        className="w-4 h-4 rounded-none border border-gray-400 bg-gray-900/65 backdrop-blur-md text-emerald-500 focus:ring-emerald-500/50 focus:ring-2 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+        className="w-4 h-4 rounded-none-none border border-gray-400 bg-gray-900/65 backdrop-blur-md text-emerald-500 focus:ring-emerald-500/50 focus:ring-2 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
       />
     </div>
   )

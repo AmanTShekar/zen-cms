@@ -49,7 +49,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  animate={{ scale: 1, opacity: 1, y: 0 }}
  exit={{ scale: 0.95, opacity: 0 }}
  className={cn(
- 'w-full max-w-2xl border rounded-none overflow-hidden shadow-2xl',
+ 'w-full max-w-2xl border rounded-none-none overflow-hidden shadow-2xl',
  theme === 'dark' ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-white border-gray-200'
  )}
  >
@@ -60,7 +60,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  )}
  >
  <div className="flex items-center gap-3">
- <div className="w-8 h-8 rounded-none bg-gray-600 dark:bg-gray-600 flex items-center justify-center text-white">
+ <div className="w-8 h-8 rounded-none-none bg-gray-600 dark:bg-gray-600 flex items-center justify-center text-white">
  <Layout size={16} />
  </div>
  <div>
@@ -102,7 +102,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  <div
  key={template.id || template._id}
  className={cn(
- 'p-4 border rounded-none space-y-3 relative group',
+ 'p-4 border rounded-none-none space-y-3 relative group',
  theme === 'dark'
  ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/30'
  : 'bg-gray-50 border-gray-200 hover:border-gray-300'
@@ -119,7 +119,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  <div className="flex gap-2">
  <button
  onClick={() => applyTemplate(template)}
- className="flex-1 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-black uppercase rounded-none hover:bg-gray-500 transition-colors"
+ className="flex-1 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-black uppercase rounded-none-none hover:bg-gray-500 transition-colors"
  >
  Apply
  </button>
@@ -132,7 +132,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  }}
  aria-label={`Delete template ${template.name}`}
  className={cn(
- 'p-2 border rounded-none transition-colors',
+ 'p-2 border rounded-none-none transition-colors',
  theme === 'dark'
  ? 'border-white/[0.08] text-gray-500 hover:border-rose-500/30 hover:text-rose-500'
  : 'border-gray-200 text-gray-400 hover:border-rose-300 hover:text-rose-500'
@@ -161,7 +161,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  setSelectedSections(new Set())
  }}
  aria-label="Save selection as template"
- className="flex items-center gap-2 px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-black uppercase rounded-none hover:bg-gray-500 transition-colors"
+ className="flex items-center gap-2 px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-black uppercase rounded-none-none hover:bg-gray-500 transition-colors"
  >
  <Download size={12} aria-hidden="true" />
  Save as Template

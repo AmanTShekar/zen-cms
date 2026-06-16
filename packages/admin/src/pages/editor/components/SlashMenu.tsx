@@ -43,7 +43,7 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
  <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 ">
  Block Command
  </span>
- <span className="text-[7px] font-bold text-gray-500/80 px-1 border border-gray-500/20 rounded uppercase">
+ <span className="text-[7px] font-bold text-gray-500/80 px-1 border border-gray-500/20 rounded-none uppercase">
  ↑↓ Enter
  </span>
  </div>
@@ -67,7 +67,7 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
  >
  <div
  className={cn(
- 'w-7 h-7 rounded flex items-center justify-center border shrink-0',
+ 'w-7 h-7 rounded-none flex items-center justify-center border shrink-0',
  isSelected
  ? theme === 'dark'
  ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400'

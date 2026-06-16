@@ -50,7 +50,7 @@ const CommentItem: React.FC<{
  animate={{ opacity: 1, y: 0 }}
  exit={{ opacity: 0, y: -2 }}
  className={cn(
- 'border rounded-none overflow-hidden',
+ 'border rounded-none-none overflow-hidden',
  comment.resolved
  ? theme === 'dark' ? 'border-gray-500/10 bg-gray-500/[0.03]' : 'border-gray-200 bg-gray-50/50'
  : theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-200 bg-white'
@@ -59,7 +59,7 @@ const CommentItem: React.FC<{
  {/* Thread header */}
  <div className="px-3 py-2.5 flex items-start gap-2.5">
  <div className={cn(
- 'w-7 h-7 rounded-none flex items-center justify-center shrink-0 mt-0.5',
+ 'w-7 h-7 rounded-none-none flex items-center justify-center shrink-0 mt-0.5',
  theme === 'dark' ? 'bg-gray-500/10 border border-gray-500/20' : 'bg-gray-50 border border-gray-100'
  )}>
  <span className="text-xs font-black text-gray-600 dark:text-gray-400 uppercase">
@@ -76,7 +76,7 @@ const CommentItem: React.FC<{
  </span>
  {comment.resolved && (
  <span className={cn(
- 'text-[7px] font-black uppercase px-1.5 py-0.5 rounded-none',
+ 'text-[7px] font-black uppercase px-1.5 py-0.5 rounded-none-none',
  theme === 'dark' ? 'bg-gray-500/10 text-gray-600 dark:text-gray-400' : 'bg-gray-100 text-gray-600'
  )}>
  Resolved
@@ -84,7 +84,7 @@ const CommentItem: React.FC<{
  )}
  {comment.blockId && (
  <span className={cn(
- 'text-[7px] font-mono px-1 py-0.5 rounded-none',
+ 'text-[7px] font-mono px-1 py-0.5 rounded-none-none',
  theme === 'dark' ? 'bg-amber-500/10 text-amber-400' : 'bg-amber-50 text-amber-600'
  )}>
  Block: {comment.blockId}
@@ -214,7 +214,7 @@ const CommentItem: React.FC<{
  onKeyDown={(e) => e.key === 'Enter' && handleReply()}
  placeholder="Write a reply..."
  className={cn(
- 'flex-1 px-2.5 py-1.5 text-xs rounded-none border transition-all',
+ 'flex-1 px-2.5 py-1.5 text-xs rounded-none-none border transition-all',
  theme === 'dark'
  ? 'bg-white/5 border-white/8 text-white placeholder-gray-600 focus:border-gray-500/50'
  : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-300'
@@ -225,7 +225,7 @@ const CommentItem: React.FC<{
  disabled={posting || !replyContent.trim()}
  aria-label="Send reply"
  className={cn(
- 'px-2.5 py-1.5 text-xs font-black uppercase tracking-wider border transition-all rounded-none disabled:opacity-50',
+ 'px-2.5 py-1.5 text-xs font-black uppercase tracking-wider border transition-all rounded-none-none disabled:opacity-50',
  theme === 'dark'
  ? 'bg-gray-500/20 border-gray-500/20 text-gray-300 hover:bg-gray-500/30'
  : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
@@ -237,7 +237,7 @@ const CommentItem: React.FC<{
  onClick={() => { setReplyOpen(false); setReplyContent('') }}
  aria-label="Cancel reply"
  className={cn(
- 'px-2 py-1.5 text-xs font-black uppercase tracking-wider border rounded-none',
+ 'px-2 py-1.5 text-xs font-black uppercase tracking-wider border rounded-none-none',
  theme === 'dark' ? 'border-white/[0.08] text-gray-600' : 'border-gray-200 text-gray-400'
  )}
  >
@@ -284,7 +284,7 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  Review
  </span>
  <span className={cn(
- 'px-1.5 py-0.5 text-[7px] font-black rounded-none',
+ 'px-1.5 py-0.5 text-[7px] font-black rounded-none-none',
  theme === 'dark' ? 'bg-white/5 text-gray-500' : 'bg-gray-100 text-gray-500'
  )}>
  {comments.filter((c) => !c.resolved).length} open / {comments.length} total
@@ -303,7 +303,7 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
 
  {/* New comment input */}
  <div className={cn(
- 'border rounded-none p-2.5',
+ 'border rounded-none-none p-2.5',
  theme === 'dark' ? 'border-white/[0.08] bg-white/[0.01]' : 'border-gray-200 bg-gray-50/50'
  )}>
  <textarea
@@ -315,7 +315,7 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  placeholder="Add a comment... (Cmd+Enter to submit)"
  rows={2}
  className={cn(
- 'w-full px-2 py-1.5 text-xs rounded-none border-none bg-transparent resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:ring-0 placeholder-gray-500',
+ 'w-full px-2 py-1.5 text-xs rounded-none-none border-none bg-transparent resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:ring-0 placeholder-gray-500',
  theme === 'dark' ? 'text-gray-300 placeholder-gray-600' : 'text-gray-700 placeholder-gray-400'
  )}
  />
@@ -325,7 +325,7 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  onClick={handleCreate}
  disabled={posting || !newComment.trim()}
  className={cn(
- 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-black uppercase tracking-wider border rounded-none transition-all disabled:opacity-50',
+ 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-black uppercase tracking-wider border rounded-none-none transition-all disabled:opacity-50',
  theme === 'dark'
  ? 'bg-gray-500/20 border-gray-500/30 text-gray-300 hover:bg-gray-500/30 hover:border-gray-500/50'
  : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 hover:border-gray-300'
@@ -341,13 +341,13 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  {loading ? (
  <div className="text-center py-4">
  <div className={cn(
- 'w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-none animate-spin mx-auto mb-2'
+ 'w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-none-none animate-spin mx-auto mb-2'
  )} />
  <p className="text-xs text-gray-500 font-bold">Loading comments...</p>
  </div>
  ) : filteredComments.length === 0 ? (
  <div className={cn(
- 'py-5 text-center border border-dashed rounded-none',
+ 'py-5 text-center border border-dashed rounded-none-none',
  theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
  )}>
  <MessageSquare size={16} className="mx-auto text-gray-600 mb-1.5" />

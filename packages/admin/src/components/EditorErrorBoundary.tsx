@@ -67,7 +67,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  <div className="flex flex-col items-center justify-center h-full min-h-64 gap-6 p-8">
  <div
  className={cn(
- 'w-14 h-14 rounded-none flex items-center justify-center border-2',
+ 'w-14 h-14 rounded-none-none flex items-center justify-center border-2',
  theme === 'dark' ? 'bg-rose-500/10 border-rose-500/20' : 'bg-rose-50 border-rose-200'
  )}
  >
@@ -85,7 +85,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  </h2>
  <p
  className={cn(
- 'text-xs leading-relaxed font-mono px-3 py-2 border rounded-none',
+ 'text-xs leading-relaxed font-mono px-3 py-2 border rounded-none-none',
  theme === 'dark' ? 'text-rose-400 bg-rose-500/5 border-rose-500/10' : 'text-rose-600 bg-rose-50 border-rose-200'
  )}
  >
@@ -97,7 +97,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  <button
  onClick={onReset}
  className={cn(
- 'flex items-center gap-2 px-4 py-2 text-xs font-black uppercase border rounded-none transition-all',
+ 'flex items-center gap-2 px-4 py-2 text-xs font-black uppercase border rounded-none-none transition-all',
  'bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white border-gray-600'
  )}
  >
@@ -107,7 +107,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  <button
  onClick={onCopy}
  className={cn(
- 'flex items-center gap-2 px-3 py-2 text-xs font-black uppercase border rounded-none transition-all',
+ 'flex items-center gap-2 px-3 py-2 text-xs font-black uppercase border rounded-none-none transition-all',
  theme === 'dark'
  ? 'border-white/[0.08] text-gray-400 hover:bg-white/5'
  : 'border-gray-200 text-gray-500 hover:bg-gray-50'
@@ -130,7 +130,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  </summary>
  <pre
  className={cn(
- 'w-full text-[9px] font-mono p-3 border rounded-none overflow-x-auto max-h-48',
+ 'w-full text-[9px] font-mono p-3 border rounded-none-none overflow-x-auto max-h-48',
  theme === 'dark' ? 'bg-white/5 border-white/[0.08] text-gray-500' : 'bg-gray-50 border-gray-200 text-gray-500'
  )}
  >

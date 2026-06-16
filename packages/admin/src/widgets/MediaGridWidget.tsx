@@ -58,7 +58,7 @@ export default function MediaGridWidget({ theme, title }: WidgetProps) {
  return (
  <div
  className={cn(
- 'h-full flex flex-col items-center justify-center gap-3 border rounded-none cursor-pointer hover:border-gray-500/30 transition-all',
+ 'h-full flex flex-col items-center justify-center gap-3 border rounded-none-none cursor-pointer hover:border-gray-500/30 transition-all',
  theme === 'dark' ? 'border-white/[0.08] border-dashed' : 'border-gray-200 border-dashed'
  )}
  onClick={() => navigate('/media')}
@@ -87,7 +87,7 @@ export default function MediaGridWidget({ theme, title }: WidgetProps) {
  {media.map((item: any) => (
  <div
  key={item._id}
- className="relative aspect-square bg-gray-900 rounded-none overflow-hidden group"
+ className="relative aspect-square bg-gray-900 rounded-none-none overflow-hidden group"
  >
  {item.url ? (
  <img

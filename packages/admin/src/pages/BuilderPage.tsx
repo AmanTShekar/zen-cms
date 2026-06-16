@@ -111,7 +111,7 @@ const BuilderPage: React.FC = () => {
  </h2>
  <button
  onClick={handleCreateNew}
- className="p-1.5 hover:bg-gray-500/10 text-gray-600 dark:text-gray-500 rounded transition-colors"
+ className="p-1.5 hover:bg-gray-500/10 text-gray-600 dark:text-gray-500 rounded-none transition-colors"
  >
  <Plus size={14} />
  </button>

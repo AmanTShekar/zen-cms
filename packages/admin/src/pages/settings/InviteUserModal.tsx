@@ -55,7 +55,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
  <div
  className={cn(
- 'w-full max-w-md border rounded-none shadow-2xl',
+ 'w-full max-w-md border rounded-none-none shadow-2xl',
  theme === 'dark'
  ? 'bg-black border-white/[0.08]'
  : 'bg-white border-gray-200 shadow-sm shadow-black/10'
@@ -64,7 +64,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  {/* Header */}
  <div className="flex items-center justify-between px-8 py-6 border-b border-white/[0.08]">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 rounded-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
+ <div className="w-10 h-10 rounded-none-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
  <Users size={18} className="text-gray-600 dark:text-gray-500" />
  </div>
  <span className="text-[12px] font-black uppercase tracking-wide">
@@ -78,7 +78,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
 
  {sent ? (
  <div className="px-8 py-12 text-center space-y-4">
- <div className="w-16 h-16 mx-auto rounded-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
+ <div className="w-16 h-16 mx-auto rounded-none-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
  <Users size={28} className="text-gray-600 dark:text-gray-500" />
  </div>
  <p className="text-[11px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-500">
@@ -103,7 +103,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  autoFocus
  placeholder="operator@example.com"
  className={cn(
- 'w-full border rounded-none py-4 px-5 text-[13px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-4 px-5 text-[13px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-white focus:border-gray-500/50'
  : 'bg-gray-50 border-gray-200 focus:border-gray-500'
@@ -123,7 +123,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  type="button"
  onClick={() => setRole(r)}
  className={cn(
- 'py-3 text-[9px] font-black uppercase tracking-wider border rounded-none transition-all',
+ 'py-3 text-[9px] font-black uppercase tracking-wider border rounded-none-none transition-all',
  role === r
  ? 'border-gray-500/40 bg-gray-500/10 text-gray-600 dark:text-gray-400'
  : theme === 'dark'
@@ -142,7 +142,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  type="submit"
  disabled={loading || !email.trim()}
  className={cn(
- 'w-full py-4 rounded-none text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 disabled:opacity-40',
+ 'w-full py-4 rounded-none-none text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 disabled:opacity-40',
  theme === 'dark'
  ? 'bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 text-white'
  : 'bg-gray-900 hover:bg-gray-800 text-white'

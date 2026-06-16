@@ -40,11 +40,6 @@ export default defineConfig({
         changeOrigin: true,
         configure: (proxy) => { proxy.on('error', proxyErrorHandler); }
       },
-      '/media': {
-        target: `http://127.0.0.1:${process.env.CORE_PORT || '3000'}`,
-        changeOrigin: true,
-        configure: (proxy) => { proxy.on('error', proxyErrorHandler); }
-      },
       '/uploads': {
         target: `http://127.0.0.1:${process.env.CORE_PORT || '3000'}`,
         changeOrigin: true,

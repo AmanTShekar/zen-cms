@@ -15,7 +15,7 @@ const SettingsMedia: React.FC<SettingsMediaProps> = ({ settings, setSettings, th
  <>
  <div
  className={cn(
- 'p-5 rounded-none border transition-all space-y-3',
+ 'p-5 rounded-none-none border transition-all space-y-3',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
@@ -26,7 +26,7 @@ const SettingsMedia: React.FC<SettingsMediaProps> = ({ settings, setSettings, th
  value={settings.mediaProvider}
  onChange={(e) => setSettings({ ...settings, mediaProvider: e.target.value })}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black appearance-none cursor-pointer',
+ 'w-full border rounded-none-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black appearance-none cursor-pointer',
  theme === 'dark'
  ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
@@ -43,7 +43,7 @@ const SettingsMedia: React.FC<SettingsMediaProps> = ({ settings, setSettings, th
 
  <div
  className={cn(
- 'p-5 rounded-none border transition-all space-y-3',
+ 'p-5 rounded-none-none border transition-all space-y-3',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
@@ -55,7 +55,7 @@ const SettingsMedia: React.FC<SettingsMediaProps> = ({ settings, setSettings, th
  value={settings.maxUploadSize}
  onChange={(e) => setSettings({ ...settings, maxUploadSize: parseInt(e.target.value, 10) })}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
  ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'

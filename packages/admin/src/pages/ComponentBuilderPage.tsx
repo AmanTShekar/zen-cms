@@ -242,7 +242,7 @@ const ComponentBuilderPage: React.FC = () => {
  }
 
  const inputCls = cn(
- 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded',
+ 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none',
  dark ? 'bg-black border-white/[0.08] focus:border-gray-500 text-white' : 'bg-gray-50 border-gray-200 focus:border-gray-500 text-black'
  )
 
@@ -256,7 +256,7 @@ const ComponentBuilderPage: React.FC = () => {
  </h2>
  <button
  onClick={handleCreateNew}
- className="p-1.5 hover:bg-gray-500/10 text-gray-600 dark:text-gray-500 rounded transition-colors"
+ className="p-1.5 hover:bg-gray-500/10 text-gray-600 dark:text-gray-500 rounded-none transition-colors"
  >
  <Plus size={14} />
  </button>
@@ -269,7 +269,7 @@ const ComponentBuilderPage: React.FC = () => {
  <button
  onClick={() => { setActiveComponent(c); setActiveTab('visual') }}
  className={cn(
- 'flex-1 text-left px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors overflow-hidden text-ellipsis whitespace-nowrap rounded',
+ 'flex-1 text-left px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors overflow-hidden text-ellipsis whitespace-nowrap rounded-none',
  activeComponent?.id === c.id
  ? 'bg-gray-500 text-white'
  : dark ? 'text-gray-400 hover:bg-white/5 hover:text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-black'
@@ -322,7 +322,7 @@ const ComponentBuilderPage: React.FC = () => {
  <div className="flex items-center gap-2">
  <button
  onClick={() => setShowPreview(!showPreview)}
- className={cn('flex items-center gap-2 px-4 py-2.5 border text-[10px] font-black uppercase tracking-widest rounded-none transition-all', dark ? 'border-white/[0.08] hover:bg-white/5' : 'border-gray-200 hover:bg-gray-50')}
+ className={cn('flex items-center gap-2 px-4 py-2.5 border text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all', dark ? 'border-white/[0.08] hover:bg-white/5' : 'border-gray-200 hover:bg-gray-50')}
  >
  {showPreview ? <EyeOff size={14} /> : <Eye size={14} />}
  {showPreview ? 'Hide' : 'Preview'}
@@ -330,7 +330,7 @@ const ComponentBuilderPage: React.FC = () => {
  <button
  onClick={handleSave}
  disabled={saving}
- className="flex items-center gap-2 px-6 py-2.5 bg-gray-500 hover:bg-gray-400 text-white text-[10px] font-black uppercase tracking-widest shadow-lg rounded-none transition-all disabled:opacity-50"
+ className="flex items-center gap-2 px-6 py-2.5 bg-gray-500 hover:bg-gray-400 text-white text-[10px] font-black uppercase tracking-widest shadow-lg rounded-none-none transition-all disabled:opacity-50"
  >
  {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
  Save Component
@@ -339,7 +339,7 @@ const ComponentBuilderPage: React.FC = () => {
  </div>
 
  {/* Tab navigation */}
- <div className={cn('flex items-center gap-1 p-1 border rounded-none w-fit', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200')}>
+ <div className={cn('flex items-center gap-1 p-1 border rounded-none-none w-fit', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200')}>
  {([
  { key: 'visual', label: 'Visual Editor', icon: Box },
  { key: 'code', label: 'Code / JSON Import', icon: Code },
@@ -351,7 +351,7 @@ const ComponentBuilderPage: React.FC = () => {
  key={tab.key}
  onClick={() => setActiveTab(tab.key)}
  className={cn(
- 'flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-none transition-all',
+ 'flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all',
  activeTab === tab.key
  ? 'bg-gray-500 text-white shadow'
  : dark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500 hover:text-gray-900'
@@ -404,7 +404,7 @@ const ComponentBuilderPage: React.FC = () => {
  ) : (
  <div className="h-full flex items-center justify-center">
  <div className="text-center space-y-5 max-w-md px-8">
- <div className="w-16 h-16 mx-auto rounded-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
+ <div className="w-16 h-16 mx-auto rounded-none-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
  <Box size={28} className="text-gray-600 dark:text-gray-400" strokeWidth={1.5} />
  </div>
  <div>
@@ -415,10 +415,10 @@ const ComponentBuilderPage: React.FC = () => {
  </p>
  </div>
  <div className="flex gap-3 justify-center">
- <button onClick={handleCreateNew} className="flex items-center gap-2 px-5 py-3 bg-gray-500 hover:bg-gray-400 text-white text-[10px] font-black uppercase tracking-widest rounded-none transition-all shadow-lg shadow-gray-900/30">
+ <button onClick={handleCreateNew} className="flex items-center gap-2 px-5 py-3 bg-gray-500 hover:bg-gray-400 text-white text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all shadow-lg shadow-gray-900/30">
  <Plus size={14} /> New Component
  </button>
- <button onClick={() => { handleCreateNew(); setTimeout(() => setActiveTab('ai'), 50) }} className="flex items-center gap-2 px-5 py-3 bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black uppercase tracking-widest rounded-none transition-all shadow-lg shadow-purple-900/30">
+ <button onClick={() => { handleCreateNew(); setTimeout(() => setActiveTab('ai'), 50) }} className="flex items-center gap-2 px-5 py-3 bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all shadow-lg shadow-purple-900/30">
  <Sparkles size={14} /> AI Generate
  </button>
  </div>

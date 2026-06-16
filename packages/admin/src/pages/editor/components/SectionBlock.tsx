@@ -191,7 +191,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  onClick={onSelect}
  onContextMenu={onContextMenu}
  className={cn(
- 'rounded-none border transition-all duration-500 relative cursor-pointer',
+ 'rounded-none-none border transition-all duration-500 relative cursor-pointer',
  calloutClasses,
  themeClasses || (theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08] hover:border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm hover:border-gray-200'),
  isActive && 'ring-2 ring-gray-500/50 scale-[1.005]',
@@ -216,7 +216,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  aria-grabbed="false"
  tabIndex={-1}
  className={cn(
- 'w-7 h-7 rounded-none border flex items-center justify-center cursor-grab active:cursor-grabbing shrink-0 transition-all',
+ 'w-7 h-7 rounded-none-none border flex items-center justify-center cursor-grab active:cursor-grabbing shrink-0 transition-all',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-400/60 hover:bg-gray-500/10 hover:border-gray-500/30 hover:text-gray-600 dark:text-gray-400'
  : 'bg-gray-100 border-gray-200 text-gray-500/60 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-600'
@@ -289,7 +289,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  <button
  onClick={(e) => { e.stopPropagation(); onToggleCollapse() }}
  className={cn(
- 'p-1.5 rounded-none border transition-all',
+ 'p-1.5 rounded-none-none border transition-all',
  theme === 'dark' ? 'text-gray-500 border-transparent hover:text-gray-600 dark:text-gray-400' : 'text-gray-400 border-transparent hover:text-gray-600 dark:text-gray-500'
  )}
  title={isCollapsed ? 'Expand' : 'Collapse'}
@@ -309,7 +309,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  setMenuOpen(!menuOpen)
  }}
  className={cn(
- 'p-1.5 rounded-none border transition-all',
+ 'p-1.5 rounded-none-none border transition-all',
  menuOpen
  ? theme === 'dark' ? 'bg-gray-500/20 border-gray-500/30 text-gray-600 dark:text-gray-400' : 'bg-gray-100 border-gray-200 text-gray-600'
  : theme === 'dark' ? 'text-gray-500 border-transparent hover:text-gray-600 dark:text-gray-400' : 'text-gray-400 border-transparent hover:text-gray-600 dark:text-gray-500'
@@ -338,7 +338,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50/50 border-gray-200 shadow-sm'
  )}>
  <div className={cn(
- 'flex items-center gap-0.5 p-0.5 rounded-none border',
+ 'flex items-center gap-0.5 p-0.5 rounded-none-none border',
  theme === 'dark' ? 'bg-black/20 border-white/[0.08]' : 'bg-white border-gray-200'
  )}>
  {(['left', 'center', 'right'] as const).map((align) => (
@@ -378,9 +378,9 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  theme === 'dark' ? 'bg-[#0F172A]/80 border-white/[0.08]' : 'bg-gray-100 border-gray-200'
  )}>
  <div className="flex gap-1.5">
- <span className="w-2.5 h-2.5 rounded-none bg-rose-500" />
- <span className="w-2.5 h-2.5 rounded-none bg-amber-500" />
- <span className="w-2.5 h-2.5 rounded-none bg-gray-500" />
+ <span className="w-2.5 h-2.5 rounded-none-none bg-rose-500" />
+ <span className="w-2.5 h-2.5 rounded-none-none bg-amber-500" />
+ <span className="w-2.5 h-2.5 rounded-none-none bg-gray-500" />
  </div>
  <span className="text-xs font-black uppercase tracking-wider text-gray-500 ">
  {section.content?.language || 'javascript'} terminal
@@ -389,7 +389,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  )}
 
  {section.blockType === 'table' ? (
- <div className="w-full overflow-x-auto border border-white/[0.08] bg-black/20 p-4 rounded-none">
+ <div className="w-full overflow-x-auto border border-white/[0.08] bg-black/20 p-4 rounded-none-none">
  <div className="overflow-x-auto min-w-full pb-4"><table className="w-full border-collapse text-left text-xs font-mono">
  <thead>
  <tr className={cn(theme === 'dark' ? 'bg-white/5 border-b border-white/[0.08]' : 'bg-gray-150 border-b border-gray-200')}>
@@ -403,7 +403,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  headers[hIdx] = { ...headers[hIdx], text: e.target.value }
  handleFieldChange('headers', headers)
  }}
- className="bg-transparent border-none font-bold w-full focus:bg-white/5 focus-visible:ring-2 focus-visible:ring-gray-500 rounded px-1 text-xs"
+ className="bg-transparent border-none font-bold w-full focus:bg-white/5 focus-visible:ring-2 focus-visible:ring-gray-500 rounded-none px-1 text-xs"
  placeholder={`Header ${hIdx + 1}`}
  />
  </th>
@@ -442,7 +442,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  rows[rIdx] = { ...rows[rIdx], cells }
  handleFieldChange('rows', rows)
  }}
- className="bg-transparent border-none w-full focus:bg-white/5 focus-visible:ring-2 focus-visible:ring-gray-500 rounded px-1"
+ className="bg-transparent border-none w-full focus:bg-white/5 focus-visible:ring-2 focus-visible:ring-gray-500 rounded-none px-1"
  placeholder="Cell..."
  />
  </td>
@@ -514,7 +514,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  {field.label || field.name}
  </label>
  <span className={cn(
- 'px-1.5 py-0.5 text-[6px] font-black uppercase rounded-none',
+ 'px-1.5 py-0.5 text-[6px] font-black uppercase rounded-none-none',
  theme === 'dark'
  ? 'bg-white/5 text-gray-600'
  : 'bg-gray-100 text-gray-400'
@@ -614,7 +614,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  ref={menuRef}
  style={{ position: 'fixed', top: menuPos.top, left: menuPos.left, zIndex: 900 }}
  className={cn(
- 'min-w-[160px] border shadow-xl rounded-none',
+ 'min-w-[160px] border shadow-xl rounded-none-none',
  theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200'
  )}
  onClick={(e) => e.stopPropagation()}

@@ -23,7 +23,7 @@ export default function CustomHtmlWidget({
  value={draft}
  onChange={(e) => setDraft(e.target.value)}
  className={cn(
- 'flex-1 w-full border rounded-none p-3 font-mono text-[11px] resize-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-gray-500',
+ 'flex-1 w-full border rounded-none-none p-3 font-mono text-[11px] resize-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-gray-500',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-gray-50 border-gray-200'
  )}
  placeholder="<h2>Hello World</h2>"
@@ -34,14 +34,14 @@ export default function CustomHtmlWidget({
  onConfigChange({ ...config, html: draft })
  setEditing(false)
  }}
- className="px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-[9px] font-black uppercase tracking-widest rounded-none"
+ className="px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-[9px] font-black uppercase tracking-widest rounded-none-none"
  >
  Save
  </button>
  <button
  onClick={() => setEditing(false)}
  className={cn(
- 'px-4 py-2 text-[9px] font-black uppercase tracking-widest rounded-none',
+ 'px-4 py-2 text-[9px] font-black uppercase tracking-widest rounded-none-none',
  theme === 'dark' ? 'bg-white/5 text-gray-400' : 'bg-gray-100 text-gray-600'
  )}
  >
@@ -69,7 +69,7 @@ export default function CustomHtmlWidget({
  />
  )}
  {isEditing && (
- <div className="absolute inset-0 border-2 border-dashed border-gray-500/30 rounded-none pointer-events-none" />
+ <div className="absolute inset-0 border-2 border-dashed border-gray-500/30 rounded-none-none pointer-events-none" />
  )}
  </div>
  )

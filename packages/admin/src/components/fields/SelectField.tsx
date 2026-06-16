@@ -38,7 +38,7 @@ const SelectField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
         theme === 'dark'
           ? "bg-gray-900/65 text-white border border-white/8 focus:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/50"
           : "bg-white/80 text-gray-900 border border-gray-200 focus:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/20",
-        isMulti ? "rounded-none min-h-[120px]" : "rounded-none",
+        isMulti ? "rounded-none-none min-h-[120px]" : "rounded-none-none",
         "disabled:opacity-60 disabled:cursor-not-allowed"
       )}
     >

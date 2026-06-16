@@ -98,7 +98,9 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     const isGlobalRoute = req.originalUrl.startsWith('/api/v1/auth') || 
                           req.originalUrl.startsWith('/api/v1/system') ||
                           req.originalUrl.startsWith('/api/v1/sites') ||
-                          req.originalUrl.startsWith('/api/v1/workspaces')
+                          req.originalUrl.startsWith('/api/v1/workspaces') ||
+                          req.originalUrl.startsWith('/api/v1/media') ||
+                          req.originalUrl.startsWith('/media')
 
     if (!req.siteId && !isGlobalRoute) {
       return res.status(400).json(createErrorResponse(400, 'Missing x-zenith-site-id header', undefined, 'BadRequestError'))

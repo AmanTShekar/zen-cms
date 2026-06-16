@@ -15,7 +15,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  <div className="col-span-1 md:col-span-2 space-y-8">
  <div
  className={cn(
- 'p-8 rounded-none border text-center space-y-4',
+ 'p-8 rounded-none-none border text-center space-y-4',
  theme === 'dark'
  ? 'bg-white/[0.01] border-white/[0.08] text-gray-400'
  : 'bg-gray-50 border-gray-200 shadow-sm text-gray-500'
@@ -39,7 +39,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  {/* Enable Billing Switcher */}
  <div
  className={cn(
- 'p-6 rounded-none border flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all group',
+ 'p-6 rounded-none-none border flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all group',
  theme === 'dark'
  ? 'bg-white/[0.01] border-white/[0.08] hover:border-gray-500/20'
  : 'bg-white border-gray-200 shadow-sm shadow-sm'
@@ -59,7 +59,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  value={activeSite.currency || 'USD'}
  onChange={(e) => setActiveSite({ ...activeSite, currency: e.target.value })}
  className={cn(
- 'border rounded-none py-1.5 px-3 text-[11px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'border rounded-none-none py-1.5 px-3 text-[11px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200 text-gray-800'
  )}
  >
@@ -76,7 +76,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  onChange={(e) => setActiveSite({ ...activeSite, billingEnabled: e.target.checked })}
  className="sr-only peer"
  />
- <div className="w-12 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-none after:h-4 after:w-5 after:transition-all peer-checked:bg-gray-600 dark:bg-gray-600 shadow-inner border border-white/[0.08]"></div>
+ <div className="w-12 h-6 bg-gray-500/20 rounded-none-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-none-none after:h-4 after:w-5 after:transition-all peer-checked:bg-gray-600 dark:bg-gray-600 shadow-inner border border-white/[0.08]"></div>
  </label>
  </div>
  </div>
@@ -93,7 +93,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  <div
  key={input.field}
  className={cn(
- 'p-4 rounded-none border transition-all space-y-3',
+ 'p-4 rounded-none-none border transition-all space-y-3',
  theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50/50 border-gray-200 shadow-sm'
  )}
  >
@@ -106,7 +106,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  value={activeSite[input.field] || ''}
  onChange={(e) => setActiveSite({ ...activeSite, [input.field]: e.target.value })}
  className={cn(
- 'w-full border rounded-none py-3 px-4 text-[12px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-3 px-4 text-[12px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
  ? 'bg-black border-white/[0.08] text-white focus:border-gray-500'
  : 'bg-white border-gray-200 focus:border-gray-500'
@@ -154,7 +154,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  <div
  key={plan.id || planIndex}
  className={cn(
- 'p-6 border rounded-none relative transition-all flex flex-col justify-between space-y-6',
+ 'p-6 border rounded-none-none relative transition-all flex flex-col justify-between space-y-6',
  plan.isPopular
  ? theme === 'dark'
  ? 'bg-gray-500/[0.03] border-gray-500/40 shadow-[0_0_15px_rgba(99,102,241,0.05)]'
@@ -203,7 +203,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
  className={cn(
- 'w-full border rounded-none py-1.5 px-3 text-[10px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-1.5 px-3 text-[10px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200'
  )}
  />
@@ -220,7 +220,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
  className={cn(
- 'w-full border rounded-none py-1.5 px-3 text-[10px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-1.5 px-3 text-[10px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200'
  )}
  />
@@ -232,7 +232,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
  className={cn(
- 'border rounded-none py-1.5 px-2 text-[9px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'border rounded-none-none py-1.5 px-2 text-[9px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200'
  )}
  >
@@ -249,7 +249,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  <label className="text-[8px] font-black text-gray-500 uppercase tracking-wider block">Paywall Restricted Collections</label>
  <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 mt-4">
  {(healthData?.collections || []).length === 0 ? (
- <div className="col-span-full py-4 text-center border border-dashed border-gray-200 dark:border-white/[0.08] rounded-none">
+ <div className="col-span-full py-4 text-center border border-dashed border-gray-200 dark:border-white/[0.08] rounded-none-none">
  <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">No collections available to monetize</span>
  </div>
  ) : (
@@ -267,7 +267,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  plans[planIndex] = { ...plan, paywalledCollections: next }
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
- className="rounded-none border-white/[0.08] text-gray-600 focus:ring-0 focus:ring-offset-0 bg-black cursor-pointer"
+ className="rounded-none-none border-white/[0.08] text-gray-600 focus:ring-0 focus:ring-offset-0 bg-black cursor-pointer"
  />
  <span className={cn(
  'text-[9px] font-black uppercase tracking-widest transition-colors',
@@ -349,7 +349,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  }}
  className="sr-only peer"
  />
- <div className="w-9 h-4 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-3 after:w-3.5 after:transition-all peer-checked:bg-gray-600 dark:bg-gray-600 shadow-inner border border-white/[0.08]"></div>
+ <div className="w-9 h-4 bg-gray-500/20 rounded-none-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none-none after:h-3 after:w-3.5 after:transition-all peer-checked:bg-gray-600 dark:bg-gray-600 shadow-inner border border-white/[0.08]"></div>
  </label>
  </div>
  </div>

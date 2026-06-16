@@ -37,7 +37,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  {/* ── Site ID Banner ─────────────────────────────────────────────── */}
  <div
  className={cn(
- 'p-5 rounded-none border col-span-1 md:col-span-2 space-y-3',
+ 'p-5 rounded-none-none border col-span-1 md:col-span-2 space-y-3',
  theme === 'dark'
  ? 'bg-gray-500/5 border-gray-500/20'
  : 'bg-gray-50 border-gray-200'
@@ -52,7 +52,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  <div className="flex items-center gap-3">
  <code
  className={cn(
- 'flex-1 font-mono text-sm px-3 py-2 rounded-none border truncate',
+ 'flex-1 font-mono text-sm px-3 py-2 rounded-none-none border truncate',
  theme === 'dark'
  ? 'bg-black/40 border-white/[0.08] text-gray-300'
  : 'bg-white border-gray-200 text-gray-700'
@@ -64,7 +64,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  onClick={handleCopy}
  disabled={!activeSiteId}
  className={cn(
- 'flex items-center gap-2 px-4 py-2 rounded-none text-xs font-bold transition-all',
+ 'flex items-center gap-2 px-4 py-2 rounded-none-none text-xs font-bold transition-all',
  activeSiteId
  ? 'bg-gray-500 text-black hover:bg-gray-400'
  : 'bg-white/5 text-gray-500 cursor-not-allowed'
@@ -76,14 +76,14 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  </div>
  <p className={cn('text-xs leading-relaxed', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
  This is the <strong>VITE_CMS_SITE_ID</strong> for <strong>{activeSiteName}</strong>.
- Paste it into the <code className="px-1 py-0.5 rounded bg-white/10">.env</code> file of any
+ Paste it into the <code className="px-1 py-0.5 rounded-none bg-white/10">.env</code> file of any
  Zenith template (storefront-glass, demo, blog-demo) to connect it to this site's content.
  </p>
  </div>
 
  <div
  className={cn(
- 'p-5 rounded-none border transition-all space-y-3',
+ 'p-5 rounded-none-none border transition-all space-y-3',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
@@ -95,7 +95,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  value={settings.siteName}
  onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
  ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
@@ -105,7 +105,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
 
  <div
  className={cn(
- 'p-5 rounded-none border transition-all space-y-3',
+ 'p-5 rounded-none-none border transition-all space-y-3',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
@@ -117,7 +117,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  onChange={(e) => setSettings({ ...settings, siteDescription: e.target.value })}
  rows={3}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
+ 'w-full border rounded-none-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
  theme === 'dark'
  ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
@@ -127,7 +127,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
 
  <div
  className={cn(
- 'p-5 rounded-none border transition-all space-y-3',
+ 'p-5 rounded-none-none border transition-all space-y-3',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
@@ -140,7 +140,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  placeholder="https://..."
  onChange={(e) => setSettings({ ...settings, logoUrl: e.target.value })}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
  ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
@@ -150,7 +150,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
 
  <div
  className={cn(
- 'p-5 rounded-none border transition-all space-y-3',
+ 'p-5 rounded-none-none border transition-all space-y-3',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
@@ -163,7 +163,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  placeholder="https://..."
  onChange={(e) => setSettings({ ...settings, faviconUrl: e.target.value })}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
  ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
@@ -173,7 +173,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
 
  <div
  className={cn(
- 'p-5 rounded-none border transition-all space-y-3',
+ 'p-5 rounded-none-none border transition-all space-y-3',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
@@ -185,7 +185,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  value={settings.publicUrl}
  onChange={(e) => setSettings({ ...settings, publicUrl: e.target.value })}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
  ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
@@ -195,7 +195,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
 
  <div
  className={cn(
- 'p-5 rounded-none border transition-all space-y-3',
+ 'p-5 rounded-none-none border transition-all space-y-3',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
@@ -207,7 +207,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  value={settings.defaultLocale || 'en'}
  onChange={(e) => setSettings({ ...settings, defaultLocale: e.target.value })}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
  ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
@@ -217,7 +217,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
 
  <div
  className={cn(
- 'p-5 rounded-none border flex items-center justify-between transition-all group col-span-1 md:col-span-2',
+ 'p-5 rounded-none-none border flex items-center justify-between transition-all group col-span-1 md:col-span-2',
  theme === 'dark'
  ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20'
  : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
@@ -238,7 +238,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  onChange={(e) => setSettings({ ...settings, maintenanceMode: e.target.checked })}
  className="sr-only peer"
  />
- <div className="w-11 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-500 border border-white/[0.08] shadow-inner"></div>
+ <div className="w-11 h-6 bg-gray-500/20 rounded-none-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none-none after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-500 border border-white/[0.08] shadow-inner"></div>
  </label>
  </div>
  </>

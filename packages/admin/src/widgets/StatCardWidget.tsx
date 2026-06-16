@@ -11,13 +11,14 @@ const METRIC_MAP: Record<string, { label: string; path: string; key: string }> =
  db_status: { label: 'DB Status', path: '/system/health', key: 'database' },
 }
 
-export default function StatCardWidget({ config = {}, theme, title }: WidgetProps) {
+export default function StatCardWidget({ config = {}, theme, title, isPreview }: WidgetProps) {
  const metric = config.metric || 'total_records'
  const def = METRIC_MAP[metric] || METRIC_MAP.total_records
- const [value, setValue] = useState<string | number>('—')
- const [loading, setLoading] = useState(true)
+ const [value, setValue] = useState<string | number>(isPreview ? '9,999' : '—')
+ const [loading, setLoading] = useState(!isPreview)
 
  useEffect(() => {
+  if (isPreview) return;
  api
  .get(def.path)
  .then((r) => {
@@ -42,10 +43,10 @@ export default function StatCardWidget({ config = {}, theme, title }: WidgetProp
  }, [metric, def.path, def.key])
 
  return (
- <div className="h-full flex flex-col justify-between p-1">
+ <div className="flex flex-col justify-between p-1">
  <div
  className={cn(
- 'w-9 h-9 rounded-none flex items-center justify-center',
+ 'w-9 h-9 rounded-none-none flex items-center justify-center',
  theme === 'dark' ? 'bg-white/5 text-gray-600 dark:text-gray-400' : 'bg-gray-50 text-gray-600'
  )}
  >

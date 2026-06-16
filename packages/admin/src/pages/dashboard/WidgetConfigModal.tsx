@@ -54,7 +54,7 @@ export function WidgetConfigModal({ widget, onClose, onSave }: WidgetConfigModal
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 className={cn(
-                  "w-full px-3 py-2 text-sm rounded-none border outline-none transition-colors",
+                  "w-full px-3 py-2 text-sm rounded-none-none border outline-none transition-colors",
                   theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500' : 'bg-white border-gray-200 focus:border-emerald-500'
                 )}
               />
@@ -76,7 +76,7 @@ export function WidgetConfigModal({ widget, onClose, onSave }: WidgetConfigModal
                   }
                 }}
                 className={cn(
-                  "w-full px-3 py-2 text-sm rounded-none border outline-none transition-colors font-mono",
+                  "w-full px-3 py-2 text-sm rounded-none-none border outline-none transition-colors font-mono",
                   theme === 'dark' ? 'bg-black border-white/[0.08] text-gray-300 focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
                 )}
               />

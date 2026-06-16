@@ -112,7 +112,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  animate={{ scale: 1, opacity: 1 }}
  exit={{ scale: 0.95, opacity: 0 }}
  className={cn(
- 'w-full max-w-lg border rounded-none overflow-hidden shadow-2xl flex flex-col max-h-[85vh]',
+ 'w-full max-w-lg border rounded-none-none overflow-hidden shadow-2xl flex flex-col max-h-[85vh]',
  theme === 'dark'
  ? 'bg-[#0a0a0a] border-white/[0.08]'
  : 'bg-white border-gray-200',
@@ -146,7 +146,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  {/* Body */}
  <div className="p-6 space-y-4 overflow-y-auto flex-1">
  {/* Preview Tab Bar */}
- <div className="flex items-center gap-1 p-1 border border-white/[0.08] bg-white/[0.02] rounded-none shrink-0">
+ <div className="flex items-center gap-1 p-1 border border-white/[0.08] bg-white/[0.02] rounded-none-none shrink-0">
  {([
  { id: 'google', icon: Globe, label: 'Google' },
  { id: 'twitter', icon: Twitter, label: 'Twitter / X' },
@@ -157,7 +157,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  onClick={() => setPreviewTab(tab.id)}
  aria-label={`${tab.label} preview`}
  className={cn(
- 'flex items-center gap-2 px-3 py-2 text-xs font-black uppercase tracking-wider transition-all border rounded-none flex-1 justify-center',
+ 'flex items-center gap-2 px-3 py-2 text-xs font-black uppercase tracking-wider transition-all border rounded-none-none flex-1 justify-center',
  previewTab === tab.id
  ? theme === 'dark'
  ? 'bg-white/10 border-white/[0.08] text-white'
@@ -176,7 +176,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  {/* Preview iframe area */}
  <div
  className={cn(
- 'rounded-none border overflow-hidden transition-all min-h-[180px]',
+ 'rounded-none-none border overflow-hidden transition-all min-h-[180px]',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50 border-gray-200'
  )}
  >
@@ -209,7 +209,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  {seoKeywords.split(',').slice(0, 4).map((kw, i) => (
  <span
  key={i}
- className="text-xs px-1.5 py-0.5 border border-gray-300 rounded text-gray-500"
+ className="text-xs px-1.5 py-0.5 border border-gray-300 rounded-none text-gray-500"
  >
  {kw.trim()}
  </span>
@@ -231,13 +231,13 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  >
  <div
  className={cn(
- 'border rounded shadow-sm overflow-hidden max-w-[400px]',
+ 'border rounded-none shadow-sm overflow-hidden max-w-[400px]',
  theme === 'dark' ? 'bg-[#15202b] border-white/[0.08]' : 'bg-white border-gray-200'
  )}
  >
  {/* Header */}
  <div className="flex items-center gap-3 px-3 py-2">
- <div className="w-8 h-8 rounded-none bg-gray-500 flex items-center justify-center text-white text-xs font-black shrink-0">
+ <div className="w-8 h-8 rounded-none-none bg-gray-500 flex items-center justify-center text-white text-xs font-black shrink-0">
  Z
  </div>
  <div className="min-w-0">
@@ -279,7 +279,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  >
  <div
  className={cn(
- 'border rounded shadow-sm overflow-hidden max-w-[400px]',
+ 'border rounded-none shadow-sm overflow-hidden max-w-[400px]',
  theme === 'dark' ? 'bg-[#1c1e21] border-white/[0.08]' : 'bg-white border-gray-200'
  )}
  >
@@ -365,7 +365,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  handleFieldChange(field, e.target.value)
  }
  className={cn(
- 'w-full rounded-none py-3 px-4 text-xs font-black h-24 resize-none transition-all border',
+ 'w-full rounded-none-none py-3 px-4 text-xs font-black h-24 resize-none transition-all border',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-white focus-visible:border-gray-500/30'
  : 'bg-gray-50 border-gray-200 text-black focus-visible:border-gray-600/30',
@@ -381,7 +381,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  handleFieldChange(field, e.target.value)
  }
  className={cn(
- 'w-full rounded-none py-3 px-4 text-xs font-black transition-all border',
+ 'w-full rounded-none-none py-3 px-4 text-xs font-black transition-all border',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-white focus-visible:border-gray-500/30'
  : 'bg-gray-50 border-gray-200 text-black focus-visible:border-gray-600/30',
@@ -406,7 +406,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  onClick={resetToDefaults}
  aria-label="Reset SEO fields"
  className={cn(
- 'flex items-center gap-2 px-4 py-2 text-xs font-black uppercase rounded-none border transition-all',
+ 'flex items-center gap-2 px-4 py-2 text-xs font-black uppercase rounded-none-none border transition-all',
  theme === 'dark'
  ? 'border-white/[0.08] text-gray-400 hover:border-rose-500/20 hover:text-rose-400'
  : 'border-gray-200 text-gray-500 hover:border-rose-200 hover:text-rose-500',
@@ -420,7 +420,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  onClick={() => setSeoOpen(false)}
  aria-label="Cancel and close"
  className={cn(
- 'px-4 py-2 text-xs font-black uppercase rounded-none border transition-all',
+ 'px-4 py-2 text-xs font-black uppercase rounded-none-none border transition-all',
  theme === 'dark'
  ? 'border-white/[0.08] text-gray-400 hover:border-white/[0.08] hover:text-white'
  : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:text-black',
@@ -431,7 +431,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <button
  onClick={commitAndClose}
  aria-label="Save SEO and close"
- className="flex items-center gap-2 px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-black uppercase rounded-none hover:bg-gray-500 transition-all"
+ className="flex items-center gap-2 px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-black uppercase rounded-none-none hover:bg-gray-500 transition-all"
  >
  <Save size={12} aria-hidden="true" />
  Save & Close

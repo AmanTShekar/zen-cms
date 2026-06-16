@@ -70,7 +70,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  exit={{ opacity: 0, scale: 0.95, y: 10 }}
  transition={{ duration: 0.15 }}
  className={cn(
- 'w-full max-w-md border rounded-none shadow-2xl',
+ 'w-full max-w-md border rounded-none-none shadow-2xl',
  theme === 'dark'
  ? 'bg-black border-rose-500/20 text-white'
  : 'bg-white border-rose-200 text-gray-900'
@@ -82,7 +82,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <div className={cn(
- 'w-10 h-10 rounded-none border flex items-center justify-center shrink-0',
+ 'w-10 h-10 rounded-none-none border flex items-center justify-center shrink-0',
  theme === 'dark'
  ? 'bg-rose-500/10 border-rose-500/20 text-rose-400'
  : 'bg-rose-50 border-rose-200 text-rose-500'
@@ -118,7 +118,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  {/* Body */}
  <div className="px-6 py-5 space-y-4">
  <div className={cn(
- 'p-4 border rounded-none text-xs font-bold tracking-wide leading-relaxed',
+ 'p-4 border rounded-none-none text-xs font-bold tracking-wide leading-relaxed',
  theme === 'dark'
  ? 'bg-white/3 border-white/[0.08] text-gray-400'
  : 'bg-gray-50 border-gray-200 shadow-sm text-gray-600'
@@ -129,7 +129,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
 
  {/* Version comparison */}
  <div className={cn(
- 'grid grid-cols-1 md:grid-cols-2 gap-3 p-3 border border-dashed rounded-none',
+ 'grid grid-cols-1 md:grid-cols-2 gap-3 p-3 border border-dashed rounded-none-none',
  theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
  )}>
  <div className="text-center">
@@ -153,7 +153,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  disabled={loading}
  onClick={handleReload}
  className={cn(
- 'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-black uppercase tracking-widest border rounded-none transition-all',
+ 'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-black uppercase tracking-widest border rounded-none-none transition-all',
  theme === 'dark'
  ? 'border-amber-500/30 text-amber-400 hover:bg-amber-500/10 hover:border-amber-500/50'
  : 'border-amber-300 text-amber-600 hover:bg-amber-50 hover:border-amber-400',
@@ -168,7 +168,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  disabled={loading}
  onClick={handleForceSave}
  className={cn(
- 'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-black uppercase tracking-widest rounded-none transition-all bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-500 border border-gray-600',
+ 'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-black uppercase tracking-widest rounded-none-none transition-all bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-500 border border-gray-600',
  loading && 'opacity-50 cursor-not-allowed'
  )}
  >

@@ -129,7 +129,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  onClick={onClose}
  aria-label="Close diff view"
  className={cn(
- 'p-2 rounded-none transition-colors',
+ 'p-2 rounded-none-none transition-colors',
  isDark ? 'hover:bg-white/5 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-600 hover:text-black'
  )}
  >
@@ -162,7 +162,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  <div
  key={diff.field}
  className={cn(
- 'border rounded-none overflow-hidden',
+ 'border rounded-none-none overflow-hidden',
  isDark ? 'border-white/[0.08] bg-black/10' : 'border-gray-200 bg-gray-50/50'
  )}
  >
@@ -198,7 +198,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  <span className="text-xs font-black text-rose-500 uppercase tracking-widest block ">
  Previous Value (V.{versionNumber})
  </span>
- <div className="flex-1 bg-red-500/[0.03] border border-red-500/10 rounded p-3 text-red-100/90 min-h-16 overflow-x-auto custom-editor-scrollbar">
+ <div className="flex-1 bg-red-500/[0.03] border border-red-500/10 rounded-none p-3 text-red-100/90 min-h-16 overflow-x-auto custom-editor-scrollbar">
  {renderValuePreview(diff.from)}
  </div>
  </div>
@@ -208,7 +208,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  <span className="text-xs font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest block ">
  Current Value
  </span>
- <div className="flex-1 bg-gray-500/[0.03] border border-gray-500/10 rounded p-3 text-gray-100/90 min-h-16 overflow-x-auto custom-editor-scrollbar">
+ <div className="flex-1 bg-gray-500/[0.03] border border-gray-500/10 rounded-none p-3 text-gray-100/90 min-h-16 overflow-x-auto custom-editor-scrollbar">
  {renderValuePreview(diff.to)}
  </div>
  </div>

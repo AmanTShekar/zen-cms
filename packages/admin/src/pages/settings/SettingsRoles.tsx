@@ -157,7 +157,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  key={role._id}
  onClick={() => setEditingRole(role)}
  className={cn(
- 'p-4 border rounded-none flex items-center justify-between cursor-pointer transition-all',
+ 'p-4 border rounded-none-none flex items-center justify-between cursor-pointer transition-all',
  editingRole?._id === role._id
  ? 'bg-gray-500/10 border-gray-500/40'
  : 'bg-white/[0.01] border-white/[0.08] hover:border-white/[0.08]'
@@ -294,7 +294,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  updated[permIdx] = { ...perm, resource: e.target.value }
  setEditingRole({ ...editingRole, permissions: updated })
  }}
- className="bg-black border border-white/[0.08] text-white text-[11px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none focus:border-gray-500 disabled:opacity-50"
+ className="bg-black border border-white/[0.08] text-white text-[11px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none-none focus:border-gray-500 disabled:opacity-50"
  >
  {availableCollections.map(c => (<option key={c.slug} value={c.slug}>{c.label}</option>))}
  </select>
@@ -316,7 +316,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  updated[permIdx] = { ...perm, actions: next }
  setEditingRole({ ...editingRole, permissions: updated })
  }}
- className="rounded-none border-white/[0.08] text-gray-600 focus:ring-0 bg-black cursor-pointer"
+ className="rounded-none-none border-white/[0.08] text-gray-600 focus:ring-0 bg-black cursor-pointer"
  />
  <span className={cn('text-[8px] font-black uppercase tracking-wider', checked ? 'text-gray-600 dark:text-gray-400' : 'text-gray-500')}>{act}</span>
  </label>
@@ -375,7 +375,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  disabled={editingRole.isSystem}
  onClick={() => toggleField(permIdx, field, fp, 'read')}
  className={cn(
- 'w-6 h-6 border rounded-none flex items-center justify-center transition-all',
+ 'w-6 h-6 border rounded-none-none flex items-center justify-center transition-all',
  readOn
  ? 'bg-gray-500/20 border-gray-500/40 text-gray-600 dark:text-gray-400'
  : 'bg-transparent border-white/[0.08] text-gray-600 hover:border-white/[0.08]',
@@ -391,7 +391,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  disabled={editingRole.isSystem}
  onClick={() => toggleField(permIdx, field, fp, 'write')}
  className={cn(
- 'w-6 h-6 border rounded-none flex items-center justify-center transition-all',
+ 'w-6 h-6 border rounded-none-none flex items-center justify-center transition-all',
  writeOn
  ? 'bg-gray-500/20 border-gray-500/40 text-gray-600 dark:text-gray-400'
  : 'bg-transparent border-white/[0.08] text-gray-600 hover:border-white/[0.08]',

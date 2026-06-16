@@ -136,7 +136,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  <button
  onClick={() => { setInjectionIndex(0); setBlockPickerOpen(true); }}
  className={cn(
- 'p-1 rounded-none border transition-all text-gray-400 hover:text-gray-600 dark:text-gray-500',
+ 'p-1 rounded-none-none border transition-all text-gray-400 hover:text-gray-600 dark:text-gray-500',
  dark ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-50 border-gray-200'
  )}
  aria-label="Add new section"
@@ -146,7 +146,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  </button>
  <button
  onClick={() => setLeftOpen(false)}
- className="md:hidden p-1 rounded-none border transition-all text-gray-400 hover:text-rose-500"
+ className="md:hidden p-1 rounded-none-none border transition-all text-gray-400 hover:text-rose-500"
  aria-label="Close layers panel"
  >
  <X size={14} />
@@ -168,7 +168,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  onChange={(e) => setSearchQuery(e.target.value)}
  placeholder="Filter layers..."
  className={cn(
- 'w-full pl-7 pr-7 py-1.5 text-xs font-bold border rounded-none bg-transparent transition-all',
+ 'w-full pl-7 pr-7 py-1.5 text-xs font-bold border rounded-none-none bg-transparent transition-all',
  dark
  ? 'border-white/[0.08] text-white placeholder-gray-600 focus:border-gray-500/30'
  : 'border-gray-200 text-black placeholder-gray-400 focus:border-gray-500/30'
@@ -218,7 +218,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  key={section.id}
  onClick={() => editorSetActiveSection(section.id)}
  className={cn(
- 'w-full flex items-center gap-2.5 px-2.5 py-2 rounded-none border text-left transition-all',
+ 'w-full flex items-center gap-2.5 px-2.5 py-2 rounded-none-none border text-left transition-all',
  activeSection === section.id
  ? dark
  ? 'bg-white border-white text-black'
@@ -268,7 +268,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  <div
  onClick={() => editorSetActiveSection(section.id)}
  className={cn(
- 'flex-1 flex items-center gap-2.5 px-2.5 py-2 rounded-none border text-left transition-all cursor-pointer',
+ 'flex-1 flex items-center gap-2.5 px-2.5 py-2 rounded-none-none border text-left transition-all cursor-pointer',
  activeSection === section.id
  ? dark
  ? 'bg-white border-white text-black'
@@ -309,7 +309,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  removeSection(section.id)
  }}
  className={cn(
- 'p-1 shrink-0 rounded opacity-0 group-hover:opacity-100 transition-opacity ml-1',
+ 'p-1 shrink-0 rounded-none opacity-0 group-hover:opacity-100 transition-opacity ml-1',
  dark
  ? 'hover:bg-rose-500/20 text-rose-500/70 hover:text-rose-500'
  : 'hover:bg-rose-100 text-rose-500/70 hover:text-rose-600'

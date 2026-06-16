@@ -118,8 +118,8 @@ const LoginPage: React.FC = () => {
  return (
  <div className="min-h-screen flex items-center justify-center p-4 md:p-6 relative overflow-auto font-sans antialiased selection:bg-white selection:text-black bg-black text-white">
  {/* Background elements */}
- <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500 z-0 bg-white/5" />
- <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500 z-0 bg-white/5" />
+ <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none-none blur-[120px] pointer-events-none transition-all duration-500 z-0 bg-white/5" />
+ <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none-none blur-[120px] pointer-events-none transition-all duration-500 z-0 bg-white/5" />
 
  <div className="w-full max-w-[400px] relative z-10 flex flex-col gap-6 md:gap-8 py-4">
  {/* Branding Module */}
@@ -128,7 +128,7 @@ const LoginPage: React.FC = () => {
  animate={{ opacity: 1, y: 0 }}
  className="flex flex-col items-center text-center"
  >
- <div className="w-14 h-14 mb-6 rounded-none flex items-center justify-center shadow-2xl relative group cursor-pointer overflow-hidden transition-all duration-500 hover:scale-105 bg-white text-black">
+ <div className="w-14 h-14 mb-6 rounded-none-none flex items-center justify-center shadow-2xl relative group cursor-pointer overflow-hidden transition-all duration-500 hover:scale-105 bg-white text-black">
  <Logo size="sm" className="scale-75" />
  </div>
  <h1 className="text-4xl font-black tracking-tighter uppercase leading-none transition-colors text-white">
@@ -143,7 +143,7 @@ const LoginPage: React.FC = () => {
  <motion.div
  initial={{ opacity: 0, scale: 0.98 }}
  animate={{ opacity: 1, scale: 1 }}
- className="p-8 relative transition-all duration-500 rounded-none border bg-black/65 backdrop-blur-[12px] border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.1)]"
+ className="p-8 relative transition-all duration-500 rounded-none-none border bg-black/65 backdrop-blur-[12px] border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.1)]"
  >
  <div className="flex items-center justify-between mb-8">
  <div className="flex flex-col">
@@ -163,7 +163,7 @@ const LoginPage: React.FC = () => {
  initial={{ opacity: 0, height: 0 }}
  animate={{ opacity: 1, height: 'auto' }}
  exit={{ opacity: 0, height: 0 }}
- className="border rounded-none p-4 mb-6 overflow-hidden transition-colors bg-red-500/10 border-red-500/20 text-red-400"
+ className="border rounded-none-none p-4 mb-6 overflow-hidden transition-colors bg-red-500/10 border-red-500/20 text-red-400"
  >
  <div className="flex items-center gap-3">
  {error.type === 'network' ? (
@@ -180,12 +180,12 @@ const LoginPage: React.FC = () => {
  {error.data?.locked && error.data.remainingMin && (
  <div className="mt-3 space-y-1.5">
  <div className="flex items-center gap-2">
- <div className="flex-1 h-1.5 bg-white/10 rounded-none overflow-hidden">
+ <div className="flex-1 h-1.5 bg-white/10 rounded-none-none overflow-hidden">
  <motion.div
  initial={{ width: '100%' }}
  animate={{ width: `${Math.max(5, (error.data.remainingMin / 15) * 100)}%` }}
  transition={{ duration: 1 }}
- className="h-full bg-current rounded-none"
+ className="h-full bg-current rounded-none-none"
  />
  </div>
  <span className="text-[9px] font-black tabular-nums">
@@ -204,7 +204,7 @@ const LoginPage: React.FC = () => {
  <div
  key={i}
  className={cn(
- 'w-2 h-2 rounded-none transition-colors',
+ 'w-2 h-2 rounded-none-none transition-colors',
  i < (error.data?.attemptsLeft || 0)
  ? 'bg-current/30'
  : 'bg-current'
@@ -243,7 +243,7 @@ const LoginPage: React.FC = () => {
  maxLength={6}
  value={twoFactorToken}
  onChange={(e) => setTwoFactorToken(e.target.value.replace(/\D/g, ''))}
- className="w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all tracking-widest text-center bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
+ className="w-full border rounded-none-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all tracking-widest text-center bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
  />
  </div>
  </div>
@@ -263,7 +263,7 @@ const LoginPage: React.FC = () => {
  autoComplete="email"
  type="email"
  placeholder="admin@zenith.com"
- className="w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
+ className="w-full border rounded-none-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
  />
  </div>
  {errors.email && (
@@ -297,12 +297,12 @@ const LoginPage: React.FC = () => {
  autoComplete="current-password"
  type={showPassword ? 'text' : 'password'}
  placeholder="••••••••"
- className="w-full border rounded-none py-3 pl-12 pr-12 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
+ className="w-full border rounded-none-none py-3 pl-12 pr-12 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
  />
  <button
  type="button"
  onClick={() => setShowPassword(!showPassword)}
- className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-none transition-colors text-white/20 hover:text-white"
+ className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-none-none transition-colors text-white/20 hover:text-white"
  >
  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
  </button>
@@ -320,7 +320,7 @@ const LoginPage: React.FC = () => {
   <button
   type="submit"
   disabled={isSubmitting || (tempToken !== null && twoFactorToken.length !== 6)}
-  className="w-full bg-white text-black hover:bg-gray-200 disabled:bg-white/20 disabled:text-white/40 px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_4px_15px_rgba(255,255,255,0.1)] rounded-none font-mono"
+  className="w-full bg-white text-black hover:bg-gray-200 disabled:bg-white/20 disabled:text-white/40 px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_4px_15px_rgba(255,255,255,0.1)] rounded-none-none font-mono"
   >
  {isSubmitting ? (
  <Loader2 size={18} className="animate-spin" />
@@ -366,7 +366,7 @@ const LoginPage: React.FC = () => {
  }
  }}
  className={cn(
- 'border rounded-none py-2 px-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02]',
+ 'border rounded-none-none py-2 px-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02]',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-white hover:bg-white/10'
  : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 hover:bg-gray-100'
@@ -390,7 +390,7 @@ const LoginPage: React.FC = () => {
  }
  }}
  className={cn(
- 'border rounded-none py-2 px-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02]',
+ 'border rounded-none-none py-2 px-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02]',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-white hover:bg-white/10'
  : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 hover:bg-gray-100'

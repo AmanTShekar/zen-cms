@@ -110,8 +110,8 @@ const getBlockIcon = (slug: string): React.ReactNode => {
 // ── Gradient Map ──────────────────────────────────────────────────────────────
 const CATEGORY_GRADIENTS: Record<string, string> = {
   Layout: 'from-emerald-900/60 to-emerald-900/40',
-  Content: 'from-blue-900/60 to-cyan-900/40',
-  Commerce: 'from-emerald-900/60 to-teal-900/40',
+  Content: 'from-emerald-900/60 to-emerald-900/40',
+  Commerce: 'from-emerald-900/60 to-emerald-900/40',
   Media: 'from-rose-900/60 to-pink-900/40',
   Social: 'from-amber-900/60 to-orange-900/40',
   General: 'from-[#1a1a2e]/80 to-[#16213e]/60',
@@ -161,13 +161,13 @@ function BlockRow({
       drag={!disabled ? 'y' : false}
       whileDrag={{ scale: 1.01, zIndex: 50, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
       className={cn(
-        'group relative bg-app border rounded-none overflow-visible shadow-sm transition-colors duration-150',
+        'group relative bg-app border rounded-none-none overflow-visible shadow-sm transition-colors duration-150',
         isExpanded ? 'border-accent/60 shadow-[0_0_0_3px_rgba(16,185,129,0.08)]' : 'border-border hover:border-white/20'
       )}
     >
       {/* Index Badge */}
       <div className={cn(
-        'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-black border z-10 transition-all',
+        'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-none-full flex items-center justify-center text-[8px] font-black border z-10 transition-all',
         isExpanded
           ? 'bg-accent text-white border-accent shadow-[0_0_8px_rgba(16,185,129,0.6)]'
           : 'bg-app text-gray-400 border-border group-hover:border-accent/40 group-hover:text-accent'
@@ -176,7 +176,7 @@ function BlockRow({
       </div>
 
       {/* Accent bar when expanded */}
-      {isExpanded && <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-accent rounded-l" />}
+      {isExpanded && <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-accent rounded-none-l" />}
 
       {/* Header Row */}
       <div className="flex items-center gap-2.5 px-4 py-3 cursor-pointer" onClick={onToggle}>
@@ -187,7 +187,7 @@ function BlockRow({
         )}
 
         {/* Icon */}
-        <div className={cn('w-7 h-7 rounded flex items-center justify-center flex-shrink-0 bg-gradient-to-br text-white/70', grad)}>
+        <div className={cn('w-7 h-7 rounded-none flex items-center justify-center flex-shrink-0 bg-gradient-to-br text-white/70', grad)}>
           {getBlockIcon(block.blockType)}
         </div>
 
@@ -197,7 +197,7 @@ function BlockRow({
             <span className="text-[11px] font-bold text-white truncate">
               {previewText || blockDef?.labels?.singular || block.blockType}
             </span>
-            <span className="flex-shrink-0 px-1.5 py-px text-[8px] font-black uppercase tracking-wider text-gray-400 bg-white/[0.05] border border-border rounded">
+            <span className="flex-shrink-0 px-1.5 py-px text-[8px] font-black uppercase tracking-wider text-gray-400 bg-white/[0.05] border border-border rounded-none">
               {block.blockType}
             </span>
           </div>
@@ -245,7 +245,7 @@ function BlockRow({
                         </label>
                         {renderField
                           ? renderField(f as unknown as FieldConfig, block[f.name], (val: any) => onUpdate({ [f.name]: val }))
-                          : <input type="text" value={(block[f.name] as string) || ''} onChange={(e) => onUpdate({ [f.name]: e.target.value })} placeholder={`Enter ${f.label || f.name}...`} className="w-full bg-app border border-border px-3 py-2 text-sm focus:border-accent focus:ring-2 focus:ring-accent/10 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all rounded-none" />
+                          : <input type="text" value={(block[f.name] as string) || ''} onChange={(e) => onUpdate({ [f.name]: e.target.value })} placeholder={`Enter ${f.label || f.name}...`} className="w-full bg-app border border-border px-3 py-2 text-sm focus:border-accent focus:ring-2 focus:ring-accent/10 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all rounded-none-none" />
                         }
                       </div>
                     )
@@ -305,7 +305,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
         transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "w-full max-w-4xl border rounded-none overflow-hidden shadow-2xl flex flex-col h-[85vh]",
+          "w-full max-w-4xl border rounded-none-none overflow-hidden shadow-2xl flex flex-col h-[85vh]",
           theme === 'dark' ? 'bg-[#0B0F19] border-white/10' : 'bg-white border-gray-200'
         )}
       >
@@ -353,7 +353,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
               onChange={(e) => setSearch(e.target.value)} 
               placeholder="Search components..." 
               className={cn(
-                "w-full rounded-none pl-11 pr-11 py-3 text-xs font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black",
+                "w-full rounded-none-none pl-11 pr-11 py-3 text-xs font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black",
                 theme === 'dark' 
                   ? 'bg-white/[0.03] border border-white/10 text-white placeholder:text-gray-600 focus:border-emerald-500/40 focus:bg-white/[0.05]'
                   : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-400 focus:bg-white'
@@ -373,14 +373,14 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
           </div>
 
           {/* Categories Tab Bar */}
-          <div className="flex items-center gap-1 p-1 border border-white/5 bg-white/[0.02] rounded-none shrink-0 mb-4 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1 p-1 border border-white/5 bg-white/[0.02] rounded-none-none shrink-0 mb-4 overflow-x-auto no-scrollbar">
             {categories.map((cat) => (
               <button 
                 key={cat} 
                 type="button" 
                 onClick={() => setActiveCategory(cat)} 
                 className={cn(
-                  'flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase italic tracking-wider transition-all border rounded-none whitespace-nowrap',
+                  'flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase italic tracking-wider transition-all border rounded-none-none whitespace-nowrap',
                   activeCategory === cat
                     ? theme === 'dark'
                       ? 'bg-emerald-600/20 border-emerald-500/30 text-emerald-400'
@@ -423,7 +423,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.97 }}
                         onClick={() => onSelect(stock.slug)}
-                        className="flex flex-col text-left group border border-border bg-app hover:border-accent/60 hover:shadow-[0_0_18px_rgba(16,185,129,0.18)] transition-all overflow-hidden rounded-none"
+                        className="flex flex-col text-left group border border-border bg-app hover:border-accent/60 hover:shadow-[0_0_18px_rgba(16,185,129,0.18)] transition-all overflow-hidden rounded-none-none"
                       >
                         <div className="w-full h-24 overflow-hidden relative flex-shrink-0">
                           {stock.admin?.imageURL ? (
@@ -436,12 +436,12 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                             </div>
                           )}
                           {stock.admin?.category && (
-                            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-black/60 backdrop-blur text-white/80 rounded-sm">
+                            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-black/60 backdrop-blur text-white/80 rounded-none-none">
                               {stock.admin.category}
                             </span>
                           )}
                           {stock.admin?.imageURL && (
-                            <div className="absolute top-2 right-2 w-5 h-5 bg-black/50 backdrop-blur flex items-center justify-center text-white/70 rounded-sm">
+                            <div className="absolute top-2 right-2 w-5 h-5 bg-black/50 backdrop-blur flex items-center justify-center text-white/70 rounded-none-none">
                               {getBlockIcon(stock.slug)}
                             </div>
                           )}
@@ -554,7 +554,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
             <Layers size={16} className="text-accent" />
             <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Page Components</span>
             {blocks.length > 0 && (
-              <span className="px-1.5 py-0.5 text-[9px] font-black bg-accent/15 text-accent border border-accent/25 rounded-full">
+              <span className="px-1.5 py-0.5 text-[9px] font-black bg-accent/15 text-accent border border-accent/25 rounded-none-full">
                 {blocks.length}
               </span>
             )}
@@ -564,7 +564,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
               type="button"
               onClick={() => setShowPreview(!showPreview)}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all rounded-none border",
+                "flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all rounded-none-none border",
                 showPreview ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : "bg-white/[0.02] text-gray-400 border-white/5 hover:text-white"
               )}
             >
@@ -572,7 +572,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
               {showPreview ? 'Close Preview' : 'Live Preview'}
             </button>
             {blocks.length > 0 && (
-              <div className="flex items-center gap-1.5 border border-white/5 bg-white/[0.02] p-0.5 rounded-none mr-2">
+              <div className="flex items-center gap-1.5 border border-white/5 bg-white/[0.02] p-0.5 rounded-none-none mr-2">
                 <button
                   type="button"
                   onClick={expandAll}
@@ -591,7 +591,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
               </div>
             )}
             {!disabled && (
-              <button type="button" onClick={handleOpenPicker} className="flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white text-[10px] font-black uppercase tracking-wider hover:bg-accent/90 transition-all shadow-sm shadow-accent/20 rounded-none">
+              <button type="button" onClick={handleOpenPicker} className="flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white text-[10px] font-black uppercase tracking-wider hover:bg-accent/90 transition-all shadow-sm shadow-accent/20 rounded-none-none">
                 <Plus size={11} /> Add Component
               </button>
             )}
@@ -600,8 +600,8 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
 
       {/* Empty State */}
       {blocks.length === 0 && (
-        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="border border-dashed border-border p-10 flex flex-col items-center gap-4 text-center bg-white/[0.05]/20 rounded-none">
-          <div className="w-12 h-12 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center">
+        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="border border-dashed border-border p-10 flex flex-col items-center gap-4 text-center bg-white/[0.05]/20 rounded-none-none">
+          <div className="w-12 h-12 rounded-none-full bg-accent/10 border border-accent/20 flex items-center justify-center">
             <Layers size={20} className="text-accent/50" />
           </div>
           <div>
@@ -609,7 +609,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
             <p className="text-xs text-gray-400 max-w-xs leading-relaxed">Build your page by stacking components — hero sections, feature grids, pricing tables and more.</p>
           </div>
           {!disabled && (
-            <button type="button" onClick={handleOpenPicker} className="flex items-center gap-2 px-4 py-2 bg-accent text-white text-[10px] font-black uppercase tracking-wider hover:bg-accent/90 transition-all shadow-sm shadow-accent/20 mt-1 rounded-none">
+            <button type="button" onClick={handleOpenPicker} className="flex items-center gap-2 px-4 py-2 bg-accent text-white text-[10px] font-black uppercase tracking-wider hover:bg-accent/90 transition-all shadow-sm shadow-accent/20 mt-1 rounded-none-none">
               <Plus size={12} /> Add Your First Component
             </button>
           )}
@@ -653,7 +653,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
           type="button"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           onClick={handleOpenPicker}
-          className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-gray-400/60 text-[10px] font-black uppercase tracking-wider hover:border-accent/50 hover:text-accent hover:bg-accent/5 transition-all rounded-none"
+          className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-gray-400/60 text-[10px] font-black uppercase tracking-wider hover:border-accent/50 hover:text-accent hover:bg-accent/5 transition-all rounded-none-none"
         >
           <Plus size={11} /> Add Component
         </motion.button>
@@ -662,10 +662,10 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
 
       {/* Side-by-Side Live Preview Iframe */}
       {showPreview && (
-        <div className="w-full h-full min-h-[700px] border border-white/10 rounded-none overflow-hidden sticky top-4 bg-[#0B0F19] shadow-2xl flex flex-col">
+        <div className="w-full h-full min-h-[700px] border border-white/10 rounded-none-none overflow-hidden sticky top-4 bg-[#0B0F19] shadow-2xl flex flex-col">
           <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between shrink-0">
             <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-400 italic flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10B981]" />
+              <div className="w-2 h-2 rounded-none-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10B981]" />
               Live Preview Connected
             </span>
             <span className="text-[9px] font-mono text-gray-500">{previewUrl}</span>

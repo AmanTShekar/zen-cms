@@ -1,0 +1,32 @@
+import React from 'react';
+import { cn } from '../../lib/utils';
+import { useTheme } from '../../context/ThemeContext';
+
+export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'purple';
+}
+
+export function Badge({ className, variant = 'default', children, ...props }: BadgeProps) {
+  const { theme } = useTheme();
+
+  const variantClasses = {
+    default: theme === 'dark' ? 'bg-white/[0.05] text-gray-300 border-white/[0.1]' : 'bg-gray-100 text-gray-700 border-gray-200',
+    success: theme === 'dark' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    warning: theme === 'dark' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-amber-50 text-amber-700 border-amber-200',
+    danger: theme === 'dark' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-red-50 text-red-700 border-red-200',
+    purple: theme === 'dark' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : 'bg-purple-50 text-purple-700 border-purple-200',
+  }[variant];
+
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-none-none border",
+        variantClasses,
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </span>
+  );
+}

@@ -36,13 +36,13 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
  <div
  className={cn(
- 'w-full max-w-sm border rounded-none shadow-2xl',
+ 'w-full max-w-sm border rounded-none-none shadow-2xl',
  theme === 'dark' ? 'bg-black border-red-500/10' : 'bg-white border-red-100'
  )}
  >
  <div className="flex items-center justify-between px-8 py-6 border-b border-white/[0.08]">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 rounded-none bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+ <div className="w-10 h-10 rounded-none-none bg-red-500/10 border border-red-500/20 flex items-center justify-center">
  <AlertTriangle size={18} className="text-red-500" />
  </div>
  <span className="text-[12px] font-black uppercase tracking-wide">
@@ -73,7 +73,7 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
  onClick={onClose}
  disabled={loading}
  className={cn(
- 'flex-1 py-3.5 rounded-none text-[10px] font-black uppercase tracking-widest border transition-all active:scale-95 disabled:opacity-40',
+ 'flex-1 py-3.5 rounded-none-none text-[10px] font-black uppercase tracking-widest border transition-all active:scale-95 disabled:opacity-40',
  theme === 'dark'
  ? 'border-white/[0.08] text-gray-400 hover:border-white/[0.08] hover:text-white'
  : 'border-gray-200 text-gray-500 hover:border-gray-300'
@@ -86,7 +86,7 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
  onClick={handleDelete}
  disabled={loading}
  className={cn(
- 'flex-1 py-3.5 rounded-none text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 disabled:opacity-40 flex items-center justify-center gap-2',
+ 'flex-1 py-3.5 rounded-none-none text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 disabled:opacity-40 flex items-center justify-center gap-2',
  'bg-red-500 hover:bg-red-600 text-white shadow-red-500/20'
  )}
  >

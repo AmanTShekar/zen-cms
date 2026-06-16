@@ -186,7 +186,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  animate={{ opacity: 1, height: 'auto' }}
  exit={{ opacity: 0, height: 0 }}
  className={cn(
- 'border rounded-none overflow-hidden',
+ 'border rounded-none-none overflow-hidden',
  theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50 border-gray-200'
  )}
  >
@@ -209,7 +209,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => setInstallForm(prev => ({ ...prev, id: e.target.value }))}
  placeholder="acme-analytics"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
  )}
  />
@@ -222,7 +222,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => setInstallForm(prev => ({ ...prev, name: e.target.value }))}
  placeholder="ACME Analytics"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
  )}
  />
@@ -235,7 +235,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => setInstallForm(prev => ({ ...prev, version: e.target.value }))}
  placeholder="1.0.0"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
  )}
  />
@@ -248,7 +248,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => setInstallForm(prev => ({ ...prev, author: e.target.value }))}
  placeholder="ACME Corp"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
  )}
  />
@@ -261,7 +261,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => setInstallForm(prev => ({ ...prev, homepage: e.target.value }))}
  placeholder="https://example.com/plugin"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
  )}
  />
@@ -274,7 +274,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => setInstallForm(prev => ({ ...prev, packageName: e.target.value }))}
  placeholder="zenith-plugin-acme-analytics"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
  )}
  />
@@ -289,7 +289,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  placeholder="What does this plugin do?"
  rows={2}
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
+ 'w-full border rounded-none-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
  )}
  />
@@ -319,7 +319,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  className={cn(
- 'w-full border rounded-none py-3 pl-11 pr-4 text-[11px] font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-3 pl-11 pr-4 text-[11px] font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
  )}
  />
@@ -332,7 +332,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  </div>
  ) : filteredPlugins.length === 0 ? (
  <div className={cn(
- 'p-12 border border-dashed rounded-none text-center space-y-4',
+ 'p-12 border border-dashed rounded-none-none text-center space-y-4',
  theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
  )}>
  <Package size={40} className="mx-auto text-gray-600" />
@@ -355,7 +355,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  key={plugin.id}
  layout
  className={cn(
- 'border rounded-none overflow-hidden transition-all',
+ 'border rounded-none-none overflow-hidden transition-all',
  plugin.enabled
  ? theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  : theme === 'dark' ? 'bg-white/[0.005] border-white/[0.03] opacity-60' : 'bg-gray-50 border-gray-200 shadow-sm opacity-60'
@@ -365,7 +365,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <div className="px-5 py-4 flex items-center justify-between">
  <div className="flex items-center gap-4">
  <div className={cn(
- 'w-10 h-10 rounded-none border flex items-center justify-center',
+ 'w-10 h-10 rounded-none-none border flex items-center justify-center',
  plugin.enabled
  ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400'
  : theme === 'dark' ? 'bg-white/5 border-white/[0.08] text-gray-600' : 'bg-gray-100 border-gray-200 text-gray-400'
@@ -403,7 +403,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  target="_blank"
  rel="noopener noreferrer"
  className={cn(
- 'p-2 border rounded-none transition-colors',
+ 'p-2 border rounded-none-none transition-colors',
  theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-gray-600 dark:text-gray-400' : 'border-gray-200 text-gray-400 hover:text-gray-600'
  )}
  title="Plugin homepage"
@@ -415,7 +415,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onClick={() => handleToggle(plugin)}
  disabled={saving === plugin.id}
  className={cn(
- 'p-2 border rounded-none transition-colors',
+ 'p-2 border rounded-none-none transition-colors',
  plugin.enabled
  ? 'border-amber-500/20 text-amber-500 hover:text-amber-400'
  : theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-gray-600 dark:text-gray-400' : 'border-gray-200 text-gray-400 hover:text-gray-600'
@@ -431,7 +431,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <button
  onClick={() => setExpandedId(isExpanded ? null : plugin.id)}
  className={cn(
- 'p-2 border rounded-none transition-colors',
+ 'p-2 border rounded-none-none transition-colors',
  isExpanded
  ? 'border-gray-500/30 text-gray-600 dark:text-gray-400'
  : theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-white' : 'border-gray-200 text-gray-400 hover:text-gray-600'
@@ -445,7 +445,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onClick={() => handleDelete(plugin.id)}
  disabled={saving === plugin.id}
  className={cn(
- 'p-2 border rounded-none transition-colors',
+ 'p-2 border rounded-none-none transition-colors',
  theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-red-400' : 'border-gray-200 text-gray-400 hover:text-red-600'
  )}
  title="Uninstall"
@@ -481,7 +481,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <button
  onClick={() => handleConfigChange(plugin.id, key, !plugin.config?.[key])}
  className={cn(
- 'flex items-center gap-2 px-3 py-2 border rounded-none transition-colors',
+ 'flex items-center gap-2 px-3 py-2 border rounded-none-none transition-colors',
  plugin.config?.[key]
  ? 'border-gray-500/30 bg-gray-500/10 text-gray-600 dark:text-gray-400'
  : theme === 'dark' ? 'border-white/[0.08] text-gray-500' : 'border-gray-200 text-gray-400'
@@ -495,7 +495,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  value={plugin.config?.[key] || schema.default || ''}
  onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2.5 px-3 text-[11px] font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
  )}
  >
@@ -510,7 +510,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
  placeholder="••••••••"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
  )}
  />
@@ -520,7 +520,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  value={plugin.config?.[key] || schema.default || ''}
  onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
  )}
  />
@@ -548,7 +548,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
 
  {/* Info footer */}
  <div className={cn(
- 'p-5 border rounded-none space-y-3',
+ 'p-5 border rounded-none-none space-y-3',
  theme === 'dark' ? 'bg-gray-500/5 border-gray-500/10' : 'bg-gray-50 border-gray-100'
  )}>
  <div className="flex items-center gap-3">

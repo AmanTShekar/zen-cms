@@ -8,7 +8,7 @@ const COLORS = [
  'bg-gray-500',
  'bg-amber-500',
  'bg-rose-500',
- 'bg-cyan-500',
+ 'bg-emerald-500',
  'bg-violet-500',
 ]
 
@@ -50,7 +50,7 @@ export default function TeamPresenceWidget({ theme, title }: WidgetProps) {
  key={m.userId || i}
  title={m.email || m.userId}
  className={cn(
- 'w-9 h-9 rounded-none flex items-center justify-center text-white text-[10px] font-black border-2 border-current shrink-0',
+ 'w-9 h-9 rounded-none-none flex items-center justify-center text-white text-[10px] font-black border-2 border-current shrink-0',
  COLORS[i % COLORS.length]
  )}
  >
@@ -60,7 +60,7 @@ export default function TeamPresenceWidget({ theme, title }: WidgetProps) {
  {members.length > 8 && (
  <div
  className={cn(
- 'w-9 h-9 rounded-none flex items-center justify-center text-[10px] font-black',
+ 'w-9 h-9 rounded-none-none flex items-center justify-center text-[10px] font-black',
  theme === 'dark' ? 'bg-white/10 text-gray-400' : 'bg-gray-100 text-gray-500'
  )}
  >

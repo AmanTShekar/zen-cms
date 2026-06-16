@@ -21,7 +21,7 @@ const CollectionListBulkToolbar: React.FC<CollectionListBulkToolbarProps> = ({
  exit={{ opacity: 0, y: -10, height: 0 }}
  transition={{ duration: 0.2 }}
  className={cn(
- 'border rounded-none px-6 py-3 flex items-center justify-between gap-4 shadow-lg',
+ 'border rounded-none-none px-6 py-3 flex items-center justify-between gap-4 shadow-lg',
  theme === 'dark' ? 'bg-gray-500/10 border-gray-500/20' : 'bg-gray-50 border-gray-200'
  )}
  >
@@ -38,7 +38,7 @@ const CollectionListBulkToolbar: React.FC<CollectionListBulkToolbarProps> = ({
  onClick={() => onBulkAction('publish')}
  disabled={bulkProcessing}
  className={cn(
- 'px-4 py-2 rounded-none font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2 border',
+ 'px-4 py-2 rounded-none-none font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2 border',
  theme === 'dark' ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400 hover:bg-gray-500/20' : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
  )}
  >
@@ -48,7 +48,7 @@ const CollectionListBulkToolbar: React.FC<CollectionListBulkToolbarProps> = ({
  onClick={() => onBulkAction('unpublish')}
  disabled={bulkProcessing}
  className={cn(
- 'px-4 py-2 rounded-none font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2 border',
+ 'px-4 py-2 rounded-none-none font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2 border',
  theme === 'dark' ? 'bg-amber-500/10 border-amber-500/20 text-amber-400 hover:bg-amber-500/20' : 'bg-amber-50 border-amber-200 text-amber-600 hover:bg-amber-100'
  )}
  >
@@ -58,7 +58,7 @@ const CollectionListBulkToolbar: React.FC<CollectionListBulkToolbarProps> = ({
  onClick={() => onBulkAction('delete')}
  disabled={bulkProcessing}
  className={cn(
- 'px-4 py-2 rounded-none font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2 border',
+ 'px-4 py-2 rounded-none-none font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2 border',
  theme === 'dark' ? 'bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20' : 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100'
  )}
  >

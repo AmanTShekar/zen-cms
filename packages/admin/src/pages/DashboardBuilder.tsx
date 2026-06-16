@@ -3,9 +3,11 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   closestCenter,
+  defaultDropAnimationSideEffects,
 } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy, arrayMove } from '@dnd-kit/sortable';
@@ -25,11 +27,12 @@ import api from '../lib/api';
 import { confirm } from '../store/confirmStore';
 import { cn } from '../lib/utils';
 import { useTheme } from '../context/ThemeContext';
+import { PageHeader } from '../components/ui/PageHeader';
 import { WIDGET_REGISTRY } from '../widgets/registry';
 
 import type { DashboardWidget } from './dashboard/types';
 import { SortableWidget } from './dashboard/SortableWidget';
-import { WidgetPicker } from './dashboard/WidgetPicker';
+import { WidgetPicker, PickerItemPreview } from './dashboard/WidgetPicker';
 import { WidgetConfigModal } from './dashboard/WidgetConfigModal';
 
 export default function DashboardBuilder() {
@@ -53,8 +56,24 @@ export default function DashboardBuilder() {
       activationConstraint: {
         distance: 5,
       },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
     })
   );
+
+  const dropAnimationConfig = {
+    sideEffects: defaultDropAnimationSideEffects({
+      styles: {
+        active: {
+          opacity: '0.4',
+        },
+      },
+    }),
+  };
 
   const fetchLayout = useCallback(async () => {
     try {
@@ -122,7 +141,42 @@ export default function DashboardBuilder() {
   const handleDragEnd = (e: DragEndEvent) => {
     setActiveId(null);
     const { active, over } = e;
-    if (!over || active.id === over.id) return;
+    if (!over) return;
+    
+    // Check if dragging from picker
+    if (String(active.id).startsWith('picker-')) {
+      const type = String(active.id).replace('picker-', '');
+      const def = WIDGET_REGISTRY.find(w => w.type === type);
+      if (!def) return;
+      
+      const newWidget: DashboardWidget = {
+        id: uuidv4(),
+        type: def.type,
+        title: def.label,
+        config: {},
+        position: { x: 0, y: 999, w: def.defaultSize?.w || 1, h: def.defaultSize?.h || 1 },
+      };
+      
+      if (widgets.length >= 50) {
+        toast.error('Maximum 50 widgets reached');
+        return;
+      }
+      
+      // Insert at the index of the item we hovered over
+      const overIdx = widgets.findIndex((w) => w.id === over.id);
+      const newWidgets = [...widgets];
+      if (overIdx >= 0) {
+        newWidgets.splice(overIdx, 0, newWidget);
+      } else {
+        newWidgets.push(newWidget);
+      }
+      
+      markDirty(newWidgets);
+      return;
+    }
+    
+    // Otherwise standard reorder
+    if (active.id === over.id) return;
     const oldIdx = widgets.findIndex((w) => w.id === active.id);
     const newIdx = widgets.findIndex((w) => w.id === over.id);
     markDirty(arrayMove(widgets, oldIdx, newIdx));
@@ -186,43 +240,17 @@ export default function DashboardBuilder() {
       theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
     )}>
       {/* Header */}
-      <header className={cn(
-        'flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 mb-6 border-b transition-colors',
-        theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
-      )}>
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)] shrink-0">
-            <Monitor size={24} />
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em]">
-                Zenith Console
-              </span>
-              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-none shadow-[0_0_10px_#10b981]" />
-            </div>
-            <h1 className={cn(
-              "text-2xl font-black tracking-tighter uppercase leading-none",
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            )}>
-              Dashboard
-            </h1>
-            <p className={cn(
-              "text-xs font-medium mt-2",
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-            )}>
-              Monitor system health, metrics, and manage active widgets.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {isEditing ? (
+      <PageHeader
+        title="Dashboard"
+        description="Monitor system health, metrics, and manage active widgets."
+        icon={<Monitor size={24} />}
+        actions={
+          isEditing ? (
             <>
               <button
                 onClick={resetLayout}
                 className={cn(
-                  'flex items-center gap-2 px-4 py-2 border text-[9px] font-black uppercase rounded-none transition-all',
+                  'flex items-center gap-2 px-4 py-2 border text-[9px] font-black uppercase rounded-none-none transition-all',
                   theme === 'dark' ? 'border-white/[0.08] text-gray-400 hover:text-white' : 'border-gray-200 text-gray-500 hover:text-gray-900'
                 )}
               >
@@ -231,7 +259,7 @@ export default function DashboardBuilder() {
               <button
                 onClick={() => setShowPicker(true)}
                 className={cn(
-                  'flex items-center gap-2 px-4 py-2 border text-[9px] font-black uppercase rounded-none transition-all',
+                  'flex items-center gap-2 px-4 py-2 border text-[9px] font-black uppercase rounded-none-none transition-all',
                   theme === 'dark' ? 'border-gray-500/30 text-gray-600 hover:bg-gray-50/10' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
                 )}
               >
@@ -240,7 +268,7 @@ export default function DashboardBuilder() {
               <button
                 onClick={() => saveLayout(widgets)}
                 disabled={saving || !isDirty}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white text-[9px] font-black uppercase rounded-none hover:bg-emerald-600 transition-all disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white text-[9px] font-black uppercase rounded-none-none hover:bg-emerald-600 transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] disabled:opacity-50"
               >
                 {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
                 {saving ? 'Saving...' : 'Save Layout'}
@@ -250,27 +278,30 @@ export default function DashboardBuilder() {
             <button
               onClick={() => setIsEditing(true)}
               className={cn(
-                'flex items-center gap-2 px-4 py-2 border text-[9px] font-black uppercase rounded-none transition-all',
+                'flex items-center gap-2 px-4 py-2 border text-[9px] font-black uppercase rounded-none-none transition-all',
                 theme === 'dark' ? 'border-white/[0.08] text-gray-400 hover:text-white hover:bg-white/5' : 'border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-gray-50'
               )}
             >
               <Pencil size={13} /> Edit Layout
             </button>
-          )}
-        </div>
-      </header>
+          )
+        }
+        className="mb-6 -mt-6 -mx-6 pb-6 pt-6 px-6"
+      />
 
       {/* Grid */}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
+        onDragEnd={(e) => {
+          handleDragEnd(e);
+        }}
       >
         <SortableContext items={widgets.map((w) => w.id)} strategy={rectSortingStrategy}>
           <div className={cn(
-            "grid gap-6 auto-rows-[160px]",
-            columns === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
+            "grid gap-6 items-start",
+            columns === 2 ? 'grid-cols-1 md:grid-cols-12' : 'grid-cols-1 md:grid-cols-12'
           )}>
             {widgets.map((w) => (
               <SortableWidget
@@ -286,9 +317,16 @@ export default function DashboardBuilder() {
           </div>
         </SortableContext>
 
-        <DragOverlay>
-          {activeWidget ? (
-            <div className="opacity-80 scale-105 shadow-2xl h-[160px]">
+        <DragOverlay dropAnimation={activeId?.toString().startsWith('picker-') ? null : dropAnimationConfig}>
+          {activeId?.toString().startsWith('picker-') ? (
+            <div className="w-[360px] opacity-90 shadow-2xl shadow-emerald-500/20 scale-105 transition-transform cursor-grabbing">
+              <PickerItemPreview 
+                def={WIDGET_REGISTRY.find(w => w.type === activeId.toString().replace('picker-', ''))} 
+                theme={theme} 
+              />
+            </div>
+          ) : activeWidget ? (
+            <div className="shadow-2xl shadow-emerald-500/20 scale-105 transition-transform h-full w-full cursor-grabbing">
               <SortableWidget
                 widget={activeWidget}
                 isEditing={true}
@@ -300,13 +338,14 @@ export default function DashboardBuilder() {
             </div>
           ) : null}
         </DragOverlay>
-      </DndContext>
 
-      <WidgetPicker 
-        isOpen={showPicker} 
-        onClose={() => setShowPicker(false)} 
-        onAdd={addWidget} 
-      />
+        <WidgetPicker 
+          isOpen={showPicker} 
+          onClose={() => setShowPicker(false)} 
+          onAdd={addWidget} 
+          activeId={activeId}
+        />
+      </DndContext>
 
       <WidgetConfigModal 
         widget={configWidget} 

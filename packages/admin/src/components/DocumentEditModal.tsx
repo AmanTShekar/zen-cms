@@ -74,7 +74,7 @@ const DocumentEditModal: React.FC<DocumentEditModalProps> = ({
  animate={{ opacity: 1, y: 0, scale: 1 }}
  exit={{ opacity: 0, y: 10, scale: 0.98 }}
  className={cn(
- 'w-full max-w-4xl border rounded-none overflow-hidden shadow-2xl flex flex-col h-[85vh]',
+ 'w-full max-w-4xl border rounded-none-none overflow-hidden shadow-2xl flex flex-col h-[85vh]',
  theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200'
  )}
  >

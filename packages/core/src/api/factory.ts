@@ -347,6 +347,19 @@ export function createCollectionRouter(
     }
   })
 
+  router.post('/:id/preview-token', async (req, res, next) => {
+    try {
+      const { contentService } = getContext()
+      const user = (req as any).user
+      const siteId = req.headers['x-zenith-site-id'] as string
+      // Just return a dummy token for now so frontend stops throwing 404
+      const token = `preview_${req.params.id}_${Date.now()}`
+      return res.json({ data: { token } })
+    } catch (err: any) {
+      next(err)
+    }
+  })
+
   router.post('/', async (req, res, next) => {
     try {
       const { schema, contentService } = getContext()

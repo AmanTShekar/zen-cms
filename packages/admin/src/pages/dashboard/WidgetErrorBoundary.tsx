@@ -27,7 +27,7 @@ export class WidgetErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex flex-col items-center justify-center p-4 border border-red-500/20 bg-red-500/10 rounded min-h-[100px] h-full">
+        <div className="flex flex-col items-center justify-center p-4 border border-red-500/20 bg-red-500/10 rounded-none min-h-[100px] h-full">
           <AlertTriangle className="text-red-500 mb-2" size={24} />
           <span className="text-xs font-bold text-red-500 uppercase tracking-wider">Widget Error</span>
           <span className="text-[10px] text-red-400 mt-1 truncate max-w-full px-2">

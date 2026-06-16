@@ -161,7 +161,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  {selectedFiles.map((file, i) => (
  <div
  key={file._id || i}
- className="relative w-20 h-20 rounded-none border border-white/[0.08] overflow-hidden group shadow-sm transition-all hover:scale-105 active:scale-95"
+ className="relative w-20 h-20 rounded-none-none border border-white/[0.08] overflow-hidden group shadow-sm transition-all hover:scale-105 active:scale-95"
  >
  <img 
  src={getMediaUrl(file.url)} 
@@ -174,7 +174,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  onClick={() =>
  hasMany ? onChange(selectedFiles.filter((_, idx) => idx !== i)) : onChange(null)
  }
- className="absolute top-1 right-1 p-1 bg-black/60 text-white rounded-none opacity-0 group-hover:opacity-100 transition-opacity"
+ className="absolute top-1 right-1 p-1 bg-black/60 text-white rounded-none-none opacity-0 group-hover:opacity-100 transition-opacity"
  >
  <X size={10} />
  </button>
@@ -185,7 +185,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  <button
  type="button"
  onClick={() => setIsOpen(true)}
- className="w-20 h-20 rounded-none border border-dashed border-white/[0.08] flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:border-gray-500/50 hover:text-gray-600 dark:text-gray-400 hover:bg-gray-500/5 transition-all group"
+ className="w-20 h-20 rounded-none-none border border-dashed border-white/[0.08] flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:border-gray-500/50 hover:text-gray-600 dark:text-gray-400 hover:bg-gray-500/5 transition-all group"
  >
  <Plus
  size={18}
@@ -209,7 +209,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  >
  <div
  className={cn(
- 'w-full border rounded-none overflow-hidden shadow-2xl flex flex-col',
+ 'w-full border rounded-none-none overflow-hidden shadow-2xl flex flex-col',
  theme === 'dark' ? 'bg-black/80 backdrop-blur-xl border-white/[0.08]' : 'bg-white border-gray-200'
  )}
  >
@@ -221,7 +221,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  <button
  type="button"
  onClick={() => setIsOpen(false)}
- className={cn('p-1 rounded-none transition-colors', theme === 'dark' ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-500 hover:text-black hover:bg-black/5')}
+ className={cn('p-1 rounded-none-none transition-colors', theme === 'dark' ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-500 hover:text-black hover:bg-black/5')}
  >
  <X size={14} />
  </button>
@@ -232,7 +232,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  <motion.div key="focal-step" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex flex-col gap-4">
  {/* Focal Point Editor */}
  <div className="flex items-center gap-3">
- <button type="button" onClick={() => setFocalPending(null)} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors border border-white/[0.08] px-3 py-1.5 rounded-none">
+ <button type="button" onClick={() => setFocalPending(null)} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors border border-white/[0.08] px-3 py-1.5 rounded-none-none">
  ← Back
  </button>
  </div>
@@ -256,10 +256,10 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  placeholder="Search assets..."
  value={search}
  onChange={(e) => setSearch(e.target.value)}
- className="w-full bg-white/5 border border-white/[0.08] rounded-none pl-9 pr-3 py-2 text-xs font-medium text-white placeholder:text-gray-500 transition-all focus:bg-white/10 focus:border-gray-500/50 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black"
+ className="w-full bg-white/5 border border-white/[0.08] rounded-none-none pl-9 pr-3 py-2 text-xs font-medium text-white placeholder:text-gray-500 transition-all focus:bg-white/10 focus:border-gray-500/50 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black"
  />
  </div>
- <label className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600/20 hover:bg-gray-600/30 text-gray-600 dark:text-gray-400 rounded-none transition-all text-[10px] font-bold uppercase tracking-widest cursor-pointer border border-gray-500/30">
+ <label className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600/20 hover:bg-gray-600/30 text-gray-600 dark:text-gray-400 rounded-none-none transition-all text-[10px] font-bold uppercase tracking-widest cursor-pointer border border-gray-500/30">
  <UploadCloud size={14} />
  <span>Upload</span>
  <input type="file" className="hidden" onChange={handleUpload} />
@@ -267,7 +267,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  </div>
 
  {/* Middle Area: Scrollable Grid */}
- <div className="h-[280px] overflow-y-auto grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 pr-2 custom-scrollbar border border-white/[0.08] rounded-none p-2 bg-black/20">
+ <div className="h-[280px] overflow-y-auto grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 pr-2 custom-scrollbar border border-white/[0.08] rounded-none-none p-2 bg-black/20">
  {loading ? (
  <div className="col-span-full h-full flex flex-col items-center justify-center gap-4">
  <Loader2 className="animate-spin text-gray-600 dark:text-gray-500" size={24} />
@@ -300,7 +300,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  key={file._id}
  onClick={() => toggleSelect(file)}
  className={cn(
- 'group relative aspect-square rounded-none border overflow-hidden cursor-pointer transition-all',
+ 'group relative aspect-square rounded-none-none border overflow-hidden cursor-pointer transition-all',
  isSelected
  ? 'border-gray-500 shadow-[0_0_15px_rgba(16,185,129,0.3)] scale-[0.98]'
  : 'border-white/[0.08] hover:border-gray-500/30'
@@ -325,7 +325,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  </p>
  </div>
  {isSelected && (
- <div className="absolute top-2 right-2 bg-gray-600 dark:bg-gray-600 text-white rounded-none p-1.5 shadow-xl animate-in zoom-in-50 duration-300">
+ <div className="absolute top-2 right-2 bg-gray-600 dark:bg-gray-600 text-white rounded-none-none p-1.5 shadow-xl animate-in zoom-in-50 duration-300">
  <Check size={10} strokeWidth={4} />
  </div>
  )}
@@ -348,7 +348,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  <button
  type="button"
  onClick={() => { setIsOpen(false); setFocalPending(null) }}
- className="px-6 py-2 bg-gray-500/20 text-gray-600 dark:text-gray-400 hover:bg-gray-500/30 hover:text-white rounded-none text-[10px] font-bold uppercase tracking-widest transition-all border border-gray-500/30"
+ className="px-6 py-2 bg-gray-500/20 text-gray-600 dark:text-gray-400 hover:bg-gray-500/30 hover:text-white rounded-none-none text-[10px] font-bold uppercase tracking-widest transition-all border border-gray-500/30"
  >
  Done
  </button>

@@ -36,7 +36,7 @@ const DraggableZoneItem = ({
  transition={{ duration: 0.15 }}
  as="div"
  className={cn(
- 'border rounded-none overflow-hidden',
+ 'border rounded-none-none overflow-hidden',
  theme === 'dark' ? 'bg-white/[0.02] border-white/8' : 'bg-gray-50 border-gray-200'
  )}
  >
@@ -55,7 +55,7 @@ const DraggableZoneItem = ({
  <GripVertical size={12} className="text-gray-500" />
  </div>
  <div className={cn(
- 'w-5 h-5 rounded-none flex items-center justify-center shrink-0',
+ 'w-5 h-5 rounded-none-none flex items-center justify-center shrink-0',
  theme === 'dark' ? 'bg-gray-500/10' : 'bg-gray-50'
  )}>
  <BlockIcon size={10} className="text-gray-600 dark:text-gray-400" />
@@ -197,7 +197,7 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
  {/* Items with drag-and-drop reorder */}
  {value.length === 0 ? (
  <div className={cn(
- 'py-5 text-center border border-dashed rounded-none',
+ 'py-5 text-center border border-dashed rounded-none-none',
  theme === 'dark' ? 'border-white/[0.08] text-gray-500' : 'border-gray-200 text-gray-400'
  )}>
  <p className="text-xs font-bold ">No components — add one below</p>
@@ -235,7 +235,7 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
  type="button"
  onClick={handleOpenPicker}
  className={cn(
- 'w-full flex items-center justify-center gap-2 py-2.5 border border-dashed rounded-none transition-all text-xs font-black uppercase tracking-widest',
+ 'w-full flex items-center justify-center gap-2 py-2.5 border border-dashed rounded-none-none transition-all text-xs font-black uppercase tracking-widest',
  theme === 'dark'
  ? 'border-white/[0.08] text-gray-500 hover:border-gray-500/40 hover:text-gray-600 dark:text-gray-400 hover:bg-gray-500/5'
  : 'border-gray-200 text-gray-400 hover:border-gray-400 hover:text-gray-600 hover:bg-gray-50/50'

@@ -88,7 +88,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  type="button"
  onClick={() => setOpen(!open)}
  className={cn(
- 'w-full px-3 py-2 flex items-center justify-between border text-xs transition-all rounded-none font-medium',
+ 'w-full px-3 py-2 flex items-center justify-between border text-xs transition-all rounded-none-none font-medium',
  theme === 'dark'
  ? 'bg-black/40 border-white/[0.08] text-gray-300 hover:border-gray-500/50 focus:border-gray-500 focus:bg-black/80'
  : 'bg-white border-gray-200 text-gray-800 hover:border-gray-500 focus:border-gray-500'
@@ -110,7 +110,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  transition={{ duration: 0.15 }}
  style={{ top: pos.top, left: pos.left }}
  className={cn(
- 'fixed z-[1000] w-[340px] border rounded-none shadow-2xl overflow-hidden flex flex-col',
+ 'fixed z-[1000] w-[340px] border rounded-none-none shadow-2xl overflow-hidden flex flex-col',
  theme === 'dark'
  ? 'bg-black/98 backdrop-blur-xl border-white/[0.08] text-white'
  : 'bg-white/98 backdrop-blur-xl border-gray-200 text-gray-900'
@@ -132,7 +132,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- 'flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-none transition-all',
+ 'flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all',
  isActive
  ? theme === 'dark' ? 'bg-gray-500/20 text-gray-600 dark:text-gray-400' : 'bg-gray-100 text-gray-700'
  : theme === 'dark' ? 'text-gray-500 hover:text-gray-300 hover:bg-white/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
@@ -155,7 +155,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  onChange={(e) => onChange(e.target.value)}
  placeholder="https:// or /path"
  className={cn(
- 'w-full px-3 py-2 text-xs font-medium border rounded-none transition-colors outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-gray-500',
+ 'w-full px-3 py-2 text-xs font-medium border rounded-none-none transition-colors outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-gray-500',
  theme === 'dark' ? 'bg-black/20 border-white/[0.08] text-white' : 'bg-white border-gray-200 text-black'
  )}
  />
@@ -179,7 +179,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  setOpen(false)
  }}
  className={cn(
- 'w-full text-left px-3 py-2 text-xs font-medium border border-transparent hover:border-gray-500/30 rounded-none transition-colors flex items-center gap-2',
+ 'w-full text-left px-3 py-2 text-xs font-medium border border-transparent hover:border-gray-500/30 rounded-none-none transition-colors flex items-center gap-2',
  theme === 'dark' ? 'hover:bg-gray-500/10 text-gray-300' : 'hover:bg-gray-50 text-gray-700'
  )}
  >
@@ -203,7 +203,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  value={search}
  onChange={(e) => setSearch(e.target.value)}
  className={cn(
- 'w-full pl-8 pr-3 py-1.5 text-xs border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-gray-500',
+ 'w-full pl-8 pr-3 py-1.5 text-xs border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-gray-500',
  theme === 'dark' ? 'bg-black/20 border-white/[0.08] text-white' : 'bg-white border-gray-200 text-black'
  )}
  />
@@ -224,7 +224,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  setOpen(false)
  }}
  className={cn(
- 'w-full text-left px-3 py-2 border rounded-none transition-colors flex flex-col gap-1',
+ 'w-full text-left px-3 py-2 border rounded-none-none transition-colors flex flex-col gap-1',
  value === `/${page.slug}` 
  ? theme === 'dark' ? 'bg-gray-500/20 border-gray-500/30' : 'bg-gray-50 border-gray-200'
  : theme === 'dark' ? 'border-transparent hover:bg-white/5' : 'border-transparent hover:bg-gray-50'

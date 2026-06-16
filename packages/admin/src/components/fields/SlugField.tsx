@@ -41,7 +41,7 @@ const SlugField: React.FC<SlugFieldProps> = ({ value, onChange, disabled, source
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
         className={cn(
-          'w-full bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-none pl-9 pr-10 py-2 text-sm',
+          'w-full bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-none-none pl-9 pr-10 py-2 text-sm',
           'focus:border-emerald-500/50 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black disabled:opacity-60 disabled:cursor-not-allowed',
           'text-emerald-300 font-mono placeholder:text-gray-500'
         )}

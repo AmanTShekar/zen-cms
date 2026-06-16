@@ -33,7 +33,7 @@ const TextareaField: React.FC<Props> = ({ field, value, onChange, disabled }) =>
         rows={8}
         style={textCasingStyle(cf.casing)}
         disabled={disabled}
-        className="w-full bg-gray-900/65 backdrop-blur-md border border-white/8 rounded-none px-4 py-2.5 text-xs focus:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/50 outline-none min-h-[120px] transition-all disabled:opacity-60 disabled:cursor-not-allowed text-white placeholder:text-gray-500"
+        className="w-full bg-gray-900/65 backdrop-blur-md border border-white/8 rounded-none-none px-4 py-2.5 text-xs focus:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/50 outline-none min-h-[120px] transition-all disabled:opacity-60 disabled:cursor-not-allowed text-white placeholder:text-gray-500"
         placeholder={`Enter ${cf.name}...`}
       />
       {cf.maxLength && (

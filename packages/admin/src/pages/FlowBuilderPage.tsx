@@ -27,6 +27,7 @@ import { motion, AnimatePresence, Reorder } from 'framer-motion'
 import api from '../lib/api'
 import { cn } from '../lib/utils'
 import toast from 'react-hot-toast'
+import { PageHeader } from '../components/ui/PageHeader'
 
 interface FlowStep {
  id: string
@@ -59,7 +60,7 @@ const STEP_TYPES = [
  id: 'webhook',
  name: 'Webhook',
  icon: Webhook,
- color: 'text-blue-500',
+ color: 'text-emerald-500',
  description: 'Outbound HTTP POST request',
  },
  {
@@ -191,7 +192,7 @@ const FlowBuilderPage: React.FC = () => {
  if (loading) {
  return (
  <div className="h-full flex flex-col items-center justify-center bg-black gap-6">
- <div className="w-16 h-16 border-2 border-gray-500 border-t-transparent animate-spin rounded-none" />
+ <div className="w-16 h-16 border-2 border-gray-500 border-t-transparent animate-spin rounded-none-none" />
  <span className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-600 dark:text-gray-500 ">
  Accessing_Flow_Matrix...
  </span>
@@ -212,7 +213,7 @@ const FlowBuilderPage: React.FC = () => {
  </div>
  <button
  onClick={createNewFlow}
- className="w-8 h-8 flex items-center justify-center bg-white text-black hover:scale-105 transition-all rounded-none"
+ className="w-8 h-8 flex items-center justify-center bg-white text-black hover:scale-105 transition-all rounded-none-none"
  >
  <Plus size={16} />
  </button>
@@ -224,7 +225,7 @@ const FlowBuilderPage: React.FC = () => {
  key={flow._id}
  onClick={() => setSelectedFlow(flow)}
  className={cn(
- 'w-full text-left p-4 transition-all flex flex-col border rounded-none group',
+ 'w-full text-left p-4 transition-all flex flex-col border rounded-none-none group',
  selectedFlow?._id === flow._id
  ? 'bg-white/5 border-white/[0.08]'
  : 'border-transparent hover:bg-white/[0.02] hover:border-white/[0.08]'
@@ -260,78 +261,79 @@ const FlowBuilderPage: React.FC = () => {
  <div className="flex-1 flex flex-col relative bg-noise">
  {selectedFlow ? (
  <>
-            {/* Context Header */}
-            <div className="px-8 h-20 border-b border-white/[0.08] flex items-center justify-between bg-white/80 dark:bg-black/65 backdrop-blur-[12px] z-10 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
- <div className="flex flex-col">
- <div className="flex items-center gap-4">
- <input
- value={selectedFlow.name}
- onChange={(e) => setSelectedFlow({ ...selectedFlow, name: e.target.value })}
- className="bg-transparent text-xl font-black text-white uppercase tracking-tighter outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:text-gray-600 dark:text-gray-500 transition-colors"
- />
- <div className="flex items-center gap-1 bg-white/5 border border-white/[0.08] p-0.5">
- <button
- onClick={() => setViewMode('visual')}
- className={cn(
- 'px-2 py-1 text-[8px] font-black uppercase tracking-widest',
- viewMode === 'visual'
- ? 'bg-white text-black'
- : 'text-gray-600 hover:text-white'
- )}
- >
- Visual
- </button>
- <button
- onClick={() => setViewMode('code')}
- className={cn(
- 'px-2 py-1 text-[8px] font-black uppercase tracking-widest',
- viewMode === 'code'
- ? 'bg-white text-black'
- : 'text-gray-600 hover:text-white'
- )}
- >
- Code
- </button>
- </div>
- </div>
- <input
- value={selectedFlow.description}
- onChange={(e) =>
- setSelectedFlow({ ...selectedFlow, description: e.target.value })
- }
- className="bg-transparent text-[9px] text-gray-600 uppercase tracking-widest outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black mt-1 w-96"
- />
- </div>
-
- <div className="flex items-center gap-4">
- <button
- onClick={() => setSelectedFlow({ ...selectedFlow, active: !selectedFlow.active })}
- className={cn(
- 'px-4 py-2 border text-[9px] font-black uppercase tracking-widest transition-all',
- selectedFlow.active
- ? 'border-gray-500 text-gray-600 dark:text-gray-500 bg-gray-500/5'
- : 'border-white/[0.08] text-gray-600'
- )}
- >
- {selectedFlow.active ? 'STATUS:_LIVE' : 'STATUS:_IDLE'}
- </button>
- <button
- onClick={saveFlow}
- disabled={saving}
- className="px-6 h-10 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:brightness-110 active:scale-95 transition-all flex items-center gap-2 rounded-none disabled:opacity-50"
- >
- {saving ? <Loader2 className="animate-spin" size={14} /> : <Save size={14} />}
- Execute_Save
- </button>
- <button
- onClick={() => deleteFlow(selectedFlow._id)}
- className="p-2.5 text-gray-700 hover:text-red-500 transition-all border border-transparent hover:border-red-500/10"
- >
- <Trash2 size={18} />
- </button>
- </div>
- </div>
-
+            <PageHeader
+              title={
+                <div className="flex items-center gap-4">
+                  <input
+                    value={selectedFlow.name}
+                    onChange={(e) => setSelectedFlow({ ...selectedFlow, name: e.target.value })}
+                    className="bg-transparent text-xl font-black text-inherit uppercase tracking-tighter outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors"
+                  />
+                  <div className="flex items-center gap-1 bg-white/5 border border-white/[0.08] p-0.5">
+                    <button
+                      onClick={() => setViewMode('visual')}
+                      className={cn(
+                        'px-2 py-1 text-[8px] font-black uppercase tracking-widest',
+                        viewMode === 'visual'
+                          ? 'bg-white text-black'
+                          : 'text-gray-600 hover:text-white'
+                      )}
+                    >
+                      Visual
+                    </button>
+                    <button
+                      onClick={() => setViewMode('code')}
+                      className={cn(
+                        'px-2 py-1 text-[8px] font-black uppercase tracking-widest',
+                        viewMode === 'code'
+                          ? 'bg-white text-black'
+                          : 'text-gray-600 hover:text-white'
+                      )}
+                    >
+                      Code
+                    </button>
+                  </div>
+                </div>
+              }
+              description={
+                <input
+                  value={selectedFlow.description}
+                  onChange={(e) =>
+                    setSelectedFlow({ ...selectedFlow, description: e.target.value })
+                  }
+                  className="bg-transparent text-inherit uppercase tracking-widest outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black w-96 block"
+                />
+              }
+              actions={
+                <>
+                  <button
+                    onClick={() => setSelectedFlow({ ...selectedFlow, active: !selectedFlow.active })}
+                    className={cn(
+                      'px-4 py-2 border text-[9px] font-black uppercase tracking-widest transition-all',
+                      selectedFlow.active
+                        ? 'border-emerald-500 text-emerald-600 dark:text-emerald-500 bg-emerald-500/5'
+                        : 'border-white/[0.08] text-gray-600'
+                    )}
+                  >
+                    {selectedFlow.active ? 'STATUS:_LIVE' : 'STATUS:_IDLE'}
+                  </button>
+                  <button
+                    onClick={saveFlow}
+                    disabled={saving}
+                    className="px-6 h-10 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-600 active:scale-95 transition-all flex items-center gap-2 rounded-none-none disabled:opacity-50"
+                  >
+                    {saving ? <Loader2 className="animate-spin" size={14} /> : <Save size={14} />}
+                    Execute_Save
+                  </button>
+                  <button
+                    onClick={() => deleteFlow(selectedFlow._id)}
+                    className="p-2.5 text-gray-700 hover:text-red-500 transition-all border border-transparent hover:border-red-500/10"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </>
+              }
+            />
  <div className="flex-1 flex overflow-hidden">
  {/* Flow Visualizer */}
  <div className="flex-1 overflow-y-auto  py-12 px-8 flex flex-col items-center">
@@ -688,7 +690,7 @@ const FlowBuilderPage: React.FC = () => {
  ) : (
  <div className="flex-1 flex flex-col items-center justify-center p-12 text-center relative overflow-hidden">
  {/* Background Decoration */}
- <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gray-500/5 blur-[120px] rounded-none" />
+ <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gray-500/5 blur-[120px] rounded-none-none" />
 
  <div className="w-32 h-32 border-2 border-white/[0.08] flex items-center justify-center text-gray-900 mb-10 bg-zinc-950/20 relative z-10 group">
  <Workflow

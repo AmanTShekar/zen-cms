@@ -153,6 +153,7 @@ router.post('/', requireAuth, upload.single('file'), async (req: any, res, next)
       alt: altText,
       tags,
       focalPoint,
+      siteId: req.siteId,
     })
 
     res.json(createResponse(doc))

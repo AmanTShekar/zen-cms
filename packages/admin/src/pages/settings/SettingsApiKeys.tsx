@@ -48,14 +48,14 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
  </span>
  <button
  onClick={() => setGenerateOpen(true)}
- className="text-[10px] font-black uppercase border border-white/[0.08] px-8 py-3 rounded-none hover:bg-white/5 transition-all"
+ className="text-[10px] font-black uppercase border border-white/[0.08] px-8 py-3 rounded-none-none hover:bg-white/5 transition-all"
  >
  Generate Token
  </button>
  </div>
  <div className="grid grid-cols-1 gap-4">
  {apiKeys.length === 0 ? (
- <div className="py-6 border border-dashed rounded-none border-white/[0.08]">
+ <div className="py-6 border border-dashed rounded-none-none border-white/[0.08]">
  <EmptyState
  icon={Key}
  title="No API keys"
@@ -63,7 +63,7 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
  action={
  <button
  onClick={() => setGenerateOpen(true)}
- className="text-[10px] font-black uppercase border border-white/[0.08] px-8 py-3 rounded-none hover:bg-white/5 transition-all"
+ className="text-[10px] font-black uppercase border border-white/[0.08] px-8 py-3 rounded-none-none hover:bg-white/5 transition-all"
  >
  Generate Token
  </button>
@@ -75,14 +75,14 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
  <div
  key={key._id}
  className={cn(
- 'flex items-center justify-between p-6 border rounded-none transition-all group',
+ 'flex items-center justify-between p-6 border rounded-none-none transition-all group',
  theme === 'dark'
  ? 'bg-black/40 border-white/[0.08] hover:border-red-500/10'
  : 'bg-gray-50 border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center gap-6">
- <div className="w-14 h-14 rounded-none bg-gray-500/10 flex items-center justify-center text-gray-600 dark:text-gray-500 border border-gray-500/20">
+ <div className="w-14 h-14 rounded-none-none bg-gray-500/10 flex items-center justify-center text-gray-600 dark:text-gray-500 border border-gray-500/20">
  <Key size={24} />
  </div>
  <div className="flex flex-col leading-none">

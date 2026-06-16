@@ -116,7 +116,7 @@ export const MediaLibraryModal: React.FC = () => {
  animate={{ scale: 1, opacity: 1 }}
  exit={{ scale: 0.95, opacity: 0 }}
  className={cn(
- 'w-full max-w-6xl border rounded-none overflow-hidden shadow-2xl flex flex-col h-[85vh]',
+ 'w-full max-w-6xl border rounded-none-none overflow-hidden shadow-2xl flex flex-col h-[85vh]',
  theme === 'dark'
  ? 'bg-[#0a0a0a] border-white/[0.08]'
  : 'bg-white border-gray-200'
@@ -169,7 +169,7 @@ export const MediaLibraryModal: React.FC = () => {
  value={mediaSearch}
  onChange={(e) => setMediaSearch(e.target.value)}
  className={cn(
- 'w-full rounded-none pl-12 pr-4 py-3 text-xs font-bold transition-all',
+ 'w-full rounded-none-none pl-12 pr-4 py-3 text-xs font-bold transition-all',
  theme === 'dark'
  ? 'bg-white/[0.03] border border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:border-gray-500/40 focus-visible:bg-white/[0.05]'
  : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus-visible:border-gray-400 focus-visible:bg-white'
@@ -183,7 +183,7 @@ export const MediaLibraryModal: React.FC = () => {
  value={mediaTypeFilter}
  onChange={(e) => setMediaTypeFilter(e.target.value)}
  className={cn(
- 'rounded-none border py-3 px-4 text-xs font-black uppercase transition-all',
+ 'rounded-none-none border py-3 px-4 text-xs font-black uppercase transition-all',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-400 focus-visible:border-gray-500/40'
  : 'bg-gray-55 border-gray-200 text-gray-600 focus-visible:border-gray-400'
@@ -199,7 +199,7 @@ export const MediaLibraryModal: React.FC = () => {
 
  {/* Upload button */}
  <label className={cn(
- 'flex items-center gap-2 px-5 py-3 rounded-none border cursor-pointer transition-all text-xs font-black uppercase tracking-wider',
+ 'flex items-center gap-2 px-5 py-3 rounded-none-none border cursor-pointer transition-all text-xs font-black uppercase tracking-wider',
  theme === 'dark'
  ? 'bg-gray-600/20 border-gray-500/30 text-gray-300 hover:bg-gray-600/30 hover:border-gray-500/50'
  : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-gray-300'
@@ -243,7 +243,7 @@ export const MediaLibraryModal: React.FC = () => {
  return (
  <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
  <div className={cn(
- 'w-16 h-16 rounded-none border-2 border-dashed flex items-center justify-center',
+ 'w-16 h-16 rounded-none-none border-2 border-dashed flex items-center justify-center',
  theme === 'dark' ? 'border-white/[0.08] text-gray-600' : 'border-gray-200 text-gray-300'
  )}>
  <ImageIcon size={28} />
@@ -292,7 +292,7 @@ export const MediaLibraryModal: React.FC = () => {
  initial={{ opacity: 0, scale: 0.9 }}
  animate={{ opacity: 1, scale: 1 }}
  transition={{ delay: Math.min(i * 0.015, 1) }}
- className="group relative aspect-square border rounded-none overflow-hidden cursor-pointer transition-all hover:scale-[1.04] hover:z-10"
+ className="group relative aspect-square border rounded-none-none overflow-hidden cursor-pointer transition-all hover:scale-[1.04] hover:z-10"
  onClick={() => {
  navigator.clipboard.writeText(url).catch(() => {})
  toast.success('URL copied to clipboard')
@@ -348,7 +348,7 @@ export const MediaLibraryModal: React.FC = () => {
  toast.success('URL copied')
  }}
  className={cn(
- 'mt-1.5 px-2 py-1 rounded-none border text-xs font-black uppercase transition-all',
+ 'mt-1.5 px-2 py-1 rounded-none-none border text-xs font-black uppercase transition-all',
  theme === 'dark'
  ? 'border-white/[0.08] text-white/70 hover:border-white/40 hover:text-white bg-white/5'
  : 'border-white/30 text-white/80 hover:border-white/[0.08]0 hover:text-white bg-white/10'
@@ -374,7 +374,7 @@ export const MediaLibraryModal: React.FC = () => {
  toast.success('Media selected')
  }}
  className={cn(
- 'mt-1 px-2 py-1 rounded-none border text-xs font-black uppercase transition-all',
+ 'mt-1 px-2 py-1 rounded-none-none border text-xs font-black uppercase transition-all',
  'border-gray-500/40 text-gray-600 dark:text-gray-400 hover:border-gray-500 hover:text-gray-300 bg-gray-500/10'
  )}
  >
@@ -383,7 +383,7 @@ export const MediaLibraryModal: React.FC = () => {
  </div>
  {/* Type badge */}
  <div className={cn(
- 'absolute top-1.5 left-1.5 px-1.5 py-0.5 text-[6px] font-black uppercase border rounded-none',
+ 'absolute top-1.5 left-1.5 px-1.5 py-0.5 text-[6px] font-black uppercase border rounded-none-none',
  theme === 'dark'
  ? 'bg-black/60 border-white/[0.08] text-gray-400'
  : 'bg-white/80 border-gray-200 text-gray-500'
@@ -414,7 +414,7 @@ export const MediaLibraryModal: React.FC = () => {
  onClick={() => setMediaLibraryOpen(false)}
  aria-label="Close media library"
  className={cn(
- 'px-5 py-2 text-xs font-black uppercase rounded-none border transition-all',
+ 'px-5 py-2 text-xs font-black uppercase rounded-none-none border transition-all',
  theme === 'dark'
  ? 'border-white/[0.08] text-gray-400 hover:border-white/[0.08] hover:text-white'
  : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:text-black'

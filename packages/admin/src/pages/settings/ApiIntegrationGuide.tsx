@@ -56,13 +56,13 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
 
  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
  <div className={cn(
- "p-6 border rounded-none relative overflow-hidden group",
+ "p-6 border rounded-none-none relative overflow-hidden group",
  theme === 'dark' ? "bg-white/[0.02] border-white/[0.08]" : "bg-gray-50 border-gray-200"
  )}>
  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
  <Server size={48} />
  </div>
- <div className="w-10 h-10 bg-gray-500/20 text-gray-600 dark:text-gray-500 flex items-center justify-center rounded-none mb-4 font-black">1</div>
+ <div className="w-10 h-10 bg-gray-500/20 text-gray-600 dark:text-gray-500 flex items-center justify-center rounded-none-none mb-4 font-black">1</div>
  <h4 className="text-[14px] font-black uppercase mb-2">Generate a Key</h4>
  <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
  Create an API key above. Make sure to copy the secret key immediately, as it will only be shown once for security reasons.
@@ -70,27 +70,27 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  </div>
 
  <div className={cn(
- "p-6 border rounded-none relative overflow-hidden group",
+ "p-6 border rounded-none-none relative overflow-hidden group",
  theme === 'dark' ? "bg-white/[0.02] border-white/[0.08]" : "bg-gray-50 border-gray-200"
  )}>
  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
  <Info size={48} />
  </div>
- <div className="w-10 h-10 bg-gray-500/20 text-gray-600 dark:text-gray-500 flex items-center justify-center rounded-none mb-4 font-black">2</div>
+ <div className="w-10 h-10 bg-gray-500/20 text-gray-600 dark:text-gray-500 flex items-center justify-center rounded-none-none mb-4 font-black">2</div>
  <h4 className="text-[14px] font-black uppercase mb-2">Site Identification</h4>
  <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
- Include the <strong>X-Zenith-Site-Id</strong> header in all your requests. Your current site ID is <code className="bg-black/20 px-1 py-0.5 rounded text-gray-600 dark:text-gray-500">{activeSiteId}</code>.
+ Include the <strong>X-Zenith-Site-Id</strong> header in all your requests. Your current site ID is <code className="bg-black/20 px-1 py-0.5 rounded-none text-gray-600 dark:text-gray-500">{activeSiteId}</code>.
  </p>
  </div>
 
  <div className={cn(
- "p-6 border rounded-none relative overflow-hidden group",
+ "p-6 border rounded-none-none relative overflow-hidden group",
  theme === 'dark' ? "bg-white/[0.02] border-white/[0.08]" : "bg-gray-50 border-gray-200"
  )}>
  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
  <Database size={48} />
  </div>
- <div className="w-10 h-10 bg-gray-500/20 text-gray-600 dark:text-gray-500 flex items-center justify-center rounded-none mb-4 font-black">3</div>
+ <div className="w-10 h-10 bg-gray-500/20 text-gray-600 dark:text-gray-500 flex items-center justify-center rounded-none-none mb-4 font-black">3</div>
  <h4 className="text-[14px] font-black uppercase mb-2">Fetch Collections</h4>
  <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
  Query the endpoints to retrieve your data. Replace <code>posts</code> in the URL with the name of your specific collection.
@@ -99,7 +99,7 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  </div>
 
  <div className={cn(
- "border rounded-none overflow-hidden mt-8",
+ "border rounded-none-none overflow-hidden mt-8",
  theme === 'dark' ? "bg-[#0A0A0A] border-white/[0.08]" : "bg-gray-900 border-gray-800"
  )}>
  <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08] bg-black/40">
@@ -109,7 +109,7 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  key={lang}
  onClick={() => setActiveLang(lang)}
  className={cn(
- "px-4 py-1.5 text-[11px] font-black uppercase tracking-wider rounded-none transition-all",
+ "px-4 py-1.5 text-[11px] font-black uppercase tracking-wider rounded-none-none transition-all",
  activeLang === lang 
  ? "bg-gray-500/20 text-gray-600 dark:text-gray-400 border border-gray-500/30" 
  : "text-gray-500 hover:text-gray-300 border border-transparent"

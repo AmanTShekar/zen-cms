@@ -246,7 +246,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  {/* Form */}
  {showForm && (
  <div className={cn(
- 'p-6 border rounded-none space-y-5',
+ 'p-6 border rounded-none-none space-y-5',
  theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50 border-gray-200'
  )}>
  <div className="flex items-center justify-between">
@@ -265,7 +265,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  onChange={(e) => setFormUrl(e.target.value)}
  placeholder="https://example.com/api/webhooks/zenith"
  className={cn(
- 'w-full border rounded-none py-3 px-4 text-[12px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-3 px-4 text-[12px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
  )}
  />
@@ -279,7 +279,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  onChange={(e) => setFormSecret(e.target.value)}
  placeholder="whsec_..."
  className={cn(
- 'w-full border rounded-none py-3 px-4 text-[12px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-3 px-4 text-[12px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
  )}
  />
@@ -288,7 +288,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <div className="space-y-2">
  <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Subscribed Events</label>
  <div className={cn(
- 'p-4 border rounded-none flex flex-wrap gap-2 max-h-40 overflow-y-auto',
+ 'p-4 border rounded-none-none flex flex-wrap gap-2 max-h-40 overflow-y-auto',
  theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200'
  )}>
  {AVAILABLE_EVENTS.map((evt) => {
@@ -299,7 +299,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  type="button"
  onClick={() => toggleEvent(evt.value)}
  className={cn(
- 'px-3 py-1.5 text-[8px] font-black uppercase tracking-widest border rounded-none transition-all',
+ 'px-3 py-1.5 text-[8px] font-black uppercase tracking-widest border rounded-none-none transition-all',
  checked
  ? 'border-gray-500/40 bg-gray-500/10 text-gray-600 dark:text-gray-400'
  : theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-gray-300' : 'border-gray-200 text-gray-400 hover:text-gray-600'
@@ -355,7 +355,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <div key={wh.id} className="space-y-0">
  <div
  className={cn(
- 'p-5 border rounded-none transition-all',
+ 'p-5 border rounded-none-none transition-all',
  wh.enabled
  ? theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  : theme === 'dark' ? 'bg-white/[0.005] border-white/[0.03] opacity-60' : 'bg-gray-50 border-gray-200 shadow-sm opacity-60'
@@ -374,7 +374,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  onClick={() => handleTest(wh.id, wh.url)}
  disabled={testingId === wh.id || !wh.enabled}
  className={cn(
- 'p-2 border rounded-none transition-colors',
+ 'p-2 border rounded-none-none transition-colors',
  theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-gray-600 dark:text-gray-400' : 'border-gray-200 text-gray-400 hover:text-gray-600'
  )}
  title="Send test event"
@@ -384,7 +384,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <button
  onClick={() => handleToggle(wh)}
  className={cn(
- 'p-2 border rounded-none transition-colors',
+ 'p-2 border rounded-none-none transition-colors',
  wh.enabled
  ? theme === 'dark' ? 'border-white/[0.08] text-amber-500 hover:text-amber-400' : 'border-gray-200 text-amber-600'
  : theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-gray-600 dark:text-gray-400' : 'border-gray-200 text-gray-400 hover:text-gray-600'
@@ -396,7 +396,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <button
  onClick={() => handleEdit(wh)}
  className={cn(
- 'px-3 py-1.5 text-[8px] font-black uppercase border rounded-none transition-colors',
+ 'px-3 py-1.5 text-[8px] font-black uppercase border rounded-none-none transition-colors',
  theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-white' : 'border-gray-200 text-gray-400 hover:text-gray-900'
  )}
  >
@@ -405,7 +405,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <button
  onClick={() => handleDelete(wh.id)}
  className={cn(
- 'p-2 border rounded-none transition-colors',
+ 'p-2 border rounded-none-none transition-colors',
  theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-red-400' : 'border-gray-200 text-gray-400 hover:text-red-600'
  )}
  title="Delete"
@@ -415,7 +415,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <button
  onClick={() => toggleExpand(wh)}
  className={cn(
- 'p-2 border rounded-none transition-colors',
+ 'p-2 border rounded-none-none transition-colors',
  expandedWebhook === wh.id
  ? 'border-gray-500/40 text-gray-600 dark:text-gray-400'
  : theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-gray-600 dark:text-gray-400' : 'border-gray-200 text-gray-400 hover:text-gray-600'
@@ -431,7 +431,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <span
  key={evt}
  className={cn(
- 'px-2 py-0.5 text-[7px] font-black uppercase tracking-widest border rounded-none',
+ 'px-2 py-0.5 text-[7px] font-black uppercase tracking-widest border rounded-none-none',
  evt === '*'
  ? 'border-gray-500/30 text-gray-600 dark:text-gray-400 bg-gray-500/5'
  : theme === 'dark' ? 'border-white/[0.08] text-gray-500' : 'border-gray-200 text-gray-400'
@@ -442,7 +442,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  ))}
  {wh.secret && (
  <span className={cn(
- 'px-2 py-0.5 text-[7px] font-black uppercase tracking-widest border rounded-none',
+ 'px-2 py-0.5 text-[7px] font-black uppercase tracking-widest border rounded-none-none',
  theme === 'dark' ? 'border-gray-500/20 text-gray-600 dark:text-gray-500' : 'border-gray-200 text-gray-600'
  )}>
  Signed
@@ -454,7 +454,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  {/* Delivery Log Panel */}
  {expandedWebhook === wh.id && (
  <div className={cn(
- 'border border-t-0 rounded-none p-4',
+ 'border border-t-0 rounded-none-none p-4',
  theme === 'dark' ? 'bg-black/30 border-white/[0.08]' : 'bg-gray-50 border-gray-200'
  )}>
  <div className="flex items-center justify-between mb-4">
@@ -468,7 +468,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  onClick={() => fetchDeliveries(wh.id, wh.url)}
  disabled={loadingDeliveries === wh.id}
  className={cn(
- 'flex items-center gap-1.5 px-3 py-1.5 text-[7px] font-black uppercase border rounded-none transition-colors',
+ 'flex items-center gap-1.5 px-3 py-1.5 text-[7px] font-black uppercase border rounded-none-none transition-colors',
  theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-gray-600 dark:text-gray-400' : 'border-gray-200 text-gray-400 hover:text-gray-600'
  )}
  >
@@ -511,7 +511,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <div
  key={d.id}
  className={cn(
- 'grid grid-cols-[1fr_1fr_80px_80px_100px_40px] gap-2 px-3 py-2.5 text-[9px] font-mono border rounded-none transition-colors items-center',
+ 'grid grid-cols-[1fr_1fr_80px_80px_100px_40px] gap-2 px-3 py-2.5 text-[9px] font-mono border rounded-none-none transition-colors items-center',
  d.success
  ? theme === 'dark' ? 'bg-gray-500/[0.03] border-gray-500/10' : 'bg-gray-50 border-gray-100'
  : theme === 'dark' ? 'bg-red-500/[0.03] border-red-500/10' : 'bg-red-50 border-red-100'
@@ -554,7 +554,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  onClick={() => handleReplay(wh.id, d.id, wh.url)}
  disabled={replayingId === d.id}
  className={cn(
- 'p-1.5 border rounded-none transition-colors',
+ 'p-1.5 border rounded-none-none transition-colors',
  theme === 'dark' ? 'border-white/[0.08] text-gray-400 hover:text-gray-600 dark:text-gray-400 hover:border-gray-500/30' : 'border-gray-200 text-gray-500 hover:text-gray-600 hover:border-gray-300'
  )}
  title="Replay Delivery"

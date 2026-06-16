@@ -58,13 +58,13 @@ const ForgotPasswordPage: React.FC = () => {
  {/* 🏛️ Professional Minimalist Background */}
  <div
  className={cn(
- 'absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500',
+ 'absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none-none blur-[120px] pointer-events-none transition-all duration-500',
  theme === 'dark' ? 'bg-gray-500/10' : 'bg-gray-500/[0.03]'
  )}
  ></div>
  <div
  className={cn(
- 'absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500',
+ 'absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none-none blur-[120px] pointer-events-none transition-all duration-500',
  theme === 'dark' ? 'bg-gray-500/10' : 'bg-gray-500/[0.02]'
  )}
  ></div>
@@ -78,7 +78,7 @@ const ForgotPasswordPage: React.FC = () => {
  >
  <div
  className={cn(
- 'w-14 h-14 mb-6 rounded-none flex items-center justify-center shadow-2xl relative group cursor-pointer overflow-hidden transition-all duration-500 hover:scale-105',
+ 'w-14 h-14 mb-6 rounded-none-none flex items-center justify-center shadow-2xl relative group cursor-pointer overflow-hidden transition-all duration-500 hover:scale-105',
  theme === 'dark' ? 'bg-white text-black' : 'bg-gray-900 text-white'
  )}
  >
@@ -102,7 +102,7 @@ const ForgotPasswordPage: React.FC = () => {
  initial={{ opacity: 0, scale: 0.98 }}
  animate={{ opacity: 1, scale: 1 }}
  className={cn(
- 'border rounded-none p-8 shadow-2xl relative transition-all duration-500',
+ 'border rounded-none-none p-8 shadow-2xl relative transition-all duration-500',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
@@ -124,14 +124,14 @@ const ForgotPasswordPage: React.FC = () => {
  {/* Theme Toggle */}
  <div
  className={cn(
- 'p-1 rounded-none border flex items-center gap-1 transition-all',
+ 'p-1 rounded-none-none border flex items-center gap-1 transition-all',
  theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-100 border-gray-200'
  )}
  >
  <button
  onClick={() => theme !== 'light' && toggleTheme()}
  className={cn(
- 'w-7 h-7 flex items-center justify-center rounded-none transition-all',
+ 'w-7 h-7 flex items-center justify-center rounded-none-none transition-all',
  theme === 'light'
  ? 'bg-white text-gray-900 shadow-sm'
  : 'text-gray-400 hover:text-white'
@@ -142,7 +142,7 @@ const ForgotPasswordPage: React.FC = () => {
  <button
  onClick={() => theme !== 'dark' && toggleTheme()}
  className={cn(
- 'w-7 h-7 flex items-center justify-center rounded-none transition-all',
+ 'w-7 h-7 flex items-center justify-center rounded-none-none transition-all',
  theme === 'dark'
  ? 'bg-gray-900 text-white shadow-sm'
  : 'text-gray-400 hover:text-white'
@@ -169,7 +169,7 @@ const ForgotPasswordPage: React.FC = () => {
  <button
  onClick={() => navigate('/login')}
  className={cn(
- 'w-full rounded-none py-4 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-xl transition-all group',
+ 'w-full rounded-none-none py-4 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-xl transition-all group',
  theme === 'dark'
  ? 'bg-white text-black hover:bg-gray-100 shadow-white/5'
  : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
@@ -184,7 +184,7 @@ const ForgotPasswordPage: React.FC = () => {
  {error && (
  <div
  className={cn(
- 'border rounded-none p-4 flex items-center gap-3 mb-6 overflow-hidden transition-colors',
+ 'border rounded-none-none p-4 flex items-center gap-3 mb-6 overflow-hidden transition-colors',
  theme === 'dark'
  ? 'bg-red-500/10 border-red-500/20 text-red-400'
  : 'bg-red-50 border-red-100 text-red-600'
@@ -214,7 +214,7 @@ const ForgotPasswordPage: React.FC = () => {
  type="email"
  placeholder="Enter your email"
  className={cn(
- 'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
+ 'w-full border rounded-none-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
  theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20'
  : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-gray-100'
@@ -232,7 +232,7 @@ const ForgotPasswordPage: React.FC = () => {
  type="submit"
  disabled={isSubmitting}
  className={cn(
- 'w-full rounded-none py-4 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-xl transition-all group disabled:opacity-50 disabled:pointer-events-none',
+ 'w-full rounded-none-none py-4 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-xl transition-all group disabled:opacity-50 disabled:pointer-events-none',
  theme === 'dark'
  ? 'bg-white text-black hover:bg-gray-100 shadow-white/5'
  : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
