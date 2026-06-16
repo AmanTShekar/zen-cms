@@ -1,5 +1,5 @@
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node'
-import { SimpleSpanProcessor, ConsoleSpanExporter } from '@opentelemetry/sdk-trace-base'
+import { SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
 import { Resource } from '@opentelemetry/resources'
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
@@ -7,12 +7,16 @@ import { registerInstrumentations } from '@opentelemetry/instrumentation'
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http'
 import { ExpressInstrumentation } from '@opentelemetry/instrumentation-express'
 import { logger } from './logger'
+import { traceContextStorage } from './tracer'
 
-/**
- * Initializes OpenTelemetry distributed tracing if configured.
- * Traces are exported via OTLP over HTTP.
- */
-export function initTelemetry() {
+function getOtelProvider() {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { getGlobalTracerProvider } = require('@opentelemetry/api/build/src/api/global-tracer-provider')
+    const existing = getGlobalTracerProvider()
+    if (existing) return null
+  } catch { /* opentelemetry not available */ }
+
   if (process.env.OTEL_EXPORTER_OTLP_ENDPOINT || process.env.ENABLE_TRACING === 'true') {
     const provider = new NodeTracerProvider({
       resource: new Resource({
@@ -21,12 +25,14 @@ export function initTelemetry() {
       }) as any,
     })
 
-    // Use OTLP Exporter if endpoint is set, else default to console (for debugging)
     const exporter = process.env.OTEL_EXPORTER_OTLP_ENDPOINT
       ? new OTLPTraceExporter({ url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT })
-      : new ConsoleSpanExporter()
+      : undefined
 
-    ;(provider as any).addSpanProcessor(new SimpleSpanProcessor(exporter))
+    if (exporter) {
+      ;(provider as any).addSpanProcessor(new SimpleSpanProcessor(exporter))
+    }
+
     provider.register()
 
     registerInstrumentations({
@@ -37,5 +43,10 @@ export function initTelemetry() {
     })
 
     logger.info('OpenTelemetry distributed tracing initialized')
+    return provider
   }
+
+  return null
 }
+
+getOtelProvider()

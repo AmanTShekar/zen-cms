@@ -1,4 +1,4 @@
-import { CMSConfig } from '@zenithcms/types'
+import { CMSConfig } from '@zenith-open/zenithcms-types'
 import { logger } from '../services/logger'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 

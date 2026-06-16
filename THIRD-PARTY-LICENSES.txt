@@ -1,0 +1,5 @@
+└─ zenith-cms@0.2.0
+   ├─ licenses: UNLICENSED
+   ├─ private: true
+   ├─ path: C:\Users\Asus\Desktop\cms
+   └─ licenseFile: C:\Users\Asus\Desktop\cms\LICENSE

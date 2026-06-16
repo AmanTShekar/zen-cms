@@ -72,7 +72,7 @@ program
     }
 
     const dbType = isPostgres ? 'PostgreSQL' : 'MongoDB'
-    const dbPkg = isPostgres ? '@zenithcms/db-postgres' : '@zenithcms/db-mongodb'
+    const dbPkg = isPostgres ? '@zenith-open/zenithcms-db-postgres' : '@zenith-open/zenithcms-db-mongodb'
 
     console.log('\n' + chalk.cyan('🏗️  Configuring project scaffolding...'))
 
@@ -92,8 +92,8 @@ program
         "start": "node dist/server.js"
       },
       dependencies: {
-        "@zenithcms/core": "^0.2.0",
-        "@zenithcms/types": "^0.2.0",
+        "@zenith-open/zenithcms-core": "^0.2.0",
+        "@zenith-open/zenithcms-types": "^0.2.0",
         [dbPkg]: "^0.2.0",
         "tsx": "^4.19.0",
         "typescript": "^5.4.5"
@@ -105,7 +105,7 @@ program
     )
 
     // 5. Generate zenith.config.ts
-    const configContent = `import type { CMSConfig } from '@zenithcms/types'
+    const configContent = `import type { CMSConfig } from '@zenith-open/zenithcms-types'
 
 const config: CMSConfig = {
   collections: [
@@ -144,7 +144,7 @@ export default config
     fs.writeFileSync(path.join(projectPath, 'zenith.config.ts'), configContent)
 
     // 6. Generate server.ts
-    const serverContent = `import { Zenith } from '@zenithcms/core'
+    const serverContent = `import { Zenith } from '@zenith-open/zenithcms-core'
 import config from './zenith.config.js'
 
 // Initialize the visual-first pro-code engine

@@ -59,14 +59,14 @@ const BADGE_COLORS: Record<string, string> = {
  number: 'bg-blue-900/60 text-blue-300',
  email: 'bg-purple-900/60 text-purple-300',
  textarea: 'bg-gray-700/60 text-gray-300',
- checkbox: 'bg-emerald-900/60 text-emerald-300',
+ checkbox: 'bg-gray-900/60 text-gray-300',
  date: 'bg-amber-900/60 text-amber-300',
  select: 'bg-orange-900/60 text-orange-300',
  media: 'bg-cyan-900/60 text-cyan-300',
  richtext: 'bg-lime-900/60 text-lime-300',
  relation: 'bg-pink-900/60 text-pink-300',
  json: 'bg-indigo-900/60 text-indigo-300',
- slug: 'bg-emerald-900/60 text-emerald-300',
+ slug: 'bg-gray-900/60 text-gray-300',
  array: 'bg-amber-900/60 text-amber-300',
  blocks: 'bg-purple-900/60 text-purple-300',
  default: 'bg-white/5 text-gray-400',
@@ -272,8 +272,8 @@ export const VisualGraphPage = () => {
  dark ? 'bg-black/80 border-white/[0.08]' : 'bg-white/90 border-gray-200'
  )}>
  <div className="flex items-center gap-2.5">
- <div className="w-8 h-8 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
- <Network size={16} className="text-emerald-600 dark:text-emerald-400" />
+ <div className="w-8 h-8 rounded-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
+ <Network size={16} className="text-gray-600 dark:text-gray-400" />
  </div>
  <div>
  <p className={cn('text-xs font-black uppercase tracking-widest', dark ? 'text-white' : 'text-black')}>Schema Graph</p>
@@ -308,8 +308,8 @@ export const VisualGraphPage = () => {
  value={search}
  onChange={e => setSearch(e.target.value)}
  className={cn(
- 'pl-8 pr-8 py-2 text-[11px] border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black w-44 transition-all',
- dark ? 'bg-black/80 border-white/[0.08] text-white placeholder:text-gray-600 focus:border-emerald-500/50 backdrop-blur-xl' : 'bg-white border-gray-200 text-gray-900 focus:border-emerald-500'
+ 'pl-8 pr-8 py-2 text-[11px] border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black w-44 transition-all',
+ dark ? 'bg-black/80 border-white/[0.08] text-white placeholder:text-gray-600 focus:border-gray-500/50 backdrop-blur-xl' : 'bg-white border-gray-200 text-gray-900 focus:border-gray-500'
  )}
  />
  {search && (
@@ -346,7 +346,7 @@ export const VisualGraphPage = () => {
  >
  {loading ? (
  <div className="absolute inset-0 flex items-center justify-center">
- <Activity className="animate-spin text-emerald-600 dark:text-emerald-500" size={32} />
+ <Activity className="animate-spin text-gray-600 dark:text-gray-500" size={32} />
  </div>
  ) : (
  <svg
@@ -575,7 +575,7 @@ export const VisualGraphPage = () => {
  `GET /api/v1/${selectedNode.id}/:id`,
  `PUT /api/v1/${selectedNode.id}/:id`,
  ].map(ep => (
- <code key={ep} className={cn('block text-[9px] font-mono px-2 py-1 rounded', dark ? 'bg-white/5 text-emerald-600 dark:text-emerald-400' : 'bg-gray-50 text-emerald-600')}>{ep}</code>
+ <code key={ep} className={cn('block text-[9px] font-mono px-2 py-1 rounded', dark ? 'bg-white/5 text-gray-600 dark:text-gray-400' : 'bg-gray-50 text-gray-600')}>{ep}</code>
  ))}
  </div>
  </div>
@@ -613,9 +613,9 @@ export const VisualGraphPage = () => {
  <button
  key={`out-${i}`}
  onClick={() => setSelectedNode(nodes.find(n => n.id === e.target) || null)}
- className="w-full text-left px-2.5 py-1.5 rounded-none bg-emerald-500/10 hover:bg-emerald-500/20 transition-colors text-[10px]"
+ className="w-full text-left px-2.5 py-1.5 rounded-none bg-gray-500/10 hover:bg-gray-500/20 transition-colors text-[10px]"
  >
- <span className="text-emerald-600 dark:text-emerald-400 font-black">.{e.fieldName}</span>
+ <span className="text-gray-600 dark:text-gray-400 font-black">.{e.fieldName}</span>
  <span className="text-gray-400 mx-1">→</span>
  <span className="text-gray-300 font-mono">{e.target}</span>
  {e.hasMany && <span className="text-[8px] text-gray-500 ml-1">[many]</span>}

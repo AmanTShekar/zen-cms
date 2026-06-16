@@ -1,20 +1,29 @@
 /**
- * Check admin user credentials in MongoDB
+ * Check admin user credentials
  * Run: npx tsx packages/core/src/database/check-admin.ts
  */
-import mongoose from 'mongoose'
-import '../database/user-model'
-
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/zenith'
+import { AdapterFactory } from './adapters/AdapterFactory'
 
 async function checkAdmin() {
-  await mongoose.connect(MONGODB_URI)
-  const User = mongoose.model('User')
+  const adapter = AdapterFactory.create()
+  await adapter.connect()
+  
+  adapter.registerCollection({
+    slug: 'users',
+    fields: [
+      { name: 'email', type: 'text' },
+      { name: 'role', type: 'text' },
+      { name: 'failedLoginAttempts', type: 'number' },
+      { name: 'lockUntil', type: 'date' }
+    ]
+  } as any)
 
-  const admin = (await User.findOne({ role: 'admin' }).lean()) as any
+  const admins = await adapter.find<any>('users', { role: 'admin' }, { limit: 1 })
+  const admin = admins[0]
+  
   if (!admin) {
     console.log('No admin user found!')
-    await mongoose.disconnect()
+    await adapter.disconnect()
     return
   }
 
@@ -23,10 +32,8 @@ async function checkAdmin() {
   console.log(`  Role: ${admin.role}`)
   console.log(`  failedLoginAttempts: ${admin.failedLoginAttempts}`)
   console.log(`  lockUntil: ${admin.lockUntil}`)
-  // NOTE: intentionally NOT logging password hash or running plaintext password comparisons
-  // to avoid leaking credentials into console/CI logs
 
-  await mongoose.disconnect()
+  await adapter.disconnect()
 }
 
 checkAdmin().catch(console.error)

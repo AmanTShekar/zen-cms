@@ -1,6 +1,6 @@
-import { DatabaseAdapter } from '../../database/adapters/DatabaseAdapter'
-import type { FieldConfig } from '@zenithcms/types'
-import { logger } from '../../utils/logger'
+import { DatabaseAdapter } from '../../database/adapters/BaseAdapter'
+import type { FieldConfig } from '@zenith-open/zenithcms-types'
+import { logger } from '../../services/logger'
 
 export async function resolveRelations(
   docs: any[],

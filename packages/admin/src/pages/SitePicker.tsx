@@ -294,26 +294,26 @@ export default function SitePicker() {
  <div
  key={siteId}
  onClick={() => handleSelectSite(site)}
- className="group relative border border-white/[0.06] bg-gradient-to-br from-white/[0.01] to-white/[0.03] hover:border-[#10B981]/50 p-6 flex flex-col justify-between h-48 cursor-pointer transition-all duration-500 overflow-hidden rounded-none shadow-[0_4px_30px_rgba(0,0,0,0.1)]"
+ className="group relative border border-white/[0.06] bg-gradient-to-br from-white/[0.01] to-white/[0.03] hover:border-[#10B981]/50 p-6 flex flex-col justify-between h-full min-h-[12rem] cursor-pointer transition-all duration-500 overflow-hidden rounded-none shadow-[0_4px_30px_rgba(0,0,0,0.1)]"
  >
  {/* Glassmorph glow on hover */}
  <div className="absolute inset-0 bg-white/[0.01] group-hover:bg-white/[0.04] transition-colors duration-500"></div>
  <div className="absolute -right-16 -bottom-16 w-32 h-32 bg-white/5 rounded-none blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
- <div className="relative z-10 flex items-start justify-between">
- <span className="text-3xl filter saturate-50 group-hover:saturate-100 transition-all duration-300">
+ <div className="relative z-10 flex items-start justify-between gap-4">
+ <span className="text-3xl filter saturate-50 group-hover:saturate-100 transition-all duration-300 flex-shrink-0">
  {site.icon || '🌐'}
  </span>
- <span className="text-[9px] font-bold tracking-widest text-white/30 font-mono uppercase bg-white/5 px-2 py-1">
+ <span className="text-[9px] font-bold tracking-widest text-white/30 font-mono uppercase bg-white/5 px-2 py-1 truncate max-w-[60%]">
  {site.slug}
  </span>
  </div>
 
- <div className="relative z-10 mt-6">
- <h3 className="text-lg font-black uppercase tracking-wider group-hover:text-[#10B981] transition-colors duration-300">
+ <div className="relative z-10 mt-6 flex-grow">
+ <h3 className="text-lg font-black uppercase tracking-wider group-hover:text-[#10B981] transition-colors duration-300 break-words line-clamp-3">
  {site.name}
  </h3>
- <p className="text-white/40 text-[11px] mt-1 line-clamp-2 leading-relaxed">
+ <p className="text-white/40 text-[11px] mt-1 line-clamp-3 leading-relaxed break-words">
  {site.description || 'No description provided.'}
  </p>
  </div>
@@ -378,7 +378,7 @@ export default function SitePicker() {
  }
  }}
  placeholder="e.g. Zenith E-Commerce"
- className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
+ className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
  />
  </div>
 
@@ -394,7 +394,7 @@ export default function SitePicker() {
  setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
  }
  placeholder="e.g. zenith-commerce"
- className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
+ className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
  />
  </div>
 
@@ -406,7 +406,7 @@ export default function SitePicker() {
  <select
  value={icon}
  onChange={(e) => setIcon(e.target.value)}
- className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-2 py-3 text-[14px] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none text-white"
+ className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-2 py-3 text-[14px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none text-white"
  >
  <option value="🌐" className="bg-gray-950 text-white">🌐</option>
  <option value="🛒" className="bg-gray-950 text-white">🛒</option>
@@ -426,7 +426,7 @@ export default function SitePicker() {
  value={description}
  onChange={(e) => setDescription(e.target.value)}
  placeholder="e.g. Storefront platform"
- className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
+ className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
  />
  </div>
  </div>
@@ -494,7 +494,7 @@ export default function SitePicker() {
  }
  }}
  placeholder="e.g. Zenith Studio"
- className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
+ className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
  />
  </div>
 
@@ -510,7 +510,7 @@ export default function SitePicker() {
  setWsSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
  }
  placeholder="e.g. zenith-studio"
- className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
+ className="w-full bg-white/[0.02] border border-white/[0.08] focus:border-[#10B981]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none placeholder:text-white/25 text-white"
  />
  </div>
 

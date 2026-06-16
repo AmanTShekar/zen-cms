@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { ContentService } from '../src/services/content'
-import { CollectionConfig } from '@zenithcms/types'
+import { CollectionConfig } from '@zenith-open/zenithcms-types'
 import { DatabaseAdapter } from '../src/database/adapters/BaseAdapter'
 
 // Mock DatabaseAdapter
@@ -58,7 +58,7 @@ describe('Zenith ContentService - Engine Validation', () => {
     mockAdapter.find.mockResolvedValue([{ title: 'Test Post' }])
 
     const user = { id: 'user1', role: 'editor' }
-    const docs = await service.find({}, { user })
+    const docs = await service.find({}, { user, siteId: 'test-site' })
 
     expect(mockAdapter.find).toHaveBeenCalled()
     expect(docs[0].title).toBe('Test Post')
@@ -71,7 +71,7 @@ describe('Zenith ContentService - Engine Validation', () => {
     mockAdapter.findOne.mockResolvedValue(oldDoc)
     mockAdapter.update.mockResolvedValue({ ...oldDoc, ...newData })
 
-    const { delta } = await service.update('1', newData, { user: { id: 'admin' } })
+    const { delta } = await service.update('1', newData, { user: { id: 'admin' }, siteId: 'test-site' })
 
     expect(delta.title).toEqual({ from: 'Old Title', to: 'New Title' })
     expect(delta.content).toBeUndefined() // Content didn't change
@@ -91,7 +91,7 @@ describe('Zenith ContentService - Engine Validation', () => {
     mockAdapter.findOne.mockResolvedValue({ id: '1', title: 'Post 1', ownerId: 'user1' })
 
     const user = { id: 'user1', role: 'editor' }
-    await rlsService.findById('1', { user })
+    await rlsService.findById('1', { user, siteId: 'test-site' })
 
     expect(mockAdapter.findOne).toHaveBeenCalledWith(
       'posts',
@@ -110,7 +110,7 @@ describe('Zenith ContentService - Engine Validation', () => {
     const rlsService = new ContentService(configWithRLS, mockAdapter)
 
     const user = { id: 'user1', role: 'editor' }
-    await expect(rlsService.update('1', { title: 'New' }, { user })).rejects.toThrow()
+    await expect(rlsService.update('1', { title: 'New' }, { user, siteId: 'test-site' })).rejects.toThrow()
   })
 
   it('should enforce RLS query constraints on delete', async () => {
@@ -125,7 +125,7 @@ describe('Zenith ContentService - Engine Validation', () => {
     mockAdapter.delete.mockResolvedValue(true)
 
     const user = { id: 'user1', role: 'editor' }
-    await rlsService.delete('1', { user })
+    await rlsService.delete('1', { user, siteId: 'test-site' })
 
     expect(mockAdapter.findOne).toHaveBeenCalledWith(
       'posts',
@@ -152,7 +152,7 @@ describe('Zenith ContentService - Engine Validation', () => {
     mockAdapter.findOne.mockResolvedValue({ _id: '1', title: 'Old' })
     mockAdapter.update.mockResolvedValue({ _id: '1', title: 'New' })
 
-    await versionedService.update('1', { title: 'New' }, { user: { id: 'admin', role: 'admin' } })
+    await versionedService.update('1', { title: 'New' }, { user: { id: 'admin', role: 'admin' }, siteId: 'test-site' })
 
     // v1 is the oldest — it should be deleted
     expect(mockAdapter.delete).toHaveBeenCalledWith('versions', 'v1')

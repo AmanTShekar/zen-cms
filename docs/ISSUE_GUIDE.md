@@ -1,60 +1,62 @@
-# Troubleshooting & Triage Guide
+# Zenith CMS — Troubleshooting & Issue Triage
 
-This guide helps you resolve common environment issues, database connection errors, and collaborative editing locks before creating a GitHub issue.
+This document provides a deterministic process for isolating environmental variables, resolving database connectivity faults, and safely releasing orphaned collaboration locks prior to escalating issues to the maintainers.
 
 ---
 
-## 🛠️ Common Environment Issues
+## 1. Environment Verification
 
-### 1. Verification of Node Version
-Ensure your local Node version satisfies the project's requirements:
+Before assuming a runtime defect, verify the host execution environment against the system prerequisites.
 
+**Node.js Constraints:**
 ```bash
-node --version # Must be >= 20.x
+node --version # Strictly requires v20.0.0 or higher. Use 'nvm use' if incorrect.
 ```
 
-### 2. Lockfile and Dependency Setup
-If you experience compile issues, try cleanly re-installing dependencies:
-
+**Dependency Synchronization:**
+Compilation errors often stem from desynchronized lockfiles across the monorepo packages. To enforce strict resolution:
 ```bash
 pnpm install --frozen-lockfile
 ```
 
-### 3. Database Connectivity
-If the server crashes on launch, check that your PostgreSQL or MongoDB server is running:
+---
 
-```bash
-# For MongoDB default port:
-curl -I http://localhost:27017
+## 2. Database Connectivity Diagnostics
 
-# For PostgreSQL default port:
-curl -I http://localhost:5432
-```
-Make sure the connection URI in your `.env` matches your database configuration.
+If the core Express server crashes upon initialization with a `MongoNetworkError` or `ECONNREFUSED` exception, the adapter is failing to establish a TCP connection with the storage layer.
+
+1. **Verify Daemon Execution:**
+    ```bash
+    # Test MongoDB availability
+    curl -I http://localhost:27017
+
+    # Test PostgreSQL availability
+    curl -I http://localhost:5432
+    ```
+2. **Review `.env` Configuration:**
+    Ensure `DATABASE_TYPE` exactly matches either `mongodb` or `postgres`.
+    Ensure the corresponding URI variable (`MONGODB_URI` or `POSTGRES_URI`) contains the correct credentials, host, port, and database name.
 
 ---
 
-## 🔒 Resolving Active Document Locks
+## 3. Resolving Stale Document Locks
 
-Because Zenith CMS prevents editors from overwriting each other's changes, you might occasionally see a lock message:
+The Zenith concurrency controller uses pessimistic locking during active editing sessions. If a client disconnects unexpectedly, the system may retain an orphaned lock state, displaying the warning: `Document locked by [User]`.
 
-> ⚠️ **Document locked by [User]**
-
-### How locks are cleared:
-1.  **Automatic Expiration**: Locks release automatically after a **60-second** inactivity period.
-2.  **Manual Database Clear**: If a lock gets stuck due to an abrupt disconnection, you can clear the presence ledger directly:
+**Resolution Paths:**
+1. **Automated TTL:** Wait 60 seconds. The server's garbage collection interval will automatically reap the stale heartbeat registration.
+2. **Manual Intervention:** If you are the system administrator and require immediate lock destruction, execute the cache purge script from the project root:
     ```bash
     pnpm run db:clear-locks
     ```
 
 ---
 
-## 🐞 Creating a GitHub Issue
+## 4. Escalation Protocol (Filing GitHub Issues)
 
-If you find a bug that needs fixing, please open a GitHub issue with the following details:
+If the issue persists after isolating environmental variables, file a detailed defect report.
 
-1.  **Console Logs**: Paste the stack trace from the server console or the browser DevTools.
-2.  **Reproduction Steps**: Describe exactly what you clicked or what API call you made to trigger the error.
-3.  **Monorepo Package**: Note which package the bug resides in (e.g. `core`, `admin`, `sdk`).
-
-Thank you for helping keep Zenith CMS clean and stable! 🛡️
+To ensure rapid triage, your report must include:
+1. **Unabridged Stack Traces:** Provide the full error log output from either the Node.js console or the browser DevTools. Do not truncate the logs.
+2. **Deterministic Reproduction Steps:** Clearly state the precise sequence of actions or API calls required to trigger the failure state.
+3. **Monorepo Localization:** Specify which sub-package (`@zenith-open/zenithcms-core`, `@zenith-open/zenithcms-admin`, or `@zenith-open/zenithcms-types`) is raising the exception.

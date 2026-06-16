@@ -5,6 +5,7 @@ import { createResponse } from './utils'
 import { ValidationError, NotFoundError, ForbiddenError } from '../errors'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { logger } from '../services/logger'
+import { invalidateRoleCache } from '../services/rbac'
 
 const router: import('express').Router = Router()
 
@@ -168,6 +169,7 @@ router.patch('/:id', async (req, res, next) => {
     }
 
     const updated = await adapter.update('z_roles', req.params.id, validation.data)
+    invalidateRoleCache((role as any).roleName)
     logger.info(`[Roles] Updated role "${(role as any).roleName}"`)
     res.json(createResponse(updated))
   } catch (err) {
@@ -186,15 +188,15 @@ router.delete('/:id', async (req, res, next) => {
     }
 
     // Check if any users are assigned this role
-    const { UserModel } = await import('../database/user-model')
-    const userCount = await UserModel.countDocuments({ role: (role as any).roleName })
-    if (userCount > 0) {
+    const usersCount = await adapter.count('users', { role: (role as any).roleName })
+    if (usersCount > 0) {
       throw new ForbiddenError(
-        `Cannot delete this role — ${userCount} user(s) are currently assigned to it. Reassign them first.`
+        `Cannot delete this role — ${usersCount} user(s) are currently assigned to it. Reassign them first.`
       )
     }
 
     await adapter.delete('z_roles', req.params.id)
+    invalidateRoleCache((role as any).roleName)
     logger.info(`[Roles] Deleted role "${(role as any).roleName}"`)
 
     res.json(createResponse({ success: true }))
@@ -244,18 +246,19 @@ router.post('/assign', async (req, res, next) => {
       )
     }
 
-    const { UserModel } = await import('../database/user-model')
-    const user = await UserModel.findById(validation.data.userId)
+    const adapter = AdapterFactory.getActiveAdapter()
+    const users = await adapter.find<any>('users', { id: validation.data.userId })
+    const user = users[0]
     if (!user) throw new NotFoundError('User', validation.data.userId)
 
+    await adapter.update('users', user.id || user._id, { role: validation.data.role })
     user.role = validation.data.role
-    await user.save()
 
     logger.info(`[Roles] Assigned role "${validation.data.role}" to user "${user.email}"`)
 
     res.json(
       createResponse({
-        userId: user._id,
+        userId: user.id || user._id,
         email: user.email,
         role: user.role,
       })
@@ -272,16 +275,14 @@ router.get('/users/list', async (req, res, next) => {
     const pageSize = Math.min(100, Math.max(1, parseInt((req.query.pageSize as string) || '20')))
     const skip = (page - 1) * pageSize
 
-    const { UserModel } = await import('../database/user-model')
-    const [users, total] = await Promise.all([
-      UserModel.find()
-        .select('_id email role createdAt')
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(pageSize)
-        .lean(),
-      UserModel.countDocuments(),
-    ])
+    const adapter = AdapterFactory.getActiveAdapter()
+    const users = await adapter.find<any>('users', {}, { 
+      skip, 
+      limit: pageSize, 
+      sort: { createdAt: -1 },
+      select: ['email', 'role', 'createdAt']
+    })
+    const total = await adapter.count('users', {})
 
     res.json(
       createResponse(users, {

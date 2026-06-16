@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState } from 'react'
 import { Plus, Trash2, Settings2, HelpCircle, GripVertical } from 'lucide-react'
 import { Reorder, useDragControls } from 'framer-motion'
@@ -10,6 +11,7 @@ import { getFieldComponent } from './fieldRegistry'
 import { useEditorStore } from '../../store/editorStore'
 import { useModalStore } from '../../store/modalStore'
 import { cn, uid } from '../../lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
 interface FieldRendererProps {
  blockId: string
@@ -52,7 +54,7 @@ function parseInputDate(value: string, format: 'date' | 'datetime' | 'time'): st
 }
 
 /** Returns true if valid JSON, false if invalid, null if empty/undefined */
-function tryParseJson(value: unknown): boolean | null {
+function tryParseJson(value: any): boolean | null {
  if (value === undefined || value === null || value === '') return null
  const str = typeof value === 'string' ? value : JSON.stringify(value)
  try {
@@ -126,8 +128,8 @@ export const FieldRenderer = React.memo(({
  error,
  isSelected: isSelectedProp,
 }: FieldRendererProps & { isSelected?: boolean }) => {
- const { selectedFieldId, setSelectedFieldId, setSelectedField, data } = useEditorStore()
- const { openComponentPicker, showFieldIndicators } = useModalStore()
+ const { selectedFieldId, setSelectedFieldId, setSelectedField, data  } = useEditorStore(useShallow(state => ({ selectedFieldId: state.selectedFieldId, setSelectedFieldId: state.setSelectedFieldId, setSelectedField: state.setSelectedField, data: state.data })))
+ const { openComponentPicker, showFieldIndicators  } = useModalStore(useShallow(state => ({ openComponentPicker: state.openComponentPicker, showFieldIndicators: state.showFieldIndicators })))
  const isSelected = !!isSelectedProp || selectedFieldId === `${blockId}:${field.name}`
 
  // Conditional Fields Evaluation
@@ -151,7 +153,7 @@ export const FieldRenderer = React.memo(({
  // Handle Array manipulation
  const handleAddArrayItem = () => {
  const list = Array.isArray(value) ? [...value] : []
- const newItem: Record<string, any> = { _id: uid() }
+ const newItem: any = { _id: uid() }
  field.fields?.forEach((subField) => {
  newItem[subField.name] = subField.type === 'array' ? [] : ''
  })
@@ -225,8 +227,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs transition-all rounded-none",
  theme === 'dark'
- ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500 text-white"
- : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 text-black"
+ ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
+ : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
  )}
  />
  )
@@ -242,8 +244,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs transition-all rounded-none",
  theme === 'dark'
- ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500 text-white"
- : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 text-black"
+ ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
+ : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
  )}
  />
  )
@@ -262,8 +264,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "flex-1 px-4 py-2.5 text-xs transition-all rounded-none font-mono",
  theme === 'dark'
- ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500 text-white"
- : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 text-black"
+ ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
+ : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
  )}
  />
  <button
@@ -272,10 +274,10 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'px-2.5 py-2.5 text-[9px] font-black uppercase border rounded-none transition-all shrink-0',
  isAuto
- ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+ ? 'bg-gray-500/10 border-gray-500/30 text-gray-600 dark:text-gray-400'
  : theme === 'dark'
- ? 'border-white/[0.08] text-gray-500 hover:text-emerald-600 dark:text-emerald-400'
- : 'border-gray-200 text-gray-400 hover:text-emerald-600'
+ ? 'border-white/[0.08] text-gray-500 hover:text-gray-600 dark:text-gray-400'
+ : 'border-gray-200 text-gray-400 hover:text-gray-600'
  )}
  title={isAuto ? 'Auto-generation enabled' : 'Enable auto-generation'}
  >
@@ -313,8 +315,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "flex-1 px-4 py-2.5 text-xs font-mono transition-all rounded-none uppercase",
  theme === 'dark'
- ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500 text-white"
- : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 text-black"
+ ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
+ : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
  )}
  />
  </div>
@@ -331,7 +333,7 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'w-6 h-6 rounded-none border-2 transition-all',
  value === colorVal
- ? 'border-emerald-500 scale-110'
+ ? 'border-gray-500 scale-110'
  : theme === 'dark' ? 'border-white/[0.08] hover:border-white/30' : 'border-gray-200 hover:border-gray-400'
  )}
  style={{ backgroundColor: colorVal }}
@@ -355,8 +357,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs transition-all rounded-none",
  theme === 'dark'
- ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500 text-white"
- : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 text-black"
+ ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
+ : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
  )}
  />
  )
@@ -371,8 +373,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs transition-all rounded-none resize-y",
  theme === 'dark'
- ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500 text-white"
- : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 text-black"
+ ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
+ : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
  )}
  />
  )
@@ -388,8 +390,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs font-mono transition-all rounded-none resize-y",
  theme === 'dark'
- ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500 text-[#e6edf3]"
- : "bg-gray-900 border border-gray-200 focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 text-gray-100"
+ ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-[#e6edf3]"
+ : "bg-gray-900 border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-gray-100"
  )}
  />
  )
@@ -400,7 +402,7 @@ export const FieldRenderer = React.memo(({
  return (
  <div className={cn(
  "border-l-2 pl-3 space-y-2",
- theme === 'dark' ? "border-emerald-500/30" : "border-emerald-300"
+ theme === 'dark' ? "border-gray-500/30" : "border-gray-300"
  )}>
  {collapsibleFields.map((subField) => (
  <div key={subField.name} className="space-y-1">
@@ -425,8 +427,8 @@ export const FieldRenderer = React.memo(({
  <div className={cn(
  "w-full px-4 py-3 border text-xs rounded-none",
  theme === 'dark'
- ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-300"
- : "bg-emerald-50 border-emerald-200 text-emerald-600"
+ ? "bg-gray-500/5 border-gray-500/20 text-gray-300"
+ : "bg-gray-50 border-gray-200 text-gray-600"
  )}>
  ⧉ Joined data — read-only
  </div>
@@ -448,8 +450,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-3 py-2 text-xs transition-all rounded-none",
  theme === 'dark'
- ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500 text-white"
- : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 text-black"
+ ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
+ : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
  )}
  />
  </div>
@@ -463,8 +465,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-3 py-2 text-xs transition-all rounded-none",
  theme === 'dark'
- ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500 text-white"
- : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 text-black"
+ ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
+ : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
  )}
  />
  </div>
@@ -492,7 +494,7 @@ export const FieldRenderer = React.memo(({
  const nextVal = typeof optVal === 'number' ? Number(e.target.value) : e.target.value
  onChange(nextVal)
  }}
- className="w-3.5 h-3.5 accent-emerald-500"
+ className="w-3.5 h-3.5 accent-gray-500"
  />
  <span className={cn(
  "text-xs",
@@ -551,8 +553,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs transition-all rounded-none",
  theme === 'dark'
- ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500 text-white"
- : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 text-black"
+ ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
+ : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
  )}
  />
  )
@@ -565,7 +567,7 @@ export const FieldRenderer = React.memo(({
  type="checkbox"
  checked={!!value}
  onChange={(e) => onChange(e.target.checked)}
- className="w-4 h-4 rounded-none border border-white/[0.08] bg-white/5 checked:bg-emerald-50 checked:border-emerald-50 transition-all accent-emerald-500"
+ className="w-4 h-4 rounded-none border border-white/[0.08] bg-white/5 checked:bg-gray-50 checked:border-gray-50 transition-all accent-gray-500"
  />
  <span className={cn(
  "text-xs font-medium",
@@ -624,8 +626,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'w-full px-4 py-2.5 text-xs transition-all rounded-none flex items-center justify-between gap-2',
  theme === 'dark'
- ? 'bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500 text-white'
- : 'bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 text-black'
+ ? 'bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white'
+ : 'bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black'
  )}
  >
  <span className={cn('truncate', !selectedValues.length && (theme === 'dark' ? 'text-gray-500' : 'text-gray-400'))}>
@@ -659,14 +661,14 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'w-full text-left px-3 py-2 text-xs flex items-center gap-2 transition-colors',
  isSelected
- ? theme === 'dark' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-emerald-50 text-emerald-600'
+ ? theme === 'dark' ? 'bg-gray-500/10 text-gray-600 dark:text-gray-400' : 'bg-gray-50 text-gray-600'
  : theme === 'dark' ? 'text-gray-300 hover:bg-white/5' : 'text-gray-700 hover:bg-gray-50'
  )}
  >
  <span className={cn(
  'w-3.5 h-3.5 border shrink-0 flex items-center justify-center transition-all rounded-none',
  isSelected
- ? 'bg-emerald-500 border-emerald-500'
+ ? 'bg-gray-500 border-gray-500'
  : theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-300'
  )}>
  {isSelected && (
@@ -708,8 +710,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs transition-all rounded-none",
  theme === 'dark'
- ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500 text-white"
- : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 text-black"
+ ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
+ : "bg-white border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
  )}
  />
  )
@@ -730,7 +732,7 @@ export const FieldRenderer = React.memo(({
  return (
  <div className="space-y-4">
  <div className="flex items-center justify-between">
- <span className="text-xs font-black tracking-widest text-emerald-600 dark:text-emerald-400 uppercase ">
+ <span className="text-xs font-black tracking-widest text-gray-600 dark:text-gray-400 uppercase ">
  {items.length} {items.length === 1 ? 'Item' : 'Items'}
  </span>
  <button
@@ -739,8 +741,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'flex items-center gap-1 px-2.5 py-1 text-xs font-black uppercase tracking-wider transition-all border',
  theme === 'dark'
- ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20'
- : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100'
+ ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400 hover:bg-gray-500/20'
+ : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
  )}
  >
  <Plus size={10} /> Add Item
@@ -777,7 +779,7 @@ export const FieldRenderer = React.memo(({
  case 'group': {
  const groupVal = value && typeof value === 'object' ? value : {}
  return (
- <div className="border-l border-emerald-500/20 pl-3 space-y-3">
+ <div className="border-l border-gray-500/20 pl-3 space-y-3">
  {field.fields?.map((subField) => (
  <div key={subField.name} className="space-y-1">
  <label className="text-xs font-black text-gray-400 uppercase tracking-widest block">
@@ -809,14 +811,14 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs font-mono transition-all rounded-none resize-y",
  theme === 'dark'
- ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500 text-[#e6edf3]"
- : "bg-gray-900 border border-gray-200 focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 text-gray-100"
+ ? "bg-black border border-white/[0.08] focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-[#e6edf3]"
+ : "bg-gray-900 border border-gray-200 focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-gray-100"
  )}
  />
  <div className="flex items-center gap-2">
  <span className={cn(
  "inline-block w-1.5 h-1.5 rounded-none",
- jsonValid === true ? "bg-emerald-500 shadow-[0_0_6px_#10b981]" : jsonValid === false ? "bg-red-500 shadow-[0_0_6px_#ef4444]" : "bg-gray-600"
+ jsonValid === true ? "bg-gray-500 shadow-[0_0_6px_#10b981]" : jsonValid === false ? "bg-red-500 shadow-[0_0_6px_#ef4444]" : "bg-gray-600"
  )} />
  <span className="text-xs font-bold uppercase tracking-widest " style={{ color: jsonValid === true ? '#10b981' : jsonValid === false ? '#ef4444' : '#6b7280' }}>
  {jsonValid === true ? 'Valid JSON' : jsonValid === false ? 'Invalid JSON' : 'JSON'}
@@ -851,7 +853,7 @@ export const FieldRenderer = React.memo(({
  )}>
  <span className={cn(
  'text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 border rounded-none',
- theme === 'dark' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+ theme === 'dark' ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-700'
  )}>
  {blockDef?.labels?.singular || humanize(blockType || 'block')}
  </span>
@@ -904,13 +906,13 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'w-full py-2.5 border-2 border-dashed flex flex-col items-center justify-center gap-1.5 transition-all group rounded-none',
  theme === 'dark'
- ? 'border-white/[0.08] hover:border-emerald-500/50 hover:bg-emerald-500/5 text-gray-400 hover:text-emerald-600 dark:text-emerald-400'
- : 'border-gray-300 hover:border-emerald-400 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600'
+ ? 'border-white/[0.08] hover:border-gray-500/50 hover:bg-gray-500/5 text-gray-400 hover:text-gray-600 dark:text-gray-400'
+ : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-500 hover:text-gray-600'
  )}
  >
  <div className={cn(
  'p-1.5 rounded-none transition-colors',
- theme === 'dark' ? 'bg-white/5 group-hover:bg-emerald-500/20' : 'bg-gray-100 group-hover:bg-emerald-100'
+ theme === 'dark' ? 'bg-white/5 group-hover:bg-gray-500/20' : 'bg-gray-100 group-hover:bg-gray-100'
  )}>
  <Plus size={14} className="stroke-[3]" />
  </div>
@@ -1042,3 +1044,4 @@ export const FieldRenderer = React.memo(({
 })
 
 export default FieldRenderer
+

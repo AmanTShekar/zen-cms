@@ -16,12 +16,19 @@ export function siteMiddleware(req: Request, res: Response, next: NextFunction) 
 
 import crypto from 'crypto'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
-import { AuthService, JWT_SECRET } from '../services/auth'
+import { AuthService, JWT_SECRET, JWT_REFRESH_SECRET } from '../services/auth'
 import { EmailService } from '../services/email'
 import { sessionStore, SessionStore } from '../services/session-store'
 import { requireAuth } from '../middleware/auth'
 import { createResponse } from './utils'
 import { createOAuthRouter } from '../auth/strategies/oauth'
+import { cookieConsentMiddleware } from '../middleware/cookie-consent'
+import { mfaRouter } from './auth/mfa'
+import { recoveryRouter } from './auth/recovery'
+import { ssoRouter } from './auth/sso'
+import passport from 'passport'
+// Load strategies
+import '../services/AuthStrategyRegistry'
 import {
   AuthenticationError,
   InvalidPayloadError,
@@ -38,6 +45,7 @@ const passwordSchema = z.string().min(8).max(128)
 const router: Router = Router()
 // Apply site middleware to all auth routes
 router.use(siteMiddleware)
+router.use(cookieConsentMiddleware)
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -163,7 +171,7 @@ router.post('/login', authLimiter, async (req: Request, res: Response, next) => 
 router.post('/register', authLimiter, async (req: Request, res: Response, next) => {
   try {
     const adapter = AdapterFactory.getActiveAdapter()
-    const settings = await adapter.findOne<any>('z_settings', {})
+    const settings = await adapter.findOne<Record<string, any>>('z_settings', {})
 
     if (!settings?.allowRegistration && process.env.ALLOW_REGISTRATION !== 'true') {
       throw new ForbiddenError('Open registration is disabled.')
@@ -174,14 +182,14 @@ router.post('/register', authLimiter, async (req: Request, res: Response, next) 
     const emailResult = emailSchema.safeParse(email)
     if (!emailResult.success) throw new InvalidPayloadError('Invalid email format')
 
-    const existingUsers = await adapter.find<any>('users', { email: email.toLowerCase() })
+    const existingUsers = await adapter.find<Record<string, any>>('users', { email: email.toLowerCase() })
     if (existingUsers.length > 0) throw new InvalidPayloadError('User already exists')
 
     const check = AuthService.validatePassword(password)
     if (!check.valid) throw new InvalidPayloadError(check.message!)
 
     const hashed = await AuthService.hashPassword(password)
-    const user = await adapter.create<any>('users', {
+    const user = await adapter.create<Record<string, any>>('users', {
       email: email.toLowerCase(),
       password: hashed,
       role: 'editor',
@@ -232,14 +240,14 @@ router.post('/refresh', authLimiter, async (req: Request, res: Response, next) =
     if (!decoded) throw new InvalidTokenError()
 
     const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<any>('users', { id: decoded.id })
+    const users = await adapter.find<Record<string, any>>('users', { id: decoded.id })
     const user = users[0] || null
     if (!user) throw new NotFoundError('User')
 
     const userId = (user.id || user._id).toString()
     const payload = { id: userId, email: user.email, role: user.role }
     const newAccess = AuthService.generateToken(payload)
-    const newRefresh = AuthService.generateRefreshToken(payload)
+    const newRefresh = await AuthService.rotateRefreshToken(payload, (decoded as any).jti)
 
     res.cookie('refreshToken', newRefresh, {
       httpOnly: true,
@@ -261,101 +269,7 @@ router.post('/refresh', authLimiter, async (req: Request, res: Response, next) =
   }
 })
 
-// ── POST /api/v1/auth/2fa/setup ────────────────────────────────────────────────
-router.post('/2fa/setup', requireAuth, async (req: Request, res: Response, next) => {
-  try {
-    const userId = (req as any).user.id
-    const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<any>('users', { id: userId })
-    const user = users[0] || null
-    if (!user) throw new NotFoundError('User')
-
-    const secret = authenticator.generateSecret()
-    const otpauthUrl = authenticator.keyuri(user.email, 'Zenith CMS', secret)
-    const qrCodeImage = await QRCode.toDataURL(otpauthUrl)
-
-    // Store secret temporarily (user must verify to enable it)
-    await adapter.update('users', userId, { twoFactorSecret: secret, twoFactorEnabled: false })
-
-    res.json(createResponse({ secret, qrCodeImage }))
-  } catch (err) {
-    next(err)
-  }
-})
-
-// ── POST /api/v1/auth/2fa/verify-setup ───────────────────────────────────────
-router.post('/2fa/verify-setup', requireAuth, async (req: Request, res: Response, next) => {
-  try {
-    const { token } = req.body
-    if (!token) throw new InvalidPayloadError('MFA token is required')
-
-    const userId = (req as any).user.id
-    const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<any>('users', { id: userId })
-    const user = users[0] || null
-    if (!user || !user.twoFactorSecret) throw new InvalidPayloadError('2FA setup not initiated')
-
-    const isValid = authenticator.verify({ token, secret: user.twoFactorSecret })
-    if (!isValid) throw new InvalidTokenError('Invalid 2FA token')
-
-    await adapter.update('users', userId, { twoFactorEnabled: true })
-    res.json(createResponse({ success: true, message: '2FA enabled successfully' }))
-  } catch (err) {
-    next(err)
-  }
-})
-
-// ── POST /api/v1/auth/2fa/verify-login ───────────────────────────────────────
-router.post('/2fa/verify-login', authLimiter, async (req: Request, res: Response, next) => {
-  try {
-    const { tempToken, token } = req.body
-    if (!tempToken || !token) throw new InvalidPayloadError('tempToken and 2FA token are required')
-
-    let decoded: any
-    try {
-      decoded = jwt.verify(tempToken, JWT_SECRET)
-      if (decoded.type !== '2fa_temp') throw new Error()
-    } catch {
-      throw new InvalidTokenError('Session expired or invalid')
-    }
-
-    const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<any>('users', { id: decoded.id })
-    const user = users[0] || null
-    if (!user || !user.twoFactorEnabled || !user.twoFactorSecret) {
-      throw new InvalidPayloadError('2FA not enabled for this user')
-    }
-
-    const isValid = authenticator.verify({ token, secret: user.twoFactorSecret })
-    if (!isValid) throw new InvalidTokenError('Invalid 2FA token')
-
-    // Reset failed attempts upon successful 2FA
-    await AuthService.resetFailedAttempts(user.email)
-
-    const userId = (user.id || user._id).toString()
-    const payload = { id: userId, email: user.email, role: user.role }
-    const accessToken = AuthService.generateToken(payload)
-    const refreshToken = AuthService.generateRefreshToken(payload)
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    })
-
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 15 * 60 * 1000,
-    })
-
-    res.json(createResponse({ user: payload }))
-  } catch (err) {
-    next(err)
-  }
-})
+router.use('/2fa', mfaRouter)
 
 // ── POST /api/v1/auth/logout ─────────────────────────────────────────────────
 router.post('/logout', requireAuth, async (req: Request, res: Response) => {
@@ -410,7 +324,7 @@ router.get('/sessions', requireAuth, async (req: Request, res: Response, next) =
 router.get('/me', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<any>('users', { id: (req as any).user.id })
+    const users = await adapter.find<Record<string, any>>('users', { id: (req as any).user.id })
     const user = users[0] || null
     if (!user) throw new NotFoundError('User')
     const userId = (user.id || user._id).toString()
@@ -420,108 +334,58 @@ router.get('/me', requireAuth, async (req: Request, res: Response, next) => {
   }
 })
 
-// ── POST /api/v1/auth/forgot-password ───────────────────────────────────────
-router.post('/forgot-password', authLimiter, async (req: Request, res: Response, next) => {
+// ── DELETE /api/v1/auth/me ──────────────────────────────────────────────────
+router.delete('/me', requireAuth, async (req: Request, res: Response, next) => {
   try {
-    const { email } = req.body
-    if (!email) throw new InvalidPayloadError('Email is required')
-    const emailResult = emailSchema.safeParse(email)
-    if (!emailResult.success) throw new InvalidPayloadError('Invalid email format')
-
     const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<any>('users', { email: email.toLowerCase() })
-    const user = users[0] || null
-
-    // Always respond 200 — never reveal if email exists (security)
-    if (!user)
-      return res.json(
-        createResponse({ message: 'If that email exists, a reset link has been sent.' })
-      )
-
-    const userId = (user.id || user._id).toString()
-    const token = crypto.randomBytes(32).toString('hex')
-    const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
-
-    await adapter.deleteMany('z_password_resets', { userId }) // Clear old tokens
-    await adapter.create('z_password_resets', { userId, token: tokenHash, expiresAt })
-
-    const resetUrl = `${getAdminUrl()}/reset-password?token=${token}`
-    await EmailService.sendPasswordResetEmail(user.email, resetUrl)
-
-    res.json(createResponse({ message: 'If that email exists, a reset link has been sent.' }))
-  } catch (err) {
-    next(err)
-  }
-})
-
-// ── POST /api/v1/auth/reset-password ─────────────────────────────────────────
-router.post('/reset-password', authLimiter, async (req: Request, res: Response, next) => {
-  try {
-    const { token, password } = req.body
-    if (!token || !password) throw new InvalidPayloadError('Token and password are required')
-
-    const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
-    const adapter = AdapterFactory.getActiveAdapter()
-    const resets = await adapter.find<any>('z_password_resets', { token: tokenHash, used: false })
-    const record = resets[0] || null
-    if (!record || new Date(record.expiresAt) < new Date()) throw new InvalidTokenError()
-
-    const check = AuthService.validatePassword(password)
-    if (!check.valid) throw new InvalidPayloadError(check.message!)
-
-    const hashed = await AuthService.hashPassword(password)
-    await adapter.update('users', record.userId, { password: hashed })
-    
-    const recordId = (record.id || record._id).toString()
-    await adapter.update('z_password_resets', recordId, { used: true })
-
-    res.json(createResponse({ message: 'Password reset successfully.' }))
-  } catch (err) {
-    next(err)
-  }
-})
-
-// ── POST /api/v1/auth/verify-email ───────────────────────────────────────────
-router.post('/verify-email', async (req: Request, res: Response, next) => {
-  try {
-    const { token } = req.body
-    if (!token) throw new InvalidPayloadError('Verification token is required')
-
-    const userId = await AuthService.verifyEmailToken(token)
-    if (!userId) throw new InvalidTokenError('Verification token is invalid or has expired')
-
-    res.json(createResponse({ message: 'Email verified successfully.' }))
-  } catch (err) {
-    next(err)
-  }
-})
-
-// ── POST /api/v1/auth/resend-verification ────────────────────────────────────
-router.post('/resend-verification', authLimiter, requireAuth, async (req: Request, res: Response, next) => {
-  try {
     const userId = (req as any).user.id
+    
+    // Revoke all active sessions
+    await sessionStore.revokeAllForUser(userId)
+    res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'strict' })
+    res.clearCookie('accessToken', { httpOnly: true, sameSite: 'strict' })
+
+    // Hard delete user from the system
+    await adapter.delete('users', userId)
+
+    // Emit event for downstream cleanup (e.g. content anonymization or deletion)
+    const { eventHub } = await import('../services/event-hub')
+    eventHub.emit('user.deleted', { userId })
+
+    res.json(createResponse({ success: true, message: 'Account permanently deleted' }))
+  } catch (err) {
+    next(err)
+  }
+})
+
+// ── GET /api/v1/auth/me/export ───────────────────────────────────────────────
+router.get('/me/export', requireAuth, async (req: Request, res: Response, next) => {
+  try {
     const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<any>('users', { id: userId })
+    const userId = (req as any).user.id
+    
+    const users = await adapter.find<Record<string, any>>('users', { id: userId })
     const user = users[0] || null
     if (!user) throw new NotFoundError('User')
-    if (user.emailVerified) {
-      return res.json(createResponse({ message: 'Email is already verified.' }))
+
+    // Find documents owned by the user (assuming 'author' or 'createdBy' maps to userId)
+    // Note: Implementation specific to Zenith's content schema structure.
+    
+    const exportPayload = {
+      profile: user,
+      exportDate: new Date().toISOString(),
+      // Add content queries here if applicable in the future
     }
 
-    const verifyToken = await AuthService.generateVerificationToken(userId)
-    const verifyUrl = `${getAdminUrl()}/verify-email?token=${verifyToken}`
-    await EmailService.send({
-      to: user.email,
-      subject: 'Verify your Zenith CMS email address',
-      html: `<p>Please verify your email by clicking <a href="${verifyUrl}">this link</a>. It expires in 24 hours.</p>`,
-    })
-
-    res.json(createResponse({ message: 'Verification email sent.' }))
+    res.setHeader('Content-Type', 'application/json')
+    res.setHeader('Content-Disposition', `attachment; filename="zenith_export_${userId}.json"`)
+    res.json(exportPayload)
   } catch (err) {
     next(err)
   }
 })
+
+router.use('/', recoveryRouter)
 
 // ── GET  /api/v1/auth/setup-status ───────────────────────────────────────────
 router.get('/setup-status', async (req: Request, res: Response, next) => {
@@ -552,7 +416,7 @@ router.post('/setup', authLimiter, async (req: Request, res: Response, next) => 
     if (!check.valid) throw new InvalidPayloadError(check.message!)
 
     const hashed = await AuthService.hashPassword(password)
-    const user = await adapter.create<any>('users', {
+    const user = await adapter.create<Record<string, any>>('users', {
       email: email.toLowerCase(),
       password: hashed,
       role: 'admin',
@@ -585,5 +449,7 @@ router.post('/setup', authLimiter, async (req: Request, res: Response, next) => 
 
 // ── OAuth routes ─────────────────────────────────────────────────────────────
 router.use('/oauth', createOAuthRouter())
+
+router.use('/sso', ssoRouter)
 
 export default router

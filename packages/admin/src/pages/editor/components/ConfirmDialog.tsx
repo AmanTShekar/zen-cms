@@ -96,7 +96,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
  'flex-1 py-2 text-xs font-black uppercase tracking-widest rounded-none transition-all',
  danger
  ? 'bg-rose-600 hover:bg-rose-500 text-white'
- : 'bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 text-white'
+ : 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white'
  )}
  >
  {confirmLabel}

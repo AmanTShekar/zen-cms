@@ -39,13 +39,13 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  className={cn(
  'p-5 rounded-none border col-span-1 md:col-span-2 space-y-3',
  theme === 'dark'
- ? 'bg-emerald-500/5 border-emerald-500/20'
- : 'bg-emerald-50 border-emerald-200'
+ ? 'bg-gray-500/5 border-gray-500/20'
+ : 'bg-gray-50 border-gray-200'
  )}
  >
  <div className="flex items-center gap-2 mb-1">
- <Link2 size={13} className="text-emerald-600 dark:text-emerald-500" />
- <span className="text-xs font-bold text-emerald-600 dark:text-emerald-500 uppercase tracking-widest">
+ <Link2 size={13} className="text-gray-600 dark:text-gray-500" />
+ <span className="text-xs font-bold text-gray-600 dark:text-gray-500 uppercase tracking-widest">
  Site Identifier
  </span>
  </div>
@@ -54,8 +54,8 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  className={cn(
  'flex-1 font-mono text-sm px-3 py-2 rounded-none border truncate',
  theme === 'dark'
- ? 'bg-black/40 border-white/[0.08] text-emerald-300'
- : 'bg-white border-emerald-200 text-emerald-700'
+ ? 'bg-black/40 border-white/[0.08] text-gray-300'
+ : 'bg-white border-gray-200 text-gray-700'
  )}
  >
  {activeSiteId || <span className="opacity-40 ">No site selected — pick a site first</span>}
@@ -66,7 +66,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  className={cn(
  'flex items-center gap-2 px-4 py-2 rounded-none text-xs font-bold transition-all',
  activeSiteId
- ? 'bg-emerald-500 text-black hover:bg-emerald-400'
+ ? 'bg-gray-500 text-black hover:bg-gray-400'
  : 'bg-white/5 text-gray-500 cursor-not-allowed'
  )}
  >
@@ -84,7 +84,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -95,10 +95,10 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  value={settings.siteName}
  onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
- ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
- : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+ ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
+ : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  )}
  />
  </div>
@@ -106,7 +106,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -117,10 +117,10 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  onChange={(e) => setSettings({ ...settings, siteDescription: e.target.value })}
  rows={3}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
+ 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
  theme === 'dark'
- ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
- : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+ ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
+ : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  )}
  />
  </div>
@@ -128,7 +128,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -140,10 +140,10 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  placeholder="https://..."
  onChange={(e) => setSettings({ ...settings, logoUrl: e.target.value })}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
- ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
- : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+ ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
+ : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  )}
  />
  </div>
@@ -151,7 +151,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -163,10 +163,10 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  placeholder="https://..."
  onChange={(e) => setSettings({ ...settings, faviconUrl: e.target.value })}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
- ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
- : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+ ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
+ : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  )}
  />
  </div>
@@ -174,7 +174,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -185,10 +185,10 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  value={settings.publicUrl}
  onChange={(e) => setSettings({ ...settings, publicUrl: e.target.value })}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
- ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
- : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+ ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
+ : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  )}
  />
  </div>
@@ -196,7 +196,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  <div
  className={cn(
  'p-5 rounded-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
+ theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20' : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
  <label className="text-xs font-semibold text-gray-400 px-1">
@@ -207,10 +207,10 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  value={settings.defaultLocale || 'en'}
  onChange={(e) => setSettings({ ...settings, defaultLocale: e.target.value })}
  className={cn(
- 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-2.5 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
- ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
- : 'bg-white border-gray-200 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50'
+ ? 'bg-[#0f141f] border-white/[0.08] text-white focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
+ : 'bg-white border-gray-200 focus:border-gray-500 focus:ring-1 focus:ring-gray-500/50'
  )}
  />
  </div>
@@ -219,8 +219,8 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  className={cn(
  'p-5 rounded-none border flex items-center justify-between transition-all group col-span-1 md:col-span-2',
  theme === 'dark'
- ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/20'
- : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-emerald-500/30'
+ ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/20'
+ : 'bg-gray-50/50 border-gray-200 shadow-sm hover:border-gray-500/30'
  )}
  >
  <div className="flex flex-col">
@@ -238,7 +238,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
  onChange={(e) => setSettings({ ...settings, maintenanceMode: e.target.checked })}
  className="sr-only peer"
  />
- <div className="w-11 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 border border-white/[0.08] shadow-inner"></div>
+ <div className="w-11 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-500 border border-white/[0.08] shadow-inner"></div>
  </label>
  </div>
  </>

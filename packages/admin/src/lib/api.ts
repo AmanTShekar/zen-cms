@@ -2,9 +2,9 @@ import { useTenantStore } from './tenantStore'
 import { ApiError } from './ApiError'
 
 let isRefreshing = false
-let failedQueue: { resolve: (value: unknown) => void; reject: (reason?: unknown) => void }[] = []
+let failedQueue: { resolve: (value: any) => void; reject: (reason?: any) => void }[] = []
 
-const processQueue = (error: unknown, _token: string | null = null) => {
+const processQueue = (error: any, _token: string | null = null) => {
  failedQueue.forEach((prom) => {
  if (error) {
  prom.reject(error)
@@ -16,7 +16,7 @@ const processQueue = (error: unknown, _token: string | null = null) => {
 }
 
 // Wrapped version ensures rejection handler throws don't break the redirect
-const safeProcessQueue = (error: unknown, token: string | null) => {
+const safeProcessQueue = (error: any, token: string | null) => {
  try {
  processQueue(error, token)
  } catch { /* ignore — queue handlers should not throw */ }
@@ -39,7 +39,7 @@ interface ApiResponse<T = any> {
  headers: Headers
 }
 
-function buildUrl(path: string, config?: { params?: Record<string, any> }): string {
+function buildUrl(path: string, config?: { params?: any }): string {
  if (path.startsWith('http')) return path
  let url = `${BASE_URL}${path}`
  if (config?.params) {
@@ -55,11 +55,11 @@ function buildUrl(path: string, config?: { params?: Record<string, any> }): stri
  return url
 }
 
-function isFormData(body: unknown): body is FormData {
+function isFormData(body: any): body is FormData {
  return typeof FormData !== 'undefined' && body instanceof FormData
 }
 
-async function fetchWithAuth(method: string, path: string, body?: unknown, config?: { headers?: Record<string, string>; params?: Record<string, any> }): Promise<ApiResponse<any>> {
+async function fetchWithAuth(method: string, path: string, body?: any, config?: { headers?: Record<string, string>; params?: any }): Promise<ApiResponse<any>> {
  const url = buildUrl(path, config)
 
  const headers: Record<string, string> = {
@@ -151,8 +151,8 @@ async function fetchWithAuth(method: string, path: string, body?: unknown, confi
 async function request<T = any>(
  method: string,
  path: string,
- body?: unknown,
- config?: { headers?: Record<string, string>; params?: Record<string, any> }
+ body?: any,
+ config?: { headers?: Record<string, string>; params?: any }
 ): Promise<ApiResponse<T>> {
  const result = await fetchWithAuth(method, path, body, config)
 
@@ -160,7 +160,7 @@ async function request<T = any>(
  if (result.status === 401 && !path.includes('/login')) {
  if (isRefreshing) {
  // Queue this request until refresh completes
- return new Promise<unknown>((resolve, reject) => {
+ return new Promise<any>((resolve, reject) => {
  failedQueue.push({ resolve, reject })
  }).then(async () => {
  return fetchWithAuth(method, path, body, config) as Promise<ApiResponse<T>>
@@ -172,7 +172,7 @@ async function request<T = any>(
  const newToken = await refreshToken()
  safeProcessQueue(null, newToken)
  return fetchWithAuth(method, path, body, config) as Promise<ApiResponse<T>>
- } catch (refreshError: unknown) {
+ } catch (refreshError: any) {
  safeProcessQueue(refreshError, null)
  if ((refreshError as any)?.status === 401 && !window.location.pathname.includes('/login')) {
  localStorage.clear()
@@ -242,23 +242,23 @@ const apiInstance = {
  } as Record<string, string>,
  },
 
- async get<T = any>(path: string, config?: { params?: Record<string, any>; headers?: Record<string, string> }): Promise<ApiResponse<T>> {
+ async get<T = any>(path: string, config?: { params?: any; headers?: Record<string, string> }): Promise<ApiResponse<T>> {
  return request<T>('GET', path, undefined, config)
  },
 
- async post<T = any>(path: string, body?: unknown, config?: { headers?: Record<string, string>; params?: Record<string, any> }): Promise<ApiResponse<T>> {
+ async post<T = any>(path: string, body?: any, config?: { headers?: Record<string, string>; params?: any }): Promise<ApiResponse<T>> {
  return request<T>('POST', path, body, config)
  },
 
- async patch<T = any>(path: string, body?: unknown, config?: { headers?: Record<string, string>; params?: Record<string, any> }): Promise<ApiResponse<T>> {
+ async patch<T = any>(path: string, body?: any, config?: { headers?: Record<string, string>; params?: any }): Promise<ApiResponse<T>> {
  return request<T>('PATCH', path, body, config)
  },
 
- async put<T = any>(path: string, body?: unknown, config?: { headers?: Record<string, string>; params?: Record<string, any> }): Promise<ApiResponse<T>> {
+ async put<T = any>(path: string, body?: any, config?: { headers?: Record<string, string>; params?: any }): Promise<ApiResponse<T>> {
  return request<T>('PUT', path, body, config)
  },
 
- async delete<T = any>(path: string, config?: { headers?: Record<string, string>; params?: Record<string, any> }): Promise<ApiResponse<T>> {
+ async delete<T = any>(path: string, config?: { headers?: Record<string, string>; params?: any }): Promise<ApiResponse<T>> {
  return request<T>('DELETE', path, undefined, config)
  },
 }

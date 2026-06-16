@@ -14,7 +14,7 @@
  * 6. Add to cms.config.ts: `plugins: [myPlugin({ apiKey: '...' })]`
  * 7. Or install from admin UI if published to npm as `zenith-plugin-*`
  */
-import { CMSConfig, ZenithPlugin, PluginContext } from '@zenithcms/types'
+import { CMSConfig, ZenithPlugin, PluginContext } from '@zenith-open/zenithcms-types'
 import { hookRegistry, adminComponentRegistry } from './hooks'
 import { logger } from '../services/logger'
 
@@ -232,3 +232,5 @@ export function auditTrailPlugin(options: { maxVersions?: number } = {}): Zenith
     },
   }
 }
+
+export { meilisearchSyncPlugin } from './meilisearch'

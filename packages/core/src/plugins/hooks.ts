@@ -167,3 +167,91 @@ class AdminComponentRegistry {
 }
 
 export const adminComponentRegistry = new AdminComponentRegistry()
+
+// ── Plugin Lifecycle Runner ──────────────────────────────────────────────────
+//
+// Industry approach (Payload CMS): plugins are plain objects implementing the
+// ZenithPlugin interface. The engine calls `plugin.apply()` at config-merge
+// time, then `onInit()` after the adapter connects, and `onReady()` once all
+// routes are mounted and the HTTP server is listening.
+//
+// Each phase is isolated: a plugin that throws during onInit does not prevent
+// other plugins from running — the error is logged and the engine continues.
+
+import type { ZenithPlugin, PluginContext, CMSConfig } from '@zenith-open/zenithcms-types'
+
+export class PluginLifecycleRunner {
+  private plugins: ZenithPlugin[]
+  private context: PluginContext
+
+  constructor(plugins: ZenithPlugin[], context: PluginContext) {
+    this.plugins = plugins.filter(p => p.enabled !== false)
+    this.context = context
+  }
+
+  /**
+   * Phase 1 — Apply: mutate the CMS config (add collections, fields, hooks).
+   * Called synchronously before any adapters connect. Returns the transformed config.
+   */
+  applyAll(config: CMSConfig): CMSConfig {
+    let result = { ...config }
+    for (const plugin of this.plugins) {
+      try {
+        const transformed = plugin.apply(result, plugin.config)
+        if (transformed) result = transformed
+        logger.info({ plugin: plugin.id }, 'Plugin applied config transforms')
+      } catch (err: any) {
+        logger.error({ plugin: plugin.id, err: err.message }, 'Plugin.apply() failed — skipping')
+      }
+    }
+    return result
+  }
+
+  /**
+   * Phase 2 — onInit: adapter is connected, before routes are mounted.
+   * Plugins can register additional collections, run migrations, seed data, etc.
+   */
+  async runOnInit(): Promise<void> {
+    for (const plugin of this.plugins) {
+      if (typeof plugin.onInit !== 'function') continue
+      try {
+        await plugin.onInit(this.context)
+        logger.info({ plugin: plugin.id }, 'Plugin.onInit() complete')
+      } catch (err: any) {
+        logger.error({ plugin: plugin.id, err: err.message }, 'Plugin.onInit() failed — continuing')
+      }
+    }
+  }
+
+  /**
+   * Phase 3 — onReady: all routes are mounted, HTTP server is listening.
+   * Plugins can start background jobs, register webhooks, connect to external services.
+   */
+  async runOnReady(): Promise<void> {
+    for (const plugin of this.plugins) {
+      if (typeof plugin.onReady !== 'function') continue
+      try {
+        await plugin.onReady(this.context)
+        logger.info({ plugin: plugin.id }, 'Plugin.onReady() complete')
+      } catch (err: any) {
+        logger.error({ plugin: plugin.id, err: err.message }, 'Plugin.onReady() failed — continuing')
+      }
+    }
+  }
+
+  /**
+   * Phase 4 — onDestroy: engine is shutting down (SIGTERM / SIGINT).
+   * Plugins should close connections, flush queues, complete in-flight work.
+   */
+  async runOnDestroy(): Promise<void> {
+    for (const plugin of this.plugins) {
+      if (typeof plugin.onDestroy !== 'function') continue
+      try {
+        await plugin.onDestroy(this.context)
+        logger.info({ plugin: plugin.id }, 'Plugin.onDestroy() complete')
+      } catch (err: any) {
+        logger.error({ plugin: plugin.id, err: err.message }, 'Plugin.onDestroy() failed — continuing')
+      }
+    }
+  }
+}

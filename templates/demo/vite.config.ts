@@ -12,6 +12,9 @@ const proxyErrorHandler = (err: any, req: any, res: any) => {
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    target: 'esnext'
+  },
   server: {
     port: 5174,
     strictPort: true,
@@ -33,4 +36,9 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'esnext'
+    }
+  }
 })

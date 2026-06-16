@@ -36,8 +36,8 @@ Always run commands from the repository root using `pnpm`:
 *   **Run Unit & Integration Test Suites**: `pnpm test`
 *   **Start Local Development Servers**:
     *   Whole Monorepo: `pnpm run dev`
-    *   Core Engine only: `pnpm --filter @zenithcms/core dev`
-    *   Admin Dashboard only: `pnpm --filter @zenithcms/admin dev`
+    *   Core Engine only: `pnpm --filter @zenith-open/zenithcms-core dev`
+    *   Admin Dashboard only: `pnpm --filter @zenith-open/zenithcms-admin dev`
 
 ---
 

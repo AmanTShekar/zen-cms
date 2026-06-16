@@ -1,22 +1,27 @@
-# ADR 002: Co-existence of MongoDB and PostgreSQL Database Adapters
+# ADR 002: Co-existence of MongoDB and PostgreSQL Adapters
 
 ## Status
 Accepted
 
 ## Context
-Zenith CMS is designed to be database-agnostic, supporting both document-oriented (MongoDB) and relational (PostgreSQL) backends. Since different hosting and deployment configurations have varied requirements, the CMS must maintain feature parity across both database types. 
+Zenith CMS is architected as a database-agnostic system, supporting both document-oriented (MongoDB) and relational (PostgreSQL) backends. Different infrastructure environments mandate varied storage capabilities, necessitating strict feature parity across disparate database paradigms.
 
-However, co-existence introduces significant engineering challenges:
-1. Difference in schema definition languages (Mongoose schemas vs Drizzle SQL tables).
-2. Divergence in query capabilities (nested document queries vs SQL joins).
-3. Handling transactions, schema migration tracking, and multi-tenant isolation uniformly.
+Supporting dual paradigms introduces significant data layer complexities:
+1. Fundamental divergence in schema definition languages (Mongoose BSON schemas vs. Drizzle SQL tables).
+2. Fundamental divergence in query execution plans (nested document traversal vs. SQL relational joins).
+3. The necessity for uniform handling of transactions, migration tracking, and multi-tenant isolation protocols across both adapters.
 
 ## Decision
-We implemented a strict `DatabaseAdapter` interface exported from `packages/types/src/database.ts`:
-1. **Drizzle ORM (PostgreSQL):** Configured via `PostgresDrizzleAdapter.ts`. Handles dynamic schemas, indexes, and custom relations stored as text/JSONB fields. Runs auto-migrations on boot protected by PostgreSQL advisory locks.
-2. **Mongoose (MongoDB):** Configured via `MongooseAdapter.ts`. Registers models dynamically on boot, matching the dynamic collection schemas.
-3. **Query Translation:** Dynamic request filters are parsed into an intermediate AST (`QueryASTParser`) before compiling into the target database dialect (Mongoose query filters or Drizzle SQL where conditions).
+The data access layer strictly conforms to a unified `DatabaseAdapter` interface defined in `@zenith-open/zenithcms-types`.
+1. **Drizzle ORM (PostgreSQL):** The `PostgresDrizzleAdapter` handles dynamic schemas, indexes, and custom relations mapped as text or JSONB fields. It executes automated migrations during boot, synchronized via PostgreSQL advisory locks to prevent race conditions in clustered deployments.
+2. **Mongoose (MongoDB):** The `MongooseAdapter` registers models dynamically during initialization, mapping exactly to the configured collection schemas.
+3. **Query Translation Engine:** Incoming dynamic HTTP request filters are parsed into an intermediate Abstract Syntax Tree (`QueryASTParser`). This AST is subsequently compiled into the targeted database dialect (Mongoose query objects or Drizzle SQL statements) immediately prior to execution.
 
 ## Consequences
-- **Pros:** Maximum flexibility for developers to scale with Document DBs or secure ACID Compliance in Relational DBs; completely decoupled controller code.
-- **Cons:** High development overhead maintaining two adapters; SQL relations must be modeled on top of dynamic SQL layouts, and complex queries must be normalized.
+### Positive
+- **Infrastructure Agnosticism:** Provides developers maximum flexibility to scale horizontally using document databases or to enforce strict ACID compliance using relational databases.
+- **Controller Decoupling:** API controllers and business logic remain entirely decoupled from the underlying storage implementation.
+
+### Negative
+- **Development Overhead:** Requires duplicate implementation and rigorous testing matrices for all data-mutating features.
+- **Relational Impedance:** Complex relational data must occasionally be modeled atop dynamic SQL layouts, necessitating query normalization and introducing potential indexing constraints.

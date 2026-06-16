@@ -30,7 +30,7 @@ export default function ApiStatusWidget({ theme, title }: WidgetProps) {
 
  return (
  <div className="h-full flex flex-col gap-3">
- <p className="text-[9px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest ">
+ <p className="text-[9px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest ">
  {title || 'API Health'}
  </p>
  <div
@@ -42,14 +42,14 @@ export default function ApiStatusWidget({ theme, title }: WidgetProps) {
  {status === 'checking' ? (
  <Activity size={24} className="text-gray-500 animate-pulse" />
  ) : isOk ? (
- <CheckCircle2 size={24} className="text-emerald-600 dark:text-emerald-500" />
+ <CheckCircle2 size={24} className="text-gray-600 dark:text-gray-500" />
  ) : (
  <XCircle size={24} className="text-red-500" />
  )}
  <span
  className={cn(
  'text-[11px] font-black uppercase ',
- isOk ? 'text-emerald-600 dark:text-emerald-500' : 'text-red-500'
+ isOk ? 'text-gray-600 dark:text-gray-500' : 'text-red-500'
  )}
  >
  {status === 'checking' ? 'Checking...' : isOk ? 'Operational' : 'Degraded'}

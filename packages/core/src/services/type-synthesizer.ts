@@ -1,6 +1,6 @@
 import fs from 'fs/promises'
 import path from 'path'
-import { CollectionConfig, FieldConfig } from '@zenithcms/types'
+import { CollectionConfig, FieldConfig } from '@zenith-open/zenithcms-types'
 import { logger } from './logger'
 
 /**
@@ -132,7 +132,7 @@ export class TypeSynthesizer {
 
       let code = `/**\n * Zenith Auto-Generated TypeScript Definitions\n * This file is automatically re-compiled on database register & boot.\n * DO NOT MODIFY MANUALLY.\n */\n\n`
 
-      code += `export interface ZenithDocument {\n  _id: string;\n  createdAt: string;\n  updatedAt: string;\n  status?: 'draft' | 'published';\n}\n\n`
+      code += `export interface ZenithDocument {\n  _id: string;\n  createdAt: string;\n  updatedAt: string;\n  status?: 'draft' | 'published' | 'archived' | string;\n}\n\n`
 
       // 1. Generate core interfaces for each collection schema
       for (const col of uniqueCollections) {

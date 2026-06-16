@@ -12,7 +12,7 @@
  * await api.post('/collections', data)
  * } catch (err) {
  * if (err instanceof ApiError) {
- * console.error(err.status, err.code, err.message)
+ * console.error((err as { status?: number }).status, (err as { code?: string }).code, (err instanceof Error ? err.message : String(err)))
  * }
  * }
  * ```
@@ -23,13 +23,13 @@ export class ApiError extends Error {
  /** Machine-readable short code: 'ERR_NETWORK', 'ERR_NO_TENANT', 'ERR_CSRF', etc. */
  code: string
  /** The raw response payload (if any) */
- response?: { data: unknown; status: number; headers?: Headers }
+ response?: { data: any; status: number; headers?: Headers }
 
  constructor(opts: {
  message: string
  status?: number
  code?: string
- response?: { data: unknown; status: number; headers?: Headers }
+ response?: { data: any; status: number; headers?: Headers }
  }) {
  super(opts.message)
  this.name = 'ApiError'

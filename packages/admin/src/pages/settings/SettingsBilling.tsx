@@ -21,7 +21,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  : 'bg-gray-50 border-gray-200 shadow-sm text-gray-500'
  )}
  >
- <CreditCard size={48} className="mx-auto text-emerald-600 dark:text-emerald-500 animate-pulse" />
+ <CreditCard size={48} className="mx-auto text-gray-600 dark:text-gray-500 animate-pulse" />
  <h3 className="text-lg font-black uppercase tracking-wider">
  No Active Workspace Selected
  </h3>
@@ -41,13 +41,13 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  className={cn(
  'p-6 rounded-none border flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all group',
  theme === 'dark'
- ? 'bg-white/[0.01] border-white/[0.08] hover:border-emerald-500/20'
+ ? 'bg-white/[0.01] border-white/[0.08] hover:border-gray-500/20'
  : 'bg-white border-gray-200 shadow-sm shadow-sm'
  )}
  >
  <div className="flex flex-col">
  <span className="text-[12px] font-black uppercase leading-none flex items-center gap-2">
- <Sparkles size={14} className="text-emerald-600 dark:text-emerald-400" />
+ <Sparkles size={14} className="text-gray-600 dark:text-gray-400" />
  Enable Custom Pricing Plans & Monetization
  </span>
  <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1.5 leading-relaxed">
@@ -59,7 +59,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  value={activeSite.currency || 'USD'}
  onChange={(e) => setActiveSite({ ...activeSite, currency: e.target.value })}
  className={cn(
- 'border rounded-none py-1.5 px-3 text-[11px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'border rounded-none py-1.5 px-3 text-[11px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200 text-gray-800'
  )}
  >
@@ -76,7 +76,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  onChange={(e) => setActiveSite({ ...activeSite, billingEnabled: e.target.checked })}
  className="sr-only peer"
  />
- <div className="w-12 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-none after:h-4 after:w-5 after:transition-all peer-checked:bg-emerald-600 dark:bg-emerald-600 shadow-inner border border-white/[0.08]"></div>
+ <div className="w-12 h-6 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-none after:h-4 after:w-5 after:transition-all peer-checked:bg-gray-600 dark:bg-gray-600 shadow-inner border border-white/[0.08]"></div>
  </label>
  </div>
  </div>
@@ -106,10 +106,10 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  value={activeSite[input.field] || ''}
  onChange={(e) => setActiveSite({ ...activeSite, [input.field]: e.target.value })}
  className={cn(
- 'w-full border rounded-none py-3 px-4 text-[12px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-3 px-4 text-[12px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
- ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500'
- : 'bg-white border-gray-200 focus:border-emerald-500'
+ ? 'bg-black border-white/[0.08] text-white focus:border-gray-500'
+ : 'bg-white border-gray-200 focus:border-gray-500'
  )}
  />
  </div>
@@ -142,7 +142,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  }
  setActiveSite({ ...activeSite, pricingPlans: [...(activeSite.pricingPlans || []), newPlan] })
  }}
- className="flex items-center gap-2 px-4 py-2 border border-emerald-500/30 hover:border-emerald-500 hover:bg-emerald-500/10 text-[10px] font-black uppercase transition-all text-emerald-600 dark:text-emerald-400 hover:text-white"
+ className="flex items-center gap-2 px-4 py-2 border border-gray-500/30 hover:border-gray-500 hover:bg-gray-500/10 text-[10px] font-black uppercase transition-all text-gray-600 dark:text-gray-400 hover:text-white"
  >
  <PlusCircle size={12} />
  Add Plan
@@ -157,8 +157,8 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  'p-6 border rounded-none relative transition-all flex flex-col justify-between space-y-6',
  plan.isPopular
  ? theme === 'dark'
- ? 'bg-emerald-500/[0.03] border-emerald-500/40 shadow-[0_0_15px_rgba(99,102,241,0.05)]'
- : 'bg-emerald-50 border-emerald-200'
+ ? 'bg-gray-500/[0.03] border-gray-500/40 shadow-[0_0_15px_rgba(99,102,241,0.05)]'
+ : 'bg-gray-50 border-gray-200'
  : theme === 'dark'
  ? 'bg-white/[0.01] border-white/[0.08]'
  : 'bg-white border-gray-200 shadow-sm shadow-sm'
@@ -175,7 +175,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
  className={cn(
- 'text-sm font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black border-b border-transparent focus:border-emerald-500 bg-transparent w-full mr-4',
+ 'text-sm font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black border-b border-transparent focus:border-gray-500 bg-transparent w-full mr-4',
  theme === 'dark' ? 'text-white' : 'text-gray-900'
  )}
  />
@@ -203,7 +203,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
  className={cn(
- 'w-full border rounded-none py-1.5 px-3 text-[10px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-1.5 px-3 text-[10px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200'
  )}
  />
@@ -220,7 +220,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
  className={cn(
- 'w-full border rounded-none py-1.5 px-3 text-[10px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-1.5 px-3 text-[10px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200'
  )}
  />
@@ -232,7 +232,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
  className={cn(
- 'border rounded-none py-1.5 px-2 text-[9px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'border rounded-none py-1.5 px-2 text-[9px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200'
  )}
  >
@@ -267,11 +267,11 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  plans[planIndex] = { ...plan, paywalledCollections: next }
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
- className="rounded-none border-white/[0.08] text-emerald-600 focus:ring-0 focus:ring-offset-0 bg-black cursor-pointer"
+ className="rounded-none border-white/[0.08] text-gray-600 focus:ring-0 focus:ring-offset-0 bg-black cursor-pointer"
  />
  <span className={cn(
  'text-[9px] font-black uppercase tracking-widest transition-colors',
- checked ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 group-hover:text-gray-400'
+ checked ? 'text-gray-600 dark:text-gray-400' : 'text-gray-500 group-hover:text-gray-400'
  )}>
  {col.label || col.slug}
  </span>
@@ -288,7 +288,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  <div className="space-y-1.5">
  {(plan.features || []).map((feat: string, featIdx: number) => (
  <div key={featIdx} className="flex items-center gap-2">
- <span className="text-emerald-600 dark:text-emerald-500 text-[10px] font-black">•</span>
+ <span className="text-gray-600 dark:text-gray-500 text-[10px] font-black">•</span>
  <input
  type="text"
  value={feat}
@@ -300,7 +300,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
  className={cn(
- 'flex-1 border-b border-transparent focus:border-white/[0.08] bg-transparent text-[10px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-0.5',
+ 'flex-1 border-b border-transparent focus:border-white/[0.08] bg-transparent text-[10px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-0.5',
  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
  )}
  />
@@ -326,7 +326,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  plans[planIndex] = { ...plan, features: feats }
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
- className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 hover:text-emerald-300 uppercase tracking-widest flex items-center gap-1 mt-1 shrink-0"
+ className="text-[9px] font-black text-gray-600 dark:text-gray-400 hover:text-gray-300 uppercase tracking-widest flex items-center gap-1 mt-1 shrink-0"
  >
  <PlusCircleIcon size={10} />
  Add Feature bullet
@@ -349,7 +349,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  }}
  className="sr-only peer"
  />
- <div className="w-9 h-4 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-3 after:w-3.5 after:transition-all peer-checked:bg-emerald-600 dark:bg-emerald-600 shadow-inner border border-white/[0.08]"></div>
+ <div className="w-9 h-4 bg-gray-500/20 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-3 after:w-3.5 after:transition-all peer-checked:bg-gray-600 dark:bg-gray-600 shadow-inner border border-white/[0.08]"></div>
  </label>
  </div>
  </div>

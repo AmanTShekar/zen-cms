@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { sessionStore, SessionStore } from './session-store'
 
 // ── Security: Hard-fail if secrets are missing in production ──────────────────
 if (process.env.NODE_ENV === 'production') {
@@ -57,25 +58,48 @@ export const AuthService = {
   },
 
   /**
-   * Short-lived access token (15 minutes)
+   * Short-lived access token (15 minutes) — includes jti for revocation support.
    */
   generateToken(user: AuthUser): string {
-    return jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, {
-      expiresIn: '15m',
-    })
+    const jti = SessionStore.generateJti()
+    return jwt.sign(
+      { id: user.id, email: user.email, role: user.role, jti },
+      JWT_SECRET,
+      { expiresIn: '15m' }
+    )
   },
 
   /**
-   * Long-lived refresh token — stores ONLY the user ID.
-   * The role is always re-fetched from the DB to prevent privilege escalation via stolen tokens.
+   * Long-lived refresh token with rotation support.
+   * Stores user ID, jti, and version. When verified successfully, the token is
+   * revoked and a new one must be issued (refresh token rotation).
+   * The role is always re-fetched from the DB to prevent privilege escalation.
    */
   generateRefreshToken(user: AuthUser): string {
-    return jwt.sign({ id: user.id, type: 'refresh' }, JWT_REFRESH_SECRET, { expiresIn: '7d' })
+    const jti = SessionStore.generateJti()
+    const version = 1
+    return jwt.sign({ id: user.id, type: 'refresh', jti, version }, JWT_REFRESH_SECRET, {
+      expiresIn: '7d',
+    })
   },
 
   verifyToken(token: string): AuthUser | null {
     try {
-      const decoded = jwt.verify(token, JWT_SECRET) as AuthUser & Record<string, unknown>
+      const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] }) as AuthUser & { jti?: string }
+      void decoded.jti
+      return { id: decoded.id, email: decoded.email, role: decoded.role }
+    } catch {
+      return null
+    }
+  },
+
+  async verifyTokenAsync(token: string): Promise<AuthUser | null> {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] }) as AuthUser & { jti?: string }
+      if (decoded.jti) {
+        const revoked = await sessionStore.isRevoked(decoded.jti)
+        if (revoked) return null
+      }
       return { id: decoded.id, email: decoded.email, role: decoded.role }
     } catch {
       return null
@@ -83,18 +107,28 @@ export const AuthService = {
   },
 
   /**
-   * Verifies a refresh token and returns only the user ID.
-   * Full user data (with current role) must be fetched from DB after verification.
+   * Verifies a refresh token with rotation support.
+   * Returns null if revoked (token reuse detected — security event).
+   * Caller is responsible for issuing a new refresh token after successful verification.
    */
-  verifyRefreshToken(token: string): { id: string } | null {
+  verifyRefreshToken(token: string): { id: string; jti: string; version: number } | null {
     try {
-      const decoded = jwt.verify(token, JWT_REFRESH_SECRET) as RefreshTokenPayload &
-        Record<string, unknown>
+      const decoded = jwt.verify(token, JWT_REFRESH_SECRET, { algorithms: ['HS256'] }) as RefreshTokenPayload &
+        { jti: string; version: number }
       if (decoded.type !== 'refresh') return null
-      return { id: decoded.id }
+      return { id: decoded.id, jti: decoded.jti, version: decoded.version }
     } catch {
       return null
     }
+  },
+
+  /**
+   * Rotate a refresh token: revoke old one and issue new.
+   * Called after verifyRefreshToken succeeds.
+   */
+  async rotateRefreshToken(user: AuthUser, oldJti: string): Promise<string> {
+    await sessionStore.revoke(oldJti, 86400 * 7)
+    return this.generateRefreshToken(user)
   },
 
   validatePassword(password: string): { valid: boolean; message?: string } {
@@ -110,7 +144,8 @@ export const AuthService = {
     if (!/[0-9]/.test(password)) {
       return { valid: false, message: 'Password must contain at least one number' }
     }
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+    // eslint-disable-next-line no-useless-escape
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/]/.test(password)) {
       return { valid: false, message: 'Password must contain at least one special character' }
     }
     return { valid: true }
@@ -126,9 +161,9 @@ export const AuthService = {
     const adapter = AdapterFactory.getActiveAdapter()
     const lower = login.toLowerCase()
     // Try email first, then username
-    const byEmail = await adapter.find<any>('users', { email: lower })
+    const byEmail = await adapter.find<Record<string, any>>('users', { email: lower })
     if (byEmail[0]) return byEmail[0]
-    const byUsername = await adapter.find<any>('users', { username: lower })
+    const byUsername = await adapter.find<Record<string, any>>('users', { username: lower })
     return byUsername[0] || null
   },
 
@@ -197,7 +232,7 @@ export const AuthService = {
   async verifyEmailToken(token: string): Promise<string | null> {
     const adapter = AdapterFactory.getActiveAdapter()
     // Fetch by token only — filter expiry in JS to avoid MongoDB-specific $gt
-    const users = await adapter.find<any>('users', { verificationToken: token })
+    const users = await adapter.find<Record<string, any>>('users', { verificationToken: token })
     const user = users.find((u: any) => u.verificationTokenExpiry && new Date(u.verificationTokenExpiry) > new Date())
     if (!user) return null
     const id = (user.id || user._id).toString()

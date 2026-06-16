@@ -21,13 +21,13 @@ export interface BlockDef {
  slug: string
  label?: string
  fields?: FieldDef[]
- defaultContent?: Record<string, any>
+ defaultContent?: any
 }
 
 export interface SectionData {
  id?: string
  blockType?: string
- content?: Record<string, any>
+ content?: any
  [key: string]: any
 }
 

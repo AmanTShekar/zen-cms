@@ -1,4 +1,4 @@
-import type { ZenithCollections } from '@zenithcms/types'
+import type { ZenithCollections } from '@zenith-open/zenithcms-types'
 
 /** Resolve a collection name string to its document type, falling back to any for unknown collections. */
 type DocType<C extends string> = C extends keyof ZenithCollections ? ZenithCollections[C] : any

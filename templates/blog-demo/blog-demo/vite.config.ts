@@ -7,4 +7,12 @@ export default defineConfig({
   server: {
     port: 4001,
   },
+  build: {
+    target: 'esnext',
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'esnext'
+    }
+  }
 })

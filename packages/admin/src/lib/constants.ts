@@ -132,12 +132,12 @@ export const DEFAULT_PAGE_SIZE = 25
 // ── Status Colors (Tailwind classes) ──────────────────────────────────────────
 export const STATUS_COLORS: Record<string, string> = {
  draft: 'text-amber-400 bg-amber-400/10 border-amber-400/20',
- published: 'text-emerald-600 dark:text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
+ published: 'text-gray-600 dark:text-gray-400 bg-gray-400/10 border-gray-400/20',
  unpublished: 'text-slate-400 bg-slate-400/10 border-slate-400/20',
  in_review: 'text-blue-400 bg-blue-400/10 border-blue-400/20',
  changes_requested: 'text-orange-400 bg-orange-400/10 border-orange-400/20',
- scheduled: 'text-emerald-600 dark:text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
- success: 'text-emerald-600 dark:text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
+ scheduled: 'text-gray-600 dark:text-gray-400 bg-gray-400/10 border-gray-400/20',
+ success: 'text-gray-600 dark:text-gray-400 bg-gray-400/10 border-gray-400/20',
  failed: 'text-red-400 bg-red-400/10 border-red-400/20',
 }
 

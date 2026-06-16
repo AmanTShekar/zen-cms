@@ -10,7 +10,7 @@ import { logger } from './logger'
  * 3. Atomic clears
  */
 export class CacheService {
-  private static cache = new NodeCache({ stdTTL: 600 }) // 10 min default
+  private static cache = new NodeCache({ stdTTL: 600, maxKeys: 10_000, checkperiod: 120 }) // 10 min default, max 10k keys
   private static tags: Record<string, string[]> = {}
 
   // Handle key expiration to prevent memory leaks in the tags array

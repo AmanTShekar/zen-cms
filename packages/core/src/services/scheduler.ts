@@ -1,8 +1,7 @@
-import { CollectionConfig } from '@zenithcms/types'
+import { CollectionConfig } from '@zenith-open/zenithcms-types'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { logger } from './logger'
 import { publishReleaseContent } from '../api/releases'
-import { AuditLogModel } from '../database/audit-model'
 import { AUDIT_RETENTION_POLICIES, getAuditCutoffDate } from './audit-rotation'
 
 let lockClient: any = null
@@ -25,15 +24,27 @@ async function acquireLock(lockKey: string, ttlMs: number): Promise<boolean> {
       lockClient = new RedisClass(redisUrl, {
         maxRetriesPerRequest: 1,
         enableReadyCheck: true,
+        retryStrategy: (times: number) => Math.min(times * 100, 3000),
       })
       lockClient.on('error', (err: any) => {
-        logger.error({ err }, 'Scheduler Lock: Redis connection error')
+        logger.error({ err }, 'Scheduler Lock: Redis connection error — will reconnect on next tick')
+        // CRITICAL FIX: disconnect and null the client so it is recreated fresh on next acquireLock call
+        if (lockClient) {
+          lockClient.disconnect()
+          lockClient = undefined
+        }
       })
     }
 
     // Set the key only if it does not exist (NX) with an expiration (PX)
     const result = await lockClient.set(lockKey, 'locked', 'PX', ttlMs, 'NX')
-    return result === 'OK'
+    const acquired = result === 'OK'
+    // Don't keep Redis connection open across ticks — clean up for next call
+    if (lockClient && lockClient.disconnect) {
+      lockClient.disconnect()
+      lockClient = undefined
+    }
+    return acquired
   } catch (err: any) {
     logger.warn({ err: err.message }, 'Scheduler Lock: Failed to contact Redis. Defaulting to local execution.')
     return true
@@ -153,7 +164,7 @@ export class SchedulerService {
         const defaultCutoff = getAuditCutoffDate(AUDIT_RETENTION_POLICIES.DEFAULT_RETENTION_DAYS)
         
         // Step 4a. Delete generic logs using default retention
-        await AuditLogModel.deleteMany({
+        await this.adapter.deleteMany('audit_logs', {
           collectionName: { $nin: collections.filter(c => (c as any).auditRetentionDays).map(c => c.slug) },
           timestamp: { $lte: defaultCutoff }
         })
@@ -164,7 +175,7 @@ export class SchedulerService {
           if (typeof customRetention === 'number') {
             const days = Math.max(customRetention, AUDIT_RETENTION_POLICIES.MINIMUM_RETENTION_DAYS)
             const cutoff = getAuditCutoffDate(days)
-            await AuditLogModel.deleteMany({
+            await this.adapter.deleteMany('audit_logs', {
               collectionName: config.slug,
               timestamp: { $lte: cutoff }
             })

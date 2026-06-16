@@ -37,8 +37,8 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  'flex items-center gap-1 px-2 py-1 rounded-none border text-[7px] font-black uppercase tracking-widest',
  isConnected
  ? theme === 'dark'
- ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
- : 'bg-emerald-50 border-emerald-200 text-emerald-600'
+ ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400'
+ : 'bg-gray-50 border-gray-200 text-gray-600'
  : theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-500'
  : 'bg-gray-100 border-gray-200 text-gray-400'
@@ -75,7 +75,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  size={6}
  fill={localUser.color}
  stroke="none"
- className="text-emerald-600 dark:text-emerald-400"
+ className="text-gray-600 dark:text-gray-400"
  />
  </motion.div>
  </div>

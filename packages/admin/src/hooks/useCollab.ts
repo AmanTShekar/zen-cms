@@ -3,6 +3,7 @@ import * as Y from 'yjs'
 import { WebsocketProvider } from 'y-websocket'
 import { useAuthStore } from '../store/authStore'
 import api from '../lib/api'
+import { useShallow } from 'zustand/react/shallow'
 
 export interface CollabUser {
  id: string
@@ -22,7 +23,7 @@ const YJS_COLORS = [
  '#14b8a6', // teal
  '#06b6d4', // cyan
  '#3b82f6', // blue
- '#a855f7', // emerald
+ '#a855f7', // gray
 ]
 
 function colorForId(id: string): string {
@@ -80,7 +81,7 @@ export function useCollab({
  pollInterval = 15000,
  enabled = true,
 }: UseCollabOptions): UseCollabReturn {
- const { user } = useAuthStore()
+ const { user  } = useAuthStore(useShallow(state => ({ user: state.user })))
  const [collabUsers, setCollabUsers] = useState<CollabUser[]>([])
  const [isConnected, setIsConnected] = useState(false)
  const [doc, setDoc] = useState<Y.Doc | null>(null)
@@ -199,7 +200,7 @@ export function useCollab({
  const provider = providerRef.current
  if (!provider) return
  const awareness = provider.awareness
- const current = awareness.getLocalState() as Record<string, any>
+ const current = awareness.getLocalState() as any
  awareness.setLocalStateField('user', {
  ...(current.user || {}),
  cursor: { sectionId, fieldKey },

@@ -83,6 +83,24 @@ export const ReorderableSectionBlock = React.memo(
  dragListener={false}
  dragControls={dragControls}
  as="div"
+ role="article"
+ aria-label={`Section block ${section.title || section.blockType}`}
+ tabIndex={0}
+ onKeyDown={(e: React.KeyboardEvent) => {
+   if (e.key === 'ArrowUp' && (e.metaKey || e.ctrlKey)) {
+     e.preventDefault()
+     moveSection(section.id, 'up')
+     // Announce to screen reader
+     const liveRegion = document.getElementById('editor-live-region')
+     if (liveRegion) liveRegion.innerText = `Moved ${section.title || section.blockType} up`
+   }
+   if (e.key === 'ArrowDown' && (e.metaKey || e.ctrlKey)) {
+     e.preventDefault()
+     moveSection(section.id, 'down')
+     const liveRegion = document.getElementById('editor-live-region')
+     if (liveRegion) liveRegion.innerText = `Moved ${section.title || section.blockType} down`
+   }
+ }}
  whileDrag={{
  scale: 1.02,
  opacity: 0.9,
@@ -90,7 +108,7 @@ export const ReorderableSectionBlock = React.memo(
  zIndex: 50,
  cursor: 'grabbing',
  }}
- className="relative group/item"
+ className="relative group/item focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
  >
  <div className="relative h-8 group/portal -mt-4">
  <button
@@ -98,13 +116,13 @@ export const ReorderableSectionBlock = React.memo(
  setInjectionIndex(index)
  setBlockPickerOpen(true)
  }}
- className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-60 hover:!opacity-100 transition-all z-20 px-3 py-1 rounded-none border-2 border-dashed border-emerald-500/40 hover:border-emerald-500/70 backdrop-blur-xl"
+ className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-60 hover:!opacity-100 transition-all z-20 px-3 py-1 rounded-none border-2 border-dashed border-gray-500/40 hover:border-gray-500/70 backdrop-blur-xl"
  >
  <span className={cn(
  'text-[9px] font-black uppercase flex items-center gap-1.5 tracking-wider',
  theme === 'dark' ? 'text-white/70' : 'text-black/70'
  )}>
- <Plus size={10} className="text-emerald-600 dark:text-emerald-500" /> Insert
+ <Plus size={10} className="text-gray-600 dark:text-gray-500" /> Insert
  </span>
  </button>
  </div>

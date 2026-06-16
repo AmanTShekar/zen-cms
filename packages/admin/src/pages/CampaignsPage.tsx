@@ -92,7 +92,7 @@ const CampaignsPage: React.FC = () => {
  </div>
  <button
  onClick={() => setActiveCampaign({ subject: '', body: '', audience: 'all' })}
- className="flex items-center gap-2 px-6 py-3 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest shadow-lg transition-all"
+ className="flex items-center gap-2 px-6 py-3 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-[10px] font-black uppercase tracking-widest shadow-lg transition-all"
  >
  <Plus size={14} />
  New Campaign
@@ -111,7 +111,7 @@ const CampaignsPage: React.FC = () => {
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}>
  <div className="flex justify-between items-center mb-4">
- <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 border-b border-emerald-500/20 pb-2">Campaign Details</h3>
+ <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-500 border-b border-gray-500/20 pb-2">Campaign Details</h3>
  <button
  onClick={() => setActiveCampaign(null)}
  className="text-[9px] font-bold text-gray-500 uppercase hover:text-white"
@@ -128,8 +128,8 @@ const CampaignsPage: React.FC = () => {
  value={activeCampaign.subject || ''}
  onChange={(e) => setActiveCampaign({ ...activeCampaign, subject: e.target.value })}
  className={cn(
- 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
- theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+ 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
+ theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-gray-500' : 'bg-gray-50 border-gray-200 focus:border-gray-500'
  )}
  placeholder="Exciting News from Zenith"
  />
@@ -140,8 +140,8 @@ const CampaignsPage: React.FC = () => {
  value={activeCampaign.audience || 'all'}
  onChange={(e) => setActiveCampaign({ ...activeCampaign, audience: e.target.value })}
  className={cn(
- 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
- theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-emerald-500 text-white' : 'bg-gray-50 border-gray-200 focus:border-emerald-500 text-black'
+ 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
+ theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-gray-500 text-white' : 'bg-gray-50 border-gray-200 focus:border-gray-500 text-black'
  )}
  >
  <option value="all" className="text-black">All Subscribers</option>
@@ -156,8 +156,8 @@ const CampaignsPage: React.FC = () => {
  onChange={(e) => setActiveCampaign({ ...activeCampaign, body: e.target.value })}
  rows={10}
  className={cn(
- 'w-full border p-3 text-[11px] font-mono outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
- theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+ 'w-full border p-3 text-[11px] font-mono outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
+ theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-gray-500' : 'bg-gray-50 border-gray-200 focus:border-gray-500'
  )}
  placeholder="Hello {{name}}, we have some exciting news..."
  />
@@ -167,7 +167,7 @@ const CampaignsPage: React.FC = () => {
  <button
  onClick={handleSave}
  disabled={saving}
- className="flex items-center gap-2 px-6 py-3 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest shadow-lg transition-all"
+ className="flex items-center gap-2 px-6 py-3 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-[10px] font-black uppercase tracking-widest shadow-lg transition-all"
  >
  {saving ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />}
  Save Draft
@@ -194,7 +194,7 @@ const CampaignsPage: React.FC = () => {
  <h4 className="text-[12px] font-black uppercase tracking-widest flex items-center gap-2">
  {c.subject}
  {c.status === 'draft' && <span className="px-2 py-0.5 bg-gray-500/20 text-gray-400 text-[8px] rounded-none">Draft</span>}
- {c.status === 'sent' && <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[8px] rounded-none">Sent</span>}
+ {c.status === 'sent' && <span className="px-2 py-0.5 bg-gray-500/20 text-gray-600 dark:text-gray-400 text-[8px] rounded-none">Sent</span>}
  </h4>
  <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">
  Audience: {c.audience} • Created: {new Date(c.createdAt).toLocaleDateString()}
@@ -205,14 +205,14 @@ const CampaignsPage: React.FC = () => {
  <>
  <button
  onClick={() => setActiveCampaign(c)}
- className="p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-400/10 transition-colors"
+ className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-400/10 transition-colors"
  title="Edit"
  >
  <Edit size={14} />
  </button>
  <button
  onClick={() => handleSend(c.id)}
- className="p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-400/10 transition-colors"
+ className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-400/10 transition-colors"
  title="Send Now"
  >
  <Send size={14} />

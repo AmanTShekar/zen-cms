@@ -40,8 +40,8 @@ packages/admin/
 
 ```bash
 # From monorepo root
-pnpm --filter @zenithcms/admin dev      # Start dev server on port 5175
-pnpm --filter @zenithcms/admin build    # Production build
+pnpm --filter @zenith-open/zenithcms-admin dev      # Start dev server on port 5175
+pnpm --filter @zenith-open/zenithcms-admin build    # Production build
 pnpm run build                          # Build entire monorepo
 ```
 

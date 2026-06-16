@@ -3,28 +3,28 @@
 /**
  * Check if a value is a plain object (not array, not null).
  */
-export function isObject(item: unknown): boolean {
+export function isObject(item: any): boolean {
  return !!item && typeof item === 'object' && !Array.isArray(item)
 }
 
 /**
  * Recursive deep merge — source values take precedence.
  */
-export function deepMerge(target: unknown, source: unknown): unknown {
- const output = isObject(target) ? { ...(target as Record<string, unknown>) } : {}
+export function deepMerge(target: any, source: any): any {
+ const output = isObject(target) ? { ...(target as any) } : {}
  if (isObject(target) && isObject(source)) {
- Object.entries(source as Record<string, unknown>).forEach(([key, val]) => {
+ Object.entries(source as any).forEach(([key, val]) => {
  if (isObject(val)) {
- if (!(key in (target as Record<string, unknown>))) {
- Object.assign(output as Record<string, unknown>, { [key]: val })
+ if (!(key in (target as any))) {
+ Object.assign(output as any, { [key]: val })
  } else {
- ;(output as Record<string, unknown>)[key] = deepMerge(
- (target as Record<string, unknown>)[key],
+ ;(output as any)[key] = deepMerge(
+ (target as any)[key],
  val
  )
  }
  } else {
- Object.assign(output as Record<string, unknown>, { [key]: val })
+ Object.assign(output as any, { [key]: val })
  }
  })
  }
@@ -35,15 +35,15 @@ export function deepMerge(target: unknown, source: unknown): unknown {
  * Navigate nested errors object by dot-notation path.
  */
 export function getFieldError(
- errors: Record<string, unknown> | undefined,
+ errors: any | undefined,
  name: string
-): unknown {
+): any {
  if (!name.includes('.')) return errors?.[name]
  const parts = name.split('.')
- let current: unknown = errors
+ let current: any = errors
  for (const part of parts) {
  if (!current || typeof current !== 'object') return undefined
- current = (current as Record<string, unknown>)[part]
+ current = (current as any)[part]
  }
  return current
 }
@@ -52,21 +52,21 @@ export function getFieldError(
  * Evaluate a field's conditional-display rule.
  */
 export function evaluateCondition(
- condition: unknown,
- formValues: Record<string, unknown>
+ condition: any,
+ formValues: any
 ): boolean {
  if (!condition) return true
 
  if (typeof condition === 'function') {
  try {
- return (condition as (v: Record<string, unknown>) => boolean)(formValues)
+ return (condition as (v: any) => boolean)(formValues)
  } catch {
  return true
  }
  }
 
  if (typeof condition === 'object' && condition !== null) {
- const cond = condition as Record<string, unknown>
+ const cond = condition as any
  const targetField = cond.field as string | undefined
  if (!targetField) return true
 

@@ -24,7 +24,7 @@ export const maintenanceMiddleware = async (req: Request, res: Response, next: N
   try {
     const adapter = AdapterFactory.getActiveAdapter()
     if (adapter) {
-      const settingsList = await adapter.find<any>('z_settings', {})
+      const settingsList = await adapter.find<Record<string, any>>('z_settings', {})
       const settings = settingsList[0] || null
 
       if (settings && (settings.maintenanceMode === true || settings.maintenance_mode === true)) {

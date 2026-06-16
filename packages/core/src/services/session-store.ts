@@ -13,12 +13,13 @@ interface StoredSession {
 /**
  * Token revocation and session store.
  *
- * Uses Redis when available (via passed client), falls back to in-memory Map
+ * Uses Redis when available (via passed client), falls back to in-memory Maps
  * for development/testing. In production with multiple instances you MUST
  * configure Redis so all nodes share the same blacklist.
  */
 export class SessionStore {
-  private blacklist: Map<string, StoredSession> = new Map()
+  private activeSessions: Map<string, StoredSession> = new Map()
+  private revokedTokens: Map<string, number> = new Map()
   private userSessions: Map<string, Set<string>> = new Map()
   private cleanupTimer: ReturnType<typeof setInterval> | null = null
   private redisClient: any | null = null
@@ -58,7 +59,7 @@ export class SessionStore {
       await this.redisClient.sadd(`zenith:user:${userId}:sessions`, jti)
       await this.redisClient.expire(`zenith:user:${userId}:sessions`, Math.max(ttlSeconds, 86400))
     } else {
-      this.blacklist.set(jti, session)
+      this.activeSessions.set(jti, session)
       if (!this.userSessions.has(userId)) {
         this.userSessions.set(userId, new Set())
       }
@@ -72,13 +73,7 @@ export class SessionStore {
       const exists = await this.redisClient.exists(`zenith:session:revoked:${jti}`)
       return exists === 1
     }
-    const session = this.blacklist.get(jti)
-    if (!session) return false
-    if (Date.now() > session.expiresAt) {
-      this.blacklist.delete(jti)
-      return false
-    }
-    return false
+    return this.revokedTokens.has(jti)
   }
 
   /** Revoke a single token / session. */
@@ -86,9 +81,16 @@ export class SessionStore {
     if (this.redisClient) {
       await this.redisClient.set(`zenith:session:revoked:${jti}`, '1', 'EX', ttlSeconds)
     } else {
-      const session = this.blacklist.get(jti)
+      this.revokedTokens.set(jti, Date.now() + ttlSeconds * 1000)
+      
+      const session = this.activeSessions.get(jti)
       if (session) {
-        session.expiresAt = Date.now()
+        this.activeSessions.delete(jti)
+        const userSet = this.userSessions.get(session.userId)
+        if (userSet) {
+          userSet.delete(jti)
+          if (userSet.size === 0) this.userSessions.delete(session.userId)
+        }
       }
     }
   }
@@ -108,7 +110,8 @@ export class SessionStore {
     if (!sessions) return 0
     const count = sessions.size
     for (const jti of sessions) {
-      this.blacklist.delete(jti)
+      this.revokedTokens.set(jti, Date.now() + 86400 * 7 * 1000)
+      this.activeSessions.delete(jti)
     }
     this.userSessions.delete(userId)
     return count
@@ -133,7 +136,7 @@ export class SessionStore {
     if (!jtis) return []
     const sessions: StoredSession[] = []
     for (const jti of jtis) {
-      const s = this.blacklist.get(jti)
+      const s = this.activeSessions.get(jti)
       if (s && Date.now() < s.expiresAt) sessions.push(s)
     }
     return sessions
@@ -143,9 +146,18 @@ export class SessionStore {
   private cleanup(): void {
     if (this.redisClient) return
     const now = Date.now()
-    for (const [jti, session] of this.blacklist) {
+    
+    // Clean up expired revoked tokens
+    for (const [jti, expiry] of this.revokedTokens) {
+      if (now > expiry) {
+        this.revokedTokens.delete(jti)
+      }
+    }
+    
+    // Clean up expired active sessions
+    for (const [jti, session] of this.activeSessions) {
       if (now > session.expiresAt) {
-        this.blacklist.delete(jti)
+        this.activeSessions.delete(jti)
         const userSet = this.userSessions.get(session.userId)
         if (userSet) {
           userSet.delete(jti)

@@ -81,7 +81,7 @@ const TrashPage = () => {
  fetchTrash()
  } catch (err: any) {
  const msg =
- err.response?.data?.error?.message || err.message || 'Failed to restore'
+ err.response?.data?.error?.message || (err instanceof Error ? err.message : String(err)) || 'Failed to restore'
  toast.error(msg)
  } finally {
  setRestoreLoading(false)
@@ -101,7 +101,7 @@ const TrashPage = () => {
  fetchTrash()
  } catch (err: any) {
  const msg =
- err.response?.data?.error?.message || err.message || 'Failed to purge'
+ err.response?.data?.error?.message || (err instanceof Error ? err.message : String(err)) || 'Failed to purge'
  toast.error(msg)
  } finally {
  setPurgeLoading(false)
@@ -118,7 +118,7 @@ const TrashPage = () => {
  } catch (err: any) {
  const msg =
  err.response?.data?.error?.message ||
- err.message ||
+ (err instanceof Error ? err.message : String(err)) ||
  'Failed to empty trash'
  toast.error(msg)
  } finally {
@@ -195,7 +195,7 @@ const TrashPage = () => {
  }}
  placeholder="Search trashed items..."
  className={cn(
- 'w-full pl-10 pr-4 py-3 text-xs font-bold tracking-wider border outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
+ 'w-full pl-10 pr-4 py-3 text-xs font-bold tracking-wider border outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
  dark
  ? 'bg-white/[0.03] border-white/[0.08] text-white placeholder:text-gray-600 focus:border-red-500/30'
  : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-red-500'
@@ -319,8 +319,8 @@ const TrashPage = () => {
  className={cn(
  'p-1.5 border transition-all',
  dark
- ? 'border-white/[0.08] text-gray-600 hover:text-emerald-600 dark:text-emerald-400 hover:border-emerald-500/30'
- : 'border-gray-200 text-gray-400 hover:text-emerald-600'
+ ? 'border-white/[0.08] text-gray-600 hover:text-gray-600 dark:text-gray-400 hover:border-gray-500/30'
+ : 'border-gray-200 text-gray-400 hover:text-gray-600'
  )}
  title="Restore"
  >
@@ -408,7 +408,7 @@ const TrashPage = () => {
  : 'bg-white border-gray-200'
  )}
  >
- <RotateCcw size={32} className="mx-auto mb-4 text-emerald-600 dark:text-emerald-500" />
+ <RotateCcw size={32} className="mx-auto mb-4 text-gray-600 dark:text-gray-500" />
  <h3
  className={cn(
  'text-sm font-black uppercase tracking-wider mb-2',
@@ -449,7 +449,7 @@ const TrashPage = () => {
  <button
  onClick={handleRestore}
  disabled={restoreLoading}
- className="px-5 py-2.5 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest transition-all border-0 flex items-center gap-2"
+ className="px-5 py-2.5 bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white text-[10px] font-black uppercase tracking-widest transition-all border-0 flex items-center gap-2"
  >
  {restoreLoading && (
  <Loader2 size={12} className="animate-spin" />

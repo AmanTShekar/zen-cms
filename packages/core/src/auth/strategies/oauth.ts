@@ -192,7 +192,7 @@ export function createOAuthRouter(): Router {
       const adapter = AdapterFactory.getActiveAdapter()
 
       // Check if user already exists (linked by email)
-      const existingUsers = await adapter.find<any>('users', { email: email.toLowerCase() })
+      const existingUsers = await adapter.find<Record<string, any>>('users', { email: email.toLowerCase() })
       const existingUser = existingUsers[0] || null
 
       let userId: string
@@ -214,7 +214,7 @@ export function createOAuthRouter(): Router {
         const randomPassword = crypto.randomBytes(32).toString('base64url')
         const hashedPassword = await AuthService.hashPassword(randomPassword)
 
-        const newUser = await adapter.create<any>('users', {
+        const newUser = await adapter.create<Record<string, any>>('users', {
           email: email.toLowerCase(),
           password: hashedPassword,
           role: 'editor',

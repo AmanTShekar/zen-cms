@@ -1,6 +1,72 @@
-import { CollectionConfig, FieldConfig, DatabaseAdapter, FindOptions, BaseOptions, AuditLogData, VersionData, WebhookDeliveryData, WebhookDeliveryRecord } from '@zenithcms/types'
+import { CollectionConfig, FieldConfig, DatabaseAdapter, FindOptions, BaseOptions, AuditLogData, VersionData, WebhookDeliveryData, WebhookDeliveryRecord } from '@zenith-open/zenithcms-types'
 import NodeCache from 'node-cache'
+import Redis from 'ioredis'
 import pino from 'pino'
+
+export interface CacheLayer {
+  get<T>(key: string): Promise<T | undefined>
+  set<T>(key: string, value: T, collection: string): Promise<void>
+  invalidate(collection: string): Promise<void>
+}
+
+export class LocalCacheLayer implements CacheLayer {
+  private cache: NodeCache
+  constructor() {
+    this.cache = new NodeCache({ stdTTL: 60, checkperiod: 120 })
+  }
+  async get<T>(key: string): Promise<T | undefined> {
+    return this.cache.get<T>(key)
+  }
+  async set<T>(key: string, value: T, collection: string): Promise<void> {
+    this.cache.set(key, value)
+  }
+  async invalidate(collection: string): Promise<void> {
+    const keys = this.cache.keys()
+    const targets = keys.filter((k) => k.startsWith(`${collection}:`))
+    this.cache.del(targets)
+  }
+}
+
+export class RedisCacheLayer implements CacheLayer {
+  private redis: Redis
+  constructor(redisUrl: string) {
+    this.redis = new Redis(redisUrl, {
+      maxRetriesPerRequest: 3,
+    })
+    logger.info('PostgresDrizzleAdapter: Redis_Cache_Layer Initialized')
+  }
+  async get<T>(key: string): Promise<T | undefined> {
+    try {
+      const data = await this.redis.get(key)
+      return data ? JSON.parse(data) : undefined
+    } catch (error: any) {
+      logger.warn({ error: error.message }, 'RedisCacheLayer: Get failed')
+      return undefined
+    }
+  }
+  async set<T>(key: string, value: T, collection: string): Promise<void> {
+    try {
+      const setKey = `zenith:cache:collection:${collection}`
+      await this.redis.setex(key, 60, JSON.stringify(value))
+      await this.redis.sadd(setKey, key)
+      await this.redis.expire(setKey, 120)
+    } catch (error: any) {
+      logger.warn({ error: error.message }, 'RedisCacheLayer: Set failed')
+    }
+  }
+  async invalidate(collection: string): Promise<void> {
+    try {
+      const setKey = `zenith:cache:collection:${collection}`
+      const keys = await this.redis.smembers(setKey)
+      if (keys.length > 0) {
+        await this.redis.del(...keys)
+      }
+      await this.redis.del(setKey)
+    } catch (error: any) {
+      logger.warn({ error: error.message }, 'RedisCacheLayer: Invalidate failed')
+    }
+  }
+}
 
 // Import Drizzle ORM and Postgres
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres'
@@ -35,7 +101,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
   name = 'postgres-drizzle'
   private pool: Pool
   public db: NodePgDatabase
-  private cache: NodeCache
+  private cache: CacheLayer
   private tables: Record<string, any> = {}
   private configs: Record<string, CollectionConfig> = {}
 
@@ -82,17 +148,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       createdAt: timestamp('created_at').defaultNow().notNull(),
       updatedAt: timestamp('updated_at').defaultNow().notNull(),
     }),
-    users: pgTable('users', {
-      id: uuid('id').defaultRandom().primaryKey(),
-      email: text('email').unique().notNull(),
-      password: text('password').notNull(),
-      role: text('role').notNull(),
-      failedLoginAttempts: integer('failed_login_attempts').default(0).notNull(),
-      lockUntil: timestamp('lock_until'),
-      emailVerified: boolean('email_verified').default(false).notNull(),
-      verificationToken: text('verification_token'),
-      verificationTokenExpiry: timestamp('verification_token_expiry'),
-    }),
+
     passwordResets: pgTable('z_password_resets', {
       id: uuid('id').defaultRandom().primaryKey(),
       userId: text('user_id').notNull(),
@@ -100,16 +156,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       expiresAt: timestamp('expires_at').notNull(),
       used: boolean('used').default(false).notNull(),
     }),
-    apiKeys: pgTable('z_api_keys', {
-      id: uuid('id').defaultRandom().primaryKey(),
-      name: text('name').notNull(),
-      key: text('key').notNull(),
-      role: text('role').notNull(),
-      expiresAt: timestamp('expires_at'),
-      revoked: boolean('revoked').default(false).notNull(),
-      lastUsed: timestamp('last_used'),
-      allowedCollections: jsonb('allowed_collections'),
-    }),
+
     migrations: pgTable('z_migrations', {
       id: uuid('id').defaultRandom().primaryKey(),
       name: text('name').unique().notNull(),
@@ -219,16 +266,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       createdBy: text('created_by'),
       createdAt: timestamp('created_at').defaultNow().notNull(),
     }),
-    roles: pgTable('z_roles', {
-      id: uuid('id').defaultRandom().primaryKey(),
-      roleName: text('role_name').notNull().unique(),
-      roleType: text('role_type').notNull().default('custom'),
-      description: text('description').default(''),
-      isSystem: boolean('is_system').default(false).notNull(),
-      permissions: jsonb('permissions').default([]).notNull(),
-      createdAt: timestamp('created_at').defaultNow().notNull(),
-      updatedAt: timestamp('updated_at').defaultNow().notNull(),
-    }),
+
     releases: pgTable('z_releases', {
       id: uuid('id').defaultRandom().primaryKey(),
       name: text('name').notNull(),
@@ -261,7 +299,13 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
   }
 
   constructor(private connectionString: string) {
-    this.cache = new NodeCache({ stdTTL: 60, checkperiod: 120 })
+    const redisUrl = process.env.REDIS_URL
+    if (redisUrl) {
+      this.cache = new RedisCacheLayer(redisUrl)
+    } else {
+      this.cache = new LocalCacheLayer()
+      logger.warn('PostgresDrizzleAdapter: Local_Cache_Layer Initialized (Warning: Cache desync risk under horizontal scaling)')
+    }
 
     logger.info('PostgresDrizzleAdapter: Zod Parser Cache pre-allocated for speed.')
 
@@ -333,6 +377,10 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     this.tenantPools[tenantId] = { pool, db }
 
     await this._ensureSystemTables(db)
+  }
+
+  getNativeClient<T = any>(): T {
+    return this.db as unknown as T
   }
 
   private getDbClient(options?: BaseOptions): NodePgDatabase<any> {
@@ -455,22 +503,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         CREATE INDEX IF NOT EXISTS idx_flows_active ON flows(active);
       `
 
-      const createUsersTable = sql`
-        CREATE TABLE IF NOT EXISTS users (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          email TEXT UNIQUE NOT NULL,
-          password TEXT NOT NULL,
-          role TEXT NOT NULL,
-          failed_login_attempts INTEGER DEFAULT 0 NOT NULL,
-          lock_until TIMESTAMP,
-          email_verified BOOLEAN DEFAULT false NOT NULL,
-          verification_token TEXT,
-          verification_token_expiry TIMESTAMP,
-          two_factor_secret TEXT,
-          two_factor_enabled BOOLEAN DEFAULT false NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-      `
+
 
       const createPasswordResetsTable = sql`
         CREATE TABLE IF NOT EXISTS z_password_resets (
@@ -483,19 +516,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         CREATE INDEX IF NOT EXISTS idx_resets_token ON z_password_resets(token);
       `
 
-      const createApiKeysTable = sql`
-        CREATE TABLE IF NOT EXISTS z_api_keys (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          name TEXT NOT NULL,
-          key TEXT NOT NULL,
-          role TEXT NOT NULL,
-          expires_at TIMESTAMP,
-          revoked BOOLEAN DEFAULT false NOT NULL,
-          last_used TIMESTAMP,
-          allowed_collections JSONB DEFAULT '[]'::jsonb
-        );
-        CREATE INDEX IF NOT EXISTS idx_api_keys_hash ON z_api_keys(key);
-      `
+
 
       const createMigrationsTable = sql`
         CREATE TABLE IF NOT EXISTS z_migrations (
@@ -723,20 +744,6 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
         CREATE INDEX IF NOT EXISTS idx_redirects_from ON z_redirects(from_path);
       `
 
-      const createRolesTable = sql`
-        CREATE TABLE IF NOT EXISTS z_roles (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          role_name TEXT NOT NULL UNIQUE,
-          role_type TEXT NOT NULL DEFAULT 'custom',
-          description TEXT DEFAULT '',
-          is_system BOOLEAN DEFAULT false NOT NULL,
-          permissions JSONB DEFAULT '[]'::jsonb NOT NULL,
-          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_roles_type ON z_roles(role_type);
-      `
-
       const createReleasesTable = sql`
         CREATE TABLE IF NOT EXISTS z_releases (
           id UUID PRIMARY KEY,
@@ -786,15 +793,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       await db.execute(createAuditLogTable)
       await db.execute(createVersionTable)
       await db.execute(createFlowsTable)
-      await db.execute(createUsersTable)
-      try {
-        await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS two_factor_secret TEXT`)
-        await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS two_factor_enabled BOOLEAN DEFAULT false NOT NULL`)
-      } catch (err) {
-        logger.warn({ err }, 'Failed to add 2FA columns to users table')
-      }
       await db.execute(createPasswordResetsTable)
-      await db.execute(createApiKeysTable)
       await db.execute(createMigrationsTable)
       await db.execute(createWebhookDeliveriesTable)
       await db.execute(createWebhookConfigsTable)
@@ -811,7 +810,6 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       await db.execute(createOnboardingStateTable)
       await db.execute(createCollectionsTable)
       await db.execute(createRedirectsTable)
-      await db.execute(createRolesTable)
       await db.execute(createReleasesTable)
       await db.execute(createPresenceTable)
       await db.execute(createLocksTable)
@@ -1057,6 +1055,17 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
           const sqlType = this.mapFieldToSqlType(field)
           let alterSql = `ALTER TABLE "${config.slug}" ADD COLUMN "${field.name}" ${sqlType}`
           if ((field as any).unique) alterSql += ' UNIQUE'
+          
+          if ((field as any).required && !field.localized) {
+            const countRes = await db.execute(sql.raw(`SELECT count(*) as c FROM "${config.slug}"`))
+            const count = parseInt(String(countRes.rows[0].c), 10)
+            if (count === 0) {
+              alterSql += ' NOT NULL'
+            } else {
+              logger.warn(`PostgresDrizzleAdapter: Bypassing NOT NULL for new column "${field.name}" because table "${config.slug}" contains ${count} existing rows. Backfill data before enforcing constraint.`)
+            }
+          }
+          
           await db.execute(sql.raw(alterSql))
         }
       }
@@ -1177,9 +1186,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
 
   private getTable(collection: string) {
     if (collection === 'flows') return this.systemTables.flows
-    if (collection === 'users') return this.systemTables.users
     if (collection === 'z_password_resets') return this.systemTables.passwordResets
-    if (collection === 'z_api_keys') return this.systemTables.apiKeys
     if (collection === 'z_migrations') return this.systemTables.migrations
     if (collection === 'z_settings') return this.systemTables.settings
     if (collection === 'z_collections') return this.systemTables.collections
@@ -1192,7 +1199,6 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     if (collection === 'z_webhook_configs') return this.systemTables.webhookConfigs
     if (collection === 'z_plugins') return this.systemTables.plugins
     if (collection === 'z_redirects') return this.systemTables.redirects
-    if (collection === 'z_roles' || collection === 'roles') return this.systemTables.roles
     if (collection === 'z_releases' || collection === 'releases') return this.systemTables.releases
     const table = this.tables[collection]
     if (!table) throw new Error(`Collection "${collection}" not registered in PostgreSQL`)
@@ -1203,10 +1209,8 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     return `${collection}:${JSON.stringify(query)}:${JSON.stringify(options)}`
   }
 
-  private _invalidateCache(collection: string) {
-    const keys = this.cache.keys()
-    const targets = keys.filter((k) => k.startsWith(`${collection}:`))
-    this.cache.del(targets)
+  private async _invalidateCache(collection: string) {
+    await this.cache.invalidate(collection)
   }
 
   private buildWhereClause(table: any, query: Record<string, any>) {
@@ -1279,7 +1283,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     options: FindOptions = {}
   ): Promise<T[]> {
     const cacheKey = this._getCacheKey(collection, query, options)
-    const cached = this.cache.get<T[]>(cacheKey)
+    const cached = await this.cache.get<T[]>(cacheKey)
     if (cached) return cached
 
     const globalAot = (globalThis as any).zenithAotBridge
@@ -1303,7 +1307,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       })
       const loaded = await this._loadJunctionIds(collection, mapped)
       const populated = await this._populateRelations(collection, loaded, options, [collection])
-      this.cache.set(cacheKey, populated)
+      await this.cache.set(cacheKey, populated, collection)
       return populated as T[]
     }
 
@@ -1340,7 +1344,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
 
     const loaded = await this._loadJunctionIds(collection, mapped)
     const populated = await this._populateRelations(collection, loaded, options, [collection])
-    this.cache.set(cacheKey, populated)
+    await this.cache.set(cacheKey, populated, collection)
     return populated as T[]
   }
 
@@ -1401,24 +1405,23 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
 
     // Always include meta columns for the result mapper
     const requested: string[] = Array.isArray(options.select) ? options.select : []
-    const toSelect = requested
+    const selectObject = requested
       .filter((col: string) => safeCols.has(col))
-      .map((col: string) => {
+      .reduce((acc: any, col: string) => {
         const mapped = col === 'id' ? (table as any).id
           : col === 'created_at' ? (table as any).createdAt
           : col === 'updated_at' ? (table as any).updatedAt
           : col === 'status' ? (table as any).status
           : (table as any)[col]
-        return mapped
-      })
-      .filter(Boolean)
+        if (mapped) acc[col] = mapped
+        return acc
+      }, {})
 
-    if (toSelect.length === 0) {
+    if (Object.keys(selectObject).length === 0) {
       return client.select().from(table).$dynamic()
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (client as any).select(...toSelect).from(table).$dynamic()
+    return client.select(selectObject).from(table as any).$dynamic()
   }
 
   /** Maximum depth for nested relation population to prevent query explosion */
@@ -1777,7 +1780,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
 
       const doc = await globalAot.executeQuery(collection, 'create', executor, table, valuesToInsert)
       await this._writeJunctionRelations(collection, id, data as any, executor)
-      this._invalidateCache(collection)
+      await this._invalidateCache(collection)
       const mappedRecord = { ...doc, ...data, id, _id: id }
       if ('status' in mappedRecord) {
         mappedRecord._status = mappedRecord.status
@@ -1810,7 +1813,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     await executor.insert(table).values(valuesToInsert)
     await this._writeJunctionRelations(collection, id, data as any, executor)
 
-    this._invalidateCache(collection)
+    await this._invalidateCache(collection)
 
     const output: Record<string, any> = { ...valuesToInsert, ...data, _id: id }
     if ('status' in output) {
@@ -1855,7 +1858,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     await executor.update(table).set(valuesToUpdate).where(eq(table.id, id))
     await this._writeJunctionRelations(collection, id, mergedData, executor)
 
-    this._invalidateCache(collection)
+    await this._invalidateCache(collection)
     
     const output: Record<string, any> = { id, ...valuesToUpdate, ...mergedData, _id: id }
     if ('status' in output) {
@@ -1931,7 +1934,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     }
 
     const result = await dbQuery.returning({ id: table.id })
-    this._invalidateCache(collection)
+    await this._invalidateCache(collection)
     return result.length
   }
 
@@ -1951,7 +1954,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
 
     const result = await executor.delete(table).where(eq(table.id, id)).returning({ id: table.id })
 
-    this._invalidateCache(collection)
+    await this._invalidateCache(collection)
     return result.length > 0
   }
 
@@ -1993,7 +1996,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     }
 
     const result = await dbQuery.returning({ id: table.id })
-    this._invalidateCache(collection)
+    await this._invalidateCache(collection)
     return result.length
   }
 

@@ -16,6 +16,8 @@ import {
  Webhook,
  Puzzle,
  Image,
+ FileText,
+ ScrollText,
 } from 'lucide-react'
 import { cn } from '../lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -37,6 +39,8 @@ import SettingsAppearance from './settings/SettingsAppearance'
 import SettingsWebhooks from './settings/SettingsWebhooks'
 import SettingsPlugins from './settings/SettingsPlugins'
 import SettingsApiKeyModal from './settings/SettingsApiKeyModal'
+import SettingsWebhookLogs from './settings/SettingsWebhookLogs'
+import SettingsLegal from './settings/SettingsLegal'
 
 interface Settings {
  siteName: string
@@ -68,14 +72,14 @@ interface Settings {
 interface DBStats {
  size?: number
  collections?: number | string
- [key: string]: unknown
+ [key: string]: any
 }
 
 interface User {
  _id: string
  email: string
  role: string
- [key: string]: unknown
+ [key: string]: any
 }
 
 interface ApiKey {
@@ -83,13 +87,13 @@ interface ApiKey {
  name: string
  role: string
  expiresAt: string | number | Date
- [key: string]: unknown
+ [key: string]: any
 }
 
 interface NewKey {
  name: string
  key: string
- [key: string]: unknown
+ [key: string]: any
 }
 
 interface Role {
@@ -215,16 +219,16 @@ const SettingsPage = () => {
 
  const tabGroups = [
  {
- label: 'Project',
+ label: 'Environment Settings',
  tabs: [
- { id: 'general', label: 'General', icon: Globe, sub: 'Site Profile' },
- { id: 'media', label: 'Media & Uploads', icon: Image, sub: 'Storage Config' },
- { id: 'billing', label: 'Plans & Paywalls', icon: CreditCard, sub: 'Site Monetization' },
- { id: 'appearance', label: 'Styles', icon: Palette, sub: 'Custom CSS' },
+ { id: 'general', label: 'General Info', icon: Globe, sub: 'Site Profile' },
+ { id: 'appearance', label: 'Appearance', icon: Palette, sub: 'Custom CSS' },
+ { id: 'media', label: 'Storage', icon: Image, sub: 'Storage Config' },
+ { id: 'billing', label: 'Billing', icon: CreditCard, sub: 'Site Monetization' },
  ]
  },
  {
- label: 'Access Control',
+ label: 'Access Management',
  tabs: [
  { id: 'users', label: 'Users', icon: Users, sub: 'Admin Registry' },
  { id: 'roles', label: 'Roles & Permissions', icon: Shield, sub: 'Granular Access' },
@@ -232,14 +236,21 @@ const SettingsPage = () => {
  ]
  },
  {
- label: 'System & Integrations',
+ label: 'Core Services',
  tabs: [
- { id: 'security', label: 'Security', icon: Shield, sub: 'Access Control' },
+ { id: 'security', label: 'Security Policies', icon: Shield, sub: 'Access Control' },
  { id: 'database', label: 'Database', icon: Database, sub: 'Storage Stats' },
- { id: 'notifications', label: 'Email', icon: Mail, sub: 'SMTP Relay' },
+ { id: 'notifications', label: 'Email Relay', icon: Mail, sub: 'Email Delivery' },
  { id: 'webhooks', label: 'Webhooks', icon: Webhook, sub: 'HTTP Callbacks' },
+ { id: 'webhook-logs', label: 'Event Logs', icon: Webhook, sub: 'Webhook History' },
  { id: 'ai', label: 'AI Engine', icon: Sparkles, sub: 'Model Settings' },
  { id: 'plugins', label: 'Plugins', icon: Puzzle, sub: 'Extensions' },
+ ]
+ },
+ {
+ label: 'Legal & Compliance',
+ tabs: [
+ { id: 'legal', label: 'Compliance', icon: FileText, sub: 'Privacy & GDPR' },
  ]
  }
  ]
@@ -272,9 +283,13 @@ const SettingsPage = () => {
  return <SettingsAppearance settings={settings} setSettings={setSettings} theme={theme} />
  case 'webhooks':
  return <SettingsWebhooks theme={theme} />
- case 'plugins':
- return <SettingsPlugins theme={theme} />
- default:
+case 'plugins':
+  return <SettingsPlugins theme={theme} />
+  case 'webhook-logs':
+  return <SettingsWebhookLogs theme={theme} />
+  case 'legal':
+  return <SettingsLegal theme={theme} />
+  default:
  return null
  }
  }
@@ -282,24 +297,39 @@ const SettingsPage = () => {
  if (loading) {
  return (
  <div className="min-h-[80vh] flex items-center justify-center">
- <Loader2 size={32} className="text-emerald-600 dark:text-emerald-500 animate-spin" />
+ <Loader2 size={32} className="text-gray-600 dark:text-gray-500 animate-spin" />
  </div>
  )
  }
 
  return (
  <div className="max-w-[1400px] mx-auto space-y-8">
- <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+ <div className={cn(
+ "flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 mb-8 border-b transition-colors",
+ theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
+ )}>
  <div className="flex items-center gap-4">
- <div className="w-12 h-12 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-500">
+ <div className="w-12 h-12 rounded-none bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)] shrink-0">
  <SettingsIcon size={24} />
  </div>
  <div>
- <h1 className="text-2xl font-black text-white tracking-tight">
+ <div className="flex items-center gap-2 mb-1.5">
+ <span className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em]">
+ System Configuration
+ </span>
+ <div className="w-1.5 h-1.5 bg-emerald-500 rounded-none shadow-[0_0_10px_#10b981]" />
+ </div>
+ <h1 className={cn(
+ "text-2xl font-black tracking-tighter uppercase leading-none",
+ theme === 'dark' ? 'text-white' : 'text-gray-900'
+ )}>
  Settings
  </h1>
- <p className="text-xs text-gray-400 font-medium mt-1">
- Configure project preferences, integrations, and access control.
+ <p className={cn(
+ "text-xs font-medium mt-2",
+ theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+ )}>
+ Configure environment preferences, integrations, and access control.
  </p>
  </div>
  </div>
@@ -308,11 +338,11 @@ const SettingsPage = () => {
  disabled={saving}
  className={cn(
  'flex items-center justify-center gap-2 px-6 py-2.5 rounded-none text-sm font-bold transition-all disabled:opacity-50',
- theme === 'dark' ? 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'bg-gray-900 text-white hover:bg-gray-800'
+ theme === 'dark' ? 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'bg-emerald-600 text-white hover:bg-emerald-500'
  )}
  >
  {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
- Save Changes
+ Save Settings
  </button>
  </div>
 
@@ -331,13 +361,13 @@ const SettingsPage = () => {
  className={cn(
  'w-full flex items-center gap-3 px-3 py-2.5 rounded-none transition-all group border',
  activeTab === tab.id
- ? theme === 'dark' ? 'bg-white/[0.06] border-white/[0.08] text-white shadow-sm' : 'bg-white border-gray-200 shadow-sm shadow-sm text-gray-900'
+ ? theme === 'dark' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]' : 'bg-emerald-50 border-emerald-500/20 shadow-sm text-emerald-700'
  : theme === 'dark' ? 'text-gray-400 border-transparent hover:bg-white/[0.02] hover:text-gray-200' : 'text-gray-500 border-transparent hover:bg-gray-50'
  )}
  >
  <div className={cn(
  "w-8 h-8 rounded-none flex items-center justify-center transition-colors",
- activeTab === tab.id ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-500" : "bg-white/5 text-gray-400 group-hover:text-gray-300"
+ activeTab === tab.id ? "bg-emerald-400 scale-110 text-black shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "bg-white/5 text-gray-400 group-hover:text-gray-300"
  )}>
  <tab.icon size={16} />
  </div>
@@ -367,7 +397,7 @@ const SettingsPage = () => {
  className="space-y-8 relative z-10"
  >
  <div className="flex items-center gap-4 border-b border-white/[0.05] pb-6">
- <div className="w-10 h-10 rounded-none bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-500">
+ <div className="w-10 h-10 rounded-none bg-emerald-500/10 flex items-center justify-center text-emerald-400">
  {activeTabDetails?.icon && <activeTabDetails.icon size={20} />}
  </div>
  <div>

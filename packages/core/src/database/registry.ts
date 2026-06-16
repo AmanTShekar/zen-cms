@@ -1,0 +1,28 @@
+/**
+ * Zenith CMS — Mongoose Schema Registry
+ * ─────────────────────────────────────
+ * Imports all Mongoose models to ensure they are registered centrally.
+ */
+import './user-model'
+import './api-key-model'
+import './audit-model'
+import './dashboard-layout-model'
+import './flow-model'
+import './member-model'
+import './onboarding-state-model'
+import './password-reset-model'
+import './preference-model'
+import './settings-model'
+import './site-model'
+import './workspace-model'
+import './version-model'
+import './webhook-model'
+import './webhook-config-model'
+import './plugin-model'
+import './release-model'
+import './role-model'
+import './template-model'
+import './comment-model'
+import './lock-model'
+import './redirect-model'
+import './schema-model'

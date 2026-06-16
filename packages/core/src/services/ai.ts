@@ -60,7 +60,7 @@ export class AIService {
     try {
       const adapter = AdapterFactory.getActiveAdapter()
       if (adapter) {
-        const settings = await adapter.findOne<any>('z_settings', {})
+        const settings = await adapter.findOne<Record<string, any>>('z_settings', {})
         if (settings) {
           if (!openRouterKey && settings.openRouterApiKey) openRouterKey = settings.openRouterApiKey
           if (!xaiKey && settings.xaiApiKey) xaiKey = settings.xaiApiKey

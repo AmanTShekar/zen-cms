@@ -106,27 +106,17 @@ export const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve,
 export function sanitizeHtml(html: string): string {
   if (typeof html !== 'string') return html
 
-  let clean = html
+  // We lazily require so we don't break environments where it's not installed yet during tests
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const sanitize = require('sanitize-html')
 
-  // 1. Remove dangerous tags completely
-  const tagsToBlock = ['script', 'iframe', 'object', 'embed', 'link', 'style', 'meta', 'base']
-  tagsToBlock.forEach((tag) => {
-    const tagRegex = new RegExp(`<${tag}[^>]*>[\\s\\S]*?<\\/${tag}>|<${tag}[^>]*\\/?>`, 'gi')
-    clean = clean.replace(tagRegex, '')
+  return sanitize(html, {
+    allowedTags: sanitize.defaults.allowedTags.concat(['img', 'h1', 'h2', 'h3']),
+    allowedAttributes: {
+      ...sanitize.defaults.allowedAttributes,
+      '*': ['class', 'id', 'data-*'],
+      'img': ['src', 'alt', 'width', 'height']
+    },
+    disallowedTagsMode: 'discard'
   })
-
-  // 2. Strip event handlers (onxyz=...)
-  clean = clean.replace(/\s+on[a-zA-Z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]*)/gi, '')
-
-  // 3. Strip javascript: URIs
-  clean = clean.replace(
-    /href\s*=\s*(["']\s*javascript:[^"']*["']|\s*javascript:[^\s>]*)/gi,
-    'href="#"'
-  )
-  clean = clean.replace(
-    /src\s*=\s*(["']\s*javascript:[^"']*["']|\s*javascript:[^\s>]*)/gi,
-    'src=""'
-  )
-
-  return clean
 }

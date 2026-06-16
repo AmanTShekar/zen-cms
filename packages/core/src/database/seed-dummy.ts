@@ -1,4 +1,4 @@
-import { CollectionConfig } from '@zenithcms/types'
+import { CollectionConfig } from '@zenith-open/zenithcms-types'
 import { DatabaseAdapter } from './adapters/BaseAdapter'
 
 /**

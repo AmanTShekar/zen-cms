@@ -13,24 +13,24 @@ import { HorizontalRuleNode } from './nodes/HorizontalRuleNode'
 export const EDITOR_NAMESPACE = 'zenith-lexical-editor'
 
 export function onError(error: Error) {
- console.error('[Zenith Lexical]', error)
+  console.error('[Zenith Lexical]', error)
 }
 
 export const nodes: Array<Klass<LexicalNode>> = [
- HeadingNode,
- ListNode,
- ListItemNode,
- QuoteNode,
- CodeNode,
- CodeHighlightNode,
- TableNode,
- TableCellNode,
- TableRowNode,
- HashtagNode,
- AutoLinkNode,
- LinkNode,
- ImageNode,
- MediaNode,
- RelationshipNode,
- HorizontalRuleNode,
+  HeadingNode,
+  ListNode,
+  ListItemNode,
+  QuoteNode,
+  CodeNode,
+  CodeHighlightNode,
+  TableNode,
+  TableCellNode,
+  TableRowNode,
+  HashtagNode,
+  AutoLinkNode,
+  LinkNode,
+  ImageNode,
+  MediaNode,
+  RelationshipNode,
+  HorizontalRuleNode,
 ]

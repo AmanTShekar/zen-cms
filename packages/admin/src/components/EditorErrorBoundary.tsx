@@ -30,12 +30,12 @@ export class EditorErrorBoundary extends React.Component<EditorErrorBoundaryProp
  }
 
  static getDerivedStateFromError(error: Error): State {
- return { hasError: true, error: { message: error.message, stack: error.stack } }
+ return { hasError: true, error: { message: (error instanceof Error ? error.message : String(error)), stack: (error instanceof Error ? error.stack : undefined) } }
  }
 
  componentDidCatch(error: Error, info: React.ErrorInfo) {
  this.setState({
- error: { message: error.message, stack: error.stack, componentStack: info.componentStack },
+ error: { message: (error instanceof Error ? error.message : String(error)), stack: (error instanceof Error ? error.stack : undefined), componentStack: info.componentStack },
  })
  }
 
@@ -47,7 +47,7 @@ export class EditorErrorBoundary extends React.Component<EditorErrorBoundaryProp
  handleCopyError = () => {
  const { error } = this.state
  if (!error) return
- const text = [error.message, error.stack, error.componentStack].filter(Boolean).join('\n\n')
+ const text = [(error instanceof Error ? error.message : String(error)), (error instanceof Error ? error.stack : undefined), error.componentStack].filter(Boolean).join('\n\n')
  navigator.clipboard.writeText(text).catch(() => {})
  }
 
@@ -89,7 +89,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  theme === 'dark' ? 'text-rose-400 bg-rose-500/5 border-rose-500/10' : 'text-rose-600 bg-rose-50 border-rose-200'
  )}
  >
- {error.message}
+ {(error instanceof Error ? error.message : String(error))}
  </p>
  </div>
 
@@ -98,7 +98,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  onClick={onReset}
  className={cn(
  'flex items-center gap-2 px-4 py-2 text-xs font-black uppercase border rounded-none transition-all',
- 'bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-600'
+ 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white border-gray-600'
  )}
  >
  <RefreshCw size={12} />

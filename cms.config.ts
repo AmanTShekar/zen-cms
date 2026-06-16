@@ -1,4 +1,4 @@
-import type { CMSConfig } from '@zenithcms/types'
+import type { CMSConfig } from '@zenith-open/zenithcms-types'
 /**
  * Zenith CMS Configuration
  * ───────────────────────

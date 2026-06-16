@@ -35,7 +35,7 @@ export const FlowEngine = {
   ) {
     try {
       const adapter = AdapterFactory.getActiveAdapter()
-      const activeFlows = await adapter.find<any>('flows', {
+      const activeFlows = await adapter.find<Record<string, any>>('flows', {
         active: true,
         'trigger.type': triggerType,
       })

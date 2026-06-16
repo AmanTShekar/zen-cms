@@ -1,55 +1,76 @@
-# AI Schema Architect & Development Guide
+# Zenith CMS — AI Integration Guide
 
-This guide helps you understand how to write code, configure schemas, and develop features within Zenith CMS, whether you are using AI tools (like Claude, Cursor, or ChatGPT) or developing manually.
+The Zenith CMS Admin UI includes a built-in AI Content Hub (Neural Bridge) that allows content editors to generate, refine, and analyze content directly within the dashboard.
 
----
-
-## 🏛️ Monorepo Rules & Boundaries
-
-To keep the monorepo clean and prevent circular dependency issues, adhere to these guidelines:
-
-1.  **Shared Types**: All shared database interfaces and schema definitions must reside in `@zenithcms/types`. Never create local versions of these types within individual packages.
-2.  **Decoupled Server & Client**: 
-    *   `packages/core` contains only Node.js server logic. Do not import React components or client-side assets here.
-    *   `packages/admin` communicates with the backend exclusively via the custom API client in `packages/admin/src/lib/api.ts`.
-3.  **UI Styling Standards**: Do not write inline styles. Use global CSS classes or Tailwind utility classes to match the dashboard's glassmorphism style (using translucent layers like `border-white/5 bg-white/[0.02] backdrop-blur-xl`).
+This document outlines how the AI system works, how to configure it, and how to extend its capabilities.
 
 ---
 
-## 📝 Creating New Database Schemas
+## 1. Provider Configuration
 
-To create a new content collection, follow these three steps:
+Zenith's AI layer is model-agnostic. It routes requests to various LLM providers based on the environment variables defined in your `.env` file. You must provide at least one API key to enable AI features.
 
-1.  **Define the config**: Define the schema structure in `@zenithcms/types` or your custom collection configuration file.
-2.  **Generate Validation**: Create the corresponding Zod validation schema inside `packages/core`. This gates client input before any write operation is performed.
-3.  **Register components**: Set up the fields in `packages/admin` so that editors can manage the data from the dashboard.
+| Environment Variable | Provider | Best For |
+|---|---|---|
+| `OPENAI_API_KEY` | OpenAI (GPT-4o, GPT-4o-mini) | General content generation, complex reasoning |
+| `ANTHROPIC_API_KEY` | Anthropic (Claude 3.5 Sonnet) | Nuanced writing, formatting consistency |
+| `XAI_API_KEY` | xAI (Grok-2) | Real-time context, edgy/dynamic copy |
+| `OPENROUTER_API_KEY` | OpenRouter | Access to open-source models (Llama 3, Mixtral) |
 
----
-
-## 🏎️ Performance & UX Standards
-
-*   **Lazy Loading**: Split code for large components (like charts, layout grids, or complex widgets) using `React.lazy()` to optimize the application's bundle size.
-*   **Smooth Animations**: Keep the UI feeling responsive and fluid by wrapping transitions, drawers, and modal states in Framer Motion wrappers.
-*   **Error Boundaries**: Wrap custom components in error boundaries so that an error in one widget doesn't crash the entire dashboard.
+If multiple keys are provided, the Admin UI will allow the user to select their preferred model from a dropdown before generating content.
 
 ---
 
-## 📡 API Testing Helpers
+## 2. Core Features
 
-You can check server status and endpoint responses using simple curl commands:
+### 2.1 Content Generation
+The **AI Hub** (accessible via the `Ctrl+Space` shortcut or the toolbar) allows editors to enter a prompt (e.g., "Write a 3-paragraph introduction about our new SaaS product"). The generated text is streamed back to the editor in real-time and can be inserted directly into Rich Text, Textarea, or Text fields.
 
-### Server Health Check:
+### 2.2 SEO Analysis
+The `content-tools/seo-analysis` endpoint takes the draft content of a document and evaluates it against standard SEO metrics:
+- Readability score (Flesch-Kincaid)
+- Keyword density
+- Heading structure
+- Suggestions for meta title/description improvements
+
+### 2.3 Tone Adjustment
+Editors can highlight text inside a Rich Text field and select an AI action such as "Make more professional", "Shorten", or "Translate to Spanish". The API processes the highlighted text and returns the modification.
+
+---
+
+## 3. The API Layer (`/api/v1/content-tools`)
+
+The AI functionality is strictly secured behind the Admin authentication middleware. Unauthenticated users, or users with insufficient permissions, cannot trigger AI generations (preventing API key abuse).
+
+**Example Request:**
 ```bash
-curl -X GET http://localhost:3000/api/v1/system/health
+POST /api/v1/content-tools/ai/generate
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "prompt": "Write a meta description for a blog post about React 19.",
+  "provider": "openai",
+  "model": "gpt-4o-mini",
+  "maxTokens": 100
+}
 ```
 
-### Active Editor Presence:
-```bash
-curl -X GET http://localhost:3000/api/v1/presence
-```
-
 ---
 
-## 🔒 Access Control Warning
+## 4. Extending the Prompts
 
-When creating custom controllers or writing database queries, always verify user permission levels. Never query collections without scoping the request by the current user's organization or using the `X-Zenith-Site-Id` header filter.
+If you want to enforce specific brand guidelines or prompt structures, you can use the Plugin system or Lifecycle Hooks to intercept AI requests before they hit the external providers.
+
+**Example: Enforcing Brand Voice via Hooks**
+```typescript
+// Example inside cms.config.ts or a custom plugin
+const config: CMSConfig = {
+  // ...
+  hooks: {
+    // Note: AI hook interception requires a custom plugin or extending the router currently
+    // This demonstrates the conceptual pattern.
+  }
+}
+```
+*(Deep customization of the internal AI system prompts is planned for Zenith v0.3.0).*

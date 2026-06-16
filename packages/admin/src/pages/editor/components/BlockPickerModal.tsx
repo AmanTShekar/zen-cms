@@ -9,13 +9,14 @@
  */
 import React, { useEffect } from 'react'
 import { useModalStore } from '../../../store/modalStore'
+import { useShallow } from 'zustand/react/shallow'
 
 interface BlockPickerModalProps {
  addBlock: (blockType: string) => void
 }
 
 export const BlockPickerModal: React.FC<BlockPickerModalProps> = ({ addBlock }) => {
- const { blockPickerOpen, setBlockPickerOpen, openComponentPicker } = useModalStore()
+ const { blockPickerOpen, setBlockPickerOpen, openComponentPicker  } = useModalStore(useShallow(state => ({ blockPickerOpen: state.blockPickerOpen, setBlockPickerOpen: state.setBlockPickerOpen, openComponentPicker: state.openComponentPicker })))
 
  useEffect(() => {
  if (blockPickerOpen) {

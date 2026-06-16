@@ -48,4 +48,4 @@ USER node
 EXPOSE 3000
 
 # Run the correct path in the monorepo after TypeScript compilation
-CMD ["pm2-runtime", "start", "packages/core/dist/packages/core/src/server.js", "--name", "zenith-cms"]
+CMD ["pm2-runtime", "start", "packages/core/dist/src/server.js", "--name", "zenith-cms"]

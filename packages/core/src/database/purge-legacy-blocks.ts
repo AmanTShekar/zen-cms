@@ -21,7 +21,7 @@ async function purgeLegacyBlocks() {
   for (const collectionName of collections) {
     console.log(`Scanning collection: ${collectionName}...`)
     try {
-      const documents = await adapter.find<any>(collectionName, {})
+      const documents = await adapter.find<Record<string, any>>(collectionName, {})
       console.log(`Found ${documents.length} documents in ${collectionName}.`)
 
       for (const doc of documents) {

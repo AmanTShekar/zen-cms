@@ -46,7 +46,10 @@ export const useAuthStore = create<AuthState>((set) => ({
  try {
  await api.post('/auth/logout')
  } finally {
- set({ user: null, isAuthenticated: false })
+ localStorage.removeItem('zenith_auth_state')
+ localStorage.removeItem('activeSiteId')
+ set({ user: null, isAuthenticated: false, siteId: null })
+ window.location.href = '/login'
  }
  },
 

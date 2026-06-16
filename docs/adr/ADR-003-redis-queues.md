@@ -4,18 +4,23 @@
 Accepted
 
 ## Context
-When content updates occur, Zenith CMS dispatches webhook notifications to external HTTP endpoints. Since these endpoints are external and untrusted, triggering requests synchronously in the HTTP thread poses serious issues:
-1. Slow external endpoints stall client response times.
-2. Network timeouts or failures result in lost webhook notifications.
-3. Lack of rate control can overload external targets or exhaust local sockets.
+Zenith CMS dispatches outbound webhook notifications to external HTTP endpoints in response to content mutations. Triggering synchronous HTTP requests to untrusted, external endpoints within the primary event loop introduces severe reliability vectors:
+1. High-latency or stalled external endpoints directly degrade client response times.
+2. Transient network failures or DNS resolution errors result in permanently lost webhook notifications.
+3. The absence of rate limiting can inadvertently execute Denial of Service (DoS) attacks against external targets or exhaust the host's available socket pool.
 
 ## Decision
-We implemented a Redis-backed webhook delivery queue utilizing `ioredis`:
-1. Mutating content actions push events to a Redis sorted set queue.
-2. Background worker processes poll the Redis queue, executing HTTP dispatches with exponential backoff retries on failure.
-3. Hosts without Redis fall back automatically to an in-memory queue to maintain basic operation.
-4. SSRF protection is built-in, performing DNS validation to block private IP ranges (RFC1918).
+The architecture utilizes a Redis-backed delivery queue managed via `ioredis` to decouple webhook execution from the primary HTTP lifecycle.
+1. Mutative actions commit webhook event payloads to a Redis sorted set queue.
+2. An isolated pool of background worker processes polls the queue, executing HTTP dispatches with implemented exponential backoff algorithms for failed deliveries.
+3. Server-Side Request Forgery (SSRF) protections are strictly enforced at the worker level, performing pre-flight DNS validation to block resolution of private IP address spaces (RFC 1918).
+4. For single-node deployments lacking Redis infrastructure, the system gracefully degrades to an in-memory queue to sustain basic operational capability.
 
 ## Consequences
-- **Pros:** Guarantees reliable delivery with automatic retries; completely decouples webhook execution latency from the request-response cycle; blocks SSRF attacks.
-- **Cons:** Introduces a runtime dependency on Redis for production scaling.
+### Positive
+- **Guaranteed Delivery:** Provides robust reliability via automated exponential retries.
+- **Latency Decoupling:** Completely isolates external webhook execution latency from the core REST API request-response cycle.
+- **Security Posture:** Hardens the host environment against SSRF vectors.
+
+### Negative
+- **Infrastructure Dependency:** Introduces a runtime dependency on Redis to achieve true horizontal scalability in production environments.

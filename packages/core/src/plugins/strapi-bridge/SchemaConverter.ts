@@ -1,4 +1,4 @@
-import { CollectionConfig, FieldConfig } from '@zenithcms/types'
+import { CollectionConfig, FieldConfig } from '@zenith-open/zenithcms-types'
 import { parseStrapiUid } from './StrapiGlobalBridge'
 
 /**

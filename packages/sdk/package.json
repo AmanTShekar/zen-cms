@@ -1,5 +1,5 @@
 {
-  "name": "@zenithcms/sdk",
+  "name": "@zenith-open/zenithcms-sdk",
   "version": "1.0.0",
   "publishConfig": {
     "access": "public"
@@ -18,10 +18,12 @@
   },
   "scripts": {
     "build": "tsc",
+    "test": "vitest run",
     "lint": "echo 'Lint bypassed for sdk'"
   },
   "license": "MIT",
   "devDependencies": {
-    "@zenithcms/types": "workspace:*"
+    "@zenith-open/zenithcms-types": "workspace:*",
+    "vitest": "^1.6.0"
   }
 }

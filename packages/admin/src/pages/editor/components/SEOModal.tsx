@@ -19,6 +19,7 @@ const Facebook: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 import { humanize } from '../constants'
 import { cn } from '../../../lib/utils'
 import { useFocusTrap } from '../../../hooks/useFocusTrap'
+import { useShallow } from 'zustand/react/shallow'
 
 interface SEOModalProps {
  onSave?: () => void | Promise<void>
@@ -31,7 +32,7 @@ type MetaField = { title: string; description: string; keywords: string }
 export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  const { theme } = useTheme()
  const { data, updateData: editorUpdateData } = useEditorStore()
- const { seoOpen, setSeoOpen } = useModalStore()
+ const { seoOpen, setSeoOpen  } = useModalStore(useShallow(state => ({ seoOpen: state.seoOpen, setSeoOpen: state.setSeoOpen })))
  const activeSiteSlug = localStorage.getItem('activeSiteSlug')
 
  const [localMeta, setLocalMeta] = useState<MetaField>({
@@ -136,7 +137,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <button
  onClick={() => setSeoOpen(false)}
  aria-label="Close"
- className="p-1 hover:text-emerald-600 dark:text-emerald-500 transition-colors"
+ className="p-1 hover:text-gray-600 dark:text-gray-500 transition-colors"
  >
  <X size={18} />
  </button>
@@ -236,7 +237,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  >
  {/* Header */}
  <div className="flex items-center gap-3 px-3 py-2">
- <div className="w-8 h-8 rounded-none bg-emerald-500 flex items-center justify-center text-white text-xs font-black shrink-0">
+ <div className="w-8 h-8 rounded-none bg-gray-500 flex items-center justify-center text-white text-xs font-black shrink-0">
  Z
  </div>
  <div className="min-w-0">
@@ -366,8 +367,8 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  className={cn(
  'w-full rounded-none py-3 px-4 text-xs font-black h-24 resize-none transition-all border',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white focus-visible:border-emerald-500/30'
- : 'bg-gray-50 border-gray-200 text-black focus-visible:border-emerald-600/30',
+ ? 'bg-white/5 border-white/[0.08] text-white focus-visible:border-gray-500/30'
+ : 'bg-gray-50 border-gray-200 text-black focus-visible:border-gray-600/30',
  )}
  placeholder="Enter page description..."
  />
@@ -382,8 +383,8 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  className={cn(
  'w-full rounded-none py-3 px-4 text-xs font-black transition-all border',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white focus-visible:border-emerald-500/30'
- : 'bg-gray-50 border-gray-200 text-black focus-visible:border-emerald-600/30',
+ ? 'bg-white/5 border-white/[0.08] text-white focus-visible:border-gray-500/30'
+ : 'bg-gray-50 border-gray-200 text-black focus-visible:border-gray-600/30',
  )}
  placeholder={field === 'title' ? 'Enter SEO title...' : 'Enter keywords (comma separated)...'}
  />
@@ -430,7 +431,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <button
  onClick={commitAndClose}
  aria-label="Save SEO and close"
- className="flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-emerald-600 text-white text-xs font-black uppercase rounded-none hover:bg-emerald-500 transition-all"
+ className="flex items-center gap-2 px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-black uppercase rounded-none hover:bg-gray-500 transition-all"
  >
  <Save size={12} aria-hidden="true" />
  Save & Close

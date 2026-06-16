@@ -13,7 +13,7 @@
     "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
-      "@zenithcms/*": ["packages/*/src"]
+      "@zenith-open/*": ["packages/*/src"]
     },
     "types": []
   },

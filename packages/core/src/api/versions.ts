@@ -39,7 +39,7 @@ router.get('/:collection/:id', async (req: Request, res: Response, next) => {
     await engine.local.findById(collection, documentId, { user, siteId })
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const versions = await adapter.find<any>('versions', {
+    const versions = await adapter.find<Record<string, any>>('versions', {
       collectionName: collection,
       documentId: documentId,
     }, {
@@ -73,7 +73,7 @@ router.get('/:collection/:id/:versionId', async (req: Request, res: Response, ne
     await engine.local.findById(collection, documentId, { user, siteId })
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const version = await adapter.findOne<any>('versions', { _id: req.params.versionId })
+    const version = await adapter.findOne<Record<string, any>>('versions', { _id: req.params.versionId })
     if (!version) throw new NotFoundError('Version', req.params.versionId)
     res.json(createResponse(version))
   } catch (err) {
@@ -101,7 +101,7 @@ router.get('/:collection/:id/:versionId/diff', async (req: Request, res: Respons
     await engine.local.findById(collection, documentId, { user, siteId })
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const version = await adapter.findOne<any>('versions', { _id: req.params.versionId })
+    const version = await adapter.findOne<Record<string, any>>('versions', { _id: req.params.versionId })
     if (!version) throw new NotFoundError('Version', req.params.versionId)
 
     // delta is stored as { fieldName: { from, to } } by ContentService._calculateDelta()
@@ -134,7 +134,7 @@ router.post('/:collection/:id/:versionId/restore', async (req: Request, res: Res
 
     const siteId = req.headers['x-zenith-site-id'] as string
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const version = await adapter.findOne<any>('versions', { _id: req.params.versionId })
+    const version = await adapter.findOne<Record<string, any>>('versions', { _id: req.params.versionId })
     if (!version) throw new NotFoundError('Version', req.params.versionId)
 
     const snapshot = version.snapshot
@@ -167,7 +167,7 @@ router.post('/:collection/:id/:versionId/rollback-fields', async (req: Request, 
 
     const siteId = req.headers['x-zenith-site-id'] as string
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const version = await adapter.findOne<any>('versions', { _id: req.params.versionId })
+    const version = await adapter.findOne<Record<string, any>>('versions', { _id: req.params.versionId })
     if (!version) throw new NotFoundError('Version', req.params.versionId)
 
     const snapshot = version.snapshot

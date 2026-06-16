@@ -1,1 +1,1 @@
-export * from '@zenithcms/types'
+export * from '@zenith-open/zenithcms-types'

@@ -43,7 +43,7 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
  <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-500 ">
  Block Command
  </span>
- <span className="text-[7px] font-bold text-emerald-500/80 px-1 border border-emerald-500/20 rounded uppercase">
+ <span className="text-[7px] font-bold text-gray-500/80 px-1 border border-gray-500/20 rounded uppercase">
  ↑↓ Enter
  </span>
  </div>
@@ -60,8 +60,8 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
  'w-full text-left px-3 py-2.5 flex items-start gap-3 transition-all duration-150 relative group',
  isSelected
  ? theme === 'dark'
- ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-l-2 border-emerald-500'
- : 'bg-emerald-50 text-emerald-600 border-l-2 border-emerald-500'
+ ? 'bg-gray-500/20 text-gray-600 dark:text-gray-400 border-l-2 border-gray-500'
+ : 'bg-gray-50 text-gray-600 border-l-2 border-gray-500'
  : 'border-l-2 border-transparent hover:bg-white/5'
  )}
  >
@@ -70,8 +70,8 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
  'w-7 h-7 rounded flex items-center justify-center border shrink-0',
  isSelected
  ? theme === 'dark'
- ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
- : 'bg-emerald-100 border-emerald-200 text-emerald-600'
+ ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400'
+ : 'bg-gray-100 border-gray-200 text-gray-600'
  : theme === 'dark'
  ? 'bg-white/5 border-white/[0.08] text-gray-400'
  : 'bg-gray-100 border-gray-200 text-gray-500'

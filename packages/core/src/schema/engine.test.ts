@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { FieldConfig } from '@zenithcms/types'
+import { FieldConfig } from '@zenith-open/zenithcms-types'
 import { createZodSchema } from './engine'
 
 describe('Zod Schema Engine', () => {

@@ -14,6 +14,7 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
       await mongoose.connect(uri, {
+        maxPoolSize: parseInt(process.env.DB_MAX_POOL_SIZE || '100', 10),
         serverSelectionTimeoutMS: parseInt(process.env.DB_SERVER_SELECTION_TIMEOUT_MS || '5000', 10),
         socketTimeoutMS: parseInt(process.env.DB_SOCKET_TIMEOUT_MS || '45000', 10),
       })

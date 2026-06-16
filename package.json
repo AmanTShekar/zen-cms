@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "description": "Zenith CMS — The Industrial Operational Platform for High-Fidelity Digital Ecosystems.",
   "private": true,
+  "type": "module",
   "workspaces": [
     "packages/*"
   ],
@@ -27,6 +28,7 @@
     "dependency-cruiser": "^16.0.0",
     "eslint": "^9.0.0",
     "globals": "^17.6.0",
+    "license-checker": "25.0.1",
     "playwright": "1.60.0",
     "prettier": "^3.0.0",
     "tsx": "^4.21.0",
@@ -38,13 +40,19 @@
       "react": "^19.2.0",
       "react-dom": "^19.2.0",
       "zod": "^3.25.76",
-      "drizzle-orm": "^0.45.2"
+      "drizzle-orm": "^0.45.2",
+      "tar": ">=7.5.11",
+      "js-cookie": ">=3.0.7",
+      "esbuild": ">=0.28.1",
+      "ws": ">=8.20.1",
+      "qs": ">=6.15.2"
     },
     "onlyBuiltDependencies": [
       "bcrypt",
       "core-js",
       "esbuild",
-      "leveldown"
+      "leveldown",
+      "mongodb-memory-server"
     ]
   }
 }

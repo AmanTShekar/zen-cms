@@ -1,4 +1,5 @@
-import { CollectionConfig } from '@zenithcms/types'
+import { CollectionConfig } from '@zenith-open/zenithcms-types'
+import { InvalidPayloadError } from '../errors'
 
 /**
  * Zenith Advanced Query Parser
@@ -21,6 +22,10 @@ export interface UQLQuery {
   pagination: {
     page: number
     pageSize: number
+    /** Cursor token for cursor-based pagination (base64 of {updatedAt}_{_id}) */
+    cursor?: string
+    /** Page size for cursor-based pagination (alternative to page/pageSize) */
+    limit?: number
   }
   select: string
   populate: string[]
@@ -62,6 +67,10 @@ function normalizeFilters(
        continue
     }
 
+    if (key.startsWith('$')) {
+      throw new InvalidPayloadError(`Illegal query operator or field name: ${key}`)
+    }
+
     const outKey = prefix ? `${prefix}.${key}` : key
     
     if (val && typeof val === 'object' && !Array.isArray(val)) {
@@ -71,6 +80,12 @@ function normalizeFilters(
       for (const [opKey, opVal] of Object.entries(rawOps)) {
         if (['eq', 'ne', 'in', 'gt', 'lt', 'gte', 'lte', 'like', 'regex'].includes(opKey)) {
           ops[`$${opKey}`] = opVal
+        } else if (opKey.startsWith('$')) {
+          const validOp = ['$eq', '$ne', '$in', '$gt', '$lt', '$gte', '$lte', '$like', '$regex'].includes(opKey)
+          if (!validOp) {
+            throw new InvalidPayloadError(`Illegal query operator: ${opKey}`)
+          }
+          ops[opKey] = opVal
         } else {
           ops[opKey] = opVal
         }
@@ -127,8 +142,10 @@ export function parseQueryParams(
     filter: {},
     sort: (src.sort as string) || '-createdAt',
     pagination: {
-      page: parseInt((src.page as string) || '1'),
-      pageSize: Math.min(parseInt((src.pageSize as string) || '25'), 100),
+      page: parseInt((src.page as string) || (query.page as string) || '1'),
+      pageSize: Math.min(parseInt((src.pageSize as string) || (query.pageSize as string) || '25'), 100),
+      ...((src.cursor || query.cursor) ? { cursor: (src.cursor || query.cursor) as string } : {}),
+      ...((src.limit !== undefined || query.limit !== undefined) ? { limit: Math.min(parseInt(String(src.limit ?? query.limit)), 100) } : {}),
     },
     select: '',
     populate: [],

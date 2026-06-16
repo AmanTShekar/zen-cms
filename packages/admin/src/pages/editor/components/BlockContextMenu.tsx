@@ -85,7 +85,7 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
  )}
  >
  <span className="flex items-center gap-2">
- <RefreshCw size={13} className="text-emerald-600 dark:text-emerald-400" />
+ <RefreshCw size={13} className="text-gray-600 dark:text-gray-400" />
  Convert to Layout
  </span>
  <ChevronRight size={12} className="opacity-50" />
@@ -119,7 +119,7 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
  theme === 'dark' ? 'hover:bg-white/5' : 'hover:bg-gray-100'
  )}
  >
- {block.icon && <block.icon size={13} className="text-emerald-600 dark:text-emerald-400 shrink-0" />}
+ {block.icon && <block.icon size={13} className="text-gray-600 dark:text-gray-400 shrink-0" />}
  <span className="truncate">{block.title}</span>
  </button>
  ))}
@@ -141,7 +141,7 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
  theme === 'dark' ? 'hover:bg-white/5' : 'hover:bg-gray-100'
  )}
  >
- <Copy size={13} className="text-emerald-600 dark:text-emerald-400" />
+ <Copy size={13} className="text-gray-600 dark:text-gray-400" />
  Duplicate Section
  </button>
 
@@ -152,21 +152,21 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
  <button
  onClick={() => { onAlign('left'); onClose() }}
  aria-label="Align left"
- className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-none transition-all', theme === 'dark' ? 'border-white/[0.08] hover:border-emerald-500/30 hover:bg-emerald-500/5 text-gray-400 hover:text-emerald-600 dark:text-emerald-400' : 'border-gray-200 hover:border-emerald-200 hover:bg-emerald-50 text-gray-600 hover:text-emerald-600')}
+ className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-none transition-all', theme === 'dark' ? 'border-white/[0.08] hover:border-gray-500/30 hover:bg-gray-500/5 text-gray-400 hover:text-gray-600 dark:text-gray-400' : 'border-gray-200 hover:border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-gray-600')}
  >
  <AlignLeft size={13} aria-hidden="true" />
  </button>
  <button
  onClick={() => { onAlign('center'); onClose() }}
  aria-label="Align center"
- className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-none transition-all', theme === 'dark' ? 'border-white/[0.08] hover:border-emerald-500/30 hover:bg-emerald-500/5 text-gray-400 hover:text-emerald-600 dark:text-emerald-400' : 'border-gray-200 hover:border-emerald-200 hover:bg-emerald-50 text-gray-600 hover:text-emerald-600')}
+ className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-none transition-all', theme === 'dark' ? 'border-white/[0.08] hover:border-gray-500/30 hover:bg-gray-500/5 text-gray-400 hover:text-gray-600 dark:text-gray-400' : 'border-gray-200 hover:border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-gray-600')}
  >
  <AlignCenter size={13} aria-hidden="true" />
  </button>
  <button
  onClick={() => { onAlign('right'); onClose() }}
  aria-label="Align right"
- className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-none transition-all', theme === 'dark' ? 'border-white/[0.08] hover:border-emerald-500/30 hover:bg-emerald-500/5 text-gray-400 hover:text-emerald-600 dark:text-emerald-400' : 'border-gray-200 hover:border-emerald-200 hover:bg-emerald-50 text-gray-600 hover:text-emerald-600')}
+ className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-none transition-all', theme === 'dark' ? 'border-white/[0.08] hover:border-gray-500/30 hover:bg-gray-500/5 text-gray-400 hover:text-gray-600 dark:text-gray-400' : 'border-gray-200 hover:border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-gray-600')}
  >
  <AlignRight size={13} aria-hidden="true" />
  </button>

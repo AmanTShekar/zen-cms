@@ -1,5 +1,5 @@
 import mongoose, { Schema, Model } from 'mongoose'
-import { CollectionConfig, FieldConfig } from '@zenithcms/types'
+import { CollectionConfig, FieldConfig } from '@zenith-open/zenithcms-types'
 
 const models: Record<string, Model<unknown>> = {}
 

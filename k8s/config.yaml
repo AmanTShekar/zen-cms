@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zenith-config
+  namespace: zenith
+data:
+  NODE_ENV: "production"
+  DATABASE_TYPE: "postgres"
+  CORS_ORIGINS: "https://zenith.example.com"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: zenith-secrets
+  namespace: zenith
+type: Opaque
+stringData:
+  # Base64 encoded values are NOT needed for stringData
+  DATABASE_URL: "postgresql://zenith:zenith_password@postgres:5432/zenith"
+  MONGODB_URI: "mongodb://zenith:zenith_password@mongodb:27017/zenith?authSource=admin"
+  REDIS_URL: "redis://redis:6379"
+  JWT_SECRET: "change_me_to_a_secure_random_string_in_production"
+  JWT_REFRESH_SECRET: "change_me_to_another_secure_string"

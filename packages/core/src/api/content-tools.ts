@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express'
+import rateLimit from 'express-rate-limit'
 import { requireAuth } from '../middleware/auth'
 import { createResponse } from './utils'
 import { AIService } from '../services/ai'
@@ -8,6 +9,15 @@ import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 
 const router: Router = Router()
 router.use(requireAuth)
+
+// Protect AI endpoints from billing exhaustion
+const aiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // limit each IP to 20 AI generation requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: { message: 'Too many AI generation requests from this IP, please try again after 15 minutes' } }
+})
 
 /**
  * Zenith Content Tools API
@@ -49,7 +59,7 @@ router.post('/quality', async (req: Request, res: Response, next) => {
 })
 
 // ── POST /api/v1/content-tools/ai/generate ───────────────────────────────────
-router.post('/ai/generate', async (req: Request, res: Response, next) => {
+router.post('/ai/generate', aiLimiter, async (req: Request, res: Response, next) => {
   try {
     if (!process.env.ANTHROPIC_API_KEY) {
       throw new ServiceUnavailableError('AI (set ANTHROPIC_API_KEY to enable)')
@@ -64,7 +74,7 @@ router.post('/ai/generate', async (req: Request, res: Response, next) => {
 })
 
 // ── POST /api/v1/content-tools/ai/improve ────────────────────────────────────
-router.post('/ai/improve', async (req: Request, res: Response, next) => {
+router.post('/ai/improve', aiLimiter, async (req: Request, res: Response, next) => {
   try {
     if (!process.env.ANTHROPIC_API_KEY) {
       throw new ServiceUnavailableError('AI (set ANTHROPIC_API_KEY to enable)')
@@ -81,7 +91,7 @@ router.post('/ai/improve', async (req: Request, res: Response, next) => {
 })
 
 // ── POST /api/v1/content-tools/ai/meta-description ───────────────────────────
-router.post('/ai/meta-description', async (req: Request, res: Response, next) => {
+router.post('/ai/meta-description', aiLimiter, async (req: Request, res: Response, next) => {
   try {
     if (!process.env.ANTHROPIC_API_KEY) {
       throw new ServiceUnavailableError('AI (set ANTHROPIC_API_KEY to enable)')
@@ -97,7 +107,7 @@ router.post('/ai/meta-description', async (req: Request, res: Response, next) =>
 })
 
 // ── POST /api/v1/content-tools/ai/alt-text ───────────────────────────────────
-router.post('/ai/alt-text', async (req: Request, res: Response, next) => {
+router.post('/ai/alt-text', aiLimiter, async (req: Request, res: Response, next) => {
   try {
     const { imageUrl, context } = req.body
     if (!imageUrl) throw new InvalidPayloadError('"imageUrl" is required')
@@ -137,7 +147,7 @@ router.post('/auto-link', async (req: Request, res: Response, next) => {
         // Production Hardening: Limit to 100 docs per collection to prevent OOM crashes
         const filter: Record<string, any> = {}
         if (siteId) filter.siteId = siteId
-        docs = await adapter.find<any>(col.slug, filter, { limit: 100 })
+        docs = await adapter.find<Record<string, any>>(col.slug, filter, { limit: 100 })
       } catch (e) {
         continue
       }

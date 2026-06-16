@@ -24,10 +24,11 @@ import Logo from '../components/Logo'
 import { cn } from '../lib/utils'
 import { loginSchema, type LoginFormValues } from '../lib/validators'
 import api from '../lib/api'
+import { useShallow } from 'zustand/react/shallow'
 
 const LoginPage: React.FC = () => {
  const navigate = useNavigate()
- const { login, setUser } = useAuthStore()
+ const { login, setUser  } = useAuthStore(useShallow(state => ({ login: state.login, setUser: state.setUser })))
  const { theme, toggleTheme } = useTheme()
  const [error, setError] = useState<{
  message: string
@@ -98,7 +99,7 @@ const LoginPage: React.FC = () => {
  }
  }
  } catch (err: any) {
- if (err.code === 'ERR_NETWORK' || !err.response) {
+ if ((err as { code?: string }).code === 'ERR_NETWORK' || !err.response) {
  setError({ message: 'Kernel Offline: Connection Refused', type: 'network' })
  } else {
  const errData = err.response?.data?.data as { attemptsLeft?: number; locked?: boolean; remainingMin?: number; maxAttempts?: number } | undefined
@@ -120,25 +121,10 @@ const LoginPage: React.FC = () => {
  }
 
  return (
- <div
- className={cn(
- 'min-h-screen flex items-center justify-center p-4 md:p-6 relative overflow-auto font-sans antialiased selection:bg-emerald-600 dark:bg-emerald-600 selection:text-white transition-colors duration-500',
- theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-[#111827]'
- )}
- >
+ <div className="min-h-screen flex items-center justify-center p-4 md:p-6 relative overflow-auto font-sans antialiased selection:bg-white selection:text-black bg-black text-white">
  {/* Background elements */}
- <div
- className={cn(
- 'fixed top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500 z-0',
- theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-500/[0.03]'
- )}
- />
- <div
- className={cn(
- 'fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500 z-0',
- theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-500/[0.02]'
- )}
- />
+ <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500 z-0 bg-white/5" />
+ <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500 z-0 bg-white/5" />
 
  <div className="w-full max-w-[400px] relative z-10 flex flex-col gap-6 md:gap-8 py-4">
  {/* Branding Module */}
@@ -147,20 +133,10 @@ const LoginPage: React.FC = () => {
  animate={{ opacity: 1, y: 0 }}
  className="flex flex-col items-center text-center"
  >
- <div
- className={cn(
- 'w-14 h-14 mb-6 rounded-none flex items-center justify-center shadow-2xl relative group cursor-pointer overflow-hidden transition-all duration-500 hover:scale-105',
- theme === 'dark' ? 'bg-white text-black' : 'bg-gray-900 text-white'
- )}
- >
+ <div className="w-14 h-14 mb-6 rounded-none flex items-center justify-center shadow-2xl relative group cursor-pointer overflow-hidden transition-all duration-500 hover:scale-105 bg-white text-black">
  <Logo size="sm" className="scale-75" />
  </div>
- <h1
- className={cn(
- 'text-4xl font-black tracking-tighter uppercase leading-none transition-colors',
- theme === 'dark' ? 'text-white' : 'text-gray-900'
- )}
- >
+ <h1 className="text-4xl font-black tracking-tighter uppercase leading-none transition-colors text-white">
  ZENITH
  </h1>
  <p className="mt-3 text-[9px] font-black text-gray-400 uppercase tracking-[0.4em] ">
@@ -172,55 +148,16 @@ const LoginPage: React.FC = () => {
  <motion.div
  initial={{ opacity: 0, scale: 0.98 }}
  animate={{ opacity: 1, scale: 1 }}
- className={cn(
- 'border rounded-none p-8 shadow-2xl relative transition-all duration-500',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
- )}
+ className="p-8 relative transition-all duration-500 rounded-none border bg-black/65 backdrop-blur-[12px] border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.1)]"
  >
  <div className="flex items-center justify-between mb-8">
  <div className="flex flex-col">
- <h2
- className={cn(
- 'text-xl font-black uppercase tracking-tight transition-colors',
- theme === 'dark' ? 'text-white' : 'text-gray-900'
- )}
- >
+ <h2 className="text-xl font-black uppercase tracking-tight transition-colors text-white">
  {needsSetup ? 'Setup Admin' : tempToken ? 'Two-Factor Auth' : 'Sign In'}
  </h2>
  <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-none mt-1">
  {needsSetup ? 'Initialize Workstation' : tempToken ? 'Verify Identity' : 'Access Controlled'}
  </p>
- </div>
-
- {/* 🌗 Theme Toggle Module */}
- <div
- className={cn(
- 'p-1 rounded-none border flex items-center gap-1 transition-all',
- theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-100 border-gray-200'
- )}
- >
- <button
- onClick={() => theme !== 'light' && toggleTheme()}
- className={cn(
- 'w-7 h-7 flex items-center justify-center rounded-none transition-all',
- theme === 'light'
- ? 'bg-white text-gray-900 shadow-sm'
- : 'text-gray-400 hover:text-white'
- )}
- >
- <Sun size={14} />
- </button>
- <button
- onClick={() => theme !== 'dark' && toggleTheme()}
- className={cn(
- 'w-7 h-7 flex items-center justify-center rounded-none transition-all',
- theme === 'dark'
- ? 'bg-gray-900 text-white shadow-sm'
- : 'text-gray-400 hover:text-white'
- )}
- >
- <Moon size={14} />
- </button>
  </div>
  </div>
 
@@ -231,20 +168,7 @@ const LoginPage: React.FC = () => {
  initial={{ opacity: 0, height: 0 }}
  animate={{ opacity: 1, height: 'auto' }}
  exit={{ opacity: 0, height: 0 }}
- className={cn(
- 'border rounded-none p-4 mb-6 overflow-hidden transition-colors',
- error.type === 'network'
- ? theme === 'dark'
- ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
- : 'bg-amber-50 border-amber-100 text-amber-600'
- : error.data?.locked
- ? theme === 'dark'
- ? 'bg-red-500/10 border-red-500/20 text-red-400'
- : 'bg-red-50 border-red-100 text-red-600'
- : theme === 'dark'
- ? 'bg-red-500/10 border-red-500/20 text-red-400'
- : 'bg-red-50 border-red-100 text-red-600'
- )}
+ className="border rounded-none p-4 mb-6 overflow-hidden transition-colors bg-red-500/10 border-red-500/20 text-red-400"
  >
  <div className="flex items-center gap-3">
  {error.type === 'network' ? (
@@ -303,7 +227,7 @@ const LoginPage: React.FC = () => {
  </AnimatePresence>
 
  {needsSetup && (
- <div className="p-3 border border-emerald-500/20 bg-emerald-500/[0.03] text-[9.5px] leading-relaxed text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider ">
+ <div className="p-3 border border-gray-500/20 bg-gray-500/[0.03] text-[9.5px] leading-relaxed text-gray-400 font-bold uppercase tracking-wider ">
  No administrative users detected. Create your root administrator account below to provision this Zenith workstation.
  </div>
  )}
@@ -315,10 +239,7 @@ const LoginPage: React.FC = () => {
  </label>
  <div className="relative group">
  <ShieldCheck
- className={cn(
- 'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
- theme === 'dark' ? 'text-white/20' : 'text-gray-300'
- )}
+ className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors text-white/20"
  size={16}
  />
  <input
@@ -327,12 +248,7 @@ const LoginPage: React.FC = () => {
  maxLength={6}
  value={twoFactorToken}
  onChange={(e) => setTwoFactorToken(e.target.value.replace(/\D/g, ''))}
- className={cn(
- 'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all tracking-widest text-center',
- theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
- : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
- )}
+ className="w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all tracking-widest text-center bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
  />
  </div>
  </div>
@@ -344,12 +260,7 @@ const LoginPage: React.FC = () => {
  </label>
  <div className="relative group">
  <Mail
- className={cn(
- 'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
- theme === 'dark'
- ? 'text-white/20 group-focus-within:text-emerald-600 dark:text-emerald-400'
- : 'text-gray-300 group-focus-within:text-emerald-600'
- )}
+ className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors text-white/20 group-focus-within:text-gray-300 dark:text-gray-400"
  size={16}
  />
  <input
@@ -357,12 +268,7 @@ const LoginPage: React.FC = () => {
  autoComplete="email"
  type="email"
  placeholder="admin@zenith.com"
- className={cn(
- 'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
- theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
- : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
- )}
+ className="w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
  />
  </div>
  {errors.email && (
@@ -380,12 +286,7 @@ const LoginPage: React.FC = () => {
  {!needsSetup && (
  <Link
  to="/forgot-password"
- className={cn(
- 'text-[9px] font-black uppercase tracking-widest hover:underline',
- theme === 'dark'
- ? 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-300'
- : 'text-emerald-600 hover:text-emerald-700'
- )}
+ className="text-[9px] font-black uppercase tracking-widest hover:underline text-gray-400 hover:text-white"
  >
  Forgot Password?
  </Link>
@@ -393,12 +294,7 @@ const LoginPage: React.FC = () => {
  </div>
  <div className="relative group">
  <Lock
- className={cn(
- 'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
- theme === 'dark'
- ? 'text-white/20 group-focus-within:text-emerald-600 dark:text-emerald-400'
- : 'text-gray-300 group-focus-within:text-emerald-600'
- )}
+ className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors text-white/20 group-focus-within:text-gray-300 dark:text-gray-400"
  size={16}
  />
  <input
@@ -406,22 +302,12 @@ const LoginPage: React.FC = () => {
  autoComplete="current-password"
  type={showPassword ? 'text' : 'password'}
  placeholder="••••••••"
- className={cn(
- 'w-full border rounded-none py-3 pl-12 pr-12 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
- theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
- : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
- )}
+ className="w-full border rounded-none py-3 pl-12 pr-12 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
  />
  <button
  type="button"
  onClick={() => setShowPassword(!showPassword)}
- className={cn(
- 'absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-none transition-colors',
- theme === 'dark'
- ? 'text-white/20 hover:text-white'
- : 'text-gray-300 hover:text-gray-900'
- )}
+ className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-none transition-colors text-white/20 hover:text-white"
  >
  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
  </button>
@@ -435,16 +321,12 @@ const LoginPage: React.FC = () => {
  </div>
  )}
 
- <button
- type="submit"
- disabled={isSubmitting || (tempToken !== null && twoFactorToken.length !== 6)}
- className={cn(
- 'w-full rounded-none py-4 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-xl transition-all group disabled:opacity-50 disabled:pointer-events-none',
- theme === 'dark'
- ? 'bg-white text-black hover:bg-gray-100 shadow-white/5'
- : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
- )}
- >
+ <div className="flex flex-col gap-1.5 mt-8">
+  <button
+  type="submit"
+  disabled={isSubmitting || (tempToken !== null && twoFactorToken.length !== 6)}
+  className="w-full bg-white text-black hover:bg-gray-200 disabled:bg-white/20 disabled:text-white/40 px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_4px_15px_rgba(255,255,255,0.1)] rounded-none font-mono"
+  >
  {isSubmitting ? (
  <Loader2 size={18} className="animate-spin" />
  ) : (
@@ -457,6 +339,7 @@ const LoginPage: React.FC = () => {
  </>
  )}
  </button>
+ </div>
  </form>
 
  {/* SSO/OAuth Provider Module */}
@@ -531,18 +414,18 @@ const LoginPage: React.FC = () => {
  className={cn(
  'mt-8 p-4 border rounded-none space-y-3 cursor-pointer group hover:scale-[1.02] active:scale-[0.98] transition-all',
  theme === 'dark'
- ? 'bg-emerald-500/5 border-emerald-500/10'
- : 'bg-emerald-50/50 border-emerald-100'
+ ? 'bg-gray-500/5 border-gray-500/10'
+ : 'bg-gray-50/50 border-gray-100'
  )}
  >
  <div className="flex items-center justify-between">
- <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-500">
+ <div className="flex items-center gap-2 text-gray-600 dark:text-gray-500">
  <Info size={12} />
  <span className="text-[8px] font-black uppercase tracking-widest ">
  Dev_Credentials
  </span>
  </div>
- <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
+ <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
  <span className="text-[7px] font-black uppercase">Auto_Fill</span>
  <MousePointer2 size={10} />
  </div>
@@ -555,7 +438,7 @@ const LoginPage: React.FC = () => {
  <code
  className={cn(
  'text-[9px] font-black transition-colors',
- theme === 'dark' ? 'text-white/60' : 'text-emerald-900'
+ theme === 'dark' ? 'text-white/60' : 'text-gray-900'
  )}
  >
  admin@zenith.com
@@ -568,7 +451,7 @@ const LoginPage: React.FC = () => {
  <code
  className={cn(
  'text-[9px] font-black transition-colors',
- theme === 'dark' ? 'text-white/60' : 'text-emerald-900'
+ theme === 'dark' ? 'text-white/60' : 'text-gray-900'
  )}
  >
  Zenith2024!

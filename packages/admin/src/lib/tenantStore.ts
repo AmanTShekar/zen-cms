@@ -53,6 +53,13 @@ export const useTenantStore = create<TenantState>()(
  }),
  {
  name: 'zenith-tenant-store',
+ // SECURITY: Never persist the auth token to localStorage — it must live in
+ // memory only. The server uses HttpOnly cookies for actual authentication.
+ // Storing the token in localStorage makes it extractable via XSS attacks.
+ partialize: (state) => ({
+  activeSiteId: state.activeSiteId,
+  activeSiteName: state.activeSiteName,
+ }),
  }
  )
 )

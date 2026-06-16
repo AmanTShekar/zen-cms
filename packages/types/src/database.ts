@@ -21,6 +21,9 @@ export interface DatabaseAdapter {
   /** Lists all existing collections/tables in the database */
   getExistingCollections(): Promise<string[]>
 
+  /** Escape hatch for bypassing the Adapter AST and executing vendor-specific queries natively */
+  getNativeClient<T = any>(): T
+
   // ── CRUD Operations ───────────────────────────────────────────────────────
   find<T = unknown>(
     collection: string,
@@ -100,6 +103,7 @@ export interface BaseOptions {
   session?: unknown
   tenantId?: string
   siteId?: string
+  expectedVersion?: number
 }
 
 export interface FindOptions extends BaseOptions {
@@ -108,6 +112,7 @@ export interface FindOptions extends BaseOptions {
   limit?: number
   select?: string | string[]
   populate?: string | string[]
+  cursor?: string
 }
 
 export interface AuditLogData {

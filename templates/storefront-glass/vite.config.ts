@@ -2,14 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
-const proxyErrorHandler = (err: any, _req: any, res: any) => {
-  if (err.code === 'ECONNREFUSED') {
-    if (res && res.writeHead) {
-      res.writeHead(503, { 'Content-Type': 'text/plain' });
-      res.end('Backend starting up...');
-    }
-  }
-};
+
 
 export default defineConfig(() => {
   return {
@@ -64,5 +57,10 @@ export default defineConfig(() => {
         },
       },
     },
+    optimizeDeps: {
+      esbuildOptions: {
+        target: 'esnext'
+      }
+    }
   }
 })

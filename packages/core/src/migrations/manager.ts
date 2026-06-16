@@ -34,7 +34,7 @@ export class MigrationManager {
 
     if (existingCollections.includes('z_migrations')) {
       try {
-        executedDocs = await adapter.find<any>('z_migrations', {})
+        executedDocs = await adapter.find<Record<string, any>>('z_migrations', {})
       } catch (err: any) {
         logger.error({ err: err.message }, '[MigrationManager] Failed to read z_migrations table despite it existing. Aborting to prevent corruption.')
         throw err
@@ -95,7 +95,7 @@ export class MigrationManager {
       return 0
     }
 
-    const executedDocs = await adapter.find<any>('z_migrations', {}, { sort: { batch: -1, executedAt: -1 } })
+    const executedDocs = await adapter.find<Record<string, any>>('z_migrations', {}, { sort: { batch: -1, executedAt: -1 } })
     if (executedDocs.length === 0) {
       logger.info('[MigrationManager] No executed migrations found. Nothing to roll back.')
       return 0

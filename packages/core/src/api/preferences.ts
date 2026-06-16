@@ -21,7 +21,7 @@ router.use(requireAuth)
 router.get('/:key', async (req: Request, res: Response, next) => {
   try {
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const pref = await adapter.findOne<any>('z_preferences', {
+    const pref = await adapter.findOne<Record<string, any>>('z_preferences', {
       user_id: (req as any).user.id,
       key: req.params.key,
     })
@@ -38,7 +38,7 @@ router.post('/:key', async (req: Request, res: Response, next) => {
     if (value === undefined) throw new InvalidPayloadError('"value" is required')
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    let pref = await adapter.findOne<any>('z_preferences', {
+    let pref = await adapter.findOne<Record<string, any>>('z_preferences', {
       user_id: (req as any).user.id,
       key: req.params.key,
     })
@@ -54,7 +54,7 @@ router.post('/:key', async (req: Request, res: Response, next) => {
       })
     }
 
-    res.json(createResponse({ key: pref.key, value: pref.value }))
+    res.json(createResponse({ key: pref!.key, value: pref!.value }))
   } catch (err) {
     next(err)
   }

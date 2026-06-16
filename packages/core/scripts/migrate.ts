@@ -7,10 +7,13 @@ async function main() {
   try {
     logger.info('Migration Script Started')
     // Initialize adapter based on env
-    AdapterFactory.getActiveAdapter()
+    const adapter = AdapterFactory.getActiveAdapter()
+    await adapter.connect()
     
     // Run all pending migrations
     await Migrator.run()
+    
+    await adapter.disconnect()
     
     logger.info('Migration Script Completed Successfully')
     process.exit(0)

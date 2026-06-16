@@ -68,7 +68,7 @@ const ResetPasswordPage: React.FC = () => {
  return (
  <div
  className={cn(
- 'min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-sans antialiased selection:bg-emerald-600 dark:bg-emerald-600 selection:text-white transition-colors duration-500',
+ 'min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-sans antialiased selection:bg-gray-600 dark:bg-gray-600 selection:text-white transition-colors duration-500',
  theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-[#111827]'
  )}
  >
@@ -76,13 +76,13 @@ const ResetPasswordPage: React.FC = () => {
  <div
  className={cn(
  'absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500',
- theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-500/[0.03]'
+ theme === 'dark' ? 'bg-gray-500/10' : 'bg-gray-500/[0.03]'
  )}
  ></div>
  <div
  className={cn(
  'absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none blur-[120px] pointer-events-none transition-all duration-500',
- theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-500/[0.02]'
+ theme === 'dark' ? 'bg-gray-500/10' : 'bg-gray-500/[0.02]'
  )}
  ></div>
 
@@ -198,7 +198,7 @@ const ResetPasswordPage: React.FC = () => {
  ) : success ? (
  <div className="space-y-6 text-center">
  <div className="flex justify-center">
- <CheckCircle className="text-emerald-600 dark:text-emerald-500 w-12 h-12 animate-pulse" />
+ <CheckCircle className="text-gray-600 dark:text-gray-500 w-12 h-12 animate-pulse" />
  </div>
  <p
  className={cn(
@@ -248,8 +248,8 @@ const ResetPasswordPage: React.FC = () => {
  className={cn(
  'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
  theme === 'dark'
- ? 'text-white/20 group-focus-within:text-emerald-600 dark:text-emerald-400'
- : 'text-gray-300 group-focus-within:text-emerald-600'
+ ? 'text-white/20 group-focus-within:text-gray-600 dark:text-gray-400'
+ : 'text-gray-300 group-focus-within:text-gray-600'
  )}
  size={16}
  />
@@ -258,10 +258,10 @@ const ResetPasswordPage: React.FC = () => {
  type={showPassword ? 'text' : 'password'}
  placeholder="••••••••"
  className={cn(
- 'w-full border rounded-none py-3 pl-12 pr-12 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
+ 'w-full border rounded-none py-3 pl-12 pr-12 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
- : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
+ ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20'
+ : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-gray-100'
  )}
  />
  <button
@@ -294,8 +294,8 @@ const ResetPasswordPage: React.FC = () => {
  className={cn(
  'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
  theme === 'dark'
- ? 'text-white/20 group-focus-within:text-emerald-600 dark:text-emerald-400'
- : 'text-gray-300 group-focus-within:text-emerald-600'
+ ? 'text-white/20 group-focus-within:text-gray-600 dark:text-gray-400'
+ : 'text-gray-300 group-focus-within:text-gray-600'
  )}
  size={16}
  />
@@ -304,10 +304,10 @@ const ResetPasswordPage: React.FC = () => {
  type="password"
  placeholder="••••••••"
  className={cn(
- 'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
+ 'w-full border rounded-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-emerald-500/20'
- : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-100'
+ ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20'
+ : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-gray-100'
  )}
  />
  </div>
@@ -348,8 +348,8 @@ const ResetPasswordPage: React.FC = () => {
  className={cn(
  'text-[9px] font-black uppercase tracking-widest hover:underline flex items-center justify-center gap-2 transition-colors',
  theme === 'dark'
- ? 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-300'
- : 'text-emerald-600 hover:text-emerald-700'
+ ? 'text-gray-600 dark:text-gray-400 hover:text-gray-300'
+ : 'text-gray-600 hover:text-gray-700'
  )}
  >
  <ArrowLeft size={10} />

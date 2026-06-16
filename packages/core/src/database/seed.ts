@@ -30,26 +30,7 @@ const TenantConfigSchema = z.object({
   data: z.record(z.array(z.any())).optional().default({}),
 })
 
-// Register Mongoose models
-import './user-model'
-import './api-key-model'
-import './audit-model'
-import './dashboard-layout-model'
-import './flow-model'
-import './member-model'
-import './onboarding-state-model'
-import './password-reset-model'
-import './preference-model'
-import './settings-model'
-import './site-model'
-import './workspace-model'
-import './version-model'
-import './webhook-model'
-import './webhook-config-model'
-import './release-model'
-import './role-model'
-import './template-model'
-import './schema-model'
+import './models'
 
 /**
  * Tenant Config Synchronisation
@@ -58,7 +39,7 @@ export async function syncTenantFiles(adapter: DatabaseAdapter, defaultWorkspace
   const rootDir = path.resolve(__dirname, '../../../../')
   const tenantsDir = path.resolve(rootDir, 'config', 'tenants')
   const env = process.env.NODE_ENV || 'development'
-  let tenantConfigs: any[] = []
+  const tenantConfigs: any[] = []
   
   if (!fs.existsSync(tenantsDir)) return
 
@@ -136,7 +117,7 @@ export async function syncTenantFiles(adapter: DatabaseAdapter, defaultWorkspace
     const siteData = config.site
     let finalSiteId: string = ''
 
-    const existingBySlug = await adapter.findOne<any>('z_sites', { slug: siteData.slug })
+    const existingBySlug = await adapter.findOne<Record<string, any>>('z_sites', { slug: siteData.slug })
     if (existingBySlug) {
       await adapter.update('z_sites', (existingBySlug.id || existingBySlug._id).toString(), {
         name: siteData.name,
@@ -149,7 +130,7 @@ export async function syncTenantFiles(adapter: DatabaseAdapter, defaultWorkspace
       finalSiteId = (existingBySlug.id || existingBySlug._id).toString()
       logger.info(`Site ${siteData.name} updated by slug`)
     } else {
-      const newSite = await adapter.create<any>('z_sites', {
+      const newSite = await adapter.create<Record<string, any>>('z_sites', {
         ...siteData,
         workspaceId: (defaultWorkspace.id || defaultWorkspace._id).toString(),
         ownerId: adminId.toString(),
@@ -168,7 +149,7 @@ export async function syncTenantFiles(adapter: DatabaseAdapter, defaultWorkspace
     for (const col of allSchemas) {
       await adapter.registerCollection(col as any)
       
-      const existingSchema = await adapter.findOne<any>('z_schemas', { slug: col.slug, siteId: finalSiteId })
+      const existingSchema = await adapter.findOne<Record<string, any>>('z_schemas', { slug: col.slug, siteId: finalSiteId })
       const schemaPayload = {
         title: col.name,
         slug: col.slug,
@@ -181,10 +162,10 @@ export async function syncTenantFiles(adapter: DatabaseAdapter, defaultWorkspace
       if (existingSchema) {
         await adapter.update('z_schemas', (existingSchema.id || existingSchema._id).toString(), schemaPayload)
       } else {
-        await adapter.create<any>('z_schemas', schemaPayload)
+        await adapter.create<Record<string, any>>('z_schemas', schemaPayload)
       }
 
-      const existingGlobal = await adapter.findOne<any>('z_collections', { slug: col.slug })
+      const existingGlobal = await adapter.findOne<Record<string, any>>('z_collections', { slug: col.slug })
       const globalPayload = {
         name: col.name,
         slug: col.slug,
@@ -198,14 +179,14 @@ export async function syncTenantFiles(adapter: DatabaseAdapter, defaultWorkspace
       if (existingGlobal) {
         await adapter.update('z_collections', (existingGlobal.id || existingGlobal._id).toString(), globalPayload)
       } else {
-        await adapter.create<any>('z_collections', globalPayload)
+        await adapter.create<Record<string, any>>('z_collections', globalPayload)
       }
     }
 
     // Sync tenant blocks
     const allBlocks = config.blocks || []
     for (const block of allBlocks) {
-      const existingBlock = await adapter.findOne<any>('z_schemas', { slug: block.slug, siteId: finalSiteId })
+      const existingBlock = await adapter.findOne<Record<string, any>>('z_schemas', { slug: block.slug, siteId: finalSiteId })
       const blockPayload = {
         title: block.labels?.singular || block.title || block.name || block.slug,
         slug: block.slug,
@@ -218,7 +199,7 @@ export async function syncTenantFiles(adapter: DatabaseAdapter, defaultWorkspace
       if (existingBlock) {
         await adapter.update('z_schemas', (existingBlock.id || existingBlock._id).toString(), blockPayload)
       } else {
-        await adapter.create<any>('z_schemas', blockPayload)
+        await adapter.create<Record<string, any>>('z_schemas', blockPayload)
       }
     }
     
@@ -243,11 +224,11 @@ export async function syncTenantFiles(adapter: DatabaseAdapter, defaultWorkspace
             }
           }
 
-          const existingDoc = await adapter.findOne<any>(colSlug, query)
+          const existingDoc = await adapter.findOne<Record<string, any>>(colSlug, query)
           if (existingDoc) {
-            await adapter.update<any>(colSlug, (existingDoc.id || existingDoc._id).toString(), payload)
+            await adapter.update<Record<string, any>>(colSlug, (existingDoc.id || existingDoc._id).toString(), payload)
           } else {
-            await adapter.create<any>(colSlug, payload)
+            await adapter.create<Record<string, any>>(colSlug, payload)
           }
         }
       }
@@ -270,7 +251,7 @@ export async function seedInitialData() {
       return
     }
 
-    let admins = await adapter.find<any>('users', { role: 'admin' })
+    let admins = await adapter.find<Record<string, any>>('users', { role: 'admin' })
 
     if (admins.length === 0) {
       const email = process.env.INITIAL_ADMIN_EMAIL || 'admin@zenith.com'
@@ -278,7 +259,7 @@ export async function seedInitialData() {
 
       const hashedPassword = await AuthService.hashPassword(password)
 
-      const newAdmin = await adapter.create<any>('users', {
+      const newAdmin = await adapter.create<Record<string, any>>('users', {
         email,
         password: hashedPassword,
         role: 'admin',
@@ -292,10 +273,10 @@ export async function seedInitialData() {
     const adminId = adminUser.id || adminUser._id
 
     // Seed default workspace if none exist
-    const workspaces = await adapter.find<any>('z_workspaces', {})
+    const workspaces = await adapter.find<Record<string, any>>('z_workspaces', {})
     let defaultWorkspace: any
     if (workspaces.length === 0) {
-      defaultWorkspace = await adapter.create<any>('z_workspaces', {
+      defaultWorkspace = await adapter.create<Record<string, any>>('z_workspaces', {
         name: 'My Workspace',
         slug: 'my-workspace',
         ownerId: adminId.toString(),
@@ -318,14 +299,25 @@ export async function seedInitialData() {
           
           let debounceTimeout: NodeJS.Timeout | null = null
           
-          chokidar.watch(tenantsDir, { ignoreInitial: true })
-            .on('change', (filename: string) => {
+          const watcher = chokidar.watch(tenantsDir, { ignoreInitial: true })
+          ;(global as any).__zenithTenantWatcherInstance = watcher
+          
+          watcher.on('change', (filename: string) => {
               if (filename && filename.endsWith('.json')) {
                 if (debounceTimeout) clearTimeout(debounceTimeout)
                 debounceTimeout = setTimeout(async () => {
                   logger.info(`[Tenant Watcher] Detected change in ${filename}, re-syncing...`)
                   try {
                     await syncTenantFiles(adapter, defaultWorkspace, adminId)
+                    
+                    // Phase 5: Redis Pub/Sub for config invalidation across instances
+                    if (process.env.REDIS_URL) {
+                      const { createClient } = await import('redis')
+                      const pubClient = createClient({ url: process.env.REDIS_URL })
+                      await pubClient.connect()
+                      await pubClient.publish('zenith:tenant:update', filename)
+                      await pubClient.disconnect()
+                    }
                   } catch (err: any) {
                     logger.error({ err: err.message }, 'Tenant hot-reload failed')
                   }
@@ -337,7 +329,7 @@ export async function seedInitialData() {
     }
 
     // Keep only up to 10 sites, remove extras
-    const currentSites = await adapter.find<any>('z_sites', {})
+    const currentSites = await adapter.find<Record<string, any>>('z_sites', {})
     if (currentSites.length > 10) {
       const toRemove = currentSites.slice(10)
       for (const site of toRemove) {
@@ -347,7 +339,7 @@ export async function seedInitialData() {
 
     // Mark onboarding as complete since we are seeding data
     try {
-      const onboarding = await adapter.findOne<any>('z_onboarding', {})
+      const onboarding = await adapter.findOne<Record<string, any>>('z_onboarding', {})
       if (!onboarding) {
         await adapter.create('z_onboarding', {
           currentStep: 7, // Must be a number to satisfy Mongoose schema

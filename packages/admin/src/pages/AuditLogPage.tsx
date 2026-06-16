@@ -31,7 +31,7 @@ interface AuditLogEntry {
  action: string
  collectionName?: string
  documentId?: string
- changes?: unknown
+ changes?: any
  ip?: string
  userAgent?: string
  timestamp: string
@@ -66,7 +66,7 @@ const AuditLogPage: React.FC = () => {
  const fetchLogs = useCallback(async () => {
  setLoading(true)
  try {
- const params: Record<string, any> = { page, limit: 25 }
+ const params: any = { page, limit: 25 }
  if (searchQuery) params.search = searchQuery
  if (filterAction) params.action = filterAction
  const res = await api.get('/system/audit-logs', { params })
@@ -160,8 +160,8 @@ const AuditLogPage: React.FC = () => {
 
  const getActionColor = (action: string) => {
  const upper = action?.toUpperCase()
- if (upper === 'CREATE') return 'bg-emerald-500/5 text-emerald-600 dark:text-emerald-500 border-emerald-500/10'
- if (upper === 'UPDATE') return 'bg-emerald-500/5 text-emerald-600 dark:text-emerald-500 border-emerald-500/10'
+ if (upper === 'CREATE') return 'bg-gray-500/5 text-gray-600 dark:text-gray-500 border-gray-500/10'
+ if (upper === 'UPDATE') return 'bg-gray-500/5 text-gray-600 dark:text-gray-500 border-gray-500/10'
  if (upper === 'DELETE') return 'bg-red-500/5 text-red-500 border-red-500/10'
  return 'bg-amber-500/5 text-amber-500 border-amber-500/10'
  }
@@ -189,10 +189,10 @@ const AuditLogPage: React.FC = () => {
  </div>
  <div className="flex flex-col">
  <div className="flex items-center gap-3 mb-1">
- <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.3em] ">
+ <span className="text-[8px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-[0.3em] ">
  System History
  </span>
- <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 shadow-[0_0_8px_#10b981]" />
+ <div className="w-1.5 h-1.5 rounded-none bg-gray-500 shadow-[0_0_8px_#10b981]" />
  </div>
  <h1 className="text-3xl font-black tracking-tighter uppercase leading-none">
  Audit Logs
@@ -211,7 +211,7 @@ const AuditLogPage: React.FC = () => {
  <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest opacity-60">
  Total Logs
  </span>
- <span className="text-xl font-black tracking-tighter leading-none text-emerald-600 dark:text-emerald-500">
+ <span className="text-xl font-black tracking-tighter leading-none text-gray-600 dark:text-gray-500">
  {total.toLocaleString()}
  </span>
  </div>
@@ -231,7 +231,7 @@ const AuditLogPage: React.FC = () => {
  <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest opacity-60">
  Status
  </span>
- <span className="text-xs font-black text-emerald-600 dark:text-emerald-500 tracking-tighter uppercase leading-none">
+ <span className="text-xs font-black text-gray-600 dark:text-gray-500 tracking-tighter uppercase leading-none">
  Stable
  </span>
  </div>
@@ -276,7 +276,7 @@ const AuditLogPage: React.FC = () => {
  >
  <Search
  size={16}
- className="text-gray-500 group-focus-within:text-emerald-600 dark:text-emerald-500 transition-colors"
+ className="text-gray-500 group-focus-within:text-gray-600 dark:text-gray-500 transition-colors"
  />
  <input
  type="text"
@@ -284,7 +284,7 @@ const AuditLogPage: React.FC = () => {
  onChange={(e) => setSearchQuery(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
  placeholder="Search by email, name, collection..."
- className="bg-transparent border-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-xs font-black text-gray-400 w-full placeholder:text-gray-700 uppercase tracking-tight"
+ className="bg-transparent border-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-xs font-black text-gray-400 w-full placeholder:text-gray-700 uppercase tracking-tight"
  />
  </div>
 
@@ -377,7 +377,7 @@ const AuditLogPage: React.FC = () => {
  <td colSpan={5} className="py-20 text-center">
  <Loader2
  size={24}
- className="animate-spin text-emerald-600 dark:text-emerald-500 mx-auto opacity-40"
+ className="animate-spin text-gray-600 dark:text-gray-500 mx-auto opacity-40"
  />
  </td>
  </tr>
@@ -396,7 +396,7 @@ const AuditLogPage: React.FC = () => {
  initial={{ opacity: 0 }}
  animate={{ opacity: 1 }}
  onClick={() => setShowDetails(showDetails === (log._id || log.id) ? null : (log._id || log.id))}
- className="hover:bg-emerald-500/[0.02] transition-colors cursor-pointer group"
+ className="hover:bg-gray-500/[0.02] transition-colors cursor-pointer group"
  >
  <td className="px-8 py-4">
  <div className="flex items-center gap-3">
@@ -450,7 +450,7 @@ const AuditLogPage: React.FC = () => {
  <span
  className={cn(
  'text-[8px] font-black uppercase tracking-widest ',
- log.status === 'failed' ? 'text-red-500' : 'text-emerald-600 dark:text-emerald-500'
+ log.status === 'failed' ? 'text-red-500' : 'text-gray-600 dark:text-gray-500'
  )}
  >
  {log.status || 'success'}

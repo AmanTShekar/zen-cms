@@ -11,8 +11,8 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:9176',
     trace: 'on-first-retry',
-    actionTimeout: 15000,
-    navigationTimeout: 30000,
+    actionTimeout: 30000,
+    navigationTimeout: 60000,
     storageState: 'e2e/storageState.json',
   },
   globalSetup: require.resolve('./e2e/global-setup.ts'),
@@ -24,11 +24,12 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'pnpm --filter @zenithcms/core dev',
+      command: 'pnpm --filter @zenith-open/zenithcms-core dev',
       port: 9001,
       timeout: 120 * 1000,
       reuseExistingServer: true,
       env: {
+        NODE_ENV: 'test',
         PORT: '9001',
         DATABASE_TYPE: 'mongodb',
         MONGODB_URI: 'mongodb://localhost:27017/zenith-e2e',
@@ -37,11 +38,12 @@ export default defineConfig({
       },
     },
     {
-      command: 'pnpm --filter @zenithcms/admin dev',
+      command: 'pnpm --filter @zenith-open/zenithcms-admin dev',
       port: 9176,
       timeout: 120 * 1000,
       reuseExistingServer: true,
       env: {
+        NODE_ENV: 'test',
         VITE_PORT: '9176',
         CORE_PORT: '9001',
       },

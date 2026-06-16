@@ -1,5 +1,5 @@
 {
-  "name": "@zenithcms/cli",
+  "name": "@zenith-open/zenithcms-cli",
   "version": "0.1.0",
   "publishConfig": {
     "access": "public"

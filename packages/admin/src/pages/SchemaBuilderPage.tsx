@@ -109,7 +109,7 @@ function FieldTypePicker({ value, onChange, theme }: { value: FieldType; onChang
  onClick={() => setOpen(!open)}
  className={cn(
  'flex items-center gap-2 px-3 py-2 border text-[10px] font-black uppercase tracking-widest transition-all w-full',
- theme === 'dark' ? 'bg-black border-white/[0.08] hover:border-emerald-500/50' : 'bg-gray-50 border-gray-200 hover:border-emerald-500'
+ theme === 'dark' ? 'bg-black border-white/[0.08] hover:border-gray-500/50' : 'bg-gray-50 border-gray-200 hover:border-gray-500'
  )}
  >
  <Icon size={12} style={{ color: current?.color }} />
@@ -137,7 +137,7 @@ function FieldTypePicker({ value, onChange, theme }: { value: FieldType; onChang
  className={cn(
  'w-full flex items-center gap-3 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest transition-all',
  value === ft.value
- ? 'bg-emerald-500 text-white'
+ ? 'bg-gray-500 text-white'
  : theme === 'dark' ? 'text-gray-400 hover:bg-white/5 hover:text-white' : 'text-gray-600 hover:bg-gray-50'
  )}
  >
@@ -164,10 +164,10 @@ function FieldAdvancedPanel({
 }) {
  const [open, setOpen] = useState(false)
  const inputClass = cn(
- 'w-full border p-2 text-[11px] font-mono outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
- theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+ 'w-full border p-2 text-[11px] font-mono outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
+ theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-gray-500' : 'bg-gray-50 border-gray-200 focus:border-gray-500'
  )
- const checkClass = 'accent-emerald-500 w-3.5 h-3.5'
+ const checkClass = 'accent-gray-500 w-3.5 h-3.5'
  const labelClass = 'text-[9px] font-black uppercase tracking-widest text-gray-500'
 
  return (
@@ -175,7 +175,7 @@ function FieldAdvancedPanel({
  <button
  type="button"
  onClick={() => setOpen(!open)}
- className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-gray-500 hover:text-emerald-600 dark:text-emerald-500 transition-colors"
+ className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-gray-500 hover:text-gray-600 dark:text-gray-500 transition-colors"
  >
  {open ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
  Advanced Options
@@ -327,7 +327,7 @@ function FieldAdvancedPanel({
  <button
  type="button"
  onClick={() => onUpdate('options', [...(field.options || []), { label: '', value: '' }])}
- className="flex items-center gap-1 text-[9px] font-black text-emerald-600 dark:text-emerald-500 hover:text-emerald-600 dark:text-emerald-400 uppercase tracking-widest"
+ className="flex items-center gap-1 text-[9px] font-black text-gray-600 dark:text-gray-500 hover:text-gray-600 dark:text-gray-400 uppercase tracking-widest"
  >
  <Plus size={10} /> Add Option
  </button>
@@ -552,7 +552,7 @@ export default function SchemaBuilderPage() {
  .map(([k]) => ` ${k}: true,`)
  .join('\n')
 
- return `import { CollectionConfig } from '@zenithcms/types'
+ return `import { CollectionConfig } from '@zenith-open/zenithcms-types'
 
 export const ${collectionName.replace(/\s+/g, '')}: CollectionConfig = {
  name: '${collectionName}',
@@ -564,8 +564,8 @@ ${fieldsCode}
  }
 
  const inputClass = cn(
- 'border outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-bold transition-colors py-2.5 px-3',
- dark ? 'bg-black border-white/[0.08] focus:border-emerald-500 text-white' : 'bg-white border-gray-200 focus:border-emerald-500 text-gray-900'
+ 'border outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-bold transition-colors py-2.5 px-3',
+ dark ? 'bg-black border-white/[0.08] focus:border-gray-500 text-white' : 'bg-white border-gray-200 focus:border-gray-500 text-gray-900'
  )
 
  return (
@@ -575,11 +575,11 @@ ${fieldsCode}
  <div className={cn('w-64 flex-shrink-0 border-r flex flex-col', dark ? 'border-white/[0.08] bg-black' : 'border-gray-200 bg-white')}>
  <div className="p-4 border-b border-inherit flex items-center justify-between">
  <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
- <Database size={14} className="text-emerald-600 dark:text-emerald-500" /> Schemas
+ <Database size={14} className="text-gray-600 dark:text-gray-500" /> Schemas
  </h2>
  <button
  onClick={resetEditor}
- className="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-500 rounded transition-colors"
+ className="p-1.5 bg-gray-500/10 hover:bg-gray-500/20 text-gray-600 dark:text-gray-500 rounded transition-colors"
  title="New Schema"
  >
  <Plus size={14} />
@@ -601,7 +601,7 @@ ${fieldsCode}
  onClick={() => loadSchema(schema)}
  className={cn(
  'flex-1 flex items-center justify-between text-left px-3 py-2.5 text-[10px] font-bold uppercase tracking-widest transition-colors rounded truncate',
- isActive ? 'bg-emerald-500 text-white' : dark ? 'text-gray-400 hover:bg-white/5 hover:text-white' : 'text-gray-600 hover:bg-gray-50'
+ isActive ? 'bg-gray-500 text-white' : dark ? 'text-gray-400 hover:bg-white/5 hover:text-white' : 'text-gray-600 hover:bg-gray-50'
  )}
  >
  <span>{schema.slug}</span>
@@ -658,7 +658,7 @@ ${fieldsCode}
  <button
  onClick={handleSave}
  disabled={saving || isCodeFirst}
- className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black uppercase tracking-widest rounded-none transition-all shadow-lg shadow-emerald-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
+ className="flex items-center gap-2 px-4 py-2 bg-gray-500 hover:bg-gray-400 text-white text-[10px] font-black uppercase tracking-widest rounded-none transition-all shadow-lg shadow-gray-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
  >
  {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
  {isCodeFirst ? 'Locked' : 'Save Schema'}
@@ -681,7 +681,7 @@ ${fieldsCode}
 
  {/* Collection Meta */}
  <div className={cn('rounded-none border p-6 space-y-4', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
- <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 flex items-center gap-2">
+ <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-500 flex items-center gap-2">
  <Settings size={12} /> Collection Settings
  </h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -727,7 +727,7 @@ ${fieldsCode}
  }}
  className={cn(
  'w-8 h-4 rounded-none relative transition-all cursor-pointer',
- settings[key] ? 'bg-emerald-500' : dark ? 'bg-white/10' : 'bg-gray-200',
+ settings[key] ? 'bg-gray-500' : dark ? 'bg-white/10' : 'bg-gray-200',
  isCodeFirst && 'opacity-50 cursor-not-allowed'
  )}
  >
@@ -747,13 +747,13 @@ ${fieldsCode}
  {/* Fields */}
  <div className={cn('rounded-none border', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm')}>
  <div className="px-6 py-4 border-b border-inherit flex items-center justify-between">
- <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 flex items-center gap-2">
+ <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-500 flex items-center gap-2">
  <Layers size={12} /> Fields ({fields.length})
  </h3>
  {!isCodeFirst && (
  <button
  onClick={addField}
- className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-500 text-[10px] font-black uppercase tracking-widest rounded-none transition-all"
+ className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-500/10 hover:bg-gray-500/20 text-gray-600 dark:text-gray-500 text-[10px] font-black uppercase tracking-widest rounded-none transition-all"
  >
  <Plus size={12} /> Add Field
  </button>
@@ -835,7 +835,7 @@ ${fieldsCode}
  if (isCodeFirst) return
  updateField(i, k, e.target.checked)
  }}
- className="accent-emerald-500 w-3 h-3 disabled:opacity-50 disabled:cursor-not-allowed"
+ className="accent-gray-500 w-3 h-3 disabled:opacity-50 disabled:cursor-not-allowed"
  />
  <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">{l}</span>
  </label>
@@ -874,9 +874,9 @@ ${fieldsCode}
  <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-3xl border rounded-none shadow-2xl p-6 relative flex flex-col h-[80vh] bg-black border-white/[0.08]">
  <button onClick={() => setShowCode(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X size={20} /></button>
  <h2 className="text-xl font-black tracking-tight uppercase mb-4 flex items-center gap-3">
- <Code className="text-emerald-600 dark:text-emerald-500" /> Generated TypeScript
+ <Code className="text-gray-600 dark:text-gray-500" /> Generated TypeScript
  </h2>
- <div className="flex-1 bg-[#1E1E1E] border border-white/[0.08] p-5 overflow-auto text-sm font-mono text-emerald-600 dark:text-emerald-400 relative rounded-none">
+ <div className="flex-1 bg-[#1E1E1E] border border-white/[0.08] p-5 overflow-auto text-sm font-mono text-gray-600 dark:text-gray-400 relative rounded-none">
  <button
  onClick={() => { navigator.clipboard.writeText(generateCode()); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
  className="absolute top-3 right-3 p-2 bg-white/10 hover:bg-white/20 text-white transition-colors rounded-none"
@@ -907,7 +907,7 @@ ${fieldsCode}
  value={aiPrompt}
  onChange={e => setAiPrompt(e.target.value)}
  placeholder='e.g. "A blog post collection with title, slug, content, featured image, author relation to users, published date, and category select field with options."'
- className="w-full bg-black border border-white/[0.08] focus:border-purple-500/50 p-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none placeholder:text-gray-600 text-white resize-none mb-4"
+ className="w-full bg-black border border-white/[0.08] focus:border-purple-500/50 p-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none placeholder:text-gray-600 text-white resize-none mb-4"
  />
  <button
  disabled={isAIGenerating || !aiPrompt}
@@ -928,7 +928,7 @@ ${fieldsCode}
  <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none shadow-2xl p-6 relative bg-black border-white/[0.08]">
  <button onClick={() => setShowIntrospect(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><X size={20} /></button>
  <h2 className="text-xl font-black tracking-tight uppercase mb-2 flex items-center gap-3">
- <Database className="text-emerald-600 dark:text-emerald-500" /> DB Introspection
+ <Database className="text-gray-600 dark:text-gray-500" /> DB Introspection
  </h2>
  <p className="text-[11px] text-gray-400 mb-5 font-medium">
  Connect to a Postgres database to reverse-engineer tables into Zenith schema fields.
@@ -938,12 +938,12 @@ ${fieldsCode}
  placeholder="postgresql://user:password@localhost:5432/mydb"
  value={dbUri}
  onChange={e => setDbUri(e.target.value)}
- className="w-full bg-black border border-white/[0.08] focus:border-emerald-500/50 p-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none placeholder:text-gray-600 text-white mb-4 font-mono"
+ className="w-full bg-black border border-white/[0.08] focus:border-gray-500/50 p-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none placeholder:text-gray-600 text-white mb-4 font-mono"
  />
  <button
  disabled={isIntrospecting}
  onClick={handleIntrospect}
- className="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-white text-[10px] font-black uppercase tracking-widest flex justify-center items-center gap-2 transition-all rounded-none"
+ className="w-full py-3.5 bg-gray-500 hover:bg-gray-400 text-white text-[10px] font-black uppercase tracking-widest flex justify-center items-center gap-2 transition-all rounded-none"
  >
  {isIntrospecting ? <><Loader2 size={14} className="animate-spin" /> Scanning...</> : <><RefreshCw size={14} /> Analyze Database</>}
  </button>

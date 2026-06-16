@@ -1,51 +1,66 @@
-# Security & Data Protection
+# Zenith CMS — Security & Data Protection
 
 Security is built directly into the core architecture of Zenith CMS. This guide explains the security measures used to protect your data, APIs, and file uploads.
 
 ---
 
-## 🔒 1. API and Schema Validation
+## 1. API and Schema Validation
 
-Every request sent to Zenith CMS is validated at the entry point before it interacts with the database or file storage:
+Every HTTP request sent to Zenith CMS is validated at the boundary, ensuring malformed or malicious payloads never reach the database.
 
-*   **Zod Schema Validation**: Validation rules are generated directly from your collection configurations. If a request body contains extra fields or incorrect types, the server rejects it immediately with a `400 Bad Request` or `422 Unprocessable Entity` status.
-*   **Preventing CPU Abuse**: Zod schemas are compiled in-memory at boot time to ensure fast parsing, preventing memory usage issues or request hangs.
-
----
-
-## 🔑 2. Authentication & Session Management
-
-*   **HttpOnly Cookies**: Authentication session tokens are stored in `HttpOnly` and `SameSite=Strict` cookies. This makes them inaccessible to client-side scripts, protecting your sessions from Cross-Site Scripting (XSS) attacks.
-*   **Brute-Force Protection**: Zenith automatically locks an account for **15 minutes** after **5 failed login attempts**.
-*   **Standardized Error Disclosures**: To prevent credential harvesting, login endpoints return generic "Invalid credentials" messages rather than disclosing whether a specific email exists in the system.
+*   **Zod Schema Validation**: Zenith compiles your TypeScript schemas (`cms.config.ts`) into Zod validation rules at boot time. If a request body contains extra fields, incorrect types, or exceeds defined limits (e.g. `maxLength: 255`), the server immediately rejects it with a `400 Bad Request` or `422 Unprocessable Entity`.
+*   **NoSQL Injection Prevention**: MongoDB operator injection (e.g. passing `{"$gt": ""}` instead of a string) is mitigated by strict Zod type coercion and validation before the payload reaches Mongoose.
+*   **Prototype Pollution**: The core API recursively sanitizes JSON payloads to strip `__proto__` and `constructor` keys.
 
 ---
 
-## 📝 3. Secure Audit Trails
+## 2. Authentication & Session Management
 
-Every change to your content or settings is recorded in a secure audit log:
-*   **Actor Identification**: Logs record who made the change (User ID, API Key, IP address, and User-Agent).
-*   **State Diffing**: Logs store the exact state before and after the change so you can review what properties were modified.
-*   **Immutability**: Audit logs are read-only and restricted to system administrators.
+Zenith utilizes dual authentication patterns to secure both the admin UI and external headless requests.
 
----
-
-## 🖼️ 4. File Upload Safety (Magic Bytes)
-
-To prevent attackers from uploading malicious executable code masquerading as media (e.g. uploading a `.js` web-shell renamed to `.png`), Zenith performs **Magic Bytes verification**:
-*   **Signature Checking**: The server inspects the first few bytes of uploaded files to verify their actual file signature (e.g. `%PDF` for documents, `PNG` headers for images).
-*   **Rejection**: If the file extension does not match the byte signature, the upload is rejected.
+*   **HttpOnly Cookies**: For the Admin UI, session tokens are stored in `HttpOnly` and `SameSite=Strict` cookies. This makes them completely inaccessible to client-side JavaScript, neutralizing Cross-Site Scripting (XSS) token theft.
+*   **Bearer Tokens**: For headless applications, JSON Web Tokens (JWT) are signed using HMAC SHA-256 with your configured `JWT_SECRET`. 
+*   **Brute-Force Lockouts**: The core `AuthService` tracks failed login attempts. After **5 failed attempts**, the account is soft-locked for **15 minutes**.
+*   **Standardized Disclosures**: To prevent user enumeration attacks, endpoints return generic "Invalid credentials" errors instead of confirming if an email exists.
 
 ---
 
-## 🕸️ 5. Webhook Security (HMAC)
+## 3. Secure Audit Trails & Multi-Tenancy
 
-Outbound webhooks sent to external servers or static hosting providers are signed with a secret key:
-*   **Signature Header**: The server adds an `x-zenith-signature` header containing a SHA-256 HMAC hash of the payload.
-*   **Validation**: The receiving server can verify this signature using the shared secret key to confirm the request came from your Zenith instance.
+*   **Tenant Isolation**: Data leakage between sites is prevented at the database adapter level. Every query automatically inherits a `{ siteId }` filter based on the `X-Zenith-Site-Id` HTTP header. 
+*   **Immutable Audit Logs**: Changes made to content or settings trigger immutable audit logs that record the User ID, timestamp, and a snapshot diff. These logs cannot be edited or deleted by standard administrators.
+
+---
+
+## 4. File Upload Safety (Magic Bytes)
+
+To prevent attackers from uploading executable code masquerading as media (e.g., uploading a `.php` or `.js` web-shell renamed to `image.png`), Zenith performs deep file inspection.
+
+*   **Magic Bytes Verification**: The server inspects the first few hexadecimal bytes (the file signature) of every uploaded file. For example, a valid JPEG must start with `FF D8 FF E0`.
+*   **Rejection**: If the MIME type or extension claims the file is an image, but the magic bytes indicate an executable, the upload is immediately rejected and deleted from the temporary buffer.
+*   **SVG Sanitization**: SVG files are notorious vectors for Stored XSS. Zenith sanitizes all uploaded SVGs to strip `<script>` tags and inline JavaScript event handlers (`onload`, `onerror`).
+
+---
+
+## 5. Webhook Security (HMAC)
+
+Outbound webhooks sent to external servers (like Vercel, Netlify, or custom endpoints) are cryptographically signed.
+
+*   **Signature Header**: The server generates a SHA-256 HMAC hash of the payload using your configured `WEBHOOK_SECRET` and includes it in the `X-Zenith-Signature` header.
+*   **Verification**: The receiving server computes the hash of the raw request body. If the hashes match via a constant-time comparison, the receiver knows the payload is authentic and untampered.
+
+---
+
+## 6. Rate Limiting
+
+By default, the Express server mounts standard rate limiters:
+- **API Endpoints**: 100 requests per minute per IP.
+- **Auth Endpoints**: 10 requests per 15 minutes per IP.
+
+In production, enabling Redis via the `REDIS_URL` environment variable elevates the rate limiter to a distributed state, enforcing limits perfectly across load-balanced clusters.
 
 ---
 
 ## Reporting Vulnerabilities
 
-If you find a security vulnerability, please do not file a public GitHub issue. Instead, email us at **security@zenithcms.com**. We will review your report and respond within 24 hours.
+If you discover a security vulnerability, please do not file a public GitHub issue. Instead, email us at **security@zenithcms.com**. We will review your report and respond within 24 hours.

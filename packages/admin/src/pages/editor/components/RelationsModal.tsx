@@ -8,6 +8,7 @@ import { cn } from '../../../lib/utils'
 import { useFocusTrap } from '../../../hooks/useFocusTrap'
 import api from '../../../lib/api'
 import toast from 'react-hot-toast'
+import { useShallow } from 'zustand/react/shallow'
 
 export const RelationsModal: React.FC = () => {
  const { theme } = useTheme()
@@ -23,9 +24,20 @@ export const RelationsModal: React.FC = () => {
  relationsField,
  fieldSettings,
  updateData: editorUpdateData,
- } = useEditorStore()
+ } = useEditorStore(useShallow(state => ({
+  selectedRelations: state.selectedRelations,
+  setSelectedRelations: state.setSelectedRelations,
+  availableCollections: state.availableCollections,
+  relationsSearch: state.relationsSearch,
+  setRelationsSearch: state.setRelationsSearch,
+  relationResults: state.relationResults,
+  setRelationResults: state.setRelationResults,
+  relationsField: state.relationsField,
+  fieldSettings: state.fieldSettings,
+  updateData: state.updateData,
+ })))
 
- const { relationsModalOpen, setRelationsModalOpen } = useModalStore()
+ const { relationsModalOpen, setRelationsModalOpen  } = useModalStore(useShallow(state => ({ relationsModalOpen: state.relationsModalOpen, setRelationsModalOpen: state.setRelationsModalOpen })))
 
  // Track the currently selected collection for visual feedback
  const [activeCollection, setActiveCollection] = useState<string | null>(null)
@@ -138,13 +150,13 @@ export const RelationsModal: React.FC = () => {
  theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}>
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 rounded-none bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
- <Link2 size={18} className="text-emerald-600 dark:text-emerald-400" />
+ <div className="w-10 h-10 rounded-none bg-gray-600/20 border border-gray-500/30 flex items-center justify-center">
+ <Link2 size={18} className="text-gray-600 dark:text-gray-400" />
  </div>
  <div>
  <h2
  id={modalTitleId}
- className="text-lg font-black uppercase text-emerald-600 dark:text-emerald-400"
+ className="text-lg font-black uppercase text-gray-600 dark:text-gray-400"
  >
  Content Relations
  </h2>
@@ -187,11 +199,11 @@ export const RelationsModal: React.FC = () => {
  'px-3 py-1.5 text-xs font-black uppercase rounded-none border shrink-0 transition-all',
  isActive
  ? theme === 'dark'
- ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
- : 'bg-emerald-50 border-emerald-300 text-emerald-600'
+ ? 'bg-gray-500/10 border-gray-500/30 text-gray-600 dark:text-gray-400'
+ : 'bg-gray-50 border-gray-300 text-gray-600'
  : theme === 'dark'
- ? 'border-white/[0.08] text-gray-400 hover:border-emerald-500/30 hover:text-emerald-600 dark:text-emerald-400'
- : 'border-gray-200 text-gray-600 hover:border-emerald-300 hover:text-emerald-600'
+ ? 'border-white/[0.08] text-gray-400 hover:border-gray-500/30 hover:text-gray-600 dark:text-gray-400'
+ : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-600'
  )}
  >
  {col.label || col.slug}
@@ -213,8 +225,8 @@ export const RelationsModal: React.FC = () => {
  className={cn(
  'w-full rounded-none py-3 pl-12 pr-4 text-xs font-bold border',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white focus-visible:border-emerald-500/50'
- : 'bg-gray-50 border-gray-200 text-gray-900 focus-visible:border-emerald-600/50'
+ ? 'bg-white/5 border-white/[0.08] text-white focus-visible:border-gray-500/50'
+ : 'bg-gray-50 border-gray-200 text-gray-900 focus-visible:border-gray-600/50'
  )}
  />
  </div>
@@ -246,17 +258,17 @@ export const RelationsModal: React.FC = () => {
  'w-full flex items-center gap-3 p-3 rounded-none border transition-all text-left',
  selectedRelations.has(item.id || item._id)
  ? theme === 'dark'
- ? 'bg-emerald-500/10 border-emerald-500/30'
- : 'bg-emerald-50 border-emerald-200'
+ ? 'bg-gray-500/10 border-gray-500/30'
+ : 'bg-gray-50 border-gray-200'
  : theme === 'dark'
  ? 'bg-white/[0.01] border-white/[0.08] hover:border-white/[0.08]'
- : 'bg-gray-50 border-gray-200 hover:border-emerald-200'
+ : 'bg-gray-50 border-gray-200 hover:border-gray-200'
  )}
  >
  <div className={cn(
  'w-5 h-5 rounded-none border-2 flex items-center justify-center shrink-0 transition-all',
  selectedRelations.has(item.id || item._id)
- ? 'bg-emerald-600 dark:bg-emerald-600 border-emerald-600'
+ ? 'bg-gray-600 dark:bg-gray-600 border-gray-600'
  : theme === 'dark'
  ? 'border-white/[0.08]'
  : 'border-gray-300'
@@ -303,7 +315,7 @@ export const RelationsModal: React.FC = () => {
  <button
  onClick={applyRelations}
  disabled={selectedRelations.size === 0}
- className="px-4 py-2 bg-emerald-600 dark:bg-emerald-600 text-white text-xs font-black uppercase rounded-none hover:bg-emerald-500 transition-all disabled:opacity-50"
+ className="px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-black uppercase rounded-none hover:bg-gray-500 transition-all disabled:opacity-50"
  >
  Link {selectedRelations.size} items
  </button>

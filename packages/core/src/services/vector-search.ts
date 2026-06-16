@@ -184,7 +184,7 @@ export class VectorSearchService {
 
     // Fetch all candidate vectors (for small/medium datasets)
     // For production scale, use pgvector or a dedicated vector DB
-    const vectors = await adapter.find<any>('z_vectors', filter, { limit: 5000 })
+    const vectors = await adapter.find<Record<string, any>>('z_vectors', filter, { limit: 5000 })
 
     const results: SemanticSearchResult[] = []
 

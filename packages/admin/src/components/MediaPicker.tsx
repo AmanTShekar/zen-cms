@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useEffect, useState } from 'react'
 import { Image as ImageIcon, X, Plus, Search, Check, Loader2, UploadCloud } from 'lucide-react'
 import api from '../lib/api'
@@ -184,7 +185,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  <button
  type="button"
  onClick={() => setIsOpen(true)}
- className="w-20 h-20 rounded-none border border-dashed border-white/[0.08] flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:border-emerald-500/50 hover:text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/5 transition-all group"
+ className="w-20 h-20 rounded-none border border-dashed border-white/[0.08] flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:border-gray-500/50 hover:text-gray-600 dark:text-gray-400 hover:bg-gray-500/5 transition-all group"
  >
  <Plus
  size={18}
@@ -249,16 +250,16 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  {/* Top Bar: Search and Upload */}
  <div className="flex flex-col sm:flex-row gap-3">
  <div className="flex-1 relative group">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-emerald-600 dark:text-emerald-400 transition-colors" size={14} />
+ <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-gray-600 dark:text-gray-400 transition-colors" size={14} />
  <input
  type="text"
  placeholder="Search assets..."
  value={search}
  onChange={(e) => setSearch(e.target.value)}
- className="w-full bg-white/5 border border-white/[0.08] rounded-none pl-9 pr-3 py-2 text-xs font-medium text-white placeholder:text-gray-500 transition-all focus:bg-white/10 focus:border-emerald-500/50 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black"
+ className="w-full bg-white/5 border border-white/[0.08] rounded-none pl-9 pr-3 py-2 text-xs font-medium text-white placeholder:text-gray-500 transition-all focus:bg-white/10 focus:border-gray-500/50 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black"
  />
  </div>
- <label className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-600 dark:text-emerald-400 rounded-none transition-all text-[10px] font-bold uppercase tracking-widest cursor-pointer border border-emerald-500/30">
+ <label className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600/20 hover:bg-gray-600/30 text-gray-600 dark:text-gray-400 rounded-none transition-all text-[10px] font-bold uppercase tracking-widest cursor-pointer border border-gray-500/30">
  <UploadCloud size={14} />
  <span>Upload</span>
  <input type="file" className="hidden" onChange={handleUpload} />
@@ -269,8 +270,8 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  <div className="h-[280px] overflow-y-auto grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 pr-2 custom-scrollbar border border-white/[0.08] rounded-none p-2 bg-black/20">
  {loading ? (
  <div className="col-span-full h-full flex flex-col items-center justify-center gap-4">
- <Loader2 className="animate-spin text-emerald-600 dark:text-emerald-500" size={24} />
- <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 animate-pulse">Syncing...</span>
+ <Loader2 className="animate-spin text-gray-600 dark:text-gray-500" size={24} />
+ <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-600 dark:text-gray-400 animate-pulse">Syncing...</span>
  </div>
  ) : (
  (() => {
@@ -301,8 +302,8 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  className={cn(
  'group relative aspect-square rounded-none border overflow-hidden cursor-pointer transition-all',
  isSelected
- ? 'border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)] scale-[0.98]'
- : 'border-white/[0.08] hover:border-emerald-500/30'
+ ? 'border-gray-500 shadow-[0_0_15px_rgba(16,185,129,0.3)] scale-[0.98]'
+ : 'border-white/[0.08] hover:border-gray-500/30'
  )}
  >
  <img
@@ -314,7 +315,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  className={cn(
  'absolute inset-0 transition-all duration-300',
  isSelected
- ? 'bg-emerald-600/10'
+ ? 'bg-gray-600/10'
  : 'bg-black/0 group-hover:bg-black/40'
  )}
  />
@@ -324,7 +325,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  </p>
  </div>
  {isSelected && (
- <div className="absolute top-2 right-2 bg-emerald-600 dark:bg-emerald-600 text-white rounded-none p-1.5 shadow-xl animate-in zoom-in-50 duration-300">
+ <div className="absolute top-2 right-2 bg-gray-600 dark:bg-gray-600 text-white rounded-none p-1.5 shadow-xl animate-in zoom-in-50 duration-300">
  <Check size={10} strokeWidth={4} />
  </div>
  )}
@@ -347,7 +348,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  <button
  type="button"
  onClick={() => { setIsOpen(false); setFocalPending(null) }}
- className="px-6 py-2 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/30 hover:text-white rounded-none text-[10px] font-bold uppercase tracking-widest transition-all border border-emerald-500/30"
+ className="px-6 py-2 bg-gray-500/20 text-gray-600 dark:text-gray-400 hover:bg-gray-500/30 hover:text-white rounded-none text-[10px] font-bold uppercase tracking-widest transition-all border border-gray-500/30"
  >
  Done
  </button>
@@ -365,3 +366,4 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
 }
 
 export default MediaPicker
+

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo } from 'react'
-import { ZenithClient } from '@zenithcms/sdk'
+import { ZenithClient } from '@zenith-open/zenithcms-sdk'
 
 interface ZenithContextValue {
   client: ZenithClient

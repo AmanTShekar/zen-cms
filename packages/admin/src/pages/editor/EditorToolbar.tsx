@@ -28,6 +28,7 @@ import { SchedulePicker } from './components/SchedulePicker'
 import { ConfirmPublishModal } from './components/ConfirmPublishModal'
 import { TranslationModal } from './components/TranslationModal'
 import { CollabAvatars } from './components/CollabAvatars'
+import { useShallow } from 'zustand/react/shallow'
 
 interface EditorToolbarProps {
  handleSave: () => Promise<void>
@@ -62,34 +63,30 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  }
  }
 
- const {
- saving,
+ const { saving,
  undoStack,
  redoStack,
  undo,
  redo,
  lastSavedAt,
- } = useEditorStore()
+  } = useEditorStore(useShallow(state => ({ saving: state.saving, undoStack: state.undoStack, redoStack: state.redoStack, undo: state.undo, redo: state.redo, lastSavedAt: state.lastSavedAt })))
 
- const {
- viewMode,
+ const { viewMode,
  setViewMode,
  leftOpen,
  setLeftOpen,
  rightOpen,
  setRightOpen,
- } = usePanelStore()
+  } = usePanelStore(useShallow(state => ({ viewMode: state.viewMode, setViewMode: state.setViewMode, leftOpen: state.leftOpen, setLeftOpen: state.setLeftOpen, rightOpen: state.rightOpen, setRightOpen: state.setRightOpen })))
 
- const {
- seoOpen,
+ const { seoOpen,
  setSeoOpen,
- } = useModalStore()
+  } = useModalStore(useShallow(state => ({ seoOpen: state.seoOpen, setSeoOpen: state.setSeoOpen })))
 
- const {
- publishStatus,
+ const { publishStatus,
  workflowStatus,
  scheduledAt,
- } = useWorkflowStore()
+  } = useWorkflowStore(useShallow(state => ({ publishStatus: state.publishStatus, workflowStatus: state.workflowStatus, scheduledAt: state.scheduledAt })))
 
  const {
  i18nEnabled,
@@ -134,7 +131,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  const iconBtnDisabled = (disabled: boolean) =>
  disabled
  ? dark ? 'bg-black/20 border-white/[0.08] text-white/20 cursor-not-allowed' : 'bg-gray-50 border-gray-200 shadow-sm text-gray-300 cursor-not-allowed'
- : dark ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-emerald-600 dark:text-emerald-400' : 'bg-gray-100 border-gray-200 text-gray-500 hover:text-emerald-600'
+ : dark ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-gray-600 dark:text-gray-400' : 'bg-gray-100 border-gray-200 text-gray-500 hover:text-gray-600'
 
  // Last saved time display
  const lastSavedLabel = lastSavedAt
@@ -164,7 +161,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  className={cn(
  'px-2.5 py-1.5 rounded-none border text-xs font-black uppercase flex items-center gap-1.5 transition-all',
  seoOpen
- ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+ ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400'
  : dark ? 'bg-white/5 border-white/[0.08] text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'
  )}
  aria-label={seoOpen ? 'Close SEO panel' : 'Open SEO panel'}
@@ -188,7 +185,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <Undo2 size={15} />
  {undoStack.length > 0 && (
  <span
- className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[8px] font-black tabular-nums rounded-none bg-emerald-600 dark:bg-emerald-600 text-white leading-none"
+ className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[8px] font-black tabular-nums rounded-none bg-gray-600 dark:bg-gray-600 text-white leading-none"
  aria-hidden="true"
  >
  {undoStack.length > 99 ? '99+' : undoStack.length}
@@ -205,7 +202,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <Redo2 size={15} />
  {redoStack.length > 0 && (
  <span
- className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[8px] font-black tabular-nums rounded-none bg-emerald-600/80 text-white leading-none"
+ className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-[8px] font-black tabular-nums rounded-none bg-gray-600/80 text-white leading-none"
  aria-hidden="true"
  >
  {redoStack.length > 99 ? '99+' : redoStack.length}
@@ -258,7 +255,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  {i18nEnabled && (
  <button
  onClick={() => setShowTranslationModal(true)}
- className={cn(iconBtn, 'text-emerald-600 dark:text-emerald-500 hover:text-emerald-600 dark:text-emerald-400')}
+ className={cn(iconBtn, 'text-gray-600 dark:text-gray-500 hover:text-gray-600 dark:text-gray-400')}
  title="Translation Mode (Side-by-Side)"
  aria-label="Open Translation Mode"
  >
@@ -294,7 +291,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  className={cn(
  'w-full flex items-center gap-2 px-3 py-2 text-xs font-bold uppercase transition-colors',
  currentLocale === locale.code
- ? dark ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-emerald-50 text-emerald-600'
+ ? dark ? 'bg-gray-500/10 text-gray-600 dark:text-gray-400' : 'bg-gray-50 text-gray-600'
  : dark ? 'text-gray-400 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50'
  )}
  >
@@ -416,7 +413,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <button
  onClick={handleSave}
  disabled={saving}
- className="flex items-center gap-1.5 px-4 py-1.5 rounded-none text-xs font-black uppercase bg-emerald-600 dark:bg-emerald-600 text-white shadow-[0_0_16px_rgba(79,70,229,0.3)] hover:bg-emerald-500 transition-all active:scale-95 disabled:opacity-50"
+ className="flex items-center gap-1.5 px-4 py-1.5 rounded-none text-xs font-black uppercase bg-gray-600 dark:bg-gray-600 text-white shadow-[0_0_16px_rgba(79,70,229,0.3)] hover:bg-gray-500 transition-all active:scale-95 disabled:opacity-50"
  aria-label="Save document"
  >
  {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}

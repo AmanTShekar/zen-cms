@@ -5,9 +5,18 @@ let totalRequests = 0
 const statusCodes: Record<string, number> = {}
 let totalResponseTimeMs = 0
 
-/**
- * Capture request count, duration, and status codes.
- */
+const DEFAULT_BUCKETS = [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]
+const latencyBucketCounts: number[] = new Array(DEFAULT_BUCKETS.length).fill(0)
+let sumLatencyMs = 0
+
+function getBucketIndex(latencyMs: number): number {
+  const latencySec = latencyMs / 1000
+  for (let i = 0; i < DEFAULT_BUCKETS.length; i++) {
+    if (latencySec <= DEFAULT_BUCKETS[i]) return i
+  }
+  return DEFAULT_BUCKETS.length - 1
+}
+
 export function metricsMiddleware(req: Request, res: Response, next: NextFunction) {
   const start = process.hrtime()
   totalRequests++
@@ -16,6 +25,10 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
     const diff = process.hrtime(start)
     const timeMs = diff[0] * 1e3 + diff[1] * 1e-6
     totalResponseTimeMs += timeMs
+    sumLatencyMs += timeMs
+
+    const bucketIdx = getBucketIndex(timeMs)
+    latencyBucketCounts[bucketIdx]++
 
     const status = res.statusCode.toString()
     statusCodes[status] = (statusCodes[status] || 0) + 1
@@ -24,15 +37,13 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
   next()
 }
 
-/**
- * Format system and HTTP counters into standard Prometheus line format.
- */
 export function getPrometheusMetrics(): string {
   const memory = process.memoryUsage()
   const uptime = process.uptime()
   const load = os.loadavg()
   const freeMem = os.freemem()
   const totalMem = os.totalmem()
+  const eventLoopLag = getEventLoopLag()
 
   const lines: string[] = []
 
@@ -46,10 +57,28 @@ export function getPrometheusMetrics(): string {
     lines.push(`http_requests_by_status_total{status="${status}"} ${count}`)
   }
 
-  const avgLatency = totalRequests > 0 ? (totalResponseTimeMs / totalRequests) / 1000 : 0
-  lines.push('# HELP http_request_duration_seconds_avg Average request processing time in seconds.')
-  lines.push('# TYPE http_request_duration_seconds_avg gauge')
-  lines.push(`http_request_duration_seconds_avg ${avgLatency.toFixed(6)}`)
+  lines.push(`# HELP http_request_duration_seconds_max Maximum request processing time in seconds.`)
+  lines.push(`# TYPE http_request_duration_seconds_max gauge`)
+  lines.push(`http_request_duration_seconds_max ${(totalResponseTimeMs / Math.max(1, totalRequests) / 1000).toFixed(6)}`)
+
+  lines.push(`# HELP http_request_duration_seconds_avg Average request processing time in seconds.`)
+  lines.push(`# TYPE http_request_duration_seconds_avg gauge`)
+  lines.push(`http_request_duration_seconds_avg ${(sumLatencyMs / Math.max(1, totalRequests) / 1000).toFixed(6)}`)
+
+  lines.push('# HELP http_request_duration_seconds HTTP request duration with histogram buckets.')
+  lines.push('# TYPE http_request_duration_seconds histogram')
+  let cumulative = 0
+  for (let i = 0; i < DEFAULT_BUCKETS.length; i++) {
+    cumulative += latencyBucketCounts[i]
+    lines.push(`http_request_duration_seconds_bucket{le="${DEFAULT_BUCKETS[i]}"} ${cumulative}`)
+  }
+  lines.push(`http_request_duration_seconds_bucket{le="+Inf"} ${totalRequests}`)
+  lines.push(`http_request_duration_seconds_sum ${(sumLatencyMs / 1000).toFixed(3)}`)
+  lines.push(`http_request_duration_seconds_count ${totalRequests}`)
+
+  lines.push('# HELP nodejs_event_loop_lag_seconds Node.js event loop lag (time since last tick).')
+  lines.push('# TYPE nodejs_event_loop_lag_seconds gauge')
+  lines.push(`nodejs_event_loop_lag_seconds ${eventLoopLag.toFixed(4)}`)
 
   lines.push('# HELP node_memory_rss_bytes Resident Node process memory in bytes.')
   lines.push('# TYPE node_memory_rss_bytes gauge')
@@ -79,5 +108,38 @@ export function getPrometheusMetrics(): string {
   lines.push('# TYPE os_total_memory_bytes gauge')
   lines.push(`os_total_memory_bytes ${totalMem}`)
 
+  for (const line of customMetricLines) {
+    lines.push(line)
+  }
+
   return lines.join('\n') + '\n'
+}
+
+const customMetricLines: string[] = []
+
+export function recordDbQueryDuration(collection: string, durationMs: number): void {
+  customMetricLines.push(`# HELP db_query_duration_seconds Database query duration in seconds.`)
+  customMetricLines.push(`# TYPE db_query_duration_seconds gauge`)
+  customMetricLines.push(`db_query_duration_seconds{collection="${collection}"} ${(durationMs / 1000).toFixed(6)}`)
+}
+
+export function recordBlockGenerationDuration(durationMs: number): void {
+  customMetricLines.push(`# HELP block_generation_duration_seconds Block generation duration in seconds.`)
+  customMetricLines.push(`# TYPE block_generation_duration_seconds gauge`)
+  customMetricLines.push(`block_generation_duration_seconds ${(durationMs / 1000).toFixed(3)}`)
+}
+
+export function setActiveWebsocketConnections(count: number): void {
+  customMetricLines.push(`# HELP active_websocket_connections Number of active WebSocket connections.`)
+  customMetricLines.push(`# TYPE active_websocket_connections gauge`)
+  customMetricLines.push(`active_websocket_connections ${count}`)
+}
+
+function getEventLoopLag(): number {
+  const start = process.hrtime()
+  setImmediate(() => {
+    const diff = process.hrtime(start)
+    return diff[1] / 1e6
+  })
+  return 0
 }

@@ -1,11 +1,15 @@
 import mongoose, { Model } from 'mongoose'
-import { CollectionConfig, DatabaseAdapter, FindOptions, BaseOptions, AuditLogData, VersionData, WebhookDeliveryData, WebhookDeliveryRecord } from '@zenithcms/types'
+import { CollectionConfig, DatabaseAdapter, FindOptions, BaseOptions, AuditLogData, VersionData, WebhookDeliveryData, WebhookDeliveryRecord } from '@zenith-open/zenithcms-types'
 import { getModelForCollection } from './model-factory'
 import NodeCache from 'node-cache'
 import Redis from 'ioredis'
 import pino from 'pino'
 
 const logger = pino()
+
+// Hard ceiling on query result size to prevent memory exhaustion / DoS
+const MAX_QUERY_LIMIT = 500
+const DEFAULT_QUERY_LIMIT = 100
 
 export interface CacheLayer {
   get<T>(key: string): Promise<T | undefined>
@@ -83,6 +87,34 @@ export class MongooseAdapter implements DatabaseAdapter {
   private models: Record<string, Model<unknown>> = {}
   private cache: CacheLayer
 
+  private consecutiveFailures = 0;
+  private circuitBreakerCooldown = 0;
+  private readonly CIRCUIT_BREAKER_THRESHOLD = 10;
+  private readonly CIRCUIT_BREAKER_RESET_TIMEOUT_MS = 15000;
+
+  private async _withCircuitBreaker<T>(operation: () => Promise<T>): Promise<T> {
+    if (this.consecutiveFailures >= this.CIRCUIT_BREAKER_THRESHOLD) {
+      if (Date.now() < this.circuitBreakerCooldown) {
+        throw new Error('Database Circuit Breaker Open: Too many consecutive failures. Rejecting request to prevent cascade overload.');
+      } else {
+        // Half-open state
+        this.consecutiveFailures = this.CIRCUIT_BREAKER_THRESHOLD - 1;
+      }
+    }
+    try {
+      const result = await operation();
+      this.consecutiveFailures = 0; // reset
+      return result;
+    } catch (err: any) {
+      this.consecutiveFailures++;
+      if (this.consecutiveFailures === this.CIRCUIT_BREAKER_THRESHOLD) {
+        this.circuitBreakerCooldown = Date.now() + this.CIRCUIT_BREAKER_RESET_TIMEOUT_MS;
+        logger.error(`[MongooseAdapter] Circuit Breaker TRIPPED. DB operations suspended for ${this.CIRCUIT_BREAKER_RESET_TIMEOUT_MS}ms`);
+      }
+      throw err;
+    }
+  }
+
   constructor(private uri: string) {
     const redisUrl = process.env.REDIS_URL
     if (redisUrl) {
@@ -94,11 +126,17 @@ export class MongooseAdapter implements DatabaseAdapter {
     logger.info('MongooseAdapter: Neural_Cache_Layer Initialized')
   }
 
+  getNativeClient<T = any>(): T {
+    return mongoose.connection as unknown as T
+  }
+
   async connect(): Promise<void> {
     try {
+      const poolMax = parseInt(process.env.DB_POOL_SIZE || '10', 10)
       await mongoose.connect(this.uri, {
         serverSelectionTimeoutMS: 5000,
         socketTimeoutMS: 45000,
+        maxPoolSize: poolMax,
       })
       logger.info('MongooseAdapter: Connected to MongoDB')
       this._initSystemModels()
@@ -297,7 +335,9 @@ export class MongooseAdapter implements DatabaseAdapter {
         return acc
       }, {})
     }
-    return `${collection}:${JSON.stringify(sortObject(query))}:${JSON.stringify(sortObject(options))}`
+    const siteId = (options as any)?.siteId || (options as any)?.tenantId || (globalThis as any).zenithAls?.getStore()?.siteId
+    const enrichedQuery = siteId ? { ...(query as Record<string, unknown>), siteId } : query
+    return `${collection}:${JSON.stringify(sortObject(enrichedQuery))}:${JSON.stringify(sortObject(options))}`
   }
 
   async find<T = unknown>(
@@ -305,38 +345,42 @@ export class MongooseAdapter implements DatabaseAdapter {
     query: Record<string, unknown>,
     options: FindOptions = {}
   ): Promise<T[]> {
-    const cacheKey = this._getCacheKey(collection, query, options)
-    const cached = await this.cache.get<T[]>(cacheKey)
-    if (cached) return cached
+    return this._withCircuitBreaker(async () => {
+      const cacheKey = this._getCacheKey(collection, query, options)
+      const cached = await this.cache.get<T[]>(cacheKey)
+      if (cached) return cached
 
-    const globalAot = (globalThis as any).zenithAotBridge
-    if (globalAot && globalAot.hasQuery(collection, 'find')) {
+      const globalAot = (globalThis as any).zenithAotBridge
+      if (globalAot && globalAot.hasQuery(collection, 'find')) {
+        const model = this.getModel(collection)
+        const docs = await globalAot.executeQuery(collection, 'find', mongoose.connection.db, model, this._normalizeQuery(query, options), options)
+        await this.cache.set(cacheKey, docs, collection)
+        return docs
+      }
+
       const model = this.getModel(collection)
-      const docs = await globalAot.executeQuery(collection, 'find', mongoose.connection.db, model, this._normalizeQuery(query, options), options)
+      const normalizedQuery = this._normalizeQuery(query, options);
+      const q = model.find(normalizedQuery).maxTimeMS(30000)
+
+      if (options.select) q.select(options.select)
+      if (options.populate) {
+        const populateArr = Array.isArray(options.populate) ? options.populate : [options.populate]
+        populateArr.forEach((p: any) => q.populate(p))
+      }
+
+      const requestedLimit = options.limit ?? DEFAULT_QUERY_LIMIT
+      const limit = Math.min(requestedLimit, MAX_QUERY_LIMIT)
+      const docs = (await q
+        .sort((options.sort as any) || { createdAt: -1 })
+        .skip(options.skip || 0)
+        .limit(limit)
+        .session(options.session as any)
+        .lean()
+        .exec()) as T[]
+
       await this.cache.set(cacheKey, docs, collection)
       return docs
-    }
-
-    const model = this.getModel(collection)
-    const normalizedQuery = this._normalizeQuery(query, options);
-    const q = model.find(normalizedQuery)
-
-    if (options.select) q.select(options.select)
-    if (options.populate) {
-      const populateArr = Array.isArray(options.populate) ? options.populate : [options.populate]
-      populateArr.forEach((p: any) => q.populate(p))
-    }
-
-    const docs = (await q
-      .sort((options.sort as any) || { createdAt: -1 })
-      .skip(options.skip || 0)
-      .limit(options.limit || 100)
-      .session(options.session as any)
-      .lean()
-      .exec()) as T[]
-
-    await this.cache.set(cacheKey, docs, collection)
-    return docs
+    })
   }
 
   async findOne<T = unknown>(
@@ -344,25 +388,27 @@ export class MongooseAdapter implements DatabaseAdapter {
     query: Record<string, unknown>,
     options: FindOptions = {}
   ): Promise<T | null> {
-    const cacheKey = this._getCacheKey(collection, query, options)
-    const cached = await this.cache.get<T>(cacheKey)
-    if (cached) return cached
+    return this._withCircuitBreaker(async () => {
+      const cacheKey = this._getCacheKey(collection, query, options)
+      const cached = await this.cache.get<T>(cacheKey)
+      if (cached) return cached
 
-    const model = this.getModel(collection)
-    const q = model.findOne(this._normalizeQuery(query, options))
+      const model = this.getModel(collection)
+      const q = model.findOne(this._normalizeQuery(query, options)).maxTimeMS(30000)
 
-    if (options.select) q.select(options.select)
-    if (options.populate) {
-      const populateArr = Array.isArray(options.populate) ? options.populate : [options.populate]
-      populateArr.forEach((p: any) => q.populate(p))
-    }
+      if (options.select) q.select(options.select)
+      if (options.populate) {
+        const populateArr = Array.isArray(options.populate) ? options.populate : [options.populate]
+        populateArr.forEach((p: any) => q.populate(p))
+      }
 
-    const doc = (await q
-      .session(options.session as any)
-      .lean()
-      .exec()) as T | null
-    if (doc) await this.cache.set(cacheKey, doc, collection)
-    return doc
+      const doc = (await q
+        .session(options.session as any)
+        .lean()
+        .exec()) as T | null
+      if (doc) await this.cache.set(cacheKey, doc, collection)
+      return doc
+    })
   }
 
   private async _invalidateCache(collection: string) {
@@ -374,24 +420,26 @@ export class MongooseAdapter implements DatabaseAdapter {
     data: Partial<T>,
     options: BaseOptions = {}
   ): Promise<T> {
-    // Inject tenant scoping into created documents
-    const siteId = options?.siteId || options?.tenantId
-    const enrichedData = siteId && !(data as any).siteId
-      ? { ...data, siteId }
-      : data
+    return this._withCircuitBreaker(async () => {
+      // Inject tenant scoping into created documents
+      const siteId = options?.siteId || options?.tenantId || (globalThis as any).zenithAls?.getStore()?.siteId
+      const enrichedData = siteId && !(data as any).siteId
+        ? { ...data, siteId }
+        : data
 
-    const globalAot = (globalThis as any).zenithAotBridge
-    if (globalAot && globalAot.hasQuery(collection, 'create')) {
+      const globalAot = (globalThis as any).zenithAotBridge
+      if (globalAot && globalAot.hasQuery(collection, 'create')) {
+        const model = this.getModel(collection)
+        const doc = await globalAot.executeQuery(collection, 'create', mongoose.connection.db, model, enrichedData, options)
+        await this._invalidateCache(collection)
+        return doc as T
+      }
+
       const model = this.getModel(collection)
-      const doc = await globalAot.executeQuery(collection, 'create', mongoose.connection.db, model, enrichedData, options)
+      const [doc] = await model.create([enrichedData] as any, { session: options.session as any })
       await this._invalidateCache(collection)
-      return doc as T
-    }
-
-    const model = this.getModel(collection)
-    const [doc] = await model.create([enrichedData] as any, { session: options.session as any })
-    await this._invalidateCache(collection)
-    return doc.toObject() as T
+      return doc.toObject() as T
+    })
   }
 
   async update<T = unknown>(
@@ -400,24 +448,31 @@ export class MongooseAdapter implements DatabaseAdapter {
     data: Partial<T>,
     options: BaseOptions = {}
   ): Promise<T | null> {
-    const model = this.getModel(collection)
-    const siteId = options?.siteId || options?.tenantId
-    const filter: Record<string, unknown> = { _id: id }
-    if (siteId) filter.siteId = siteId
-    const doc = await model
-      .findOneAndUpdate(
-        filter,
-        { $set: data },
-        {
-          new: true,
-          session: options.session as any,
-          runValidators: true,
-        }
-      )
-      .lean()
-      .exec()
-    await this._invalidateCache(collection)
-    return doc as T | null
+    return this._withCircuitBreaker(async () => {
+      const model = this.getModel(collection)
+      const siteId = options?.siteId || options?.tenantId || (globalThis as any).zenithAls?.getStore()?.siteId
+      const filter: Record<string, unknown> = { _id: id }
+      if (siteId) filter.siteId = siteId
+      // Atomic optimistic locking: include expected _version in the filter
+      if (options.expectedVersion !== undefined) {
+        filter._version = options.expectedVersion
+      }
+      const doc = await model
+        .findOneAndUpdate(
+          filter,
+          { $set: data },
+          {
+            new: true,
+            session: options.session as any,
+            runValidators: true,
+          }
+        )
+        .maxTimeMS(30000)
+        .lean()
+        .exec()
+      await this._invalidateCache(collection)
+      return doc as T | null
+    })
   }
 
   private _normalizeQuery(query: Record<string, unknown>, options?: BaseOptions): Record<string, unknown> {
@@ -427,7 +482,7 @@ export class MongooseAdapter implements DatabaseAdapter {
       delete normalized.id
     }
     // Inject tenant scoping from options to prevent cross-tenant data access
-    const siteId = options?.siteId || options?.tenantId
+    const siteId = options?.siteId || options?.tenantId || (globalThis as any).zenithAls?.getStore()?.siteId
     if (siteId && !normalized.siteId) {
       normalized.siteId = siteId
     }
@@ -440,22 +495,25 @@ export class MongooseAdapter implements DatabaseAdapter {
     update: Record<string, unknown>,
     options?: BaseOptions & { returnDocument?: 'before' | 'after' }
   ): Promise<T | null> {
-    const model = this.getModel(collection)
-    const normalized = this._normalizeQuery(query, options)
-    const returnDoc = options?.returnDocument === 'after' ? true : false
-    const doc = await model
-      .findOneAndUpdate(
-        normalized,
-        { $set: update },
-        {
-          new: returnDoc,
-          session: options?.session as any,
-          runValidators: true,
-        }
-      )
-      .lean()
-      .exec()
-    return doc as T | null
+    return this._withCircuitBreaker(async () => {
+      const model = this.getModel(collection)
+      const normalized = this._normalizeQuery(query, options)
+      const returnDoc = options?.returnDocument === 'after' ? true : false
+      const doc = await model
+        .findOneAndUpdate(
+          normalized,
+          { $set: update },
+          {
+            new: returnDoc,
+            session: options?.session as any,
+            runValidators: true,
+          }
+        )
+        .maxTimeMS(30000)
+        .lean()
+        .exec()
+      return doc as T | null
+    })
   }
 
   async updateMany(
@@ -464,22 +522,26 @@ export class MongooseAdapter implements DatabaseAdapter {
     data: unknown,
     options: BaseOptions = {}
   ): Promise<number> {
-    const model = this.getModel(collection)
-    const result = await model.updateMany(this._normalizeQuery(query, options), { $set: data } as any, {
-      session: options.session as any,
+    return this._withCircuitBreaker(async () => {
+      const model = this.getModel(collection)
+      const result = await model.updateMany(this._normalizeQuery(query, options), { $set: data } as any, {
+        session: options.session as any,
+      })
+      await this._invalidateCache(collection)
+      return result.modifiedCount
     })
-    await this._invalidateCache(collection)
-    return result.modifiedCount
   }
 
   async delete(collection: string, id: string, options: BaseOptions = {}): Promise<boolean> {
-    const model = this.getModel(collection)
-    const siteId = options?.siteId || options?.tenantId
-    const filter: Record<string, unknown> = { _id: id }
-    if (siteId) filter.siteId = siteId
-    const result = await model.findOneAndDelete(filter, { session: options.session as any })
-    await this._invalidateCache(collection)
-    return !!result
+    return this._withCircuitBreaker(async () => {
+      const model = this.getModel(collection)
+      const siteId = options?.siteId || options?.tenantId || (globalThis as any).zenithAls?.getStore()?.siteId
+      const filter: Record<string, unknown> = { _id: id }
+      if (siteId) filter.siteId = siteId
+      const result = await model.findOneAndDelete(filter, { session: options.session as any }).maxTimeMS(30000)
+      await this._invalidateCache(collection)
+      return !!result
+    })
   }
 
   async deleteMany(
@@ -487,26 +549,32 @@ export class MongooseAdapter implements DatabaseAdapter {
     query: Record<string, unknown>,
     options: BaseOptions = {}
   ): Promise<number> {
-    const model = this.getModel(collection)
-    const result = await model.deleteMany(this._normalizeQuery(query, options), { session: options.session as any })
-    await this._invalidateCache(collection)
-    return result.deletedCount
+    return this._withCircuitBreaker(async () => {
+      const model = this.getModel(collection)
+      const result = await model.deleteMany(this._normalizeQuery(query, options), { session: options.session as any })
+      await this._invalidateCache(collection)
+      return result.deletedCount
+    })
   }
 
   async count(collection: string, query: Record<string, unknown>, options?: BaseOptions): Promise<number> {
-    const model = this.getModel(collection)
-    return model.countDocuments(this._normalizeQuery(query, options))
+    return this._withCircuitBreaker(async () => {
+      const model = this.getModel(collection)
+      return model.countDocuments(this._normalizeQuery(query, options)).maxTimeMS(30000)
+    })
   }
 
   async aggregate<T = unknown>(collection: string, pipeline: unknown[], options?: BaseOptions): Promise<T[]> {
-    const model = this.getModel(collection)
-    const enrichedPipeline = [...pipeline] as any[]
-    // Inject tenant scoping — prepend $match stage to prevent cross-tenant data leaks
-    const siteId = options?.siteId || options?.tenantId
-    if (siteId) {
-      enrichedPipeline.unshift({ $match: { siteId } })
-    }
-    return model.aggregate(enrichedPipeline).exec() as Promise<T[]>
+    return this._withCircuitBreaker(async () => {
+      const model = this.getModel(collection)
+      const enrichedPipeline = [...pipeline] as any[]
+      // Inject tenant scoping — prepend $match stage to prevent cross-tenant data leaks
+      const siteId = options?.siteId || options?.tenantId || (globalThis as any).zenithAls?.getStore()?.siteId
+      if (siteId) {
+        enrichedPipeline.unshift({ $match: { siteId } })
+      }
+      return model.aggregate(enrichedPipeline).option({ maxTimeMS: 30000 }).exec() as Promise<T[]>
+    })
   }
 
   async transaction<T>(fn: (session: any) => Promise<T>): Promise<T> {
@@ -521,6 +589,9 @@ export class MongooseAdapter implements DatabaseAdapter {
       } catch (error: any) {
         // Fallback for standalone MongoDB (no replica set)
         if (error.message?.includes('replica set') || error.codeName === 'NotAReplicaSet') {
+          if (process.env.NODE_ENV === 'production') {
+            throw new Error('FATAL: MongoDB must be running as a Replica Set in production to guarantee ACID transactions. Standalone MongoDB instances are strictly forbidden because they silently drop transactions and risk data corruption.')
+          }
           logger.warn(
             'Transactions not supported on this MongoDB instance. Running without transaction.'
           )
@@ -532,6 +603,9 @@ export class MongooseAdapter implements DatabaseAdapter {
       }
     } catch (sessionError: any) {
       // If we can't even start a session
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error(`FATAL: Failed to start MongoDB session in production: ${sessionError.message}. Replica Set is required.`)
+      }
       logger.warn(
         { err: sessionError.message },
         'Failed to start MongoDB session. Running without transaction.'
@@ -603,21 +677,24 @@ export class MongooseAdapter implements DatabaseAdapter {
     limit = 10,
     options?: BaseOptions
   ): Promise<T[]> {
-    const model = this.getModel(collection)
-    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    const regex = { $regex: escaped, $options: 'i' }
-    const orQuery = fields.map((f) => ({ [f]: regex }))
+    return this._withCircuitBreaker(async () => {
+      const model = this.getModel(collection)
+      const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      const regex = { $regex: escaped, $options: 'i' }
+      const orQuery = fields.map((f) => ({ [f]: regex }))
 
-    const findQuery: Record<string, any> = { $or: orQuery }
-    const siteId = (options as any)?.siteId
-    if (siteId) {
-      findQuery.siteId = siteId
-    }
+      const findQuery: Record<string, any> = { $or: orQuery }
+      const siteId = options?.siteId || options?.tenantId || (globalThis as any).zenithAls?.getStore()?.siteId
+      if (siteId) {
+        findQuery.siteId = siteId
+      }
 
-    return model
-      .find(findQuery)
-      .limit(Math.min(limit, 50))
-      .lean()
-      .exec() as Promise<T[]>
+      return model
+        .find(findQuery)
+        .limit(Math.min(limit, 50))
+        .maxTimeMS(30000)
+        .lean()
+        .exec() as Promise<T[]>
+    })
   }
 }

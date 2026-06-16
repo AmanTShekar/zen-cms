@@ -9,6 +9,7 @@ import { useFocusTrap } from '../../../hooks/useFocusTrap'
 import api from '../../../lib/api'
 import toast from 'react-hot-toast'
 import { registerMediaBlob } from '../../../components/lexical/nodes/MediaNode'
+import { useShallow } from 'zustand/react/shallow'
 
 const fileFullUrl = (file: any, blobMap: Record<string, string>): string => {
  if (!file.url) return ''
@@ -18,9 +19,8 @@ const fileFullUrl = (file: any, blobMap: Record<string, string>): string => {
 
 export const MediaLibraryModal: React.FC = () => {
  const { theme } = useTheme()
- const { mediaLibraryOpen, setMediaLibraryOpen } = useModalStore()
- const {
- mediaAssets,
+ const { mediaLibraryOpen, setMediaLibraryOpen  } = useModalStore(useShallow(state => ({ mediaLibraryOpen: state.mediaLibraryOpen, setMediaLibraryOpen: state.setMediaLibraryOpen })))
+ const { mediaAssets,
  setMediaAssets,
  mediaSearch,
  setMediaSearch,
@@ -28,7 +28,7 @@ export const MediaLibraryModal: React.FC = () => {
  setMediaTypeFilter,
  mediaLoading,
  setMediaLoading,
- } = useEditorStore()
+  } = useEditorStore(useShallow(state => ({ mediaAssets: state.mediaAssets, setMediaAssets: state.setMediaAssets, mediaSearch: state.mediaSearch, setMediaSearch: state.setMediaSearch, mediaTypeFilter: state.mediaTypeFilter, setMediaTypeFilter: state.setMediaTypeFilter, mediaLoading: state.mediaLoading, setMediaLoading: state.setMediaLoading })))
 
  const [blobMap, setBlobMap] = React.useState<Record<string, string>>({})
  const blobTokens = useRef<Set<string>>(new Set())
@@ -142,7 +142,7 @@ export const MediaLibraryModal: React.FC = () => {
  aria-label="Close"
  className={cn(
  'p-1 transition-colors',
- theme === 'dark' ? 'text-gray-400 hover:text-emerald-600 dark:text-emerald-500' : 'text-gray-500 hover:text-emerald-600'
+ theme === 'dark' ? 'text-gray-400 hover:text-gray-600 dark:text-gray-500' : 'text-gray-500 hover:text-gray-600'
  )}
  >
  <X size={18} />
@@ -158,7 +158,7 @@ export const MediaLibraryModal: React.FC = () => {
  <Search
  className={cn(
  'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
- theme === 'dark' ? 'text-gray-555 group-focus-within:text-emerald-600 dark:text-emerald-400' : 'text-gray-400 group-focus-within:text-emerald-600'
+ theme === 'dark' ? 'text-gray-555 group-focus-within:text-gray-600 dark:text-gray-400' : 'text-gray-400 group-focus-within:text-gray-600'
  )}
  size={15}
  />
@@ -171,8 +171,8 @@ export const MediaLibraryModal: React.FC = () => {
  className={cn(
  'w-full rounded-none pl-12 pr-4 py-3 text-xs font-bold transition-all',
  theme === 'dark'
- ? 'bg-white/[0.03] border border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:border-emerald-500/40 focus-visible:bg-white/[0.05]'
- : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus-visible:border-emerald-400 focus-visible:bg-white'
+ ? 'bg-white/[0.03] border border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:border-gray-500/40 focus-visible:bg-white/[0.05]'
+ : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus-visible:border-gray-400 focus-visible:bg-white'
  )}
  />
  </div>
@@ -185,8 +185,8 @@ export const MediaLibraryModal: React.FC = () => {
  className={cn(
  'rounded-none border py-3 px-4 text-xs font-black uppercase transition-all',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-gray-400 focus-visible:border-emerald-500/40'
- : 'bg-gray-55 border-gray-200 text-gray-600 focus-visible:border-emerald-400'
+ ? 'bg-white/5 border-white/[0.08] text-gray-400 focus-visible:border-gray-500/40'
+ : 'bg-gray-55 border-gray-200 text-gray-600 focus-visible:border-gray-400'
  )}
  >
  <option value="all">All Types</option>
@@ -201,8 +201,8 @@ export const MediaLibraryModal: React.FC = () => {
  <label className={cn(
  'flex items-center gap-2 px-5 py-3 rounded-none border cursor-pointer transition-all text-xs font-black uppercase tracking-wider',
  theme === 'dark'
- ? 'bg-emerald-600/20 border-emerald-500/30 text-emerald-300 hover:bg-emerald-600/30 hover:border-emerald-500/50'
- : 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300'
+ ? 'bg-gray-600/20 border-gray-500/30 text-gray-300 hover:bg-gray-600/30 hover:border-gray-500/50'
+ : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-gray-300'
  )}>
  <Upload size={14} />
  Ingest
@@ -232,8 +232,8 @@ export const MediaLibraryModal: React.FC = () => {
  <div className="flex-1 overflow-y-auto p-6">
  {mediaLoading ? (
  <div className="flex flex-col items-center justify-center h-full gap-5">
- <Loader2 size={36} className="animate-spin text-emerald-600 dark:text-emerald-500" />
- <span className="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-[0.3em] animate-pulse">
+ <Loader2 size={36} className="animate-spin text-gray-600 dark:text-gray-500" />
+ <span className="text-xs font-black uppercase text-gray-600 dark:text-gray-400 tracking-[0.3em] animate-pulse">
  Loading Registry...
  </span>
  </div>
@@ -375,7 +375,7 @@ export const MediaLibraryModal: React.FC = () => {
  }}
  className={cn(
  'mt-1 px-2 py-1 rounded-none border text-xs font-black uppercase transition-all',
- 'border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:border-emerald-500 hover:text-emerald-300 bg-emerald-500/10'
+ 'border-gray-500/40 text-gray-600 dark:text-gray-400 hover:border-gray-500 hover:text-gray-300 bg-gray-500/10'
  )}
  >
  Select

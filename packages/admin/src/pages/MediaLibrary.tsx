@@ -26,6 +26,7 @@ import {
  Crop,
  Save,
  Undo2,
+ Target,
 } from 'lucide-react'
 import api from '../lib/api'
 import { cn } from '../lib/utils'
@@ -48,12 +49,34 @@ const MediaLibrary = () => {
  const [flipX, setFlipX] = useState(false)
  const [flipY, setFlipY] = useState(false)
  const [isCropMode, setIsCropMode] = useState(false)
+ const [isFocalMode, setIsFocalMode] = useState(false)
+ const [focalPoint, setFocalPoint] = useState<{ x: number; y: number } | null>(null)
  const [cropRect, setCropRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null)
  const [cropStart, setCropStart] = useState<{ x: number; y: number } | null>(null)
  const [isProcessing, setIsProcessing] = useState(false)
  const [saveName, setSaveName] = useState('')
  const isMountedRef = useRef(true)
  useEffect(() => { return () => { isMountedRef.current = false } }, [])
+
+ useEffect(() => {
+   if (selectedFile) {
+     setFocalPoint(selectedFile.focalPoint || { x: 50, y: 50 })
+   }
+ }, [selectedFile])
+
+ const handleSaveMetadata = async () => {
+   if (!selectedFile) return
+   setIsProcessing(true)
+   try {
+     await api.patch(`/media/${selectedFile._id}`, { focalPoint })
+     toast.success('METADATA_SYNCED')
+     fetchFiles()
+   } catch {
+     toast.error('METADATA_SYNC_FAILED')
+   } finally {
+     setIsProcessing(false)
+   }
+ }
 
  const filteredFiles = useMemo(() => {
  return files.filter((f: any) => {
@@ -152,48 +175,49 @@ const MediaLibrary = () => {
  }
 
 
- // Blob URL cache for authenticated media — prevents bare URLs that skip auth cookies
- const blobMap = React.useRef<Record<string, string>>({})
- const blobTokens = React.useRef<Set<string>>(new Set())
- const [, rerender] = React.useState(0)
+  // Blob URL cache for authenticated media - prevents bare URLs that skip auth cookies
+  const [blobMap, setBlobMap] = React.useState<Record<string, string>>({})
+  const blobTokens = React.useRef<Set<string>>(new Set())
 
- const getFullUrl = (url: string): string => {
- if (!url) return ''
- if (url.startsWith('http')) return url
- return blobMap.current[url] || `${import.meta.env.VITE_API_URL || ''}${url}`
- }
+  const getFullUrl = (url?: string) => {
+    if (!url) return ''
+    if (url.startsWith('http')) return url
+    return blobMap[url] || `${import.meta.env.VITE_API_URL || ''}${url}`
+  }
 
  // Pre-fetch internal media URLs with credentials when files load
- React.useEffect(() => {
- if (!files.length && !selectedFile) return
- const items = [...files, selectedFile].filter((f: any) => f?.url && !f.url.startsWith('http') && !blobMap.current[f.url])
- if (!items.length) return
- const apiBase = (import.meta.env.VITE_API_URL || '').replace('/api/v1', '')
- items.forEach((item: any) => {
- fetch(`${apiBase}${item.url}`, { credentials: 'include' })
- .then((r) => r.blob())
- .then((blob) => {
- const objectUrl = URL.createObjectURL(blob)
- blobTokens.current.add(objectUrl)
- blobMap.current[item.url] = objectUrl
- rerender((n) => n + 1)
- })
- .catch(() => {})
- })
- }, [files, selectedFile])
+  React.useEffect(() => {
+    if (!files.length && !selectedFile) return
+    const items = [...files, selectedFile].filter((f: any) => f?.url && !f.url.startsWith('http') && !blobMap[f.url])
+    if (!items.length) return
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace('/api/v1', '')
+    
+    items.forEach((item) => {
+      fetch(`${apiBase}${item.url}`)
+        .then((r) => r.blob())
+        .then((blob) => {
+          const objectUrl = URL.createObjectURL(blob)
+          blobTokens.current.add(objectUrl)
+          setBlobMap(prev => ({ ...prev, [item.url]: objectUrl }))
+        })
+        .catch(() => {})
+    })
+  }, [files, selectedFile, blobMap])
 
  React.useEffect(() => {
  return () => { blobTokens.current.forEach((u) => URL.revokeObjectURL(u)) }
  }, [])
 
  const resetTransform = () => {
- setRotation(0)
- setFlipX(false)
- setFlipY(false)
- setCropRect(null)
- setCropStart(null)
- setIsCropMode(false)
- }
+    setRotation(0)
+    setFlipX(false)
+    setFlipY(false)
+    setCropRect(null)
+    setCropStart(null)
+    setIsCropMode(false)
+    setIsFocalMode(false)
+    if (selectedFile) setFocalPoint(selectedFile.focalPoint || { x: 50, y: 50 })
+  }
 
  const handleSaveTransformed = async () => {
  if (!selectedFile || !selectedFile.mimetype?.startsWith('image')) return
@@ -268,21 +292,28 @@ const MediaLibrary = () => {
  }
 
  const handleMouseDownOnImage = (e: React.MouseEvent) => {
- if (!isCropMode) return
- const rect = e.currentTarget.getBoundingClientRect()
- setCropStart({ x: e.clientX - rect.left, y: e.clientY - rect.top })
- setCropRect(null)
+    if (isFocalMode) {
+      const rect = e.currentTarget.getBoundingClientRect()
+      const clickX = e.clientX - rect.left
+      const clickY = e.clientY - rect.top
+      const xPct = Math.round((clickX / rect.width) * 100)
+      const yPct = Math.round((clickY / rect.height) * 100)
+      setFocalPoint({ x: Math.max(0, Math.min(100, xPct)), y: Math.max(0, Math.min(100, yPct)) })
+      return
+    }
+    if (!isCropMode) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    setCropStart({ x: e.clientX - rect.left, y: e.clientY - rect.top })
+    setCropRect(null)
  }
 
- const handleMouseMoveOnImage = (e: React.MouseEvent) => {
- if (!isCropMode || !cropStart) return
- const rect = e.currentTarget.getBoundingClientRect()
- const x = Math.min(cropStart.x, Math.max(0, e.clientX - rect.left))
- const y = Math.min(cropStart.y, Math.max(0, e.clientY - rect.top))
- const w = Math.abs(e.clientX - rect.left - cropStart.x)
- const h = Math.abs(e.clientY - rect.top - cropStart.y)
- setCropRect({ x: Math.min(cropStart.x, e.clientX - rect.left), y: Math.min(cropStart.y, e.clientY - rect.top), w, h })
- }
+  const handleMouseMoveOnImage = (e: React.MouseEvent) => {
+    if (!isCropMode || !cropStart) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    const w = Math.abs(e.clientX - rect.left - cropStart.x)
+    const h = Math.abs(e.clientY - rect.top - cropStart.y)
+    setCropRect({ x: Math.min(cropStart.x, Math.max(0, e.clientX - rect.left)), y: Math.min(cropStart.y, Math.max(0, e.clientY - rect.top)), w, h })
+  }
 
  const handleMouseUpOnImage = () => {
  setCropStart(null)
@@ -681,6 +712,43 @@ const MediaLibrary = () => {
  }}
  />
  )}
+ {isFocalMode && focalPoint && (
+ <div
+ className="absolute pointer-events-none z-30 flex items-center justify-center transition-all duration-150"
+ style={{
+ left: `${focalPoint.x}%`,
+ top: `${focalPoint.y}%`,
+ transform: 'translate(-50%, -50%)',
+ width: '28px',
+ height: '28px',
+ borderRadius: '50%',
+ border: '2.5px solid #10B981',
+ boxShadow: '0 0 12px #10B981, inset 0 0 4px #10B981',
+ }}
+ >
+ <div className="w-[6px] h-[6px] rounded-full bg-emerald-500" />
+ </div>
+ )}
+ {isFocalMode && focalPoint && (
+ <div 
+   className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/65 backdrop-blur-xl border border-white/10 p-4 rounded-none shadow-2xl flex items-center gap-6 z-40 transition-all pointer-events-auto"
+   onMouseDown={(e) => e.stopPropagation()}
+ >
+   <div className="flex flex-col">
+     <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 mb-1 flex items-center gap-2">
+       <Target size={12} /> Precision Matrix
+     </span>
+     <span className="text-[13px] font-mono text-white tracking-widest">X:{focalPoint.x}% | Y:{focalPoint.y}%</span>
+   </div>
+   <button
+     onClick={handleSaveMetadata}
+     disabled={isProcessing}
+     className="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-lg"
+   >
+     {isProcessing ? 'SYNCING...' : 'SYNC_NODE'}
+   </button>
+ </div>
+ )}
  </div>
  ) : (
  <div className="relative z-10 flex flex-col items-center gap-6">
@@ -833,7 +901,18 @@ const MediaLibrary = () => {
  </div>
  <div className="flex gap-2">
  <button
- onClick={() => setIsCropMode((c) => !c)}
+   onClick={() => { setIsFocalMode((c) => !c); setIsCropMode(false); }}
+   className={cn(
+     'flex-1 py-3 rounded-none text-[9px] font-black uppercase tracking-widest transition-all leading-none flex items-center justify-center gap-2 border',
+     isFocalMode
+       ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-600 dark:text-emerald-500'
+       : theme === 'dark' ? 'border-white/[0.08] text-gray-400 hover:border-white/30' : 'border-gray-200 shadow-sm hover:border-gray-300'
+   )}
+ >
+   <Target size={12} /> {isFocalMode ? 'FOCAL_ACTIVE' : 'FOCAL_PT'}
+ </button>
+ <button
+ onClick={() => { setIsCropMode((c) => !c); setIsFocalMode(false); }}
  className={cn(
  'flex-1 py-3 rounded-none text-[9px] font-black uppercase tracking-widest transition-all leading-none flex items-center justify-center gap-2 border',
  isCropMode

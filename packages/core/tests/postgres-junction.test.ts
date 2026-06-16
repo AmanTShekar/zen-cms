@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
-import { PostgresDrizzleAdapter } from '@zenithcms/db-postgres'
-import { CollectionConfig } from '@zenithcms/types'
+import { PostgresDrizzleAdapter } from '@zenith-open/zenithcms-db-postgres'
+import { CollectionConfig } from '@zenith-open/zenithcms-types'
 import { PgDialect } from 'drizzle-orm/pg-core'
 
 vi.mock('pg', () => {

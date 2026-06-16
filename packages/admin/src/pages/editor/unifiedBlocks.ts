@@ -7,7 +7,7 @@ export interface UnifiedBlockDefinition {
  description: string
  category: 'Layout' | 'Content' | 'Commerce' | 'Media' | 'Social' | 'General' | 'Advanced'
  fields: FieldDefinition[]
- defaultContent: Record<string, any>
+ defaultContent: any
 }
 
 export const STANDARD_STYLE_FIELDS: FieldDefinition[] = [
@@ -19,7 +19,7 @@ export const STANDARD_STYLE_FIELDS: FieldDefinition[] = [
  { label: 'Default', value: 'default' },
  { label: 'Light', value: 'light' },
  { label: 'Dark', value: 'dark' },
- { label: 'Cyber-Purple Gradient', value: 'cyber-emerald' },
+ { label: 'Cyber-Purple Gradient', value: 'cyber-gray' },
  { label: 'Glassmorphic Translucent', value: 'glassmorphic' }
  ],
  placeholder: 'Select Theme',

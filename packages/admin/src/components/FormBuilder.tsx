@@ -33,6 +33,7 @@ import {
 
 import BlocksBuilder from './BlocksBuilder'
 import SimpleArrayBuilder from './SimpleArrayBuilder'
+import { useShallow } from 'zustand/react/shallow'
 
 /** Field config used by the form builder — keeps a flexible shape since runtime
  * field configs can have additional properties not in the base discriminated union. */
@@ -60,7 +61,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
  readOnlyLocale,
  hideSubmitButton = false,
 }) => {
- const { user } = useAuthStore()
+ const { user  } = useAuthStore(useShallow(state => ({ user: state.user })))
  const currentLocale = activeLocale || 'en'
  const isReadOnly = !!readOnlyLocale
 
@@ -319,7 +320,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
  {field.label || field.name.replace(/([A-Z])/g, ' $1')}
  {field.required && <span className="text-rose-500">*</span>}
  {field.localized && (
- <span className="px-1.5 py-0.5 text-[8px] font-black tracking-widest text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-none uppercase">
+ <span className="px-1.5 py-0.5 text-[8px] font-black tracking-widest text-gray-600 dark:text-gray-400 bg-gray-500/10 border border-gray-500/20 rounded-none uppercase">
  {isFieldDisabled ? readOnlyLocale || currentLocale : currentLocale}
  </span>
  )}

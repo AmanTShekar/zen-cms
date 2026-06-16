@@ -7,7 +7,7 @@ import mongoSanitize from 'express-mongo-sanitize'
 import path from 'path'
 import fs from 'fs/promises'
 
-import { CMSConfig } from '@zenithcms/types'
+import { CMSConfig } from '@zenith-open/zenithcms-types'
 import { applyPlugins, createPluginContext, ZenithPlugin } from './plugins'
 import { logger } from './services/logger'
 import { SchedulerService } from './services/scheduler'
@@ -19,31 +19,10 @@ import { WebhookService } from './services/webhook'
 import { PresenceService } from './services/presence'
 import { sessionStore } from './services/session-store'
 import { eventHub } from './services/event-hub'
+import { AuthService } from './services/auth'
 
 // ── Register Mongoose Schemas (Required for MongoDB Mode) ────────────────────
-import './database/user-model'
-import './database/api-key-model'
-import './database/audit-model'
-import './database/dashboard-layout-model'
-import './database/flow-model'
-import './database/member-model'
-import './database/onboarding-state-model'
-import './database/password-reset-model'
-import './database/preference-model'
-import './database/settings-model'
-import './database/site-model'
-import './database/workspace-model'
-import './database/version-model'
-import './database/webhook-model'
-import './database/webhook-config-model'
-import './database/plugin-model'
-import './database/release-model'
-import './database/role-model'
-import './database/template-model'
-import './database/comment-model'
-import './database/lock-model'
-import './database/redirect-model'
-import './database/schema-model'
+import './database/registry'
 
 // ── Middleware ───────────────────────────────────────────────────────────────
 import { rateLimitMiddleware } from './middleware/rate-limit'
@@ -139,6 +118,8 @@ export class ZenithEngine {
   private corsOptions?: ZenithOptions['cors']
   private servicesMap = new Map<string, ContentService>()
   private apiRouter: express.Router = express.Router()
+  public server: import('http').Server | null = null;
+  public auditInterval: ReturnType<typeof setInterval> | null = null;
 
   /**
    * ZERO-OVERHEAD LOCAL API BYPASS
@@ -315,7 +296,7 @@ export class ZenithEngine {
             scriptSrc: ["'self'", "'unsafe-inline'"], // unsafe-inline needed for Swagger UI
             styleSrc: ["'self'", "'unsafe-inline'"], // unsafe-inline needed for Swagger UI
             imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
-            connectSrc: ["'self'"],
+            connectSrc: ["'self'", "ws:", "wss:"],
             fontSrc: ["'self'", 'https://fonts.gstatic.com'],
             objectSrc: ["'none'"],
             frameAncestors: ["'none'"],
@@ -391,9 +372,42 @@ export class ZenithEngine {
 
   private _mountRoutes(router: express.Router) {
     // ── Public Prometheus Metrics ────────────────────────────────────────────
-    router.get('/metrics', (_req, res) => {
-      res.set('Content-Type', 'text/plain; version=0.0.4; charset=utf-8')
-      res.send(getPrometheusMetrics())
+    router.get('/metrics', async (req, res) => {
+      try {
+        const { metricsRegistry } = await import('./telemetry/metrics')
+        res.set('Content-Type', metricsRegistry.contentType)
+        res.end(await metricsRegistry.metrics())
+      } catch (err) {
+        res.status(500).end(err)
+      }
+    })
+    logger.warn('[SECURITY] The /metrics endpoint is exposed. Ensure your infrastructure restricts public access to this path.')
+
+    // ── Kubernetes Health Probes ──────────────────────────────────────────────
+    router.get('/live', (_req, res) => {
+      // Returns 200 immediately to verify process health.
+      res.status(200).send('OK')
+    })
+
+    router.get('/ready', (_req, res) => {
+      // Returns 200 only if DB connection is active.
+      if (this.adapter && this.adapter.getHealth() === 'ok') {
+        res.status(200).send('Ready')
+      } else {
+        res.status(503).send('Not Ready')
+      }
+    })
+
+    router.get('/health', (_req, res) => {
+      // Returns detailed system metrics
+      res.status(200).json({
+        status: this.adapter?.getHealth() === 'ok' ? 'ok' : 'degraded',
+        uptime: process.uptime(),
+        database: this.adapter?.getHealth() || 'disconnected',
+        memoryUsage: process.memoryUsage(),
+        version: process.env.npm_package_version || 'unknown',
+        timestamp: new Date().toISOString()
+      })
     })
 
     // ── Public ───────────────────────────────────────────────────────────────
@@ -491,9 +505,11 @@ export class ZenithEngine {
       }
       if (token) {
         try {
-          const decoded = require('./services/auth').AuthService.verifyToken(token)
+          const decoded = AuthService.verifyToken(token)
           if (decoded) (req as any).user = decoded
-        } catch (err) {}
+        } catch {
+          // Token invalid or expired, ignore
+        }
       }
 
       const isAuthenticated = !!(req as any).user
@@ -567,7 +583,9 @@ export class ZenithEngine {
         } catch (err: any) {
           lastError = err
           if (attempt < 5) {
-            const delay = Math.min(1000 * Math.pow(2, attempt - 1), 15_000)
+            const baseDelay = Math.min(1000 * Math.pow(2, attempt - 1), 15_000)
+            const jitter = Math.floor(Math.random() * 1000)
+            const delay = baseDelay + jitter
             logger.warn({ attempt, delay }, `Database connection attempt ${attempt} failed. Retrying in ${delay}ms...`)
             await new Promise((resolve) => setTimeout(resolve, delay))
           }
@@ -635,7 +653,7 @@ export class ZenithEngine {
       // Startup Reconciliation Check for Blocks
       try {
         const blocksDir = path.resolve(__dirname, '../../../config/blocks')
-        let tsSlugs = new Set<string>()
+        const tsSlugs = new Set<string>()
         try {
           await fs.access(blocksDir)
           const files = await fs.readdir(blocksDir)
@@ -834,7 +852,7 @@ export class ZenithEngine {
         const rotationInterval = 24 * 60 * 60 * 1000 // once per day
         setTimeout(async () => {
           await rotateAuditLogs()
-          setInterval(rotateAuditLogs, rotationInterval)
+          this.auditInterval = setInterval(rotateAuditLogs, rotationInterval)
         }, 3 * 60 * 60 * 1000) // first run in 3 hours (≈3am if server started at midnight)
       }
 
@@ -884,7 +902,7 @@ export class ZenithEngine {
         logger.info('Admin SPA dist not found — serving API only')
       }
 
-      const server = this.app.listen(port, () => {
+      this.server = this.app.listen(port, () => {
         console.log(`
 ╔════════════════════════════════════════════════╗
 ║            🚀  Zenith CMS — Online              ║
@@ -897,7 +915,7 @@ export class ZenithEngine {
       })
 
       // Handle port-in-use errors (common with tsx watch restarts on Windows)
-      server.on('error', (err: NodeJS.ErrnoException) => {
+      this.server.on('error', (err: NodeJS.ErrnoException) => {
         if (err.code === 'EADDRINUSE') {
           logger.warn({ port }, 'Port already in use — another instance is running. Server will not start.')
           // Don't process.exit(1) — let tsx watch or orchestrator handle the lifecycle
@@ -909,7 +927,7 @@ export class ZenithEngine {
       // ── Real-Time Collaborative WebSockets & Presence ───────────────────────
       try {
         const { Server } = await import('socket.io')
-        const io = new Server(server, {
+        const ioOptions: any = {
           cors: {
             origin:
               this.corsOptions?.origins ||
@@ -917,7 +935,32 @@ export class ZenithEngine {
               '*',
             credentials: true,
           },
-        })
+        }
+
+        if (process.env.REDIS_URL) {
+          const { createClient } = await import('redis')
+          const { createAdapter } = await import('@socket.io/redis-adapter')
+          
+          const pubClient = createClient({ url: process.env.REDIS_URL })
+          const subClient = pubClient.duplicate()
+
+          await Promise.all([pubClient.connect(), subClient.connect()])
+          ioOptions.adapter = createAdapter(pubClient, subClient)
+          logger.info('Socket.IO Redis Adapter configured successfully')
+
+          // Phase 5: Redis Pub/Sub for config invalidation across instances
+          subClient.subscribe('zenith:tenant:update', async (message) => {
+            logger.info(`Received cross-node tenant update for siteId: ${message}`)
+            // Clear local caches
+            const { AdapterFactory } = await import('./database/adapters/AdapterFactory')
+            const adapter = AdapterFactory.getActiveAdapter()
+            if ((adapter as any)._invalidateSchemaCache) {
+               (adapter as any)._invalidateSchemaCache()
+            }
+          })
+        }
+
+        const io = new Server(this.server, ioOptions)
 
         io.on('connection', (socket) => {
           socket.on('presence:join', async ({ userId, email, collection, documentId }) => {
@@ -1009,57 +1052,79 @@ export class ZenithEngine {
         }
       }
 
-      // Graceful shutdown
-      const shutdown = async (signal: string) => {
-        logger.info({ signal }, 'Graceful shutdown started')
+      return this.server
+    } catch (error: any) {
+      logger.error({ err: error.message, stack: error.stack }, 'Startup failed')
+      process.exit(1)
+    }
+  }
 
-        // ── Plugin onDestroy lifecycle ──────────────────────────────────────
-        const pluginCtx = createPluginContext(this.app, this.config)
-        for (const plugin of this.plugins || []) {
-          if (plugin.enabled === false) continue
-          if (typeof plugin.onDestroy === 'function') {
-            try {
-              await Promise.race([
-                plugin.onDestroy(pluginCtx),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('onDestroy timeout')), 5000)),
-              ])
-              logger.info({ plugin: plugin.id || plugin.name }, 'Plugin onDestroy completed')
-            } catch (err: any) {
-              logger.warn({ plugin: plugin.id || plugin.name, err: err.message }, 'Plugin onDestroy failed')
-            }
-          }
-        }
+  public async stop(signal: string = 'SIGTERM') {
+    logger.info({ signal }, 'Graceful shutdown started')
 
-        SchedulerService.stop()
-        sessionStore.stopCleanup()
+    if (this.auditInterval) {
+      clearInterval(this.auditInterval)
+    }
 
-        // Shutdown webhook service
+    if ((global as any).__zenithTenantWatcherInstance) {
+      try {
+        await (global as any).__zenithTenantWatcherInstance.close()
+        logger.info('Tenant watcher closed')
+      } catch (err: any) {
+        logger.warn({ err: err.message }, 'Failed to close tenant watcher')
+      }
+    }
+
+    // ── Plugin onDestroy lifecycle ──────────────────────────────────────
+    const pluginCtx = createPluginContext(this.app, this.config)
+    for (const plugin of this.plugins || []) {
+      if (plugin.enabled === false) continue
+      if (typeof plugin.onDestroy === 'function') {
         try {
-          await WebhookService.shutdown()
-        } catch {
-          // ignored
+          await Promise.race([
+            plugin.onDestroy(pluginCtx),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('onDestroy timeout')), 5000)),
+          ])
+          logger.info({ plugin: plugin.id || plugin.name }, 'Plugin onDestroy completed')
+        } catch (err: any) {
+          logger.warn({ plugin: plugin.id || plugin.name, err: err.message }, 'Plugin onDestroy failed')
         }
+      }
+    }
 
-        // Close Socket.IO server
-        try {
-          const io = (this as any).io
-          if (io) {
-            await new Promise<void>((resolve) => io.close(resolve))
-            logger.info('Socket.IO server closed')
-          }
-        } catch {
-          // ignored
-        }
+    SchedulerService.stop()
+    sessionStore.stopCleanup()
 
-        try {
-          /* eslint-disable-next-line @typescript-eslint/no-require-imports */
-          const { sandboxPool } = require('./services/content')
-          sandboxPool.shutdown()
-          logger.info('[Zenith Next-Gen] Sandbox Worker Pool terminated successfully.')
-        } catch {
-          // Ignored if sandbox pool was not loaded
-        }
-        server.close(async () => {
+    // Shutdown webhook service
+    try {
+      await WebhookService.shutdown()
+    } catch {
+      // ignored
+    }
+
+    // Close Socket.IO server
+    try {
+      const io = (this as any).io
+      if (io) {
+        await new Promise<void>((resolve) => io.close(resolve))
+        logger.info('Socket.IO server closed')
+      }
+    } catch {
+      // ignored
+    }
+
+    try {
+      /* eslint-disable-next-line @typescript-eslint/no-require-imports */
+      const { sandboxPool } = require('./services/content')
+      sandboxPool.shutdown()
+      logger.info('[Zenith Next-Gen] Sandbox Worker Pool terminated successfully.')
+    } catch {
+      // Ignored if sandbox pool was not loaded
+    }
+
+    if (this.server) {
+      await new Promise<void>((resolve) => {
+        this.server!.close(async () => {
           // Drain in-flight requests (max 30s) before closing DB connections
           const drainTimeout = setTimeout(() => {
             logger.warn('Shutdown drain timeout (30s) — forcing exit')
@@ -1068,19 +1133,11 @@ export class ZenithEngine {
           clearTimeout(drainTimeout)
           await this.adapter.disconnect()
           logger.info('Shutdown complete')
-          process.exit(0)
+          resolve()
         })
-        // Keep force-kill as safety net if server.close() hangs
-        setTimeout(() => process.exit(1), 60_000)
-      }
-
-      process.on('SIGTERM', () => shutdown('SIGTERM'))
-      process.on('SIGINT', () => shutdown('SIGINT'))
-
-      return server
-    } catch (error: any) {
-      logger.error({ err: error.message, stack: error.stack }, 'Startup failed')
-      process.exit(1)
+      })
+    } else {
+      await this.adapter.disconnect()
     }
   }
 }
@@ -1102,5 +1159,5 @@ export * from './plugins/strapi-bridge'
 export { LicensingService } from './services/LicensingService'
 export { eventHub } from './services/event-hub'
 export { AIService } from './services/ai'
-export type { CMSConfig, CollectionConfig, FieldConfig } from '@zenithcms/types'
+export type { CMSConfig, CollectionConfig, FieldConfig } from '@zenith-open/zenithcms-types'
 

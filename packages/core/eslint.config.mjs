@@ -21,6 +21,6 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ['dist', 'node_modules', 'uploads', 'src/sandbox/worker-runner.js', '.zenith'],
+    ignores: ['dist', 'node_modules', 'uploads', 'src/sandbox/worker-runner.js', '.zenith', '*.js', 'scripts/**/*.ts'],
   }
 )

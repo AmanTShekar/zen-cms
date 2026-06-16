@@ -60,7 +60,7 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  {/* Header */}
  <div className="px-8 py-6 border-b flex justify-between items-center" style={{ borderColor: theme === 'dark' ? 'rgba(255,255,255,0.05)' : '#f3f4f6' }}>
  <div className="flex items-center gap-4">
- <div className="w-9 h-9 bg-emerald-600 dark:bg-emerald-600 rounded-none flex items-center justify-center text-white shadow-lg">
+ <div className="w-9 h-9 bg-gray-600 dark:bg-gray-600 rounded-none flex items-center justify-center text-white shadow-lg">
  <Upload size={16} />
  </div>
  <div className="flex flex-col">
@@ -82,7 +82,7 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  onClick={() => { setImportFormat('csv'); setImportResult(null); }}
  className={cn(
  'px-4 py-2 rounded-none font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2 border',
- importFormat === 'csv' ? 'bg-emerald-600 dark:bg-emerald-600 border-emerald-500 text-white' :
+ importFormat === 'csv' ? 'bg-gray-600 dark:bg-gray-600 border-gray-500 text-white' :
  theme === 'dark' ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-white' : 'bg-white border-gray-200 text-gray-500 hover:text-gray-900'
  )}
  >
@@ -92,7 +92,7 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  onClick={() => { setImportFormat('json'); setImportResult(null); }}
  className={cn(
  'px-4 py-2 rounded-none font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2 border',
- importFormat === 'json' ? 'bg-emerald-600 dark:bg-emerald-600 border-emerald-500 text-white' :
+ importFormat === 'json' ? 'bg-gray-600 dark:bg-gray-600 border-gray-500 text-white' :
  theme === 'dark' ? 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-white' : 'bg-white border-gray-200 text-gray-500 hover:text-gray-900'
  )}
  >
@@ -112,7 +112,7 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  }}
  className={cn(
  'border-2 border-dashed rounded-none p-8 text-center transition-all cursor-pointer',
- dragOver ? 'border-emerald-500 bg-emerald-500/5' :
+ dragOver ? 'border-gray-500 bg-gray-500/5' :
  theme === 'dark' ? 'border-white/[0.08] hover:border-white/[0.08]' : 'border-gray-200 hover:border-gray-300'
  )}
  onClick={() => {
@@ -128,8 +128,8 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  >
  {importFile ? (
  <div className="flex flex-col items-center gap-3">
- {importFormat === 'csv' ? <FileSpreadsheet size={32} className="text-emerald-600 dark:text-emerald-500" /> : <FileJson size={32} className="text-emerald-600 dark:text-emerald-500" />}
- <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">{importFile.name}</span>
+ {importFormat === 'csv' ? <FileSpreadsheet size={32} className="text-gray-600 dark:text-gray-500" /> : <FileJson size={32} className="text-gray-600 dark:text-gray-500" />}
+ <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-400">{importFile.name}</span>
  <span className="text-[8px] font-bold text-gray-500">{(importFile.size / 1024).toFixed(1)} KB — Click to change</span>
  </div>
  ) : (
@@ -149,8 +149,8 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  onChange={(e) => { setImportText(e.target.value); setImportFile(null); setImportResult(null); }}
  rows={6}
  className={cn(
- 'w-full border rounded-none px-4 py-3 text-xs font-mono outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all resize-y',
- theme === 'dark' ? 'bg-white/[0.03] border-white/[0.08] text-white focus:border-emerald-500/50' : 'bg-gray-50 border-gray-200 focus:border-emerald-400'
+ 'w-full border rounded-none px-4 py-3 text-xs font-mono outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all resize-y',
+ theme === 'dark' ? 'bg-white/[0.03] border-white/[0.08] text-white focus:border-gray-500/50' : 'bg-gray-50 border-gray-200 focus:border-gray-400'
  )}
  placeholder={importFormat === 'csv'
  ? 'name,title,price\nProduct A,Title A,29.99\nProduct B,Title B,49.99'
@@ -164,11 +164,11 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  <div className={cn(
  'border rounded-none p-5 space-y-3',
  importResult.errors.length === 0
- ? theme === 'dark' ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-emerald-50 border-emerald-200'
+ ? theme === 'dark' ? 'bg-gray-500/5 border-gray-500/20' : 'bg-gray-50 border-gray-200'
  : theme === 'dark' ? 'bg-amber-500/5 border-amber-500/20' : 'bg-amber-50 border-amber-200'
  )}>
  <div className="flex items-center gap-3">
- {importResult.errors.length === 0 ? <CheckCircle2 size={16} className="text-emerald-600 dark:text-emerald-500" /> : <AlertCircle size={16} className="text-amber-500" />}
+ {importResult.errors.length === 0 ? <CheckCircle2 size={16} className="text-gray-600 dark:text-gray-500" /> : <AlertCircle size={16} className="text-amber-500" />}
  <span className="text-[10px] font-black uppercase tracking-widest">
  {importResult.imported} of {importResult.total} records imported
  {importResult.errors.length > 0 && ` (${importResult.errors.length} errors)`}
@@ -191,7 +191,7 @@ const CollectionListImportModal: React.FC<CollectionListImportModalProps> = ({ s
  <button
  onClick={handleImport}
  disabled={importing || (!importFile && !importText.trim())}
- className={cn('px-8 py-3 rounded-none font-black text-[9px] uppercase tracking-widest shadow-xl transition-all flex items-center gap-2 disabled:opacity-40', theme === 'dark' ? 'bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20' : 'bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-700 text-white')}
+ className={cn('px-8 py-3 rounded-none font-black text-[9px] uppercase tracking-widest shadow-xl transition-all flex items-center gap-2 disabled:opacity-40', theme === 'dark' ? 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white shadow-gray-600/20' : 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white')}
  >
  {importing ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
  {importing ? 'Importing...' : 'Import'}

@@ -19,13 +19,13 @@ router.post('/register', async (req: Request, res: Response, next) => {
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-    const existing = await adapter.findOne<any>('z_members', { email })
+    const existing = await adapter.findOne<Record<string, any>>('z_members', { email })
     if (existing) throw new InvalidPayloadError('Email already registered')
 
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
 
-    const member = await adapter.create<any>('z_members', { 
+    const member = await adapter.create<Record<string, any>>('z_members', { 
       email: email.toLowerCase(), 
       password: hashedPassword, 
       name,
@@ -59,7 +59,7 @@ router.post('/login', async (req: Request, res: Response, next) => {
     
     // In SQL implementations, we fetch everything. If needed, you might need adapter method to fetch hidden fields.
     // For now, adapter.findOne will fetch the password as well in generic Drizzle wrapper.
-    const member = await adapter.findOne<any>('z_members', { email: email.toLowerCase() })
+    const member = await adapter.findOne<Record<string, any>>('z_members', { email: email.toLowerCase() })
 
     if (!member || !member.password) {
       throw new AuthenticationError('Invalid credentials')
@@ -97,10 +97,10 @@ router.get('/me', async (req: Request, res: Response, next) => {
     if (!authHeader?.startsWith('Bearer ')) throw new AuthenticationError('No token provided')
 
     const token = authHeader.split(' ')[1]
-    const decoded = jwt.verify(token, JWT_SECRET) as any
+    const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] }) as any
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const member = await adapter.findOne<any>('z_members', { id: decoded.id })
+    const member = await adapter.findOne<Record<string, any>>('z_members', { id: decoded.id })
     if (!member) throw new NotFoundError('Member', decoded.id)
 
     // Omit password

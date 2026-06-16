@@ -6,6 +6,18 @@
  */
 
 import type React from 'react'
+export * from './generated'
+
+export interface ZenithDocument {
+  _id?: string
+  id?: string
+  siteId?: string | null
+  _status?: 'draft' | 'published' | string
+  _version?: number
+  workflowStatus?: string
+  deletedAt?: Date | null
+  [key: string]: unknown
+}
 
 export type FieldType =
   | 'text'
@@ -51,7 +63,7 @@ export interface FieldAdminConfig {
   hidden?: boolean
   readOnly?: boolean
   width?: string
-  condition?: (data: any, siblingData: any) => boolean
+  condition?: (data: unknown, siblingData: unknown) => boolean
   readAccess?: string[]
   writeAccess?: string[]
 }
@@ -63,17 +75,17 @@ export interface BaseFieldConfig {
   unique?: boolean
   localized?: boolean
   virtual?: boolean
-  defaultValue?: any
+  defaultValue?: unknown
   admin?: FieldAdminConfig
   hooks?: {
-    beforeChange?: (value: any) => any | Promise<any>
-    afterRead?: (value: any) => any | Promise<any>
-    validate?: (value: any, data: any) => boolean | string | Promise<boolean | string>
+    beforeChange?: (value: unknown) => unknown | Promise<unknown>
+    afterRead?: (value: unknown) => unknown | Promise<unknown>
+    validate?: (value: unknown, data: unknown) => boolean | string | Promise<boolean | string>
   }
   access?: {
-    read?: (user: any) => boolean
-    update?: (user: any) => boolean
-    create?: (user: any) => boolean
+    read?: (user: unknown) => boolean
+    update?: (user: unknown) => boolean
+    create?: (user: unknown) => boolean
   }
 }
 
@@ -153,7 +165,7 @@ export interface JoinFieldConfig extends Omit<BaseFieldConfig, 'required'> {
   collection: string | string[]
   on: string
   maxDepth?: number
-  where?: Record<string, any>
+  where?: Record<string, unknown>
   defaultLimit?: number
   defaultSort?: string
 }
@@ -176,9 +188,9 @@ export interface UIFieldConfig extends Omit<BaseFieldConfig, 'required' | 'uniqu
   type: 'ui'
   admin?: {
     components?: {
-      Field?: React.ComponentType<any>
+      Field?: React.ComponentType<unknown>
     }
-    condition?: (data: any, siblingData: any) => boolean
+    condition?: (data: unknown, siblingData: unknown) => boolean
   }
 }
 
@@ -226,25 +238,30 @@ export interface CollectionConfig {
   publicRead?: boolean
   softDelete?: boolean
   hooks?: {
-    beforeValidate?: (data: any, user: any, context: { hookType: string }) => any | Promise<any>
-    beforeCreate?: (data: any, user: any, context: { hookType: string }) => any | Promise<any>
-    afterCreate?: (doc: any, user: any, context: { hookType: string }) => void | Promise<void>
-    beforeUpdate?: (data: any, user: any, context: { hookType: string }) => any | Promise<any>
-    afterUpdate?: (doc: any, user: any, context: { hookType: string }) => void | Promise<void>
-    beforeDelete?: (id: string, user: any, context: { hookType: string }) => void | Promise<void>
-    afterDelete?: (id: string, user: any, context: { hookType: string }) => void | Promise<void>
-    afterRead?: (doc: any, user: any, context: { hookType: string }) => any | Promise<any>
-    afterError?: (error: Error, data: any, user: any) => void | Promise<void>
+    beforeValidate?: (data: unknown, user: unknown, context: { hookType: string }) => unknown | Promise<unknown>
+    beforeCreate?: (data: unknown, user: unknown, context: { hookType: string }) => unknown | Promise<unknown>
+    afterCreate?: (doc: unknown, user: unknown, context: { hookType: string }) => void | Promise<void>
+    beforeUpdate?: (data: unknown, user: unknown, context: { hookType: string }) => unknown | Promise<unknown>
+    afterUpdate?: (doc: unknown, user: unknown, context: { hookType: string }) => void | Promise<void>
+    beforeDelete?: (id: string, user: unknown, context: { hookType: string }) => void | Promise<void>
+    afterDelete?: (id: string, user: unknown, context: { hookType: string }) => void | Promise<void>
+    afterRead?: (doc: unknown, user: unknown, context: { hookType: string }) => unknown | Promise<unknown>
+    afterError?: (error: Error, data: unknown, user: unknown) => void | Promise<void>
   }
+  endpoints?: Array<{
+    path: string
+    method: 'get' | 'post' | 'put' | 'patch' | 'delete'
+    handler: (req: any, res: any, next: any) => void | Promise<void>
+  }>
   access?: {
     /** Return false to deny, or an object to merge as query constraints (Row-Level Security). */
-    read?: (user: any, context?: { req?: any }) => boolean | object
+    read?: (user: unknown, context?: { req?: unknown }) => boolean | object
     /** Return false to deny, or an object to constrain which documents the user may create. */
-    create?: (user: any, context?: { req?: any }) => boolean
+    create?: (user: unknown, context?: { req?: unknown }) => boolean
     /** Return false to deny, or an object to constrain which documents the user may update. */
-    update?: (user: any, context?: { req?: any }) => boolean | object
+    update?: (user: unknown, context?: { req?: unknown }) => boolean | object
     /** Return false to deny, or an object to constrain which documents the user may delete. */
-    delete?: (user: any, context?: { req?: any }) => boolean | object
+    delete?: (user: unknown, context?: { req?: unknown }) => boolean | object
   }
   admin?: {
     group?: string
@@ -253,13 +270,9 @@ export interface CollectionConfig {
     displayTemplate?: string
     defaultColumns?: string[]
     icon?: string
-    previewUrl?: string | ((doc: any) => string)
+    previewUrl?: string | ((doc: unknown) => string)
   }
-  endpoints?: {
-    path: string
-    method: 'get' | 'post' | 'put' | 'delete' | 'patch'
-    handler: (req: any, res: any) => void | Promise<void>
-  }[]
+
 }
 
 export type GlobalConfig = CollectionConfig // Globals are singletons
@@ -293,17 +306,17 @@ export interface ZenithPlugin {
     type: 'string' | 'number' | 'boolean' | 'select' | 'multiselect' | 'url' | 'secret'
     label: string
     description?: string
-    default?: any
+    default?: unknown
     options?: Array<{ label: string; value: string }>
     required?: boolean
   }>
   /** Runtime config values (set by admin UI) */
-  config?: Record<string, any>
+  config?: Record<string, unknown>
   /**
    * Transform the CMS config (add collections, fields, hooks, etc.).
    * Called at engine bootstrap for each enabled plugin.
    */
-  apply: (config: CMSConfig, pluginConfig?: Record<string, any>) => CMSConfig | void
+  apply: (config: CMSConfig, pluginConfig?: Record<string, unknown>) => CMSConfig | void
   /** Called after all plugins are applied, before routes are mounted */
   onInit?: (ctx: PluginContext) => void | Promise<void>
   /** Called after the engine is fully started and listening */
@@ -314,9 +327,9 @@ export interface ZenithPlugin {
 
 export interface PluginContext {
   /** Express application instance */
-  app: any
+  app: unknown
   /** Active database adapter */
-  adapter: any
+  adapter: unknown
   /** Current CMS config (after all plugins applied) */
   config: CMSConfig
   /** Hook registry — use to register lifecycle hooks */
@@ -361,6 +374,11 @@ export interface CMSConfig {
   cors?: {
     origins: string[]
   }
+  endpoints?: Array<{
+    path: string
+    method: 'get' | 'post' | 'put' | 'patch' | 'delete'
+    handler: (req: any, res: any, next: any) => void | Promise<void>
+  }>
 }
 
 export * from './generated'

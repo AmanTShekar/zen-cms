@@ -33,11 +33,12 @@ import { useSystemMetadata } from '../hooks/useQueries'
 
 import Logo from '../components/Logo'
 import GlobalSearch from '../components/GlobalSearch'
+import { useShallow } from 'zustand/react/shallow'
 
 interface RegistryItem {
  slug: string
  name: string
- [key: string]: unknown
+ [key: string]: any
 }
 
 interface HealthData {
@@ -48,17 +49,71 @@ interface HealthData {
  collections?: RegistryItem[]
  globals?: RegistryItem[]
  }
- [key: string]: unknown
+ [key: string]: any
 }
 
+ const LiveClock = () => {
+ const [time, setTime] = useState(new Date())
+
+ useEffect(() => {
+ const timer = setInterval(() => setTime(new Date()), 1000)
+ return () => clearInterval(timer)
+ }, [])
+
+ return (
+ <span className="text-sm font-black tracking-tighter tabular-nums leading-none">
+ {time.toLocaleTimeString([], {
+ hour12: false,
+ hour: '2-digit',
+ minute: '2-digit',
+ second: '2-digit',
+ })}
+ </span>
+ )
+ }
+
 const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
- const { logout, user } = useAuthStore()
+ const { logout, user  } = useAuthStore(useShallow(state => ({ logout: state.logout, user: state.user })))
  const { theme, toggleTheme } = useTheme()
  const activeSiteName = useTenantStore((state) => state.activeSiteName)
  const activeSiteId = useTenantStore((state) => state.activeSiteId)
  const [isSidebarOpen, setSidebarOpen] = useState(true)
  const [isMobile, setIsMobile] = useState(false)
  const [, setCommandPaletteOpen] = useState(false)
+
+ const envMode = import.meta.env.MODE || 'development'
+ let envConfig = {
+ bg: 'bg-gray-500/5',
+ border: 'border-gray-500/10',
+ dot: 'bg-gray-500',
+ shadow: 'shadow-[0_0_8px_#6b7280]',
+ text: 'text-gray-600 dark:text-gray-500'
+ }
+ if (envMode === 'development') {
+ envConfig = {
+ bg: 'bg-emerald-500/5',
+ border: 'border-emerald-500/10',
+ dot: 'bg-emerald-500',
+ shadow: 'shadow-[0_0_8px_#10b981]',
+ text: 'text-emerald-600 dark:text-emerald-500'
+ }
+ } else if (envMode === 'production') {
+ envConfig = {
+ bg: 'bg-purple-500/5',
+ border: 'border-purple-500/10',
+ dot: 'bg-purple-500',
+ shadow: 'shadow-[0_0_8px_#a855f7]',
+ text: 'text-purple-600 dark:text-purple-500'
+ }
+ } else if (envMode === 'test') {
+ envConfig = {
+ bg: 'bg-amber-500/5',
+ border: 'border-amber-500/10',
+ dot: 'bg-amber-500',
+ shadow: 'shadow-[0_0_8px_#f59e0b]',
+ text: 'text-amber-600 dark:text-amber-500'
+ }
+ }
  
  // React Query Hook for metadata
  const { data: health, isSuccess } = useSystemMetadata()
@@ -75,14 +130,14 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  const location = useLocation()
 
  const defaultNavItems = [
- { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+ { name: 'System Overview', path: '/', icon: LayoutDashboard },
+ { name: 'Media Storage', path: '/media', icon: Box },
  { name: 'Templates', path: '/templates', icon: Layout },
+ { name: 'Data Graph', path: '/graph', icon: Network },
  { name: 'Campaigns', path: '/campaigns', icon: Command },
- { name: 'AI Content Hub', path: '/ai-architect', icon: Sparkles },
- { name: 'Automations', path: '/automations', icon: Workflow },
+ { name: 'Workflows', path: '/automations', icon: Workflow },
+ { name: 'AI Assistant', path: '/ai-architect', icon: Sparkles },
  { name: 'Plugins', path: '/plugins', icon: Puzzle },
- { name: 'Schema Graph', path: '/graph', icon: Network },
- { name: 'Media Library', path: '/media', icon: Box },
  ]
 
  const saveSidebarConfig = useCallback((items: { name: string; path: string; visible: boolean }[]) => {
@@ -201,8 +256,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'h-full flex-shrink-0 flex flex-col border-r z-50 transition-colors duration-500',
  isMobile ? 'fixed inset-y-0 left-0 shadow-2xl' : 'relative',
  theme === 'dark'
- ? 'bg-black border-white/[0.08]'
- : 'bg-white border-gray-200 shadow-sm shadow-sm'
+ ? 'bg-black/65 backdrop-blur-xl border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.1)]'
+ : 'bg-white/80 backdrop-blur-xl border-gray-200 shadow-sm'
  )}
  >
  {/* Workspace */}
@@ -211,7 +266,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <div
  className={cn(
  'w-9 h-9 rounded-none flex items-center justify-center flex-shrink-0 transition-all relative overflow-hidden',
- theme === 'dark' ? 'bg-white text-black' : 'bg-gray-900 text-gray-100'
+ theme === 'dark' ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-emerald-600 text-white'
  )}
  >
  <Logo size="sm" />
@@ -219,7 +274,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <motion.div
  animate={{ opacity: [0.1, 0.4, 0.1], scale: [1, 1.2, 1] }}
  transition={{ duration: 2, repeat: Infinity }}
- className="absolute inset-0 bg-emerald-500/20"
+ className="absolute inset-0 bg-gray-500/20"
  />
  </div>
  <AnimatePresence>
@@ -233,9 +288,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <span className="text-lg font-black tracking-tight uppercase leading-none">
  Zenith
  </span>
- <div className="w-1 h-1 bg-emerald-500 rounded-none animate-pulse" />
+ <div className="w-1 h-1 bg-gray-500 rounded-none animate-pulse" />
  </div>
- <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-wider leading-none mt-1.5">
+ <span className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-wider leading-none mt-1.5">
  v6.0 Stable
  </span>
  </motion.div>
@@ -248,7 +303,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <SiteSelector isSidebarOpen={isSidebarOpen} />
 
  {/* Navigation Core */}
- <div className="flex-1 overflow-y-auto no-scrollbar py-8 px-4 space-y-10">
+ <div className="flex-1 overflow-y-auto py-8 px-4 space-y-10">
  <nav className="space-y-1.5">
  {(() => {
  const visibleItems = isCustomizing ? navItems : navItems.filter((n) => n.visible)
@@ -266,7 +321,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  className={cn(
  'p-1 border rounded-none transition-all',
  isCustomizing
- ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
+ ? 'bg-gray-500/20 border-gray-500/40 text-gray-600 dark:text-gray-400'
  : 'border-transparent text-gray-500 hover:text-gray-300'
  )}
  title={isCustomizing ? 'Done' : 'Customize'}
@@ -324,8 +379,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'flex items-center gap-4 px-4 py-3 rounded-none transition-all group relative border',
  isActive
  ? theme === 'dark'
- ? 'bg-white border-white text-black shadow-lg shadow-white/5'
- : 'bg-gray-900 border-gray-800 text-gray-100 shadow-xl'
+ ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
+ : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 shadow-sm'
  : theme === 'dark'
  ? 'text-gray-500 border-transparent hover:bg-white/[0.03] hover:text-gray-300'
  : 'text-gray-500 border-transparent hover:bg-gray-100 hover:text-gray-900'
@@ -347,7 +402,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  {isActive && !isSidebarOpen && (
  <motion.div
  layoutId="nav-glow-mini"
- className="absolute left-0 w-1 h-4 bg-emerald-500 rounded-none"
+ className="absolute left-0 w-1 h-4 bg-emerald-500 rounded-none shadow-[0_0_10px_rgba(16,185,129,0.5)]"
  />
  )}
  </Link>
@@ -363,11 +418,11 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <nav className="space-y-1.5 pt-4 border-t border-white/[0.03]">
  <div className="px-3 mb-4 flex items-center justify-between">
  {isSidebarOpen && (
- <span className="text-[12px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-wider leading-none">
+ <span className="text-[12px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-wider leading-none">
  Global Settings
  </span>
  )}
- <ShieldCheck size={10} className="text-emerald-600 dark:text-emerald-500" />
+ <ShieldCheck size={10} className="text-gray-600 dark:text-gray-500" />
  </div>
 
  <div className="space-y-0.5">
@@ -381,8 +436,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'flex items-center gap-4 px-4 py-3 rounded-none transition-all duration-300 group relative border',
  isActive
  ? theme === 'dark'
- ? 'bg-white border-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]'
- : 'bg-gray-900 border-gray-800 text-gray-100 shadow-xl'
+ ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.1)]'
+ : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 shadow-sm'
  : theme === 'dark'
  ? 'text-gray-500 border-white/[0.08] hover:bg-white/[0.03] hover:text-gray-300'
  : 'text-gray-500 border-gray-200 shadow-sm hover:bg-gray-100 hover:text-gray-900'
@@ -393,9 +448,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'w-2 h-2 rounded-none transition-all shadow-[0_0_10px_currentColor]',
  isActive
  ? theme === 'dark'
- ? 'bg-black'
- : 'bg-emerald-400'
- : 'bg-gray-700/40 group-hover:bg-emerald-500'
+ ? 'bg-emerald-400'
+ : 'bg-emerald-500'
+ : 'bg-gray-700/40 group-hover:bg-gray-500'
  )}
  />
  {isSidebarOpen && (
@@ -430,8 +485,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
  isActive
  ? theme === 'dark'
- ? 'bg-white border-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]'
- : 'bg-gray-900 border-gray-800 text-gray-100 shadow-xl'
+ ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.1)]'
+ : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 shadow-sm'
  : theme === 'dark'
  ? 'text-gray-400 border-white/[0.08] hover:bg-white/[0.04] hover:text-gray-100'
  : 'text-gray-600 border-gray-200 shadow-sm hover:bg-gray-100 hover:text-gray-900'
@@ -442,9 +497,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  isActive
  ? theme === 'dark'
- ? 'bg-black scale-110'
- : 'bg-emerald-400'
- : 'bg-gray-700/40 group-hover:bg-emerald-500'
+ ? 'bg-emerald-400 scale-110'
+ : 'bg-emerald-500'
+ : 'bg-gray-700/40 group-hover:bg-gray-500'
  )}
  />
  {isSidebarOpen && (
@@ -476,8 +531,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
  location.pathname === '/audit-log'
  ? theme === 'dark'
- ? 'bg-white border-white text-black shadow-lg'
- : 'bg-gray-900 border-gray-800 text-gray-100 shadow-xl'
+ ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
+ : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 shadow-sm'
  : theme === 'dark'
  ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-gray-100'
  : 'text-gray-600 border-gray-200 shadow-sm hover:bg-gray-100 hover:text-gray-900'
@@ -488,9 +543,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  location.pathname === '/audit-log'
  ? theme === 'dark'
- ? 'bg-black scale-110'
- : 'bg-emerald-400'
- : 'bg-gray-700/40 group-hover:bg-emerald-500'
+ ? 'bg-emerald-400 scale-110'
+ : 'bg-emerald-500'
+ : 'bg-gray-700/40 group-hover:bg-gray-500'
  )}
  />
  {isSidebarOpen && (
@@ -506,8 +561,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
  location.pathname === '/schema-builder'
  ? theme === 'dark'
- ? 'bg-white border-white text-black shadow-lg'
- : 'bg-gray-900 border-gray-800 text-gray-100 shadow-xl'
+ ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
+ : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 shadow-sm'
  : theme === 'dark'
  ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-gray-100'
  : 'text-gray-600 border-gray-200 shadow-sm hover:bg-gray-100 hover:text-gray-900'
@@ -518,9 +573,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  location.pathname === '/schema-builder'
  ? theme === 'dark'
- ? 'bg-black scale-110'
- : 'bg-emerald-400'
- : 'bg-gray-700/40 group-hover:bg-emerald-500'
+ ? 'bg-emerald-400 scale-110'
+ : 'bg-emerald-500'
+ : 'bg-gray-700/40 group-hover:bg-gray-500'
  )}
  />
  {isSidebarOpen && (
@@ -536,8 +591,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
  location.pathname === '/block-builder'
  ? theme === 'dark'
- ? 'bg-white border-white text-black shadow-lg'
- : 'bg-gray-900 border-gray-800 text-gray-100 shadow-xl'
+ ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
+ : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 shadow-sm'
  : theme === 'dark'
  ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-gray-100'
  : 'text-gray-600 border-gray-200 shadow-sm hover:bg-gray-100 hover:text-gray-900'
@@ -548,9 +603,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  location.pathname === '/block-builder'
  ? theme === 'dark'
- ? 'bg-black scale-110'
- : 'bg-emerald-400'
- : 'bg-gray-700/40 group-hover:bg-emerald-500'
+ ? 'bg-emerald-400 scale-110'
+ : 'bg-emerald-500'
+ : 'bg-gray-700/40 group-hover:bg-gray-500'
  )}
  />
  {isSidebarOpen && (
@@ -566,8 +621,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
  location.pathname === '/component-builder'
  ? theme === 'dark'
- ? 'bg-white border-white text-black shadow-lg'
- : 'bg-gray-900 border-gray-800 text-gray-100 shadow-xl'
+ ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
+ : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 shadow-sm'
  : theme === 'dark'
  ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-gray-100'
  : 'text-gray-600 border-gray-200 shadow-sm hover:bg-gray-100 hover:text-gray-900'
@@ -578,9 +633,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  location.pathname === '/component-builder'
  ? theme === 'dark'
- ? 'bg-black scale-110'
- : 'bg-emerald-400'
- : 'bg-gray-700/40 group-hover:bg-emerald-500'
+ ? 'bg-emerald-400 scale-110'
+ : 'bg-emerald-500'
+ : 'bg-gray-700/40 group-hover:bg-gray-500'
  )}
  />
  {isSidebarOpen && (
@@ -596,8 +651,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
  location.pathname.startsWith('/collections/members')
  ? theme === 'dark'
- ? 'bg-white border-white text-black shadow-lg'
- : 'bg-gray-900 border-gray-800 text-gray-100 shadow-xl'
+ ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
+ : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 shadow-sm'
  : theme === 'dark'
  ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-gray-100'
  : 'text-gray-600 border-gray-200 shadow-sm hover:bg-gray-100 hover:text-gray-900'
@@ -608,9 +663,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  location.pathname.startsWith('/collections/members')
  ? theme === 'dark'
- ? 'bg-black scale-110'
- : 'bg-emerald-400'
- : 'bg-gray-700/40 group-hover:bg-emerald-500'
+ ? 'bg-emerald-400 scale-110'
+ : 'bg-emerald-500'
+ : 'bg-gray-700/40 group-hover:bg-gray-500'
  )}
  />
  {isSidebarOpen && (
@@ -626,8 +681,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
  location.pathname === '/redirects'
  ? theme === 'dark'
- ? 'bg-white border-white text-black shadow-lg'
- : 'bg-gray-900 border-gray-800 text-gray-100 shadow-xl'
+ ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
+ : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 shadow-sm'
  : theme === 'dark'
  ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-gray-100'
  : 'text-gray-600 border-gray-200 shadow-sm hover:bg-gray-100 hover:text-gray-900'
@@ -638,9 +693,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  location.pathname === '/redirects'
  ? theme === 'dark'
- ? 'bg-black scale-110'
- : 'bg-emerald-400'
- : 'bg-gray-700/40 group-hover:bg-emerald-500'
+ ? 'bg-emerald-400 scale-110'
+ : 'bg-emerald-500'
+ : 'bg-gray-700/40 group-hover:bg-gray-500'
  )}
  />
  {isSidebarOpen && (
@@ -656,8 +711,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
  location.pathname === '/trash'
  ? theme === 'dark'
- ? 'bg-white border-white text-black shadow-lg'
- : 'bg-gray-900 border-gray-800 text-gray-100 shadow-xl'
+ ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
+ : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 shadow-sm'
  : theme === 'dark'
  ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-gray-100'
  : 'text-gray-600 border-gray-200 shadow-sm hover:bg-gray-100 hover:text-gray-900'
@@ -668,9 +723,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  location.pathname === '/trash'
  ? theme === 'dark'
- ? 'bg-black scale-110'
- : 'bg-emerald-400'
- : 'bg-gray-700/40 group-hover:bg-emerald-500'
+ ? 'bg-emerald-400 scale-110'
+ : 'bg-emerald-500'
+ : 'bg-gray-700/40 group-hover:bg-gray-500'
  )}
  />
  {isSidebarOpen && (
@@ -686,8 +741,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'flex items-center gap-4 px-4 py-3 rounded-none transition-all group border relative overflow-hidden',
  location.pathname === '/system'
  ? theme === 'dark'
- ? 'bg-white border-white text-black shadow-lg'
- : 'bg-gray-900 border-gray-800 text-gray-100 shadow-xl'
+ ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.1)]'
+ : 'bg-emerald-50 border-emerald-500/20 text-emerald-700 shadow-sm'
  : theme === 'dark'
  ? 'text-gray-450 border-white/[0.08] hover:bg-white/[0.04] hover:text-gray-100'
  : 'text-gray-600 border-gray-200 shadow-sm hover:bg-gray-100 hover:text-gray-900'
@@ -698,9 +753,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  'w-2 h-2 rounded-none transition-all flex-shrink-0 shadow-[0_0_10px_currentColor]',
  location.pathname === '/system'
  ? theme === 'dark'
- ? 'bg-black scale-110'
- : 'bg-emerald-400'
- : 'bg-gray-700/40 group-hover:bg-emerald-500'
+ ? 'bg-emerald-400 scale-110'
+ : 'bg-emerald-500'
+ : 'bg-gray-700/40 group-hover:bg-gray-500'
  )}
  />
  {isSidebarOpen && (
@@ -738,14 +793,14 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <main
  className={cn(
  'flex-1 flex flex-col min-w-0 relative h-full overflow-hidden transition-colors duration-500',
- theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]'
+ theme === 'dark' ? 'bg-[#050505]' : 'bg-[#f4f4f5]'
  )}
  >
- <div className="flex-1 flex flex-col overflow-auto">
+ <div className="flex-1 flex flex-col overflow-hidden">
  <header
  className={cn(
  'h-20 flex items-center justify-between px-4 md:px-8 border-b z-40 transition-colors duration-500 backdrop-blur-xl shrink-0',
- theme === 'dark' ? 'bg-black/60 border-white/[0.08]' : 'bg-white/60 border-gray-200 shadow-sm'
+ theme === 'dark' ? 'bg-black/65 border-white/[0.08]' : 'bg-white/80 border-gray-200 shadow-sm'
  )}
  >
  <div className="flex items-center gap-4">
@@ -767,23 +822,16 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  <div className="flex items-center gap-5">
  {/* Tactical Clock */}
  <div className="hidden lg:flex flex-col items-end mr-4">
- <span className="text-[10px] font-black tracking-tighter tabular-nums leading-none">
- {new Date().toLocaleTimeString([], {
- hour12: false,
- hour: '2-digit',
- minute: '2-digit',
- second: '2-digit',
- })}
- </span>
+ <LiveClock />
  <span className="text-[7px] font-bold text-gray-500 uppercase tracking-widest mt-1">
  UTC
  </span>
  </div>
 
- <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/5 rounded-none border border-emerald-500/10">
- <div className="w-1 h-1 bg-emerald-500 rounded-none animate-pulse shadow-[0_0_8px_#10b981]" />
- <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 ">
- Production
+ <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-none border", envConfig.bg, envConfig.border)}>
+ <div className={cn("w-1 h-1 rounded-none animate-pulse", envConfig.dot, envConfig.shadow)} />
+ <span className={cn("text-[8px] font-black uppercase tracking-widest", envConfig.text)}>
+ {envMode}
  </span>
  </div>
 
@@ -834,7 +882,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
  </div>
  </header>
 
- <div className="flex-1 overflow-y-auto no-scrollbar scroll-smooth p-6 md:p-10">
+ <div className="flex-1 overflow-y-auto scroll-smooth p-6 md:p-10">
  <AnimatePresence>
  {health?.maintenanceMode && (
  <motion.div

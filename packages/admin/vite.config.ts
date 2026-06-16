@@ -16,6 +16,7 @@ const proxyErrorHandler = (err: any, _req: any, res: any) => {
 export default defineConfig({
   base: '/',
   plugins: [react()],
+
   test: {
     globals: true,
     environment: 'node',
@@ -25,6 +26,7 @@ export default defineConfig({
       // absolute URLs in the Node test environment. MSW intercepts this origin.
       VITE_API_URL: 'http://localhost:5173/api/v1',
     },
+    exclude: ['e2e/**/*', 'node_modules/**/*'],
   },
   resolve: {
     dedupe: ['react', 'react-dom'],
@@ -56,6 +58,7 @@ export default defineConfig({
     },
   },
   build: {
+    target: 'esnext',
     sourcemap: 'hidden',
     rollupOptions: {
       output: {
@@ -69,6 +72,11 @@ export default defineConfig({
           // All other node_modules go into a catch-all vendor chunk
         },
       },
+    },
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'esnext',
     },
   },
 })

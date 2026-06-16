@@ -99,12 +99,12 @@ export interface BlockDefinition {
  description: string
  category: string
  fields: FieldDefinition[]
- defaultContent: Record<string, any>
+ defaultContent: any
 }
 
 import { UNIFIED_BLOCK_LIBRARY } from './unifiedBlocks'
 
-const IconMap: Record<string, any> = {
+const IconMap: any = {
  Star,
  Grid,
  BarChart4,
@@ -168,7 +168,7 @@ export interface PageData {
  heroDescription?: string
  sections: Section[]
  align?: 'left' | 'center' | 'right'
- meta?: Record<string, any>
+ meta?: any
  publishedAt?: string
  createdAt?: string
  updatedAt?: string

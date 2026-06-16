@@ -5,6 +5,7 @@ import { useWorkflowStore } from '../../../store/workflowStore'
 import { useEditorStore } from '../../../store/editorStore'
 import { cn } from '../../../lib/utils'
 import toast from 'react-hot-toast'
+import { useShallow } from 'zustand/react/shallow'
 
 interface SchedulePickerProps {
  open: boolean
@@ -13,7 +14,7 @@ interface SchedulePickerProps {
 
 export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose }) => {
  const { theme } = useTheme()
- const { scheduledAt, setScheduledAt } = useWorkflowStore()
+ const { scheduledAt, setScheduledAt  } = useWorkflowStore(useShallow(state => ({ scheduledAt: state.scheduledAt, setScheduledAt: state.setScheduledAt })))
  const [scheduleInput, setScheduleInput] = useState('')
  const popoverRef = useRef<HTMLDivElement>(null)
 
@@ -115,7 +116,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
  disabled={!scheduleInput}
  className={cn(
  'flex-1 py-1.5 text-xs font-black uppercase text-center transition-all disabled:opacity-40',
- theme === 'dark' ? 'bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 text-white'
+ theme === 'dark' ? 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white'
  )}
  >
  Apply

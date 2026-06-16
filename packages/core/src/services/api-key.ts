@@ -17,8 +17,9 @@ export class ApiKeyService {
   static async generateKey(
     name: string,
     role: 'admin' | 'editor' | 'viewer' = 'viewer',
-    expiresInDays?: number
-  ): Promise<{ name: string; key: string; role: string; expiresAt?: Date }> {
+    expiresInDays?: number,
+    siteId?: string
+  ): Promise<{ id: string; name: string; key: string; role: string; expiresAt?: Date }> {
     const rawKey = `zn_${crypto.randomBytes(24).toString('hex')}`
     const keyHash = this.hash(rawKey)
 
@@ -27,17 +28,17 @@ export class ApiKeyService {
       : undefined
 
     const adapter = AdapterFactory.getActiveAdapter()
-    await adapter.create('z_api_keys', { name, key: keyHash, role, expiresAt })
-    logger.info({ name, role, expiresAt }, 'New API Key generated')
+    const doc = (await adapter.create('z_api_keys', { name, key: keyHash, role, expiresAt, siteId })) as any
+    logger.info({ name, role, expiresAt, siteId }, 'New API Key generated')
 
     // Return the raw key ONCE — never stored in DB
-    return { name, key: rawKey, role, expiresAt }
+    return { id: doc._id || doc.id, name, key: rawKey, role, expiresAt }
   }
 
   static async validateKey(rawKey: string) {
     const keyHash = this.hash(rawKey)
     const adapter = AdapterFactory.getActiveAdapter()
-    const apiKeys = await adapter.find<any>('z_api_keys', { key: keyHash, revoked: false })
+    const apiKeys = await adapter.find<Record<string, any>>('z_api_keys', { key: keyHash, revoked: false })
     const apiKey = apiKeys[0] || null
     if (!apiKey) return null
 

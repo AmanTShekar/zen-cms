@@ -67,7 +67,7 @@ const PluginsPage = () => {
  'Integrates high-performance transactional email flows via React Email templates and Resend SMTP nodes.',
  downloads: 8912,
  verified: true,
- icon: <Mail size={20} className="text-emerald-600 dark:text-emerald-500" />,
+ icon: <Mail size={20} className="text-gray-600 dark:text-gray-500" />,
  },
  {
  id: 'algolia-search-matrix',
@@ -100,7 +100,7 @@ const PluginsPage = () => {
  'Power tip-tap rich text editors with inline content draft generation, grammar correction, and dynamic prompt templates.',
  downloads: 19823,
  verified: true,
- icon: <Cpu size={20} className="text-emerald-600 dark:text-emerald-500" />,
+ icon: <Cpu size={20} className="text-gray-600 dark:text-gray-500" />,
  },
  ]
 
@@ -131,7 +131,7 @@ const PluginsPage = () => {
  if (lowercaseName.includes('cloudinary'))
  return <Database size={20} className="text-cyan-500" />
  if (lowercaseName.includes('resend') || lowercaseName.includes('mail'))
- return <Mail size={20} className="text-emerald-600 dark:text-emerald-500" />
+ return <Mail size={20} className="text-gray-600 dark:text-gray-500" />
  if (lowercaseName.includes('algolia') || lowercaseName.includes('search'))
  return <Search size={20} className="text-blue-500" />
  if (lowercaseName.includes('vercel') || lowercaseName.includes('deploy'))
@@ -141,8 +141,8 @@ const PluginsPage = () => {
  lowercaseName.includes('copilot') ||
  lowercaseName.includes('ai')
  )
- return <Cpu size={20} className="text-emerald-600 dark:text-emerald-500" />
- return <Puzzle size={20} className="text-emerald-600 dark:text-emerald-500" />
+ return <Cpu size={20} className="text-gray-600 dark:text-gray-500" />
+ return <Puzzle size={20} className="text-gray-600 dark:text-gray-500" />
  }
 
  const togglePlugin = async (id: string | undefined, currentStatus: string | undefined) => {
@@ -207,7 +207,7 @@ const PluginsPage = () => {
  theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]'
  )}
  >
- <Loader2 size={32} className="animate-spin text-emerald-600 dark:text-emerald-500" strokeWidth={1.5} />
+ <Loader2 size={32} className="animate-spin text-gray-600 dark:text-gray-500" strokeWidth={1.5} />
  <p className="text-[10px] font-black uppercase tracking-[0.6em] text-gray-400 animate-pulse ">
  Syncing plugins...
  </p>
@@ -236,10 +236,10 @@ const PluginsPage = () => {
  </div>
  <div className="flex flex-col">
  <div className="flex items-center gap-3 mb-1">
- <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.3em] ">
+ <span className="text-[8px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-[0.3em] ">
  System Extensions
  </span>
- <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 shadow-[0_0_8px_#10b981]" />
+ <div className="w-1.5 h-1.5 rounded-none bg-gray-500 shadow-[0_0_8px_#10b981]" />
  </div>
  <h1 className="text-3xl font-black tracking-tighter uppercase leading-none">
  Plugins
@@ -296,7 +296,7 @@ const PluginsPage = () => {
  >
  <Search
  size={14}
- className="text-gray-500 group-focus-within:text-emerald-600 dark:text-emerald-500 transition-colors"
+ className="text-gray-500 group-focus-within:text-gray-600 dark:text-gray-500 transition-colors"
  />
  <input
  type="text"
@@ -305,7 +305,7 @@ const PluginsPage = () => {
  }
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
- className="bg-transparent border-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[10px] font-black text-gray-400 w-full placeholder:text-gray-600 uppercase tracking-tight"
+ className="bg-transparent border-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[10px] font-black text-gray-400 w-full placeholder:text-gray-600 uppercase tracking-tight"
  />
  </div>
 
@@ -327,7 +327,7 @@ const PluginsPage = () => {
  'px-8 py-3 rounded-none text-[9px] font-black uppercase tracking-[0.2em] shadow-lg transition-all leading-none flex items-center gap-3 active:scale-95',
  theme === 'dark'
  ? 'bg-white text-black hover:bg-gray-200'
- : 'bg-emerald-600 dark:bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-600/10'
+ : 'bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-700 shadow-gray-600/10'
  )}
  >
  <Plus size={14} strokeWidth={3} />
@@ -376,7 +376,7 @@ const PluginsPage = () => {
  {plugin.icon}
  </div>
  <div className="flex flex-col">
- <h3 className="text-sm font-black tracking-tight uppercase leading-none group-hover:text-emerald-600 dark:text-emerald-500 transition-colors">
+ <h3 className="text-sm font-black tracking-tight uppercase leading-none group-hover:text-gray-600 dark:text-gray-500 transition-colors">
  {plugin.name}
  </h3>
  <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest mt-1.5">
@@ -393,7 +393,7 @@ const PluginsPage = () => {
  className={cn(
  'px-4 py-1.5 rounded-none text-[9px] font-black uppercase border shadow-inner transition-all flex items-center gap-2',
  plugin.status === 'active'
- ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]'
+ ? 'bg-gray-500/10 text-gray-600 dark:text-gray-500 border-gray-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]'
  : 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20'
  )}
  >
@@ -404,7 +404,7 @@ const PluginsPage = () => {
  className={cn(
  'px-4 py-1.5 rounded-none text-[9px] font-black uppercase border shadow-inner transition-all flex items-center gap-2',
  installed
- ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border-emerald-500/20 shadow-[0_0_10px_rgba(99,102,241,0.1)]'
+ ? 'bg-gray-500/10 text-gray-600 dark:text-gray-500 border-gray-500/20 shadow-[0_0_10px_rgba(99,102,241,0.1)]'
  : 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20'
  )}
  >
@@ -428,7 +428,7 @@ const PluginsPage = () => {
  'flex items-center gap-2 px-4 py-2 rounded-none text-[9px] font-black uppercase tracking-widest transition-all leading-none border',
  plugin.status === 'active'
  ? 'bg-red-500/5 border-red-500/10 text-red-500 hover:bg-red-500/10'
- : 'bg-emerald-500 border-emerald-600 text-white hover:brightness-110 shadow-lg shadow-emerald-500/20'
+ : 'bg-gray-500 border-gray-600 text-white hover:brightness-110 shadow-lg shadow-gray-500/20'
  )}
  >
  {plugin.status === 'active' ? <Box size={12} /> : <Zap size={12} />}
@@ -472,8 +472,8 @@ const PluginsPage = () => {
  installed
  ? 'bg-zinc-500/5 border-zinc-500/10 text-zinc-500 cursor-not-allowed'
  : installingId === plugin.id
- ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 cursor-wait'
- : 'bg-emerald-600 dark:bg-emerald-600 border-emerald-700 text-white hover:bg-emerald-700 shadow-emerald-600/10 active:scale-95'
+ ? 'bg-gray-500/20 border-gray-500/30 text-gray-600 dark:text-gray-400 cursor-wait'
+ : 'bg-gray-600 dark:bg-gray-600 border-gray-700 text-white hover:bg-gray-700 shadow-gray-600/10 active:scale-95'
  )}
  >
  {installingId === plugin.id ? (
@@ -492,14 +492,14 @@ const PluginsPage = () => {
 
  <div className="flex items-center gap-3">
  {plugin.verified ? (
- <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-500">
+ <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-500">
  <ShieldCheck size={12} strokeWidth={3} />
  <span className="text-[9px] font-black uppercase tracking-tighter ">
  Verified Core
  </span>
  </div>
  ) : (
- <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-500">
+ <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-500">
  <Activity size={12} strokeWidth={3} />
  <span className="text-[9px] font-black uppercase tracking-tighter ">
  Community
@@ -538,7 +538,7 @@ const PluginsPage = () => {
  >
  <div className="flex items-center gap-8">
  <div className="flex items-center gap-2">
- <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 shadow-[0_0_8px_#10b981]" />
+ <div className="w-1.5 h-1.5 rounded-none bg-gray-500 shadow-[0_0_8px_#10b981]" />
  <span>Status: Online</span>
  </div>
  <div
@@ -547,13 +547,13 @@ const PluginsPage = () => {
  theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
  )}
  >
- <Cpu size={10} className="text-emerald-600 dark:text-emerald-500" />
+ <Cpu size={10} className="text-gray-600 dark:text-gray-500" />
  <span>Active Plugins: {plugins.filter((p) => p.status === 'active').length}</span>
  </div>
  </div>
  <div className="flex items-center gap-8">
  <div className="flex items-center gap-2">
- <Activity size={10} className="text-emerald-600 dark:text-emerald-500" />
+ <Activity size={10} className="text-gray-600 dark:text-gray-500" />
  <span>System Status: Optimal</span>
  </div>
  </div>

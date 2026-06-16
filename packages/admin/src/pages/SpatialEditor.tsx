@@ -114,9 +114,9 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  setAvailableCollections: s.setAvailableCollections,
  setActiveSection: s.setActiveSection,
  })))
- const { viewMode } = usePanelStore()
- const { templatesOpen, setTemplatesOpen, setSeoOpen, showFieldIndicators, blockPickerOpen, setBlockPickerOpen } = useModalStore()
- const { workflowStatus, setWorkflowStatus, publishStatus, setPublishStatus, workflowReviewers, setWorkflowReviewers, workflowComments, setWorkflowComments, scheduledAt, setScheduledAt, setReleases, setActiveRelease } = useWorkflowStore()
+  const { viewMode  } = usePanelStore(useShallow(state => ({ viewMode: state.viewMode })))
+  const { templatesOpen, setTemplatesOpen, setSeoOpen, showFieldIndicators, blockPickerOpen, setBlockPickerOpen  } = useModalStore(useShallow(state => ({ templatesOpen: state.templatesOpen, setTemplatesOpen: state.setTemplatesOpen, setSeoOpen: state.setSeoOpen, showFieldIndicators: state.showFieldIndicators, blockPickerOpen: state.blockPickerOpen, setBlockPickerOpen: state.setBlockPickerOpen })))
+  const { workflowStatus, setWorkflowStatus, publishStatus, setPublishStatus, workflowReviewers, setWorkflowReviewers, workflowComments, setWorkflowComments, scheduledAt, setScheduledAt, setReleases, setActiveRelease  } = useWorkflowStore(useShallow(state => ({ workflowStatus: state.workflowStatus, setWorkflowStatus: state.setWorkflowStatus, publishStatus: state.publishStatus, setPublishStatus: state.setPublishStatus, workflowReviewers: state.workflowReviewers, setWorkflowReviewers: state.setWorkflowReviewers, workflowComments: state.workflowComments, setWorkflowComments: state.setWorkflowComments, scheduledAt: state.scheduledAt, setScheduledAt: state.setScheduledAt, setReleases: state.setReleases, setActiveRelease: state.setActiveRelease })))
  const { i18nEnabled, currentLocale, translations, setTranslations, updateTranslation: i18nUpdateTranslation } = useI18nStore()
  
  const siteId = useAuthStore((s) => s.siteId)
@@ -140,9 +140,9 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  const hasBlocksField = React.useMemo(() => {
  return topLevelFields.some((f: any) => f.type === 'blocks' || f.name === 'layout' || f.name === 'sections')
  }, [topLevelFields])
- const sectionIdsMemo = React.useMemo(() => {
- return (dataRaw as PageData | null)?.sections?.map((s: Section) => s.id) || []
- }, [(dataRaw as PageData | null)?.sections?.length])
+  const sectionIdsMemo = React.useMemo(() => {
+  return (dataRaw as PageData | null)?.sections?.map((s: any) => s.id) || []
+  }, [(dataRaw as PageData | null)?.sections?.length])
  const [conflictData, setConflictData] = useState<{
  open: boolean
  message?: string
@@ -515,29 +515,29 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  toast.success(`Section added: ${blockType.toUpperCase()}`, { icon: '✨' })
  }
 
- const duplicateSection = (sectionId: string) => {
- const latest = dataRef.current
- if (!latest) return
- const sectionToDuplicate = latest.sections.find((s) => s.id === sectionId)
- if (!sectionToDuplicate) return
- const newId = uid()
- const anchorId = `${sectionToDuplicate.blockType}-${newId.slice(0, 4)}`
- const duplicatedSection: Section = { 
- ...sectionToDuplicate, 
- id: newId, 
- title: `${sectionToDuplicate.title} (Copy)`, 
- content: { ...safeDeepClone(sectionToDuplicate.content), anchorId } 
- }
- editorUpdateData((prev) => { const idx = prev.sections.findIndex((s) => s.id === sectionId); const newSections = [...prev.sections]; newSections.splice(idx + 1, 0, duplicatedSection); return { ...prev, sections: newSections } })
- editorSetActiveSection(duplicatedSection.id)
- toast.success('Section duplicated', { icon: '📋' })
- }
+  const duplicateSection = useCallback((sectionId: string) => {
+    const latest = dataRef.current
+    if (!latest) return
+    const sectionToDuplicate = latest.sections.find((s) => s.id === sectionId)
+    if (!sectionToDuplicate) return
+    const newId = uid()
+    const anchorId = `${sectionToDuplicate.blockType}-${newId.slice(0, 4)}`
+    const duplicatedSection: Section = { 
+      ...sectionToDuplicate, 
+      id: newId, 
+      title: `${sectionToDuplicate.title} (Copy)`, 
+      content: { ...safeDeepClone(sectionToDuplicate.content), anchorId } 
+    }
+    editorUpdateData((prev) => { const idx = prev.sections.findIndex((s) => s.id === sectionId); const newSections = [...prev.sections]; newSections.splice(idx + 1, 0, duplicatedSection); return { ...prev, sections: newSections } })
+    editorSetActiveSection(duplicatedSection.id)
+    toast.success('Section duplicated', { icon: '📋' })
+  }, [dataRef, editorUpdateData, editorSetActiveSection]);
 
- const removeSection = (id: string) => {
- const target = dataRef.current?.sections?.find((s) => s.id === id)
- if (!target) return
- setDeleteConfirm({ open: true, sectionId: id })
- }
+  const removeSection = useCallback((id: string) => {
+    const target = dataRef.current?.sections?.find((s) => s.id === id)
+    if (!target) return
+    setDeleteConfirm({ open: true, sectionId: id })
+  }, [dataRef]);
 
  const confirmRemoveSection = () => {
  const id = deleteConfirm.sectionId
@@ -593,17 +593,17 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  toast.success(`Converted block layout to: ${targetBlockDef.title}`, { icon: '🔄' })
  }
 
- const toggleCollapse = (sectionId: string) => {
- editorUpdateData((prev) => {
- const newSections = [...prev.sections]
- const idx = newSections.findIndex((s) => s.id === sectionId)
- if (idx !== -1) {
- newSections[idx] = { ...newSections[idx], collapsed: !newSections[idx].collapsed }
- }
- return { ...prev, sections: newSections }
- })
- editorSetHasUnsavedChanges(true)
- }
+  const toggleCollapse = useCallback((sectionId: string) => {
+    editorUpdateData((prev) => {
+      const newSections = [...prev.sections]
+      const idx = newSections.findIndex((s) => s.id === sectionId)
+      if (idx !== -1) {
+        newSections[idx] = { ...newSections[idx], collapsed: !newSections[idx].collapsed }
+      }
+      return { ...prev, sections: newSections }
+    })
+    editorSetHasUnsavedChanges(true)
+  }, [editorUpdateData, editorSetHasUnsavedChanges])
 
  const moveSection = (sectionId: string, direction: 'up' | 'down') => {
  editorUpdateData((prev) => {
@@ -676,17 +676,17 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  })
  }
 
- const handleBlockNameChange = (sectionId: string, name: string) => {
- editorUpdateData((prev) => {
- const newSections = [...prev.sections]
- const idx = newSections.findIndex((s) => s.id === sectionId)
- if (idx !== -1) {
- newSections[idx] = { ...newSections[idx], blockName: name }
- }
- return { ...prev, sections: newSections }
- })
- editorSetHasUnsavedChanges(true)
- }
+  const handleBlockNameChange = useCallback((sectionId: string, name: string) => {
+    editorUpdateData((prev) => {
+      const newSections = [...prev.sections]
+      const idx = newSections.findIndex((s) => s.id === sectionId)
+      if (idx !== -1) {
+        newSections[idx] = { ...newSections[idx], blockName: name }
+      }
+      return { ...prev, sections: newSections }
+    })
+    editorSetHasUnsavedChanges(true)
+  }, [editorUpdateData, editorSetHasUnsavedChanges])
 
  const handleCollapseAll = () => {
  const latest = dataRef.current
@@ -700,9 +700,9 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  toast.success(allCollapsed ? 'All sections expanded' : 'All sections collapsed', { icon: '📐' })
  }
 
- const updateAlign = (sectionId: string, align: 'left' | 'center' | 'right') => {
- editorUpdateData((prev) => { const newSections = [...prev.sections]; const idx = newSections.findIndex((s) => s.id === sectionId); if (idx !== -1) newSections[idx].align = align; return { ...prev, sections: newSections } })
- }
+  const updateAlign = useCallback((sectionId: string, align: 'left' | 'center' | 'right') => {
+    editorUpdateData((prev) => { const newSections = [...prev.sections]; const idx = newSections.findIndex((s) => s.id === sectionId); if (idx !== -1) newSections[idx].align = align; return { ...prev, sections: newSections } })
+  }, [editorUpdateData])
 
  const handleReorder = (newIds: string[]) => {
  editorUpdateData((prev) => {

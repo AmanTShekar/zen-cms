@@ -12,7 +12,7 @@ interface ApiKey {
  name: string
  role: string
  expiresAt: string | number | Date
- [key: string]: unknown
+ [key: string]: any
 }
 
 interface SettingsApiKeysProps {
@@ -43,7 +43,7 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
  <>
  <div className="col-span-full space-y-4">
  <div className="flex items-center justify-between mb-4 px-2">
- <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-500">
+ <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-600 dark:text-gray-500">
  {apiKeys.length} Active Credentials
  </span>
  <button
@@ -82,7 +82,7 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
  )}
  >
  <div className="flex items-center gap-6">
- <div className="w-14 h-14 rounded-none bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-500 border border-emerald-500/20">
+ <div className="w-14 h-14 rounded-none bg-gray-500/10 flex items-center justify-center text-gray-600 dark:text-gray-500 border border-gray-500/20">
  <Key size={24} />
  </div>
  <div className="flex flex-col leading-none">

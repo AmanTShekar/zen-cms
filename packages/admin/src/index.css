@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 /**
  * Zenith Premium Design System - Refined Industrial Edition
@@ -32,8 +32,8 @@
  --border-rgb: 255 255 255;
  --border-strong: rgba(255, 255, 255, 0.15);
 
- --accent-rgb: 16 185 129; /* Cyber-Purple */
- --color-cyber-purple: #10B981;
+ --accent-rgb: 139 92 246; /* Cyber-Purple */
+ --color-cyber-purple: #8B5CF6;
  --color-emerald-green: #10B981;
 
  /* Tactical Color Injection - High Saturation for observability */
@@ -42,9 +42,9 @@
  --status-orange: #f59e0b;
  --status-blue: #3b82f6;
 
- --glass-bg: rgba(17, 24, 39, 0.65);
+ --glass-bg: rgba(0, 0, 0, 0.65);
  --glass-border: rgba(255, 255, 255, 0.08);
- --glass-blur: 16px;
+ --glass-blur: 12px;
 
  --shadow-premium: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
  }
@@ -99,6 +99,8 @@
  #root {
  width: 100%;
  height: 100%;
+ display: flex;
+ flex-direction: column;
  background-color: var(--bg-app);
  }
 
@@ -114,11 +116,11 @@
 
  /* 💎 Premium Obsidian Glassmorphism Card Style */
  .card {
- background-color: rgba(17, 24, 39, 0.65);
+ background-color: rgba(0, 0, 0, 0.65);
  backdrop-filter: blur(12px);
  -webkit-backdrop-filter: blur(12px);
  border: 1px solid rgba(255, 255, 255, 0.08);
- border-radius: 12px;
+ border-radius: 0px;
  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
  overflow: hidden;
@@ -175,11 +177,11 @@
 
  /* 🎨 Premium Elements */
  .glass {
- background-color: rgba(11, 15, 25, 0.65);
- backdrop-filter: blur(16px);
- -webkit-backdrop-filter: blur(16px);
+ background-color: rgba(0, 0, 0, 0.65);
+ backdrop-filter: blur(12px);
+ -webkit-backdrop-filter: blur(12px);
  border: 1px solid rgba(255, 255, 255, 0.08);
- box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+ box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
  }
 
  .input-premium {
@@ -222,19 +224,22 @@
  background: transparent;
  }
  ::-webkit-scrollbar-thumb {
- @apply bg-indigo-500/10 rounded-none transition-all;
+ background-color: rgba(139, 92, 246, 0.2);
+ border-radius: 0px;
  border: 2px solid transparent;
  background-clip: padding-box;
+ transition: background-color 0.2s;
  }
  ::-webkit-scrollbar-thumb:hover {
- @apply bg-indigo-500/30;
+ background-color: rgba(139, 92, 246, 0.4);
  }
 
  .dark ::-webkit-scrollbar-thumb {
- @apply bg-white/5;
+ background-color: rgba(139, 92, 246, 0.2);
+ border-radius: 0px;
  }
  .dark ::-webkit-scrollbar-thumb:hover {
- @apply bg-white/10;
+ background-color: rgba(139, 92, 246, 0.4);
  }
 
  /* 🌊 Animations */
@@ -405,7 +410,7 @@
 
 /* ── Link ───────────────────────────────────────────────── */
 .zenith-lexical-editor .lexical-link {
- color: #10B981;
+ color: #8B5CF6;
  text-decoration: underline;
  text-underline-offset: 2px;
  cursor: pointer;
@@ -418,7 +423,7 @@
 .zenith-lexical-editor .lexical-image {
  max-width: 100%;
  height: auto;
- border-radius: 8px;
+ border-radius: 0px;
  display: block;
 }
 
@@ -426,19 +431,19 @@
 .zenith-lexical-editor .lexical-media-node {
  display: block;
  margin: 1em 0;
- border-radius: 8px;
+ border-radius: 0px;
  overflow: hidden;
 }
 
 .zenith-lexical-editor .lexical-media-image { max-width: 100%; height: auto; display: block; }
-.zenith-lexical-editor .lexical-media-video { max-width: 100%; display: block; border-radius: 8px; }
+.zenith-lexical-editor .lexical-media-video { max-width: 100%; display: block; border-radius: 0px; }
 
 .zenith-lexical-editor .lexical-media-file {
  display: inline-flex;
  align-items: center;
  gap: 0.5em;
  padding: 0.6em 1em;
- border-radius: 8px;
+ border-radius: 0px;
  font-size: 0.9em;
  font-weight: 600;
  text-decoration: none;
@@ -462,7 +467,7 @@
  align-items: center;
  gap: 0.5em;
  padding: 0.35em 0.75em;
- border-radius: 6px;
+ border-radius: 0px;
  font-size: 0.85em;
  font-weight: 700;
  background: rgba(139, 92, 246, 0.1);
@@ -483,7 +488,7 @@
  font-weight: 800;
  text-transform: uppercase;
  padding: 0.1em 0.5em;
- border-radius: 4px;
+ border-radius: 0px;
 }
 
 .zenith-lexical-editor .lexical-relationship-status--published {
@@ -501,7 +506,7 @@
  border-collapse: collapse;
  width: 100%;
  margin: 1em 0;
- border-radius: 8px;
+ border-radius: 0px;
  overflow: hidden;
  border: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -530,7 +535,7 @@
 
 /* ── Hashtag ────────────────────────────────────────────── */
 .zenith-lexical-editor .lexical-hashtag {
- color: #10B981;
+ color: #8B5CF6;
  font-weight: 600;
  font-size: 0.9em;
 }

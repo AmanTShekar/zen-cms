@@ -196,7 +196,7 @@ program
   .action(() => {
     console.log(chalk.bold.hex('#00F5FF')('🏗️  Initializing Zenith CMS project...'))
 
-    const configContent = `import type { CMSConfig } from '@zenithcms/types';
+    const configContent = `import type { CMSConfig } from '@zenith-open/zenithcms-types';
 
 const config: CMSConfig = {
   collections: [
@@ -750,7 +750,7 @@ program
       main: 'dist/index.js',
       types: 'dist/index.d.ts',
       scripts: { build: 'tsc' },
-      peerDependencies: { '@zenithcms/core': '^0.2.0', '@zenithcms/types': '^0.2.0' },
+      peerDependencies: { '@zenith-open/zenithcms-core': '^0.2.0', '@zenith-open/zenithcms-types': '^0.2.0' },
       keywords: ['zenithcms', 'zenith', 'plugin', slug],
     }, null, 2))
 
@@ -766,7 +766,7 @@ program
 
     // src/index.ts — plugin source
     fs.mkdirSync(path.join(targetDir, 'src'), { recursive: true })
-    fs.writeFileSync(path.join(targetDir, 'src/index.ts'), `import type { ZenithPlugin, PluginContext } from '@zenithcms/types'
+    fs.writeFileSync(path.join(targetDir, 'src/index.ts'), `import type { ZenithPlugin, PluginContext } from '@zenith-open/zenithcms-types'
 
 export interface ${className}Options {
   /** Enable verbose logging */
@@ -889,6 +889,109 @@ MIT
     console.log(chalk.white(`  npm install`))
     console.log(chalk.white(`  npm run build`))
     console.log('')
+  })
+
+program
+  .command('sync:blocks')
+  .description('Sync manually edited block schema (.ts) files to the database')
+  .action(() => {
+    console.log(chalk.bold.hex('#00F5FF')('🔄 Syncing local block schemas to database...'))
+
+    try {
+      const tempRunnerPath = path.join(process.cwd(), '.zenith-sync-blocks-runner.ts')
+      const runnerContent = `
+import * as path from 'path'
+import * as fs from 'fs'
+import { pathToFileURL } from 'url'
+import 'dotenv/config'
+import { AdapterFactory } from './packages/core/src/database/adapters/AdapterFactory'
+import './packages/core/src/database/schema-model'
+
+async function run() {
+  const blocksDir = path.resolve(process.cwd(), 'config', 'blocks')
+  if (!fs.existsSync(blocksDir)) {
+    console.log('No config/blocks directory found. Nothing to sync.')
+    return
+  }
+
+  const files = fs.readdirSync(blocksDir).filter(f => f.endsWith('.ts'))
+  if (files.length === 0) {
+    console.log('No .ts block files found in config/blocks.')
+    return
+  }
+
+  console.log('Connecting to database adapter...')
+  const adapter = AdapterFactory.create()
+  await adapter.connect()
+
+  let syncedCount = 0
+
+  for (const file of files) {
+    const filePath = path.join(blocksDir, file)
+    try {
+      // Dynamically import the TS file using file URL
+      const blockModule = await import(pathToFileURL(filePath).href)
+      
+      // The block is usually exported as a named export matching the slug, or default.
+      // We'll iterate through exports to find the BlockDefinition.
+      let blockDef = null
+      for (const key in blockModule) {
+        if (blockModule[key] && blockModule[key].slug && blockModule[key].fields) {
+          blockDef = blockModule[key]
+          break
+        }
+      }
+
+      if (!blockDef) {
+        console.warn(\`⚠️ Skipped \${file}: No valid block definition found (missing slug or fields).\`)
+        continue
+      }
+
+      // Upsert into z_schemas
+      const dbPayload = {
+        title: blockDef.labels?.singular || blockDef.title || blockDef.slug,
+        slug: blockDef.slug,
+        type: 'block',
+        isGlobal: false,
+        fields: blockDef.fields || [],
+        siteId: null, // Blocks from FS are currently global
+        admin: blockDef.admin || { category: 'General', icon: 'Box' }
+      }
+
+      const existing = await adapter.findOne('z_schemas', { slug: blockDef.slug, siteId: null })
+      if (existing) {
+        await adapter.update('z_schemas', (existing._id || existing.id).toString(), dbPayload)
+      } else {
+        await adapter.create('z_schemas', dbPayload)
+      }
+      
+      console.log(\`✓ Synced block: \${blockDef.slug}\`)
+      syncedCount++
+    } catch (err: any) {
+      console.error(\`❌ Failed to sync \${file}: \${err.message}\`)
+    }
+  }
+
+  await adapter.disconnect()
+  console.log(\`\\n🎉 Successfully synced \${syncedCount} block(s) to the database!\`)
+}
+
+run().catch(err => {
+  console.error('Sync error:', err)
+  process.exit(1)
+})
+`
+      fs.writeFileSync(tempRunnerPath, runnerContent, 'utf-8')
+      try {
+        execSync('npx tsx .zenith-sync-blocks-runner.ts', { stdio: 'inherit' })
+      } finally {
+        if (fs.existsSync(tempRunnerPath)) {
+          fs.unlinkSync(tempRunnerPath)
+        }
+      }
+    } catch (err: any) {
+      console.error(chalk.red(`Error syncing blocks: ${err.message}`))
+    }
   })
 
 program.parse()

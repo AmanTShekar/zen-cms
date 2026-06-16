@@ -11,6 +11,7 @@ import api from '../../../lib/api'
 import { CommentsPanel } from './CommentsPanel'
 import EmptyState from '../../../components/EmptyState'
 import toast from 'react-hot-toast'
+import { useShallow } from 'zustand/react/shallow'
 
 interface RightPanelProps {
  isGlobal?: boolean
@@ -42,8 +43,8 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  const { id, slug } = useParams<{ id: string; slug: string }>()
  const documentId = id || slug
  const { theme } = useTheme()
- const { history, data } = useEditorStore()
- const { rightOpen, rightWidth, activeRightTab, setActiveRightTab, setRightOpen, previewMode, setPreviewMode } = usePanelStore()
+ const { history, data  } = useEditorStore(useShallow(state => ({ history: state.history, data: state.data })))
+ const { rightOpen, rightWidth, activeRightTab, setActiveRightTab, setRightOpen, previewMode, setPreviewMode  } = usePanelStore(useShallow(state => ({ rightOpen: state.rightOpen, rightWidth: state.rightWidth, activeRightTab: state.activeRightTab, setActiveRightTab: state.setActiveRightTab, setRightOpen: state.setRightOpen, previewMode: state.previewMode, setPreviewMode: state.setPreviewMode })))
  const { siteId: tenantSiteId, siteSlug, siteDomain } = useTenantStorage()
 
  const [sites, setSites] = React.useState<any[]>([])
@@ -122,8 +123,8 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  className={cn(
  'absolute left-0 top-0 bottom-0 w-1 cursor-col-resize z-50 transition-colors',
  resizingSide === 'right'
- ? 'bg-emerald-500 shadow-[0_0_15px_#10b981]'
- : 'bg-transparent hover:bg-emerald-500/50'
+ ? 'bg-gray-500 shadow-[0_0_15px_#10b981]'
+ : 'bg-transparent hover:bg-gray-500/50'
  )}
  />
 
@@ -149,7 +150,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  className={cn(
  'text-xs font-black uppercase tracking-[0.2em] ',
  activeRightTab === tab.id
- ? dark ? 'text-emerald-600 dark:text-emerald-400' : 'text-emerald-600'
+ ? dark ? 'text-gray-600 dark:text-gray-400' : 'text-gray-600'
  : dark ? 'text-white' : 'text-black'
  )}
  >
@@ -164,7 +165,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  </button>
  ))}
  </div>
- <button onClick={() => setRightOpen(false)} className="p-1 hover:text-emerald-600 dark:text-emerald-500 transition-colors" aria-label="Close panel">
+ <button onClick={() => setRightOpen(false)} className="p-1 hover:text-gray-600 dark:text-gray-500 transition-colors" aria-label="Close panel">
  <X size={16} />
  </button>
  </div>
@@ -190,8 +191,8 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  'flex items-center gap-1.5 px-2.5 py-1 rounded-none border text-[10px] font-black uppercase tracking-wider transition-all',
  isActive
  ? dark
- ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
- : 'bg-emerald-50 border-emerald-200 text-emerald-600'
+ ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400'
+ : 'bg-gray-50 border-gray-200 text-gray-600'
  : dark
  ? 'bg-white/5 border-white/[0.08] text-gray-500 hover:text-gray-300'
  : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-600'
@@ -308,7 +309,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  </button>
  <button
  onClick={(e) => { e.stopPropagation(); handleRestore(v._id) }}
- className="flex-1 py-1 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black uppercase tracking-widest text-center transition-all"
+ className="flex-1 py-1 bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white text-xs font-black uppercase tracking-widest text-center transition-all"
  >
  Restore
  </button>

@@ -104,41 +104,7 @@ function SectionContainer({
   )
 }
 
-// ── Navbar Section ──────────────────────────────────
-function NavbarSection({ id, content }: { id: string; content: any }) {
-  const logo = content?.logo?.url || ''
-  const links = content?.links || []
-  const ctaText = content?.ctaText || 'Get Started'
-  const ctaUrl = content?.ctaUrl || '#'
 
-  return (
-    <SectionContainer id={id} blockType="navbar" title="Navigation" content={content}>
-      <nav className="navbar-zenith">
-        <div className="flex items-center gap-4">
-          {logo ? (
-            <img src={logo} alt="Logo" className="h-8 object-contain" />
-          ) : (
-            <div className="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center font-black italic">
-              Z
-            </div>
-          )}
-        </div>
-        <div className="nav-links hidden md:flex">
-          {links.map((link: any, idx: number) => (
-            <a key={idx} href={link.url}>
-              {link.label}
-            </a>
-          ))}
-        </div>
-        <div className="nav-cta">
-          <a href={ctaUrl} className="zenith-btn-primary">
-            {ctaText}
-          </a>
-        </div>
-      </nav>
-    </SectionContainer>
-  )
-}
 
 // ── Hero Section ───────────────────────────────────
 function HeroSection({ id, content }: { id: string; content: any }) {
@@ -663,7 +629,6 @@ function HomePage() {
   const [posts, setPosts] = useState<Post[]>([])
   const [pageData, setPageData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
   const params = new URLSearchParams(window.location.search)
   const isPreview = params.get('preview') === 'true'
@@ -743,9 +708,6 @@ function HomePage() {
         setError(null)
       } catch (err) {
         console.error('Failed to load home content:', err)
-        if (!isPreview) {
-          setError('Could not connect to CMS. Check your .env settings.')
-        }
       } finally {
         setLoading(false)
       }

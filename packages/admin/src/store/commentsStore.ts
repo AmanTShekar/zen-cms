@@ -58,7 +58,7 @@ export const useCommentsStore = create<CommentsState>((set, get) => ({
  setActiveCommentId: (activeCommentId) => set({ activeCommentId }),
 
  fetchComments: async (collection, documentId) => {
- set({ loading: true })
+ set({ comments: [], loading: true })
  try {
  const res = await api.get('/comments', { params: { collection, documentId } })
  set({ comments: res.data.data || [] })

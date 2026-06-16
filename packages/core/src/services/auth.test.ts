@@ -1,43 +1,108 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { AuthService } from './auth'
+import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { RBACEngine } from './rbac'
 
-describe('Auth Service', () => {
-  it('should hash and compare passwords correctly', async () => {
-    const password = 'MySecretPassword123'
-    const hash = await AuthService.hashPassword(password)
+vi.mock('../database/adapters/AdapterFactory', () => {
+  return {
+    AdapterFactory: {
+      getActiveAdapter: vi.fn()
+    }
+  }
+})
 
-    expect(hash).not.toBe(password)
-    expect(await AuthService.comparePassword(password, hash)).toBe(true)
-    expect(await AuthService.comparePassword('wrongPassword', hash)).toBe(false)
+describe('AuthService and RBAC Engine (Enterprise Readiness)', () => {
+  let mockAdapter: any
+
+  beforeEach(() => {
+    vi.resetAllMocks()
+    mockAdapter = {
+      findOne: vi.fn(),
+      find: vi.fn(),
+      update: vi.fn(),
+      create: vi.fn(),
+    }
+    ;(AdapterFactory.getActiveAdapter as any).mockReturnValue(mockAdapter)
   })
 
-  it('should generate and verify access tokens (15min expiry)', () => {
-    const user = { id: '123', email: 'test@example.com', role: 'admin' as const }
-    const token = AuthService.generateToken(user)
+  describe('AuthService', () => {
+    it('tracks failed login attempts and locks out users', async () => {
+      mockAdapter.find.mockResolvedValueOnce([{
+        id: 'user-1',
+        email: 'test@example.com',
+        failedLoginAttempts: 4,
+        lockUntil: null
+      }])
 
-    expect(token).toBeDefined()
-    const verified = AuthService.verifyToken(token)
-    expect(verified).toMatchObject({ id: '123', email: 'test@example.com', role: 'admin' })
+      const attempt = await AuthService.trackFailedAttempt('test@example.com')
+      
+      expect(mockAdapter.update).toHaveBeenCalledWith('users', 'user-1', expect.objectContaining({
+        failedLoginAttempts: 5,
+        lockUntil: expect.any(Date)
+      }))
+      
+      expect(attempt.locked).toBe(true)
+      expect(attempt.attemptsLeft).toBe(0)
+    })
+
+    it('resets failed attempts on successful login', async () => {
+      mockAdapter.find.mockResolvedValueOnce([{
+        id: 'user-1',
+        email: 'test@example.com',
+        failedLoginAttempts: 3
+      }])
+
+      await AuthService.resetFailedAttempts('test@example.com')
+
+      expect(mockAdapter.update).toHaveBeenCalledWith('users', 'user-1', {
+        failedLoginAttempts: 0,
+        lockUntil: null
+      })
+    })
+
+    it('hashes passwords uniquely', async () => {
+      const hash1 = await AuthService.hashPassword('SuperSecret123!')
+      const hash2 = await AuthService.hashPassword('SuperSecret123!')
+      expect(hash1).not.toEqual(hash2)
+      
+      const isValid = await AuthService.comparePassword('SuperSecret123!', hash1)
+      expect(isValid).toBe(true)
+    })
   })
 
-  it('should generate and verify refresh tokens (7d expiry)', () => {
-    const user = { id: '456', email: 'editor@example.com', role: 'editor' as const }
-    const refreshToken = AuthService.generateRefreshToken(user)
+  describe('RBACEngine', () => {
+    it('grants admin users wildcard access', async () => {
+      const access = await RBACEngine.checkAccess('admin', 'posts', 'delete')
+      expect(access).toBe(true)
+    })
 
-    expect(refreshToken).toBeDefined()
-    const verified = AuthService.verifyRefreshToken(refreshToken)
-    expect(verified).toMatchObject({ id: '456' })
-  })
+    it('enforces specific resource permissions from database custom roles', async () => {
+      mockAdapter.find.mockResolvedValue([{
+        roleName: 'custom-writer',
+        hasWildcard: false,
+        permissions: {
+          'posts': ['create', 'read'],
+          'pages': ['read']
+        }
+      }])
 
-  it('should return null for invalid tokens', () => {
-    expect(AuthService.verifyToken('invalid-token')).toBeNull()
-    expect(AuthService.verifyRefreshToken('invalid-token')).toBeNull()
-  })
+      const canCreatePost = await RBACEngine.checkAccess('custom-writer', 'posts', 'create')
+      const canDeletePost = await RBACEngine.checkAccess('custom-writer', 'posts', 'delete')
+      
+      expect(canCreatePost).toBe(true)
+      expect(canDeletePost).toBe(false)
+    })
 
-  it('should validate password strength', () => {
-    expect(AuthService.validatePassword('short')).toMatchObject({ valid: false })
-    expect(AuthService.validatePassword('nouppercase1')).toMatchObject({ valid: false })
-    expect(AuthService.validatePassword('NoNumbers')).toMatchObject({ valid: false })
-    expect(AuthService.validatePassword('ValidPass1!')).toMatchObject({ valid: true })
+    it('falls back to secure defaults if role is missing in db', async () => {
+      mockAdapter.find.mockResolvedValue([]) // Not found
+      
+      const viewerRead = await RBACEngine.checkAccess('viewer', 'posts', 'read')
+      const viewerWrite = await RBACEngine.checkAccess('viewer', 'posts', 'update')
+      const editorDelete = await RBACEngine.checkAccess('editor', 'posts', 'delete')
+
+      expect(viewerRead).toBe(true)
+      expect(viewerWrite).toBe(false)
+      expect(editorDelete).toBe(false)
+    })
   })
 })

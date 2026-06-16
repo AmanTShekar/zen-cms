@@ -53,7 +53,7 @@ export function useSpatialSave({
   const setWorkflowStatus = useWorkflowStore((s) => s.setWorkflowStatus)
 
  // Store latest state in refs so the timeout callback always reads fresh values
- const autoSaveStateRef = useRef<{ data: PageData | null; publishStatus: string; workflowStatus: string; workflowReviewers: any[]; workflowComments: any[]; scheduledAt: string; translations: any; fieldSettings: Record<string, any> }>({
+ const autoSaveStateRef = useRef<{ data: PageData | null; publishStatus: string; workflowStatus: string; workflowReviewers: any[]; workflowComments: any[]; scheduledAt: string; translations: any; fieldSettings: any }>({
  data: null, publishStatus: 'draft', workflowStatus: 'draft', workflowReviewers: [], workflowComments: [], scheduledAt: '', translations: {}, fieldSettings: {},
  })
  // Keep refs in sync with latest state
@@ -78,7 +78,7 @@ export function useSpatialSave({
  const errorMap: Record<string, string> = {}
  errors.forEach(e => {
  const key = `${e.sectionId}:${e.fieldName}`
- errorMap[key] = e.message
+ errorMap[key] = (e instanceof Error ? e.message : String(e))
  })
  setStoreFieldErrors(errorMap)
  toast.error(`${errors.length} validation error(s) found. Please fix the errors.`)
@@ -120,8 +120,8 @@ export function useSpatialSave({
  }, [data, hasUnsavedChanges, saving, isGlobal, id, validate])
 
 
- const sanitizeContent = (content: Record<string, any>): Record<string, any> => {
- const cleaned: Record<string, any> = {}
+ const sanitizeContent = (content: any): any => {
+ const cleaned: any = {}
  for (const [key, val] of Object.entries(content)) {
  if (val === '' || val === null || val === undefined) continue
  if (Array.isArray(val) && val.length === 0) continue
@@ -141,7 +141,7 @@ export function useSpatialSave({
  const errorMap: Record<string, string> = {}
  errors.forEach(e => {
  const key = `${e.sectionId}:${e.fieldName}`
- errorMap[key] = e.message
+ errorMap[key] = (e instanceof Error ? e.message : String(e))
  })
  setStoreFieldErrors(errorMap)
  toast.error(`${errors.length} validation error(s) found. Please fix the errors before saving.`)

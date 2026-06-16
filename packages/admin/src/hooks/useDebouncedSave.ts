@@ -22,7 +22,7 @@ export function useDebouncedSave(
  slug: string,
  id: string,
  isGlobal: boolean,
- getPayload: (data: import('../store/editorStore').PageData) => Record<string, unknown>,
+ getPayload: (data: import('../store/editorStore').PageData) => any,
  debounceMs = DEFAULT_DEBOUNCE_MS
 ) {
  const save = useEditorStore((s) => s.save)

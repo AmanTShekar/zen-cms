@@ -26,7 +26,7 @@ import { requireAuth, requireRole } from '../middleware/auth'
 import { createResponse } from './utils'
 import { InvalidPayloadError, NotFoundError } from '../errors'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
-import { DatabaseAdapter } from '@zenithcms/types'
+import { DatabaseAdapter } from '@zenith-open/zenithcms-types'
 
 const COMPONENTS_COLLECTION = 'z_components'
 
@@ -56,7 +56,7 @@ const router: import('express').Router = Router()
 router.get('/', async (req: Request, res: Response, next) => {
   try {
     const adapter = getAdapter(req)
-    const docs = await adapter.find<any>(COMPONENTS_COLLECTION, {})
+    const docs = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, {})
     res.json(createResponse(docs.map(toDTO)))
   } catch (err) {
     next(err)
@@ -67,7 +67,7 @@ router.get('/', async (req: Request, res: Response, next) => {
 router.get('/:slug', async (req: Request, res: Response, next) => {
   try {
     const adapter = getAdapter(req)
-    const docs = await adapter.find<any>(COMPONENTS_COLLECTION, { slug: req.params.slug })
+    const docs = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, { slug: req.params.slug })
     const doc = docs[0]
     if (!doc) throw new NotFoundError(`Component "${req.params.slug}" not found`)
     res.json(createResponse(toDTO(doc)))
@@ -92,11 +92,11 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
       throw new InvalidPayloadError(`Slug "${cleanSlug}" is reserved`)
 
     const adapter = getAdapter(req)
-    const existing = await adapter.find<any>(COMPONENTS_COLLECTION, { slug: cleanSlug })
+    const existing = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, { slug: cleanSlug })
     if (existing.length > 0)
       throw new InvalidPayloadError(`Component with slug "${cleanSlug}" already exists`)
 
-    const doc = await adapter.create<any>(COMPONENTS_COLLECTION, {
+    const doc = await adapter.create<Record<string, any>>(COMPONENTS_COLLECTION, {
       slug: cleanSlug,
       displayName,
       category: category || 'General',
@@ -125,7 +125,7 @@ router.put('/:id', requireAuth, requireRole('admin'), async (req: Request, res: 
     if (description !== undefined) update.description = description
     if (fields !== undefined)      update.fields = fields
 
-    const doc = await adapter.update<any>(COMPONENTS_COLLECTION, id, update)
+    const doc = await adapter.update<Record<string, any>>(COMPONENTS_COLLECTION, id, update)
     if (!doc) throw new NotFoundError(`Component "${id}" not found`)
 
     res.json(createResponse(toDTO(doc)))
@@ -152,12 +152,12 @@ router.post('/:id/duplicate', requireAuth, requireRole('admin'), async (req: Req
   try {
     const { id } = req.params
     const adapter = getAdapter(req)
-    const docs = await adapter.find<any>(COMPONENTS_COLLECTION, { _id: id })
+    const docs = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, { _id: id })
     const original = docs[0]
     if (!original) throw new NotFoundError(`Component "${id}" not found`)
 
     const newSlug = `${original.slug}-copy-${Date.now()}`
-    const doc = await adapter.create<any>(COMPONENTS_COLLECTION, {
+    const doc = await adapter.create<Record<string, any>>(COMPONENTS_COLLECTION, {
       slug: newSlug,
       displayName: `${original.displayName} (Copy)`,
       category: original.category,
@@ -192,10 +192,10 @@ router.post('/register-code', requireAuth, requireRole('admin'), async (req: Req
     const adapter = getAdapter(req)
 
     // Upsert: if component already exists, update it (idempotent registration)
-    const existing = await adapter.find<any>(COMPONENTS_COLLECTION, { slug: cleanSlug })
+    const existing = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, { slug: cleanSlug })
     let doc: any
     if (existing.length > 0) {
-      doc = await adapter.update<any>(COMPONENTS_COLLECTION, String(existing[0]._id ?? existing[0].id), {
+      doc = await adapter.update<Record<string, any>>(COMPONENTS_COLLECTION, String(existing[0]._id ?? existing[0].id), {
         displayName: resolvedName,
         category: category || existing[0].category,
         icon: icon || existing[0].icon,
@@ -206,7 +206,7 @@ router.post('/register-code', requireAuth, requireRole('admin'), async (req: Req
       return res.json(createResponse({ ...toDTO(doc), registered: 'updated' }))
     }
 
-    doc = await adapter.create<any>(COMPONENTS_COLLECTION, {
+    doc = await adapter.create<Record<string, any>>(COMPONENTS_COLLECTION, {
       slug: cleanSlug,
       displayName: resolvedName,
       category: category || 'General',

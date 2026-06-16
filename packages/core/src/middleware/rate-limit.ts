@@ -90,13 +90,23 @@ function readRateLimitConfig(): { apiMax: number; apiWindowMs: number; authMax: 
 
 const { apiMax, apiWindowMs, authMax, authWindowMs } = readRateLimitConfig()
 
+function getRateLimitKey(req: any): string {
+  const userId = req.user?.id
+  const ip = req.ip || req.socket.remoteAddress || 'unknown'
+  const apiKey = req.headers['x-api-key']
+  if (userId) return `user:${userId}:${ip}`
+  if (apiKey) return `apikey:${apiKey.slice(0, 8)}`
+  return `ip:${ip}`
+}
+
 // General API: 100 requests per minute (configurable via env)
 export const rateLimitMiddleware = rateLimit({
   windowMs: apiWindowMs,
   max: apiMax,
+  keyGenerator: getRateLimitKey,
   message: { error: 'Too many requests, please try again later.' },
   standardHeaders: true,
-  legacyHeaders: false,
+  legacyHeaders: true,
   store: rateLimitStore,
   skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
 })
@@ -108,9 +118,10 @@ export const apiRateLimiter = rateLimitMiddleware
 export const authRateLimiter = rateLimit({
   windowMs: authWindowMs,
   max: authMax,
+  keyGenerator: getRateLimitKey,
   message: { error: 'Too many login attempts. Please wait 15 minutes.' },
   standardHeaders: true,
-  legacyHeaders: false,
+  legacyHeaders: true,
   store: rateLimitStore,
   skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
 })

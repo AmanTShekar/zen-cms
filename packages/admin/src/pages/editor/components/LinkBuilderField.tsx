@@ -4,6 +4,7 @@ import { Link2, Search, X, Hash, Globe, FileText, ChevronDown } from 'lucide-rea
 import { cn } from '../../../lib/utils'
 import api from '../../../lib/api'
 import { useEditorStore } from '../../../store/editorStore'
+import { useShallow } from 'zustand/react/shallow'
 
 interface LinkBuilderFieldProps {
  value: string
@@ -25,7 +26,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  const [loading, setLoading] = useState(false)
  const popoverRef = useRef<HTMLDivElement>(null)
  
- const { data } = useEditorStore()
+ const { data  } = useEditorStore(useShallow(state => ({ data: state.data })))
 
  // Extract page anchors
  const anchors = (data?.sections?.map(s => s.content?.anchorId).filter(Boolean) as string[]) || []
@@ -89,12 +90,12 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  className={cn(
  'w-full px-3 py-2 flex items-center justify-between border text-xs transition-all rounded-none font-medium',
  theme === 'dark'
- ? 'bg-black/40 border-white/[0.08] text-gray-300 hover:border-emerald-500/50 focus:border-emerald-500 focus:bg-black/80'
- : 'bg-white border-gray-200 text-gray-800 hover:border-emerald-500 focus:border-emerald-500'
+ ? 'bg-black/40 border-white/[0.08] text-gray-300 hover:border-gray-500/50 focus:border-gray-500 focus:bg-black/80'
+ : 'bg-white border-gray-200 text-gray-800 hover:border-gray-500 focus:border-gray-500'
  )}
  >
  <span className="flex items-center gap-2 truncate">
- <Link2 size={13} className="text-emerald-600 dark:text-emerald-500 shrink-0" />
+ <Link2 size={13} className="text-gray-600 dark:text-gray-500 shrink-0" />
  <span className="truncate">{value || 'Select link...'}</span>
  </span>
  <ChevronDown size={13} className="opacity-50 shrink-0" />
@@ -133,7 +134,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  className={cn(
  'flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-none transition-all',
  isActive
- ? theme === 'dark' ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-emerald-100 text-emerald-700'
+ ? theme === 'dark' ? 'bg-gray-500/20 text-gray-600 dark:text-gray-400' : 'bg-gray-100 text-gray-700'
  : theme === 'dark' ? 'text-gray-500 hover:text-gray-300 hover:bg-white/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
  )}
  >
@@ -154,7 +155,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  onChange={(e) => onChange(e.target.value)}
  placeholder="https:// or /path"
  className={cn(
- 'w-full px-3 py-2 text-xs font-medium border rounded-none transition-colors outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500',
+ 'w-full px-3 py-2 text-xs font-medium border rounded-none transition-colors outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-gray-500',
  theme === 'dark' ? 'bg-black/20 border-white/[0.08] text-white' : 'bg-white border-gray-200 text-black'
  )}
  />
@@ -164,7 +165,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  {activeTab === 'anchors' && (
  <div className="flex flex-col h-56">
  <div className="p-3 pb-1 border-b border-white/[0.08]">
- <p className="text-[10px] uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-500 mb-2">On this page</p>
+ <p className="text-[10px] uppercase font-black tracking-widest text-gray-600 dark:text-gray-500 mb-2">On this page</p>
  </div>
  <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-editor-scrollbar">
  {anchors.length === 0 ? (
@@ -178,11 +179,11 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  setOpen(false)
  }}
  className={cn(
- 'w-full text-left px-3 py-2 text-xs font-medium border border-transparent hover:border-emerald-500/30 rounded-none transition-colors flex items-center gap-2',
- theme === 'dark' ? 'hover:bg-emerald-500/10 text-gray-300' : 'hover:bg-emerald-50 text-gray-700'
+ 'w-full text-left px-3 py-2 text-xs font-medium border border-transparent hover:border-gray-500/30 rounded-none transition-colors flex items-center gap-2',
+ theme === 'dark' ? 'hover:bg-gray-500/10 text-gray-300' : 'hover:bg-gray-50 text-gray-700'
  )}
  >
- <Hash size={12} className="text-emerald-600 dark:text-emerald-500" />
+ <Hash size={12} className="text-gray-600 dark:text-gray-500" />
  {anchor}
  </button>
  ))
@@ -202,7 +203,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  value={search}
  onChange={(e) => setSearch(e.target.value)}
  className={cn(
- 'w-full pl-8 pr-3 py-1.5 text-xs border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-emerald-500',
+ 'w-full pl-8 pr-3 py-1.5 text-xs border rounded-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:border-gray-500',
  theme === 'dark' ? 'bg-black/20 border-white/[0.08] text-white' : 'bg-white border-gray-200 text-black'
  )}
  />
@@ -210,7 +211,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  </div>
  <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-editor-scrollbar">
  {loading ? (
- <p className="text-[10px] uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-500 text-center py-6 animate-pulse">Searching...</p>
+ <p className="text-[10px] uppercase font-black tracking-widest text-gray-600 dark:text-gray-500 text-center py-6 animate-pulse">Searching...</p>
  ) : pages.length === 0 ? (
  <p className="text-[10px] uppercase font-black tracking-widest text-gray-500 text-center py-6">No pages found</p>
  ) : (
@@ -225,12 +226,12 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  className={cn(
  'w-full text-left px-3 py-2 border rounded-none transition-colors flex flex-col gap-1',
  value === `/${page.slug}` 
- ? theme === 'dark' ? 'bg-emerald-500/20 border-emerald-500/30' : 'bg-emerald-50 border-emerald-200'
+ ? theme === 'dark' ? 'bg-gray-500/20 border-gray-500/30' : 'bg-gray-50 border-gray-200'
  : theme === 'dark' ? 'border-transparent hover:bg-white/5' : 'border-transparent hover:bg-gray-50'
  )}
  >
  <span className={cn("text-xs font-bold", theme === 'dark' ? 'text-gray-200' : 'text-gray-800')}>{page.title}</span>
- <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-500">/{page.slug}</span>
+ <span className="text-[10px] font-mono text-gray-600 dark:text-gray-500">/{page.slug}</span>
  </button>
  ))
  )}
@@ -245,7 +246,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  )}>
  <button
  onClick={() => setOpen(false)}
- className="px-4 py-1.5 text-[10px] uppercase font-black tracking-widest bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+ className="px-4 py-1.5 text-[10px] uppercase font-black tracking-widest bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white transition-colors"
  >
  Done
  </button>

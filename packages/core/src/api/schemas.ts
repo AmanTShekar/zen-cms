@@ -3,7 +3,7 @@ import { requireAuth, requireRole } from '../middleware/auth'
 import { createResponse } from './utils'
 import { InvalidPayloadError, NotFoundError } from '../errors'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
-import { DatabaseAdapter } from '@zenithcms/types'
+import { DatabaseAdapter } from '@zenith-open/zenithcms-types'
 import { logger } from '../services/logger'
 
 const SCHEMAS_COLLECTION = 'z_schemas'
@@ -30,7 +30,7 @@ router.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Res
   try {
     const siteId = req.headers['x-zenith-site-id'] as string
     const adapter = getAdapter(req)
-    const docs = await adapter.find<any>(SCHEMAS_COLLECTION, {}, { siteId })
+    const docs = await adapter.find<Record<string, any>>(SCHEMAS_COLLECTION, {}, { siteId })
     // Ensure blocks do not leak into the collections list
     const filteredDocs = docs.filter((d: any) => d.type !== 'block')
     console.log(`[/schemas] Called with siteId: ${siteId}. Returning ${filteredDocs.length} schemas.`)
@@ -45,7 +45,7 @@ router.get('/:id', requireAuth, requireRole('admin'), async (req: Request, res: 
   try {
     const siteId = req.headers['x-zenith-site-id'] as string
     const adapter = getAdapter(req)
-    const docs = await adapter.find<any>(SCHEMAS_COLLECTION, { id: req.params.id }, { siteId })
+    const docs = await adapter.find<Record<string, any>>(SCHEMAS_COLLECTION, { id: req.params.id }, { siteId })
     const doc = docs[0]
     if (!doc) throw new NotFoundError(`Schema "${req.params.id}" not found`)
     res.json(createResponse(toSchemaDTO(doc)))
@@ -66,12 +66,12 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
     const adapter = getAdapter(req)
     
     // Check if slug already exists
-    const existing = await adapter.find<any>(SCHEMAS_COLLECTION, { slug }, { siteId })
+    const existing = await adapter.find<Record<string, any>>(SCHEMAS_COLLECTION, { slug }, { siteId })
     if (existing && existing.length > 0) {
       throw new InvalidPayloadError(`Schema with slug "${slug}" already exists`)
     }
 
-    const doc = await adapter.create<any>(SCHEMAS_COLLECTION, {
+    const doc = await adapter.create<Record<string, any>>(SCHEMAS_COLLECTION, {
       slug,
       singular,
       plural,
@@ -103,7 +103,7 @@ router.put('/:id', requireAuth, requireRole('admin'), async (req: Request, res: 
     if (fields !== undefined) update.fields = fields
     if (settings !== undefined) update.settings = settings
 
-    const doc = await adapter.update<any>(SCHEMAS_COLLECTION, id, update, { siteId })
+    const doc = await adapter.update<Record<string, any>>(SCHEMAS_COLLECTION, id, update, { siteId })
     if (!doc) throw new NotFoundError(`Schema "${id}" not found`)
 
     logger.info(`Schema "${doc.slug}" updated.`)

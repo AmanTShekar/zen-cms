@@ -1,7 +1,7 @@
 /**
  * Zenith CMS — Server Entry Point
  * ─────────────────────────────────
- * Run in development: npx pnpm --filter @zenithcms/core dev
+ * Run in development: npx pnpm --filter @zenith-open/zenithcms-core dev
  * Run in production:  node dist/server.js
  */
 import 'dotenv/config'
@@ -14,16 +14,20 @@ if (process.env.NODE_ENV === 'production' && !process.env.REDIS_URL) {
   process.exit(1)
 }
 
-import { initTelemetry } from './services/telemetry'
+import './services/telemetry'
+import { nodeProfilingIntegration } from '@sentry/profiling-node'
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     environment: process.env.NODE_ENV || 'development',
+    integrations: [
+      nodeProfilingIntegration(),
+    ],
+    tracesSampleRate: 1.0, 
+    profilesSampleRate: 1.0,
   })
 }
-
-initTelemetry()
 
 // ── Global Process Error Handlers ────────────────────────────────────────────
 // These must be registered before any other code to catch every unhandled error.
@@ -61,7 +65,22 @@ try {
 }
 /* eslint-enable @typescript-eslint/no-require-imports */
 
-const engine = new ZenithEngine({
+// eslint-disable-next-line prefer-const
+let engine: any
+
+const shutdown = async (signal: string) => {
+  logger.info({ signal }, 'Graceful shutdown initiated — stopping engine...')
+  if (engine?.stop) {
+    await engine.stop(signal)
+  }
+  logger.info('Shutdown complete.')
+  process.exit(0)
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'))
+process.on('SIGINT', () => shutdown('SIGINT'))
+
+engine = new ZenithEngine({
   config,
   cors: {
     origins: process.env.CORS_ORIGINS

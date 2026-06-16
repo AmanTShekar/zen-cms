@@ -6,6 +6,7 @@ import { useModalStore } from '../../../store/modalStore'
 import { humanize, type FieldDefinition } from '../constants'
 import { FieldRenderer } from '../FieldRenderer'
 import { cn } from '../../../lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
 interface NestedDynamicZoneProps {
  blockId: string
@@ -55,12 +56,12 @@ const DraggableZoneItem = ({
  </div>
  <div className={cn(
  'w-5 h-5 rounded-none flex items-center justify-center shrink-0',
- theme === 'dark' ? 'bg-emerald-500/10' : 'bg-emerald-50'
+ theme === 'dark' ? 'bg-gray-500/10' : 'bg-gray-50'
  )}>
- <BlockIcon size={10} className="text-emerald-600 dark:text-emerald-400" />
+ <BlockIcon size={10} className="text-gray-600 dark:text-gray-400" />
  </div>
  <div className="flex-1 min-w-0">
- <p className="text-xs font-black uppercase text-emerald-300 truncate">
+ <p className="text-xs font-black uppercase text-gray-300 truncate">
  {componentLabel}
  </p>
  </div>
@@ -76,9 +77,9 @@ const DraggableZoneItem = ({
  </button>
  <button
  onClick={() => toggleExpand(dzId)}
- className="p-1 text-gray-500 hover:text-emerald-600 dark:text-emerald-400 transition-colors"
+ className="p-1 text-gray-500 hover:text-gray-600 dark:text-gray-400 transition-colors"
  >
- {isExpanded ? <ChevronUp size={12} className="text-emerald-600 dark:text-emerald-400" /> : <ChevronDown size={12} className="text-gray-400" />}
+ {isExpanded ? <ChevronUp size={12} className="text-gray-600 dark:text-gray-400" /> : <ChevronDown size={12} className="text-gray-400" />}
  </button>
  </div>
  </div>
@@ -124,7 +125,7 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
  components,
 }) => {
  const BLOCK_LIBRARY = useEditorBlocks()
- const { openComponentPicker } = useModalStore()
+ const { openComponentPicker  } = useModalStore(useShallow(state => ({ openComponentPicker: state.openComponentPicker })))
  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
 
  const componentTypeLabel = (type: string) =>
@@ -147,7 +148,7 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
 
  const addItem = useCallback((type: string) => {
  const def = BLOCK_LIBRARY.find((b) => b.type === type)
- const newItem: Record<string, any> = {
+ const newItem: any = {
  __component: `content.${type}`,
  ...(def?.defaultContent ? JSON.parse(JSON.stringify(def.defaultContent)) : {}),
  }
@@ -186,8 +187,8 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
  <div className="space-y-3">
  {/* Zone label */}
  <div className="flex items-center gap-2 px-1">
- <Layers size={10} className="text-emerald-600 dark:text-emerald-400" />
- <span className="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+ <Layers size={10} className="text-gray-600 dark:text-gray-400" />
+ <span className="text-xs font-black uppercase tracking-widest text-gray-600 dark:text-gray-400">
  Dynamic Zone
  </span>
  <span className="text-xs text-gray-500">— {value.length} component{value.length !== 1 ? 's' : ''}</span>
@@ -236,8 +237,8 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
  className={cn(
  'w-full flex items-center justify-center gap-2 py-2.5 border border-dashed rounded-none transition-all text-xs font-black uppercase tracking-widest',
  theme === 'dark'
- ? 'border-white/[0.08] text-gray-500 hover:border-emerald-500/40 hover:text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/5'
- : 'border-gray-200 text-gray-400 hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50/50'
+ ? 'border-white/[0.08] text-gray-500 hover:border-gray-500/40 hover:text-gray-600 dark:text-gray-400 hover:bg-gray-500/5'
+ : 'border-gray-200 text-gray-400 hover:border-gray-400 hover:text-gray-600 hover:bg-gray-50/50'
  )}
  >
  <Plus size={12} />

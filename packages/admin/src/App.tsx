@@ -54,6 +54,7 @@ import { ThemeProvider } from './context/ThemeContext'
 import { BlockLibraryProvider } from './context/BlockLibraryContext'
 import { GlobalComponentPickerModal } from './components/GlobalComponentPickerModal'
 import { GlobalConfirmDialog } from './components/GlobalConfirmDialog'
+import { useShallow } from 'zustand/react/shallow'
 
 // ── Code-split page bundles ────────────────────────────────────────────────────
 const CollectionsPage = lazy(() => import('./pages/CollectionsPage'))
@@ -104,7 +105,7 @@ const queryClient = new QueryClient({
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
- const { isAuthenticated, isLoading, checkAuth } = useAuthStore()
+ const { isAuthenticated, isLoading, checkAuth  } = useAuthStore(useShallow(state => ({ isAuthenticated: state.isAuthenticated, isLoading: state.isLoading, checkAuth: state.checkAuth })))
  const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null)
  const location = useLocation()
 

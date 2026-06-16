@@ -1,5 +1,5 @@
 {
-  "name": "@zenithcms/db-postgres",
+  "name": "@zenith-open/zenithcms-db-postgres",
   "version": "0.1.0",
   "publishConfig": {
     "access": "public"
@@ -14,8 +14,9 @@
     "drizzle-orm": "^0.45.2",
     "pg": "^8.11.0",
     "node-cache": "^5.1.2",
+    "ioredis": "^5.3.2",
     "pino": "^9.0.0",
-    "@zenithcms/types": "workspace:*"
+    "@zenith-open/zenithcms-types": "workspace:*"
   },
   "devDependencies": {
     "@types/pg": "^8.11.0",

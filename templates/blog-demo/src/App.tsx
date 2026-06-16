@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ZenithClient } from '@zenithcms/sdk'
+import { ZenithClient } from '@zenith-open/zenithcms-sdk'
 import { BookOpen, Calendar, User, ArrowRight } from 'lucide-react'
 
 // Connect to Zenith CMS v2
@@ -152,3 +152,4 @@ const BlogDemo = () => {
 }
 
 export default BlogDemo
+

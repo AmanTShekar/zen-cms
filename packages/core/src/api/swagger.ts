@@ -1,7 +1,7 @@
 import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
 import { Express } from 'express'
-import { CMSConfig } from '@zenithcms/types'
+import { CMSConfig } from '@zenith-open/zenithcms-types'
 
 // Helper to map Zenith field types to OpenAPI schemas
 function mapFieldToSwagger(field: any): any {
@@ -93,6 +93,29 @@ export function setupSwagger(app: Express, config: CMSConfig) {
     })
     const collectionSchema = { type: 'object', properties }
 
+    const errorSchema = {
+      type: 'object',
+      properties: {
+        error: {
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+            code: { type: 'string' },
+            details: { type: 'array', items: { type: 'string' } }
+          }
+        }
+      }
+    }
+
+    const errorResponses = {
+      400: { description: 'Bad Request', content: { 'application/json': { schema: errorSchema } } },
+      401: { description: 'Unauthorized', content: { 'application/json': { schema: errorSchema } } },
+      403: { description: 'Forbidden', content: { 'application/json': { schema: errorSchema } } },
+      404: { description: 'Not Found', content: { 'application/json': { schema: errorSchema } } },
+      422: { description: 'Unprocessable Entity', content: { 'application/json': { schema: errorSchema } } },
+      500: { description: 'Internal Server Error', content: { 'application/json': { schema: errorSchema } } },
+    }
+
     if (!(specs as any).paths) (specs as any).paths = {}
     
     ;(specs as any).paths[`/${slug}`] = {
@@ -103,7 +126,8 @@ export function setupSwagger(app: Express, config: CMSConfig) {
           200: { 
             description: 'Success',
             content: { 'application/json': { schema: { type: 'array', items: collectionSchema } } }
-          } 
+          },
+          ...errorResponses
         },
         security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
       },
@@ -113,7 +137,10 @@ export function setupSwagger(app: Express, config: CMSConfig) {
         requestBody: { 
           content: { 'application/json': { schema: collectionSchema } } 
         },
-        responses: { 201: { description: 'Created', content: { 'application/json': { schema: collectionSchema } } } },
+        responses: { 
+          201: { description: 'Created', content: { 'application/json': { schema: collectionSchema } } },
+          ...errorResponses
+        },
         security: [{ bearerAuth: [] }],
       },
     }
@@ -127,7 +154,8 @@ export function setupSwagger(app: Express, config: CMSConfig) {
           200: { 
             description: 'Success',
             content: { 'application/json': { schema: collectionSchema } }
-          } 
+          },
+          ...errorResponses
         },
         security: [{ bearerAuth: [] }, { apiKeyAuth: [] }],
       },
@@ -142,7 +170,8 @@ export function setupSwagger(app: Express, config: CMSConfig) {
           200: { 
             description: 'Success',
             content: { 'application/json': { schema: collectionSchema } }
-          } 
+          },
+          ...errorResponses
         },
         security: [{ bearerAuth: [] }],
       },
@@ -150,16 +179,19 @@ export function setupSwagger(app: Express, config: CMSConfig) {
         tags: [name],
         summary: `Delete ${name}`,
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-        responses: { 204: { description: 'No Content' } },
+        responses: { 
+          204: { description: 'No Content' },
+          ...errorResponses
+        },
         security: [{ bearerAuth: [] }],
       },
     }
   })
 
   // Export JSON spec for openapi-typescript client generation
-  app.get('/api-docs/json', (req, res) => {
+  app.get('/api/docs/json', (req, res) => {
     res.json(specs)
   })
 
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs))
 }

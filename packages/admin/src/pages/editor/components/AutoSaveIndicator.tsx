@@ -4,9 +4,10 @@ import { Loader2, Check, AlertCircle } from 'lucide-react'
 import { useEditorStore } from '../../../store/editorStore'
 import { useTheme } from '../../../context/ThemeContext'
 import { cn } from '../../../lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
 export const AutoSaveIndicator: React.FC = () => {
- const { saving, hasUnsavedChanges } = useEditorStore()
+ const { saving, hasUnsavedChanges  } = useEditorStore(useShallow(state => ({ saving: state.saving, hasUnsavedChanges: state.hasUnsavedChanges })))
  const { theme } = useTheme()
 
  // Determine active status: 'saving' | 'unsaved' | 'saved'
@@ -24,8 +25,8 @@ export const AutoSaveIndicator: React.FC = () => {
  className={cn(
  'px-2.5 py-1 flex items-center gap-1.5 border text-xs font-black uppercase tracking-wider rounded-none',
  theme === 'dark'
- ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
- : 'bg-emerald-50 border-emerald-200 text-emerald-600'
+ ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400'
+ : 'bg-gray-50 border-gray-200 text-gray-600'
  )}
  >
  <Loader2 size={11} className="animate-spin" />
@@ -60,11 +61,11 @@ export const AutoSaveIndicator: React.FC = () => {
  className={cn(
  'px-2.5 py-1 flex items-center gap-1.5 border text-xs font-black uppercase tracking-wider rounded-none',
  theme === 'dark'
- ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
- : 'bg-emerald-50 border-emerald-200 text-emerald-600'
+ ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400'
+ : 'bg-gray-50 border-gray-200 text-gray-600'
  )}
  >
- <Check size={11} className="text-emerald-600 dark:text-emerald-500" />
+ <Check size={11} className="text-gray-600 dark:text-gray-500" />
  <span>Saved</span>
  </motion.div>
  )}

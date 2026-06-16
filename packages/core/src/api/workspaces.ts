@@ -19,7 +19,7 @@ router.get('/', async (req: Request, res: Response, next) => {
 
     // Adapter-agnostic: fetch all then JS-filter by owner/membership
     // ($or with dot-notation 'members.userId' is MongoDB-specific)
-    const all = await adapter.find<any>('z_workspaces', {}, { sort: { updatedAt: -1 } })
+    const all = await adapter.find<Record<string, any>>('z_workspaces', {}, { sort: { updatedAt: -1 } })
     let workspaces = all.filter((ws: any) =>
       ws.ownerId === user.id ||
       (Array.isArray(ws.members) && ws.members.some((m: any) => m.userId === user.id))
@@ -27,7 +27,7 @@ router.get('/', async (req: Request, res: Response, next) => {
 
     if (!workspaces || workspaces.length === 0) {
       const wsId = crypto.randomUUID()
-      const newWs = await adapter.create<any>('z_workspaces', {
+      const newWs = await adapter.create<Record<string, any>>('z_workspaces', {
         id: wsId,
         name: 'My Workspace',
         slug: `workspace-${user.id.slice(0, 6)}-${Math.random().toString(36).substring(2, 6)}`.toLowerCase(),
@@ -36,7 +36,7 @@ router.get('/', async (req: Request, res: Response, next) => {
       })
 
       // Map existing sites to this workspace
-      const orphanedSites = await adapter.find<any>('z_sites', { ownerId: user.id })
+      const orphanedSites = await adapter.find<Record<string, any>>('z_sites', { ownerId: user.id })
       for (const site of orphanedSites) {
         if (!site.workspaceId) {
           await adapter.update('z_sites', site.id || site._id, { workspaceId: newWs.id || newWs._id })
@@ -63,13 +63,13 @@ router.post('/', async (req: Request, res: Response, next) => {
     const user = (req as any).user
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-    const existing = await adapter.findOne<any>('z_workspaces', { slug: slug.toLowerCase() })
+    const existing = await adapter.findOne<Record<string, any>>('z_workspaces', { slug: slug.toLowerCase() })
     if (existing) {
       throw new InvalidPayloadError(`A workspace with the slug '${slug}' already exists.`)
     }
 
     const wsId = crypto.randomUUID()
-    const workspace = await adapter.create<any>('z_workspaces', {
+    const workspace = await adapter.create<Record<string, any>>('z_workspaces', {
       id: wsId,
       name,
       slug: slug.toLowerCase(),
@@ -97,10 +97,10 @@ router.get('/:id', async (req: Request, res: Response, next) => {
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
     // Adapter-agnostic lookup with membership check in JS
-    const allById = await adapter.find<any>('z_workspaces', { id })
+    const allById = await adapter.find<Record<string, any>>('z_workspaces', { id })
     let workspace: any = allById[0] || null
     if (!workspace) {
-      const allByMongoId = await adapter.find<any>('z_workspaces', { _id: id })
+      const allByMongoId = await adapter.find<Record<string, any>>('z_workspaces', { _id: id })
       workspace = allByMongoId[0] || null
     }
 
@@ -123,10 +123,10 @@ router.patch('/:id', async (req: Request, res: Response, next) => {
     const user = (req as any).user
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-    const allById = await adapter.find<any>('z_workspaces', { id })
+    const allById = await adapter.find<Record<string, any>>('z_workspaces', { id })
     let workspace: any = allById[0] || null
     if (!workspace) {
-      const allByMongoId = await adapter.find<any>('z_workspaces', { _id: id })
+      const allByMongoId = await adapter.find<Record<string, any>>('z_workspaces', { _id: id })
       workspace = allByMongoId[0] || null
     }
     if (!workspace) throw new NotFoundError('Workspace', id)
@@ -144,7 +144,7 @@ router.patch('/:id', async (req: Request, res: Response, next) => {
     delete updates.ownerId
     delete updates.members
 
-    const updatedWorkspace = await adapter.update<any>('z_workspaces', id, updates)
+    const updatedWorkspace = await adapter.update<Record<string, any>>('z_workspaces', id, updates)
     res.json(createResponse(updatedWorkspace))
   } catch (err) {
     next(err)
@@ -158,10 +158,10 @@ router.delete('/:id', async (req: Request, res: Response, next) => {
     const user = (req as any).user
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-    const allById = await adapter.find<any>('z_workspaces', { id })
+    const allById = await adapter.find<Record<string, any>>('z_workspaces', { id })
     let workspace: any = allById[0] || null
     if (!workspace) {
-      const allByMongoId = await adapter.find<any>('z_workspaces', { _id: id })
+      const allByMongoId = await adapter.find<Record<string, any>>('z_workspaces', { _id: id })
       workspace = allByMongoId[0] || null
     }
     if (!workspace) throw new NotFoundError('Workspace', id)

@@ -107,7 +107,7 @@ const AIWriterPage = () => {
  className={cn(
  'text-3xl font-black ',
  result.score >= 80
- ? 'text-emerald-600 dark:text-emerald-500'
+ ? 'text-gray-600 dark:text-gray-500'
  : result.score >= 50
  ? 'text-amber-500'
  : 'text-red-500'
@@ -141,7 +141,7 @@ const AIWriterPage = () => {
  <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest block mb-1">
  Readability
  </span>
- <span className="text-xl font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-tighter">
+ <span className="text-xl font-black text-gray-600 dark:text-gray-500 uppercase tracking-tighter">
  {result.readability}
  </span>
  </div>
@@ -149,7 +149,7 @@ const AIWriterPage = () => {
  <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest block mb-1">
  Complexity
  </span>
- <span className="text-xl font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-tighter">
+ <span className="text-xl font-black text-gray-600 dark:text-gray-500 uppercase tracking-tighter">
  {result.complexity}
  </span>
  </div>
@@ -160,7 +160,7 @@ const AIWriterPage = () => {
  </span>
  {result.suggestions?.map((s: string, i: number) => (
  <div key={i} className="flex gap-3 items-center p-2">
- <CheckCircle2 size={12} className="text-emerald-600 dark:text-emerald-500" />
+ <CheckCircle2 size={12} className="text-gray-600 dark:text-gray-500" />
  <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tight ">
  {s}
  </span>
@@ -201,10 +201,10 @@ const AIWriterPage = () => {
  AI Content Architect
  </h1>
  <div className="flex items-center gap-3 mt-2">
- <div className="px-3 py-1 rounded-none bg-white/5 border border-white/[0.08] text-[8px] font-black text-emerald-600 dark:text-emerald-400 uppercase ">
+ <div className="px-3 py-1 rounded-none bg-white/5 border border-white/[0.08] text-[8px] font-black text-gray-600 dark:text-gray-400 uppercase ">
  Zenith Pro
  </div>
- <div className="w-2 h-2 rounded-none bg-emerald-500 shadow-[0_0_12px_#10b981]" />
+ <div className="w-2 h-2 rounded-none bg-gray-500 shadow-[0_0_12px_#10b981]" />
  </div>
  </div>
  </div>
@@ -257,19 +257,19 @@ const AIWriterPage = () => {
  className={cn(
  'p-8 border rounded-none space-y-6 shadow-sm transition-all relative overflow-hidden',
  theme === 'dark'
- ? 'bg-emerald-500/5 border-emerald-500/20'
- : 'bg-emerald-50 border-emerald-100'
+ ? 'bg-gray-500/5 border-gray-500/20'
+ : 'bg-gray-50 border-gray-100'
  )}
  >
  <div className="flex items-center gap-4">
- <Cpu size={20} className="text-emerald-600 dark:text-emerald-500" />
+ <Cpu size={20} className="text-gray-600 dark:text-gray-500" />
  <span className="text-[12px] font-black uppercase tracking-widest ">
  Prompt Examples
  </span>
  </div>
  <p className="text-[11px] font-bold text-gray-500 uppercase tracking-tight leading-relaxed ">
  Try complex scenarios like: <br />
- <span className="text-emerald-600 dark:text-emerald-400">
+ <span className="text-gray-600 dark:text-gray-400">
  "Generate a 5-step workflow for a multi-tenant SaaS media pipeline"
  </span>
  </p>
@@ -318,8 +318,8 @@ const AIWriterPage = () => {
  className={cn(
  'w-10 h-10 rounded-none flex items-center justify-center border shadow-inner',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-emerald-600 dark:text-emerald-500'
- : 'bg-gray-50 border-gray-200 shadow-sm text-emerald-600'
+ ? 'bg-white/5 border-white/[0.08] text-gray-600 dark:text-gray-500'
+ : 'bg-gray-50 border-gray-200 shadow-sm text-gray-600'
  )}
  >
  <Terminal size={16} />
@@ -347,10 +347,10 @@ const AIWriterPage = () => {
  : 'Define schema structure...'
  }
  className={cn(
- 'w-full h-48 bg-transparent border rounded-none p-6 text-[11px] font-black outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all resize-none placeholder:text-gray-700 mb-6',
+ 'w-full h-48 bg-transparent border rounded-none p-6 text-[11px] font-black outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all resize-none placeholder:text-gray-700 mb-6',
  theme === 'dark'
- ? 'border-white/[0.08] text-white focus:border-emerald-500/30'
- : 'border-gray-200 shadow-sm text-gray-900 focus:border-emerald-500/20'
+ ? 'border-white/[0.08] text-white focus:border-gray-500/30'
+ : 'border-gray-200 shadow-sm text-gray-900 focus:border-gray-500/20'
  )}
  />
 
@@ -382,7 +382,7 @@ const AIWriterPage = () => {
  'absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-12 rounded-none border z-50 flex items-center justify-center transition-all hover:scale-110',
  theme === 'dark'
  ? 'bg-black border-white/[0.08] text-gray-500 hover:text-white'
- : 'bg-white border-gray-200 shadow-sm text-gray-400 hover:text-emerald-600 shadow-md'
+ : 'bg-white border-gray-200 shadow-sm text-gray-400 hover:text-gray-600 shadow-md'
  )}
  >
  <div
@@ -411,8 +411,8 @@ const AIWriterPage = () => {
  className={cn(
  'w-8 h-8 rounded-none border flex items-center justify-center',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-emerald-600 dark:text-emerald-500'
- : 'bg-white border-gray-200 shadow-sm text-emerald-600'
+ ? 'bg-white/5 border-white/[0.08] text-gray-600 dark:text-gray-500'
+ : 'bg-white border-gray-200 shadow-sm text-gray-600'
  )}
  >
  <Type size={14} />
@@ -433,7 +433,7 @@ const AIWriterPage = () => {
  'p-2 rounded-none transition-all',
  theme === 'dark'
  ? 'hover:bg-white/5 text-gray-500 hover:text-white'
- : 'hover:bg-gray-50 text-gray-400 hover:text-emerald-600'
+ : 'hover:bg-gray-50 text-gray-400 hover:text-gray-600'
  )}
  >
  <Copy size={16} />
@@ -441,12 +441,12 @@ const AIWriterPage = () => {
  )}
  </div>
 
- <div className="flex-1 p-8 overflow-auto font-mono text-[11px] font-black text-gray-500 leading-relaxed selection:bg-emerald-500 selection:text-white custom-scrollbar relative">
+ <div className="flex-1 p-8 overflow-auto font-mono text-[11px] font-black text-gray-500 leading-relaxed selection:bg-gray-500 selection:text-white custom-scrollbar relative">
  {mode === 'structure' && !result && !loading && (
  <div className="h-full flex flex-col p-10 space-y-12">
  <div className="flex items-center justify-between">
  <div className="flex flex-col">
- <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-600 dark:text-emerald-500">
+ <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-600 dark:text-gray-500">
  Persist_Canvas
  </span>
  <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-2">
@@ -461,7 +461,7 @@ const AIWriterPage = () => {
  <span className="text-[14px] font-black ">0%</span>
  </div>
  <div className="w-32 h-1 bg-white/5 rounded-none overflow-hidden">
- <div className="w-0 h-full bg-emerald-500 shadow-[0_0_10px_#10b981]" />
+ <div className="w-0 h-full bg-gray-500 shadow-[0_0_10px_#10b981]" />
  </div>
  </div>
  </div>
@@ -476,7 +476,7 @@ const AIWriterPage = () => {
  }}
  />
  <div className="flex flex-col items-center gap-6 group-hover:scale-110 transition-transform duration-700 opacity-20">
- <Globe size={64} strokeWidth={1} className="text-emerald-600 dark:text-emerald-500" />
+ <Globe size={64} strokeWidth={1} className="text-gray-600 dark:text-gray-500" />
  <span className="text-[9px] font-black uppercase tracking-[0.6em] ">
  Sections_Map_Standby
  </span>
@@ -496,8 +496,8 @@ const AIWriterPage = () => {
  {loading && (
  <div className="h-full flex flex-col items-center justify-center gap-8">
  <div className="relative">
- <Loader2 size={40} className="animate-spin text-emerald-600 dark:text-emerald-500 opacity-40" />
- <div className="absolute inset-0 bg-emerald-500/20 blur-xl rounded-none animate-pulse" />
+ <Loader2 size={40} className="animate-spin text-gray-600 dark:text-gray-500 opacity-40" />
+ <div className="absolute inset-0 bg-gray-500/20 blur-xl rounded-none animate-pulse" />
  </div>
  <span className="text-[10px] uppercase tracking-[0.5em] animate-pulse">
  Thinking...
@@ -524,7 +524,7 @@ const AIWriterPage = () => {
  <span className="text-[7px] font-black uppercase tracking-widest text-gray-500 block mb-1">
  {stat.label}
  </span>
- <span className="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400">
+ <span className="text-[10px] font-black uppercase text-gray-600 dark:text-gray-400">
  {stat.value}
  </span>
  </div>
@@ -534,8 +534,8 @@ const AIWriterPage = () => {
  className={cn(
  'w-full py-5 rounded-none text-[12px] font-black uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-4',
  theme === 'dark'
- ? 'bg-emerald-500 text-white hover:bg-emerald-600 dark:bg-emerald-600 shadow-lg shadow-emerald-500/10'
- : 'bg-emerald-600 dark:bg-emerald-600 text-white hover:bg-emerald-700'
+ ? 'bg-gray-500 text-white hover:bg-gray-600 dark:bg-gray-600 shadow-lg shadow-gray-500/10'
+ : 'bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-700'
  )}
  onClick={() => toast.success('Collection Saved')}
  >

@@ -111,7 +111,7 @@ const BuilderPage: React.FC = () => {
  </h2>
  <button
  onClick={handleCreateNew}
- className="p-1.5 hover:bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 rounded transition-colors"
+ className="p-1.5 hover:bg-gray-500/10 text-gray-600 dark:text-gray-500 rounded transition-colors"
  >
  <Plus size={14} />
  </button>
@@ -126,7 +126,7 @@ const BuilderPage: React.FC = () => {
  className={cn(
  'w-full text-left px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors',
  activeSchema?.id === s.id
- ? 'bg-emerald-500 text-white'
+ ? 'bg-gray-500 text-white'
  : theme === 'dark'
  ? 'text-gray-400 hover:bg-white/5 hover:text-white'
  : 'text-gray-600 hover:bg-black/5 hover:text-black'
@@ -159,7 +159,7 @@ const BuilderPage: React.FC = () => {
  <button
  onClick={handleSave}
  disabled={saving}
- className="flex items-center gap-2 px-6 py-3 bg-emerald-600 dark:bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest shadow-lg transition-all"
+ className="flex items-center gap-2 px-6 py-3 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-[10px] font-black uppercase tracking-widest shadow-lg transition-all"
  >
  {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
  Save Schema
@@ -170,7 +170,7 @@ const BuilderPage: React.FC = () => {
  'p-6 border space-y-4',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}>
- <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500 mb-4 border-b border-emerald-500/20 pb-2">General Info</h3>
+ <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-500 mb-4 border-b border-gray-500/20 pb-2">General Info</h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-1">
  <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Singular Name</label>
@@ -179,8 +179,8 @@ const BuilderPage: React.FC = () => {
  value={activeSchema.singular}
  onChange={(e) => setActiveSchema({ ...activeSchema, singular: e.target.value })}
  className={cn(
- 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
- theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+ 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
+ theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-gray-500' : 'bg-gray-50 border-gray-200 focus:border-gray-500'
  )}
  placeholder="e.g. Article"
  />
@@ -192,8 +192,8 @@ const BuilderPage: React.FC = () => {
  value={activeSchema.plural}
  onChange={(e) => setActiveSchema({ ...activeSchema, plural: e.target.value })}
  className={cn(
- 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
- theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-emerald-500' : 'bg-gray-50 border-gray-200 focus:border-emerald-500'
+ 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
+ theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-gray-500' : 'bg-gray-50 border-gray-200 focus:border-gray-500'
  )}
  placeholder="e.g. Articles"
  />
@@ -206,8 +206,8 @@ const BuilderPage: React.FC = () => {
  onChange={(e) => setActiveSchema({ ...activeSchema, slug: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '') })}
  disabled={!!activeSchema.id}
  className={cn(
- 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
- theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-emerald-500 disabled:opacity-50' : 'bg-gray-50 border-gray-200 focus:border-emerald-500 disabled:opacity-50'
+ 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
+ theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-gray-500 disabled:opacity-50' : 'bg-gray-50 border-gray-200 focus:border-gray-500 disabled:opacity-50'
  )}
  placeholder="e.g. articles"
  />
@@ -219,11 +219,11 @@ const BuilderPage: React.FC = () => {
  'p-6 border space-y-4',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}>
- <div className="flex items-center justify-between mb-4 border-b border-emerald-500/20 pb-2">
- <h3 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-500">Fields Configuration</h3>
+ <div className="flex items-center justify-between mb-4 border-b border-gray-500/20 pb-2">
+ <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-500">Fields Configuration</h3>
  <button
  onClick={addField}
- className="flex items-center gap-1 text-[9px] font-black text-emerald-600 dark:text-emerald-400 hover:text-emerald-300 uppercase tracking-widest"
+ className="flex items-center gap-1 text-[9px] font-black text-gray-600 dark:text-gray-400 hover:text-gray-300 uppercase tracking-widest"
  >
  <Plus size={12} /> Add Field
  </button>
@@ -240,12 +240,12 @@ const BuilderPage: React.FC = () => {
  value={field.name}
  onChange={e => updateField(idx, 'name', e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
  placeholder="field_name"
- className="flex-1 bg-transparent border-b border-transparent focus:border-emerald-500 text-[11px] font-mono outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1"
+ className="flex-1 bg-transparent border-b border-transparent focus:border-gray-500 text-[11px] font-mono outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1"
  />
  <select
  value={field.type}
  onChange={e => updateField(idx, 'type', e.target.value)}
- className="w-32 bg-transparent border-b border-transparent focus:border-emerald-500 text-[10px] font-black uppercase tracking-widest outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1"
+ className="w-32 bg-transparent border-b border-transparent focus:border-gray-500 text-[10px] font-black uppercase tracking-widest outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1"
  >
  {FIELD_TYPES.map(t => <option key={t} value={t} className="text-black">{t}</option>)}
  </select>
@@ -254,7 +254,7 @@ const BuilderPage: React.FC = () => {
  type="checkbox"
  checked={field.required || false}
  onChange={e => updateField(idx, 'required', e.target.checked)}
- className="accent-emerald-500"
+ className="accent-gray-500"
  />
  Req
  </label>

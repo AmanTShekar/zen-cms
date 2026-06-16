@@ -12,13 +12,13 @@ import { registerCodeHighlighting } from '@lexical/code'
  * In lexical 0.44.0, the equivalent is `registerCodeHighlighting` from @lexical/code.
  */
 export function CodeHighlightPlugin(): null {
- const [editor] = useLexicalComposerContext()
+  const [editor] = useLexicalComposerContext()
 
- useEffect(() => {
- return registerCodeHighlighting(editor)
- }, [editor])
+  useEffect(() => {
+    return registerCodeHighlighting(editor)
+  }, [editor])
 
- return null
+  return null
 }
 
 export default CodeHighlightPlugin

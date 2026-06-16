@@ -32,9 +32,9 @@ export async function verifySiteAccess(user: AuthUser, siteId: string): Promise<
   }
 
   const adapter = AdapterFactory.getActiveAdapter()
-  let sites = await adapter.find<any>('sites', { slug: siteId })
+  let sites = await adapter.find<Record<string, any>>('sites', { slug: siteId })
   if (sites.length === 0 && /^[0-9a-fA-F]{24}$/.test(siteId)) {
-    sites = await adapter.find<any>('sites', { id: siteId })
+    sites = await adapter.find<Record<string, any>>('sites', { id: siteId })
   }
   const site = sites[0] || null
 
@@ -95,13 +95,17 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
       req.siteId = headerSiteId
     }
 
+    const isGlobalRoute = req.originalUrl.startsWith('/api/v1/auth') || 
+                          req.originalUrl.startsWith('/api/v1/system') ||
+                          req.originalUrl.startsWith('/api/v1/sites') ||
+                          req.originalUrl.startsWith('/api/v1/workspaces')
+
+    if (!req.siteId && !isGlobalRoute) {
+      return res.status(400).json(createErrorResponse(400, 'Missing x-zenith-site-id header', undefined, 'BadRequestError'))
+    }
+
     // ── Secure Tenant Resolution (IDOR Protection) ──
     if (req.siteId) {
-      const isGlobalRoute = req.originalUrl.startsWith('/api/v1/auth') || 
-                            req.originalUrl.startsWith('/api/v1/system') ||
-                            req.originalUrl.startsWith('/api/v1/sites') ||
-                            req.originalUrl.startsWith('/api/v1/workspaces')
-                            
       const hasAccess = await verifySiteAccess(req.user as AuthUser, req.siteId)
       if (!hasAccess) {
         if (isGlobalRoute) {
@@ -137,20 +141,20 @@ export function requireRole(...roles: Array<string>) {
 
     // Resolve custom roles from database
     try {
-      const { RoleModel } = await import('../database/role-model')
-      const customRole = await RoleModel.findOne({ roleName: req.user.role })
+      const adapter = (await import('../database/adapters/AdapterFactory')).AdapterFactory.getActiveAdapter()
+      const customRole = await adapter.findOne<any>('z_roles', { roleName: req.user.role })
       
       if (customRole) {
         // If the route requires 'admin', check if custom role has wildcard access
-        const hasWildcard = customRole.permissions.some(p => p.resource === '*' && p.actions.includes('*'))
+        const hasWildcard = customRole.permissions.some((p: any) => p.resource === '*' && p.actions.includes('*'))
         if (roles.includes('admin') && hasWildcard) return next()
         
         // If route requires 'editor', check if they have write access to any resource
-        const hasWrite = customRole.permissions.some(p => p.actions.includes('*') || p.actions.includes('create') || p.actions.includes('update'))
+        const hasWrite = customRole.permissions.some((p: any) => p.actions.includes('*') || p.actions.includes('create') || p.actions.includes('update'))
         if (roles.includes('editor') && (hasWildcard || hasWrite)) return next()
         
         // If route requires 'viewer', check if they have read access
-        const hasRead = customRole.permissions.some(p => p.actions.includes('*') || p.actions.includes('read'))
+        const hasRead = customRole.permissions.some((p: any) => p.actions.includes('*') || p.actions.includes('read'))
         if (roles.includes('viewer') && (hasWildcard || hasWrite || hasRead)) return next()
       }
     } catch (err) {

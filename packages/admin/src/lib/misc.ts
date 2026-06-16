@@ -84,9 +84,9 @@ export const isBrowser = typeof window !== 'undefined'
 /**
  * Debounce a function call.
  */
-export function debounce<T extends (...args: unknown[]) => void>(fn: T, delay: number): T {
+export function debounce<T extends (...args: any[]) => void>(fn: T, delay: number): T {
  let timer: ReturnType<typeof setTimeout>
- return ((...args: unknown[]) => {
+ return ((...args: any[]) => {
  clearTimeout(timer)
  timer = setTimeout(() => fn(...args), delay)
  }) as T

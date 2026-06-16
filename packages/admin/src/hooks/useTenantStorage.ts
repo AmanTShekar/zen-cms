@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { useSiteStore } from '../lib/siteStore'
 import { useTenantStore } from '../lib/tenantStore'
+import { useShallow } from 'zustand/react/shallow'
 
 /** Keys used in localStorage for tenant context */
 export const TENANT_KEYS = {
@@ -29,7 +30,7 @@ function isTenantExempt(): boolean {
  * Call this at the top of any component that must operate within a tenant context.
  */
 export function useTenantStorage() {
- const { activeSiteId, activeWorkspaceId, setActiveSiteId, setActiveWorkspaceId } = useSiteStore()
+ const { activeSiteId, activeWorkspaceId, setActiveSiteId, setActiveWorkspaceId  } = useSiteStore(useShallow(state => ({ activeSiteId: state.activeSiteId, activeWorkspaceId: state.activeWorkspaceId, setActiveSiteId: state.setActiveSiteId, setActiveWorkspaceId: state.setActiveWorkspaceId })))
 
  const safeGet = (key: string): string => {
  try { return localStorage.getItem(key) || '' } catch { return '' }

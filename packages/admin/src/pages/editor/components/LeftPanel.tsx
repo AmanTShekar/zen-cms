@@ -15,6 +15,7 @@ import { AnimatePresence, motion, Reorder } from 'framer-motion'
 import { type Section, humanize } from '../constants'
 import { useEditorBlocks } from '../../../context/BlockLibraryContext'
 import EmptyState from '../../../components/EmptyState'
+import { useShallow } from 'zustand/react/shallow'
 
 interface LeftPanelProps {
  isGlobal?: boolean
@@ -44,13 +45,17 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  activeSection: editorActiveSection,
  setActiveSection: editorSetActiveSection,
  updateData,
- } = useEditorStore()
+ } = useEditorStore(useShallow(state => ({
+  data: state.data,
+  activeSection: state.activeSection,
+  setActiveSection: state.setActiveSection,
+  updateData: state.updateData,
+ })))
 
- const {
- leftOpen,
+ const { leftOpen,
  leftWidth,
  setLeftOpen,
- } = usePanelStore()
+  } = usePanelStore(useShallow(state => ({ leftOpen: state.leftOpen, leftWidth: state.leftWidth, setLeftOpen: state.setLeftOpen })))
 
  const activeSection = editorActiveSection ?? 'root'
 
@@ -116,7 +121,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  onMouseDown={startResizing('left')}
  className={cn(
  'absolute right-0 top-0 bottom-0 w-1 cursor-col-resize z-50 transition-colors',
- resizingSide === 'left' ? 'bg-emerald-500' : 'bg-transparent hover:bg-emerald-500/50'
+ resizingSide === 'left' ? 'bg-gray-500' : 'bg-transparent hover:bg-gray-500/50'
  )}
  />
 
@@ -131,7 +136,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  <button
  onClick={() => { setInjectionIndex(0); setBlockPickerOpen(true); }}
  className={cn(
- 'p-1 rounded-none border transition-all text-gray-400 hover:text-emerald-600 dark:text-emerald-500',
+ 'p-1 rounded-none border transition-all text-gray-400 hover:text-gray-600 dark:text-gray-500',
  dark ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-50 border-gray-200'
  )}
  aria-label="Add new section"
@@ -165,8 +170,8 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  className={cn(
  'w-full pl-7 pr-7 py-1.5 text-xs font-bold border rounded-none bg-transparent transition-all',
  dark
- ? 'border-white/[0.08] text-white placeholder-gray-600 focus:border-emerald-500/30'
- : 'border-gray-200 text-black placeholder-gray-400 focus:border-emerald-500/30'
+ ? 'border-white/[0.08] text-white placeholder-gray-600 focus:border-gray-500/30'
+ : 'border-gray-200 text-black placeholder-gray-400 focus:border-gray-500/30'
  )}
  aria-label="Filter layers"
  />
@@ -187,7 +192,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  )}
 
  {/* Layers List */}
- <div className="flex-1 overflow-y-auto no-scrollbar custom-editor-scrollbar px-2 pt-3 pb-4 space-y-2">
+ <div className="flex-1 overflow-y-auto  custom-editor-scrollbar px-2 pt-3 pb-4 space-y-2">
  {filteredSections.length === 0 ? (
  <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-4">
  {data?.sections?.length === 0 ? (
@@ -228,7 +233,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  'shrink-0',
  activeSection === section.id
  ? ''
- : dark ? 'text-emerald-400/60' : 'text-emerald-500/60'
+ : dark ? 'text-gray-400/60' : 'text-gray-500/60'
  )} />
  <span className="text-xs font-black uppercase tracking-tight truncate flex-1">
  {section.blockName || section.title || humanize(section.blockType)}
@@ -283,7 +288,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  'shrink-0',
  activeSection === section.id
  ? ''
- : dark ? 'text-emerald-400/60' : 'text-emerald-500/60'
+ : dark ? 'text-gray-400/60' : 'text-gray-500/60'
  )} aria-hidden="true" />
  <span className="text-xs font-black uppercase tracking-tight truncate flex-1">
  {section.blockName || section.title || humanize(section.blockType)}
@@ -292,7 +297,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  <span className={cn(
  'text-[8px] font-black uppercase tracking-wider shrink-0',
  activeSection === section.id
- ? dark ? 'text-emerald-400/80' : 'text-emerald-600/80'
+ ? dark ? 'text-gray-400/80' : 'text-gray-600/80'
  : 'text-gray-400'
  )}>
  {humanize(section.blockType)}

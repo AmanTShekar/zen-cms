@@ -1,12 +1,12 @@
 import { Express } from 'express'
-import { CMSConfig, FieldConfig as CMSField } from '@zenithcms/types'
+import { CMSConfig, FieldConfig as CMSField } from '@zenith-open/zenithcms-types'
 import { logger } from '../services/logger'
 import { AuthService } from '../services/auth'
 import { ContentService } from '../services/content'
 import { CacheService } from '../services/cache'
 import { eventHub } from '../services/event-hub'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
-import { resolveRelations } from './factory'
+import { resolveRelations } from './handlers/RelationResolver'
 import { verifySiteAccess } from '../middleware/auth'
 
 /**

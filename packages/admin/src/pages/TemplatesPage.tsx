@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import {
  Layout,
  GitBranch,
@@ -50,7 +50,7 @@ const TEMPLATES: Template[] = [
  tags: ['React 19', 'Vite', 'Tailwind CSS', 'Framer Motion', 'Zustand'],
  stars: 382,
  performanceScore: 99,
- primaryColor: 'from-violet-600 to-emerald-600',
+ primaryColor: 'from-violet-600 to-gray-600',
  accentColor: '#10B981',
  features: [
  'Interactive spatial layout engine',
@@ -71,7 +71,7 @@ const TEMPLATES: Template[] = [
  tags: ['Next.js 15', 'React 19', 'Tailwind CSS', 'Radix UI', 'SWR'],
  stars: 219,
  performanceScore: 98,
- primaryColor: 'from-emerald-600 to-teal-600',
+ primaryColor: 'from-gray-600 to-teal-600',
  accentColor: '#10B981',
  features: [
  'Stunning asymmetric typography grid',
@@ -139,6 +139,18 @@ const TemplatesPage: React.FC = () => {
  const [liveUrl, setLiveUrl] = useState('')
  const [copied, setCopied] = useState(false)
 
+ const logIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+ const buildIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+ const networkIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+ useEffect(() => {
+   return () => {
+     if (logIntervalRef.current) clearInterval(logIntervalRef.current)
+     if (buildIntervalRef.current) clearInterval(buildIntervalRef.current)
+     if (networkIntervalRef.current) clearInterval(networkIntervalRef.current)
+   }
+ }, [])
+
  // Filter Categories
  const categories = ['All', 'E-Commerce / Portfolio', 'Editorial / Blog']
 
@@ -159,7 +171,7 @@ const TemplatesPage: React.FC = () => {
  
  // Simulate terminal logs generator
  const logs = [
- `[system] Initializing deployment protocol for @zenithcms/${selectedTemplate.slug}...`,
+ `[system] Initializing deployment protocol for @zenith-open/${selectedTemplate.slug}...`,
  `[system] Selected target provider: ${provider.toUpperCase()}`,
  `[git] Cloning repository from ${selectedTemplate.gitUrl}...`,
  `[git] Branch: main (HEAD resolved to latest secure release v${selectedTemplate.version})`,
@@ -186,6 +198,7 @@ const TemplatesPage: React.FC = () => {
  logIndex++
  } else {
  clearInterval(logInterval)
+ logIntervalRef.current = null
  setDeployStep(2) // Move to Building state
  
  let buildLogIndex = 6
@@ -195,6 +208,7 @@ const TemplatesPage: React.FC = () => {
  buildLogIndex++
  } else {
  clearInterval(buildInterval)
+ buildIntervalRef.current = null
  setDeployStep(3) // Move to Edge Routing state
  
  let networkLogIndex = 13
@@ -204,15 +218,19 @@ const TemplatesPage: React.FC = () => {
  networkLogIndex++
  } else {
  clearInterval(networkInterval)
+ networkIntervalRef.current = null
  setDeployStep(4) // Success!
  setLiveUrl(`https://zenith-${selectedTemplate.slug}.${provider}.app`)
  toast.success('Storefront successfully deployed!')
  }
  }, 800)
+ networkIntervalRef.current = networkInterval
  }
  }, 600)
+ buildIntervalRef.current = buildInterval
  }
  }, 450)
+ logIntervalRef.current = logInterval
  }
 
  const copyToClipboard = (text: string) => {
@@ -242,10 +260,10 @@ const TemplatesPage: React.FC = () => {
  </div>
  <div className="flex flex-col">
  <div className="flex items-center gap-3 mb-1">
- <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.3em] ">
+ <span className="text-[8px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-[0.3em] ">
  Storefront Hub
  </span>
- <div className="w-1.5 h-1.5 rounded-none bg-emerald-500 shadow-[0_0_8px_#10b981]" />
+ <div className="w-1.5 h-1.5 rounded-none bg-gray-500 shadow-[0_0_8px_#10b981]" />
  </div>
  <h1 className="text-3xl font-black tracking-tighter uppercase leading-none">
  Templates
@@ -256,7 +274,7 @@ const TemplatesPage: React.FC = () => {
  {/* Categories Tab Selector */}
  <div
  className={cn(
- 'p-1 rounded-none border flex items-center shadow-sm backdrop-blur-xl self-start md:self-auto overflow-x-auto max-w-full no-scrollbar',
+ 'p-1 rounded-none border flex items-center shadow-sm backdrop-blur-xl self-start md:self-auto overflow-x-auto max-w-full ',
  theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
  )}
  >
@@ -288,11 +306,11 @@ const TemplatesPage: React.FC = () => {
  : 'bg-gradient-to-r from-gray-50 via-white to-gray-50 border-gray-200 shadow-sm'
  )}
  >
- <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 blur-[100px] pointer-events-none rounded-none" />
- <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-500/5 blur-[100px] pointer-events-none rounded-none" />
+ <div className="absolute top-0 right-0 w-80 h-80 bg-gray-500/10 blur-[100px] pointer-events-none rounded-none" />
+ <div className="absolute bottom-0 left-0 w-80 h-80 bg-gray-500/5 blur-[100px] pointer-events-none rounded-none" />
 
  <div className="flex-1 space-y-3 z-10">
- <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-500">
+ <div className="flex items-center gap-2 text-gray-600 dark:text-gray-500">
  <Sparkles size={16} className="animate-pulse" />
  <span className="text-[10px] font-black uppercase tracking-widest ">
  Pre-integrated Storefront Ecosystem
@@ -317,14 +335,14 @@ const TemplatesPage: React.FC = () => {
  >
  <Search
  size={14}
- className="text-gray-500 group-focus-within:text-emerald-600 dark:text-emerald-500 transition-colors"
+ className="text-gray-500 group-focus-within:text-gray-600 dark:text-gray-500 transition-colors"
  />
  <input
  type="text"
  placeholder="Filter by tech or tags..."
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
- className="bg-transparent border-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[10px] font-black text-gray-400 w-full placeholder:text-gray-600 uppercase tracking-tight"
+ className="bg-transparent border-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[10px] font-black text-gray-400 w-full placeholder:text-gray-600 uppercase tracking-tight"
  />
  </div>
  </div>
@@ -377,17 +395,17 @@ const TemplatesPage: React.FC = () => {
  {template.category}
  </span>
  <span className="w-1 h-1 bg-gray-500 rounded-none" />
- <span className="text-[8px] font-mono font-black text-emerald-600 dark:text-emerald-400">
+ <span className="text-[8px] font-mono font-black text-gray-600 dark:text-gray-400">
  v{template.version}
  </span>
  {template.slug === activeSiteSlug && (
- <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[7px] font-black uppercase tracking-wider leading-none">
+ <div className="flex items-center gap-1.5 px-2 py-0.5 bg-gray-500/10 text-gray-600 dark:text-gray-400 border border-gray-500/20 text-[7px] font-black uppercase tracking-wider leading-none">
  <Activity size={8} />
  Active Workspace / Site
  </div>
  )}
  </div>
- <h3 className="text-xl font-black tracking-tight uppercase leading-none group-hover:text-emerald-600 dark:text-emerald-400 transition-colors mt-1.5">
+ <h3 className="text-xl font-black tracking-tight uppercase leading-none group-hover:text-gray-600 dark:text-gray-400 transition-colors mt-1.5">
  {template.name}
  </h3>
  </div>
@@ -398,11 +416,11 @@ const TemplatesPage: React.FC = () => {
  <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest leading-none">
  Lighthouse
  </span>
- <span className="text-lg font-black text-emerald-600 dark:text-emerald-500 mt-1">
+ <span className="text-lg font-black text-gray-600 dark:text-gray-500 mt-1">
  {template.performanceScore}%
  </span>
  </div>
- <div className="w-9 h-9 rounded-none border border-emerald-500/20 bg-emerald-500/5 flex items-center justify-center text-emerald-600 dark:text-emerald-500 font-bold text-xs ">
+ <div className="w-9 h-9 rounded-none border border-gray-500/20 bg-gray-500/5 flex items-center justify-center text-gray-600 dark:text-gray-500 font-bold text-xs ">
  {template.performanceScore}
  </div>
  </div>
@@ -465,7 +483,7 @@ const TemplatesPage: React.FC = () => {
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
  {template.features.map((feat, idx) => (
  <div key={idx} className="flex items-center gap-2 text-xs text-gray-300">
- <div className="w-1.5 h-1.5 bg-emerald-500/40 border border-emerald-500 rounded-none shrink-0" />
+ <div className="w-1.5 h-1.5 bg-gray-500/40 border border-gray-500 rounded-none shrink-0" />
  <span className="uppercase tracking-tight truncate">{feat}</span>
  </div>
  ))}
@@ -495,7 +513,7 @@ const TemplatesPage: React.FC = () => {
  theme === 'dark' ? 'bg-black border-white/[0.08] text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-600'
  )}>
  <div className="flex items-center gap-1.5 truncate">
- <Terminal size={10} className="text-emerald-600 dark:text-emerald-400" />
+ <Terminal size={10} className="text-gray-600 dark:text-gray-400" />
  <span className="truncate select-all">git clone {template.gitUrl}.git</span>
  </div>
  <div className="flex items-center gap-2 shrink-0">
@@ -631,7 +649,7 @@ const TemplatesPage: React.FC = () => {
  <Server size={18} />
  </div>
  <div>
- <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.25em] block">
+ <span className="text-[8px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-[0.25em] block">
  Zero-Config Handshake
  </span>
  <h3 className="text-xl font-black uppercase tracking-tight leading-none mt-1">
@@ -656,7 +674,7 @@ const TemplatesPage: React.FC = () => {
  className={cn(
  'h-1 w-full rounded-none transition-all duration-500',
  isCompleted
- ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]'
+ ? 'bg-gray-500 shadow-[0_0_8px_#10b981]'
  : isActive
  ? 'bg-amber-500 animate-pulse'
  : 'bg-white/5'
@@ -696,7 +714,7 @@ const TemplatesPage: React.FC = () => {
  className={cn(
  'border p-3 flex flex-col items-center justify-center gap-2 rounded-none transition-all group relative',
  provider === prov.id
- ? 'bg-emerald-500/10 border-emerald-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.15)]'
+ ? 'bg-gray-500/10 border-gray-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.15)]'
  : 'bg-white/[0.01] border-white/[0.08] text-gray-500 hover:text-gray-300 hover:border-white/[0.08]'
  )}
  >
@@ -707,7 +725,7 @@ const TemplatesPage: React.FC = () => {
  className={cn(
  'text-[7px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded-none border',
  provider === prov.id
- ? 'border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5'
+ ? 'border-gray-500/30 text-gray-600 dark:text-gray-400 bg-gray-500/5'
  : 'border-white/[0.08] text-gray-600 bg-white/5'
  )}
  >
@@ -726,7 +744,7 @@ const TemplatesPage: React.FC = () => {
  )}
  >
  <div className="flex items-center gap-3">
- <GitBranch size={16} className="text-emerald-600 dark:text-emerald-400" />
+ <GitBranch size={16} className="text-gray-600 dark:text-gray-400" />
  <div className="flex flex-col">
  <span className="text-[10px] font-black uppercase tracking-tight leading-none text-white">
  AmanTShekar/{selectedTemplate.slug}
@@ -736,7 +754,7 @@ const TemplatesPage: React.FC = () => {
  </span>
  </div>
  </div>
- <div className="flex items-center gap-1 text-[8px] font-mono text-emerald-600 dark:text-emerald-400 px-2 py-1 bg-emerald-500/5 border border-emerald-500/20">
+ <div className="flex items-center gap-1 text-[8px] font-mono text-gray-600 dark:text-gray-400 px-2 py-1 bg-gray-500/5 border border-gray-500/20">
  ● CONNECTED
  </div>
  </div>
@@ -762,7 +780,7 @@ const TemplatesPage: React.FC = () => {
  <div className="space-y-4 flex-1 flex flex-col">
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2.5">
- <Terminal size={14} className="text-emerald-600 dark:text-emerald-400" />
+ <Terminal size={14} className="text-gray-600 dark:text-gray-400" />
  <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">
  Simulated Edge Console Output
  </span>
@@ -780,7 +798,7 @@ const TemplatesPage: React.FC = () => {
  </div>
 
  {/* Console Logger */}
- <div className="flex-1 min-h-[160px] bg-black border border-white/[0.08] p-4 font-mono text-[9px] text-gray-400 overflow-y-auto space-y-1.5 no-scrollbar scroll-smooth">
+ <div className="flex-1 min-h-[160px] bg-black border border-white/[0.08] p-4 font-mono text-[9px] text-gray-400 overflow-y-auto space-y-1.5  scroll-smooth">
  {terminalLogs.map((log, idx) => (
  <div
  key={idx}
@@ -789,7 +807,7 @@ const TemplatesPage: React.FC = () => {
  log.startsWith('[error]')
  ? 'text-red-500'
  : log.startsWith('[build]')
- ? 'text-emerald-300'
+ ? 'text-gray-300'
  : log.startsWith('[network]')
  ? 'text-cyan-300'
  : 'text-gray-300'
@@ -802,7 +820,7 @@ const TemplatesPage: React.FC = () => {
  {/* Interactive Cursor */}
  <div className="flex items-center gap-1">
  <span className="text-gray-600 mr-2">[{terminalLogs.length + 1}]</span>
- <div className="w-1.5 h-3 bg-emerald-500 animate-pulse" />
+ <div className="w-1.5 h-3 bg-gray-500 animate-pulse" />
  </div>
  </div>
  </div>
@@ -815,7 +833,7 @@ const TemplatesPage: React.FC = () => {
  initial={{ scale: 0.5, opacity: 0 }}
  animate={{ scale: 1, opacity: 1 }}
  transition={{ type: 'spring', stiffness: 200, damping: 15 }}
- className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/30 rounded-none flex items-center justify-center mx-auto text-emerald-600 dark:text-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.25)]"
+ className="w-16 h-16 bg-gray-500/10 border border-gray-500/30 rounded-none flex items-center justify-center mx-auto text-gray-600 dark:text-gray-500 shadow-[0_0_30px_rgba(16,185,129,0.25)]"
  >
  <CheckCircle2 size={32} strokeWidth={2.5} />
  </motion.div>
@@ -838,7 +856,7 @@ const TemplatesPage: React.FC = () => {
  )}
  >
  <div className="flex items-center gap-3 min-w-0">
- <Globe size={16} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+ <Globe size={16} className="text-gray-600 dark:text-gray-400 shrink-0" />
  <span className="text-[10px] font-black tracking-tight text-white uppercase truncate font-mono">
  {liveUrl}
  </span>
@@ -848,7 +866,7 @@ const TemplatesPage: React.FC = () => {
  className={cn(
  'p-2.5 rounded-none border transition-all flex items-center justify-center shrink-0',
  copied
- ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+ ? 'bg-gray-500/10 border-gray-500/30 text-gray-600 dark:text-gray-400'
  : 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-white'
  )}
  >

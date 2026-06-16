@@ -5,6 +5,7 @@ import { useTheme } from '../../../context/ThemeContext'
 import { useCommentsStore, type Comment } from '../../../store/commentsStore'
 import { useAuthStore } from '../../../store/authStore'
 import { cn } from '../../../lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
 interface CommentsPanelProps {
  collection: string
@@ -51,7 +52,7 @@ const CommentItem: React.FC<{
  className={cn(
  'border rounded-none overflow-hidden',
  comment.resolved
- ? theme === 'dark' ? 'border-emerald-500/10 bg-emerald-500/[0.03]' : 'border-emerald-200 bg-emerald-50/50'
+ ? theme === 'dark' ? 'border-gray-500/10 bg-gray-500/[0.03]' : 'border-gray-200 bg-gray-50/50'
  : theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-200 bg-white'
  )}
  >
@@ -59,9 +60,9 @@ const CommentItem: React.FC<{
  <div className="px-3 py-2.5 flex items-start gap-2.5">
  <div className={cn(
  'w-7 h-7 rounded-none flex items-center justify-center shrink-0 mt-0.5',
- theme === 'dark' ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-emerald-50 border border-emerald-100'
+ theme === 'dark' ? 'bg-gray-500/10 border border-gray-500/20' : 'bg-gray-50 border border-gray-100'
  )}>
- <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 uppercase">
+ <span className="text-xs font-black text-gray-600 dark:text-gray-400 uppercase">
  {comment.author?.[0] || '?'}
  </span>
  </div>
@@ -76,7 +77,7 @@ const CommentItem: React.FC<{
  {comment.resolved && (
  <span className={cn(
  'text-[7px] font-black uppercase px-1.5 py-0.5 rounded-none',
- theme === 'dark' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-emerald-100 text-emerald-600'
+ theme === 'dark' ? 'bg-gray-500/10 text-gray-600 dark:text-gray-400' : 'bg-gray-100 text-gray-600'
  )}>
  Resolved
  </span>
@@ -130,7 +131,7 @@ const CommentItem: React.FC<{
  {comment.replies.map((reply, idx) => (
  <div key={idx} className={cn(
  'flex gap-2 pl-3 border-l-2',
- theme === 'dark' ? 'border-emerald-500/20' : 'border-emerald-100'
+ theme === 'dark' ? 'border-gray-500/20' : 'border-gray-100'
  )}>
  <div className="flex-1 min-w-0">
  <div className="flex items-center gap-1.5">
@@ -169,8 +170,8 @@ const CommentItem: React.FC<{
  className={cn(
  'flex items-center gap-1 text-xs font-black uppercase tracking-wider transition-colors',
  comment.resolved
- ? theme === 'dark' ? 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-300' : 'text-emerald-600 dark:text-emerald-500 hover:text-emerald-600'
- : theme === 'dark' ? 'text-emerald-400/50 hover:text-emerald-300' : 'text-emerald-300 hover:text-emerald-600 dark:text-emerald-500'
+ ? theme === 'dark' ? 'text-gray-600 dark:text-gray-400 hover:text-gray-300' : 'text-gray-600 dark:text-gray-500 hover:text-gray-600'
+ : theme === 'dark' ? 'text-gray-400/50 hover:text-gray-300' : 'text-gray-300 hover:text-gray-600 dark:text-gray-500'
  )}
  >
  {comment.resolved ? <CheckCheck size={9} /> : <Check size={9} />}
@@ -215,8 +216,8 @@ const CommentItem: React.FC<{
  className={cn(
  'flex-1 px-2.5 py-1.5 text-xs rounded-none border transition-all',
  theme === 'dark'
- ? 'bg-white/5 border-white/8 text-white placeholder-gray-600 focus:border-emerald-500/50'
- : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-emerald-300'
+ ? 'bg-white/5 border-white/8 text-white placeholder-gray-600 focus:border-gray-500/50'
+ : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-300'
  )}
  />
  <button
@@ -226,8 +227,8 @@ const CommentItem: React.FC<{
  className={cn(
  'px-2.5 py-1.5 text-xs font-black uppercase tracking-wider border transition-all rounded-none disabled:opacity-50',
  theme === 'dark'
- ? 'bg-emerald-500/20 border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
- : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100'
+ ? 'bg-gray-500/20 border-gray-500/20 text-gray-300 hover:bg-gray-500/30'
+ : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
  )}
  >
  <Send size={10} aria-hidden="true" />
@@ -255,8 +256,8 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  documentId,
  theme,
 }) => {
- const { comments, loading, posting, fetchComments, createComment, replyToComment, resolveComment, deleteComment } = useCommentsStore()
- const { user } = useAuthStore()
+ const { comments, loading, posting, fetchComments, createComment, replyToComment, resolveComment, deleteComment  } = useCommentsStore(useShallow(state => ({ comments: state.comments, loading: state.loading, posting: state.posting, fetchComments: state.fetchComments, createComment: state.createComment, replyToComment: state.replyToComment, resolveComment: state.resolveComment, deleteComment: state.deleteComment })))
+ const { user  } = useAuthStore(useShallow(state => ({ user: state.user })))
  const [newComment, setNewComment] = useState('')
  const [showResolved, setShowResolved] = useState(false)
 
@@ -278,8 +279,8 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  {/* Panel header */}
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2">
- <MessageSquare size={11} className="text-emerald-600 dark:text-emerald-400" />
- <span className="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+ <MessageSquare size={11} className="text-gray-600 dark:text-gray-400" />
+ <span className="text-xs font-black uppercase tracking-widest text-gray-600 dark:text-gray-400">
  Review
  </span>
  <span className={cn(
@@ -314,7 +315,7 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  placeholder="Add a comment... (Cmd+Enter to submit)"
  rows={2}
  className={cn(
- 'w-full px-2 py-1.5 text-xs rounded-none border-none bg-transparent resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:ring-0 placeholder-gray-500',
+ 'w-full px-2 py-1.5 text-xs rounded-none border-none bg-transparent resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:ring-0 placeholder-gray-500',
  theme === 'dark' ? 'text-gray-300 placeholder-gray-600' : 'text-gray-700 placeholder-gray-400'
  )}
  />
@@ -326,8 +327,8 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  className={cn(
  'flex items-center gap-1.5 px-3 py-1.5 text-xs font-black uppercase tracking-wider border rounded-none transition-all disabled:opacity-50',
  theme === 'dark'
- ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/30 hover:border-emerald-500/50'
- : 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100 hover:border-emerald-300'
+ ? 'bg-gray-500/20 border-gray-500/30 text-gray-300 hover:bg-gray-500/30 hover:border-gray-500/50'
+ : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 hover:border-gray-300'
  )}
  >
  <MessageSquare size={9} />
@@ -340,7 +341,7 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  {loading ? (
  <div className="text-center py-4">
  <div className={cn(
- 'w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-none animate-spin mx-auto mb-2'
+ 'w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-none animate-spin mx-auto mb-2'
  )} />
  <p className="text-xs text-gray-500 font-bold">Loading comments...</p>
  </div>

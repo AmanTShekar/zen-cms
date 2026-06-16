@@ -1,4 +1,4 @@
-import { CollectionConfig, FieldConfig } from '@zenithcms/types'
+import { CollectionConfig, FieldConfig } from '@zenith-open/zenithcms-types'
 import { logger } from './logger'
 import { DatabaseAdapter, BaseOptions } from '../database/adapters/BaseAdapter'
 import { NotFoundError, ForbiddenError, ConflictError } from '../errors'
@@ -9,6 +9,8 @@ import { i18n } from '../i18n'
 import { PresenceService } from './presence'
 import { canTransition, roleFromString } from './workflow-engine'
 import { hookRegistry } from '../plugins/hooks'
+import { VersioningService } from './versioning'
+import { RLSService } from './rls'
 
 export const sandboxPool = new WorkerSandboxPool()
 
@@ -139,6 +141,29 @@ export class ContentService<T = unknown> {
           logger.warn({ field: field.name, err: err.message }, 'Field hook failed')
         }
       }
+
+      // 4. Field-level Access Control (RBAC)
+      if ((field as any).access && options.user) {
+        if (action === 'afterRead' && typeof (field as any).access.read === 'function') {
+          if (!(field as any).access.read(options.user)) {
+            // Strip the field out if user cannot read it
+            delete cleanData[field.name]
+          }
+        }
+        
+        if (action === 'beforeChange') {
+          const isCreating = !existingDoc
+          if (isCreating && typeof (field as any).access.create === 'function') {
+            if (!(field as any).access.create(options.user)) {
+              delete cleanData[field.name] // Strip unauthorized create payload
+            }
+          } else if (!isCreating && typeof (field as any).access.update === 'function') {
+            if (!(field as any).access.update(options.user)) {
+              delete cleanData[field.name] // Strip unauthorized update payload
+            }
+          }
+        }
+      }
     }
 
     return cleanData
@@ -172,7 +197,11 @@ export class ContentService<T = unknown> {
     filter: Record<string, unknown> = {},
     options: ContentOperationOptions = {}
   ): Promise<T[]> {
-    let query = { ...filter }
+    if (!options.siteId && !this.config.singleton) {
+      throw new Error('[Zenith] Security: siteId must be provided for tenant-scoped operations')
+    }
+
+    const query = { ...filter }
 
     if (options.siteId) {
       query.siteId = options.siteId
@@ -189,11 +218,7 @@ export class ContentService<T = unknown> {
     }
 
     // Apply RLS (Row Level Security)
-    if (options.user && typeof this.config.access?.read === 'function') {
-      const access = this.config.access.read(options.user)
-      if (access === false) return []
-      if (typeof access === 'object') query = { ...query, ...access }
-    }
+    if (!RLSService.applyReadAccess(query, this.config.access, options.user)) return []
 
     let docs = await this.adapter.find<T>(this.config.slug, query, options)
 
@@ -212,19 +237,17 @@ export class ContentService<T = unknown> {
   }
 
   async findById(id: string, options: ContentOperationOptions = {}): Promise<T | null> {
+    if (!options.siteId && !this.config.singleton) {
+      throw new Error('[Zenith] Security: siteId must be provided for tenant-scoped operations')
+    }
+
     const query = this.config.singleton && id === 'singleton' ? {} : ({ _id: id } as any)
     if (options.siteId) {
       query.siteId = options.siteId
     }
 
     // Apply RLS (Row Level Security)
-    if (options.user && typeof this.config.access?.read === 'function') {
-      const access = this.config.access.read(options.user)
-      if (access === false) return null
-      if (typeof access === 'object') {
-        Object.assign(query, access)
-      }
-    }
+    if (!RLSService.applyReadAccess(query, this.config.access, options.user)) return null
 
     // Apply draft/publish isolation for public queries
     if (this.config.drafts && !options.user && !options.preview) {
@@ -269,6 +292,10 @@ export class ContentService<T = unknown> {
         docData = await hookRegistry.apply(`content:${this.config.slug}:beforeCreate`, docData)
       }
 
+      if (!options.siteId && !this.config.singleton) {
+        throw new Error('[Zenith] Security: siteId must be provided for tenant-scoped operations')
+      }
+
       if (options.siteId) {
         ;(docData as any).siteId = options.siteId
       }
@@ -284,7 +311,7 @@ export class ContentService<T = unknown> {
       await hookRegistry.emit(`content:${this.config.slug}:afterCreate`, createdDoc)
 
       if (this.config.versions) {
-        await this._createVersion(createdDoc, opts)
+        await new VersioningService(this.adapter, this.config).createVersion(createdDoc, opts)
       }
 
       return createdDoc
@@ -310,21 +337,17 @@ export class ContentService<T = unknown> {
   ): Promise<{ doc: T; delta: unknown }> {
     const result = await this.adapter.transaction(async (session) => {
       const opts = { ...options, session }
+      if (!options.siteId && !this.config.singleton) {
+        throw new Error('[Zenith] Security: siteId must be provided for tenant-scoped operations')
+      }
+
       const query = this.config.singleton && id === 'singleton' ? {} : ({ _id: id } as any)
       if (options.siteId) {
         query.siteId = options.siteId
       }
 
       // Apply RLS (Row Level Security) for updates
-      // access.update() may return a boolean (allow/deny) OR an object (query constraints)
-      // that restricts which documents the user may write to — same pattern as read RLS.
-      if (options.user && typeof this.config.access?.update === 'function') {
-        const access = this.config.access.update(options.user, { req: (options as any).req })
-        if (access === false) throw new ForbiddenError()
-        if (typeof access === 'object' && access !== null) {
-          Object.assign(query, access)
-        }
-      }
+      RLSService.applyUpdateAccess(query, this.config.access, options.user, (options as any).req)
 
       // Check active document locks (Concurrency Control)
       if (options.user) {
@@ -399,7 +422,7 @@ export class ContentService<T = unknown> {
       await hookRegistry.emit(`content:${this.config.slug}:afterUpdate`, { doc, delta, collection: this.config.slug })
 
       if (this.config.versions && !options.skipVersioning) {
-        await this._createVersion(doc, opts, delta)
+        await new VersioningService(this.adapter, this.config).createVersion(doc, opts, delta)
       }
 
       return { doc, delta }
@@ -428,6 +451,10 @@ export class ContentService<T = unknown> {
     }
 
     let targetId = id
+    if (!options.siteId && !this.config.singleton) {
+      throw new Error('[Zenith] Security: siteId must be provided for tenant-scoped operations')
+    }
+
     if (this.config.singleton && id === 'singleton') {
       const query = {} as any
       if (options.siteId) query.siteId = options.siteId
@@ -438,15 +465,7 @@ export class ContentService<T = unknown> {
       if (options.siteId) query.siteId = options.siteId
 
       // Apply RLS (Row Level Security) for deletes
-      // access.delete() may return a boolean OR an object of query constraints
-      // so users can only delete their own documents (e.g. { createdBy: user.id }).
-      if (options.user && typeof this.config.access?.delete === 'function') {
-        const access = this.config.access.delete(options.user, { req: (options as any).req })
-        if (access === false) throw new ForbiddenError()
-        if (typeof access === 'object' && access !== null) {
-          Object.assign(query, access)
-        }
-      }
+      RLSService.applyDeleteAccess(query, this.config.access, options.user, (options as any).req)
 
       // Check active document locks (Concurrency Control)
       if (options.user) {
@@ -501,49 +520,5 @@ export class ContentService<T = unknown> {
     return delta
   }
 
-  private async _createVersion(doc: any, options: any, delta?: any) {
-    try {
-      const isGlobal = this.config.singleton || !doc._id
-      const documentId = isGlobal ? this.config.slug : doc._id?.toString() || 'singleton'
-      await this.adapter.createVersion({
-        collectionName: isGlobal ? 'globals' : this.config.name || this.config.slug,
-        collectionSlug: isGlobal ? 'globals' : this.config.slug,
-        documentId,
-        snapshot: doc,
-        delta,
-        createdBy: options.user?.id || 'system',
-        timestamp: new Date(),
-      }, { session: options?.session })
-
-      // Prune old versions beyond the max limit (default 50)
-      const maxVersions = this.config.maxVersions ?? 50
-      await this._enforceMaxVersions(documentId, maxVersions)
-    } catch (err) {
-      logger.error({ err }, 'Versioning failed')
-    }
-  }
-
-  /**
-   * Prunes oldest versions beyond `maxVersions` for a given document.
-   * Keeps the most recent N versions and deletes the rest.
-   */
-  private async _enforceMaxVersions(documentId: string, maxVersions: number): Promise<void> {
-    try {
-      const allVersions = await this.adapter.getVersions(this.config.slug, documentId)
-      if (allVersions.length <= maxVersions) return
-
-      const toDelete = allVersions
-        .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-        .slice(maxVersions)
-
-      await Promise.all(
-        toDelete.map(async (version: any) => {
-          const vid = version._id?.toString() || version.id
-          if (vid) await this.adapter.delete('versions', vid)
-        })
-      )
-    } catch (err) {
-      logger.warn({ err, collection: this.config.slug, documentId }, 'Version pruning failed')
-    }
-  }
+  
 }

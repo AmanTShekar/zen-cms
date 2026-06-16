@@ -1,37 +1,104 @@
 version: '3.8'
 
 services:
-  zenith:
-    build: .
-    container_name: zenith-cms
-    ports:
-      - '${PORT:-3000}:3000'
-    environment:
-      - MONGODB_URI=mongodb://mongo:27017/zenith
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
-      - NODE_ENV=production
-    volumes:
-      - zenith_media:/zenith/media
-    depends_on:
-      mongo:
-        condition: service_healthy
+  core:
+    build:
+      context: .
+      dockerfile: packages/core/Dockerfile
+    container_name: zenith_core
     restart: unless-stopped
-
-  mongo:
-    image: mongo:7
-    container_name: zenith-mongo
     ports:
-      - '27017:27017'
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_TYPE=postgres
+      - DATABASE_URL=postgresql://zenith:zenith_password@postgres:5432/zenith
+      - MONGODB_URI=mongodb://zenith:zenith_password@mongodb:27017/zenith?authSource=admin
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=change_me_to_a_secure_random_string_in_production
+      - JWT_REFRESH_SECRET=change_me_to_another_secure_string
+      - CORS_ORIGINS=http://localhost:8080
+      - UPLOADS_DIR=/app/packages/core/uploads
+    networks:
+      - frontend-net
+      - backend-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
-      - mongo_data:/data/db
+      - uploads_data:/app/packages/core/uploads
+
+  admin:
+    build:
+      context: .
+      dockerfile: packages/admin/Dockerfile
+    container_name: zenith_admin
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    networks:
+      - frontend-net
+    depends_on:
+      - core
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: zenith_postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=zenith
+      - POSTGRES_PASSWORD=zenith_password
+      - POSTGRES_DB=zenith
+    ports:
+      - "5432:5432"
+    networks:
+      - backend-net
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      test: ["CMD-SHELL", "pg_isready -U zenith -d zenith"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  mongodb:
+    image: mongo:7.0
+    container_name: zenith_mongodb
     restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=zenith
+      - MONGO_INITDB_ROOT_PASSWORD=zenith_password
+      - MONGO_INITDB_DATABASE=zenith
+    ports:
+      - "27017:27017"
+    networks:
+      - backend-net
+    volumes:
+      - mongodb_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    container_name: zenith_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - backend-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  frontend-net:
+    driver: bridge
+  backend-net:
+    driver: bridge
 
 volumes:
-  mongo_data:
-  zenith_media:
+  postgres_data:
+  mongodb_data:
+  uploads_data:

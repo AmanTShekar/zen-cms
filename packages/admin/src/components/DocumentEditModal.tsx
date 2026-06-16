@@ -97,7 +97,7 @@ const DocumentEditModal: React.FC<DocumentEditModalProps> = ({
  aria-label="Close"
  className={cn(
  'p-1 transition-colors',
- theme === 'dark' ? 'text-gray-400 hover:text-emerald-600 dark:text-emerald-500' : 'text-gray-500 hover:text-emerald-600'
+ theme === 'dark' ? 'text-gray-400 hover:text-gray-600 dark:text-gray-500' : 'text-gray-500 hover:text-gray-600'
  )}
  >
  <X size={18} />
@@ -107,7 +107,7 @@ const DocumentEditModal: React.FC<DocumentEditModalProps> = ({
  <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
  {loading ? (
  <div className="h-full flex items-center justify-center flex-col gap-4">
- <Loader2 className="animate-spin text-emerald-600 dark:text-emerald-500" size={32} />
+ <Loader2 className="animate-spin text-gray-600 dark:text-gray-500" size={32} />
  <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 ">
  Loading Document...
  </span>

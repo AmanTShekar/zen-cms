@@ -7,6 +7,7 @@ import { useModalStore } from '../../../store/modalStore'
 import { cn } from '../../../lib/utils'
 import { useFocusTrap } from '../../../hooks/useFocusTrap'
 import { confirm } from '../../../store/confirmStore'
+import { useShallow } from 'zustand/react/shallow'
 
 interface TemplatesModalProps {
  selectedSections: Set<string>
@@ -24,8 +25,8 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  saveAsTemplate,
 }) => {
  const { theme } = useTheme()
- const { templates } = useEditorStore()
- const { templatesOpen, setTemplatesOpen } = useModalStore()
+ const { templates  } = useEditorStore(useShallow(state => ({ templates: state.templates })))
+ const { templatesOpen, setTemplatesOpen  } = useModalStore(useShallow(state => ({ templatesOpen: state.templatesOpen, setTemplatesOpen: state.setTemplatesOpen })))
 
  const dialogRef = useRef<HTMLDivElement>(null)
  const modalTitleId = 'templates-modal-title'
@@ -59,13 +60,13 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  )}
  >
  <div className="flex items-center gap-3">
- <div className="w-8 h-8 rounded-none bg-emerald-600 dark:bg-emerald-600 flex items-center justify-center text-white">
+ <div className="w-8 h-8 rounded-none bg-gray-600 dark:bg-gray-600 flex items-center justify-center text-white">
  <Layout size={16} />
  </div>
  <div>
  <h3
  id={modalTitleId}
- className="text-lg font-black uppercase leading-none text-emerald-600 dark:text-emerald-500"
+ className="text-lg font-black uppercase leading-none text-gray-600 dark:text-gray-500"
  >
  Block Templates
  </h3>
@@ -77,7 +78,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  <button
  onClick={() => setTemplatesOpen(false)}
  aria-label="Close"
- className="p-1 hover:text-emerald-600 dark:text-emerald-500 transition-colors"
+ className="p-1 hover:text-gray-600 dark:text-gray-500 transition-colors"
  style={{ color: theme === 'dark' ? '#fff' : '#000' }}
  >
  <X size={18} />
@@ -103,12 +104,12 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  className={cn(
  'p-4 border rounded-none space-y-3 relative group',
  theme === 'dark'
- ? 'bg-white/[0.02] border-white/[0.08] hover:border-emerald-500/30'
- : 'bg-gray-50 border-gray-200 hover:border-emerald-300'
+ ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/30'
+ : 'bg-gray-50 border-gray-200 hover:border-gray-300'
  )}
  >
  <div className="flex items-center justify-between">
- <span className="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400">
+ <span className="text-xs font-black uppercase text-gray-600 dark:text-gray-400">
  {template.name}
  </span>
  <span className="text-xs text-gray-500">
@@ -118,7 +119,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  <div className="flex gap-2">
  <button
  onClick={() => applyTemplate(template)}
- className="flex-1 py-2 bg-emerald-600 dark:bg-emerald-600 text-white text-xs font-black uppercase rounded-none hover:bg-emerald-500 transition-colors"
+ className="flex-1 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-black uppercase rounded-none hover:bg-gray-500 transition-colors"
  >
  Apply
  </button>
@@ -160,7 +161,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  setSelectedSections(new Set())
  }}
  aria-label="Save selection as template"
- className="flex items-center gap-2 px-4 py-2 bg-emerald-600 dark:bg-emerald-600 text-white text-xs font-black uppercase rounded-none hover:bg-emerald-500 transition-colors"
+ className="flex items-center gap-2 px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-black uppercase rounded-none hover:bg-gray-500 transition-colors"
  >
  <Download size={12} aria-hidden="true" />
  Save as Template

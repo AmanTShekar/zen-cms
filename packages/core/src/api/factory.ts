@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express'
-import { CollectionConfig, WebhookTarget } from '@zenithcms/types'
+import crypto from 'crypto'
+import { CollectionConfig, WebhookTarget } from '@zenith-open/zenithcms-types'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { getCompiledZodSchema } from '../schema/engine'
 import { createResponse } from './utils'
@@ -15,37 +16,34 @@ import { AdapterFactory } from '../database/adapters/AdapterFactory'
 /**
  * Helper to dynamically query and verify granular role permissions in the database.
  */
+interface GranularAccessResult {
+  allowed: boolean
+  fieldPermissions?: Record<string, { read?: boolean; write?: boolean }>
+}
+
+import { RBACEngine } from '../services/rbac'
+
 async function verifyGranularAccess(
   user: any,
   resource: string,
   action: string,
-  adapter: DatabaseAdapter
-): Promise<boolean | null> {
+  _adapter: DatabaseAdapter
+): Promise<GranularAccessResult | null> {
   if (!user || !user.role) return null
-  if (user.role === 'admin') return true
+  if (user.role === 'admin') return { allowed: true }
 
   try {
-    const roleRecord = await adapter.findOne<any>('z_roles', { roleName: user.role })
-    if (!roleRecord || !roleRecord.permissions) {
-      return null // Fallback to schema/default static roles
-    }
+    const hasAccess = await RBACEngine.checkAccess(user.role, resource, action as any)
+    if (hasAccess === null) return null // no custom role found — use schema access fns
 
-    const permission = roleRecord.permissions.find(
-      (p: any) => p.resource === resource || p.resource === '*'
-    )
+    // ── Field-Level Permissions (Payload CMS parity) ──────────────────────────
+    // Load the per-collection, per-field permission map from the role definition.
+    // This is the key wire-up that makes fieldPermissions in z_roles actually work.
+    const fieldPermissions = await RBACEngine.getFieldPermissions(user.role, resource)
 
-    if (permission) {
-      const allowedActions = permission.actions || []
-      if (allowedActions.includes(action) || allowedActions.includes('*')) {
-        return true
-      }
-      return false
-    }
-
-    // Deny if dynamic role configuration exists but this resource is not configured
-    return false
+    return { allowed: hasAccess, fieldPermissions }
   } catch (err) {
-    return null // Fallback
+    return null // Fallback to schema access functions
   }
 }
 
@@ -90,36 +88,68 @@ export function createCollectionRouter(
   // ── Access Control Helper ──────────────────────────────────────────────────
 
   const verifyAccess = async (user: any, action: keyof NonNullable<CollectionConfig['access']>) => {
-    if (config.publicRead && action === 'read' && !user) return
+    let fieldPermissions: Record<string, any> = {}
+    if (config.publicRead && action === 'read' && !user) return fieldPermissions
 
     // Dynamic Role Permissions Check
     const granularAccess = await verifyGranularAccess(user, config.slug, action as string, adapter)
-    if (granularAccess === true) return
-    if (granularAccess === false) throw new ForbiddenError()
+    if (granularAccess) {
+      if (granularAccess.allowed === false) throw new ForbiddenError()
+      fieldPermissions = granularAccess.fieldPermissions || {}
+      return fieldPermissions
+    }
 
     const accessFn = config.access?.[action]
     if (accessFn) {
       const result = await accessFn(user)
       if (result === false) throw new ForbiddenError()
     }
+    return fieldPermissions
   }
 
-  const sanitizeFields = (doc: any, user: any, action: 'read' | 'update') => {
+  const sanitizeFields = (doc: any, user: any, action: 'read' | 'update', fieldPermissions: Record<string, { read?: boolean; write?: boolean }> = {}) => {
     if (!doc) return doc
     const sanitized = { ...doc }
     config.fields.forEach((field) => {
-      if (field.access?.[action] && !field.access[action]!(user)) {
+      const fieldPerms = fieldPermissions[field.name]
+      if (fieldPerms) {
+        const hasAccess = action === 'read' ? fieldPerms.read !== false : fieldPerms.write !== false
+        if (!hasAccess) {
+          delete sanitized[field.name]
+          return
+        }
+      }
+
+      if ((field as Record<string, any>).access?.[action] && !(field as Record<string, any>).access[action]!(user)) {
         delete sanitized[field.name]
       }
     })
     return sanitized
   }
 
+  const enforceWritePermissions = (data: any, fieldPermissions: Record<string, { write?: boolean }> = {}) => {
+    if (!data) return data
+    const result = { ...data }
+    for (const key of Object.keys(result)) {
+      if (fieldPermissions[key]?.write === false) {
+        delete result[key]
+      }
+    }
+    return result
+  }
+
   // ── Authentication & Role Middleware ──────────────────────────────────────────
 
   router.use((req, res, next) => {
+    if (!req.headers['x-zenith-site-id']) {
+      return res.status(400).json({ error: { message: 'Missing x-zenith-site-id header' } })
+    }
+
     // Public read: allow GET without auth if configured
-    if (config.publicRead && req.method === 'GET') return next()
+    if (config.publicRead && req.method === 'GET') {
+      req.siteId = req.headers['x-zenith-site-id'] as string
+      return next()
+    }
     return requireAuth(req, res, next)
   })
 
@@ -138,9 +168,11 @@ export function createCollectionRouter(
 
     try {
       const granularAccess = await verifyGranularAccess(user, config.slug, action, adapter)
-      if (granularAccess === true) return next()
-      if (granularAccess === false) {
-        return res.status(403).json({ error: { message: `Access Denied: Role permissions deny "${action}" on resource "${config.slug}".` } })
+      if (granularAccess) {
+        if (granularAccess.allowed === false) {
+          return res.status(403).json({ error: { message: `Access Denied: Role permissions deny "${action}" on resource "${config.slug}".` } })
+        }
+        return next()
       }
 
       if (req.method === 'DELETE') {
@@ -193,39 +225,91 @@ export function createCollectionRouter(
       const user = (req as any).user
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       const siteId = req.headers['x-zenith-site-id'] as string
-      await verifyAccess(user, 'read')
+      const fieldPermissions = await verifyAccess(user, 'read')
 
       if (config.singleton) {
         const doc = await contentService.findById('singleton', { user, locale, siteId })
-        return res.json(createResponse(sanitizeFields(doc, user, 'read')))
+        return res.json(createResponse(sanitizeFields(doc, user, 'read', fieldPermissions)))
       }
 
       const { filter, sort, pagination, select, populate } = parseQueryParams(req.query, config)
       const cacheKey = `${cachePrefix}:list:${JSON.stringify(req.query)}:loc:${locale || 'en'}:site:${siteId || ''}`
 
       const cached = CacheService.get(cacheKey)
-      if (cached) return res.json(cached)
+      if (cached) {
+        res.setHeader('Cache-Control', 'private, max-age=60, must-revalidate')
+        return res.json(cached)
+      }
 
-      const skip = (pagination.page - 1) * pagination.pageSize
-      const findFilter = siteId ? { ...filter, siteId } : filter
+      const isCursorMode = !!pagination.cursor
+      let findFilter = { ...filter, siteId }
+
+      if (isCursorMode) {
+        const sortField = sort.replace(/^-/, '')
+        const sortDir = sort.startsWith('-') ? -1 : 1
+        try {
+          const decoded = Buffer.from(pagination.cursor!, 'base64').toString('utf-8')
+          const [cursorUpdatedAt, cursorId] = decoded.split('_')
+          if (cursorUpdatedAt && cursorId) {
+            const cursorFilter: Record<string, unknown> = {
+              $or: [
+                { updatedAt: sortDir === 1 ? { $gt: new Date(cursorUpdatedAt) } : { $lt: new Date(cursorUpdatedAt) } },
+                {
+                  updatedAt: new Date(cursorUpdatedAt),
+                  _id: sortDir === 1 ? { $gt: cursorId } : { $lt: cursorId },
+                },
+              ],
+            }
+            findFilter = { ...findFilter, ...cursorFilter }
+          }
+        } catch {
+          // Invalid cursor — ignore and use offset mode fallback
+        }
+      }
+
+      const limit = isCursorMode ? (pagination.limit || pagination.pageSize) : pagination.pageSize
+      const skip = isCursorMode ? 0 : (pagination.page - 1) * pagination.pageSize
+
       const [docs, total] = await Promise.all([
-        contentService.find(filter, {
+        contentService.find(findFilter, {
           user,
           locale,
           sort,
           skip,
-          limit: pagination.pageSize,
+          limit,
           select,
           populate,
           siteId,
         } as any),
-        adapter.count(config.slug, findFilter),
+        isCursorMode ? Promise.resolve(-1) : adapter.count(config.slug, findFilter),
       ])
 
-      const response = createResponse(
-        docs.map((d) => sanitizeFields(d, user, 'read')),
-        { pagination: { ...pagination, total, totalPages: Math.ceil(total / pagination.pageSize) } }
-      )
+      const sanitized = docs.map((d) => sanitizeFields(d, user, 'read', fieldPermissions))
+
+      const paginationMeta = isCursorMode
+        ? { limit, hasNextPage: docs.length === limit }
+        : { ...pagination, total, totalPages: Math.ceil(total / pagination.pageSize) }
+
+      if (isCursorMode && docs.length > 0) {
+        const lastDoc = docs[docs.length - 1] as any
+        const nextCursor = Buffer.from(`${lastDoc.updatedAt}_${lastDoc._id || lastDoc.id}`).toString('base64')
+        ;(paginationMeta as any).nextCursor = nextCursor
+      }
+
+      const response = createResponse(sanitized, { pagination: paginationMeta as any })
+
+      const firstUpdated = (docs[0] as any)?.updatedAt || ''
+      const lastUpdated = (docs[docs.length - 1] as any)?.updatedAt || ''
+      const etag = crypto.createHash('sha256').update(`${total}:${pagination.pageSize}:${firstUpdated}:${lastUpdated}`).digest('hex').slice(0, 16)
+      const ifNoneMatch = req.headers['if-none-match']
+      if (ifNoneMatch === etag) {
+        return res.status(304).end()
+      }
+      res.setHeader('ETag', `"${etag}"`)
+      if (docs.length > 0 && lastUpdated) {
+        res.setHeader('Last-Modified', new Date(lastUpdated).toUTCString())
+      }
+      res.setHeader('Cache-Control', 'private, max-age=60, must-revalidate')
 
       CacheService.set(cacheKey, response, 60, [config.slug])
       res.json(response)
@@ -240,12 +324,24 @@ export function createCollectionRouter(
       const user = (req as any).user
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       const siteId = req.headers['x-zenith-site-id'] as string
-      await verifyAccess(user, 'read')
+      const fieldPermissions = await verifyAccess(user, 'read')
 
       const doc = await contentService.findById(req.params.id, { user, locale, siteId })
       if (!doc) throw new NotFoundError(config.name, req.params.id)
 
-      res.json(createResponse(sanitizeFields(doc, user, 'read')))
+      const sanitized = sanitizeFields(doc, user, 'read', fieldPermissions)
+      const etag = crypto.createHash('sha256').update(`${(doc as any)._id}:${(doc as any).updatedAt || ''}`).digest('hex').slice(0, 16)
+      const ifNoneMatch = req.headers['if-none-match']
+      if (ifNoneMatch === etag) {
+        return res.status(304).end()
+      }
+      res.setHeader('ETag', `"${etag}"`)
+      if ((doc as any).updatedAt) {
+        res.setHeader('Last-Modified', new Date((doc as any).updatedAt).toUTCString())
+      }
+      res.setHeader('Cache-Control', 'private, max-age=300, must-revalidate')
+
+      res.json(createResponse(sanitized))
     } catch (err) {
       next(err)
     }
@@ -257,7 +353,8 @@ export function createCollectionRouter(
       const user = (req as any).user
       const siteId = req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
-      await verifyAccess(user, 'create')
+      const fieldPermissions = await verifyAccess(user, 'create')
+      req.body = enforceWritePermissions(req.body, fieldPermissions)
 
       const validation = schema.safeParse(req.body)
       if (!validation.success) {
@@ -273,7 +370,7 @@ export function createCollectionRouter(
 
       CacheService.invalidateTag(config.slug)
 
-      res.status(201).json(createResponse(sanitizeFields(doc, user, 'read')))
+      res.status(201).json(createResponse(sanitizeFields(doc, user, 'read', fieldPermissions)))
     } catch (err) {
       next(err)
     }
@@ -286,7 +383,8 @@ export function createCollectionRouter(
       const user = (req as any).user
       const siteId = req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
-      await verifyAccess(user, 'update')
+      const fieldPermissions = await verifyAccess(user, 'update')
+      req.body = enforceWritePermissions(req.body, fieldPermissions)
 
       const validation = schema.partial().safeParse(req.body)
       if (!validation.success) {
@@ -306,7 +404,7 @@ export function createCollectionRouter(
 
       CacheService.invalidateTag(config.slug)
 
-      res.json(createResponse(sanitizeFields(doc, user, 'read')))
+      res.json(createResponse(sanitizeFields(doc, user, 'read', fieldPermissions)))
     } catch (err) {
       next(err)
     }
@@ -318,7 +416,8 @@ export function createCollectionRouter(
       const user = (req as any).user
       const siteId = req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
-      await verifyAccess(user, 'update')
+      const fieldPermissions = await verifyAccess(user, 'update')
+      req.body = enforceWritePermissions(req.body, fieldPermissions)
 
       const validation = schema.partial().safeParse(req.body)
       if (!validation.success) {
@@ -338,7 +437,7 @@ export function createCollectionRouter(
 
       CacheService.invalidateTag(config.slug)
 
-      res.json(createResponse(sanitizeFields(doc, user, 'read')))
+      res.json(createResponse(sanitizeFields(doc, user, 'read', fieldPermissions)))
     } catch (err) {
       next(err)
     }

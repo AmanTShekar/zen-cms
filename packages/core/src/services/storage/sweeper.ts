@@ -24,7 +24,7 @@ export async function pruneOrphanedMedia(
     logger.info('[MediaSweeper] Beginning media storage sweep...')
 
     // 1. Fetch all media records from the database
-    const dbMediaRecords = await adapter.find<any>('media', {})
+    const dbMediaRecords = await adapter.find<Record<string, any>>('media', {})
     const dbMediaIds = new Set(dbMediaRecords.map((m) => m.id))
 
     // 2. Identify physical files (for local storage)
@@ -67,7 +67,7 @@ export async function pruneOrphanedMedia(
     if (options.pruneUnreferencedMedia) {
       let collections: any[] = []
       try {
-        collections = await adapter.find<any>('z_collections', {})
+        collections = await adapter.find<Record<string, any>>('z_collections', {})
       } catch {
         // Ignore if z_collections table is empty or missing
       }
@@ -91,7 +91,7 @@ export async function pruneOrphanedMedia(
       // Query records from all user collections
       for (const col of collections) {
         try {
-          const records = await adapter.find<any>(col.slug, {})
+          const records = await adapter.find<Record<string, any>>(col.slug, {})
           for (const doc of records) {
             extractReferences(doc)
           }
@@ -104,7 +104,7 @@ export async function pruneOrphanedMedia(
       const knownCollections = ['products', 'categories', 'authors', 'posts']
       for (const slug of knownCollections) {
         try {
-          const records = await adapter.find<any>(slug, {})
+          const records = await adapter.find<Record<string, any>>(slug, {})
           for (const doc of records) {
             extractReferences(doc)
           }

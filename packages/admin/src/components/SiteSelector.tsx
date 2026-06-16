@@ -9,6 +9,7 @@ import { useTheme } from '../context/ThemeContext';
 import { toast } from 'react-hot-toast';
 import { cn } from '../lib/utils';
 import { GlassDropdown, type DropdownOption } from './GlassDropdown';
+import { useShallow } from 'zustand/react/shallow'
 
 interface SiteSelectorProps {
  isSidebarOpen?: boolean;
@@ -16,7 +17,7 @@ interface SiteSelectorProps {
 
 export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true }) => {
  const { theme } = useTheme();
- const { activeWorkspaceId, setActiveWorkspaceId, activeSiteId, setActiveSiteId } = useSiteStore();
+ const { activeWorkspaceId, setActiveWorkspaceId, activeSiteId, setActiveSiteId  } = useSiteStore(useShallow(state => ({ activeWorkspaceId: state.activeWorkspaceId, setActiveWorkspaceId: state.setActiveWorkspaceId, activeSiteId: state.activeSiteId, setActiveSiteId: state.setActiveSiteId })));
  const [workspaces, setWorkspaces] = useState<any[]>([]);
  const [sites, setSites] = useState<any[]>([]);
  const initialized = useRef(false);
@@ -156,7 +157,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  ? "bg-black/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-[#10B981]/50 hover:bg-black/85" 
  : "bg-white/65 backdrop-blur-[12px] text-gray-900 border border-black/[0.08] hover:border-[#10B981]/30 hover:bg-white/85",
  isSidebarOpen ? "rounded-none" : "rounded-none p-2 justify-center",
- "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-500"
+ "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gray-500"
  )}
  title={!isSidebarOpen ? activeLabel : undefined}
  >
@@ -209,7 +210,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  ? "bg-black/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-[#10B981]/50 hover:bg-black/85" 
  : "bg-white/65 backdrop-blur-[12px] text-gray-900 border border-black/[0.08] hover:border-[#10B981]/30 hover:bg-white/85",
  isSidebarOpen ? "rounded-none" : "rounded-none p-2 justify-center",
- "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-500"
+ "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gray-500"
  )}
  title={!isSidebarOpen ? activeLabel : undefined}
  >

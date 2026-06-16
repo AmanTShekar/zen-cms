@@ -1,4 +1,4 @@
-import { CMSConfig } from '@zenithcms/types'
+import { CMSConfig } from '@zenith-open/zenithcms-types'
 import { logger } from './logger'
 import { eventHub } from './event-hub'
 

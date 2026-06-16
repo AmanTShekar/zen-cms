@@ -1,4 +1,4 @@
-import { createClient, type ZenithClient as ZenithClientType } from '@zenithcms/sdk'
+import { createClient, type ZenithClient as ZenithClientType } from '@zenith-open/zenithcms-sdk'
 
 /**
  * Zenith CMS Client — Storefront Glass
@@ -244,8 +244,9 @@ export function parseLexicalToHTML(jsonStr: string | object): string {
     }
 
     return renderNode(data.root)
-  } catch (e) {
+  } catch {
     return typeof jsonStr === 'string' ? jsonStr : JSON.stringify(jsonStr)
   }
 }
+
 

@@ -24,9 +24,9 @@ import type { LucideIcon } from 'lucide-react'
 // ── Widget Contract ───────────────────────────────────────────────────────────
 export interface WidgetProps {
  id: string
- config: Record<string, any>
+ config: any
  isEditing: boolean
- onConfigChange: (cfg: Record<string, any>) => void
+ onConfigChange: (cfg: any) => void
  onRemove: () => void
  theme: 'dark' | 'light'
  title?: string

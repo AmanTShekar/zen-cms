@@ -4,7 +4,7 @@ import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { logger } from '../services/logger'
 import fs from 'fs'
 import path from 'path'
-import type { AuditLogData } from '@zenithcms/types'
+import type { AuditLogData } from '@zenith-open/zenithcms-types'
 
 // ── Sensitive field patterns to redact from audit logs ────────────────────
 const SENSITIVE_FIELDS = new Set([

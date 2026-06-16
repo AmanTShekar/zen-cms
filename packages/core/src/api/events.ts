@@ -50,13 +50,16 @@ router.get('/', (req: Request, res: Response) => {
   eventHub.on('content.updated', onUpdated)
   eventHub.on('content.deleted', onDeleted)
 
-  // Cleanup on client disconnect
-  req.on('close', () => {
+  // Cleanup on client disconnect or error
+  const cleanup = () => {
     clearInterval(heartbeat)
     eventHub.off('content.created', onCreated)
     eventHub.off('content.updated', onUpdated)
     eventHub.off('content.deleted', onDeleted)
-  })
+  }
+  req.on('close', cleanup)
+  req.on('error', cleanup)
+  res.on('error', cleanup)
 })
 
 export default router

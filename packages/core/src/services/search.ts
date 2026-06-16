@@ -1,5 +1,4 @@
-import mongoose from 'mongoose'
-import { CollectionConfig } from '@zenithcms/types'
+import { CollectionConfig } from '@zenith-open/zenithcms-types'
 
 export interface SearchResult {
   collection: string

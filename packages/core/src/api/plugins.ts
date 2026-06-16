@@ -3,7 +3,7 @@ import { requireAuth, requireRole } from '../middleware/auth'
 import { createResponse } from './utils'
 import { InvalidPayloadError } from '../errors'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
-import { DatabaseAdapter } from '@zenithcms/types'
+import { DatabaseAdapter } from '@zenith-open/zenithcms-types'
 
 const PLUGINS_COLLECTION = 'z_plugins'
 
@@ -16,7 +16,7 @@ const router: import('express').Router = Router()
 router.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const adapter = getAdapter(req)
-    const docs = await adapter.find<any>(PLUGINS_COLLECTION, {})
+    const docs = await adapter.find<Record<string, any>>(PLUGINS_COLLECTION, {})
     res.json(createResponse(docs))
   } catch (err) {
     next(err)
@@ -34,10 +34,10 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
     const adapter = getAdapter(req)
 
     // Check if plugin already exists
-    const existing = await adapter.findOne<any>(PLUGINS_COLLECTION, { id })
+    const existing = await adapter.findOne<Record<string, any>>(PLUGINS_COLLECTION, { id })
     if (existing) throw new InvalidPayloadError(`Plugin "${id}" is already installed`)
 
-    const doc = await adapter.create<any>(PLUGINS_COLLECTION, {
+    const doc = await adapter.create<Record<string, any>>(PLUGINS_COLLECTION, {
       id,
       name,
       version: version || '1.0.0',
@@ -68,7 +68,7 @@ router.put('/:id', requireAuth, requireRole('admin'), async (req: Request, res: 
     if (config !== undefined) update.config = config
     if (enabled !== undefined) update.enabled = enabled
 
-    const doc = await adapter.update<any>(PLUGINS_COLLECTION, id, update)
+    const doc = await adapter.update<Record<string, any>>(PLUGINS_COLLECTION, id, update)
     if (!doc) throw new InvalidPayloadError(`Plugin "${id}" not found`)
 
     res.json(createResponse(doc))

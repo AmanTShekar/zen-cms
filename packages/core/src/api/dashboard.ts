@@ -149,7 +149,7 @@ router.get('/layout', async (req: Request, res: Response, next) => {
     const siteId = req.headers['x-zenith-site-id'] as string
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const layout = await adapter.findOne<any>('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
+    const layout = await adapter.findOne<Record<string, any>>('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
 
     if (!layout) {
       // Return role-appropriate default, don't persist yet
@@ -191,7 +191,7 @@ router.put('/layout', async (req: Request, res: Response, next) => {
       const debugPath = process.env.NODE_ENV === 'production'
         ? path.join(os.tmpdir(), 'zenith-failed-layout-payload.json')
         : path.join(process.cwd(), 'failed-layout-payload.json')
-      fs.writeFileSync(
+      await fs.promises.writeFile(
         debugPath,
         JSON.stringify({ body: req.body, issues: parsed.error.issues }, null, 2)
       )
@@ -208,7 +208,7 @@ router.put('/layout', async (req: Request, res: Response, next) => {
     // Optimistic locking — reject if client is saving stale data
     if (clientUpdatedAt) {
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const existing = await adapter.findOne<any>('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
+      const existing = await adapter.findOne<Record<string, any>>('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
       if (existing && new Date(clientUpdatedAt) < new Date(existing.updated_at)) {
         throw new ConflictError('Layout was modified in another tab. Refresh to get the latest version.')
       }
@@ -230,7 +230,7 @@ router.put('/layout', async (req: Request, res: Response, next) => {
       user.role === 'admin' ? clamped : clamped.filter((w: any) => !ADMIN_ONLY_WIDGETS.has(w.type))
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    let layout = await adapter.findOne<any>('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
+    let layout = await adapter.findOne<Record<string, any>>('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
     
     if (layout) {
       layout = await adapter.update('z_dashboard_layouts', (layout.id || layout._id).toString(), {
@@ -251,9 +251,9 @@ router.put('/layout', async (req: Request, res: Response, next) => {
 
     res.json(
       createResponse({
-        widgets: layout.widgets,
-        columns: layout.columns,
-        updatedAt: layout.updated_at || layout.updatedAt,
+        widgets: layout!.widgets,
+        columns: layout!.columns,
+        updatedAt: layout!.updated_at || layout!.updatedAt,
         warnings,
       })
     )

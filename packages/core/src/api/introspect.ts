@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express'
 import { Client } from 'pg'
 import { requireAuth } from '../middleware/auth'
-import { CollectionConfig, FieldConfig } from '@zenithcms/types'
+import { CollectionConfig, FieldConfig } from '@zenith-open/zenithcms-types'
 
 const router: import('express').Router = Router()
 

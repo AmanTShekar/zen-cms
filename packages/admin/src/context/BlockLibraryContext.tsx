@@ -39,9 +39,9 @@ function mapApiFields(fields: any[]): FieldDefinition[] {
  } satisfies FieldDefinition))
 }
 
-function normalizeDefaultContent(apiBlock: any): Record<string, any> {
+function normalizeDefaultContent(apiBlock: any): any {
  // Build minimal default content from field definitions
- const content: Record<string, any> = {}
+ const content: any = {}
  for (const f of apiBlock.fields || []) {
  if (f.type === 'text') content[f.name] = ''
  else if (f.type === 'richtext') content[f.name] = ''

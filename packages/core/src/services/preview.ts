@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { CollectionConfig } from '@zenithcms/types'
+import { CollectionConfig } from '@zenith-open/zenithcms-types'
 
 const PREVIEW_SECRET = process.env.PREVIEW_SECRET || 'zenith_preview_secret_v1'
 
@@ -27,7 +27,7 @@ export class PreviewService {
    */
   static verifyPreviewToken(token: string): { collection: string; id: string } | null {
     try {
-      const decoded = jwt.verify(token, PREVIEW_SECRET) as any
+      const decoded = jwt.verify(token, PREVIEW_SECRET, { algorithms: ['HS256'] }) as any
       if (decoded.mode !== 'preview') return null
       return { collection: decoded.collection, id: decoded.id }
     } catch (_err) {
