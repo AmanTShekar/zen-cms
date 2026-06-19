@@ -43,6 +43,40 @@ router.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Res
   }
 })
 
+// ── Get all delivery logs for the system ───────────────────────────────────────
+router.get('/deliveries', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
+  try {
+    const siteId = req.headers['x-zenith-site-id'] as string
+    if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
+    const limit = Math.min(parseInt(req.query.limit as string) || 50, 200)
+    const page = Math.max(parseInt(req.query.page as string) || 1, 1)
+    const adapter = getAdapter(req)
+
+    const filter: any = { siteId }
+    if (req.query.status === 'success') filter.success = true
+    if (req.query.status === 'failed') filter.success = false
+    if (req.query.search) {
+      filter.$or = [
+        { event: { $regex: req.query.search, $options: 'i' } },
+        { url: { $regex: req.query.search, $options: 'i' } }
+      ]
+    }
+
+    const skip = (page - 1) * limit
+    // Assuming z_webhook_deliveries stores webhook deliveries
+    const deliveries = await adapter.find('z_webhook_deliveries', filter, { sort: '-createdAt', skip, limit })
+    const total = await adapter.count('z_webhook_deliveries', filter)
+
+    res.json({
+      data: deliveries,
+      meta: { total, page, limit }
+    })
+  } catch (err) {
+    next(err)
+  }
+})
+
+
 // ── Create webhook ─────────────────────────────────────────────────────────────
 router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
   try {

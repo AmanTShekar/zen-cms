@@ -35,6 +35,7 @@ export function maskSettings(settings: any) {
   if (result.stripe?.webhookSecret) result.stripe.webhookSecret = MASK_PLACEHOLDER
   if (result.ai?.openaiKey) result.ai.openaiKey = MASK_PLACEHOLDER
   if (result.ai?.anthropicKey) result.ai.anthropicKey = MASK_PLACEHOLDER
+  if (result.s3SecretKey) result.s3SecretKey = MASK_PLACEHOLDER
   
   return result
 }
@@ -66,6 +67,11 @@ export function unmaskSettings(incoming: any, existing: any) {
   if (result.ai && result.ai.anthropicKey === MASK_PLACEHOLDER) {
     if (existing?.ai?.anthropicKey) result.ai.anthropicKey = existing.ai.anthropicKey
     else delete result.ai.anthropicKey
+  }
+
+  if (result.s3SecretKey === MASK_PLACEHOLDER) {
+    if (existing?.s3SecretKey) result.s3SecretKey = existing.s3SecretKey
+    else delete result.s3SecretKey
   }
   
   return result
@@ -411,20 +417,79 @@ router.delete(
   }
 )
 
+router.patch(
+  '/users/:id',
+  requireAuth,
+  requireRole('admin'),
+  async (req: Request, res: Response, next) => {
+    try {
+      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const updates = { ...req.body }
+      delete updates._id
+      delete updates.password
+      
+      const existing = await adapter.findOne('users', { _id: req.params.id })
+      if (!existing) throw new NotFoundError('User', req.params.id)
+      
+      const updated = await adapter.update('users', req.params.id, updates)
+      
+      // Remove password from response
+      const { password, ...rest } = updated as any
+      res.json(createResponse(rest))
+    } catch (err) {
+      next(err)
+    }
+  }
+)
+
 router.post(
   '/smtp/test',
   requireAuth,
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      await EmailService.send({
-        to: (req as any).user?.email || req.body.email,
-        subject: 'SMTP Test from Zenith CMS',
-        html: '<p>This is a test email from your Zenith CMS instance. If you received this, your email configuration is working.</p>',
-      })
-      res.json(createResponse({ success: true, message: 'Test email sent' }))
-    } catch (err) {
-      next(err)
+      await EmailService.testConnection(req.body)
+      res.json(createResponse({ success: true, message: 'SMTP connection verified' }))
+    } catch (err: any) {
+      res.status(400).json(createErrorResponse(400, err.message || 'SMTP verification failed'))
+    }
+  }
+)
+
+router.post(
+  '/media/test',
+  requireAuth,
+  requireRole('admin'),
+  async (req: Request, res: Response, next) => {
+    try {
+      const { MediaService } = await import('../../services/media')
+      const success = await MediaService.testConnection(req.body)
+      if (success) {
+        res.json(createResponse({ success: true, message: 'Cloudinary connection verified' }))
+      } else {
+        throw new Error('Verification failed')
+      }
+    } catch (err: any) {
+      res.status(400).json(createErrorResponse(400, err.message || 'Cloudinary verification failed'))
+    }
+  }
+)
+
+router.post(
+  '/s3/test',
+  requireAuth,
+  requireRole('admin'),
+  async (req: Request, res: Response, next) => {
+    try {
+      const { getBlockStorage } = await import('../../services/s3-storage')
+      const success = await getBlockStorage().testConnection(req.body)
+      if (success) {
+        res.json(createResponse({ success: true, message: 'S3 connection verified' }))
+      } else {
+        throw new Error('Verification failed')
+      }
+    } catch (err: any) {
+      res.status(400).json(createErrorResponse(400, err.message || 'S3 verification failed'))
     }
   }
 )

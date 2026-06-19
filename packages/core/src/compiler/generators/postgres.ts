@@ -5,7 +5,7 @@ export function generatePostgresCode(col: any): string {
   return `
 // --- Compiled Postgres Queries for Collection: ${slug} ---
 
-export async function find${capitalized}Compiled(db: any, table: any, filters: { id?: string; siteId?: string }, options: any = {}) {
+export async function find${capitalized}Compiled(db: any, table: any, filters: Record<string, any> = {}, options: any = {}) {
   if (!db || !table) {
     throw new Error('Postgres compiled query requires active db and table handles')
   }
@@ -13,11 +13,12 @@ export async function find${capitalized}Compiled(db: any, table: any, filters: {
   let baseQuery = db.select().from(table)
   const conditions: any[] = []
 
-  if (filters.id) {
-    conditions.push(eq(table.id, filters.id))
-  }
-  if (filters.siteId) {
-    conditions.push(eq(table.siteId, filters.siteId))
+  for (const [key, value] of Object.entries(filters)) {
+    if (value !== undefined && table[key]) {
+      conditions.push(eq(table[key], value))
+    } else if (key === 'id' && table.id) {
+      conditions.push(eq(table.id, value))
+    }
   }
 
   const query = conditions.length > 0 ? baseQuery.where(and(...conditions)) : baseQuery

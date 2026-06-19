@@ -37,7 +37,7 @@ const DateField: React.FC<DateFieldProps> = ({ value, onChange, disabled, format
 
   return (
     <div className="relative w-full">
-      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
+      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-z-secondary pointer-events-none">
         <Calendar size={14} />
       </div>
       <input
@@ -47,8 +47,8 @@ const DateField: React.FC<DateFieldProps> = ({ value, onChange, disabled, format
         disabled={disabled}
         className={cn(
           'w-full bg-gray-900/65 backdrop-blur-md border border-white/8 rounded-none-none pl-9 pr-4 py-2.5 text-xs',
-          'focus:border-emerald-500/50 focus-visible:ring-2 focus-visible:ring-emerald-500/50 outline-none disabled:opacity-60 disabled:cursor-not-allowed',
-          'text-white placeholder:text-gray-500 transition-all font-mono'
+          'focus:border-z-accent/50 focus-visible:ring-2 focus-visible:ring-z-active-border outline-none disabled:opacity-60 disabled:cursor-not-allowed',
+          'text-white placeholder:text-z-secondary transition-all font-mono'
         )}
       />
     </div>

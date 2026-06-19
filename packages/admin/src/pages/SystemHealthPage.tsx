@@ -45,9 +45,9 @@ const TelemetryCard = ({
  theme,
 }: TelemetryCardProps) => (
  <Card
- className="relative group p-8"
+ className="relative group p-8 shadow-[var(--z-active-glow)] transition-all"
  >
- <div className="absolute top-0 right-0 p-8 text-gray-500/[0.02] pointer-events-none group-hover:text-gray-500/[0.05] transition-colors">
+ <div className="absolute top-0 right-0 p-8 text-z-secondary/[0.02] pointer-events-none group-hover:text-z-secondary/[0.05] transition-colors">
  <Icon size={100} strokeWidth={0.5} />
  </div>
 
@@ -55,7 +55,7 @@ const TelemetryCard = ({
  <div
  className={cn(
  'w-12 h-12 flex items-center justify-center transition-all',
- theme === 'dark' ? 'bg-white/5 text-white' : 'bg-gray-900 text-white'
+ theme === 'dark' ? 'bg-z-hover text-white' : 'bg-gray-900 text-white'
  )}
  >
  <Icon size={20} />
@@ -64,15 +64,15 @@ const TelemetryCard = ({
  className={cn(
  'flex items-center gap-3 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] border',
  status === 'healthy' || status === 'up' || status === 'ok'
- ? 'bg-gray-500/5 text-gray-600 dark:text-gray-500 border-gray-500/10'
+ ? 'bg-gray-500/5 text-gray-600 dark:text-z-secondary border-gray-500/10'
  : 'bg-amber-500/5 text-amber-500 border-amber-500/10'
  )}
  >
  <div
  className={cn(
- 'w-1.5 h-1.5 rounded-none-none',
+ 'w-1.5 h-1.5 rounded-none',
  status === 'healthy' || status === 'up' || status === 'ok'
- ? 'bg-gray-500 shadow-[0_0_8px_#10b981]'
+ ? 'bg-gray-500 shadow-[var(--z-active-glow)]'
  : 'bg-amber-500'
  )}
  />
@@ -81,18 +81,18 @@ const TelemetryCard = ({
  </div>
 
  <div className="relative z-10">
- <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] mb-3">
+ <p className="text-[10px] font-black text-z-secondary uppercase tracking-[0.4em] mb-3">
  {title}
  </p>
  <h3 className="text-3xl font-black tracking-tighter uppercase leading-none">
  {detail}
  </h3>
  <div className="flex items-center justify-between mt-4">
- <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest opacity-60">
+ <p className="text-[10px] font-bold text-z-muted uppercase tracking-widest opacity-60">
  {subdetail}
  </p>
  {trend && (
- <span className="text-[9px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-tighter flex items-center gap-1">
+ <span className="text-[9px] font-black text-gray-600 dark:text-z-secondary uppercase tracking-tighter flex items-center gap-1">
  <Zap size={10} /> Optimal
  </span>
  )}
@@ -181,7 +181,7 @@ const SystemHealthPage = () => {
  <div className="relative w-24 h-24">
  <Loader2
  size={32}
- className="absolute inset-0 m-auto animate-spin text-gray-600 dark:text-gray-500"
+ className="absolute inset-0 m-auto animate-spin text-gray-600 dark:text-z-secondary"
  strokeWidth={1.5}
  />
  <motion.div
@@ -191,7 +191,7 @@ const SystemHealthPage = () => {
  />
  </div>
  <div className="text-center">
- <p className="text-[10px] font-black uppercase tracking-[0.6em] text-gray-400 mb-2">
+ <p className="text-[10px] font-black uppercase tracking-[0.6em] text-z-muted mb-2">
  Establishing Uplink
  </p>
  <p className="text-[9px] font-bold text-gray-600 uppercase tracking-[0.3em] animate-pulse">
@@ -212,10 +212,10 @@ const SystemHealthPage = () => {
           onClick={() => fetchHealth()}
           disabled={isRefreshing}
           className={cn(
-            'px-8 py-3 rounded-none-none font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all active:scale-95 shadow-xl',
+            'px-8 py-3 rounded-none font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all active:scale-95 shadow-[var(--z-active-glow)]',
             theme === 'dark'
-              ? 'bg-white text-black hover:bg-gray-200'
-              : 'bg-gray-900 text-white hover:bg-black'
+              ? 'bg-z-accent text-white hover:opacity-90 shadow-[var(--z-active-glow)]'
+              : 'bg-z-accent text-white hover:opacity-90 shadow-sm'
           )}
         >
           <RefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} />
@@ -226,7 +226,7 @@ const SystemHealthPage = () => {
 
     <div className={cn(
       'flex-1 overflow-y-auto p-10 space-y-12 transition-colors duration-500',
-      theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
+      theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-z-primary'
     )}>
 
  {/* 📊 High-Level Metrics */}
@@ -269,20 +269,20 @@ const SystemHealthPage = () => {
 
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
  {/* 🧠 Neural Load / Resources */}
- <Card className="p-10 group relative">
- <div className="absolute top-0 right-0 p-12 text-gray-500/[0.01] pointer-events-none group-hover:text-gray-500/[0.03] transition-colors">
+ <Card className="p-10 group relative shadow-[var(--z-active-glow)] transition-all">
+ <div className="absolute top-0 right-0 p-12 text-z-secondary/[0.01] pointer-events-none group-hover:text-z-secondary/[0.03] transition-colors">
  <Cpu size={200} strokeWidth={0.5} />
  </div>
 
  <div className="flex items-center gap-6 mb-12 relative z-10">
- <div className="w-12 h-12 bg-gray-500/10 border border-gray-500/20 flex items-center justify-center text-gray-600 dark:text-gray-500 font-black text-xl">
+ <div className="w-12 h-12 bg-gray-500/10 border border-gray-500/20 flex items-center justify-center text-gray-600 dark:text-z-secondary font-black text-xl">
  C
  </div>
  <div>
  <h3 className="text-2xl font-black tracking-tight uppercase leading-none">
  Compute Resources
  </h3>
- <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2 leading-none">
+ <p className="text-[10px] font-bold text-z-secondary uppercase tracking-widest mt-2 leading-none">
  Real-time hardware utilization
  </p>
  </div>
@@ -293,10 +293,10 @@ const SystemHealthPage = () => {
  <div className="space-y-4">
  <div className="flex justify-between items-end">
  <div className="space-y-1">
- <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest ">
+ <p className="text-[11px] font-black text-z-muted uppercase tracking-widest ">
  Memory Allocation
  </p>
- <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
+ <p className="text-[9px] font-bold text-z-secondary uppercase tracking-widest">
  {health?.memory.used} / {health?.memory.total}
  </p>
  </div>
@@ -315,7 +315,7 @@ const SystemHealthPage = () => {
  %
  </span>
  </div>
- <div className="h-2 w-full bg-gray-500/5 rounded-none-none overflow-hidden p-[2px] border border-gray-500/10">
+ <div className="h-2 w-full bg-gray-500/5 rounded-none overflow-hidden p-[2px] border border-gray-500/10">
  <motion.div
  initial={{ width: 0 }}
  animate={{
@@ -333,7 +333,7 @@ const SystemHealthPage = () => {
  )
  }%`,
  }}
- className="h-full bg-gray-500 shadow-[0_0_10px_#10b981]"
+ className="h-full bg-gray-500 shadow-[var(--z-active-glow)]"
  />
  </div>
  </div>
@@ -342,10 +342,10 @@ const SystemHealthPage = () => {
  <div className="space-y-4">
  <div className="flex justify-between items-end">
  <div className="space-y-1">
- <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest ">
+ <p className="text-[11px] font-black text-z-muted uppercase tracking-widest ">
  Processor Load
  </p>
- <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
+ <p className="text-[9px] font-bold text-z-secondary uppercase tracking-widest">
  Throughput: {health?.cpu?.cores || 0} Cores Active
  </p>
  </div>
@@ -353,7 +353,7 @@ const SystemHealthPage = () => {
  {health?.cpu?.usage || '0%'}
  </span>
  </div>
- <div className="h-2 w-full bg-gray-500/5 rounded-none-none overflow-hidden p-[2px] border border-gray-500/10">
+ <div className="h-2 w-full bg-gray-500/5 rounded-none overflow-hidden p-[2px] border border-gray-500/10">
  <motion.div
  initial={{ width: 0 }}
  animate={{ width: health?.cpu?.usage || '0%' }}
@@ -365,20 +365,20 @@ const SystemHealthPage = () => {
  </Card>
 
  {/* 🔐 Security / Integrity */}
- <Card className="p-10 group relative">
- <div className="absolute top-0 right-0 p-12 text-gray-500/[0.01] pointer-events-none group-hover:text-gray-500/[0.03] transition-colors">
+ <Card className="p-10 group relative shadow-[var(--z-active-glow)] transition-all">
+ <div className="absolute top-0 right-0 p-12 text-z-secondary/[0.01] pointer-events-none group-hover:text-z-secondary/[0.03] transition-colors">
  <Lock size={200} strokeWidth={0.5} />
  </div>
 
  <div className="flex items-center gap-6 mb-12 relative z-10">
- <div className="w-12 h-12 bg-gray-500/10 border border-gray-500/20 flex items-center justify-center text-gray-600 dark:text-gray-500">
+ <div className="w-12 h-12 bg-gray-500/10 border border-gray-500/20 flex items-center justify-center text-gray-600 dark:text-z-secondary">
  <ShieldCheck size={24} />
  </div>
  <div>
  <h3 className="text-2xl font-black tracking-tight uppercase leading-none">
  Security Protocols
  </h3>
- <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-2 leading-none">
+ <p className="text-[10px] font-bold text-z-secondary uppercase tracking-widest mt-2 leading-none">
  Integrity and authentication audit
  </p>
  </div>
@@ -419,32 +419,32 @@ const SystemHealthPage = () => {
  to={svc.path}
  key={i}
  className={cn(
- 'p-6 border transition-all hover:bg-white/[0.02] group block',
+ 'p-6 border transition-all hover:bg-z-panel group block',
  theme === 'dark'
- ? 'bg-black/40 border-white/[0.08] hover:border-gray-500/20'
- : 'bg-white border-gray-200 shadow-sm hover:border-gray-500/10 shadow-sm'
+ ? 'bg-black/40 border-z-border hover:border-gray-500/20'
+ : 'bg-z-panel border-z-border shadow-sm hover:border-gray-500/10 shadow-sm'
  )}
  >
  <div className="flex items-start justify-between">
  <div className="flex items-center gap-4">
  <div
  className={cn(
- 'w-12 h-12 rounded-none-none flex items-center justify-center border transition-colors',
+ 'w-12 h-12 rounded-none flex items-center justify-center border transition-colors',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] group-hover:bg-gray-500/10 group-hover:border-gray-500/20'
- : 'bg-gray-50 border-gray-200 shadow-sm group-hover:bg-gray-50 group-hover:border-gray-200'
+ ? 'bg-z-hover border-z-border group-hover:bg-gray-500/10 group-hover:border-gray-500/20'
+ : 'bg-z-input border-z-border shadow-sm group-hover:bg-gray-50 group-hover:border-z-border'
  )}
  >
  <svc.icon
  size={20}
- className="text-gray-400 group-hover:text-gray-600 dark:text-gray-500 transition-colors"
+ className="text-z-muted group-hover:text-gray-600 dark:text-z-secondary transition-colors"
  />
  </div>
  <div className="flex flex-col leading-none">
  <span className="text-[12px] font-black uppercase leading-none">
  {svc.label}
  </span>
- <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-2">
+ <span className="text-[9px] text-z-secondary font-bold uppercase tracking-widest mt-2">
  {svc.detail}
  </span>
  </div>
@@ -452,15 +452,15 @@ const SystemHealthPage = () => {
  <div className="flex flex-col items-end gap-2">
  <span
  className={cn(
- 'text-[9px] font-black uppercase px-3 py-1 border rounded-none-none ',
+ 'text-[9px] font-black uppercase px-3 py-1 border rounded-none ',
  svc.status === 'Active'
- ? 'text-gray-600 dark:text-gray-500 border-gray-500/20 bg-gray-500/5'
+ ? 'text-gray-600 dark:text-z-secondary border-gray-500/20 bg-gray-500/5'
  : 'text-amber-500 border-amber-500/20 bg-amber-500/5'
  )}
  >
  {svc.status}
  </span>
- <span className="text-[8px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+ <span className="text-[8px] font-black text-gray-600 dark:text-z-secondary uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
  Configure →
  </span>
  </div>
@@ -472,7 +472,7 @@ const SystemHealthPage = () => {
  </div>
 
   {/* 🚨 Security Alert for Metrics */}
-  <div className={cn("p-6 border rounded-none-none mb-8", theme === 'dark' ? 'bg-amber-500/10 border-amber-500/20' : 'bg-amber-50 border-amber-200')}>
+  <div className={cn("p-6 border rounded-none mb-8 shadow-[var(--z-active-glow)] transition-all", theme === 'dark' ? 'bg-amber-500/10 border-amber-500/20' : 'bg-amber-50 border-amber-200')}>
     <div className="flex items-center gap-4">
       <div className="w-10 h-10 bg-amber-500/20 flex items-center justify-center text-amber-500">
         <ShieldCheck size={20} />
@@ -489,24 +489,24 @@ const SystemHealthPage = () => {
   </div>
 
  <Card
- className="flex items-center justify-between cursor-pointer p-8 group transition-all"
+ className="flex items-center justify-between cursor-pointer p-8 group transition-all shadow-[var(--z-active-glow)]"
  interactive
  onClick={() => toast.success('Redirecting to Audit Logs')}
  >
  <div className="flex items-center gap-8">
- <div className="w-12 h-12 bg-gray-500/10 flex items-center justify-center text-gray-600 dark:text-gray-500">
+ <div className="w-12 h-12 bg-gray-500/10 flex items-center justify-center text-gray-600 dark:text-z-secondary">
  <Terminal size={24} />
  </div>
  <div>
  <p className="text-[14px] font-black uppercase tracking-tight leading-none mb-2">
  View System Audit Logs
  </p>
- <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-none opacity-60">
+ <p className="text-[10px] font-bold text-z-secondary uppercase tracking-widest leading-none opacity-60">
  Complete history of administrative operations and system events.
  </p>
  </div>
  </div>
- <div className="w-12 h-12 border border-gray-500/20 flex items-center justify-center text-gray-600 dark:text-gray-500 group-hover:bg-gray-500 group-hover:text-white transition-all">
+ <div className="w-12 h-12 border border-gray-500/20 flex items-center justify-center text-gray-600 dark:text-z-secondary group-hover:bg-gray-500 group-hover:text-white transition-all">
  <Zap size={20} />
  </div>
  </Card>

@@ -118,14 +118,14 @@ export const MediaLibraryModal: React.FC = () => {
  className={cn(
  'w-full max-w-6xl border rounded-none-none overflow-hidden shadow-2xl flex flex-col h-[85vh]',
  theme === 'dark'
- ? 'bg-[#0a0a0a] border-white/[0.08]'
- : 'bg-white border-gray-200'
+ ? 'bg-[#0a0a0a] border-z-border'
+ : 'bg-z-panel border-z-border'
  )}
  >
  <div
  className={cn(
  'p-6 border-b flex items-center justify-between shrink-0',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm',
+ theme === 'dark' ? 'border-z-border' : 'border-z-border shadow-sm',
  )}
  >
  <h3
@@ -142,7 +142,7 @@ export const MediaLibraryModal: React.FC = () => {
  aria-label="Close"
  className={cn(
  'p-1 transition-colors',
- theme === 'dark' ? 'text-gray-400 hover:text-gray-600 dark:text-gray-500' : 'text-gray-500 hover:text-gray-600'
+ theme === 'dark' ? 'text-z-muted hover:text-gray-600 dark:text-z-secondary' : 'text-z-secondary hover:text-gray-600'
  )}
  >
  <X size={18} />
@@ -152,13 +152,13 @@ export const MediaLibraryModal: React.FC = () => {
  {/* Toolbar: search, filters, upload */}
  <div className={cn(
  'flex items-center gap-4 px-8 py-4 border-b shrink-0',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
+ theme === 'dark' ? 'border-z-border' : 'border-z-border shadow-sm'
  )}>
  <div className="relative group flex-1">
  <Search
  className={cn(
  'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
- theme === 'dark' ? 'text-gray-555 group-focus-within:text-gray-600 dark:text-gray-400' : 'text-gray-400 group-focus-within:text-gray-600'
+ theme === 'dark' ? 'text-gray-555 group-focus-within:text-gray-600 dark:text-z-muted' : 'text-z-muted group-focus-within:text-gray-600'
  )}
  size={15}
  />
@@ -171,8 +171,8 @@ export const MediaLibraryModal: React.FC = () => {
  className={cn(
  'w-full rounded-none-none pl-12 pr-4 py-3 text-xs font-bold transition-all',
  theme === 'dark'
- ? 'bg-white/[0.03] border border-white/[0.08] text-white placeholder:text-gray-600 focus-visible:border-gray-500/40 focus-visible:bg-white/[0.05]'
- : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus-visible:border-gray-400 focus-visible:bg-white'
+ ? 'bg-z-hover border border-z-border text-white placeholder:text-gray-600 focus-visible:border-gray-500/40 focus-visible:bg-white/[0.05]'
+ : 'bg-gray-50 border border-z-border text-z-primary placeholder:text-z-muted focus-visible:border-gray-400 focus-visible:bg-white'
  )}
  />
  </div>
@@ -185,8 +185,8 @@ export const MediaLibraryModal: React.FC = () => {
  className={cn(
  'rounded-none-none border py-3 px-4 text-xs font-black uppercase transition-all',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-gray-400 focus-visible:border-gray-500/40'
- : 'bg-gray-55 border-gray-200 text-gray-600 focus-visible:border-gray-400'
+ ? 'bg-z-hover border-z-border text-z-muted focus-visible:border-gray-500/40'
+ : 'bg-gray-55 border-z-border text-gray-600 focus-visible:border-gray-400'
  )}
  >
  <option value="all">All Types</option>
@@ -202,7 +202,7 @@ export const MediaLibraryModal: React.FC = () => {
  'flex items-center gap-2 px-5 py-3 rounded-none-none border cursor-pointer transition-all text-xs font-black uppercase tracking-wider',
  theme === 'dark'
  ? 'bg-gray-600/20 border-gray-500/30 text-gray-300 hover:bg-gray-600/30 hover:border-gray-500/50'
- : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-gray-300'
+ : 'bg-z-input border-z-border text-gray-700 hover:bg-gray-100 hover:border-z-border-strong'
  )}>
  <Upload size={14} />
  Ingest
@@ -232,8 +232,8 @@ export const MediaLibraryModal: React.FC = () => {
  <div className="flex-1 overflow-y-auto p-6">
  {mediaLoading ? (
  <div className="flex flex-col items-center justify-center h-full gap-5">
- <Loader2 size={36} className="animate-spin text-gray-600 dark:text-gray-500" />
- <span className="text-xs font-black uppercase text-gray-600 dark:text-gray-400 tracking-[0.3em] animate-pulse">
+ <Loader2 size={36} className="animate-spin text-gray-600 dark:text-z-secondary" />
+ <span className="text-xs font-black uppercase text-gray-600 dark:text-z-muted tracking-[0.3em] animate-pulse">
  Loading Registry...
  </span>
  </div>
@@ -244,13 +244,13 @@ export const MediaLibraryModal: React.FC = () => {
  <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
  <div className={cn(
  'w-16 h-16 rounded-none-none border-2 border-dashed flex items-center justify-center',
- theme === 'dark' ? 'border-white/[0.08] text-gray-600' : 'border-gray-200 text-gray-300'
+ theme === 'dark' ? 'border-z-border text-gray-600' : 'border-z-border text-gray-300'
  )}>
  <ImageIcon size={28} />
  </div>
  <p className={cn(
  'text-xs font-black uppercase tracking-wider',
- theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+ theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
  )}>
  No assets in the registry
  </p>
@@ -270,7 +270,7 @@ export const MediaLibraryModal: React.FC = () => {
  <Search size={28} className={theme === 'dark' ? 'text-gray-700' : 'text-gray-300'} />
  <span className={cn(
  'text-xs font-black uppercase ',
- theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+ theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
  )}>
  No assets match your filter
  </span>
@@ -315,12 +315,12 @@ export const MediaLibraryModal: React.FC = () => {
  ) : (
  <div className={cn(
  'w-full h-full flex flex-col items-center justify-center gap-2',
- theme === 'dark' ? 'bg-white/[0.03]' : 'bg-gray-50'
+ theme === 'dark' ? 'bg-z-hover' : 'bg-gray-50'
  )}>
- <File size={24} className={theme === 'dark' ? 'text-gray-500' : 'text-gray-400'} />
+ <File size={24} className={theme === 'dark' ? 'text-z-secondary' : 'text-z-muted'} />
  <span className={cn(
  'text-[7px] font-black uppercase tracking-widest text-center px-1 truncate w-full',
- theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+ theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
  )}>
  {(file.mimetype || 'file').split('/')[1]?.toUpperCase().slice(0, 4) || 'FILE'}
  </span>
@@ -350,8 +350,8 @@ export const MediaLibraryModal: React.FC = () => {
  className={cn(
  'mt-1.5 px-2 py-1 rounded-none-none border text-xs font-black uppercase transition-all',
  theme === 'dark'
- ? 'border-white/[0.08] text-white/70 hover:border-white/40 hover:text-white bg-white/5'
- : 'border-white/30 text-white/80 hover:border-white/[0.08]0 hover:text-white bg-white/10'
+ ? 'border-z-border text-white/70 hover:border-white/40 hover:text-white bg-z-hover'
+ : 'border-white/30 text-white/80 hover:border-z-border0 hover:text-white bg-white/10'
  )}
  >
  Copy URL
@@ -375,7 +375,7 @@ export const MediaLibraryModal: React.FC = () => {
  }}
  className={cn(
  'mt-1 px-2 py-1 rounded-none-none border text-xs font-black uppercase transition-all',
- 'border-gray-500/40 text-gray-600 dark:text-gray-400 hover:border-gray-500 hover:text-gray-300 bg-gray-500/10'
+ 'border-gray-500/40 text-gray-600 dark:text-z-muted hover:border-gray-500 hover:text-gray-300 bg-gray-500/10'
  )}
  >
  Select
@@ -385,8 +385,8 @@ export const MediaLibraryModal: React.FC = () => {
  <div className={cn(
  'absolute top-1.5 left-1.5 px-1.5 py-0.5 text-[6px] font-black uppercase border rounded-none-none',
  theme === 'dark'
- ? 'bg-black/60 border-white/[0.08] text-gray-400'
- : 'bg-white/80 border-gray-200 text-gray-500'
+ ? 'bg-black/60 border-z-border text-z-muted'
+ : 'bg-white/80 border-z-border text-z-secondary'
  )}>
  {(file.mimetype || 'file').split('/')[1]?.toUpperCase().slice(0, 4) || 'FILE'}
  </div>
@@ -402,11 +402,11 @@ export const MediaLibraryModal: React.FC = () => {
  {/* Footer */}
  <div className={cn(
  'flex items-center justify-between px-8 py-3 border-t shrink-0',
- theme === 'dark' ? 'border-white/[0.08] bg-white/[0.015]' : 'border-gray-200 shadow-sm bg-gray-50'
+ theme === 'dark' ? 'border-z-border bg-white/[0.015]' : 'border-z-border shadow-sm bg-gray-50'
  )}>
  <span className={cn(
  'text-xs font-bold uppercase tracking-widest',
- theme === 'dark' ? 'text-gray-655' : 'text-gray-400'
+ theme === 'dark' ? 'text-gray-655' : 'text-z-muted'
  )}>
  Click any asset to copy its URL • Supports images, video, audio, PDF
  </span>
@@ -416,8 +416,8 @@ export const MediaLibraryModal: React.FC = () => {
  className={cn(
  'px-5 py-2 text-xs font-black uppercase rounded-none-none border transition-all',
  theme === 'dark'
- ? 'border-white/[0.08] text-gray-400 hover:border-white/[0.08] hover:text-white'
- : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:text-black'
+ ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
+ : 'border-z-border text-gray-600 hover:border-z-border-strong hover:text-black'
  )}
  >
  Close

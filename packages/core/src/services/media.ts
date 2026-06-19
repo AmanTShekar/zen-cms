@@ -1,47 +1,75 @@
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary'
 import multer from 'multer'
 import { logger } from './logger'
+import { AdapterFactory } from '../database/adapters/AdapterFactory'
 
-const isConfigured = !!(
-  process.env.CLOUDINARY_CLOUD_NAME &&
-  process.env.CLOUDINARY_API_KEY &&
-  process.env.CLOUDINARY_API_SECRET
-)
+let isConfiguredGlobal = false;
 
-if (isConfigured) {
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  })
-  logger.info('Media service: Cloudinary configured')
-} else {
-  logger.warn('Media service: Cloudinary env vars missing — media uploads will return 503')
+const resolveConfig = async (overrideSettings?: any) => {
+  let config = {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET
+  }
+  
+  if (overrideSettings) {
+    if (overrideSettings.cloudinaryCloudName) config.cloudName = overrideSettings.cloudinaryCloudName
+    if (overrideSettings.cloudinaryApiKey) config.apiKey = overrideSettings.cloudinaryApiKey
+    if (overrideSettings.cloudinaryApiSecret && overrideSettings.cloudinaryApiSecret !== '[MASKED_CREDENTIAL]') config.apiSecret = overrideSettings.cloudinaryApiSecret
+    return config
+  }
+
+  try {
+    const adapter = AdapterFactory.getActiveAdapter()
+    if (adapter) {
+      const settings = await adapter.findOne<Record<string, any>>('z_settings', {})
+      if (settings) {
+        if (settings.cloudinaryCloudName) config.cloudName = settings.cloudinaryCloudName
+        if (settings.cloudinaryApiKey) config.apiKey = settings.cloudinaryApiKey
+        if (settings.cloudinaryApiSecret && settings.cloudinaryApiSecret !== '[MASKED_CREDENTIAL]') config.apiSecret = settings.cloudinaryApiSecret
+      }
+    }
+  } catch (e) {
+    logger.warn('Failed to load media config from settings')
+  }
+  return config
 }
 
-// Resilient middleware: if not configured, return 503 — don't crash
-export const upload = isConfigured
-  ? multer({
-      storage: multer.memoryStorage(), // use memory first, then upload to Cloudinary
-      limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
-    })
-  : {
-      single: () => (_req: unknown, res: any, _next: unknown) => {
-        res.status(503).json({ error: 'Media service unavailable' })
-      },
-      array: () => (_req: unknown, res: any, _next: unknown) => {
-        res.status(503).json({ error: 'Media service unavailable' })
-      },
-    }
+// Always use memoryStorage. The check is done at upload time instead.
+export const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
+})
 
 export const MediaService = {
-  isAvailable: isConfigured,
+  async testConnection(overrideSettings: any): Promise<boolean> {
+    const config = await resolveConfig(overrideSettings)
+    if (!config.cloudName || !config.apiKey || !config.apiSecret) {
+      throw new Error('Cloudinary credentials missing')
+    }
+    cloudinary.config({
+      cloud_name: config.cloudName,
+      api_key: config.apiKey,
+      api_secret: config.apiSecret
+    })
+    const result = await cloudinary.api.ping()
+    return result.status === 'ok'
+  },
 
   async uploadFile(
     fileInput: Buffer | string,
     options: { folder?: string; filename?: string; mimetype?: string } = {}
   ): Promise<UploadApiResponse> {
-    if (!isConfigured) throw new Error('Media service is not configured')
+    const config = await resolveConfig()
+    if (!config.cloudName || !config.apiKey || !config.apiSecret) {
+      throw new Error('Media service is not configured (missing Cloudinary credentials)')
+    }
+
+    cloudinary.config({
+      cloud_name: config.cloudName,
+      api_key: config.apiKey,
+      api_secret: config.apiSecret
+    })
 
     const sanitizedFilename = options.filename
       ? options.filename.replace(/[^a-zA-Z0-9.-]/g, '-')
@@ -77,12 +105,21 @@ export const MediaService = {
   },
 
   async deleteFile(publicId: string): Promise<void> {
-    if (!isConfigured) throw new Error('Media service is not configured')
+    const config = await resolveConfig()
+    if (!config.cloudName || !config.apiKey || !config.apiSecret) {
+      throw new Error('Media service is not configured')
+    }
+    cloudinary.config({
+      cloud_name: config.cloudName,
+      api_key: config.apiKey,
+      api_secret: config.apiSecret
+    })
     await cloudinary.uploader.destroy(publicId)
     logger.info({ publicId }, 'Media file deleted')
   },
 
   async getHealth(): Promise<'ok' | 'disabled'> {
-    return isConfigured ? 'ok' : 'disabled'
+    const config = await resolveConfig()
+    return (config.cloudName && config.apiKey && config.apiSecret) ? 'ok' : 'disabled'
   },
 }

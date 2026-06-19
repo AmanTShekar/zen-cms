@@ -36,18 +36,18 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item, idx, theme, removeF
  className={cn(
  'flex items-center gap-3 p-3 rounded-none-none border group',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] hover:border-gray-500/20'
- : 'bg-gray-50 border-gray-200 hover:border-gray-200'
+ ? 'bg-z-hover border-z-border hover:border-gray-500/20'
+ : 'bg-z-input border-z-border hover:border-z-border'
  )}
  >
  <div
  onPointerDown={(e) => dragControls.start(e)}
  className="cursor-grab active:cursor-grabbing shrink-0"
  >
- <GripVertical size={12} className="text-gray-500" />
+ <GripVertical size={12} className="text-z-secondary" />
  </div>
  <div className="w-6 h-6 rounded-none-none bg-gray-500/10 flex items-center justify-center shrink-0">
- <Layout size={12} className="text-gray-600 dark:text-gray-400" />
+ <Layout size={12} className="text-gray-600 dark:text-z-muted" />
  </div>
  <div className="flex-1 min-w-0">
  <p className="text-xs font-black uppercase truncate">
@@ -57,7 +57,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item, idx, theme, removeF
  <button
  onClick={() => removeFromDynamicZone(idx)}
  aria-label={`Remove component ${idx + 1}`}
- className="p-1 text-gray-500 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100 shrink-0"
+ className="p-1 text-z-secondary hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100 shrink-0"
  >
  <Trash2 size={12} aria-hidden="true" />
  </button>
@@ -117,25 +117,25 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  exit={{ scale: 0.9, opacity: 0 }}
  className={cn(
  'absolute right-0 top-0 bottom-0 w-[450px] border-l shadow-2xl flex flex-col overflow-hidden',
- theme === 'dark' ? 'bg-[#060606] border-white/[0.08]' : 'bg-white border-gray-200'
+ theme === 'dark' ? 'bg-[#060606] border-z-border' : 'bg-z-panel border-z-border'
  )}
  >
  <div className={cn(
  'p-6 border-b flex items-center justify-between',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
+ theme === 'dark' ? 'border-z-border' : 'border-z-border shadow-sm'
  )}>
  <div className="flex items-center gap-3">
  <div className="w-8 h-8 rounded-none-none bg-gray-600/20 border border-gray-500/30 flex items-center justify-center">
- <Layers size={16} className="text-gray-600 dark:text-gray-400" />
+ <Layers size={16} className="text-gray-600 dark:text-z-muted" />
  </div>
  <div>
  <h2
  id={modalTitleId}
- className="text-base font-black uppercase text-gray-600 dark:text-gray-400 leading-none"
+ className="text-base font-black uppercase text-gray-600 dark:text-z-muted leading-none"
  >
  Dynamic Zone
  </h2>
- <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">
+ <p className="text-xs text-z-secondary font-bold uppercase tracking-widest mt-1">
  Add/arrange component blocks
  </p>
  </div>
@@ -146,8 +146,8 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  className={cn(
  'p-1.5 rounded-none-none border transition-all',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] hover:bg-white hover:text-black'
- : 'bg-gray-100 border-gray-200 hover:bg-black hover:text-white'
+ ? 'bg-z-hover border-z-border hover:bg-white hover:text-black'
+ : 'bg-gray-100 border-z-border hover:bg-black hover:text-white'
  )}
  >
  <X size={14} />
@@ -162,7 +162,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  const zone = section?.content?.[activeDynamicZone.fieldKey] || []
  return zone.length > 0 ? (
  <div className="space-y-2">
- <p className="text-xs font-black text-gray-500 uppercase px-1">
+ <p className="text-xs font-black text-z-secondary uppercase px-1">
  Zone Contents ({zone.length})
  </p>
  <Reorder.Group
@@ -184,8 +184,8 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  </div>
  ) : (
  <div className="text-center py-6">
- <Box size={24} className="mx-auto text-gray-500 mb-2" />
- <p className="text-xs text-gray-500 font-bold ">
+ <Box size={24} className="mx-auto text-z-secondary mb-2" />
+ <p className="text-xs text-z-secondary font-bold ">
  Zone is empty — add components below
  </p>
  </div>
@@ -195,13 +195,13 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
 
  {/* Add Components */}
  <div className="space-y-2">
- <p className="text-xs font-black text-gray-500 uppercase px-1">
+ <p className="text-xs font-black text-z-secondary uppercase px-1">
  Available Components
  </p>
  <div className="relative">
  <Search size={12} className={cn(
  'absolute left-3 top-1/2 -translate-y-1/2',
- theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+ theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
  )} />
  <input
  type="text"
@@ -211,14 +211,14 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  className={cn(
  'w-full pl-8 pr-3 py-2 text-xs font-bold border rounded-none-none bg-transparent',
  theme === 'dark'
- ? 'border-white/[0.08] text-white placeholder-gray-600 focus:border-gray-500/30'
- : 'border-gray-200 text-black placeholder-gray-400 focus:border-gray-500/30'
+ ? 'border-z-border text-white placeholder-gray-600 focus:border-gray-500/30'
+ : 'border-z-border text-black placeholder-gray-400 focus:border-gray-500/30'
  )}
  />
  </div>
  <div className="max-h-64 overflow-y-auto space-y-1.5 custom-editor-scrollbar">
  {filteredBlocks.length === 0 ? (
- <p className={cn('text-xs font-bold text-center py-4', theme === 'dark' ? 'text-gray-600' : 'text-gray-400')}>
+ <p className={cn('text-xs font-bold text-center py-4', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
  No components match your search
  </p>
  ) : (
@@ -232,20 +232,20 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  className={cn(
  'w-full flex items-center gap-3 p-3 rounded-none-none border transition-all text-left',
  theme === 'dark'
- ? 'bg-white/[0.01] border-white/[0.08] hover:border-gray-500/30 hover:bg-gray-500/5'
- : 'bg-gray-50 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+ ? 'bg-white/[0.01] border-z-border hover:border-gray-500/30 hover:bg-gray-500/5'
+ : 'bg-z-input border-z-border hover:border-z-border-strong hover:bg-gray-50'
  )}
  >
  <div className="w-8 h-8 rounded-none-none bg-gray-500/10 flex items-center justify-center shrink-0">
- <Icon size={14} className="text-gray-600 dark:text-gray-400" />
+ <Icon size={14} className="text-gray-600 dark:text-z-muted" />
  </div>
  <div className="flex-1 min-w-0">
  <p className="text-xs font-black uppercase truncate">{block.title}</p>
- <p className={cn('text-[10px] font-bold truncate', theme === 'dark' ? 'text-gray-600' : 'text-gray-400')}>
+ <p className={cn('text-[10px] font-bold truncate', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
  {block.description}
  </p>
  </div>
- <PlusCircle size={14} aria-hidden="true" className="text-gray-600 dark:text-gray-500 opacity-50 shrink-0" />
+ <PlusCircle size={14} aria-hidden="true" className="text-gray-600 dark:text-z-secondary opacity-50 shrink-0" />
  </button>
  )
  })

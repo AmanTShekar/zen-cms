@@ -12,23 +12,23 @@ export const BuilderAITab = ({
 }: any) => {
   return (
     <motion.div key="ai" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
-      <div className={cn('p-6 border rounded-none-none', dark ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm')}>
-        <h3 className="text-[10px] font-black uppercase tracking-widest text-purple-400 mb-1 flex items-center gap-2">
+      <div className={cn('p-6 border rounded-none shadow-[var(--z-active-glow)] transition-all', 'z-panel')}>
+        <h3 className="text-[10px] font-black uppercase tracking-widest text-z-active-text mb-1 flex items-center gap-2">
           <Sparkles size={12} /> AI Component Architect
         </h3>
-        <p className={cn('text-[10px] mb-6 font-medium', dark ? 'text-gray-400' : 'text-gray-500')}>
+        <p className={cn('text-[10px] mb-6 font-medium', dark ? 'text-z-muted' : 'text-z-secondary')}>
           Describe a component and the AI will generate its complete field schema. Works best with detailed descriptions.
         </p>
 
         <div className="space-y-4">
           <div>
-            <label className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-2">Describe your component</label>
+            <label className="text-[9px] font-black uppercase tracking-widest text-z-secondary block mb-2">Describe your component</label>
             <textarea
               rows={5}
               value={aiPrompt}
               onChange={e => setAiPrompt(e.target.value)}
               placeholder='e.g. "A pricing card component with a plan name, price per month, list of up to 5 feature bullets, a CTA button label, a highlighted/featured boolean flag, and a color accent picker."'
-              className={cn('w-full border p-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none-none placeholder:text-gray-600 resize-none', dark ? 'bg-black border-white/[0.08] focus:border-purple-500/50 text-white' : 'bg-gray-50 border-gray-200 focus:border-purple-500 text-gray-900')}
+              className={cn('w-full border p-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none placeholder:text-gray-600 resize-none shadow-inner', dark ? 'bg-black/40 backdrop-blur-sm border-z-border focus:border-z-accent/50 text-white' : 'bg-z-input border-z-border focus:border-z-accent text-z-primary')}
             />
           </div>
 
@@ -43,7 +43,7 @@ export const BuilderAITab = ({
               <button
                 key={suggestion}
                 onClick={() => setAiPrompt(suggestion)}
-                className={cn('text-[9px] font-bold px-3 py-1.5 border rounded-none-none transition-all', dark ? 'border-white/[0.08] text-gray-500 hover:text-white hover:border-purple-500/50' : 'border-gray-200 text-gray-500 hover:text-black hover:border-purple-400')}
+                className={cn('text-[9px] font-black uppercase tracking-widest px-3 py-1.5 border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white hover:border-z-accent/50 hover:bg-z-active-bg' : 'border-z-border text-z-secondary hover:text-black hover:border-z-active-border')}
               >
                 {suggestion.slice(0, 40)}...
               </button>
@@ -53,7 +53,7 @@ export const BuilderAITab = ({
           <button
             disabled={isAIGenerating || !aiPrompt.trim()}
             onClick={handleAIGenerate}
-            className="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black uppercase tracking-widest flex justify-center items-center gap-2 transition-all rounded-none-none disabled:opacity-50 shadow-lg shadow-purple-900/30"
+            className="w-full py-4 bg-z-accent hover:opacity-90 text-white text-[10px] font-black uppercase tracking-widest flex justify-center items-center gap-2 transition-all rounded-none disabled:opacity-50 shadow-[var(--z-active-glow)]"
           >
             {isAIGenerating
               ? <><Loader2 size={14} className="animate-spin" /> Generating with AI...</>

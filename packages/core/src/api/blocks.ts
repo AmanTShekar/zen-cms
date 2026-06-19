@@ -6,7 +6,7 @@ import { NotFoundError } from '../errors'
 import fs from 'fs'
 import path from 'path'
 import { z } from 'zod'
-import { getBlockStorage, isS3Enabled } from '../services/s3-storage'
+import { getBlockStorage } from '../services/s3-storage'
 
 const router: Router = Router()
 const generationLocks = new Map<string, boolean>()

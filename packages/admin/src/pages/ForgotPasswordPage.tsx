@@ -87,12 +87,12 @@ const ForgotPasswordPage: React.FC = () => {
  <h1
  className={cn(
  'text-4xl font-black tracking-tighter uppercase leading-none transition-colors',
- theme === 'dark' ? 'text-white' : 'text-gray-900'
+ theme === 'dark' ? 'text-white' : 'text-z-primary'
  )}
  >
  ZENITH
  </h1>
- <p className="mt-3 text-[9px] font-black text-gray-400 uppercase tracking-[0.4em] ">
+ <p className="mt-3 text-[9px] font-black text-z-muted uppercase tracking-[0.4em] ">
  Access_Recovery_Interface
  </p>
  </motion.div>
@@ -103,7 +103,7 @@ const ForgotPasswordPage: React.FC = () => {
  animate={{ opacity: 1, scale: 1 }}
  className={cn(
  'border rounded-none-none p-8 shadow-2xl relative transition-all duration-500',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
+ 'bg-z-panel border-z-border shadow-sm'
  )}
  >
  <div className="flex items-center justify-between mb-8">
@@ -111,12 +111,12 @@ const ForgotPasswordPage: React.FC = () => {
  <h2
  className={cn(
  'text-xl font-black uppercase tracking-tight transition-colors',
- theme === 'dark' ? 'text-white' : 'text-gray-900'
+ theme === 'dark' ? 'text-white' : 'text-z-primary'
  )}
  >
  Recover Password
  </h2>
- <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-none mt-1">
+ <p className="text-[9px] text-z-muted font-bold uppercase tracking-widest leading-none mt-1">
  Credentials Verification
  </p>
  </div>
@@ -125,7 +125,7 @@ const ForgotPasswordPage: React.FC = () => {
  <div
  className={cn(
  'p-1 rounded-none-none border flex items-center gap-1 transition-all',
- theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-100 border-gray-200'
+ theme === 'dark' ? 'bg-z-hover border-z-border' : 'bg-gray-100 border-z-border'
  )}
  >
  <button
@@ -133,8 +133,8 @@ const ForgotPasswordPage: React.FC = () => {
  className={cn(
  'w-7 h-7 flex items-center justify-center rounded-none-none transition-all',
  theme === 'light'
- ? 'bg-white text-gray-900 shadow-sm'
- : 'text-gray-400 hover:text-white'
+ ? 'bg-white text-z-primary shadow-sm'
+ : 'text-z-muted hover:text-white'
  )}
  >
  <Sun size={14} />
@@ -145,7 +145,7 @@ const ForgotPasswordPage: React.FC = () => {
  'w-7 h-7 flex items-center justify-center rounded-none-none transition-all',
  theme === 'dark'
  ? 'bg-gray-900 text-white shadow-sm'
- : 'text-gray-400 hover:text-white'
+ : 'text-z-muted hover:text-white'
  )}
  >
  <Moon size={14} />
@@ -156,7 +156,7 @@ const ForgotPasswordPage: React.FC = () => {
  {success ? (
  <div className="space-y-6 text-center">
  <div className="flex justify-center">
- <CheckCircle className="text-gray-600 dark:text-gray-500 w-12 h-12" />
+ <CheckCircle className="text-gray-600 dark:text-z-secondary w-12 h-12" />
  </div>
  <p
  className={cn(
@@ -196,7 +196,7 @@ const ForgotPasswordPage: React.FC = () => {
  )}
 
  <div className="space-y-1.5">
- <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest px-1">
+ <label className="text-[9px] font-black text-z-muted uppercase tracking-widest px-1">
  Email Address
  </label>
  <div className="relative group">
@@ -204,7 +204,7 @@ const ForgotPasswordPage: React.FC = () => {
  className={cn(
  'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
  theme === 'dark'
- ? 'text-white/20 group-focus-within:text-gray-600 dark:text-gray-400'
+ ? 'text-white/20 group-focus-within:text-gray-600 dark:text-z-muted'
  : 'text-gray-300 group-focus-within:text-gray-600'
  )}
  size={16}
@@ -216,8 +216,8 @@ const ForgotPasswordPage: React.FC = () => {
  className={cn(
  'w-full border rounded-none-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20'
- : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-gray-100'
+ ? 'bg-z-hover border-z-border text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20'
+ : 'bg-z-input border-z-border shadow-sm text-z-primary focus:bg-white focus:ring-2 focus:ring-gray-100'
  )}
  />
  </div>
@@ -257,7 +257,7 @@ const ForgotPasswordPage: React.FC = () => {
  className={cn(
  'text-[9px] font-black uppercase tracking-widest hover:underline flex items-center justify-center gap-2 transition-colors',
  theme === 'dark'
- ? 'text-gray-600 dark:text-gray-400 hover:text-gray-300'
+ ? 'text-gray-600 dark:text-z-muted hover:text-gray-300'
  : 'text-gray-600 hover:text-gray-700'
  )}
  >
@@ -269,7 +269,7 @@ const ForgotPasswordPage: React.FC = () => {
  )}
  </motion.div>
 
- <p className="text-center text-[8px] font-bold text-gray-400 uppercase tracking-[0.2em] ">
+ <p className="text-center text-[8px] font-bold text-z-muted uppercase tracking-[0.2em] ">
  Authorized Personnel Only • Zenith CMS Engine
  </p>
  </div>

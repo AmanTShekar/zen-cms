@@ -1,363 +1,590 @@
-import React, { useEffect, useState, useCallback, useRef, Suspense } from 'react';
+import React, { useEffect, useState, useCallback } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import {
-  DndContext,
-  DragOverlay,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  closestCenter,
-  defaultDropAnimationSideEffects,
-} from '@dnd-kit/core';
-import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
-import { SortableContext, rectSortingStrategy, arrayMove } from '@dnd-kit/sortable';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  RotateCcw,
-  Save,
-  Pencil,
+  Activity,
+  ArrowRight,
   CheckCircle2,
-  Loader2,
-  Monitor,
   AlertTriangle,
-} from 'lucide-react';
-import { toast } from 'react-hot-toast';
-import { v4 as uuidv4 } from 'uuid';
-import api from '../lib/api';
-import { confirm } from '../store/confirmStore';
-import { cn } from '../lib/utils';
-import { useTheme } from '../context/ThemeContext';
-import { PageHeader } from '../components/ui/PageHeader';
-import { WIDGET_REGISTRY } from '../widgets/registry';
+  Clock,
+  Database,
+  FileText,
+  History,
+  ImageIcon,
+  Layers,
+  Loader2,
+  Plus,
+  Radio,
+  Sparkles,
+  Users,
+  XCircle,
+  Globe,
+  KeyRound,
+  Zap,
+} from 'lucide-react'
+import { cn } from '../lib/utils'
+import { useTheme } from '../context/ThemeContext'
+import { PageHeader } from '../components/ui/PageHeader'
+import api from '../lib/api'
+import { DashboardCard } from './dashboard/DashboardCard'
 
-import type { DashboardWidget } from './dashboard/types';
-import { SortableWidget } from './dashboard/SortableWidget';
-import { WidgetPicker, PickerItemPreview } from './dashboard/WidgetPicker';
-import { WidgetConfigModal } from './dashboard/WidgetConfigModal';
+// ── Types ──────────────────────────────────────────────────────────────────────
+interface HealthData {
+  status: string
+  database: string
+  version: string
+  environment: string
+  uptime: number
+  memory: { heapUsed: string; heapTotal: string; rss: string }
+}
+interface AuditEntry {
+  _id: string
+  action: string
+  collection?: string
+  collectionName?: string
+  user?: { email?: string }
+  userEmail?: string
+  timestamp: string
+  status?: string
+}
+interface AuditStats {
+  total: number
+  failed: number
+  success: number
+  byAction: Record<string, number>
+}
+interface CollectionInfo {
+  name: string
+  label?: string
+  count?: number
+  drafts?: boolean
+  icon?: string
+}
+interface PresenceMember {
+  userId: string
+  email?: string
+  collection?: string
+  documentId?: string
+  color?: string
+}
 
-export default function DashboardBuilder() {
-  const { theme } = useTheme();
-  const [widgets, setWidgets] = useState<DashboardWidget[]>([]);
-  const [columns, setColumns] = useState(3);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  
-  const [showPicker, setShowPicker] = useState(false);
-  const [configWidget, setConfigWidget] = useState<DashboardWidget | null>(null);
+// ── Helpers ────────────────────────────────────────────────────────────────────
+function timeAgo(ts: string) {
+  const secs = Math.floor((Date.now() - new Date(ts).getTime()) / 1000)
+  if (secs < 60) return `${secs}s ago`
+  if (secs < 3600) return `${Math.floor(secs / 60)}m ago`
+  if (secs < 86400) return `${Math.floor(secs / 3600)}h ago`
+  return `${Math.floor(secs / 86400)}d ago`
+}
 
-  const saveDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const savedUpdatedAt = useRef<string | null>(null);
+function uptimeStr(seconds: number) {
+  if (!seconds) return '—'
+  const d = Math.floor(seconds / 86400)
+  const h = Math.floor((seconds % 86400) / 3600)
+  const m = Math.floor((seconds % 3600) / 60)
+  if (d > 0) return `${d}d ${h}h`
+  if (h > 0) return `${h}h ${m}m`
+  return `${m}m`
+}
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 250,
-        tolerance: 5,
-      },
-    })
-  );
+const ACTION_PALETTE: Record<string, string> = {
+  create: 'text-z-active-text bg-z-active-bg',
+  update: 'text-z-active-text bg-z-active-bg',
+  delete: 'text-rose-400 bg-rose-500/10',
+  login: 'text-sky-400 bg-sky-500/10',
+  logout: 'text-z-muted bg-gray-500/10',
+}
 
-  const dropAnimationConfig = {
-    sideEffects: defaultDropAnimationSideEffects({
-      styles: {
-        active: {
-          opacity: '0.4',
-        },
-      },
-    }),
-  };
+const INITIALS_COLORS = [
+  'bg-z-accent', 'bg-z-accent', 'bg-sky-600',
+  'bg-amber-600', 'bg-rose-600', 'bg-z-accent',
+]
 
-  const fetchLayout = useCallback(async () => {
-    try {
-      setLoading(true);
-      const r = await api.get('/dashboard/layout');
-      setWidgets(r.data?.data?.widgets || []);
-      setColumns(r.data?.data?.columns || 3);
-      savedUpdatedAt.current = r.data?.data?.updatedAt;
-      setIsDirty(false);
-    } catch (err) {
-      toast.error('Failed to load dashboard layout');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchLayout();
-  }, [fetchLayout]);
-
-  const saveLayout = useCallback(async (ws: DashboardWidget[], silent = false) => {
-    try {
-      if (!silent) setSaving(true);
-      const r = await api.put('/dashboard/layout', {
-        widgets: ws,
-        columns,
-        updatedAt: savedUpdatedAt.current,
-      });
-      savedUpdatedAt.current = r.data?.data?.updatedAt;
-      if (r.data?.data?.warnings?.length) {
-        r.data.data.warnings.forEach((w: string) => toast(w, { icon: '⚠️' }));
-      }
-      if (!silent) {
-        toast.success('Dashboard saved');
-        setIsDirty(false);
-        setIsEditing(false);
-      }
-    } catch (err: any) {
-      if (err?.response?.status === 409) {
-        toast.error('Dashboard was updated in another tab. Refresh to get latest.');
-      } else {
-        toast.error('Failed to save layout');
-      }
-    } finally {
-      if (!silent) setSaving(false);
-    }
-  }, [columns]);
-
-  useEffect(() => {
-    if (!isDirty || !isEditing) return;
-    if (saveDebounce.current) clearTimeout(saveDebounce.current);
-    saveDebounce.current = setTimeout(() => saveLayout(widgets, true), 1500);
-    return () => {
-      if (saveDebounce.current) clearTimeout(saveDebounce.current);
-    };
-  }, [widgets, isDirty, isEditing, saveLayout]);
-
-  const markDirty = (ws: DashboardWidget[]) => {
-    setWidgets(ws);
-    setIsDirty(true);
-  };
-
-  const handleDragStart = (e: DragStartEvent) => setActiveId(e.active.id as string);
-  
-  const handleDragEnd = (e: DragEndEvent) => {
-    setActiveId(null);
-    const { active, over } = e;
-    if (!over) return;
-    
-    // Check if dragging from picker
-    if (String(active.id).startsWith('picker-')) {
-      const type = String(active.id).replace('picker-', '');
-      const def = WIDGET_REGISTRY.find(w => w.type === type);
-      if (!def) return;
-      
-      const newWidget: DashboardWidget = {
-        id: uuidv4(),
-        type: def.type,
-        title: def.label,
-        config: {},
-        position: { x: 0, y: 999, w: def.defaultSize?.w || 1, h: def.defaultSize?.h || 1 },
-      };
-      
-      if (widgets.length >= 50) {
-        toast.error('Maximum 50 widgets reached');
-        return;
-      }
-      
-      // Insert at the index of the item we hovered over
-      const overIdx = widgets.findIndex((w) => w.id === over.id);
-      const newWidgets = [...widgets];
-      if (overIdx >= 0) {
-        newWidgets.splice(overIdx, 0, newWidget);
-      } else {
-        newWidgets.push(newWidget);
-      }
-      
-      markDirty(newWidgets);
-      return;
-    }
-    
-    // Otherwise standard reorder
-    if (active.id === over.id) return;
-    const oldIdx = widgets.findIndex((w) => w.id === active.id);
-    const newIdx = widgets.findIndex((w) => w.id === over.id);
-    markDirty(arrayMove(widgets, oldIdx, newIdx));
-  };
-
-  const addWidget = (def: any) => {
-    const newWidget: DashboardWidget = {
-      id: uuidv4(),
-      type: def.type,
-      title: def.label,
-      config: {},
-      position: { x: 0, y: 999, w: def.defaultSize?.w || 1, h: def.defaultSize?.h || 1 },
-    };
-    if (widgets.length >= 50) {
-      toast.error('Maximum 50 widgets reached');
-      return;
-    }
-    markDirty([...widgets, newWidget]);
-  };
-
-  const removeWidget = (id: string) => markDirty(widgets.filter((w) => w.id !== id));
-  
-  const updateWidgetConfig = (id: string, cfg: any) =>
-    markDirty(widgets.map((w) => (w.id === id ? { ...w, config: cfg } : w)));
-    
-  const updateWidgetTitle = (id: string, title: string) =>
-    markDirty(widgets.map((w) => (w.id === id ? { ...w, title } : w)));
-
-  const resetLayout = async () => {
-    if (!await confirm({ message: 'Reset your dashboard to the default layout? This cannot be undone.' }))
-      return;
-    try {
-      const r = await api.post('/dashboard/layout/reset');
-      setWidgets(r.data?.data?.widgets || []);
-      setIsDirty(false);
-      toast.success('Dashboard reset to default');
-    } catch {
-      toast.error('Failed to reset layout');
-    }
-  };
-
-  const activeWidget = activeId ? widgets.find((w) => w.id === activeId) : null;
-
-  if (loading) {
-    return (
-      <div className={cn(
-        'h-full w-full flex flex-col items-center justify-center gap-6',
-        theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]'
-      )}>
-        <Loader2 size={32} className="animate-spin text-gray-600 dark:text-gray-500" strokeWidth={1.5} />
-        <p className="text-[10px] font-black uppercase tracking-[0.6em] text-gray-400 animate-pulse">
-          Loading Dashboard...
-        </p>
-      </div>
-    );
-  }
+// ── Stat Pill ─────────────────────────────────────────────────────────────────
+function StatPill({
+  label, value, sub, icon: Icon, accent, loading,
+}: {
+  label: string; value: string; sub?: string
+  icon: React.ElementType; accent?: 'purple' | 'emerald' | 'red'; loading?: boolean
+}) {
+  const { theme } = useTheme()
+  const accentClass =
+    accent === 'purple' ? 'text-z-active-text' :
+    accent === 'emerald' ? 'text-z-active-text' :
+    accent === 'red' ? 'text-rose-400' :
+    theme === 'dark' ? 'text-white' : 'text-z-primary'
 
   return (
     <div className={cn(
-      'min-h-full transition-colors duration-500 p-6',
-      theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
+      'flex flex-col justify-between gap-2 p-5 border transition-colors',
+      theme === 'dark'
+        ? 'bg-z-panel backdrop-blur-[12px] border-z-border'
+        : 'bg-white/80 backdrop-blur-[12px] border-z-border/60 shadow-sm'
     )}>
-      {/* Header */}
-      <PageHeader
-        title="Dashboard"
-        description="Monitor system health, metrics, and manage active widgets."
-        icon={<Monitor size={24} />}
-        actions={
-          isEditing ? (
-            <>
-              <button
-                onClick={resetLayout}
-                className={cn(
-                  'flex items-center gap-2 px-4 py-2 border text-[9px] font-black uppercase rounded-none-none transition-all',
-                  theme === 'dark' ? 'border-white/[0.08] text-gray-400 hover:text-white' : 'border-gray-200 text-gray-500 hover:text-gray-900'
-                )}
-              >
-                <RotateCcw size={13} /> Reset
-              </button>
-              <button
-                onClick={() => setShowPicker(true)}
-                className={cn(
-                  'flex items-center gap-2 px-4 py-2 border text-[9px] font-black uppercase rounded-none-none transition-all',
-                  theme === 'dark' ? 'border-gray-500/30 text-gray-600 hover:bg-gray-50/10' : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                )}
-              >
-                + Add Widget
-              </button>
-              <button
-                onClick={() => saveLayout(widgets)}
-                disabled={saving || !isDirty}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white text-[9px] font-black uppercase rounded-none-none hover:bg-emerald-600 transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] disabled:opacity-50"
-              >
-                {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
-                {saving ? 'Saving...' : 'Save Layout'}
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => setIsEditing(true)}
-              className={cn(
-                'flex items-center gap-2 px-4 py-2 border text-[9px] font-black uppercase rounded-none-none transition-all',
-                theme === 'dark' ? 'border-white/[0.08] text-gray-400 hover:text-white hover:bg-white/5' : 'border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-gray-50'
-              )}
-            >
-              <Pencil size={13} /> Edit Layout
-            </button>
-          )
-        }
-        className="mb-6 -mt-6 -mx-6 pb-6 pt-6 px-6"
-      />
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-black uppercase tracking-[0.12em] text-z-secondary">{label}</span>
+        <Icon size={13} className="text-gray-600" />
+      </div>
+      <div>
+        <span className={cn('text-2xl font-black tracking-tighter leading-none tabular-nums', accentClass)}>
+          {loading ? <span className="text-gray-600 text-base">—</span> : value}
+        </span>
+        {sub && <p className="text-[10px] text-gray-600 mt-1">{sub}</p>}
+      </div>
+    </div>
+  )
+}
 
-      {/* Grid */}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={(e) => {
-          handleDragEnd(e);
-        }}
-      >
-        <SortableContext items={widgets.map((w) => w.id)} strategy={rectSortingStrategy}>
-          <div className={cn(
-            "grid gap-6 items-start",
-            columns === 2 ? 'grid-cols-1 md:grid-cols-12' : 'grid-cols-1 md:grid-cols-12'
-          )}>
-            {widgets.map((w) => (
-              <SortableWidget
-                key={w.id}
-                widget={w}
-                isEditing={isEditing}
-                onRemove={removeWidget}
-                onUpdateConfig={updateWidgetConfig}
-                onUpdateTitle={updateWidgetTitle}
-                onOpenConfig={setConfigWidget}
-              />
+// ── Environment Badge ──────────────────────────────────────────────────────────
+function EnvBadge({ env }: { env?: string }) {
+  if (!env) return null
+  const isProd = env === 'production'
+  return (
+    <span className={cn(
+      'inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest border',
+      isProd
+        ? 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+        : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+    )}>
+      <span className={cn('w-1.5 h-1.5 rounded-full', isProd ? 'bg-rose-400 animate-pulse' : 'bg-amber-400')} />
+      {env}
+    </span>
+  )
+}
+
+// ── Main Dashboard ─────────────────────────────────────────────────────────────
+export default function Dashboard() {
+  const { theme } = useTheme()
+  const navigate = useNavigate()
+
+  const [health, setHealth] = useState<HealthData | null>(null)
+  const [latency, setLatency] = useState<number | null>(null)
+  const [auditLogs, setAuditLogs] = useState<AuditEntry[]>([])
+  const [auditStats, setAuditStats] = useState<AuditStats | null>(null)
+  const [collections, setCollections] = useState<CollectionInfo[]>([])
+  const [totalRecords, setTotalRecords] = useState<string>('—')
+  const [mediaCount, setMediaCount] = useState<number | null>(null)
+  const [membersOnline, setMembersOnline] = useState<PresenceMember[]>([])
+  const [memberCount, setMemberCount] = useState<number | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  const fetchAll = useCallback(async () => {
+    setLoading(true)
+    try {
+      const t0 = performance.now()
+      const results = await Promise.allSettled([
+        api.get('/system/health'),          // 0
+        api.get('/system/audit-logs?limit=8'),  // 1
+        api.get('/system/audit-logs/stats'),    // 2
+        api.get('/system/schemas'),             // 3 — collections list
+        api.get('/system/counts'),              // 4
+        api.get('/media?pageSize=1&sort=-createdAt'), // 5 — just for total count
+        api.get('/presence'),                   // 6
+      ])
+
+      if (results[0].status === 'fulfilled') {
+        setLatency(Math.round(performance.now() - t0))
+        setHealth(results[0].value.data?.data || null)
+      }
+      if (results[1].status === 'fulfilled') {
+        setAuditLogs(results[1].value.data?.data || [])
+      }
+      if (results[2].status === 'fulfilled') {
+        setAuditStats(results[2].value.data?.data || null)
+      }
+
+      // Build collections from schemas + counts
+      const counts: Record<string, number> = results[4].status === 'fulfilled'
+        ? results[4].value.data?.data || {}
+        : {}
+
+      if (results[3].status === 'fulfilled') {
+        const schemas = results[3].value.data?.data
+        const cols: any[] = schemas?.collections || (Array.isArray(schemas) ? schemas : [])
+        setCollections(cols.map((c: any) => ({
+          name: c.slug || c.name,
+          label: c.label || c.labels?.plural || c.slug || c.name,
+          count: counts[c.slug || c.name],
+          drafts: !!c.drafts,
+          icon: c.admin?.icon,
+        })))
+        // total records = sum of all counts (excluding internal z_ collections)
+        const total = Object.entries(counts)
+          .filter(([k]) => !k.startsWith('z_'))
+          .reduce((a, [, v]) => a + (v as number), 0)
+        setTotalRecords(total > 0 ? total.toLocaleString() : '0')
+        // member count from counts
+        if (counts['z_users'] != null) setMemberCount(counts['z_users'])
+        else if (counts['members'] != null) setMemberCount(counts['members'])
+      }
+
+      if (results[5].status === 'fulfilled') {
+        const pagination = results[5].value.data?.meta?.pagination
+        setMediaCount(pagination?.total ?? results[5].value.data?.data?.length ?? null)
+      }
+      if (results[6].status === 'fulfilled') {
+        setMembersOnline(results[6].value.data?.data || [])
+      }
+    } catch {
+      // partial failures are fine
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchAll()
+    // Only refresh presence every 30s — everything else is static on page load
+    const presenceInterval = setInterval(() => {
+      api.get('/presence').then(r => setMembersOnline(r.data?.data || [])).catch(() => {})
+    }, 30_000)
+    return () => clearInterval(presenceInterval)
+  }, [fetchAll])
+
+  const isHealthOk = health?.status === 'ok'
+  const isDbOk = health?.database === 'ok'
+
+  if (loading) {
+    return (
+      <div className={cn('h-full w-full flex flex-col items-center justify-center gap-4', theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]')}>
+        <Loader2 size={26} className="animate-spin text-gray-600" strokeWidth={1.5} />
+        <p className="text-[10px] font-black uppercase tracking-[0.6em] text-z-secondary animate-pulse">Loading…</p>
+      </div>
+    )
+  }
+
+  const QUICK_ACTIONS = [
+    { label: 'New Content', icon: Plus, path: '/collections', color: 'bg-z-accent hover:bg-z-accent text-white' },
+    { label: 'Media Library', icon: ImageIcon, path: '/media', color: theme === 'dark' ? 'bg-z-hover hover:bg-white/[0.08] text-gray-300 border border-z-border' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border border-z-border' },
+    { label: 'AI Writer', icon: Sparkles, path: '/ai-architect', color: 'bg-z-accent hover:opacity-90 text-white' },
+    { label: 'Schema Builder', icon: Layers, path: '/schema-builder', color: theme === 'dark' ? 'bg-z-hover hover:bg-white/[0.08] text-gray-300 border border-z-border' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border border-z-border' },
+    { label: 'API Keys', icon: KeyRound, path: '/settings/api-keys', color: theme === 'dark' ? 'bg-z-hover hover:bg-white/[0.08] text-gray-300 border border-z-border' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border border-z-border' },
+    { label: 'Audit Log', icon: History, path: '/audit-log', color: theme === 'dark' ? 'bg-z-hover hover:bg-white/[0.08] text-gray-300 border border-z-border' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border border-z-border' },
+  ]
+
+  return (
+    <div className={cn('min-h-full transition-colors duration-300', theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-z-primary')}>
+      <div className="p-6 space-y-5 max-w-screen-2xl mx-auto">
+
+        {/* Page Header */}
+        <PageHeader
+          title="Dashboard"
+          description="System overview for your Zenith CMS workspace."
+          icon={<Activity size={20} />}
+          actions={
+            <div className="flex items-center gap-2">
+              <EnvBadge env={health?.environment} />
+              {health?.version && (
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">
+                  v{health.version}
+                </span>
+              )}
+            </div>
+          }
+        />
+
+        {/* ── Row 1: Key stats ──────────────────────────────────────────────── */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <StatPill label="Content Records" value={totalRecords} icon={FileText} />
+          <StatPill label="Collections" value={String(collections.length || '—')} icon={Database} />
+          <StatPill
+            label="Media Files"
+            value={mediaCount != null ? mediaCount.toLocaleString() : '—'}
+            icon={ImageIcon}
+          />
+          <StatPill
+            label="Team Members"
+            value={memberCount != null ? String(memberCount) : '—'}
+            sub={membersOnline.length > 0 ? `${membersOnline.length} online now` : undefined}
+            icon={Users}
+          />
+          <StatPill
+            label="API Status"
+            value={health ? (isHealthOk ? 'Operational' : 'Degraded') : '—'}
+            sub={latency != null ? `${latency}ms` : undefined}
+            icon={Radio}
+            accent={!health ? undefined : isHealthOk ? 'emerald' : 'red'}
+          />
+          <StatPill
+            label="Database"
+            value={health ? (isDbOk ? 'Connected' : 'Degraded') : '—'}
+            sub={uptimeStr(health?.uptime ?? 0) !== '—' ? `Up ${uptimeStr(health?.uptime ?? 0)}` : undefined}
+            icon={Activity}
+            accent={!health ? undefined : isDbOk ? 'emerald' : 'red'}
+          />
+        </div>
+
+        {/* ── Row 2: Audit stats ───────────────────────────────────────────── */}
+        {auditStats && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <StatPill label="Total Events" value={auditStats.total.toLocaleString()} icon={History} />
+            <StatPill label="Successful Ops" value={auditStats.success.toLocaleString()} icon={CheckCircle2} accent="emerald" />
+            <StatPill label="Failed Ops" value={auditStats.failed.toLocaleString()} icon={XCircle} accent={auditStats.failed > 0 ? 'red' : undefined} />
+          </div>
+        )}
+
+        {/* ── Row 3: Quick Actions ────────────────────────────────────────────── */}
+        <DashboardCard title="Quick Actions" icon={<Zap size={13} />}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+            {QUICK_ACTIONS.map((a) => (
+              <button
+                key={a.label}
+                onClick={() => navigate(a.path)}
+                className={cn(
+                  'flex items-center gap-2.5 px-3 py-2.5 text-[11px] font-black uppercase tracking-wide transition-all',
+                  a.color
+                )}
+              >
+                <a.icon size={14} />
+                {a.label}
+              </button>
             ))}
           </div>
-        </SortableContext>
+        </DashboardCard>
 
-        <DragOverlay dropAnimation={activeId?.toString().startsWith('picker-') ? null : dropAnimationConfig}>
-          {activeId?.toString().startsWith('picker-') ? (
-            <div className="w-[360px] opacity-90 shadow-2xl shadow-emerald-500/20 scale-105 transition-transform cursor-grabbing">
-              <PickerItemPreview 
-                def={WIDGET_REGISTRY.find(w => w.type === activeId.toString().replace('picker-', ''))} 
-                theme={theme} 
-              />
+        {/* ── Row 4: Collections + Activity ──────────────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+          {/* Collections */}
+          <DashboardCard
+            title="Collections"
+            icon={<Database size={13} />}
+            noPadding
+            action={
+              <Link to="/schema-builder" className={cn('text-[10px] font-black uppercase tracking-widest flex items-center gap-1 transition-colors', theme === 'dark' ? 'text-gray-600 hover:text-gray-300' : 'text-z-muted hover:text-gray-700')}>
+                Manage <ArrowRight size={11} />
+              </Link>
+            }
+          >
+            {collections.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-14 gap-4 px-6">
+                <Database size={32} className="text-gray-700" strokeWidth={1} />
+                <div className="text-center">
+                  <p className="text-[12px] font-bold text-z-muted">No collections yet</p>
+                  <p className="text-[11px] text-gray-600 mt-1">Create your first collection to start managing content.</p>
+                </div>
+                <Link to="/schema-builder" className="px-5 py-2.5 bg-z-accent hover:opacity-90 text-white text-[10px] font-black uppercase tracking-widest transition-colors">
+                  + Create Collection
+                </Link>
+              </div>
+            ) : (
+              <div>
+                {collections.slice(0, 8).map((col) => (
+                  <Link
+                    key={col.name}
+                    to={`/collections/${col.name}`}
+                    className={cn(
+                      'flex items-center justify-between px-5 py-3 group transition-colors border-b last:border-b-0',
+                      theme === 'dark' ? 'border-z-border hover:bg-z-hover' : 'border-z-border hover:bg-gray-50'
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn('w-6 h-6 flex items-center justify-center border text-z-secondary', theme === 'dark' ? 'bg-z-hover border-z-border' : 'bg-z-input border-z-border')}>
+                        <Layers size={11} />
+                      </div>
+                      <div>
+                        <span className={cn('text-[12px] font-bold capitalize', theme === 'dark' ? 'text-gray-200' : 'text-gray-800')}>
+                          {col.label || col.name}
+                        </span>
+                        {col.drafts && (
+                          <span className="ml-2 text-[8px] font-black uppercase tracking-widest text-amber-500 bg-amber-500/10 px-1.5 py-0.5">
+                            Drafts
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {col.count != null && (
+                        <span className="text-[11px] font-black tabular-nums text-gray-600">
+                          {col.count.toLocaleString()}
+                        </span>
+                      )}
+                      <ArrowRight size={12} className={cn('transition-transform group-hover:translate-x-0.5', theme === 'dark' ? 'text-gray-700' : 'text-gray-300')} />
+                    </div>
+                  </Link>
+                ))}
+                {collections.length > 8 && (
+                  <div className={cn('px-5 py-3 border-t', 'border-z-border')}>
+                    <Link to="/schema-builder" className="text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-z-active-text transition-colors">
+                      +{collections.length - 8} more collections →
+                    </Link>
+                  </div>
+                )}
+                <div className={cn('px-5 py-3 border-t', 'border-z-border')}>
+                  <Link to="/schema-builder" className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-z-active-text transition-colors w-fit">
+                    <Plus size={11} /> New Collection
+                  </Link>
+                </div>
+              </div>
+            )}
+          </DashboardCard>
+
+          {/* Recent Activity */}
+          <DashboardCard
+            title="Recent Activity"
+            icon={<History size={13} />}
+            noPadding
+            action={
+              <Link to="/audit-log" className={cn('text-[10px] font-black uppercase tracking-widest flex items-center gap-1 transition-colors', theme === 'dark' ? 'text-gray-600 hover:text-gray-300' : 'text-z-muted hover:text-gray-700')}>
+                Full Log <ArrowRight size={11} />
+              </Link>
+            }
+          >
+            {auditLogs.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-14 gap-2">
+                <History size={28} className="text-gray-700" strokeWidth={1} />
+                <p className="text-[11px] text-gray-600">No activity recorded yet.</p>
+              </div>
+            ) : (
+              <div>
+                {auditLogs.map((log) => {
+                  const actor = log.userEmail || log.user?.email || 'System'
+                  const initials = actor === 'System' ? 'SY' : actor.slice(0, 2).toUpperCase()
+                  const colorIdx = actor.charCodeAt(0) % INITIALS_COLORS.length
+                  const collection = (log.collectionName || log.collection || 'system').replace(/-/g, ' ')
+                  const isFailed = log.status === 'failed'
+
+                  return (
+                    <div
+                      key={log._id}
+                      onClick={() => navigate('/audit-log')}
+                      className={cn(
+                        'flex items-center gap-3 px-5 py-3 cursor-pointer transition-colors border-b last:border-b-0',
+                        theme === 'dark' ? 'border-z-border hover:bg-z-hover' : 'border-z-border hover:bg-gray-50',
+                        isFailed && (theme === 'dark' ? 'bg-rose-500/[0.03]' : 'bg-rose-50/50')
+                      )}
+                    >
+                      {/* Avatar */}
+                      <div className={cn('w-6 h-6 flex items-center justify-center text-white text-[9px] font-black shrink-0', INITIALS_COLORS[colorIdx])}>
+                        {initials}
+                      </div>
+                      {/* Action badge */}
+                      <span className={cn(
+                        'inline-flex px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest shrink-0',
+                        isFailed ? 'text-rose-400 bg-rose-500/10' : (ACTION_PALETTE[log.action?.toLowerCase()] || 'text-z-muted bg-gray-500/10')
+                      )}>
+                        {log.action}
+                      </span>
+                      {/* Collection */}
+                      <span className={cn('text-[11px] font-medium flex-1 truncate capitalize', theme === 'dark' ? 'text-z-muted' : 'text-gray-600')}>
+                        {collection}
+                      </span>
+                      {/* Time */}
+                      <span className="text-[10px] text-gray-600 shrink-0 tabular-nums">{timeAgo(log.timestamp)}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </DashboardCard>
+
+        </div>
+
+        {/* ── Row 5: Who's online + API health strip ─────────────────────────── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+          {/* Who's Editing — Google Docs style */}
+          <DashboardCard title="Who's Editing" icon={<Users size={13} />}>
+            {membersOnline.length === 0 ? (
+              <div className="flex items-center gap-2.5">
+                <div className={cn('w-2 h-2 rounded-full', theme === 'dark' ? 'bg-white/10' : 'bg-gray-200')} />
+                <p className="text-[11px] text-gray-600">No one else is editing right now.</p>
+              </div>
+            ) : (
+              <div className="space-y-2.5">
+                {membersOnline.map((m, i) => {
+                  const email = m.email || m.userId || 'Unknown'
+                  const name = email.split('@')[0]
+                  const initials = name.slice(0, 2).toUpperCase()
+                  const collection = m.collection
+                    ? m.collection.replace(/-/g, ' ')
+                    : null
+                  const avatarColor = m.color || INITIALS_COLORS[i % INITIALS_COLORS.length]
+
+                  return (
+                    <div key={m.userId || i} className="flex items-center gap-3">
+                      {/* Avatar with live pulse */}
+                      <div className="relative shrink-0">
+                        <div
+                          className="w-7 h-7 flex items-center justify-center text-white text-[10px] font-black"
+                          style={{ backgroundColor: avatarColor }}
+                          title={email}
+                        >
+                          {initials}
+                        </div>
+                        <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-z-accent rounded-full border-2 border-black" />
+                      </div>
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <p className={cn('text-[12px] font-bold truncate', theme === 'dark' ? 'text-gray-200' : 'text-gray-800')}>
+                          {name}
+                        </p>
+                        {collection ? (
+                          <p className="text-[10px] text-z-secondary truncate">
+                            Editing <span className="capitalize font-medium text-z-muted">{collection}</span>
+                          </p>
+                        ) : (
+                          <p className="text-[10px] text-gray-600">Browsing the CMS</p>
+                        )}
+                      </div>
+                      {/* Live indicator */}
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="w-1.5 h-1.5 rounded-full bg-z-accent animate-pulse" />
+                        <span className="text-[10px] text-gray-600">Live</span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </DashboardCard>
+
+          {/* API / DB Health strip */}
+          <DashboardCard title="System Status" icon={<Globe size={13} />}>
+            <div className="space-y-3">
+              {[
+                {
+                  label: 'REST API',
+                  ok: isHealthOk,
+                  detail: latency != null ? `${latency}ms latency` : 'Checking…',
+                },
+                {
+                  label: 'Database',
+                  ok: isDbOk,
+                  detail: health?.database || 'Unknown',
+                },
+                {
+                  label: 'Memory',
+                  ok: true,
+                  detail: health?.memory?.heapUsed
+                    ? `${health.memory.heapUsed} / ${health.memory.heapTotal} heap`
+                    : '—',
+                },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {item.ok
+                      ? <CheckCircle2 size={13} className="text-z-active-text shrink-0" />
+                      : <AlertTriangle size={13} className="text-rose-400 shrink-0" />}
+                    <span className={cn('text-[12px] font-bold', theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>{item.label}</span>
+                  </div>
+                  <span className="text-[11px] text-gray-600">{item.detail}</span>
+                </div>
+              ))}
+              {health?.uptime != null && (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Clock size={13} className="text-gray-600 shrink-0" />
+                    <span className={cn('text-[12px] font-bold', theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>Uptime</span>
+                  </div>
+                  <span className="text-[11px] text-gray-600">{uptimeStr(health.uptime)}</span>
+                </div>
+              )}
             </div>
-          ) : activeWidget ? (
-            <div className="shadow-2xl shadow-emerald-500/20 scale-105 transition-transform h-full w-full cursor-grabbing">
-              <SortableWidget
-                widget={activeWidget}
-                isEditing={true}
-                onRemove={() => {}}
-                onUpdateConfig={() => {}}
-                onUpdateTitle={() => {}}
-                onOpenConfig={() => {}}
-              />
-            </div>
-          ) : null}
-        </DragOverlay>
+          </DashboardCard>
 
-        <WidgetPicker 
-          isOpen={showPicker} 
-          onClose={() => setShowPicker(false)} 
-          onAdd={addWidget} 
-          activeId={activeId}
-        />
-      </DndContext>
+        </div>
 
-      <WidgetConfigModal 
-        widget={configWidget} 
-        onClose={() => setConfigWidget(null)}
-        onSave={(cfg, title) => {
-          if (configWidget) {
-            updateWidgetConfig(configWidget.id, cfg);
-            updateWidgetTitle(configWidget.id, title);
-            setConfigWidget(null);
-          }
-        }}
-      />
+      </div>
     </div>
-  );
+  )
 }

@@ -127,7 +127,7 @@ router.post('/login', authLimiter, async (req: Request, res: Response, next) => 
     await AuthService.resetFailedAttempts(login)
 
     const userId = (user.id || user._id).toString()
-    const payload = { id: userId, email: user.email, role: user.role }
+    const payload = { id: userId, email: user.email, role: user.role, color: user.color }
     const accessToken = AuthService.generateToken(payload)
     const refreshToken = AuthService.generateRefreshToken(payload)
 
@@ -328,7 +328,7 @@ router.get('/me', requireAuth, async (req: Request, res: Response, next) => {
     const user = users[0] || null
     if (!user) throw new NotFoundError('User')
     const userId = (user.id || user._id).toString()
-    res.json(createResponse({ id: userId, email: user.email, role: user.role, twoFactorEnabled: user.twoFactorEnabled || false }))
+    res.json(createResponse({ id: userId, email: user.email, role: user.role, color: user.color, twoFactorEnabled: user.twoFactorEnabled || false }))
   } catch (err) {
     next(err)
   }

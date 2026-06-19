@@ -75,13 +75,13 @@ const DocumentEditModal: React.FC<DocumentEditModalProps> = ({
  exit={{ opacity: 0, y: 10, scale: 0.98 }}
  className={cn(
  'w-full max-w-4xl border rounded-none-none overflow-hidden shadow-2xl flex flex-col h-[85vh]',
- theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200'
+ theme === 'dark' ? 'bg-black border-z-border' : 'bg-z-panel border-z-border'
  )}
  >
  <div
  className={cn(
  'p-6 border-b flex items-center justify-between shrink-0',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm',
+ theme === 'dark' ? 'border-z-border' : 'border-z-border shadow-sm',
  )}
  >
  <h3
@@ -97,7 +97,7 @@ const DocumentEditModal: React.FC<DocumentEditModalProps> = ({
  aria-label="Close"
  className={cn(
  'p-1 transition-colors',
- theme === 'dark' ? 'text-gray-400 hover:text-gray-600 dark:text-gray-500' : 'text-gray-500 hover:text-gray-600'
+ theme === 'dark' ? 'text-z-muted hover:text-gray-600 dark:text-z-secondary' : 'text-z-secondary hover:text-gray-600'
  )}
  >
  <X size={18} />
@@ -107,8 +107,8 @@ const DocumentEditModal: React.FC<DocumentEditModalProps> = ({
  <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
  {loading ? (
  <div className="h-full flex items-center justify-center flex-col gap-4">
- <Loader2 className="animate-spin text-gray-600 dark:text-gray-500" size={32} />
- <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 ">
+ <Loader2 className="animate-spin text-gray-600 dark:text-z-secondary" size={32} />
+ <span className="text-[10px] font-black uppercase tracking-widest text-z-secondary ">
  Loading Document...
  </span>
  </div>
@@ -120,7 +120,7 @@ const DocumentEditModal: React.FC<DocumentEditModalProps> = ({
  isSubmitting={saving}
  />
  ) : (
- <div className="h-full flex items-center justify-center text-gray-500 font-black uppercase tracking-widest text-xs">
+ <div className="h-full flex items-center justify-center text-z-secondary font-black uppercase tracking-widest text-xs">
  Failed to load schema or data.
  </div>
  )}

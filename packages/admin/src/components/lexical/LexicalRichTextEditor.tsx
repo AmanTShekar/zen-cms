@@ -39,7 +39,7 @@ function LexicalPlaceholder({ text }: { text: string }) {
     <div
       className={cn(
         'absolute top-0 left-0 pointer-events-none select-none truncate max-w-full',
-        theme === 'dark' ? 'text-gray-600' : 'text-gray-400',
+        theme === 'dark' ? 'text-gray-600' : 'text-z-muted',
       )}
     >
       {text}
@@ -82,9 +82,9 @@ function LexicalEditorInner({ mode, placeholder, disabled, autoFocus }: {
           contentEditable={
             <ContentEditable
               className={cn(
-                'outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black min-h-full',
+                'outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black min-h-full',
                 'prose prose-indigo max-w-none',
-                theme === 'dark' ? 'prose-invert text-white' : 'text-gray-900',
+                theme === 'dark' ? 'prose-invert text-white' : 'text-z-primary',
                 mode === 'heading'
                   ? 'text-5xl md:text-7xl font-black italic tracking-tighter p-0 min-h-0 uppercase leading-[0.85]'
                   : mode === 'inline'
@@ -220,7 +220,7 @@ export function LexicalRichTextEditor({
         isFull
           ? theme === 'dark'
             ? 'bg-[#080808] border border-white/5 shadow-2xl'
-            : 'bg-white border border-gray-100 shadow-xl'
+            : 'bg-white border border-z-border shadow-xl'
           : 'bg-transparent',
         className,
       )}

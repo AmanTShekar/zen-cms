@@ -30,11 +30,11 @@ const CollapsibleField: React.FC<Props> = ({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-white/[0.03] hover:bg-white/[0.06] transition-colors text-sm font-semibold text-white"
+        className="w-full flex items-center justify-between px-4 py-3 bg-z-hover hover:bg-white/[0.06] transition-colors text-sm font-semibold text-white"
       >
         <span className="flex items-center gap-2">
           <span
-            className={`transition-transform duration-200 text-emerald-400 ${
+            className={`transition-transform duration-200 text-z-active-text ${
               isOpen ? 'rotate-90' : ''
             }`}
           >

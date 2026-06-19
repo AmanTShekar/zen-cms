@@ -26,11 +26,11 @@ export function Card({
   return (
     <div
       className={cn(
-        "relative rounded-none-none border transition-all duration-200 overflow-hidden",
+        "relative rounded-none border transition-all duration-200 overflow-hidden",
         theme === 'dark' 
-          ? 'bg-black/65 backdrop-blur-[12px] border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.1)]' 
-          : 'bg-white border-gray-200 shadow-sm',
-        interactive && (theme === 'dark' ? 'hover:border-emerald-500/50 hover:bg-black/80' : 'hover:border-emerald-500/50 hover:bg-gray-50'),
+          ? 'bg-z-panel backdrop-blur-md border-z-border shadow-[var(--z-active-glow)]' 
+          : 'bg-z-panel border-z-border shadow-sm',
+        interactive && (theme === 'dark' ? 'hover:border-z-accent/50 hover:bg-black/80' : 'hover:border-z-accent/50 hover:bg-gray-50'),
         paddingClass,
         className
       )}
@@ -47,7 +47,7 @@ export function CardHeader({ className, children, ...props }: React.HTMLAttribut
     <div
       className={cn(
         "flex flex-row items-center justify-between border-b px-6 py-4",
-        theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-100 bg-gray-50/50',
+        theme === 'dark' ? 'border-z-border bg-z-panel' : 'border-z-border bg-gray-50/50',
         className
       )}
       {...props}
@@ -62,8 +62,8 @@ export function CardTitle({ className, children, ...props }: React.HTMLAttribute
   return (
     <h3
       className={cn(
-        "text-sm font-bold uppercase tracking-wider",
-        theme === 'dark' ? 'text-white' : 'text-gray-900',
+        "text-[10px] font-black uppercase tracking-widest",
+        theme === 'dark' ? 'text-z-secondary' : 'text-z-primary',
         className
       )}
       {...props}

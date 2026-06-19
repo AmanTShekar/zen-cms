@@ -43,26 +43,26 @@ const CreateRoleModal: React.FC<CreateRoleModalProps> = ({ onClose, onCreated, t
  <div
  className={cn(
  'w-full max-w-sm border rounded-none-none shadow-2xl',
- theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
+ theme === 'dark' ? 'bg-black border-z-border' : 'bg-z-panel border-z-border shadow-sm'
  )}
  >
- <div className="flex items-center justify-between px-8 py-6 border-b border-white/[0.08]">
+ <div className="flex items-center justify-between px-8 py-6 border-b border-z-border">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-none-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
- <PlusCircle size={18} className="text-gray-600 dark:text-gray-500" />
+ <PlusCircle size={18} className="text-gray-600 dark:text-z-secondary" />
  </div>
  <span className="text-[12px] font-black uppercase tracking-wide">
  New Custom Role
  </span>
  </div>
- <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors">
+ <button onClick={onClose} className="text-z-secondary hover:text-white transition-colors">
  <X size={18} />
  </button>
  </div>
 
  <form onSubmit={handleCreate} className="px-8 py-6 space-y-6">
  <div className="space-y-2">
- <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">
+ <label className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary">
  Role Name
  </label>
  <input
@@ -75,8 +75,8 @@ const CreateRoleModal: React.FC<CreateRoleModalProps> = ({ onClose, onCreated, t
  className={cn(
  'w-full border rounded-none-none py-4 px-5 text-[13px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white focus:border-gray-500/50'
- : 'bg-gray-50 border-gray-200 focus:border-gray-500'
+ ? 'bg-z-hover border-z-border text-white focus:border-gray-500/50'
+ : 'bg-z-input border-z-border focus:border-gray-500'
  )}
  />
  </div>

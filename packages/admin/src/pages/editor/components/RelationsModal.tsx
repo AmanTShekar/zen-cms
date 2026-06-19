@@ -141,32 +141,32 @@ export const RelationsModal: React.FC = () => {
  exit={{ scale: 0.9, opacity: 0 }}
  className={cn(
  'absolute inset-4 md:inset-10 border rounded-none-none shadow-2xl flex flex-col overflow-hidden',
- theme === 'dark' ? 'bg-[#060606] border-white/[0.08]' : 'bg-white border-gray-200'
+ theme === 'dark' ? 'bg-[#060606] border-z-border' : 'bg-z-panel border-z-border'
  )}
  >
  {/* Header */}
  <div className={cn(
  'p-6 border-b flex items-start justify-between shrink-0',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
+ theme === 'dark' ? 'border-z-border' : 'border-z-border shadow-sm'
  )}>
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-none-none bg-gray-600/20 border border-gray-500/30 flex items-center justify-center">
- <Link2 size={18} className="text-gray-600 dark:text-gray-400" />
+ <Link2 size={18} className="text-gray-600 dark:text-z-muted" />
  </div>
  <div>
  <h2
  id={modalTitleId}
- className="text-lg font-black uppercase text-gray-600 dark:text-gray-400"
+ className="text-lg font-black uppercase text-gray-600 dark:text-z-muted"
  >
  Content Relations
  </h2>
- <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">
+ <p className="text-xs text-z-secondary font-bold uppercase tracking-widest">
  Connect entries from other collections
  </p>
  </div>
  </div>
  <div className="flex items-center gap-2">
- <span className="text-xs text-gray-500 font-mono">
+ <span className="text-xs text-z-secondary font-mono">
  {selectedRelations.size} selected
  </span>
  <button
@@ -175,8 +175,8 @@ export const RelationsModal: React.FC = () => {
  className={cn(
  'p-2 rounded-none-none border transition-all',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white hover:bg-white hover:text-black'
- : 'bg-gray-100 border-gray-200 text-black hover:bg-black hover:text-white'
+ ? 'bg-z-hover border-z-border text-white hover:bg-white hover:text-black'
+ : 'bg-gray-100 border-z-border text-black hover:bg-black hover:text-white'
  )}
  >
  <X size={16} />
@@ -187,7 +187,7 @@ export const RelationsModal: React.FC = () => {
  {/* Collection Selector */}
  <div className={cn(
  'p-4 border-b flex gap-2 overflow-x-auto',
- theme === 'dark' ? 'border-white/[0.08] bg-white/[0.01]' : 'border-gray-200 shadow-sm bg-gray-55'
+ theme === 'dark' ? 'border-z-border bg-white/[0.01]' : 'border-z-border shadow-sm bg-gray-55'
  )}>
  {availableCollections.map((col) => {
  const isActive = activeCollection === col.slug
@@ -199,11 +199,11 @@ export const RelationsModal: React.FC = () => {
  'px-3 py-1.5 text-xs font-black uppercase rounded-none-none border shrink-0 transition-all',
  isActive
  ? theme === 'dark'
- ? 'bg-gray-500/10 border-gray-500/30 text-gray-600 dark:text-gray-400'
- : 'bg-gray-50 border-gray-300 text-gray-600'
+ ? 'bg-gray-500/10 border-gray-500/30 text-gray-600 dark:text-z-muted'
+ : 'bg-gray-50 border-z-border-strong text-gray-600'
  : theme === 'dark'
- ? 'border-white/[0.08] text-gray-400 hover:border-gray-500/30 hover:text-gray-600 dark:text-gray-400'
- : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-600'
+ ? 'border-z-border text-z-muted hover:border-gray-500/30 hover:text-gray-600 dark:text-z-muted'
+ : 'border-z-border text-gray-600 hover:border-z-border-strong hover:text-gray-600'
  )}
  >
  {col.label || col.slug}
@@ -215,7 +215,7 @@ export const RelationsModal: React.FC = () => {
  {/* Search */}
  <div className="p-4 shrink-0">
  <div className="relative">
- <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+ <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-z-secondary" />
  <input
  type="text"
  aria-label="Search relation entries"
@@ -225,8 +225,8 @@ export const RelationsModal: React.FC = () => {
  className={cn(
  'w-full rounded-none-none py-3 pl-12 pr-4 text-xs font-bold border',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white focus-visible:border-gray-500/50'
- : 'bg-gray-50 border-gray-200 text-gray-900 focus-visible:border-gray-600/50'
+ ? 'bg-z-hover border-z-border text-white focus-visible:border-gray-500/50'
+ : 'bg-z-input border-z-border text-z-primary focus-visible:border-gray-600/50'
  )}
  />
  </div>
@@ -237,14 +237,14 @@ export const RelationsModal: React.FC = () => {
  {!activeCollection ? (
  <div className="flex flex-col items-center justify-center h-full gap-4">
  <GitBranch size={40} className="text-gray-600 opacity-30" />
- <p className="text-xs text-gray-500 font-black uppercase tracking-widest text-center">
+ <p className="text-xs text-z-secondary font-black uppercase tracking-widest text-center">
  Select a collection above to view entries
  </p>
  </div>
  ) : relationResults.length === 0 ? (
  <div className="flex flex-col items-center justify-center h-full gap-4">
  <Search size={32} className="text-gray-600 opacity-30" />
- <p className="text-xs text-gray-500 font-black uppercase tracking-widest text-center">
+ <p className="text-xs text-z-secondary font-black uppercase tracking-widest text-center">
  {debouncedSearch ? 'No entries match your search' : 'No entries found in this collection'}
  </p>
  </div>
@@ -259,10 +259,10 @@ export const RelationsModal: React.FC = () => {
  selectedRelations.has(item.id || item._id)
  ? theme === 'dark'
  ? 'bg-gray-500/10 border-gray-500/30'
- : 'bg-gray-50 border-gray-200'
+ : 'bg-z-input border-z-border'
  : theme === 'dark'
- ? 'bg-white/[0.01] border-white/[0.08] hover:border-white/[0.08]'
- : 'bg-gray-50 border-gray-200 hover:border-gray-200'
+ ? 'bg-white/[0.01] border-z-border hover:border-z-border'
+ : 'bg-z-input border-z-border hover:border-z-border'
  )}
  >
  <div className={cn(
@@ -270,8 +270,8 @@ export const RelationsModal: React.FC = () => {
  selectedRelations.has(item.id || item._id)
  ? 'bg-gray-600 dark:bg-gray-600 border-gray-600'
  : theme === 'dark'
- ? 'border-white/[0.08]'
- : 'border-gray-300'
+ ? 'border-z-border'
+ : 'border-z-border-strong'
  )}>
  {selectedRelations.has(item.id || item._id) && <Check size={12} className="text-white" />}
  </div>
@@ -279,11 +279,11 @@ export const RelationsModal: React.FC = () => {
  <p className="text-xs font-black uppercase truncate">
  {item.title || item.name || item.headline || item.id}
  </p>
- <p className="text-[7px] text-gray-500 font-mono truncate">
+ <p className="text-[7px] text-z-secondary font-mono truncate">
  ID: {item.id || item._id}
  </p>
  </div>
- <span className="text-[7px] text-gray-500 font-mono shrink-0">
+ <span className="text-[7px] text-z-secondary font-mono shrink-0">
  {item._status || item.status || 'active'}
  </span>
  </button>
@@ -295,9 +295,9 @@ export const RelationsModal: React.FC = () => {
  {/* Footer */}
  <div className={cn(
  'p-4 border-t flex items-center justify-between',
- theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-200 shadow-sm bg-gray-50'
+ theme === 'dark' ? 'border-z-border bg-z-panel' : 'border-z-border shadow-sm bg-gray-50'
  )}>
- <span className="text-xs text-gray-500 font-bold ">
+ <span className="text-xs text-z-secondary font-bold ">
  Click entries to select/deselect for relation
  </span>
  <div className="flex items-center gap-2">
@@ -306,8 +306,8 @@ export const RelationsModal: React.FC = () => {
  className={cn(
  'px-4 py-2 text-xs font-black uppercase rounded-none-none border transition-all',
  theme === 'dark'
- ? 'border-white/[0.08] text-gray-400 hover:border-white/[0.08] hover:text-white'
- : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:text-black'
+ ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
+ : 'border-z-border text-gray-600 hover:border-z-border-strong hover:text-black'
  )}
  >
  Cancel

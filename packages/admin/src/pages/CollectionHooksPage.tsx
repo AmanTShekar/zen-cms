@@ -99,7 +99,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ value, onChange, theme, height 
  className={cn(
  'w-full border rounded-none-none px-4 py-3 font-mono text-[11px] leading-relaxed resize-y outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
  theme === 'dark'
- ? 'bg-black border-white/[0.08] text-gray-300 focus:border-gray-500/50'
+ ? 'bg-black border-z-border text-gray-300 focus:border-gray-500/50'
  : 'bg-gray-900 border-gray-600 text-gray-300 focus:border-gray-500'
  )}
  style={{ minHeight: height, fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace' }}
@@ -257,7 +257,7 @@ const CollectionHooksPage: React.FC = () => {
  if (loading) {
  return (
  <div className="min-h-[80vh] flex items-center justify-center">
- <Loader2 size={32} className="text-gray-600 dark:text-gray-500 animate-spin" />
+ <Loader2 size={32} className="text-gray-600 dark:text-z-secondary animate-spin" />
  </div>
  )
  }
@@ -270,7 +270,7 @@ const CollectionHooksPage: React.FC = () => {
           <button
             onClick={handleSave}
             disabled={saving || !isDirty()}
-            className="flex items-center justify-center gap-3 px-8 py-4 rounded-none-none text-[10px] font-black uppercase tracking-widest transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] active:scale-95 disabled:opacity-50 bg-emerald-500 text-white hover:bg-emerald-600"
+            className="flex items-center justify-center gap-3 px-8 py-4 rounded-none-none text-[10px] font-black uppercase tracking-widest transition-all shadow-[var(--z-active-glow)] active:scale-95 disabled:opacity-50 bg-z-accent text-white hover:bg-z-accent"
           >
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
             Save Configuration
@@ -279,7 +279,7 @@ const CollectionHooksPage: React.FC = () => {
       />
       <div className={cn(
         'flex-1 overflow-y-auto p-6 md:p-10 space-y-8 transition-colors duration-500',
-        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
+        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-z-primary'
       )}>
         <div className="max-w-[1400px] mx-auto space-y-8">
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
@@ -288,21 +288,21 @@ const CollectionHooksPage: React.FC = () => {
  {/* Public Read Toggle */}
  <div className={cn(
  'p-5 border rounded-none-none',
- theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
+ theme === 'dark' ? 'bg-white/[0.01] border-z-border' : 'bg-z-panel border-z-border shadow-sm'
  )}>
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-3">
- <Globe size={14} className="text-gray-600 dark:text-gray-400" />
+ <Globe size={14} className="text-gray-600 dark:text-z-muted" />
  <span className="text-[10px] font-black uppercase tracking-widest">Public Read Access</span>
  </div>
  <button
  onClick={() => setPublicRead(!publicRead)}
- className="text-gray-600 dark:text-gray-400 hover:text-gray-300 transition-colors"
+ className="text-gray-600 dark:text-z-muted hover:text-gray-300 transition-colors"
  >
  {publicRead ? <ToggleRight size={28} /> : <ToggleLeft size={28} className="text-gray-600" />}
  </button>
  </div>
- <p className="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-2">
+ <p className="text-[8px] text-z-secondary font-bold uppercase tracking-widest mt-2">
  Allow unauthenticated access to read this collection
  </p>
  </div>
@@ -310,10 +310,10 @@ const CollectionHooksPage: React.FC = () => {
  {/* Available hooks to add */}
  <div className={cn(
  'border rounded-none-none overflow-hidden',
- theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
+ theme === 'dark' ? 'bg-white/[0.01] border-z-border' : 'bg-z-panel border-z-border shadow-sm'
  )}>
- <div className="px-5 py-3 border-b border-white/[0.08]">
- <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Available Lifecycle Hooks</span>
+ <div className="px-5 py-3 border-b border-z-border">
+ <span className="text-[9px] font-black uppercase tracking-widest text-z-muted">Available Lifecycle Hooks</span>
  </div>
  <div className="divide-y divide-white/5">
  {COLLECTION_HOOKS.map(hook => {
@@ -325,14 +325,14 @@ const CollectionHooksPage: React.FC = () => {
  'px-5 py-3 flex items-center justify-between transition-colors',
  isActive
  ? 'bg-gray-500/5'
- : theme === 'dark' ? 'hover:bg-white/[0.02]' : 'hover:bg-gray-50'
+ : theme === 'dark' ? 'hover:bg-z-panel' : 'hover:bg-gray-50'
  )}
  >
  <div className="flex items-center gap-2">
  {isActive && <div className="w-1.5 h-1.5 rounded-none-none bg-gray-500" />}
  <span className={cn(
  'text-[10px] font-black uppercase tracking-widest',
- isActive ? 'text-gray-600 dark:text-gray-400' : theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+ isActive ? 'text-gray-600 dark:text-z-muted' : theme === 'dark' ? 'text-z-secondary' : 'text-z-muted'
  )}>
  {hook.label}
  </span>
@@ -340,7 +340,7 @@ const CollectionHooksPage: React.FC = () => {
  {!isActive && (
  <button
  onClick={() => handleAddHook(hook.name)}
- className="text-gray-600 dark:text-gray-400 hover:text-gray-300 transition-colors"
+ className="text-gray-600 dark:text-z-muted hover:text-gray-300 transition-colors"
  title={`Add ${hook.label} hook`}
  >
  <Plus size={14} />
@@ -355,24 +355,24 @@ const CollectionHooksPage: React.FC = () => {
  {/* Quick info */}
  <div className={cn(
  'p-5 border rounded-none-none space-y-3',
- theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
+ theme === 'dark' ? 'bg-white/[0.01] border-z-border' : 'bg-z-panel border-z-border shadow-sm'
  )}>
  <div className="flex items-center gap-2">
- <Terminal size={12} className="text-gray-500" />
- <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Runtime Info</span>
+ <Terminal size={12} className="text-z-secondary" />
+ <span className="text-[9px] font-black uppercase tracking-widest text-z-muted">Runtime Info</span>
  </div>
  <div className="space-y-2">
  <div className="flex justify-between">
- <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">Active Hooks</span>
- <span className="text-[8px] text-gray-600 dark:text-gray-400 font-black">{activeHooks.length}</span>
+ <span className="text-[8px] text-z-secondary font-bold uppercase tracking-widest">Active Hooks</span>
+ <span className="text-[8px] text-gray-600 dark:text-z-muted font-black">{activeHooks.length}</span>
  </div>
  <div className="flex justify-between">
- <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">Custom Endpoints</span>
- <span className="text-[8px] text-gray-600 dark:text-gray-400 font-black">{endpoints.length}</span>
+ <span className="text-[8px] text-z-secondary font-bold uppercase tracking-widest">Custom Endpoints</span>
+ <span className="text-[8px] text-gray-600 dark:text-z-muted font-black">{endpoints.length}</span>
  </div>
  <div className="flex justify-between">
- <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">Fields</span>
- <span className="text-[8px] text-gray-600 dark:text-gray-400 font-black">{fields.length}</span>
+ <span className="text-[8px] text-z-secondary font-bold uppercase tracking-widest">Fields</span>
+ <span className="text-[8px] text-gray-600 dark:text-z-muted font-black">{fields.length}</span>
  </div>
  </div>
  </div>
@@ -382,10 +382,10 @@ const CollectionHooksPage: React.FC = () => {
  <div className="xl:col-span-2 space-y-8">
  {/* Collection Lifecycle Hooks */}
  <div className="space-y-4">
- <div className="flex items-center gap-3 border-b border-white/[0.08] pb-4">
- <Zap size={16} className="text-gray-600 dark:text-gray-400" />
+ <div className="flex items-center gap-3 border-b border-z-border pb-4">
+ <Zap size={16} className="text-gray-600 dark:text-z-muted" />
  <h2 className="text-sm font-black uppercase tracking-wider">Collection Lifecycle Hooks</h2>
- <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest ml-auto">
+ <span className="text-[8px] text-z-secondary font-bold uppercase tracking-widest ml-auto">
  {activeHooks.length} active
  </span>
  </div>
@@ -393,10 +393,10 @@ const CollectionHooksPage: React.FC = () => {
  {activeHooks.length === 0 ? (
  <div className={cn(
  'p-8 border border-dashed rounded-none-none text-center space-y-3',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
+ theme === 'dark' ? 'border-z-border' : 'border-z-border'
  )}>
  <Code2 size={32} className="mx-auto text-gray-600" />
- <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+ <p className="text-[10px] font-black text-z-secondary uppercase tracking-widest">
  No hooks configured
  </p>
  <p className="text-[9px] text-gray-600 uppercase tracking-wider">
@@ -415,7 +415,7 @@ const CollectionHooksPage: React.FC = () => {
  exit={{ opacity: 0, y: -8 }}
  className={cn(
  'border rounded-none-none overflow-hidden',
- theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
+ theme === 'dark' ? 'bg-white/[0.01] border-z-border' : 'bg-z-panel border-z-border shadow-sm'
  )}
  >
  <button
@@ -424,20 +424,20 @@ const CollectionHooksPage: React.FC = () => {
  'w-full px-5 py-4 flex items-center justify-between transition-colors',
  isOpen
  ? theme === 'dark' ? 'bg-gray-500/5' : 'bg-gray-50'
- : theme === 'dark' ? 'hover:bg-white/[0.02]' : 'hover:bg-gray-50'
+ : theme === 'dark' ? 'hover:bg-z-panel' : 'hover:bg-gray-50'
  )}
  >
  <div className="flex items-center gap-3">
- {isOpen ? <ChevronDown size={14} className="text-gray-600 dark:text-gray-400" /> : <ChevronRight size={14} className="text-gray-500" />}
- <FileCode size={14} className="text-gray-600 dark:text-gray-400" />
+ {isOpen ? <ChevronDown size={14} className="text-gray-600 dark:text-z-muted" /> : <ChevronRight size={14} className="text-z-secondary" />}
+ <FileCode size={14} className="text-gray-600 dark:text-z-muted" />
  <div className="flex flex-col items-start">
  <span className="text-[11px] font-black uppercase tracking-tight text-white">{hook.label}</span>
- <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">{hook.event}</span>
+ <span className="text-[8px] text-z-secondary font-bold uppercase tracking-widest">{hook.event}</span>
  </div>
  </div>
  <button
  onClick={(e) => { e.stopPropagation(); handleRemoveHook(hook.name) }}
- className="p-2 text-gray-500 hover:text-red-400 transition-colors"
+ className="p-2 text-z-secondary hover:text-red-400 transition-colors"
  title="Remove hook"
  >
  <Trash2 size={14} />
@@ -445,7 +445,7 @@ const CollectionHooksPage: React.FC = () => {
  </button>
  {isOpen && (
  <div className="px-5 pb-5 space-y-3">
- <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
+ <p className="text-[9px] text-z-muted font-bold uppercase tracking-widest">
  {hook.description}
  </p>
  <CodeEditor
@@ -465,17 +465,17 @@ const CollectionHooksPage: React.FC = () => {
 
  {/* Custom Endpoints */}
  <div className="space-y-4">
- <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+ <div className="flex items-center justify-between border-b border-z-border pb-4">
  <div className="flex items-center gap-3">
- <Globe size={16} className="text-gray-600 dark:text-gray-400" />
+ <Globe size={16} className="text-gray-600 dark:text-z-muted" />
  <h2 className="text-sm font-black uppercase tracking-wider">Custom Endpoints</h2>
- <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">
+ <span className="text-[8px] text-z-secondary font-bold uppercase tracking-widest">
  {endpoints.length} defined
  </span>
  </div>
  <button
  onClick={handleAddEndpoint}
- className="flex items-center gap-2 px-3 py-1.5 border border-gray-500/30 hover:border-gray-500 hover:bg-gray-500/10 text-[9px] font-black uppercase transition-all text-gray-600 dark:text-gray-400 hover:text-white"
+ className="flex items-center gap-2 px-3 py-1.5 border border-gray-500/30 hover:border-gray-500 hover:bg-gray-500/10 text-[9px] font-black uppercase transition-all text-gray-600 dark:text-z-muted hover:text-white"
  >
  <Plus size={10} />
  Add Endpoint
@@ -485,10 +485,10 @@ const CollectionHooksPage: React.FC = () => {
  {endpoints.length === 0 ? (
  <div className={cn(
  'p-8 border border-dashed rounded-none-none text-center space-y-3',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
+ theme === 'dark' ? 'border-z-border' : 'border-z-border'
  )}>
  <Globe size={32} className="mx-auto text-gray-600" />
- <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+ <p className="text-[10px] font-black text-z-secondary uppercase tracking-widest">
  No custom endpoints
  </p>
  <p className="text-[9px] text-gray-600 uppercase tracking-wider">
@@ -502,7 +502,7 @@ const CollectionHooksPage: React.FC = () => {
  key={idx}
  className={cn(
  'p-5 border rounded-none-none space-y-4',
- theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
+ theme === 'dark' ? 'bg-white/[0.01] border-z-border' : 'bg-z-panel border-z-border shadow-sm'
  )}
  >
  <div className="flex items-center gap-3">
@@ -511,7 +511,7 @@ const CollectionHooksPage: React.FC = () => {
  onChange={(e) => handleUpdateEndpoint(idx, 'method', e.target.value)}
  className={cn(
  'bg-black border text-[9px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none-none focus:border-gray-500',
- theme === 'dark' ? 'border-white/[0.08] text-gray-600 dark:text-gray-400' : 'border-gray-200 text-gray-600'
+ theme === 'dark' ? 'border-z-border text-gray-600 dark:text-z-muted' : 'border-z-border text-gray-600'
  )}
  >
  {HTTP_METHODS.map(m => (
@@ -525,12 +525,12 @@ const CollectionHooksPage: React.FC = () => {
  placeholder="/custom-path"
  className={cn(
  'flex-1 border rounded-none-none py-2 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-gray-50 border-gray-200 focus:border-gray-500'
+ theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-input border-z-border focus:border-gray-500'
  )}
  />
  <button
  onClick={() => handleRemoveEndpoint(idx)}
- className="p-2 text-gray-500 hover:text-red-400 transition-colors"
+ className="p-2 text-z-secondary hover:text-red-400 transition-colors"
  >
  <Trash2 size={14} />
  </button>
@@ -542,7 +542,7 @@ const CollectionHooksPage: React.FC = () => {
  placeholder="Brief description of this endpoint..."
  className={cn(
  'w-full border rounded-none-none py-2 px-3 text-[10px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-gray-300 focus:border-gray-500' : 'bg-gray-50 border-gray-200 focus:border-gray-500'
+ theme === 'dark' ? 'bg-black border-z-border text-gray-300 focus:border-gray-500' : 'bg-z-input border-z-border focus:border-gray-500'
  )}
  />
  </div>
@@ -554,18 +554,18 @@ const CollectionHooksPage: React.FC = () => {
  {/* Info card */}
  <div className={cn(
  'p-6 border rounded-none-none space-y-4',
- theme === 'dark' ? 'bg-gray-500/5 border-gray-500/10' : 'bg-gray-50 border-gray-100'
+ theme === 'dark' ? 'bg-gray-500/5 border-gray-500/10' : 'bg-gray-50 border-z-border'
  )}>
  <div className="flex items-center gap-3">
- <Shield size={14} className="text-gray-600 dark:text-gray-400" />
- <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-400">Developer Notes</span>
+ <Shield size={14} className="text-gray-600 dark:text-z-muted" />
+ <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-z-muted">Developer Notes</span>
  </div>
- <ul className="space-y-2 text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-relaxed">
+ <ul className="space-y-2 text-[9px] text-z-muted font-bold uppercase tracking-widest leading-relaxed">
  <li>• Hooks are stored as JSON configuration and executed server-side</li>
- <li>• <code className="text-gray-600 dark:text-gray-400 font-mono">before*</code> hooks can modify data by returning the modified value</li>
- <li>• <code className="text-gray-600 dark:text-gray-400 font-mono">after*</code> hooks are for side effects (fire-and-forget)</li>
- <li>• Custom endpoints are mounted at <code className="text-gray-600 dark:text-gray-400 font-mono">/api/v1/{slug}/your-path</code></li>
- <li>• Access <code className="text-gray-600 dark:text-gray-400 font-mono">req.zenith.adapter</code> for database operations</li>
+ <li>• <code className="text-gray-600 dark:text-z-muted font-mono">before*</code> hooks can modify data by returning the modified value</li>
+ <li>• <code className="text-gray-600 dark:text-z-muted font-mono">after*</code> hooks are for side effects (fire-and-forget)</li>
+ <li>• Custom endpoints are mounted at <code className="text-gray-600 dark:text-z-muted font-mono">/api/v1/{slug}/your-path</code></li>
+ <li>• Access <code className="text-gray-600 dark:text-z-muted font-mono">req.zenith.adapter</code> for database operations</li>
  </ul>
  </div>
  </div>

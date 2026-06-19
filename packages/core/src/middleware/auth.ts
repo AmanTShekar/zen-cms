@@ -32,18 +32,24 @@ export async function verifySiteAccess(user: AuthUser, siteId: string): Promise<
   }
 
   const adapter = AdapterFactory.getActiveAdapter()
-  let sites = await adapter.find<Record<string, any>>('sites', { slug: siteId })
+  let sites = await adapter.find<Record<string, any>>('z_sites', { slug: siteId })
   if (sites.length === 0 && /^[0-9a-fA-F]{24}$/.test(siteId)) {
-    sites = await adapter.find<Record<string, any>>('sites', { id: siteId })
+    sites = await adapter.find<Record<string, any>>('z_sites', { id: siteId })
   }
   const site = sites[0] || null
 
   if (!site) return false
 
+  if (user.role === 'admin') return true
+
+  const userFromDb = await adapter.findOne<Record<string, any>>('users', { _id: user.id }) || 
+                     await adapter.findOne<Record<string, any>>('users', { id: user.id }) || user
+
   const isOwner = site.ownerId === user.id
   const isMember = Array.isArray(site.members) && site.members.some((m: any) => m.userId === user.id)
+  const hasSpecialAccess = Array.isArray((userFromDb as any).specialAccess) && ((userFromDb as any).specialAccess.includes(`site:${siteId}`) || (userFromDb as any).specialAccess.includes(`site:${site.slug}`))
 
-  const accessGranted = isOwner || isMember
+  const accessGranted = isOwner || isMember || hasSpecialAccess
   
   if (redisService.client) {
     await redisService.client.setex(cacheKey, 300, accessGranted ? '1' : '0')

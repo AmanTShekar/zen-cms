@@ -103,7 +103,7 @@ const BuilderPage: React.FC = () => {
  {/* Sidebar List */}
  <div className={cn(
  'w-64 border-r shrink-0 flex flex-col',
- theme === 'dark' ? 'border-white/[0.08] bg-black' : 'border-gray-200 bg-gray-50'
+ theme === 'dark' ? 'border-z-border bg-black' : 'border-z-border bg-gray-50'
  )}>
  <div className="p-4 border-b border-inherit flex items-center justify-between">
  <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
@@ -111,14 +111,14 @@ const BuilderPage: React.FC = () => {
  </h2>
  <button
  onClick={handleCreateNew}
- className="p-1.5 hover:bg-gray-500/10 text-gray-600 dark:text-gray-500 rounded-none transition-colors"
+ className="p-1.5 hover:bg-gray-500/10 text-gray-600 dark:text-z-secondary rounded-none transition-colors"
  >
  <Plus size={14} />
  </button>
  </div>
  <div className="flex-1 overflow-auto p-2 space-y-1">
  {loading ? (
- <div className="p-4 flex justify-center"><Loader2 className="animate-spin text-gray-400" size={16} /></div>
+ <div className="p-4 flex justify-center"><Loader2 className="animate-spin text-z-muted" size={16} /></div>
  ) : schemas.map(s => (
  <button
  key={s.id}
@@ -128,7 +128,7 @@ const BuilderPage: React.FC = () => {
  activeSchema?.id === s.id
  ? 'bg-gray-500 text-white'
  : theme === 'dark'
- ? 'text-gray-400 hover:bg-white/5 hover:text-white'
+ ? 'text-z-muted hover:bg-z-hover hover:text-white'
  : 'text-gray-600 hover:bg-black/5 hover:text-black'
  )}
  >
@@ -136,7 +136,7 @@ const BuilderPage: React.FC = () => {
  </button>
  ))}
  {!loading && schemas.length === 0 && (
- <div className="p-4 text-center text-[9px] text-gray-500 uppercase tracking-widest ">
+ <div className="p-4 text-center text-[9px] text-z-secondary uppercase tracking-widest ">
  No schemas found
  </div>
  )}
@@ -154,7 +154,7 @@ const BuilderPage: React.FC = () => {
  <div className="flex items-center justify-between">
  <div>
  <h1 className="text-2xl font-black uppercase tracking-widest ">Content-Type Builder</h1>
- <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mt-1">Design your database schema visually</p>
+ <p className="text-[10px] text-z-secondary uppercase tracking-widest font-bold mt-1">Design your database schema visually</p>
  </div>
  <button
  onClick={handleSave}
@@ -168,38 +168,38 @@ const BuilderPage: React.FC = () => {
 
  <div className={cn(
  'p-6 border space-y-4',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
+ 'bg-z-panel border-z-border shadow-sm'
  )}>
- <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-500 mb-4 border-b border-gray-500/20 pb-2">General Info</h3>
+ <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-z-secondary mb-4 border-b border-gray-500/20 pb-2">General Info</h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-1">
- <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Singular Name</label>
+ <label className="text-[9px] font-bold text-z-secondary uppercase tracking-widest">Singular Name</label>
  <input
  type="text"
  value={activeSchema.singular}
  onChange={(e) => setActiveSchema({ ...activeSchema, singular: e.target.value })}
  className={cn(
  'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
- theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-gray-500' : 'bg-gray-50 border-gray-200 focus:border-gray-500'
+ theme === 'dark' ? 'bg-black border-z-border focus:border-gray-500' : 'bg-z-input border-z-border focus:border-gray-500'
  )}
  placeholder="e.g. Article"
  />
  </div>
  <div className="space-y-1">
- <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Plural Name</label>
+ <label className="text-[9px] font-bold text-z-secondary uppercase tracking-widest">Plural Name</label>
  <input
  type="text"
  value={activeSchema.plural}
  onChange={(e) => setActiveSchema({ ...activeSchema, plural: e.target.value })}
  className={cn(
  'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
- theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-gray-500' : 'bg-gray-50 border-gray-200 focus:border-gray-500'
+ theme === 'dark' ? 'bg-black border-z-border focus:border-gray-500' : 'bg-z-input border-z-border focus:border-gray-500'
  )}
  placeholder="e.g. Articles"
  />
  </div>
  <div className="space-y-1 col-span-2">
- <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Database Slug (API Route)</label>
+ <label className="text-[9px] font-bold text-z-secondary uppercase tracking-widest">Database Slug (API Route)</label>
  <input
  type="text"
  value={activeSchema.slug}
@@ -207,7 +207,7 @@ const BuilderPage: React.FC = () => {
  disabled={!!activeSchema.id}
  className={cn(
  'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
- theme === 'dark' ? 'bg-black border-white/[0.08] focus:border-gray-500 disabled:opacity-50' : 'bg-gray-50 border-gray-200 focus:border-gray-500 disabled:opacity-50'
+ theme === 'dark' ? 'bg-black border-z-border focus:border-gray-500 disabled:opacity-50' : 'bg-z-input border-z-border focus:border-gray-500 disabled:opacity-50'
  )}
  placeholder="e.g. articles"
  />
@@ -217,13 +217,13 @@ const BuilderPage: React.FC = () => {
 
  <div className={cn(
  'p-6 border space-y-4',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
+ 'bg-z-panel border-z-border shadow-sm'
  )}>
  <div className="flex items-center justify-between mb-4 border-b border-gray-500/20 pb-2">
- <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-500">Fields Configuration</h3>
+ <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-z-secondary">Fields Configuration</h3>
  <button
  onClick={addField}
- className="flex items-center gap-1 text-[9px] font-black text-gray-600 dark:text-gray-400 hover:text-gray-300 uppercase tracking-widest"
+ className="flex items-center gap-1 text-[9px] font-black text-gray-600 dark:text-z-muted hover:text-gray-300 uppercase tracking-widest"
  >
  <Plus size={12} /> Add Field
  </button>
@@ -233,7 +233,7 @@ const BuilderPage: React.FC = () => {
  {activeSchema.fields.map((field, idx) => (
  <div key={idx} className={cn(
  'flex items-center gap-3 p-3 border group',
- theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-gray-50 border-gray-200'
+ theme === 'dark' ? 'bg-black border-z-border' : 'bg-z-input border-z-border'
  )}>
  <input
  type="text"
@@ -249,7 +249,7 @@ const BuilderPage: React.FC = () => {
  >
  {FIELD_TYPES.map(t => <option key={t} value={t} className="text-black">{t}</option>)}
  </select>
- <label className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-gray-400">
+ <label className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-z-muted">
  <input
  type="checkbox"
  checked={field.required || false}
@@ -273,8 +273,8 @@ const BuilderPage: React.FC = () => {
  <div className="h-full flex items-center justify-center">
  <div className="text-center space-y-4 max-w-sm">
  <Database size={48} className="mx-auto text-white/5 dark:text-white/10" strokeWidth={1} />
- <p className="text-[12px] font-black uppercase tracking-[0.3em] text-gray-400 ">Schema Architect</p>
- <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest leading-relaxed">
+ <p className="text-[12px] font-black uppercase tracking-[0.3em] text-z-muted ">Schema Architect</p>
+ <p className="text-[10px] font-bold text-z-secondary uppercase tracking-widest leading-relaxed">
  Select an existing collection model from the sidebar to edit, or deploy a new visual schema.
  </p>
  </div>

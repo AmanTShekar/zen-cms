@@ -188,7 +188,7 @@ export class ZenithEngine {
     this.corsOptions = options.cors
 
     // Resolve database adapter dynamically via AdapterFactory (supporting SQLite, PG, Mongo)
-    this.adapter = options.adapter || AdapterFactory.create()
+    this.adapter = options.adapter || AdapterFactory.create((this.config as any).database?.uri, (this.config as any).database?.engine)
     AdapterFactory.setActiveAdapter(this.adapter)
 
     this.app = express()
@@ -678,12 +678,15 @@ export class ZenithEngine {
           }
         }
 
-        // 2. Check for missing .ts files (DB exists, File missing - Reverse Mismatch)
+        // 2. Check for missing .ts files (DB exists, File missing)
+        // DEPRECATED: We now support fully dynamic DB-backed blocks, so we do not enforce .ts file existence.
+        /*
         for (const dbSchema of dbSchemas) {
           if (!tsSlugs.has(dbSchema.slug)) {
             logger.error(`[Startup Reconciliation] CRITICAL: Missing file ${dbSchema.slug}.ts for DB record in z_schemas. Action Required: Manually delete the DB record or restore the .ts file from version control.`)
           }
         }
+        */
       } catch (err: any) {
         logger.warn({ err: err.message }, '[Zenith Engine] Block reconciliation check failed or z_schemas not yet initialized')
       }

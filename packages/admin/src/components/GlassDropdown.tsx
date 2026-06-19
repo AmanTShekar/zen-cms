@@ -107,10 +107,10 @@ export const GlassDropdown = <T,>({
  disabled={disabled}
  className={cn(
  "w-full flex items-center justify-between text-left transition-all duration-300 p-2.5",
- "relative overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.1)]",
+ "relative overflow-hidden shadow-[var(--z-active-glow)]",
  theme === 'dark'
- ? "bg-black/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-gray-500/50 hover:bg-black/85"
- : "bg-white/65 backdrop-blur-[12px] text-gray-900 border border-black/[0.08] hover:border-gray-500/30 hover:bg-white/85",
+ ? "bg-z-panel backdrop-blur-[12px] text-white border border-z-border hover:border-gray-500/50 hover:bg-black/85"
+ : "bg-white/65 backdrop-blur-[12px] text-z-primary border border-black/[0.08] hover:border-gray-500/30 hover:bg-white/85",
  isSidebarOpen ? "rounded-none-none" : "rounded-none-none p-2 justify-center",
  "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
  triggerClassName
@@ -120,7 +120,7 @@ export const GlassDropdown = <T,>({
  {selectedOption?.icon && (
  <div className={cn(
  "rounded-none-none flex items-center justify-center text-lg flex-shrink-0 transition-colors duration-300",
- theme === 'dark' ? "bg-gray-500/10 text-gray-600 dark:text-gray-400" : "bg-gray-50 text-gray-600",
+ theme === 'dark' ? "bg-gray-500/10 text-gray-600 dark:text-z-muted" : "bg-gray-50 text-gray-600",
  isSidebarOpen ? "w-8 h-8" : "w-10 h-10"
  )}>
  {selectedOption.icon}
@@ -130,7 +130,7 @@ export const GlassDropdown = <T,>({
  {isSidebarOpen && (
  <div className="flex flex-col min-w-0">
  {selectedOption?.description && (
- <span className="text-[8px] font-black text-gray-600 dark:text-gray-400 dark:text-gray-400 uppercase tracking-[0.2em] font-mono leading-none mb-1">
+ <span className="text-[8px] font-black text-gray-600 dark:text-z-muted dark:text-z-muted uppercase tracking-[0.2em] font-mono leading-none mb-1">
  {selectedOption.description}
  </span>
  )}
@@ -145,7 +145,7 @@ export const GlassDropdown = <T,>({
  <motion.div
  animate={{ rotate: isOpen ? 180 : 0 }}
  transition={{ duration: 0.2 }}
- className="text-gray-400 flex-shrink-0 z-10 ml-2"
+ className="text-z-muted flex-shrink-0 z-10 ml-2"
  >
  <ChevronDown size={14} />
  </motion.div>
@@ -178,10 +178,10 @@ export const GlassDropdown = <T,>({
  WebkitBackdropFilter: 'blur(12px)',
  }}
  className={cn(
- "rounded-none-none overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.3)] border",
+ "rounded-none-none overflow-hidden shadow-[var(--z-active-glow)] border",
  theme === 'dark'
- ? "border-white/[0.08] text-white"
- : "border-black/[0.08] text-gray-900",
+ ? "border-z-border text-white"
+ : "border-black/[0.08] text-z-primary",
  menuClassName
  )}
  >
@@ -190,7 +190,7 @@ export const GlassDropdown = <T,>({
  "px-4 py-2.5 border-b bg-white/[0.01]",
  theme === 'dark' ? "border-white/[0.05]" : "border-black/[0.05]"
  )}>
- <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest font-mono">
+ <span className="text-[9px] font-black text-z-muted uppercase tracking-widest font-mono">
  {headerText}
  </span>
  </div>
@@ -213,8 +213,8 @@ export const GlassDropdown = <T,>({
  onClick={() => handleSelect(option)}
  className={cn(
  "w-full px-4 py-2.5 flex items-center justify-between text-left transition-colors duration-200",
- theme === 'dark' ? "hover:bg-white/[0.04]" : "hover:bg-black/[0.02]",
- isSelected && (theme === 'dark' ? "bg-gray-500/10 text-gray-600 dark:text-gray-400" : "bg-gray-50 text-gray-600")
+ theme === 'dark' ? "hover:bg-z-hover" : "hover:bg-black/[0.02]",
+ isSelected && (theme === 'dark' ? "bg-gray-500/10 text-gray-600 dark:text-z-muted" : "bg-gray-50 text-gray-600")
  )}
  >
  <div className="flex items-center gap-3 min-w-0">
@@ -222,7 +222,7 @@ export const GlassDropdown = <T,>({
  <div className="flex flex-col min-w-0">
  <span className="text-xs font-bold truncate">{option.label}</span>
  {option.description && (
- <span className="text-[9px] text-gray-400 font-mono tracking-wider">
+ <span className="text-[9px] text-z-muted font-mono tracking-wider">
  {option.description}
  </span>
  )}
@@ -236,7 +236,7 @@ export const GlassDropdown = <T,>({
  })}
 
  {options.length === 0 && (
- <div className="px-4 py-6 text-center text-gray-500 text-xs">
+ <div className="px-4 py-6 text-center text-z-secondary text-xs">
  No options found.
  </div>
  )}
@@ -244,7 +244,7 @@ export const GlassDropdown = <T,>({
 
  {footerAction && (
  <div className={cn(
- "border-t bg-white/[0.02]",
+ "border-t bg-z-panel",
  theme === 'dark' ? "border-white/[0.05]" : "border-black/[0.05]"
  )}>
  {footerAction}

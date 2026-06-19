@@ -1,0 +1,130 @@
+{
+  "body": {
+    "widgets": [
+      {
+        "id": "w1",
+        "type": "stat-card",
+        "title": "Content Assets",
+        "config": {
+          "metric": "total_records"
+        },
+        "position": {
+          "x": 0,
+          "y": 8,
+          "w": 3,
+          "h": 2
+        },
+        "isOrphaned": false
+      },
+      {
+        "id": "w2",
+        "type": "stat-card",
+        "title": "Team Members",
+        "config": {
+          "metric": "members"
+        },
+        "position": {
+          "x": 3,
+          "y": 8,
+          "w": 3,
+          "h": 2
+        },
+        "isOrphaned": false
+      },
+      {
+        "id": "w3",
+        "type": "stat-card",
+        "title": "System Uptime",
+        "config": {
+          "metric": "uptime"
+        },
+        "position": {
+          "x": 6,
+          "y": 6,
+          "w": 3,
+          "h": 2
+        },
+        "isOrphaned": false
+      },
+      {
+        "id": "w4",
+        "type": "system-health",
+        "title": "Infrastructure",
+        "position": {
+          "x": 9,
+          "y": 6,
+          "w": 3,
+          "h": 2
+        },
+        "isOrphaned": false
+      },
+      {
+        "id": "de0cfd78-5c71-45b2-85d7-639f6f723f5f",
+        "type": "team-presence",
+        "title": "Team Presence",
+        "position": {
+          "x": 0,
+          "y": 6,
+          "w": 4,
+          "h": 2
+        },
+        "isOrphaned": false
+      },
+      {
+        "id": "w5",
+        "type": "quick-actions",
+        "title": "Quick Start",
+        "position": {
+          "x": 0,
+          "y": null,
+          "w": 12,
+          "h": 2
+        },
+        "isOrphaned": false
+      },
+      {
+        "id": "w7",
+        "type": "api-status",
+        "title": "API Health",
+        "position": {
+          "x": 8,
+          "y": 2,
+          "w": 4,
+          "h": 4
+        },
+        "isOrphaned": false
+      },
+      {
+        "id": "w6",
+        "type": "audit-log",
+        "title": "Audit Log",
+        "config": {
+          "limit": 5
+        },
+        "position": {
+          "x": 0,
+          "y": 2,
+          "w": 8,
+          "h": 4
+        },
+        "isOrphaned": false
+      }
+    ],
+    "columns": 12,
+    "updatedAt": "2026-06-17T19:58:05.640Z"
+  },
+  "issues": [
+    {
+      "code": "invalid_type",
+      "expected": "number",
+      "received": "null",
+      "path": [
+        "widgets",
+        5,
+        "position",
+        "y"
+      ],
+      "message": "Expected number, received null"
+    }
+  ]
+}

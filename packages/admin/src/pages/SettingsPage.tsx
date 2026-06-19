@@ -45,32 +45,55 @@ import SettingsPlugins from './settings/SettingsPlugins'
 import SettingsApiKeyModal from './settings/SettingsApiKeyModal'
 import SettingsWebhookLogs from './settings/SettingsWebhookLogs'
 import SettingsLegal from './settings/SettingsLegal'
+import SettingsSystem from './settings/SettingsSystem'
+import SettingsThemeStore from './settings/SettingsThemeStore'
 
 interface Settings {
- siteName: string
- siteDescription: string
- logoUrl: string
- faviconUrl: string
- publicUrl: string
- maintenanceMode: boolean
- defaultLocale: string
- supportedLocales: string[]
- mediaProvider: string
- maxUploadSize: number
- jwtExpiresIn: string
- passwordMinLength: number
- allowRegistration: boolean
- customCSS: string
- smtpHost: string
- smtpPort: number
- smtpUser: string
- smtpPass: string
- fromEmail: string
- rateLimitWindow: number
- rateLimitMax: number
- aiModel: string
- aiApiKey: string
- enableTelemetry: boolean
+  siteName: string
+  siteDescription: string
+  logoUrl: string
+  faviconUrl: string
+  ogImageUrl: string
+  publicUrl: string
+  maintenanceMode: boolean
+  defaultLocale: string
+  supportedLocales: string[]
+  timezone: string
+  dateFormat: string
+  supportEmail: string
+  mediaProvider: string
+  maxUploadSize: number
+  jwtExpiresIn: string
+  passwordMinLength: number
+  allowRegistration: boolean
+  rateLimitWindow: number
+  rateLimitMax: number
+  corsOrigins: string[]
+  customCSS: string
+  smtpHost: string
+  smtpPort: number
+  smtpUser: string
+  smtpPass: string
+  fromEmail: string
+  smtpSecure: boolean
+  smtpFromName: string
+  emailSubjectPrefix: string
+  // AI Engine
+  aiProvider: string
+  aiModel: string
+  aiApiKey: string
+  openRouterApiKey: string
+  openaiApiKey: string
+  anthropicApiKey: string
+  googleApiKey: string
+  groqApiKey: string
+  nvidiaApiKey: string
+  togetherApiKey: string
+  mistralApiKey: string
+  cohereApiKey: string
+  xaiApiKey: string
+  enableTelemetry: boolean
+  [key: string]: any
 }
 
 interface DBStats {
@@ -115,30 +138,49 @@ const SettingsPage = () => {
  const queryParams = new URLSearchParams(location.search)
  const [activeTab, setActiveTab] = useState(queryParams.get('tab') || 'general')
  const [settings, setSettings] = useState<Settings>({
- siteName: '',
- siteDescription: '',
- logoUrl: '',
- faviconUrl: '',
- publicUrl: '',
- maintenanceMode: false,
- defaultLocale: 'en',
- supportedLocales: ['en'],
- mediaProvider: 'local',
- maxUploadSize: 5242880,
- jwtExpiresIn: '7d',
- passwordMinLength: 8,
- allowRegistration: false,
- customCSS: '',
- smtpHost: '',
- smtpPort: 587,
- smtpUser: '',
- smtpPass: '',
- fromEmail: '',
- rateLimitWindow: 15,
- rateLimitMax: 100,
- aiModel: 'claude-3-5-sonnet',
- aiApiKey: '',
- enableTelemetry: true,
+  siteName: '',
+  siteDescription: '',
+  logoUrl: '',
+  faviconUrl: '',
+  ogImageUrl: '',
+  publicUrl: '',
+  maintenanceMode: false,
+  defaultLocale: 'en',
+  supportedLocales: ['en'],
+  timezone: 'UTC',
+  dateFormat: 'MM/DD/YYYY',
+  supportEmail: '',
+  mediaProvider: 'local',
+  maxUploadSize: 5242880,
+  jwtExpiresIn: '7d',
+  passwordMinLength: 8,
+  allowRegistration: false,
+  rateLimitWindow: 15,
+  rateLimitMax: 100,
+  corsOrigins: [],
+  customCSS: '',
+  smtpHost: '',
+  smtpPort: 587,
+  smtpUser: '',
+  smtpPass: '',
+  fromEmail: '',
+  smtpSecure: false,
+  smtpFromName: '',
+  emailSubjectPrefix: '',
+  aiProvider: 'openrouter',
+  aiModel: 'anthropic/claude-3.5-sonnet',
+  aiApiKey: '',
+  openRouterApiKey: '',
+  openaiApiKey: '',
+  anthropicApiKey: '',
+  googleApiKey: '',
+  groqApiKey: '',
+  nvidiaApiKey: '',
+  togetherApiKey: '',
+  mistralApiKey: '',
+  cohereApiKey: '',
+  xaiApiKey: '',
+  enableTelemetry: true,
  })
  const [loading, setLoading] = useState(true)
  const [saving, setSaving] = useState(false)
@@ -222,11 +264,12 @@ const SettingsPage = () => {
  }
 
  const tabGroups = [
- {
+  {
  label: 'Environment Settings',
  tabs: [
  { id: 'general', label: 'General Info', icon: Globe, sub: 'Site Profile' },
- { id: 'appearance', label: 'Appearance', icon: Palette, sub: 'Custom CSS' },
+ { id: 'appearance', label: 'Appearance', icon: Palette, sub: 'White-Label' },
+ { id: 'themes', label: 'Theme Store', icon: Palette, sub: 'Plug-and-Play Themes' },
  { id: 'media', label: 'Storage', icon: Image, sub: 'Storage Config' },
  { id: 'billing', label: 'Billing', icon: CreditCard, sub: 'Site Monetization' },
  ]
@@ -240,23 +283,24 @@ const SettingsPage = () => {
  ]
  },
  {
- label: 'Core Services',
- tabs: [
- { id: 'security', label: 'Security Policies', icon: Shield, sub: 'Access Control' },
- { id: 'database', label: 'Database', icon: Database, sub: 'Storage Stats' },
- { id: 'notifications', label: 'Email Relay', icon: Mail, sub: 'Email Delivery' },
- { id: 'webhooks', label: 'Webhooks', icon: Webhook, sub: 'HTTP Callbacks' },
- { id: 'webhook-logs', label: 'Event Logs', icon: Webhook, sub: 'Webhook History' },
- { id: 'ai', label: 'AI Engine', icon: Sparkles, sub: 'Model Settings' },
- { id: 'plugins', label: 'Plugins', icon: Puzzle, sub: 'Extensions' },
- ]
- },
- {
- label: 'Legal & Compliance',
- tabs: [
- { id: 'legal', label: 'Compliance', icon: FileText, sub: 'Privacy & GDPR' },
- ]
- }
+  label: 'Core Services',
+  tabs: [
+  { id: 'security', label: 'Security Policies', icon: Shield, sub: 'Access Control' },
+  { id: 'database', label: 'Database', icon: Database, sub: 'Storage Stats' },
+  { id: 'notifications', label: 'Email Relay', icon: Mail, sub: 'Email Delivery' },
+  { id: 'webhooks', label: 'Webhooks', icon: Webhook, sub: 'HTTP Callbacks' },
+  { id: 'webhook-logs', label: 'Event Logs', icon: Webhook, sub: 'Webhook History' },
+  { id: 'ai', label: 'AI Engine', icon: Sparkles, sub: 'Model Settings' },
+  { id: 'plugins', label: 'Plugins', icon: Puzzle, sub: 'Extensions' },
+  { id: 'system', label: 'System Ops', icon: SettingsIcon, sub: 'Restart & Maintenance' },
+  ]
+  },
+  {
+  label: 'Legal & Compliance',
+  tabs: [
+  { id: 'legal', label: 'Compliance', icon: FileText, sub: 'Privacy & GDPR' },
+  ]
+  }
  ]
 
  const activeTabDetails = tabGroups.flatMap(g => g.tabs).find(t => t.id === activeTab)
@@ -283,16 +327,20 @@ const SettingsPage = () => {
  return <SettingsDatabase dbStats={dbStats} theme={theme} />
  case 'roles':
  return <SettingsRoles roles={roles} setRoles={setRoles} editingRole={editingRole} setEditingRole={setEditingRole} roleFilter={roleFilter} setRoleFilter={setRoleFilter} healthData={healthData} users={users} theme={theme} />
+ case 'themes':
+ return <SettingsThemeStore theme={theme} />
  case 'appearance':
  return <SettingsAppearance settings={settings} setSettings={setSettings} theme={theme} />
  case 'webhooks':
  return <SettingsWebhooks theme={theme} />
-case 'plugins':
+  case 'plugins':
   return <SettingsPlugins theme={theme} />
   case 'webhook-logs':
   return <SettingsWebhookLogs theme={theme} />
   case 'legal':
   return <SettingsLegal theme={theme} />
+  case 'system':
+  return <SettingsSystem theme={theme} />
   default:
  return null
  }
@@ -301,7 +349,7 @@ case 'plugins':
  if (loading) {
  return (
  <div className="min-h-[80vh] flex items-center justify-center">
- <Loader2 size={32} className="text-gray-600 dark:text-gray-500 animate-spin" />
+ <Loader2 size={32} className="text-gray-600 dark:text-z-secondary animate-spin" />
  </div>
  )
  }
@@ -317,12 +365,12 @@ case 'plugins':
        onClick={handleSave}
        disabled={saving}
        className={cn(
-         'flex items-center justify-center gap-2 px-6 py-2.5 rounded-none-none text-sm font-bold transition-all disabled:opacity-50',
-         theme === 'dark' ? 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]' : 'bg-emerald-600 text-white hover:bg-emerald-500'
+         'flex items-center justify-center gap-2 px-6 py-2.5 rounded-none text-sm font-bold transition-all disabled:opacity-50',
+         theme === 'dark' ? 'bg-z-accent hover:opacity-90 text-white shadow-[var(--z-active-glow)]' : 'bg-z-accent text-white hover:opacity-90'
        )}
      >
        {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-       Save Settings
+       Commit Config
      </button>
    }
  />
@@ -330,11 +378,12 @@ case 'plugins':
  <ActionPanel
    sidebarPosition="left"
    sidebarWidth="w-full lg:w-[320px]"
+   className="flex-1 min-h-0"
    sidebar={
-     <div className="p-6 space-y-8 h-[calc(100vh-140px)] overflow-y-auto">
+     <div className="p-6 space-y-8 h-full overflow-y-auto pb-24">
        {tabGroups.map((group) => (
          <div key={group.label}>
-           <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-3">
+           <h3 className="text-[10px] font-black text-z-muted uppercase tracking-widest mb-3 px-3">
              {group.label}
            </h3>
            <div className="space-y-1">
@@ -343,15 +392,15 @@ case 'plugins':
                  key={tab.id}
                  onClick={() => setActiveTab(tab.id)}
                  className={cn(
-                   'w-full flex items-center gap-3 px-3 py-2.5 rounded-none-none transition-all group border',
+                   'w-full flex items-center gap-3 px-3 py-2.5 rounded-none transition-all group border',
                    activeTab === tab.id
-                     ? theme === 'dark' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]' : 'bg-emerald-50 border-emerald-500/20 shadow-sm text-emerald-700'
-                     : theme === 'dark' ? 'text-gray-400 border-transparent hover:bg-white/[0.02] hover:text-gray-200' : 'text-gray-500 border-transparent hover:bg-gray-50'
+                     ? theme === 'dark' ? 'bg-z-active-bg border-z-active-border text-z-active-text shadow-[var(--z-active-glow)] transform scale-[1.02]' : 'bg-z-active-bg border-z-active-border shadow-sm text-z-accent'
+                     : theme === 'dark' ? 'text-z-muted border-transparent hover:bg-z-panel hover:text-gray-200' : 'text-z-secondary border-transparent hover:bg-gray-50'
                  )}
                >
                  <div className={cn(
-                   "w-8 h-8 rounded-none-none flex items-center justify-center transition-colors",
-                   activeTab === tab.id ? "bg-emerald-400 scale-110 text-black shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "bg-white/5 text-gray-400 group-hover:text-gray-300"
+                   "w-8 h-8 flex items-center justify-center transition-colors",
+                   activeTab === tab.id ? "bg-z-accent text-white shadow-[var(--z-active-glow)]" : "bg-z-hover text-z-muted group-hover:text-gray-300"
                  )}>
                    <tab.icon size={16} />
                  </div>
@@ -366,35 +415,35 @@ case 'plugins':
      </div>
    }
  >
-   <div className="flex-1 overflow-y-auto p-6 lg:p-10">
-     <Card padding="lg" className="min-h-[600px]">
-       <AnimatePresence mode="wait">
-         <motion.div
-           key={activeTab}
-           initial={{ opacity: 0, y: 10 }}
-           animate={{ opacity: 1, y: 0 }}
-           exit={{ opacity: 0, y: -10 }}
-           className="space-y-8 relative z-10"
-         >
-           <div className="flex items-center gap-4 border-b pb-6" style={{ borderColor: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}>
-             <div className="w-10 h-10 rounded-none-none bg-emerald-500/10 flex items-center justify-center text-emerald-400">
-               {activeTabDetails?.icon && <activeTabDetails.icon size={20} />}
-             </div>
+    <div className={cn("flex-1 overflow-y-auto p-6 lg:p-10 pb-32 lg:pb-32", theme === 'dark' && 'bg-black')}>
+      <div className={cn("min-h-[600px] border mb-16", 'z-card p-8')}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="space-y-8 relative z-10"
+          >
+            <div className="flex items-center gap-4 border-b pb-6" style={{ borderColor: theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }}>
+              <div className="w-10 h-10 bg-z-active-bg flex items-center justify-center text-z-active-text">
+                {activeTabDetails?.icon && <activeTabDetails.icon size={20} />}
+              </div>
              <div>
-               <h2 className={cn("text-xl font-bold tracking-tight", theme === 'dark' ? 'text-white' : 'text-gray-900')}>
+               <h2 className={cn("text-xl font-bold tracking-tight", theme === 'dark' ? 'text-white' : 'text-z-primary')}>
                  {activeTabDetails?.label}
                </h2>
-               <p className={cn("text-xs mt-1", theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>{activeTabDetails?.sub}</p>
+               <p className={cn("text-xs mt-1", theme === 'dark' ? 'text-z-muted' : 'text-z-secondary')}>{activeTabDetails?.sub}</p>
              </div>
            </div>
            
            <div className="space-y-6 w-full">
              {renderTab()}
            </div>
-         </motion.div>
-       </AnimatePresence>
-     </Card>
-   </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
  </ActionPanel>
 
  <AnimatePresence>

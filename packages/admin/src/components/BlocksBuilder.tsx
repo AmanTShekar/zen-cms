@@ -109,9 +109,9 @@ const getBlockIcon = (slug: string): React.ReactNode => {
 
 // ── Gradient Map ──────────────────────────────────────────────────────────────
 const CATEGORY_GRADIENTS: Record<string, string> = {
-  Layout: 'from-emerald-900/60 to-emerald-900/40',
-  Content: 'from-emerald-900/60 to-emerald-900/40',
-  Commerce: 'from-emerald-900/60 to-emerald-900/40',
+  Layout: 'from-z-accent to-transparent',
+  Content: 'from-z-accent to-transparent',
+  Commerce: 'from-z-accent to-transparent',
   Media: 'from-rose-900/60 to-pink-900/40',
   Social: 'from-amber-900/60 to-orange-900/40',
   General: 'from-[#1a1a2e]/80 to-[#16213e]/60',
@@ -162,15 +162,15 @@ function BlockRow({
       whileDrag={{ scale: 1.01, zIndex: 50, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
       className={cn(
         'group relative bg-app border rounded-none-none overflow-visible shadow-sm transition-colors duration-150',
-        isExpanded ? 'border-accent/60 shadow-[0_0_0_3px_rgba(16,185,129,0.08)]' : 'border-border hover:border-white/20'
+        isExpanded ? 'border-accent/60 shadow-[var(--z-active-glow)]' : 'border-border hover:border-white/20'
       )}
     >
       {/* Index Badge */}
       <div className={cn(
         'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-none-full flex items-center justify-center text-[8px] font-black border z-10 transition-all',
         isExpanded
-          ? 'bg-accent text-white border-accent shadow-[0_0_8px_rgba(16,185,129,0.6)]'
-          : 'bg-app text-gray-400 border-border group-hover:border-accent/40 group-hover:text-accent'
+          ? 'bg-accent text-white border-accent shadow-[var(--z-active-glow)]'
+          : 'bg-app text-z-muted border-border group-hover:border-accent/40 group-hover:text-accent'
       )}>
         {index + 1}
       </div>
@@ -181,7 +181,7 @@ function BlockRow({
       {/* Header Row */}
       <div className="flex items-center gap-2.5 px-4 py-3 cursor-pointer" onClick={onToggle}>
         {!disabled && (
-          <div className="p-1 text-gray-400/30 hover:text-gray-400 cursor-grab active:cursor-grabbing flex-shrink-0" onPointerDown={(e) => e.stopPropagation()}>
+          <div className="p-1 text-z-muted/30 hover:text-z-muted cursor-grab active:cursor-grabbing flex-shrink-0" onPointerDown={(e) => e.stopPropagation()}>
             <GripVertical size={13} />
           </div>
         )}
@@ -197,12 +197,12 @@ function BlockRow({
             <span className="text-[11px] font-bold text-white truncate">
               {previewText || blockDef?.labels?.singular || block.blockType}
             </span>
-            <span className="flex-shrink-0 px-1.5 py-px text-[8px] font-black uppercase tracking-wider text-gray-400 bg-white/[0.05] border border-border rounded-none">
+            <span className="flex-shrink-0 px-1.5 py-px text-[8px] font-black uppercase tracking-wider text-z-muted bg-white/[0.05] border border-border rounded-none">
               {block.blockType}
             </span>
           </div>
           {blockDef?.admin?.description && (
-            <p className="text-[9px] text-gray-400/70 truncate mt-0.5">{blockDef.admin.description}</p>
+            <p className="text-[9px] text-z-muted/70 truncate mt-0.5">{blockDef.admin.description}</p>
           )}
         </div>
 
@@ -210,13 +210,13 @@ function BlockRow({
         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" onClick={(e) => e.stopPropagation()}>
           {!disabled && (
             <>
-              <button type="button" onClick={onMoveUp} disabled={index === 0} title="Move Up" className="p-1.5 text-gray-400 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowUp size={11} /></button>
-              <button type="button" onClick={onMoveDown} disabled={index === total - 1} title="Move Down" className="p-1.5 text-gray-400 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowDown size={11} /></button>
-              <button type="button" onClick={onDuplicate} title="Duplicate" className="p-1.5 text-gray-400 hover:text-accent transition-colors"><Copy size={11} /></button>
-              <button type="button" onClick={onRemove} title="Remove" className="p-1.5 text-gray-400 hover:text-danger transition-colors"><Trash2 size={11} /></button>
+              <button type="button" onClick={onMoveUp} disabled={index === 0} title="Move Up" className="p-1.5 text-z-muted hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowUp size={11} /></button>
+              <button type="button" onClick={onMoveDown} disabled={index === total - 1} title="Move Down" className="p-1.5 text-z-muted hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowDown size={11} /></button>
+              <button type="button" onClick={onDuplicate} title="Duplicate" className="p-1.5 text-z-muted hover:text-accent transition-colors"><Copy size={11} /></button>
+              <button type="button" onClick={onRemove} title="Remove" className="p-1.5 text-z-muted hover:text-danger transition-colors"><Trash2 size={11} /></button>
             </>
           )}
-          <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }} className="p-1.5 text-gray-400/50 ml-0.5">
+          <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }} className="p-1.5 text-z-muted/50 ml-0.5">
             <ChevronDown size={13} />
           </motion.div>
         </div>
@@ -239,20 +239,20 @@ function BlockRow({
                     const fullWidth = ['richtext','textarea','blocks','array','media','code','collapsible'].includes(f.type)
                     return (
                       <div key={f.name} className={cn('flex flex-col gap-1.5', fullWidth && 'col-span-2')}>
-                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                        <label className="text-[9px] font-black text-z-muted uppercase tracking-widest flex items-center gap-1">
                           {f.label || f.name}
                           {f.required && <span className="text-danger">*</span>}
                         </label>
                         {renderField
                           ? renderField(f as unknown as FieldConfig, block[f.name], (val: any) => onUpdate({ [f.name]: val }))
-                          : <input type="text" value={(block[f.name] as string) || ''} onChange={(e) => onUpdate({ [f.name]: e.target.value })} placeholder={`Enter ${f.label || f.name}...`} className="w-full bg-app border border-border px-3 py-2 text-sm focus:border-accent focus:ring-2 focus:ring-accent/10 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all rounded-none-none" />
+                          : <input type="text" value={(block[f.name] as string) || ''} onChange={(e) => onUpdate({ [f.name]: e.target.value })} placeholder={`Enter ${f.label || f.name}...`} className="w-full bg-app border border-border px-3 py-2 text-sm focus:border-accent focus:ring-2 focus:ring-accent/10 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all rounded-none-none" />
                         }
                       </div>
                     )
                   })}
                 </div>
               ) : (
-                <p className="text-xs text-gray-400 text-center py-4 italic">Unknown block type: "{block.blockType}"</p>
+                <p className="text-xs text-z-muted text-center py-4 italic">Unknown block type: "{block.blockType}"</p>
               )}
             </div>
           </motion.div>
@@ -306,14 +306,14 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
         onClick={(e) => e.stopPropagation()}
         className={cn(
           "w-full max-w-4xl border rounded-none-none overflow-hidden shadow-2xl flex flex-col h-[85vh]",
-          theme === 'dark' ? 'bg-[#0B0F19] border-white/10' : 'bg-white border-gray-200'
+          theme === 'dark' ? 'bg-[#0B0F19] border-white/10' : 'bg-z-panel border-z-border'
         )}
       >
         {/* Header */}
         <div
           className={cn(
             'p-6 border-b flex items-center justify-between shrink-0',
-            theme === 'dark' ? 'border-white/5' : 'border-gray-100',
+            theme === 'dark' ? 'border-white/5' : 'border-z-border',
           )}
         >
           <h3
@@ -329,7 +329,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
             aria-label="Close"
             className={cn(
               'p-1 transition-colors',
-              theme === 'dark' ? 'text-gray-400 hover:text-emerald-500' : 'text-gray-500 hover:text-emerald-600'
+              theme === 'dark' ? 'text-z-muted hover:text-z-active-text' : 'text-z-secondary hover:text-z-accent'
             )}
           >
             <X size={18} />
@@ -344,7 +344,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
           <div className="relative mb-6 shrink-0">
             <Search size={14} className={cn(
               "absolute left-4 top-1/2 -translate-y-1/2",
-              theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              theme === 'dark' ? 'text-z-secondary' : 'text-z-muted'
             )} />
             <input 
               ref={searchRef} 
@@ -353,10 +353,10 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
               onChange={(e) => setSearch(e.target.value)} 
               placeholder="Search components..." 
               className={cn(
-                "w-full rounded-none-none pl-11 pr-11 py-3 text-xs font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black",
+                "w-full rounded-none-none pl-11 pr-11 py-3 text-xs font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black",
                 theme === 'dark' 
-                  ? 'bg-white/[0.03] border border-white/10 text-white placeholder:text-gray-600 focus:border-emerald-500/40 focus:bg-white/[0.05]'
-                  : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-400 focus:bg-white'
+                  ? 'bg-z-hover border border-white/10 text-white placeholder:text-gray-600 focus:border-z-accent/40 focus:bg-white/[0.05]'
+                  : 'bg-gray-50 border border-z-border text-z-primary placeholder:text-z-muted focus:border-z-active-border focus:bg-white'
               )} 
             />
             {search && (
@@ -364,7 +364,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                 onClick={() => setSearch('')} 
                 className={cn(
                   "absolute right-4 top-1/2 -translate-y-1/2 transition-colors",
-                  theme === 'dark' ? 'text-gray-500 hover:text-white' : 'text-gray-400 hover:text-black'
+                  theme === 'dark' ? 'text-z-secondary hover:text-white' : 'text-z-muted hover:text-black'
                 )}
               >
                 <X size={14} />
@@ -373,7 +373,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
           </div>
 
           {/* Categories Tab Bar */}
-          <div className="flex items-center gap-1 p-1 border border-white/5 bg-white/[0.02] rounded-none-none shrink-0 mb-4 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1 p-1 border border-white/5 bg-z-panel rounded-none-none shrink-0 mb-4 overflow-x-auto no-scrollbar">
             {categories.map((cat) => (
               <button 
                 key={cat} 
@@ -383,11 +383,11 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                   'flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase italic tracking-wider transition-all border rounded-none-none whitespace-nowrap',
                   activeCategory === cat
                     ? theme === 'dark'
-                      ? 'bg-emerald-600/20 border-emerald-500/30 text-emerald-400'
-                      : 'bg-emerald-100 border-emerald-200 text-emerald-600 shadow-sm'
+                      ? 'bg-z-accent/20 border-z-active-border text-z-active-text'
+                      : 'bg-z-active-bg border-z-active-border text-z-accent shadow-sm'
                     : theme === 'dark'
-                      ? 'bg-transparent border-transparent text-gray-500 hover:bg-white/5'
-                      : 'bg-transparent border-transparent text-gray-500 hover:bg-gray-100'
+                      ? 'bg-transparent border-transparent text-z-secondary hover:bg-z-hover'
+                      : 'bg-transparent border-transparent text-z-secondary hover:bg-gray-100'
                 )}
               >
                 {cat}
@@ -399,9 +399,9 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
           <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 pb-4 space-y-6">
           {Object.keys(grouped).length === 0 ? (
             <div className="text-center py-14">
-              <Search size={28} className="mx-auto text-gray-400/20 mb-3" />
-              <p className="text-sm font-semibold text-gray-400">No results for "{search}"</p>
-              <p className="text-xs text-gray-400/60 mt-1">Try a different keyword</p>
+              <Search size={28} className="mx-auto text-z-muted/20 mb-3" />
+              <p className="text-sm font-semibold text-z-muted">No results for "{search}"</p>
+              <p className="text-xs text-z-muted/60 mt-1">Try a different keyword</p>
             </div>
           ) : (
             Object.entries(grouped).map(([category, blocks]) => (
@@ -409,7 +409,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                 {activeCategory === 'All' && (
                   <div className="flex items-center gap-3 mb-4">
                     <span className="h-px flex-1 bg-border" />
-                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400">{category}</span>
+                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-z-muted">{category}</span>
                     <span className="h-px flex-1 bg-border" />
                   </div>
                 )}
@@ -423,7 +423,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.97 }}
                         onClick={() => onSelect(stock.slug)}
-                        className="flex flex-col text-left group border border-border bg-app hover:border-accent/60 hover:shadow-[0_0_18px_rgba(16,185,129,0.18)] transition-all overflow-hidden rounded-none-none"
+                        className="flex flex-col text-left group border border-border bg-app hover:border-accent/60 hover:shadow-[var(--z-active-glow)] transition-all overflow-hidden rounded-none-none"
                       >
                         <div className="w-full h-24 overflow-hidden relative flex-shrink-0">
                           {stock.admin?.imageURL ? (
@@ -448,7 +448,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                         </div>
                         <div className="p-3 flex-1 bg-app group-hover:bg-accent/5 transition-colors">
                           <p className="text-[11px] font-black text-white mb-0.5">{stock.labels?.singular || stock.slug}</p>
-                          <p className="text-[9px] text-gray-400 leading-relaxed line-clamp-2">{stock.admin?.description || `Add ${stock.slug} to your page.`}</p>
+                          <p className="text-[9px] text-z-muted leading-relaxed line-clamp-2">{stock.admin?.description || `Add ${stock.slug} to your page.`}</p>
                         </div>
                       </motion.button>
                     )
@@ -565,18 +565,18 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
               onClick={() => setShowPreview(!showPreview)}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all rounded-none-none border",
-                showPreview ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : "bg-white/[0.02] text-gray-400 border-white/5 hover:text-white"
+                showPreview ? "bg-z-active-bg text-z-active-text border-z-active-border" : "bg-z-panel text-z-muted border-white/5 hover:text-white"
               )}
             >
               {showPreview ? <EyeOff size={12} /> : <Eye size={12} />}
               {showPreview ? 'Close Preview' : 'Live Preview'}
             </button>
             {blocks.length > 0 && (
-              <div className="flex items-center gap-1.5 border border-white/5 bg-white/[0.02] p-0.5 rounded-none-none mr-2">
+              <div className="flex items-center gap-1.5 border border-white/5 bg-z-panel p-0.5 rounded-none-none mr-2">
                 <button
                   type="button"
                   onClick={expandAll}
-                  className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-white transition-all hover:bg-white/[0.05]"
+                  className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-z-muted hover:text-white transition-all hover:bg-white/[0.05]"
                 >
                   Expand All
                 </button>
@@ -584,7 +584,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
                 <button
                   type="button"
                   onClick={collapseAll}
-                  className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-white transition-all hover:bg-white/[0.05]"
+                  className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-z-muted hover:text-white transition-all hover:bg-white/[0.05]"
                 >
                   Collapse All
                 </button>
@@ -606,7 +606,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
           </div>
           <div>
             <p className="text-sm font-bold text-white mb-1">No components yet</p>
-            <p className="text-xs text-gray-400 max-w-xs leading-relaxed">Build your page by stacking components — hero sections, feature grids, pricing tables and more.</p>
+            <p className="text-xs text-z-muted max-w-xs leading-relaxed">Build your page by stacking components — hero sections, feature grids, pricing tables and more.</p>
           </div>
           {!disabled && (
             <button type="button" onClick={handleOpenPicker} className="flex items-center gap-2 px-4 py-2 bg-accent text-white text-[10px] font-black uppercase tracking-wider hover:bg-accent/90 transition-all shadow-sm shadow-accent/20 mt-1 rounded-none-none">
@@ -653,7 +653,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
           type="button"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           onClick={handleOpenPicker}
-          className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-gray-400/60 text-[10px] font-black uppercase tracking-wider hover:border-accent/50 hover:text-accent hover:bg-accent/5 transition-all rounded-none-none"
+          className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-z-muted/60 text-[10px] font-black uppercase tracking-wider hover:border-accent/50 hover:text-accent hover:bg-accent/5 transition-all rounded-none-none"
         >
           <Plus size={11} /> Add Component
         </motion.button>
@@ -664,11 +664,11 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
       {showPreview && (
         <div className="w-full h-full min-h-[700px] border border-white/10 rounded-none-none overflow-hidden sticky top-4 bg-[#0B0F19] shadow-2xl flex flex-col">
           <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between shrink-0">
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-400 italic flex items-center gap-2">
-              <div className="w-2 h-2 rounded-none-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10B981]" />
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-z-active-text italic flex items-center gap-2">
+              <div className="w-2 h-2 rounded-none-full bg-z-accent animate-pulse shadow-[var(--z-active-glow)]" />
               Live Preview Connected
             </span>
-            <span className="text-[9px] font-mono text-gray-500">{previewUrl}</span>
+            <span className="text-[9px] font-mono text-z-secondary">{previewUrl}</span>
           </div>
           <iframe 
              src={previewUrl} 

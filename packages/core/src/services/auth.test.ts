@@ -80,10 +80,10 @@ describe('AuthService and RBAC Engine (Enterprise Readiness)', () => {
       mockAdapter.find.mockResolvedValue([{
         roleName: 'custom-writer',
         hasWildcard: false,
-        permissions: {
-          'posts': ['create', 'read'],
-          'pages': ['read']
-        }
+        permissions: [
+          { resource: 'posts', actions: ['create', 'read'] },
+          { resource: 'pages', actions: ['read'] }
+        ]
       }])
 
       const canCreatePost = await RBACEngine.checkAccess('custom-writer', 'posts', 'create')

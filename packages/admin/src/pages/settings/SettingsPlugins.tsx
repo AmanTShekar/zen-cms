@@ -158,20 +158,20 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  return (
  <div className="col-span-full space-y-6">
  {/* Header */}
- <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+ <div className="flex items-center justify-between border-b border-z-border pb-4">
  <div className="flex flex-col">
  <h3 className="text-sm font-black uppercase tracking-wider flex items-center gap-3">
- <Puzzle size={16} className="text-gray-600 dark:text-gray-400" />
+ <Puzzle size={16} className="text-gray-600 dark:text-z-muted" />
  Plugin Registry
  </h3>
- <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1">
+ <span className="text-[8px] text-z-secondary font-bold uppercase tracking-widest mt-1">
  {plugins.length} installed · {enabledCount} active · Community extensibility framework
  </span>
  </div>
  <button
  type="button"
  onClick={() => setShowInstallForm(!showInstallForm)}
- className="flex items-center gap-2 px-4 py-2 border border-gray-500/30 hover:border-gray-500 hover:bg-gray-500/10 text-[10px] font-black uppercase transition-all text-gray-600 dark:text-gray-400 hover:text-white"
+ className="flex items-center gap-2 px-4 py-2 border border-z-active-border hover:border-z-accent hover:bg-z-active-bg text-[10px] font-black uppercase transition-all text-z-accent dark:text-z-active-text hover:text-white"
  >
  <Plus size={12} />
  Install Plugin
@@ -186,111 +186,111 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  animate={{ opacity: 1, height: 'auto' }}
  exit={{ opacity: 0, height: 0 }}
  className={cn(
- 'border rounded-none-none overflow-hidden',
- theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50 border-gray-200'
+ 'border rounded-none overflow-hidden shadow-[var(--z-active-glow)]',
+ theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-z-border' : 'bg-z-input border-z-border'
  )}
  >
  <div className="p-6 space-y-4">
  <div className="flex items-center justify-between">
- <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-400">
+ <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-z-muted">
  Register New Plugin
  </span>
- <button onClick={() => setShowInstallForm(false)} className="text-gray-500 hover:text-white text-[10px] font-black uppercase">
+ <button onClick={() => setShowInstallForm(false)} className="text-z-secondary hover:text-white text-[10px] font-black uppercase">
  Cancel
  </button>
  </div>
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Plugin ID *</label>
+ <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">Plugin ID *</label>
  <input
  type="text"
  value={installForm.id}
  onChange={(e) => setInstallForm(prev => ({ ...prev, id: e.target.value }))}
  placeholder="acme-analytics"
  className={cn(
- 'w-full border rounded-none-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
  </div>
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Display Name *</label>
+ <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">Display Name *</label>
  <input
  type="text"
  value={installForm.name}
  onChange={(e) => setInstallForm(prev => ({ ...prev, name: e.target.value }))}
  placeholder="ACME Analytics"
  className={cn(
- 'w-full border rounded-none-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
  </div>
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Version</label>
+ <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">Version</label>
  <input
  type="text"
  value={installForm.version}
  onChange={(e) => setInstallForm(prev => ({ ...prev, version: e.target.value }))}
  placeholder="1.0.0"
  className={cn(
- 'w-full border rounded-none-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
  </div>
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Author</label>
+ <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">Author</label>
  <input
  type="text"
  value={installForm.author}
  onChange={(e) => setInstallForm(prev => ({ ...prev, author: e.target.value }))}
  placeholder="ACME Corp"
  className={cn(
- 'w-full border rounded-none-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
  </div>
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Homepage URL</label>
+ <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">Homepage URL</label>
  <input
  type="url"
  value={installForm.homepage}
  onChange={(e) => setInstallForm(prev => ({ ...prev, homepage: e.target.value }))}
  placeholder="https://example.com/plugin"
  className={cn(
- 'w-full border rounded-none-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
  </div>
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest">NPM Package</label>
+ <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">NPM Package</label>
  <input
  type="text"
  value={installForm.packageName}
  onChange={(e) => setInstallForm(prev => ({ ...prev, packageName: e.target.value }))}
  placeholder="zenith-plugin-acme-analytics"
  className={cn(
- 'w-full border rounded-none-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
  </div>
  </div>
 
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Description</label>
+ <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">Description</label>
  <textarea
  value={installForm.description}
  onChange={(e) => setInstallForm(prev => ({ ...prev, description: e.target.value }))}
  placeholder="What does this plugin do?"
  rows={2}
  className={cn(
- 'w-full border rounded-none-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
+ theme === 'dark' ? 'bg-black border-z-border text-white focus:border-z-accent' : 'bg-z-panel border-z-border focus:border-z-accent'
  )}
  />
  </div>
@@ -299,7 +299,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <button
  onClick={handleInstall}
  disabled={saving === 'install'}
- className="flex items-center gap-2 px-6 py-3 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-40"
+ className={cn("flex items-center gap-2 px-6 py-3 text-white text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-40", theme === 'dark' ? 'bg-z-accent hover:opacity-90 shadow-[var(--z-active-glow)]' : 'bg-gray-900 hover:bg-gray-800')}
  >
  {saving === 'install' ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
  Install Plugin
@@ -312,15 +312,15 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
 
  {/* Search */}
  <div className="relative">
- <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+ <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-z-secondary" />
  <input
  type="text"
  placeholder="Search plugins..."
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  className={cn(
- 'w-full border rounded-none-none py-3 pl-11 pr-4 text-[11px] font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
+ 'w-full border rounded-none py-3 pl-11 pr-4 text-[11px] font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark' ? 'bg-black/40 border-z-border text-white focus:border-z-accent' : 'bg-z-panel border-z-border focus:border-z-accent'
  )}
  />
  </div>
@@ -328,15 +328,15 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  {/* Plugin list */}
  {loading ? (
  <div className="flex items-center justify-center py-12">
- <Loader2 size={24} className="text-gray-600 dark:text-gray-500 animate-spin" />
+ <Loader2 size={24} className="text-gray-600 dark:text-z-secondary animate-spin" />
  </div>
  ) : filteredPlugins.length === 0 ? (
  <div className={cn(
- 'p-12 border border-dashed rounded-none-none text-center space-y-4',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200'
+ 'p-12 border border-dashed rounded-none text-center space-y-4',
+ theme === 'dark' ? 'border-z-border' : 'border-z-border'
  )}>
  <Package size={40} className="mx-auto text-gray-600" />
- <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+ <p className="text-[10px] font-black text-z-secondary uppercase tracking-widest">
  {plugins.length === 0 ? 'No plugins installed' : 'No plugins match your search'}
  </p>
  <p className="text-[9px] text-gray-600 uppercase tracking-wider">
@@ -355,43 +355,43 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  key={plugin.id}
  layout
  className={cn(
- 'border rounded-none-none overflow-hidden transition-all',
+ 'border rounded-none overflow-hidden transition-all shadow-[var(--z-active-glow)]',
  plugin.enabled
- ? theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
- : theme === 'dark' ? 'bg-white/[0.005] border-white/[0.03] opacity-60' : 'bg-gray-50 border-gray-200 shadow-sm opacity-60'
+ ? theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-z-border' : 'bg-z-panel border-z-border shadow-sm'
+ : theme === 'dark' ? 'bg-black/30 backdrop-blur-sm border-white/[0.03] opacity-60' : 'bg-z-input border-z-border shadow-sm opacity-60'
  )}
  >
  {/* Plugin header */}
  <div className="px-5 py-4 flex items-center justify-between">
  <div className="flex items-center gap-4">
  <div className={cn(
- 'w-10 h-10 rounded-none-none border flex items-center justify-center',
+ 'w-10 h-10 rounded-none border flex items-center justify-center',
  plugin.enabled
- ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400'
- : theme === 'dark' ? 'bg-white/5 border-white/[0.08] text-gray-600' : 'bg-gray-100 border-gray-200 text-gray-400'
+ ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted'
+ : theme === 'dark' ? 'bg-z-hover border-z-border text-gray-600' : 'bg-gray-100 border-z-border text-z-muted'
  )}>
  <Puzzle size={18} />
  </div>
  <div className="flex flex-col">
  <div className="flex items-center gap-2">
  <span className="text-[12px] font-black uppercase tracking-tight text-white">{plugin.name}</span>
- <span className="text-[8px] font-black text-gray-500 font-mono">v{plugin.version}</span>
+ <span className="text-[8px] font-black text-z-secondary font-mono">v{plugin.version}</span>
  {plugin.enabled
- ? <CheckCircle2 size={12} className="text-gray-600 dark:text-gray-500" />
+ ? <CheckCircle2 size={12} className="text-gray-600 dark:text-z-secondary" />
  : <XCircle size={12} className="text-gray-600" />
  }
  </div>
  <div className="flex items-center gap-2 mt-0.5">
- <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest font-mono">{plugin.id}</span>
+ <span className="text-[8px] font-bold text-z-secondary uppercase tracking-widest font-mono">{plugin.id}</span>
  {plugin.author && (
  <>
  <span className="text-gray-700">·</span>
- <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">{plugin.author}</span>
+ <span className="text-[8px] font-bold text-z-secondary uppercase tracking-widest">{plugin.author}</span>
  </>
  )}
  </div>
  {plugin.description && (
- <p className="text-[9px] text-gray-400 mt-1 max-w-lg">{plugin.description}</p>
+ <p className="text-[9px] text-z-muted mt-1 max-w-lg">{plugin.description}</p>
  )}
  </div>
  </div>
@@ -403,8 +403,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  target="_blank"
  rel="noopener noreferrer"
  className={cn(
- 'p-2 border rounded-none-none transition-colors',
- theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-gray-600 dark:text-gray-400' : 'border-gray-200 text-gray-400 hover:text-gray-600'
+ 'p-2 border rounded-none transition-colors',
+ theme === 'dark' ? 'border-z-border text-z-secondary hover:text-gray-600 dark:text-z-muted' : 'border-z-border text-z-muted hover:text-gray-600'
  )}
  title="Plugin homepage"
  >
@@ -415,10 +415,10 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onClick={() => handleToggle(plugin)}
  disabled={saving === plugin.id}
  className={cn(
- 'p-2 border rounded-none-none transition-colors',
+ 'p-2 border rounded-none transition-colors',
  plugin.enabled
  ? 'border-amber-500/20 text-amber-500 hover:text-amber-400'
- : theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-gray-600 dark:text-gray-400' : 'border-gray-200 text-gray-400 hover:text-gray-600'
+ : theme === 'dark' ? 'border-z-border text-z-secondary hover:text-gray-600 dark:text-z-muted' : 'border-z-border text-z-muted hover:text-gray-600'
  )}
  title={plugin.enabled ? 'Disable' : 'Enable'}
  >
@@ -431,10 +431,10 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <button
  onClick={() => setExpandedId(isExpanded ? null : plugin.id)}
  className={cn(
- 'p-2 border rounded-none-none transition-colors',
+ 'p-2 border rounded-none transition-colors',
  isExpanded
- ? 'border-gray-500/30 text-gray-600 dark:text-gray-400'
- : theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-white' : 'border-gray-200 text-gray-400 hover:text-gray-600'
+ ? 'border-gray-500/30 text-gray-600 dark:text-z-muted'
+ : theme === 'dark' ? 'border-z-border text-z-secondary hover:text-white' : 'border-z-border text-z-muted hover:text-gray-600'
  )}
  title="Configure"
  >
@@ -445,8 +445,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onClick={() => handleDelete(plugin.id)}
  disabled={saving === plugin.id}
  className={cn(
- 'p-2 border rounded-none-none transition-colors',
- theme === 'dark' ? 'border-white/[0.08] text-gray-500 hover:text-red-400' : 'border-gray-200 text-gray-400 hover:text-red-600'
+ 'p-2 border rounded-none transition-colors',
+ theme === 'dark' ? 'border-z-border text-z-secondary hover:text-red-400' : 'border-z-border text-z-muted hover:text-red-600'
  )}
  title="Uninstall"
  >
@@ -464,13 +464,13 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  exit={{ opacity: 0, height: 0 }}
  className={cn(
  'border-t px-5 py-4 space-y-4',
- theme === 'dark' ? 'border-white/[0.08] bg-black/20' : 'border-gray-200 shadow-sm bg-gray-50/50'
+ theme === 'dark' ? 'border-z-border bg-black/20' : 'border-z-border shadow-sm bg-gray-50/50'
  )}
  >
- <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Plugin Settings</span>
+ <span className="text-[9px] font-black uppercase tracking-widest text-z-muted">Plugin Settings</span>
  {Object.entries(plugin.configSchema).map(([key, schema]) => (
  <div key={key} className="space-y-1.5">
- <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest">
+ <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">
  {schema.label}
  {schema.required && <span className="text-red-400 ml-1">*</span>}
  </label>
@@ -481,10 +481,10 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <button
  onClick={() => handleConfigChange(plugin.id, key, !plugin.config?.[key])}
  className={cn(
- 'flex items-center gap-2 px-3 py-2 border rounded-none-none transition-colors',
+ 'flex items-center gap-2 px-3 py-2 border rounded-none transition-colors',
  plugin.config?.[key]
- ? 'border-gray-500/30 bg-gray-500/10 text-gray-600 dark:text-gray-400'
- : theme === 'dark' ? 'border-white/[0.08] text-gray-500' : 'border-gray-200 text-gray-400'
+ ? 'border-gray-500/30 bg-gray-500/10 text-gray-600 dark:text-z-muted'
+ : 'border-z-border text-z-secondary'
  )}
  >
  {plugin.config?.[key] ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
@@ -495,8 +495,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  value={plugin.config?.[key] || schema.default || ''}
  onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
  className={cn(
- 'w-full border rounded-none-none py-2.5 px-3 text-[11px] font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-[11px] font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  >
  {schema.options?.map(opt => (
@@ -510,8 +510,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
  placeholder="••••••••"
  className={cn(
- 'w-full border rounded-none-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
  ) : (
@@ -520,8 +520,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  value={plugin.config?.[key] || schema.default || ''}
  onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
  className={cn(
- 'w-full border rounded-none-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-white focus:border-gray-500' : 'bg-white border-gray-200 focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
  )}
@@ -531,7 +531,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <button
  onClick={() => handleSaveConfig(plugin)}
  disabled={saving === plugin.id}
- className="flex items-center gap-2 px-5 py-2.5 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-[9px] font-black uppercase tracking-wider transition-all disabled:opacity-40"
+ className={cn("flex items-center gap-2 px-5 py-2.5 text-white text-[9px] font-black uppercase tracking-wider transition-all disabled:opacity-40", theme === 'dark' ? 'bg-z-accent hover:opacity-90 shadow-[var(--z-active-glow)]' : 'bg-gray-900 hover:bg-gray-800')}
  >
  {saving === plugin.id ? <Loader2 size={10} className="animate-spin" /> : null}
  Save Settings
@@ -549,17 +549,17 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  {/* Info footer */}
  <div className={cn(
  'p-5 border rounded-none-none space-y-3',
- theme === 'dark' ? 'bg-gray-500/5 border-gray-500/10' : 'bg-gray-50 border-gray-100'
+ theme === 'dark' ? 'bg-gray-500/5 border-gray-500/10' : 'bg-gray-50 border-z-border'
  )}>
  <div className="flex items-center gap-3">
  <AlertTriangle size={14} className="text-amber-400" />
  <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">Developer Note</span>
  </div>
- <ul className="space-y-1.5 text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-relaxed">
+ <ul className="space-y-1.5 text-[9px] text-z-muted font-bold uppercase tracking-widest leading-relaxed">
  <li>• Plugins are registered in the database and managed via this UI</li>
  <li>• Plugin code must be loaded at engine startup via cms.config.ts</li>
- <li>• Community plugins should be published as <code className="text-gray-600 dark:text-gray-400 font-mono">zenith-plugin-*</code> on npm</li>
- <li>• Use <code className="text-gray-600 dark:text-gray-400 font-mono">configSchema</code> to expose settings that admins can configure here</li>
+ <li>• Community plugins should be published as <code className="text-gray-600 dark:text-z-muted font-mono">zenith-plugin-*</code> on npm</li>
+ <li>• Use <code className="text-gray-600 dark:text-z-muted font-mono">configSchema</code> to expose settings that admins can configure here</li>
  <li>• Disabled plugins are not applied but remain installed for easy re-enabling</li>
  </ul>
  </div>

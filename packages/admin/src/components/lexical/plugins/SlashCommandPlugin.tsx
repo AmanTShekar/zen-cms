@@ -478,21 +478,21 @@ export function SlashCommandPlugin() {
       className={cn(
         'fixed z-[2500] w-72 max-h-[360px] overflow-y-auto border shadow-2xl backdrop-blur-2xl',
         theme === 'dark'
-          ? 'bg-[#0b0f19]/95 border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.6)]'
-          : 'bg-white/95 border-gray-200 shadow-[0_20px_60px_rgba(0,0,0,0.15)]',
+          ? 'bg-[#0b0f19]/95 border-white/10 shadow-[var(--z-active-glow)]'
+          : 'bg-white/95 border-z-border shadow-[var(--z-active-glow)]',
       )}
       style={{ top: position.top, left: position.left }}
     >
       <div
         className={cn(
           'px-3 py-2 border-b flex items-center justify-between',
-          theme === 'dark' ? 'border-white/5' : 'border-gray-100',
+          theme === 'dark' ? 'border-white/5' : 'border-z-border',
         )}
       >
         <span
           className={cn(
             'text-[8px] font-black uppercase tracking-[0.2em] italic',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400',
+            theme === 'dark' ? 'text-z-secondary' : 'text-z-muted',
           )}
         >
           Block Command
@@ -501,8 +501,8 @@ export function SlashCommandPlugin() {
           className={cn(
             'text-[7px] font-bold px-1.5 py-0.5 border rounded-none uppercase',
             theme === 'dark'
-              ? 'text-emerald-400 border-emerald-500/20'
-              : 'text-emerald-500 border-emerald-200',
+              ? 'text-z-active-text border-z-accent/20'
+              : 'text-z-active-text border-z-active-border',
           )}
         >
           ↑↓ Enter
@@ -524,9 +524,9 @@ export function SlashCommandPlugin() {
                 'w-full text-left px-3 py-2.5 flex items-start gap-3 transition-all duration-100 relative',
                 isSelected
                   ? theme === 'dark'
-                    ? 'bg-emerald-500/20 text-emerald-400 border-l-2 border-emerald-500'
-                    : 'bg-emerald-50 text-emerald-600 border-l-2 border-emerald-500'
-                  : 'border-l-2 border-transparent hover:bg-white/5',
+                    ? 'bg-z-accent/20 text-z-active-text border-l-2 border-z-accent'
+                    : 'bg-z-active-bg text-z-accent border-l-2 border-z-accent'
+                  : 'border-l-2 border-transparent hover:bg-z-hover',
               )}
             >
               <div
@@ -534,11 +534,11 @@ export function SlashCommandPlugin() {
                   'w-7 h-7 rounded-none flex items-center justify-center border shrink-0',
                   isSelected
                     ? theme === 'dark'
-                      ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-                      : 'bg-emerald-100 border-emerald-200 text-emerald-600'
+                      ? 'bg-z-active-bg border-z-accent/20 text-z-active-text'
+                      : 'bg-z-active-bg border-z-active-border text-z-accent'
                     : theme === 'dark'
-                      ? 'bg-white/5 border-white/5 text-gray-400'
-                      : 'bg-gray-100 border-gray-200 text-gray-500',
+                      ? 'bg-z-hover border-white/5 text-z-muted'
+                      : 'bg-gray-100 border-z-border text-z-secondary',
                 )}
               >
                 <Icon size={14} />
@@ -547,7 +547,7 @@ export function SlashCommandPlugin() {
                 <span
                   className={cn(
                     'text-[11px] font-black uppercase tracking-tight italic',
-                    theme === 'dark' ? 'text-white' : 'text-gray-900',
+                    theme === 'dark' ? 'text-white' : 'text-z-primary',
                   )}
                 >
                   {cmd.label}
@@ -555,7 +555,7 @@ export function SlashCommandPlugin() {
                 <span
                   className={cn(
                     'text-[10px] leading-tight truncate mt-0.5',
-                    theme === 'dark' ? 'text-gray-500' : 'text-gray-400',
+                    theme === 'dark' ? 'text-z-secondary' : 'text-z-muted',
                   )}
                 >
                   {cmd.description}

@@ -13,9 +13,22 @@ export class RBACEngine {
     if (roles && roles.length > 0) {
       const dbRole = roles[0]
       if (dbRole.hasWildcard) return true
-      const perms = dbRole.permissions || {}
-      const resourcePerms = perms[resource] || []
-      return resourcePerms.includes(action)
+      
+      const permsArray = Array.isArray(dbRole.permissions) ? dbRole.permissions : []
+      
+      // Check wildcard resource first
+      const wildcardPerm = permsArray.find((p: any) => p.resource === '*')
+      if (wildcardPerm && Array.isArray(wildcardPerm.actions) && wildcardPerm.actions.includes(action)) {
+        return true
+      }
+      
+      // Check specific resource
+      const resourcePerm = permsArray.find((p: any) => p.resource === resource)
+      if (resourcePerm && Array.isArray(resourcePerm.actions) && resourcePerm.actions.includes(action)) {
+        return true
+      }
+      
+      return false
     }
 
     // Fallbacks
@@ -30,7 +43,27 @@ export class RBACEngine {
     return false
   }
   
-  static getFieldPermissions(...args: any[]) { return {} }
+  static async getFieldPermissions(role: string, resource: string): Promise<Record<string, { read?: boolean; write?: boolean }>> {
+    if (role === 'admin') return {}
+    
+    try {
+      const adapter = AdapterFactory.getActiveAdapter()
+      const roles = await adapter.find<any>('z_roles', { roleName: role })
+      if (!roles || roles.length === 0) return {}
+      
+      const dbRole = roles[0]
+      const permsArray = Array.isArray(dbRole.permissions) ? dbRole.permissions : []
+      
+      const resourcePerm = permsArray.find((p: any) => p.resource === resource)
+      if (resourcePerm && resourcePerm.fieldPermissions) {
+        return resourcePerm.fieldPermissions
+      }
+      
+      return {}
+    } catch (e) {
+      return {}
+    }
+  }
 }
 
 export const invalidateRoleCache = async (...args: any[]) => {}

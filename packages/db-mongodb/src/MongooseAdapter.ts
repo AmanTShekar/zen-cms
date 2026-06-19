@@ -266,7 +266,7 @@ export class MongooseAdapter implements DatabaseAdapter {
           documentId: { type: String, required: true },
           lastActive: { type: Number, required: true },
         },
-        { timestamps: false, strict: true }
+        { timestamps: false, strict: true, collection: 'z_presence' }
       )
       mongoose.model('z_presence', schema)
     }
@@ -360,6 +360,7 @@ export class MongooseAdapter implements DatabaseAdapter {
 
       const model = this.getModel(collection)
       const normalizedQuery = this._normalizeQuery(query, options);
+      console.log(`[DEBUG] MongooseAdapter.find(${collection}):`, JSON.stringify(normalizedQuery))
       const q = model.find(normalizedQuery).maxTimeMS(30000)
 
       if (options.select) q.select(options.select)
@@ -483,7 +484,7 @@ export class MongooseAdapter implements DatabaseAdapter {
     }
     // Inject tenant scoping from options to prevent cross-tenant data access
     const siteId = options?.siteId || options?.tenantId || (globalThis as any).zenithAls?.getStore()?.siteId
-    if (siteId && !normalized.siteId) {
+    if (siteId && siteId !== 'global' && !normalized.siteId) {
       normalized.siteId = siteId
     }
     return normalized

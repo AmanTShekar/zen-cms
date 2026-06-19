@@ -25,8 +25,8 @@ export const AutoSaveIndicator: React.FC = () => {
  className={cn(
  'px-2.5 py-1 flex items-center gap-1.5 border text-xs font-black uppercase tracking-wider rounded-none-none',
  theme === 'dark'
- ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400'
- : 'bg-gray-50 border-gray-200 text-gray-600'
+ ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted'
+ : 'bg-z-input border-z-border text-gray-600'
  )}
  >
  <Loader2 size={11} className="animate-spin" />
@@ -61,11 +61,11 @@ export const AutoSaveIndicator: React.FC = () => {
  className={cn(
  'px-2.5 py-1 flex items-center gap-1.5 border text-xs font-black uppercase tracking-wider rounded-none-none',
  theme === 'dark'
- ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400'
- : 'bg-gray-50 border-gray-200 text-gray-600'
+ ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted'
+ : 'bg-z-input border-z-border text-gray-600'
  )}
  >
- <Check size={11} className="text-gray-600 dark:text-gray-500" />
+ <Check size={11} className="text-gray-600 dark:text-z-secondary" />
  <span>Saved</span>
  </motion.div>
  )}

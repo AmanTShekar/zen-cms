@@ -162,6 +162,7 @@ export const AuthService = {
     const lower = login.toLowerCase()
     // Try email first, then username
     const byEmail = await adapter.find<Record<string, any>>('users', { email: lower })
+    console.log('[DEBUG] resolveUser byEmail for', lower, ':', byEmail.map(u => u.email))
     if (byEmail[0]) return byEmail[0]
     const byUsername = await adapter.find<Record<string, any>>('users', { username: lower })
     return byUsername[0] || null

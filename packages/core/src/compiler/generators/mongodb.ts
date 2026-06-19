@@ -5,18 +5,16 @@ export function generateMongoCode(col: any): string {
   return `
 // --- Compiled MongoDB Queries for Collection: ${slug} ---
 
-export async function find${capitalized}Compiled(db: any, table: any, filters: { id?: string; siteId?: string }, options: any = {}) {
+export async function find${capitalized}Compiled(db: any, table: any, filters: Record<string, any> = {}, options: any = {}) {
   const model = table
   if (!model) {
     throw new Error('Model ${slug} was not passed to AOT bridge correctly')
   }
 
-  const query: Record<string, any> = {}
-  if (filters.id) {
-    query._id = filters.id
-  }
-  if (filters.siteId) {
-    query.siteId = filters.siteId
+  const query: Record<string, any> = { ...filters }
+  if (query.id) {
+    query._id = query.id
+    delete query.id
   }
 
   let baseQuery = model.find(query)

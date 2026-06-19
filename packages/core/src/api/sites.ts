@@ -42,12 +42,20 @@ router.get('/', async (req: Request, res: Response, next) => {
     const user = (req as any).user
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
+    const userFromDb = await adapter.findOne<Record<string, any>>('users', { _id: user.id }) || 
+                       await adapter.findOne<Record<string, any>>('users', { id: user.id }) || user
+    
     // Adapter-agnostic: fetch all sites owned by user OR containing user as member
     // $or with dot-notation `members.userId` is Mongo-specific; use JS filter instead
     const allSites = await adapter.find<Record<string, any>>('z_sites', {}, { sort: { updatedAt: -1 } })
     let sites = allSites.filter((s: any) =>
+      user.role === 'admin' ||
       s.ownerId === user.id ||
-      (Array.isArray(s.members) && s.members.some((m: any) => m.userId === user.id))
+      (Array.isArray(s.members) && s.members.some((m: any) => m.userId === user.id)) ||
+      (Array.isArray((userFromDb as any).specialAccess) && (
+        (userFromDb as any).specialAccess.includes(`site:${s.slug}`) ||
+        (userFromDb as any).specialAccess.includes(`site:${s.id || s._id}`)
+      ))
     )
     if (req.query.workspaceId) {
       sites = sites.filter((s: any) => s.workspaceId === req.query.workspaceId)

@@ -37,11 +37,11 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  'flex items-center gap-1 px-2 py-1 rounded-none-none border text-[7px] font-black uppercase tracking-widest',
  isConnected
  ? theme === 'dark'
- ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400'
- : 'bg-gray-50 border-gray-200 text-gray-600'
+ ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted'
+ : 'bg-z-input border-z-border text-gray-600'
  : theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-gray-500'
- : 'bg-gray-100 border-gray-200 text-gray-400'
+ ? 'bg-z-hover border-z-border text-z-secondary'
+ : 'bg-gray-100 border-z-border text-z-muted'
  )}
  title={isConnected ? 'Live collaboration active' : 'Offline — changes saved locally'}
  >
@@ -60,7 +60,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  initial={{ scale: 0 }}
  animate={{ scale: 1 }}
  className={cn(
- 'w-6 h-6 rounded-none-none flex items-center justify-center text-[7px] font-black border-2 border-white/[0.08] shadow-sm',
+ 'w-6 h-6 rounded-none-none flex items-center justify-center text-[7px] font-black border-2 border-z-border shadow-sm',
  )}
  style={{ backgroundColor: localUser.color }}
  >
@@ -75,7 +75,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  size={6}
  fill={localUser.color}
  stroke="none"
- className="text-gray-600 dark:text-gray-400"
+ className="text-gray-600 dark:text-z-muted"
  />
  </motion.div>
  </div>
@@ -113,7 +113,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  className={cn(
  'relative -ml-1.5 w-6 h-6 rounded-none-none flex items-center justify-center text-[7px] font-black border-2 shadow-sm transition-transform',
  theme === 'dark'
- ? 'bg-gray-800 border-white/[0.08] text-gray-400 hover:scale-110'
+ ? 'bg-gray-800 border-z-border text-z-muted hover:scale-110'
  : 'bg-gray-200 border-white text-gray-600 hover:scale-110'
  )}
  style={{ zIndex: 0 }}
@@ -134,12 +134,12 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  className={cn(
  'absolute top-full right-0 mt-2 z-50 w-48 border rounded-none-none shadow-2xl p-3',
  theme === 'dark'
- ? 'bg-black border-white/[0.08] text-white'
- : 'bg-white border-gray-200 text-gray-900 shadow-gray-200/50'
+ ? 'bg-black border-z-border text-white'
+ : 'bg-z-panel border-z-border text-z-primary shadow-[var(--z-active-glow)]/50'
  )}
  onClick={() => setExpanded(false)}
  >
- <p className="text-xs font-black uppercase text-gray-500 tracking-widest mb-2">
+ <p className="text-xs font-black uppercase text-z-secondary tracking-widest mb-2">
  {users.length} {users.length === 1 ? 'person' : 'people'} editing
  </p>
  <div className="space-y-1.5">
@@ -154,13 +154,13 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  <div className="flex-1 min-w-0">
  <p className="text-xs font-black truncate">{u.name || u.email}</p>
  {u.cursor?.fieldKey && (
- <p className="text-xs text-gray-500 truncate ">
+ <p className="text-xs text-z-secondary truncate ">
  → {u.cursor.fieldKey}
  </p>
  )}
  </div>
  {u.id === localUser.id && (
- <span className="text-xs text-gray-500 ">you</span>
+ <span className="text-xs text-z-secondary ">you</span>
  )}
  </div>
  ))}

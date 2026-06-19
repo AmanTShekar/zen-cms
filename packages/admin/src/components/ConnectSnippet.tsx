@@ -130,7 +130,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  return (
  <div className="space-y-4">
  {/* Tab bar */}
- <div className="flex gap-1 border-b border-white/[0.08]">
+ <div className="flex gap-1 border-b border-z-border">
  {TABS.map((t) => (
  <button
  key={t.id}
@@ -138,8 +138,8 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  className={cn(
  'px-4 py-2 text-[9px] font-black uppercase tracking-widest border-b-2 -mb-px transition-all',
  tab === t.id
- ? 'border-gray-500 text-gray-600 dark:text-gray-400'
- : 'border-transparent text-gray-500 hover:text-gray-300'
+ ? 'border-gray-500 text-gray-600 dark:text-z-muted'
+ : 'border-transparent text-z-secondary hover:text-gray-300'
  )}
  >
  {t.label}
@@ -151,7 +151,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  <div
  className={cn(
  'relative rounded-none-none border overflow-hidden',
- isDark ? 'bg-black border-white/[0.08]' : 'bg-gray-900 border-gray-700'
+ isDark ? 'bg-black border-z-border' : 'bg-gray-900 border-gray-700'
  )}
  >
  <pre className="overflow-x-auto p-5 text-[11px] font-mono text-gray-300 leading-relaxed">
@@ -162,8 +162,8 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  className={cn(
  'absolute top-3 right-3 p-2 border rounded-none-none text-[9px] font-black uppercase transition-all',
  copied
- ? 'border-gray-500 text-gray-600 dark:text-gray-500 bg-gray-500/10'
- : 'border-white/[0.08] text-gray-400 hover:border-white/30 bg-black/40'
+ ? 'border-gray-500 text-gray-600 dark:text-z-secondary bg-gray-500/10'
+ : 'border-z-border text-z-muted hover:border-white/30 bg-black/40'
  )}
  >
  {copied ? <Check size={13} /> : <Copy size={13} />}
@@ -178,8 +178,8 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  className={cn(
  'flex items-center gap-2 px-5 py-2.5 border text-[9px] font-black uppercase rounded-none-none transition-all',
  isDark
- ? 'border-white/[0.08] text-gray-400 hover:border-gray-500/40 hover:text-gray-600 dark:text-gray-400'
- : 'border-gray-200 text-gray-600 hover:border-gray-300'
+ ? 'border-z-border text-z-muted hover:border-gray-500/40 hover:text-gray-600 dark:text-z-muted'
+ : 'border-z-border text-gray-600 hover:border-z-border-strong'
  )}
  >
  {testing ? <Loader2 size={13} className="animate-spin" /> : <Globe size={13} />}
@@ -187,14 +187,14 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  </button>
 
  {testResult === 'ok' && (
- <span className="flex items-center gap-2 text-[9px] font-black uppercase text-gray-600 dark:text-gray-500">
+ <span className="flex items-center gap-2 text-[9px] font-black uppercase text-gray-600 dark:text-z-secondary">
  <CheckCircle2 size={13} /> Connected successfully
  </span>
  )}
  {testResult === 'error' && (
  <div className="text-[9px] font-black uppercase text-red-400 space-y-1">
  <p>Connection failed. Check that:</p>
- <ul className="list-disc list-inside text-gray-500 normal-case not- font-medium space-y-0.5">
+ <ul className="list-disc list-inside text-z-secondary normal-case not- font-medium space-y-0.5">
  <li>
  Your CMS is running at <code className="text-gray-300">{publicUrl}</code>
  </li>

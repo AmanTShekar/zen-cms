@@ -21,7 +21,24 @@ router.use(requireAuth)
 router.get('/', async (req: Request, res: Response, next) => {
   try {
     const users = await PresenceService.getAllActiveUsers()
-    res.json(createResponse(users))
+    
+    // Attach customized colors from the users table
+    const { AdapterFactory } = await import('../database/adapters/AdapterFactory')
+    const adapter = AdapterFactory.getActiveAdapter()
+    
+    const enrichedUsers = await Promise.all(users.map(async (u) => {
+      try {
+        const profile = await adapter.find<any>('users', { email: u.email })
+        if (profile && profile.length > 0) {
+          return { ...u, color: profile[0].color, role: profile[0].role }
+        }
+      } catch (e) {
+        // ignore
+      }
+      return u
+    }))
+    
+    res.json(createResponse(enrichedUsers))
   } catch (err) {
     next(err)
   }
@@ -50,13 +67,28 @@ router.get('/:collection/:id', async (req: Request, res: Response, next) => {
     // Filter out the current user from the response (they know they're here)
     const others = users.filter((u) => u.id !== currentUserId)
 
+    const { AdapterFactory } = await import('../database/adapters/AdapterFactory')
+    const adapter = AdapterFactory.getActiveAdapter()
+
+    const enrichedOthers = await Promise.all(others.map(async (u) => {
+      try {
+        const profile = await adapter.find<any>('users', { email: u.email })
+        if (profile && profile.length > 0) {
+          return { ...u, color: profile[0].color, role: profile[0].role }
+        }
+      } catch (e) {
+        // ignore
+      }
+      return u
+    }))
+
     res.json(
       createResponse({
-        isLocked: others.length > 0,
-        activeUsers: others,
+        isLocked: enrichedOthers.length > 0,
+        activeUsers: enrichedOthers,
         message:
-          others.length > 0
-            ? `${others.map((u) => u.email?.split('@')[0]).join(', ')} ${others.length === 1 ? 'is' : 'are'} also editing this document`
+          enrichedOthers.length > 0
+            ? `${enrichedOthers.map((u) => u.email?.split('@')[0]).join(', ')} ${enrichedOthers.length === 1 ? 'is' : 'are'} also editing this document`
             : null,
       })
     )

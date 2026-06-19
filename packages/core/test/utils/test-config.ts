@@ -13,6 +13,16 @@ export const getTestConfig = (): ZenithConfig => ({
     secret: process.env.JWT_SECRET || 'secret',
     expiresIn: '1h'
   },
-  collections: [],
+  collections: [
+    {
+      name: 'posts',
+      slug: 'posts',
+      fields: [
+        { name: 'title', type: 'text', required: true },
+        { name: 'content', type: 'richtext', required: false },
+        { name: 'slug', type: 'text', unique: true, required: true }
+      ]
+    }
+  ],
   globals: []
 })

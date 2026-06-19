@@ -24,7 +24,7 @@ const PointField: React.FC<Props> = ({ field: _field, value, onChange, disabled 
   return (
     <div className="flex gap-3">
       <div className="flex-1 space-y-1">
-        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+        <label className="text-[10px] font-bold text-z-secondary uppercase tracking-wider">
           Longitude
         </label>
         <input
@@ -33,12 +33,12 @@ const PointField: React.FC<Props> = ({ field: _field, value, onChange, disabled 
           onChange={(e) => onChange([Number(e.target.value), coords[1]])}
           step="any"
           disabled={disabled}
-          className="w-full bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-none-none px-3 py-2 text-sm focus:border-emerald-500/50 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black disabled:opacity-60 disabled:cursor-not-allowed text-white placeholder:text-gray-500"
+          className="w-full bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-none-none px-3 py-2 text-sm focus:border-z-accent/50 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black disabled:opacity-60 disabled:cursor-not-allowed text-white placeholder:text-z-secondary"
           placeholder="0.0"
         />
       </div>
       <div className="flex-1 space-y-1">
-        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+        <label className="text-[10px] font-bold text-z-secondary uppercase tracking-wider">
           Latitude
         </label>
         <input
@@ -47,7 +47,7 @@ const PointField: React.FC<Props> = ({ field: _field, value, onChange, disabled 
           onChange={(e) => onChange([coords[0], Number(e.target.value)])}
           step="any"
           disabled={disabled}
-          className="w-full bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-none-none px-3 py-2 text-sm focus:border-emerald-500/50 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black disabled:opacity-60 disabled:cursor-not-allowed text-white placeholder:text-gray-500"
+          className="w-full bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-none-none px-3 py-2 text-sm focus:border-z-accent/50 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black disabled:opacity-60 disabled:cursor-not-allowed text-white placeholder:text-z-secondary"
           placeholder="0.0"
         />
       </div>
@@ -80,10 +80,10 @@ const RowField: React.FC<RowFieldProps> = ({ field, value, onChange, renderField
 }
 
 const JoinField: React.FC<{ field: { collection?: string } }> = ({ field }) => (
-  <div className="w-full bg-white/[0.03] border border-white/10 rounded-none-none px-4 py-3 text-sm text-gray-400 italic flex items-center gap-2">
-    <span className="text-emerald-400">⧉</span>
+  <div className="w-full bg-z-hover border border-white/10 rounded-none-none px-4 py-3 text-sm text-z-muted italic flex items-center gap-2">
+    <span className="text-z-active-text">⧉</span>
     Joined data from{' '}
-    <span className="font-mono text-emerald-300 text-xs">{field.collection}</span> — read-only
+    <span className="font-mono text-z-active-text text-xs">{field.collection}</span> — read-only
   </div>
 )
 
@@ -111,7 +111,7 @@ const RadioField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
               checked={value === optVal}
               onChange={(e) => onChange(e.target.value)}
               disabled={disabled}
-              className="w-4 h-4 border border-white/20 text-emerald-500 focus:ring-emerald-500 disabled:opacity-60 accent-emerald-500"
+              className="w-4 h-4 border border-white/20 text-z-active-text focus:ring-z-active-border disabled:opacity-60 accent-z-accent"
             />
             <span className="text-sm text-gray-300 group-hover:text-white transition-colors">
               {String(optLabel)}

@@ -16,14 +16,14 @@ export function PageHeader({ title, description, icon, actions, className }: Pag
   return (
     <div className={cn(
       "px-6 py-4 border-b flex items-center justify-between transition-colors",
-      theme === 'dark' ? 'bg-black/80 backdrop-blur-md border-white/[0.08]' : 'bg-white/80 backdrop-blur-md border-gray-200',
+      theme === 'dark' ? 'bg-black/80 backdrop-blur-md border-z-border' : 'bg-white/80 backdrop-blur-md border-z-border',
       className
     )}>
       <div className="flex items-center gap-4">
         {icon && (
           <div className={cn(
             "p-2.5 rounded-none-none border",
-            theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08] text-emerald-500' : 'bg-gray-50 border-gray-200 text-emerald-600'
+            theme === 'dark' ? 'bg-z-panel border-z-border text-z-active-text' : 'bg-z-input border-z-border text-z-accent'
           )}>
             {icon}
           </div>
@@ -31,14 +31,14 @@ export function PageHeader({ title, description, icon, actions, className }: Pag
         <div>
           <h1 className={cn(
             "text-xl font-black uppercase tracking-widest leading-none",
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
+            theme === 'dark' ? 'text-white' : 'text-z-primary'
           )}>
             {title}
           </h1>
           {description && (
             <p className={cn(
               "text-xs mt-1",
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+              theme === 'dark' ? 'text-z-muted' : 'text-z-secondary'
             )}>
               {description}
             </p>

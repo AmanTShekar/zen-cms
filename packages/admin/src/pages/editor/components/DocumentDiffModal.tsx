@@ -72,7 +72,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
 
  const renderValuePreview = (val: any) => {
  if (val === null || val === undefined) {
- return <span className=" text-gray-500 text-xs">None / Empty</span>
+ return <span className=" text-z-secondary text-xs">None / Empty</span>
  }
  if (typeof val === 'object') {
  return (
@@ -107,20 +107,20 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  transition={{ type: 'spring', damping: 25, stiffness: 250 }}
  className={cn(
  'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[120] w-[85vw] max-w-[1100px] h-[80vh] flex flex-col border shadow-2xl overflow-hidden font-sans',
- isDark ? 'bg-black border-white/8 text-white' : 'bg-white border-gray-250 text-gray-900'
+ isDark ? 'bg-black border-white/8 text-white' : 'bg-white border-gray-250 text-z-primary'
  )}
  >
  {/* Header */}
- <div className="p-6 border-b border-white/[0.08] flex items-center justify-between shrink-0 bg-gradient-to-r from-gray-500/5 to-transparent">
+ <div className="p-6 border-b border-z-border flex items-center justify-between shrink-0 bg-gradient-to-r from-gray-500/5 to-transparent">
  <div className="flex items-center gap-3">
- <div className="w-9 h-9 border flex items-center justify-center text-gray-600 dark:text-gray-400">
+ <div className="w-9 h-9 border flex items-center justify-center text-gray-600 dark:text-z-muted">
  <ArrowLeftRight size={16} />
  </div>
  <div>
  <h3 className="text-base font-black uppercase tracking-tighter">
  Compare Differences — V.{versionNumber}
  </h3>
- <p className="text-xs text-gray-500 uppercase tracking-widest mt-0.5">
+ <p className="text-xs text-z-secondary uppercase tracking-widest mt-0.5">
  Compare historical version snapshot with current working draft
  </p>
  </div>
@@ -130,7 +130,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  aria-label="Close diff view"
  className={cn(
  'p-2 rounded-none-none transition-colors',
- isDark ? 'hover:bg-white/5 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-600 hover:text-black'
+ isDark ? 'hover:bg-z-hover text-z-muted hover:text-white' : 'hover:bg-gray-100 text-gray-600 hover:text-black'
  )}
  >
  <X size={15} aria-hidden="true" />
@@ -141,17 +141,17 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-editor-scrollbar">
  {loading ? (
  <div className="h-full flex flex-col items-center justify-center gap-4">
- <Loader2 size={32} className="animate-spin text-gray-600 dark:text-gray-500" />
- <p className="text-xs font-black uppercase tracking-[0.4em] text-gray-500 animate-pulse">
+ <Loader2 size={32} className="animate-spin text-gray-600 dark:text-z-secondary" />
+ <p className="text-xs font-black uppercase tracking-[0.4em] text-z-secondary animate-pulse">
  Analyzing delta changes...
  </p>
  </div>
  ) : diffs.length === 0 ? (
  <div className="h-full flex flex-col items-center justify-center gap-3 text-center">
- <CheckCircle2 size={36} className="text-gray-600 dark:text-gray-500" />
+ <CheckCircle2 size={36} className="text-gray-600 dark:text-z-secondary" />
  <div>
  <h4 className="text-xs font-black uppercase ">No Differences Detected</h4>
- <p className="text-xs text-gray-500 uppercase tracking-widest mt-1">
+ <p className="text-xs text-z-secondary uppercase tracking-widest mt-1">
  This version snapshot matches the current working copy exactly.
  </p>
  </div>
@@ -163,16 +163,16 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  key={diff.field}
  className={cn(
  'border rounded-none-none overflow-hidden',
- isDark ? 'border-white/[0.08] bg-black/10' : 'border-gray-200 bg-gray-50/50'
+ isDark ? 'border-z-border bg-black/10' : 'border-z-border bg-gray-50/50'
  )}
  >
  {/* Diff Item Header */}
  <div className={cn(
  'px-4 py-2.5 border-b flex items-center justify-between',
- isDark ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-100 border-gray-200'
+ isDark ? 'bg-z-panel border-z-border' : 'bg-gray-100 border-z-border'
  )}>
  <div className="flex items-center gap-2">
- <FileText size={13} className="text-gray-600 dark:text-gray-400" />
+ <FileText size={13} className="text-gray-600 dark:text-z-muted" />
  <span className="text-xs font-black uppercase tracking-wider">
  {diff.field.replace(':', ' ➔ ').toUpperCase()}
  </span>
@@ -180,7 +180,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  <button
  onClick={() => handleRollbackField(diff.field)}
  disabled={rollingBackField === diff.field}
- className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-black uppercase bg-gray-600/10 hover:bg-gray-600 dark:bg-gray-600 border border-gray-500/20 hover:border-gray-500 text-gray-600 dark:text-gray-400 hover:text-white transition-all disabled:opacity-50"
+ className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-black uppercase bg-gray-600/10 hover:bg-gray-600 dark:bg-gray-600 border border-gray-500/20 hover:border-gray-500 text-gray-600 dark:text-z-muted hover:text-white transition-all disabled:opacity-50"
  >
  {rollingBackField === diff.field ? (
  <Loader2 size={10} className="animate-spin" />
@@ -205,7 +205,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
 
  {/* Current Value (Green Tint) */}
  <div className="p-4 bg-gray-500/[0.01] flex flex-col gap-2">
- <span className="text-xs font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest block ">
+ <span className="text-xs font-black text-gray-600 dark:text-z-secondary uppercase tracking-widest block ">
  Current Value
  </span>
  <div className="flex-1 bg-gray-500/[0.03] border border-gray-500/10 rounded-none p-3 text-gray-100/90 min-h-16 overflow-x-auto custom-editor-scrollbar">
@@ -220,10 +220,10 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  </div>
 
  {/* Footer */}
- <div className="p-4 border-t border-white/[0.08] flex items-center justify-end bg-gradient-to-r from-transparent to-gray-500/5">
+ <div className="p-4 border-t border-z-border flex items-center justify-end bg-gradient-to-r from-transparent to-gray-500/5">
  <button
  onClick={onClose}
- className="px-5 py-2 border border-white/[0.08] hover:border-white/[0.08] text-xs font-black uppercase tracking-widest hover:bg-white/5 transition-all text-gray-400 hover:text-white"
+ className="px-5 py-2 border border-z-border hover:border-z-border text-xs font-black uppercase tracking-widest hover:bg-z-hover transition-all text-z-muted hover:text-white"
  >
  Close Comparison
  </button>

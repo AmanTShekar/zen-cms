@@ -28,7 +28,7 @@ class ErrorBoundary extends React.Component<
  </p>
  <button
  onClick={() => window.location.reload()}
- className="mt-4 px-6 py-2 border border-white/[0.08] text-[9px] font-black uppercase tracking-widest hover:border-red-500/30 hover:text-red-400 transition-all"
+ className="mt-4 px-6 py-2 border border-z-border text-[9px] font-black uppercase tracking-widest hover:border-red-500/30 hover:text-red-400 transition-all"
  >
  Reload
  </button>
@@ -51,6 +51,7 @@ import { Cpu } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import api from './lib/api'
 import { ThemeProvider } from './context/ThemeContext'
+import { BrandProvider } from './context/BrandContext'
 import { BlockLibraryProvider } from './context/BlockLibraryContext'
 import { GlobalComponentPickerModal } from './components/GlobalComponentPickerModal'
 import { GlobalConfirmDialog } from './components/GlobalConfirmDialog'
@@ -160,6 +161,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const App: React.FC = () => {
  return (
  <ThemeProvider>
+ <BrandProvider>
  <QueryClientProvider client={queryClient}>
  <BlockLibraryProvider>
  <Toaster
@@ -315,6 +317,7 @@ const App: React.FC = () => {
  </BrowserRouter>
  </BlockLibraryProvider>
  </QueryClientProvider>
+ </BrandProvider>
  </ThemeProvider>
  )
 }

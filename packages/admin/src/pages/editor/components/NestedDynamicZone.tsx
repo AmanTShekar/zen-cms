@@ -37,13 +37,13 @@ const DraggableZoneItem = ({
  as="div"
  className={cn(
  'border rounded-none-none overflow-hidden',
- theme === 'dark' ? 'bg-white/[0.02] border-white/8' : 'bg-gray-50 border-gray-200'
+ theme === 'dark' ? 'bg-z-panel border-white/8' : 'bg-z-input border-z-border'
  )}
  >
  <div
  className={cn(
  'flex items-center gap-2 px-3 py-2.5 cursor-pointer select-none',
- theme === 'dark' ? 'bg-white/[0.02] hover:bg-white/[0.04]' : 'bg-gray-100/50 hover:bg-gray-100'
+ theme === 'dark' ? 'bg-z-panel hover:bg-z-hover' : 'bg-gray-100/50 hover:bg-gray-100'
  )}
  onClick={() => toggleExpand(dzId)}
  >
@@ -52,34 +52,34 @@ const DraggableZoneItem = ({
  className="shrink-0 cursor-grab active:cursor-grabbing p-1"
  onClick={(e) => e.stopPropagation()}
  >
- <GripVertical size={12} className="text-gray-500" />
+ <GripVertical size={12} className="text-z-secondary" />
  </div>
  <div className={cn(
  'w-5 h-5 rounded-none-none flex items-center justify-center shrink-0',
  theme === 'dark' ? 'bg-gray-500/10' : 'bg-gray-50'
  )}>
- <BlockIcon size={10} className="text-gray-600 dark:text-gray-400" />
+ <BlockIcon size={10} className="text-gray-600 dark:text-z-muted" />
  </div>
  <div className="flex-1 min-w-0">
  <p className="text-xs font-black uppercase text-gray-300 truncate">
  {componentLabel}
  </p>
  </div>
- <span className={cn('text-[8px] font-black shrink-0', theme === 'dark' ? 'text-gray-600' : 'text-gray-400')}>
+ <span className={cn('text-[8px] font-black shrink-0', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
  #{idx + 1}
  </span>
  <div className="flex items-center gap-0.5 shrink-0" onClick={(e) => e.stopPropagation()}>
  <button
  onClick={() => removeItem(dzId)}
- className="p-1 text-gray-500 hover:text-rose-500 transition-colors"
+ className="p-1 text-z-secondary hover:text-rose-500 transition-colors"
  >
  <Trash2 size={12} />
  </button>
  <button
  onClick={() => toggleExpand(dzId)}
- className="p-1 text-gray-500 hover:text-gray-600 dark:text-gray-400 transition-colors"
+ className="p-1 text-z-secondary hover:text-gray-600 dark:text-z-muted transition-colors"
  >
- {isExpanded ? <ChevronUp size={12} className="text-gray-600 dark:text-gray-400" /> : <ChevronDown size={12} className="text-gray-400" />}
+ {isExpanded ? <ChevronUp size={12} className="text-gray-600 dark:text-z-muted" /> : <ChevronDown size={12} className="text-z-muted" />}
  </button>
  </div>
  </div>
@@ -92,10 +92,10 @@ const DraggableZoneItem = ({
  transition={{ duration: 0.15 }}
  className="overflow-hidden"
  >
- <div className={cn('px-4 py-4 space-y-4 border-t', theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200')}>
+ <div className={cn('px-4 py-4 space-y-4 border-t', theme === 'dark' ? 'border-z-border' : 'border-z-border')}>
  {def.fields.map((field: any) => (
  <div key={field.name} className="space-y-1">
- <label className="text-xs font-black text-gray-400 uppercase tracking-widest block">
+ <label className="text-xs font-black text-z-muted uppercase tracking-widest block">
  {field.label || humanize(field.name)}
  </label>
  <FieldRenderer
@@ -187,18 +187,18 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
  <div className="space-y-3">
  {/* Zone label */}
  <div className="flex items-center gap-2 px-1">
- <Layers size={10} className="text-gray-600 dark:text-gray-400" />
- <span className="text-xs font-black uppercase tracking-widest text-gray-600 dark:text-gray-400">
+ <Layers size={10} className="text-gray-600 dark:text-z-muted" />
+ <span className="text-xs font-black uppercase tracking-widest text-gray-600 dark:text-z-muted">
  Dynamic Zone
  </span>
- <span className="text-xs text-gray-500">— {value.length} component{value.length !== 1 ? 's' : ''}</span>
+ <span className="text-xs text-z-secondary">— {value.length} component{value.length !== 1 ? 's' : ''}</span>
  </div>
 
  {/* Items with drag-and-drop reorder */}
  {value.length === 0 ? (
  <div className={cn(
  'py-5 text-center border border-dashed rounded-none-none',
- theme === 'dark' ? 'border-white/[0.08] text-gray-500' : 'border-gray-200 text-gray-400'
+ 'border-z-border text-z-secondary'
  )}>
  <p className="text-xs font-bold ">No components — add one below</p>
  </div>
@@ -237,14 +237,14 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
  className={cn(
  'w-full flex items-center justify-center gap-2 py-2.5 border border-dashed rounded-none-none transition-all text-xs font-black uppercase tracking-widest',
  theme === 'dark'
- ? 'border-white/[0.08] text-gray-500 hover:border-gray-500/40 hover:text-gray-600 dark:text-gray-400 hover:bg-gray-500/5'
- : 'border-gray-200 text-gray-400 hover:border-gray-400 hover:text-gray-600 hover:bg-gray-50/50'
+ ? 'border-z-border text-z-secondary hover:border-gray-500/40 hover:text-gray-600 dark:text-z-muted hover:bg-gray-500/5'
+ : 'border-z-border text-z-muted hover:border-gray-400 hover:text-gray-600 hover:bg-gray-50/50'
  )}
  >
  <Plus size={12} />
  Add Component
  {availableComponents.length > 0 && (
- <span className={cn('text-[9px] font-black ml-1', theme === 'dark' ? 'text-gray-600' : 'text-gray-400')}>
+ <span className={cn('text-[9px] font-black ml-1', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
  ({availableComponents.length} available)
  </span>
  )}

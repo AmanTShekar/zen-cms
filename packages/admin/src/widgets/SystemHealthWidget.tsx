@@ -33,7 +33,7 @@ export default function SystemHealthWidget({ theme, title, isPreview }: WidgetPr
 
   const getStatusColor = (pct: number | null) => {
     if (pct === null) return 'bg-gray-500'
-    if (pct < 50) return 'bg-emerald-500'
+    if (pct < 50) return 'bg-z-accent'
     if (pct < 80) return 'bg-amber-500'
     return 'bg-red-500'
   }
@@ -54,7 +54,7 @@ export default function SystemHealthWidget({ theme, title, isPreview }: WidgetPr
     <div className="flex flex-col justify-between gap-4">
       <div className="flex items-center justify-between">
         <p className="text-[12px] font-bold text-gray-800 dark:text-gray-200 uppercase tracking-tight flex items-center gap-2">
-          <Cpu size={14} className="text-gray-500" /> 
+          <Cpu size={14} className="text-z-secondary" /> 
           {title || 'Infrastructure Vitals'}
         </p>
       </div>
@@ -67,17 +67,17 @@ export default function SystemHealthWidget({ theme, title, isPreview }: WidgetPr
             key={m.label}
             className={cn(
               'flex flex-col items-start justify-between gap-1 p-4 border rounded-none-none transition-colors w-full',
-              theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
+              'bg-z-panel border-z-border shadow-sm'
             )}
           >
             <div className="w-full">
-              <div className="flex items-center gap-1.5 text-gray-500 mb-2">
+              <div className="flex items-center gap-1.5 text-z-secondary mb-2">
                 <m.icon size={12} />
                 <span className="text-[9px] font-bold uppercase tracking-widest">{m.label}</span>
               </div>
               <span className={cn(
                 "text-xl font-black tracking-tighter leading-none block mb-3",
-                m.isDb && m.value === 'Connected' ? "text-emerald-500" : "text-gray-900 dark:text-gray-100"
+                m.isDb && m.value === 'Connected' ? "text-z-active-text" : "text-z-primary dark:text-gray-100"
               )}>
                 {m.value}
               </span>
@@ -91,7 +91,7 @@ export default function SystemHealthWidget({ theme, title, isPreview }: WidgetPr
                   style={{ width: `${m.pct}%` }} 
                 />
               ) : m.isDb && m.value === 'Connected' ? (
-                <div className="h-full bg-emerald-500 w-full" />
+                <div className="h-full bg-z-accent w-full" />
               ) : (
                 <div className="h-full bg-gray-300 dark:bg-gray-700 w-full opacity-50" />
               )}

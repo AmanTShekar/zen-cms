@@ -79,7 +79,7 @@ const SiteSchema = new Schema<ISite>(
       default: [],
     },
   },
-  { timestamps: true }
+  { timestamps: true, collection: 'z_sites' }
 )
 
 export const SiteModel = mongoose.models.Site || mongoose.model<ISite>('Site', SiteSchema)

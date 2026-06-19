@@ -131,7 +131,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  const workspaceOptions: DropdownOption[] = workspaces.map((ws) => ({
  value: ws._id || ws.id,
  label: ws.name,
- icon: <Briefcase size={16} className="text-[#10B981]" />,
+ icon: <Briefcase size={16} className="text-[var(--z-accent)]" />,
  slug: ws.slug,
  }));
 
@@ -139,7 +139,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  const siteOptions: DropdownOption[] = sites.map((site) => ({
  value: site._id || site.id,
  label: site.name,
- icon: <span className="text-[#10B981]">{site.icon || '🌐'}</span>,
+ icon: <span className="text-[var(--z-accent)]">{site.icon || '🌐'}</span>,
  slug: site.slug,
  }));
 
@@ -152,10 +152,10 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  onClick={toggle}
  className={cn(
  "w-full flex items-center justify-between text-left transition-all duration-300 p-2.5",
- "relative overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.1)]",
+ "relative overflow-hidden shadow-[var(--z-active-glow)]",
  theme === 'dark' 
- ? "bg-black/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-[#10B981]/50 hover:bg-black/85" 
- : "bg-white/65 backdrop-blur-[12px] text-gray-900 border border-black/[0.08] hover:border-[#10B981]/30 hover:bg-white/85",
+ ? "bg-z-panel backdrop-blur-[12px] text-white border border-z-border hover:border-[var(--z-accent)]/50 hover:bg-black/85" 
+ : "bg-white/65 backdrop-blur-[12px] text-z-primary border border-black/[0.08] hover:border-[var(--z-accent)]/30 hover:bg-white/85",
  isSidebarOpen ? "rounded-none-none" : "rounded-none-none p-2 justify-center",
  "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gray-500"
  )}
@@ -164,7 +164,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  <div className={cn("flex items-center min-w-0 z-10", isSidebarOpen ? "gap-3" : "gap-0 justify-center")}>
  <div className={cn(
  "rounded-none-none flex items-center justify-center flex-shrink-0 transition-colors duration-300",
- theme === 'dark' ? "bg-[#10B981]/10 text-[#10B981]" : "bg-[#10B981]/5 text-[#10B981]",
+ theme === 'dark' ? "bg-[var(--z-accent)]/10 text-[var(--z-accent)]" : "bg-[var(--z-accent)]/5 text-[var(--z-accent)]",
  isSidebarOpen ? "w-8 h-8" : "w-10 h-10"
  )}>
  <Briefcase size={16} />
@@ -172,7 +172,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  
  {isSidebarOpen && (
  <div className="flex flex-col min-w-0">
- <span className="text-[8px] font-black text-[#10B981] uppercase tracking-[0.2em] font-mono leading-none mb-1">
+ <span className="text-[8px] font-black text-[var(--z-accent)] uppercase tracking-[0.2em] font-mono leading-none mb-1">
  WORKSPACE
  </span>
  <span className="text-xs font-black uppercase tracking-wide truncate leading-none">
@@ -186,7 +186,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  <motion.div
  animate={{ rotate: isOpen ? 180 : 0 }}
  transition={{ duration: 0.2 }}
- className="text-gray-400 flex-shrink-0 z-10 ml-2"
+ className="text-z-muted flex-shrink-0 z-10 ml-2"
  >
  <ChevronDown size={14} />
  </motion.div>
@@ -205,10 +205,10 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  onClick={toggle}
  className={cn(
  "w-full flex items-center justify-between text-left transition-all duration-300 p-2.5",
- "relative overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.1)]",
+ "relative overflow-hidden shadow-[var(--z-active-glow)]",
  theme === 'dark' 
- ? "bg-black/65 backdrop-blur-[12px] text-white border border-white/[0.08] hover:border-[#10B981]/50 hover:bg-black/85" 
- : "bg-white/65 backdrop-blur-[12px] text-gray-900 border border-black/[0.08] hover:border-[#10B981]/30 hover:bg-white/85",
+ ? "bg-z-panel backdrop-blur-[12px] text-white border border-z-border hover:border-[var(--z-accent)]/50 hover:bg-black/85" 
+ : "bg-white/65 backdrop-blur-[12px] text-z-primary border border-black/[0.08] hover:border-[var(--z-accent)]/30 hover:bg-white/85",
  isSidebarOpen ? "rounded-none-none" : "rounded-none-none p-2 justify-center",
  "hover:scale-[1.02] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-gray-500"
  )}
@@ -217,7 +217,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  <div className={cn("flex items-center min-w-0 z-10", isSidebarOpen ? "gap-3" : "gap-0 justify-center")}>
  <div className={cn(
  "rounded-none-none flex items-center justify-center flex-shrink-0 transition-colors duration-300",
- theme === 'dark' ? "bg-[#10B981]/10 text-[#10B981]" : "bg-[#10B981]/5 text-[#10B981]",
+ theme === 'dark' ? "bg-[var(--z-accent)]/10 text-[var(--z-accent)]" : "bg-[var(--z-accent)]/5 text-[var(--z-accent)]",
  isSidebarOpen ? "w-8 h-8" : "w-10 h-10"
  )}>
  {activeIcon}
@@ -225,7 +225,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  
  {isSidebarOpen && (
  <div className="flex flex-col min-w-0">
- <span className="text-[8px] font-black text-[#10B981] uppercase tracking-[0.2em] font-mono leading-none mb-1">
+ <span className="text-[8px] font-black text-[var(--z-accent)] uppercase tracking-[0.2em] font-mono leading-none mb-1">
  TENANT / SITE
  </span>
  <span className="text-xs font-black uppercase tracking-wide truncate leading-none">
@@ -239,7 +239,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  <motion.div
  animate={{ rotate: isOpen ? 180 : 0 }}
  transition={{ duration: 0.2 }}
- className="text-gray-400 flex-shrink-0 z-10 ml-2"
+ className="text-z-muted flex-shrink-0 z-10 ml-2"
  >
  <ChevronDown size={14} />
  </motion.div>
@@ -254,19 +254,19 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  type="button"
  className={cn(
  "w-full px-4 py-2.5 flex items-center justify-between text-left transition-colors duration-200",
- theme === 'dark' ? "hover:bg-white/[0.04]" : "hover:bg-black/[0.02]",
- isSelected && (theme === 'dark' ? "bg-[#10B981]/10 text-[#10B981]" : "bg-[#10B981]/5 text-[#10B981]")
+ theme === 'dark' ? "hover:bg-z-hover" : "hover:bg-black/[0.02]",
+ isSelected && (theme === 'dark' ? "bg-[var(--z-accent)]/10 text-[var(--z-accent)]" : "bg-[var(--z-accent)]/5 text-[var(--z-accent)]")
  )}
  >
  <div className="flex items-center gap-3 min-w-0">
  <span className="text-base flex-shrink-0">{option.icon}</span>
  <div className="flex flex-col min-w-0">
  <span className="text-xs font-bold truncate">{option.label}</span>
- <span className="text-[9px] text-gray-400 font-mono tracking-wider">/{option.slug}</span>
+ <span className="text-[9px] text-z-muted font-mono tracking-wider">/{option.slug}</span>
  </div>
  </div>
  {isSelected && (
- <span className="w-1.5 h-1.5 rounded-none-none bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+ <span className="w-1.5 h-1.5 rounded-none-none bg-[var(--z-accent)] shadow-[var(--z-active-glow)]" />
  )}
  </button>
  );
@@ -278,19 +278,19 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  type="button"
  className={cn(
  "w-full px-4 py-2.5 flex items-center justify-between text-left transition-colors duration-200",
- theme === 'dark' ? "hover:bg-white/[0.04]" : "hover:bg-black/[0.02]",
- isSelected && (theme === 'dark' ? "bg-[#10B981]/10 text-[#10B981]" : "bg-[#10B981]/5 text-[#10B981]")
+ theme === 'dark' ? "hover:bg-z-hover" : "hover:bg-black/[0.02]",
+ isSelected && (theme === 'dark' ? "bg-[var(--z-accent)]/10 text-[var(--z-accent)]" : "bg-[var(--z-accent)]/5 text-[var(--z-accent)]")
  )}
  >
  <div className="flex items-center gap-3 min-w-0">
  <span className="text-base flex-shrink-0">{option.icon}</span>
  <div className="flex flex-col min-w-0">
  <span className="text-xs font-bold truncate">{option.label}</span>
- <span className="text-[9px] text-gray-400 font-mono tracking-wider">/{option.slug}</span>
+ <span className="text-[9px] text-z-muted font-mono tracking-wider">/{option.slug}</span>
  </div>
  </div>
  {isSelected && (
- <span className="w-1.5 h-1.5 rounded-none-none bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+ <span className="w-1.5 h-1.5 rounded-none-none bg-[var(--z-accent)] shadow-[var(--z-active-glow)]" />
  )}
  </button>
  );
@@ -302,11 +302,11 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  className={cn(
  "w-full px-4 py-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest font-mono transition-colors",
  theme === 'dark' 
- ? "text-gray-400 hover:text-white hover:bg-white/[0.03]" 
+ ? "text-z-muted hover:text-white hover:bg-z-hover" 
  : "text-gray-600 hover:text-black hover:bg-black/[0.02]"
  )}
  >
- <Sliders size={12} className="text-[#10B981]" />
+ <Sliders size={12} className="text-[var(--z-accent)]" />
  Manage Workspaces & Tenants
  </Link>
  );

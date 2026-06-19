@@ -61,9 +61,6 @@ router.post('/quality', async (req: Request, res: Response, next) => {
 // ── POST /api/v1/content-tools/ai/generate ───────────────────────────────────
 router.post('/ai/generate', aiLimiter, async (req: Request, res: Response, next) => {
   try {
-    if (!process.env.ANTHROPIC_API_KEY) {
-      throw new ServiceUnavailableError('AI (set ANTHROPIC_API_KEY to enable)')
-    }
     const { prompt } = req.body
     if (!prompt) throw new InvalidPayloadError('"prompt" is required')
     const result = await AIService.generateContent(prompt)
@@ -76,13 +73,9 @@ router.post('/ai/generate', aiLimiter, async (req: Request, res: Response, next)
 // ── POST /api/v1/content-tools/ai/improve ────────────────────────────────────
 router.post('/ai/improve', aiLimiter, async (req: Request, res: Response, next) => {
   try {
-    if (!process.env.ANTHROPIC_API_KEY) {
-      throw new ServiceUnavailableError('AI (set ANTHROPIC_API_KEY to enable)')
-    }
     const { text, instruction } = req.body
     if (!text || !instruction)
       throw new InvalidPayloadError('"text" and "instruction" are required')
-
     const result = await AIService.improveText(text, instruction)
     res.json(createResponse({ text: result }))
   } catch (err) {
@@ -93,12 +86,8 @@ router.post('/ai/improve', aiLimiter, async (req: Request, res: Response, next) 
 // ── POST /api/v1/content-tools/ai/meta-description ───────────────────────────
 router.post('/ai/meta-description', aiLimiter, async (req: Request, res: Response, next) => {
   try {
-    if (!process.env.ANTHROPIC_API_KEY) {
-      throw new ServiceUnavailableError('AI (set ANTHROPIC_API_KEY to enable)')
-    }
     const { title, content } = req.body
     if (!title || !content) throw new InvalidPayloadError('"title" and "content" are required')
-
     const description = await AIService.generateMetaDescription(title, content)
     res.json(createResponse({ description }))
   } catch (err) {

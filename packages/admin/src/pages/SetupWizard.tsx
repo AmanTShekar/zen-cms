@@ -190,21 +190,21 @@ export default function SetupWizard() {
  }
 
  const isDark = theme === 'dark'
- const bg = isDark ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'
- const card = isDark ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm'
+ const bg = isDark ? 'bg-black text-white' : 'bg-gray-50 text-z-primary'
+ const card = isDark ? 'bg-[#0a0a0a] border-z-border' : 'bg-z-panel border-z-border shadow-sm shadow-sm'
  const input = isDark
- ? 'bg-white/5 border-white/[0.08] text-white placeholder-gray-600 focus:border-gray-500'
- : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400'
+ ? 'bg-z-hover border-z-border text-white placeholder-gray-600 focus:border-gray-500'
+ : 'bg-z-panel border-z-border text-z-primary placeholder-gray-400 focus:border-gray-400'
 
  const STEPS = [
  {
  title: 'Welcome to Zenith',
  subtitle: "Let's get your CMS set up in under 2 minutes.",
- icon: <Zap size={28} className="text-gray-600 dark:text-gray-400" />,
+ icon: <Zap size={28} className="text-gray-600 dark:text-z-muted" />,
  content: (
  <div className="space-y-6">
  <div className="space-y-3">
- <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+ <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
  Your Project Name
  </label>
  <input
@@ -216,10 +216,10 @@ export default function SetupWizard() {
  input
  )}
  />
- <p className="text-[8px] text-gray-500">This will appear in your admin panel header.</p>
+ <p className="text-[8px] text-z-secondary">This will appear in your admin panel header.</p>
  </div>
  <div className="space-y-3">
- <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+ <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
  Your Website URL
  </label>
  <input
@@ -231,7 +231,7 @@ export default function SetupWizard() {
  input
  )}
  />
- <p className="text-[8px] text-gray-500">
+ <p className="text-[8px] text-z-secondary">
  Where your website or app is hosted. Used to configure CORS.
  </p>
  </div>
@@ -242,7 +242,7 @@ export default function SetupWizard() {
  {
  title: 'What are you building?',
  subtitle: "We'll pre-select relevant content types for you.",
- icon: <Globe size={28} className="text-gray-600 dark:text-gray-400" />,
+ icon: <Globe size={28} className="text-gray-600 dark:text-z-muted" />,
  content: (
  <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-3 gap-3">
  {PROJECT_TYPES.map((pt) => (
@@ -256,8 +256,8 @@ export default function SetupWizard() {
  state.projectType === pt.id
  ? 'border-gray-500 bg-gray-500/10'
  : isDark
- ? 'border-white/[0.08] hover:border-white/[0.08]'
- : 'border-gray-200 shadow-sm hover:border-gray-100'
+ ? 'border-z-border hover:border-z-border'
+ : 'border-z-border shadow-sm hover:border-z-border'
  )}
  >
  <span className="text-2xl">{pt.icon}</span>
@@ -271,7 +271,7 @@ export default function SetupWizard() {
  {
  title: 'Choose your content types',
  subtitle: 'Select the collections you want to start with.',
- icon: <Layers size={28} className="text-gray-600 dark:text-gray-400" />,
+ icon: <Layers size={28} className="text-gray-600 dark:text-z-muted" />,
  content: (
  <div className="space-y-3">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -292,13 +292,13 @@ export default function SetupWizard() {
  selected
  ? 'border-gray-500 bg-gray-500/10'
  : isDark
- ? 'border-white/[0.08] hover:border-white/[0.08]'
- : 'border-gray-200 shadow-sm hover:border-gray-100'
+ ? 'border-z-border hover:border-z-border'
+ : 'border-z-border shadow-sm hover:border-z-border'
  )}
  >
  <span>{col.icon}</span>
  <span className="text-[11px] font-black uppercase ">{col.label}</span>
- {selected && <Check size={12} className="text-gray-600 dark:text-gray-400 ml-auto shrink-0" />}
+ {selected && <Check size={12} className="text-gray-600 dark:text-z-muted ml-auto shrink-0" />}
  </button>
  )
  })}
@@ -315,11 +315,11 @@ export default function SetupWizard() {
  {
  title: 'Database Setup',
  subtitle: 'Configure your database connection and write it to .env.',
- icon: <Database size={28} className="text-gray-600 dark:text-gray-400" />,
+ icon: <Database size={28} className="text-gray-600 dark:text-z-muted" />,
  content: (
  <div className="space-y-4">
  <div className="space-y-2">
- <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+ <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
  Database Dialect
  </label>
  <div className="flex gap-2">
@@ -344,7 +344,7 @@ export default function SetupWizard() {
  'flex-1 py-3 border text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all',
  state.dbDialect === dialect
  ? 'border-gray-500 bg-gray-500/10 text-white'
- : 'border-white/[0.08] hover:border-white/[0.08] text-gray-400'
+ : 'border-z-border hover:border-z-border text-z-muted'
  )}
  >
  {dialect === 'mongodb' ? 'MongoDB / Mongoose' : 'PostgreSQL / Drizzle'}
@@ -354,7 +354,7 @@ export default function SetupWizard() {
  </div>
 
  <div className="space-y-2">
- <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+ <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
  Connection URL
  </label>
  <input
@@ -377,7 +377,7 @@ export default function SetupWizard() {
  type="button"
  onClick={testDbConnection}
  disabled={state.dbTestStatus === 'testing'}
- className="flex-1 py-3 border border-white/[0.08] hover:border-white/30 text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all flex items-center justify-center gap-2"
+ className="flex-1 py-3 border border-z-border hover:border-white/30 text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all flex items-center justify-center gap-2"
  >
  {state.dbTestStatus === 'testing' ? (
  <Loader2 size={12} className="animate-spin" />
@@ -394,7 +394,7 @@ export default function SetupWizard() {
  'flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all flex items-center justify-center gap-2',
  state.dbTestStatus === 'success' && !state.dbSaved
  ? 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white shadow-lg shadow-gray-600/20'
- : 'bg-white/5 border border-white/[0.08] text-gray-500 cursor-not-allowed'
+ : 'bg-z-hover border border-z-border text-z-secondary cursor-not-allowed'
  )}
  >
  Save Configuration
@@ -406,9 +406,9 @@ export default function SetupWizard() {
  className={cn(
  'p-4 border rounded-none-none text-[10px] font-bold uppercase tracking-wide ',
  state.dbTestStatus === 'success'
- ? 'bg-gray-500/5 border-gray-500/20 text-gray-600 dark:text-gray-400'
+ ? 'bg-gray-500/5 border-gray-500/20 text-gray-600 dark:text-z-muted'
  : state.dbTestStatus === 'testing'
- ? 'bg-gray-500/5 border-gray-500/10 text-gray-600 dark:text-gray-400'
+ ? 'bg-gray-500/5 border-gray-500/10 text-gray-600 dark:text-z-muted'
  : 'bg-red-500/5 border-red-500/20 text-red-400'
  )}
  >
@@ -424,20 +424,20 @@ export default function SetupWizard() {
  {
  title: 'AI Integration Engine',
  subtitle: 'Integrate state-of-the-art AI features natively into your CMS.',
- icon: <Cpu size={28} className="text-gray-600 dark:text-gray-400" />,
+ icon: <Cpu size={28} className="text-gray-600 dark:text-z-muted" />,
  content: (
  <div className="space-y-4">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-2">
  <div className="flex justify-between items-center">
- <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+ <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
  OpenRouter API Key
  </label>
  <a
  href="https://openrouter.ai/keys"
  target="_blank"
  rel="noreferrer"
- className="text-[8px] font-bold text-gray-600 dark:text-gray-400 hover:underline flex items-center gap-0.5"
+ className="text-[8px] font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
  >
  Get Key <HelpCircle size={8} />
  </a>
@@ -456,14 +456,14 @@ export default function SetupWizard() {
 
  <div className="space-y-2">
  <div className="flex justify-between items-center">
- <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+ <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
  OpenAI API Key
  </label>
  <a
  href="https://platform.openai.com/api-keys"
  target="_blank"
  rel="noreferrer"
- className="text-[8px] font-bold text-gray-600 dark:text-gray-400 hover:underline flex items-center gap-0.5"
+ className="text-[8px] font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
  >
  Get Key <HelpCircle size={8} />
  </a>
@@ -482,14 +482,14 @@ export default function SetupWizard() {
 
  <div className="space-y-2">
  <div className="flex justify-between items-center">
- <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+ <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
  Anthropic API Key
  </label>
  <a
  href="https://console.anthropic.com/settings/keys"
  target="_blank"
  rel="noreferrer"
- className="text-[8px] font-bold text-gray-600 dark:text-gray-400 hover:underline flex items-center gap-0.5"
+ className="text-[8px] font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
  >
  Get Key <HelpCircle size={8} />
  </a>
@@ -508,14 +508,14 @@ export default function SetupWizard() {
 
  <div className="space-y-2">
  <div className="flex justify-between items-center">
- <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+ <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
  xAI (Grok) API Key
  </label>
  <a
  href="https://console.x.ai"
  target="_blank"
  rel="noreferrer"
- className="text-[8px] font-bold text-gray-600 dark:text-gray-400 hover:underline flex items-center gap-0.5"
+ className="text-[8px] font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
  >
  Get Key <HelpCircle size={8} />
  </a>
@@ -534,12 +534,12 @@ export default function SetupWizard() {
  </div>
 
  <div className="p-3 border border-gray-500/20 bg-gray-500/[0.03] rounded-none-none flex items-start gap-2.5">
- <Info size={14} className="text-gray-600 dark:text-gray-400 shrink-0 mt-0.5" />
+ <Info size={14} className="text-gray-600 dark:text-z-muted shrink-0 mt-0.5" />
  <div>
- <p className="text-[9px] font-black uppercase text-gray-600 dark:text-gray-400 ">
+ <p className="text-[9px] font-black uppercase text-gray-600 dark:text-z-muted ">
  Free AI Keys Available
  </p>
- <p className="text-[8px] text-gray-400 leading-normal mt-1">
+ <p className="text-[8px] text-z-muted leading-normal mt-1">
  Need keys? Get a key from{' '}
  <a
  href="https://openrouter.ai"
@@ -556,7 +556,7 @@ export default function SetupWizard() {
  </div>
 
  <div className="pt-2">
- <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-2">
+ <p className="text-[9px] font-black uppercase tracking-widest text-z-secondary mb-2">
  NATIVE AI CAPABILITIES INTEGRATED
  </p>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -582,11 +582,11 @@ export default function SetupWizard() {
  icon: '📝',
  },
  ].map((feat, i) => (
- <div key={i} className="p-2.5 border border-white/[0.08] bg-white/[0.01] rounded-none-none flex gap-2">
+ <div key={i} className="p-2.5 border border-z-border bg-white/[0.01] rounded-none-none flex gap-2">
  <span className="text-base">{feat.icon}</span>
  <div>
  <p className="text-[9px] font-black uppercase leading-none">{feat.title}</p>
- <p className="text-[7.5px] text-gray-500 leading-tight mt-1">{feat.desc}</p>
+ <p className="text-[7.5px] text-z-secondary leading-tight mt-1">{feat.desc}</p>
  </div>
  </div>
  ))}
@@ -599,13 +599,13 @@ export default function SetupWizard() {
  {
  title: 'Generate your API key',
  subtitle: 'This key lets your website fetch content from Zenith.',
- icon: <Key size={28} className="text-gray-600 dark:text-gray-400" />,
+ icon: <Key size={28} className="text-gray-600 dark:text-z-muted" />,
  content: (
  <div className="space-y-5">
  {!state.generatedKey ? (
  <div className="space-y-4">
  <div className="space-y-2">
- <label className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+ <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
  Key Name
  </label>
  <input
@@ -617,7 +617,7 @@ export default function SetupWizard() {
  input
  )}
  />
- <p className="text-[8px] text-gray-500">
+ <p className="text-[8px] text-z-secondary">
  Give it a name so you can identify it later (e.g. "Production Site").
  </p>
  </div>
@@ -637,16 +637,16 @@ export default function SetupWizard() {
  'p-4 border rounded-none-none space-y-3',
  isDark
  ? 'bg-gray-500/5 border-gray-500/20'
- : 'bg-gray-50 border-gray-100'
+ : 'bg-gray-50 border-z-border'
  )}
  >
- <p className="text-[9px] font-black uppercase text-gray-600 dark:text-gray-500 ">
+ <p className="text-[9px] font-black uppercase text-gray-600 dark:text-z-secondary ">
  ✓ Key generated — copy it now. It will not be shown again.
  </p>
  <div
  className={cn(
  'flex items-center gap-3 p-3 border rounded-none-none font-mono text-[11px] break-all',
- isDark ? 'bg-black border-white/[0.08]' : 'bg-gray-100 border-gray-200'
+ isDark ? 'bg-black border-z-border' : 'bg-gray-100 border-z-border'
  )}
  >
  <span className="flex-1">{state.generatedKey}</span>
@@ -655,10 +655,10 @@ export default function SetupWizard() {
  className={cn(
  'shrink-0 px-3 py-1.5 border rounded-none-none text-[9px] font-black uppercase transition-all',
  state.keyCopied
- ? 'border-gray-50 text-gray-600 dark:text-gray-500'
+ ? 'border-gray-50 text-gray-600 dark:text-z-secondary'
  : isDark
- ? 'border-white/[0.08] hover:border-white/40'
- : 'border-gray-300 hover:border-gray-500'
+ ? 'border-z-border hover:border-white/40'
+ : 'border-z-border-strong hover:border-gray-500'
  )}
  >
  {state.keyCopied ? <Check size={13} /> : <Copy size={13} />}
@@ -674,7 +674,7 @@ export default function SetupWizard() {
  {
  title: 'Connect your app',
  subtitle: 'Use these snippets to start pulling content from Zenith.',
- icon: <Server size={28} className="text-gray-600 dark:text-gray-400" />,
+ icon: <Server size={28} className="text-gray-600 dark:text-z-muted" />,
  content: (
  <ConnectSnippet
  apiKey={state.generatedKey}
@@ -697,7 +697,7 @@ export default function SetupWizard() {
  <div className="w-full max-w-2xl flex justify-end mb-4">
  <button
  onClick={skip}
- className="flex items-center gap-1 text-[9px] font-black uppercase text-gray-500 hover:text-gray-300 transition-colors "
+ className="flex items-center gap-1 text-[9px] font-black uppercase text-z-secondary hover:text-gray-300 transition-colors "
  >
  Skip setup <X size={11} />
  </button>
@@ -715,7 +715,7 @@ export default function SetupWizard() {
  <div
  className={cn(
  'flex items-center gap-2 px-8 pt-6',
- isDark ? 'text-gray-500' : 'text-gray-400'
+ isDark ? 'text-z-secondary' : 'text-z-muted'
  )}
  >
  <span className="text-[8px] font-black uppercase tracking-widest">
@@ -757,7 +757,7 @@ export default function SetupWizard() {
  <h2 className="text-[22px] font-black uppercase leading-tight">
  {current.title}
  </h2>
- <p className="text-[10px] text-gray-400 mt-1">{current.subtitle}</p>
+ <p className="text-[10px] text-z-muted mt-1">{current.subtitle}</p>
  </div>
  </div>
  <div>{current.content}</div>
@@ -768,7 +768,7 @@ export default function SetupWizard() {
  <div
  className={cn(
  'flex items-center justify-between px-8 py-5 border-t',
- isDark ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
+ isDark ? 'border-z-border' : 'border-z-border shadow-sm'
  )}
  >
  <button
@@ -779,8 +779,8 @@ export default function SetupWizard() {
  step === 0
  ? 'opacity-30 cursor-not-allowed'
  : isDark
- ? 'border-white/[0.08] hover:border-white/30'
- : 'border-gray-200 hover:border-gray-400'
+ ? 'border-z-border hover:border-white/30'
+ : 'border-z-border hover:border-gray-400'
  )}
  >
  <ArrowLeft size={14} /> Back

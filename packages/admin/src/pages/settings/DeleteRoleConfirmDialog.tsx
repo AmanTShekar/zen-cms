@@ -40,7 +40,7 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
  theme === 'dark' ? 'bg-black border-red-500/10' : 'bg-white border-red-100'
  )}
  >
- <div className="flex items-center justify-between px-8 py-6 border-b border-white/[0.08]">
+ <div className="flex items-center justify-between px-8 py-6 border-b border-z-border">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-none-none bg-red-500/10 border border-red-500/20 flex items-center justify-center">
  <AlertTriangle size={18} className="text-red-500" />
@@ -49,7 +49,7 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
  Delete Role
  </span>
  </div>
- <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors">
+ <button onClick={onClose} className="text-z-secondary hover:text-white transition-colors">
  <X size={18} />
  </button>
  </div>
@@ -75,8 +75,8 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
  className={cn(
  'flex-1 py-3.5 rounded-none-none text-[10px] font-black uppercase tracking-widest border transition-all active:scale-95 disabled:opacity-40',
  theme === 'dark'
- ? 'border-white/[0.08] text-gray-400 hover:border-white/[0.08] hover:text-white'
- : 'border-gray-200 text-gray-500 hover:border-gray-300'
+ ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
+ : 'border-z-border text-z-secondary hover:border-z-border-strong'
  )}
  >
  Cancel
@@ -87,7 +87,7 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
  disabled={loading}
  className={cn(
  'flex-1 py-3.5 rounded-none-none text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 disabled:opacity-40 flex items-center justify-center gap-2',
- 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/20'
+ 'bg-red-500 hover:bg-red-600 text-white shadow-[var(--z-active-glow)]/20'
  )}
  >
  {loading ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}

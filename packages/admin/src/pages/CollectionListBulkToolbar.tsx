@@ -22,14 +22,14 @@ const CollectionListBulkToolbar: React.FC<CollectionListBulkToolbarProps> = ({
  transition={{ duration: 0.2 }}
  className={cn(
  'border rounded-none-none px-6 py-3 flex items-center justify-between gap-4 shadow-lg',
- theme === 'dark' ? 'bg-gray-500/10 border-gray-500/20' : 'bg-gray-50 border-gray-200'
+ theme === 'dark' ? 'bg-gray-500/10 border-gray-500/20' : 'bg-z-input border-z-border'
  )}
  >
  <div className="flex items-center gap-3">
- <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-400 ">
+ <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-z-muted ">
  {selectedIds.size} Selected
  </span>
- <button onClick={onClearSelection} className="p-1 text-gray-500 hover:text-white transition-colors" title="Clear selection">
+ <button onClick={onClearSelection} className="p-1 text-z-secondary hover:text-white transition-colors" title="Clear selection">
  <X size={12} />
  </button>
  </div>
@@ -39,7 +39,7 @@ const CollectionListBulkToolbar: React.FC<CollectionListBulkToolbarProps> = ({
  disabled={bulkProcessing}
  className={cn(
  'px-4 py-2 rounded-none-none font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2 border',
- theme === 'dark' ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400 hover:bg-gray-500/20' : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+ theme === 'dark' ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted hover:bg-gray-500/20' : 'bg-z-input border-z-border text-gray-600 hover:bg-gray-100'
  )}
  >
  <Send size={11} /> Publish

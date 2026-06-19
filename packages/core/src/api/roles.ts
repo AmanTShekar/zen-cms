@@ -9,7 +9,8 @@ import { invalidateRoleCache } from '../services/rbac'
 
 const router: import('express').Router = Router()
 
-// All routes require admin
+// All routes require authentication and admin role
+router.use(requireAuth)
 router.use(requireRole('admin'))
 
 // ── Schemas ─────────────────────────────────────────────────────────────────

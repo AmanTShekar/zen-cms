@@ -114,15 +114,15 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  className={cn(
  'w-full max-w-lg border rounded-none-none overflow-hidden shadow-2xl flex flex-col max-h-[85vh]',
  theme === 'dark'
- ? 'bg-[#0a0a0a] border-white/[0.08]'
- : 'bg-white border-gray-200',
+ ? 'bg-[#0a0a0a] border-z-border'
+ : 'bg-z-panel border-z-border',
  )}
  >
  {/* Header */}
  <div
  className={cn(
  'p-6 border-b flex items-center justify-between',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm',
+ theme === 'dark' ? 'border-z-border' : 'border-z-border shadow-sm',
  )}
  >
  <h3
@@ -137,7 +137,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <button
  onClick={() => setSeoOpen(false)}
  aria-label="Close"
- className="p-1 hover:text-gray-600 dark:text-gray-500 transition-colors"
+ className="p-1 hover:text-gray-600 dark:text-z-secondary transition-colors"
  >
  <X size={18} />
  </button>
@@ -146,7 +146,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  {/* Body */}
  <div className="p-6 space-y-4 overflow-y-auto flex-1">
  {/* Preview Tab Bar */}
- <div className="flex items-center gap-1 p-1 border border-white/[0.08] bg-white/[0.02] rounded-none-none shrink-0">
+ <div className="flex items-center gap-1 p-1 border border-z-border bg-z-panel rounded-none-none shrink-0">
  {([
  { id: 'google', icon: Globe, label: 'Google' },
  { id: 'twitter', icon: Twitter, label: 'Twitter / X' },
@@ -160,11 +160,11 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  'flex items-center gap-2 px-3 py-2 text-xs font-black uppercase tracking-wider transition-all border rounded-none-none flex-1 justify-center',
  previewTab === tab.id
  ? theme === 'dark'
- ? 'bg-white/10 border-white/[0.08] text-white'
- : 'bg-white border-gray-200 text-black shadow-sm'
+ ? 'bg-white/10 border-z-border text-white'
+ : 'bg-z-panel border-z-border text-black shadow-sm'
  : theme === 'dark'
- ? 'text-gray-500 border-transparent hover:text-gray-300'
- : 'text-gray-400 border-transparent hover:text-gray-600'
+ ? 'text-z-secondary border-transparent hover:text-gray-300'
+ : 'text-z-muted border-transparent hover:text-gray-600'
  )}
  >
  <tab.icon size={11} aria-hidden="true" />
@@ -177,7 +177,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <div
  className={cn(
  'rounded-none-none border overflow-hidden transition-all min-h-[180px]',
- theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-gray-50 border-gray-200'
+ theme === 'dark' ? 'bg-z-panel border-z-border' : 'bg-z-input border-z-border'
  )}
  >
  {/* ── Google SERP Preview ── */}
@@ -191,7 +191,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  className="p-5"
  >
  <div className="space-y-1">
- <div className="text-xs text-gray-500 truncate">{pageUrl}</div>
+ <div className="text-xs text-z-secondary truncate">{pageUrl}</div>
  <h2
  className="text-lg font-normal text-[#1a0dab] leading-5 truncate cursor-pointer hover:underline"
  style={{ fontFamily: 'Arial, sans-serif' }}
@@ -209,7 +209,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  {seoKeywords.split(',').slice(0, 4).map((kw, i) => (
  <span
  key={i}
- className="text-xs px-1.5 py-0.5 border border-gray-300 rounded-none text-gray-500"
+ className="text-xs px-1.5 py-0.5 border border-z-border-strong rounded-none text-z-secondary"
  >
  {kw.trim()}
  </span>
@@ -232,7 +232,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <div
  className={cn(
  'border rounded-none shadow-sm overflow-hidden max-w-[400px]',
- theme === 'dark' ? 'bg-[#15202b] border-white/[0.08]' : 'bg-white border-gray-200'
+ theme === 'dark' ? 'bg-[#15202b] border-z-border' : 'bg-z-panel border-z-border'
  )}
  >
  {/* Header */}
@@ -245,9 +245,9 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <span className={cn('text-[11px] font-black', theme === 'dark' ? 'text-white' : 'text-black')}>
  Zenith CMS
  </span>
- <span className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>@zenith·now</span>
+ <span className={cn('text-xs', theme === 'dark' ? 'text-z-secondary' : 'text-z-muted')}>@zenith·now</span>
  </div>
- <span className={cn('text-xs', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>{pageUrl}</span>
+ <span className={cn('text-xs', theme === 'dark' ? 'text-z-secondary' : 'text-z-muted')}>{pageUrl}</span>
  </div>
  </div>
  {/* Card content */}
@@ -280,7 +280,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <div
  className={cn(
  'border rounded-none shadow-sm overflow-hidden max-w-[400px]',
- theme === 'dark' ? 'bg-[#1c1e21] border-white/[0.08]' : 'bg-white border-gray-200'
+ theme === 'dark' ? 'bg-[#1c1e21] border-z-border' : 'bg-z-panel border-z-border'
  )}
  >
  {/* Image */}
@@ -295,16 +295,16 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <div
  className={cn(
  'p-3 border-t',
- theme === 'dark' ? 'bg-[#242526] border-white/[0.08]' : 'bg-gray-50 border-gray-200'
+ theme === 'dark' ? 'bg-[#242526] border-z-border' : 'bg-z-input border-z-border'
  )}
  >
- <div className="text-xs font-black uppercase tracking-wider text-gray-400 mb-1">
+ <div className="text-xs font-black uppercase tracking-wider text-z-muted mb-1">
  {siteUrl.replace(/^https?:\/\//, '')}
  </div>
  <div
  className={cn(
  'text-[13px] font-bold leading-4 line-clamp-2 mb-1',
- theme === 'dark' ? 'text-white' : 'text-gray-900'
+ theme === 'dark' ? 'text-white' : 'text-z-primary'
  )}
  style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}
  >
@@ -313,7 +313,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <div
  className={cn(
  'text-[11px] leading-3 line-clamp-2',
- theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+ theme === 'dark' ? 'text-z-muted' : 'text-z-secondary'
  )}
  style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}
  >
@@ -332,7 +332,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <div className="flex items-center justify-between">
  <label
  htmlFor={`seo-${field}`}
- className="text-xs font-black text-gray-500 uppercase tracking-widest px-1"
+ className="text-xs font-black text-z-secondary uppercase tracking-widest px-1"
  >
  {humanize(field)}
  </label>
@@ -367,8 +367,8 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  className={cn(
  'w-full rounded-none-none py-3 px-4 text-xs font-black h-24 resize-none transition-all border',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white focus-visible:border-gray-500/30'
- : 'bg-gray-50 border-gray-200 text-black focus-visible:border-gray-600/30',
+ ? 'bg-z-hover border-z-border text-white focus-visible:border-gray-500/30'
+ : 'bg-z-input border-z-border text-black focus-visible:border-gray-600/30',
  )}
  placeholder="Enter page description..."
  />
@@ -383,8 +383,8 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  className={cn(
  'w-full rounded-none-none py-3 px-4 text-xs font-black transition-all border',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white focus-visible:border-gray-500/30'
- : 'bg-gray-50 border-gray-200 text-black focus-visible:border-gray-600/30',
+ ? 'bg-z-hover border-z-border text-white focus-visible:border-gray-500/30'
+ : 'bg-z-input border-z-border text-black focus-visible:border-gray-600/30',
  )}
  placeholder={field === 'title' ? 'Enter SEO title...' : 'Enter keywords (comma separated)...'}
  />
@@ -398,8 +398,8 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  className={cn(
  'p-4 border-t flex items-center justify-between shrink-0',
  theme === 'dark'
- ? 'border-white/[0.08] bg-white/[0.02]'
- : 'border-gray-200 shadow-sm bg-gray-50',
+ ? 'border-z-border bg-z-panel'
+ : 'border-z-border shadow-sm bg-gray-50',
  )}
  >
  <button
@@ -408,8 +408,8 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  className={cn(
  'flex items-center gap-2 px-4 py-2 text-xs font-black uppercase rounded-none-none border transition-all',
  theme === 'dark'
- ? 'border-white/[0.08] text-gray-400 hover:border-rose-500/20 hover:text-rose-400'
- : 'border-gray-200 text-gray-500 hover:border-rose-200 hover:text-rose-500',
+ ? 'border-z-border text-z-muted hover:border-rose-500/20 hover:text-rose-400'
+ : 'border-z-border text-z-secondary hover:border-rose-200 hover:text-rose-500',
  )}
  >
  <RotateCcw size={12} />
@@ -422,8 +422,8 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  className={cn(
  'px-4 py-2 text-xs font-black uppercase rounded-none-none border transition-all',
  theme === 'dark'
- ? 'border-white/[0.08] text-gray-400 hover:border-white/[0.08] hover:text-white'
- : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:text-black',
+ ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
+ : 'border-z-border text-gray-600 hover:border-z-border-strong hover:text-black',
  )}
  >
  Cancel

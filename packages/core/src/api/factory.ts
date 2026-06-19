@@ -32,9 +32,29 @@ async function verifyGranularAccess(
   if (!user || !user.role) return null
   if (user.role === 'admin') return { allowed: true }
 
+  const userFromDb = await _adapter.findOne<Record<string, any>>('users', { _id: user.id }) || 
+                     await _adapter.findOne<Record<string, any>>('users', { id: user.id }) || user
+
+  // ── Operator Content Restriction (Special Access) ──
+  // If the operator has a defined specialAccess array, it acts as a strict whitelist.
+  // We must skip this whitelist for system collections needed to boot the CMS UI.
+  if (Array.isArray((userFromDb as any).specialAccess) && (userFromDb as any).specialAccess.length > 0) {
+    const isSystemResource = resource.startsWith('z_') || ['users', 'media', 'audit-logs'].includes(resource)
+    
+    if (!isSystemResource) {
+      const hasAccess = (userFromDb as any).specialAccess.includes(`col:${resource}`) || (userFromDb as any).specialAccess.includes(`glb:${resource}`)
+      if (!hasAccess) {
+        return { allowed: false }
+      }
+    }
+  }
+
   try {
     const hasAccess = await RBACEngine.checkAccess(user.role, resource, action as any)
-    if (hasAccess === null) return null // no custom role found — use schema access fns
+    if (hasAccess === null) {
+      // No custom role found, but they passed specialAccess. Allow fallback to schema access fns.
+      return null
+    }
 
     // ── Field-Level Permissions (Payload CMS parity) ──────────────────────────
     // Load the per-collection, per-field permission map from the role definition.

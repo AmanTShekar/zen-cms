@@ -50,13 +50,13 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  exit={{ scale: 0.95, opacity: 0 }}
  className={cn(
  'w-full max-w-2xl border rounded-none-none overflow-hidden shadow-2xl',
- theme === 'dark' ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-white border-gray-200'
+ theme === 'dark' ? 'bg-[#0a0a0a] border-z-border' : 'bg-z-panel border-z-border'
  )}
  >
  <div
  className={cn(
  'p-6 border-b flex items-center justify-between',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
+ theme === 'dark' ? 'border-z-border' : 'border-z-border shadow-sm'
  )}
  >
  <div className="flex items-center gap-3">
@@ -66,11 +66,11 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  <div>
  <h3
  id={modalTitleId}
- className="text-lg font-black uppercase leading-none text-gray-600 dark:text-gray-500"
+ className="text-lg font-black uppercase leading-none text-gray-600 dark:text-z-secondary"
  >
  Block Templates
  </h3>
- <p className="text-xs text-gray-500 uppercase tracking-widest">
+ <p className="text-xs text-z-secondary uppercase tracking-widest">
  Save & reuse component combinations
  </p>
  </div>
@@ -78,7 +78,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  <button
  onClick={() => setTemplatesOpen(false)}
  aria-label="Close"
- className="p-1 hover:text-gray-600 dark:text-gray-500 transition-colors"
+ className="p-1 hover:text-gray-600 dark:text-z-secondary transition-colors"
  style={{ color: theme === 'dark' ? '#fff' : '#000' }}
  >
  <X size={18} />
@@ -89,7 +89,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  {templates.length === 0 ? (
  <div className="py-12 text-center">
  <Layout size={40} className="mx-auto mb-4 text-gray-600" />
- <p className="text-xs text-gray-500 font-black uppercase tracking-widest ">
+ <p className="text-xs text-z-secondary font-black uppercase tracking-widest ">
  No saved templates yet
  </p>
  <p className="text-xs text-gray-600 mt-2">
@@ -104,15 +104,15 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  className={cn(
  'p-4 border rounded-none-none space-y-3 relative group',
  theme === 'dark'
- ? 'bg-white/[0.02] border-white/[0.08] hover:border-gray-500/30'
- : 'bg-gray-50 border-gray-200 hover:border-gray-300'
+ ? 'bg-z-panel border-z-border hover:border-gray-500/30'
+ : 'bg-z-input border-z-border hover:border-z-border-strong'
  )}
  >
  <div className="flex items-center justify-between">
- <span className="text-xs font-black uppercase text-gray-600 dark:text-gray-400">
+ <span className="text-xs font-black uppercase text-gray-600 dark:text-z-muted">
  {template.name}
  </span>
- <span className="text-xs text-gray-500">
+ <span className="text-xs text-z-secondary">
  {template.content?.sections?.length || template.sections?.length || 0} blocks
  </span>
  </div>
@@ -134,8 +134,8 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  className={cn(
  'p-2 border rounded-none-none transition-colors',
  theme === 'dark'
- ? 'border-white/[0.08] text-gray-500 hover:border-rose-500/30 hover:text-rose-500'
- : 'border-gray-200 text-gray-400 hover:border-rose-300 hover:text-rose-500'
+ ? 'border-z-border text-z-secondary hover:border-rose-500/30 hover:text-rose-500'
+ : 'border-z-border text-z-muted hover:border-rose-300 hover:text-rose-500'
  )}
  >
  <Trash2 size={12} />
@@ -150,9 +150,9 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  {selectedSections.size > 0 && (
  <div className={cn(
  'p-4 border-t flex items-center justify-between',
- theme === 'dark' ? 'border-white/[0.08] bg-white/[0.02]' : 'border-gray-200 shadow-sm bg-gray-50/50'
+ theme === 'dark' ? 'border-z-border bg-z-panel' : 'border-z-border shadow-sm bg-gray-50/50'
  )}>
- <span className="text-xs text-gray-500 font-black uppercase tracking-widest ">
+ <span className="text-xs text-z-secondary font-black uppercase tracking-widest ">
  {selectedSections.size} block{selectedSections.size > 1 ? 's' : ''} selected
  </span>
  <button

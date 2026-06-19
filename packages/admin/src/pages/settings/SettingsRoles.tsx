@@ -115,17 +115,17 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
 
  return (
  <div className="col-span-full space-y-6">
- <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+ <div className="flex items-center justify-between border-b border-z-border pb-4">
  <div className="flex flex-col">
  <h3 className="text-sm font-black uppercase tracking-wider">Roles & Permissions</h3>
- <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1">
+ <span className="text-[8px] text-z-secondary font-bold uppercase tracking-widest mt-1">
  Manage team access levels and granular resource permissions
  </span>
  </div>
  <button
  type="button"
  onClick={() => setCreateOpen(true)}
- className="flex items-center gap-2 px-4 py-2 border border-gray-500/30 hover:border-gray-500 hover:bg-gray-500/10 text-[10px] font-black uppercase transition-all text-gray-600 dark:text-gray-400 hover:text-white"
+ className="flex items-center gap-2 px-4 py-2 border border-z-active-border hover:border-z-accent hover:bg-z-active-bg text-[10px] font-black uppercase transition-all text-z-accent dark:text-z-active-text hover:text-white"
  >
  <PlusCircle size={12} />
  New Custom Role
@@ -133,7 +133,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  </div>
 
  {/* Role type filter tabs */}
- <div className="flex items-center gap-1 border-b border-white/[0.08] pb-0">
+ <div className="flex items-center gap-1 border-b border-z-border pb-0">
  {(['all', 'system', 'custom'] as const).map((filter) => (
  <button
  key={filter}
@@ -141,7 +141,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  onClick={() => setRoleFilter(filter)}
  className={cn(
  'px-4 py-2 text-[9px] font-black uppercase tracking-widest border-b-2 transition-all',
- roleFilter === filter ? 'border-gray-500 text-white' : 'border-transparent text-gray-500 hover:text-white'
+ roleFilter === filter ? 'border-gray-500 text-white' : 'border-transparent text-z-secondary hover:text-white'
  )}
  >
  {filter === 'all' ? `All (${roles.length})` : filter === 'system' ? `System (${roles.filter(r => r.isSystem).length})` : `Custom (${roles.filter(r => !r.isSystem).length})`}
@@ -157,10 +157,10 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  key={role._id}
  onClick={() => setEditingRole(role)}
  className={cn(
- 'p-4 border rounded-none-none flex items-center justify-between cursor-pointer transition-all',
+ 'p-4 border rounded-none flex items-center justify-between cursor-pointer transition-all shadow-[var(--z-active-glow)]',
  editingRole?._id === role._id
- ? 'bg-gray-500/10 border-gray-500/40'
- : 'bg-white/[0.01] border-white/[0.08] hover:border-white/[0.08]'
+ ? 'bg-z-active-bg border-z-active-border'
+ : theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-z-border hover:border-z-active-border' : 'bg-z-input border-z-border'
  )}
  >
  <div className="flex flex-col leading-none gap-1.5">
@@ -172,13 +172,13 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  <span className={cn(
  'text-[7px] font-black uppercase px-1.5 py-0.5 tracking-widest border',
  role.roleType === 'admin' ? 'border-red-500/30 text-red-400' :
- role.roleType === 'editor' ? 'border-gray-500/30 text-gray-600 dark:text-gray-400' :
- 'border-white/[0.08] text-gray-500'
+ role.roleType === 'editor' ? 'border-gray-500/30 text-gray-600 dark:text-z-muted' :
+ 'border-z-border text-z-secondary'
  )}>
  {role.roleType}
  </span>
  </div>
- <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">
+ <span className="text-[8px] font-bold text-z-secondary uppercase tracking-widest">
  {role.permissions?.length || 0} rule{role.permissions?.length !== 1 ? 's' : ''}
  {role.description && ` · ${role.description.slice(0, 40)}`}
  </span>
@@ -196,7 +196,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  toast.success(`Cloned as "${res.data.data.roleName}"`)
  } catch { toast.error('Failed to clone role') }
  }}
- className="text-gray-500 hover:text-gray-600 dark:text-gray-400 transition-colors"
+ className="text-z-secondary hover:text-gray-600 dark:text-z-muted transition-colors"
  >
  <Copy size={14} />
  </button>
@@ -207,7 +207,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  e.stopPropagation()
  setDeleteRole(role)
  }}
- className="text-gray-500 hover:text-red-400 transition-colors"
+ className="text-z-secondary hover:text-red-400 transition-colors"
  >
  <Trash2 size={14} />
  </button>
@@ -216,19 +216,19 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  </div>
  ))}
  {filteredRoles.length === 0 && (
- <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest py-4">No {roleFilter} roles found.</p>
+ <p className="text-[10px] text-z-secondary font-bold uppercase tracking-widest py-4">No {roleFilter} roles found.</p>
  )}
  </div>
 
  {/* Permission editor */}
  <div className="xl:col-span-2">
  {editingRole ? (
- <div className="space-y-6 p-6 border border-white/[0.08] bg-white/[0.01] backdrop-blur-3xl">
- <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+ <div className="space-y-6 p-6 border rounded-none shadow-[var(--z-active-glow)] transition-all bg-z-panel backdrop-blur-md border-z-border">
+ <div className="flex items-center justify-between border-b border-z-border pb-4">
  <div className="flex flex-col">
- <h4 className="text-xs font-black uppercase tracking-widest text-gray-600 dark:text-gray-400">{editingRole.roleName}</h4>
+ <h4 className="text-xs font-black uppercase tracking-widest text-gray-600 dark:text-z-muted">{editingRole.roleName}</h4>
  {editingRole.description && (
- <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">{editingRole.description}</span>
+ <span className="text-[9px] font-bold text-z-secondary uppercase tracking-widest mt-0.5">{editingRole.description}</span>
  )}
  </div>
  <div className="flex items-center gap-2">
@@ -249,7 +249,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  toast.error(err.response?.data?.error?.message || 'Failed to save')
  }
  }}
- className="flex items-center gap-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 text-white text-[10px] font-black uppercase tracking-wider transition-all"
+ className={cn("flex items-center gap-2 px-4 py-2 text-white text-[10px] font-black uppercase tracking-wider transition-all", theme === 'dark' ? 'bg-z-accent hover:opacity-90 shadow-[var(--z-active-glow)]' : 'bg-gray-900 hover:bg-gray-800')}
  >
  <Save size={12} />
  Save
@@ -266,12 +266,12 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
 
  <div className="space-y-4">
  <div className="flex items-center justify-between">
- <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Resource Permission Rules</span>
+ <span className="text-[9px] font-black uppercase tracking-widest text-z-muted">Resource Permission Rules</span>
  {!editingRole.isSystem && (
  <button
  type="button"
  onClick={() => setEditingRole({ ...editingRole, permissions: [...(editingRole.permissions || []), { resource: '*', actions: ['read'] }] })}
- className="text-[9px] font-black text-gray-600 dark:text-gray-400 hover:text-gray-300 uppercase tracking-widest flex items-center gap-1"
+ className="text-[9px] font-black text-gray-600 dark:text-z-muted hover:text-gray-300 uppercase tracking-widest flex items-center gap-1"
  >
  <PlusCircle size={10} />
  Add Rule
@@ -281,7 +281,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
 
  <div className="space-y-3">
  {(editingRole.permissions || []).map((perm, permIdx) => (
- <div key={permIdx} className="border border-white/[0.08] bg-black/40">
+ <div key={permIdx} className="border border-z-border bg-black/40">
  {/* Rule header */}
  <div className="p-4 flex flex-col gap-4">
  <div className="flex items-center gap-3 flex-wrap">
@@ -294,7 +294,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  updated[permIdx] = { ...perm, resource: e.target.value }
  setEditingRole({ ...editingRole, permissions: updated })
  }}
- className="bg-black border border-white/[0.08] text-white text-[11px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none-none focus:border-gray-500 disabled:opacity-50"
+ className={cn("text-[11px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1.5 px-3 rounded-none focus:border-z-accent disabled:opacity-50 border", theme === 'dark' ? 'bg-black/80 border-z-border text-white' : 'bg-z-panel border-z-border')}
  >
  {availableCollections.map(c => (<option key={c.slug} value={c.slug}>{c.label}</option>))}
  </select>
@@ -316,9 +316,9 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  updated[permIdx] = { ...perm, actions: next }
  setEditingRole({ ...editingRole, permissions: updated })
  }}
- className="rounded-none-none border-white/[0.08] text-gray-600 focus:ring-0 bg-black cursor-pointer"
+ className="rounded-none-none border-z-border text-gray-600 focus:ring-0 bg-black cursor-pointer"
  />
- <span className={cn('text-[8px] font-black uppercase tracking-wider', checked ? 'text-gray-600 dark:text-gray-400' : 'text-gray-500')}>{act}</span>
+ <span className={cn('text-[8px] font-black uppercase tracking-wider', checked ? 'text-gray-600 dark:text-z-muted' : 'text-z-secondary')}>{act}</span>
  </label>
  )
  })}
@@ -328,14 +328,14 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
 
  {/* Field permissions */}
  {perm.resource !== '*' && (
- <div className="border-t border-white/[0.08]">
+ <div className="border-t border-z-border">
  <button
  type="button"
  disabled={editingRole.isSystem}
  onClick={() => setExpandedResource(expandedResource === `${editingRole._id}-${permIdx}` ? null : `${editingRole._id}-${permIdx}`)}
  className={cn(
  'w-full flex items-center gap-2 px-4 py-2.5 text-[8px] font-black uppercase tracking-widest transition-all',
- theme === 'dark' ? 'hover:bg-white/5 text-gray-400 hover:text-gray-300' : 'hover:bg-gray-50 text-gray-500 hover:text-gray-700',
+ theme === 'dark' ? 'hover:bg-z-hover text-z-muted hover:text-gray-300' : 'hover:bg-gray-50 text-z-secondary hover:text-gray-700',
  editingRole.isSystem && 'opacity-50 cursor-not-allowed'
  )}
  >
@@ -350,7 +350,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  const fields = getCollectionFields(perm.resource)
  return (
  <div className="space-y-2">
- <div className="grid grid-cols-12 gap-2 border-b border-white/[0.08] pb-2">
+ <div className="grid grid-cols-12 gap-2 border-b border-z-border pb-2">
  <div className="col-span-4 text-[7px] font-black uppercase text-gray-600 tracking-widest">Field</div>
  <div className="col-span-4 text-[7px] font-black uppercase text-gray-600 tracking-widest flex items-center gap-1 justify-center"><Eye size={8} /> Read</div>
  <div className="col-span-4 text-[7px] font-black uppercase text-gray-600 tracking-widest flex items-center gap-1 justify-center"><Edit3 size={8} /> Write</div>
@@ -364,7 +364,7 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  <div className="col-span-4">
  <span className={cn(
  'text-[9px] font-black uppercase ',
- (readOn || writeOn) ? 'text-gray-600 dark:text-gray-400' : 'text-gray-500'
+ (readOn || writeOn) ? 'text-gray-600 dark:text-z-muted' : 'text-z-secondary'
  )}>
  {field}
  </span>
@@ -375,10 +375,10 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  disabled={editingRole.isSystem}
  onClick={() => toggleField(permIdx, field, fp, 'read')}
  className={cn(
- 'w-6 h-6 border rounded-none-none flex items-center justify-center transition-all',
+ 'w-6 h-6 border rounded-none flex items-center justify-center transition-all',
  readOn
- ? 'bg-gray-500/20 border-gray-500/40 text-gray-600 dark:text-gray-400'
- : 'bg-transparent border-white/[0.08] text-gray-600 hover:border-white/[0.08]',
+ ? 'bg-z-accent/20 border-z-active-border text-z-active-text'
+ : 'bg-transparent border-z-border text-gray-600 hover:border-z-active-border hover:text-z-active-text',
  editingRole.isSystem && 'opacity-50 cursor-not-allowed'
  )}
  >
@@ -391,10 +391,10 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  disabled={editingRole.isSystem}
  onClick={() => toggleField(permIdx, field, fp, 'write')}
  className={cn(
- 'w-6 h-6 border rounded-none-none flex items-center justify-center transition-all',
+ 'w-6 h-6 border rounded-none flex items-center justify-center transition-all',
  writeOn
- ? 'bg-gray-500/20 border-gray-500/40 text-gray-600 dark:text-gray-400'
- : 'bg-transparent border-white/[0.08] text-gray-600 hover:border-white/[0.08]',
+ ? 'bg-z-accent/20 border-z-active-border text-z-active-text'
+ : 'bg-transparent border-z-border text-gray-600 hover:border-z-active-border hover:text-z-active-text',
  editingRole.isSystem && 'opacity-50 cursor-not-allowed'
  )}
  >
@@ -420,20 +420,20 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  </div>
 
  {/* User assignment */}
- <div className="border-t border-white/[0.08] pt-5 space-y-3">
+ <div className="border-t border-z-border pt-5 space-y-3">
  <div className="flex items-center justify-between">
- <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">
+ <span className="text-[9px] font-black uppercase tracking-widest text-z-muted">
  Assigned Users ({users.filter(u => u.role === editingRole.roleName || u.role === editingRole.roleType).length})
  </span>
  </div>
  <div className="space-y-2">
  {users.filter(u => u.role === editingRole.roleName || u.role === editingRole.roleType).map(u => (
- <div key={u._id} className="flex items-center justify-between p-3 border border-white/[0.08] bg-black/40">
+ <div key={u._id} className="flex items-center justify-between p-3 border border-z-border bg-black/40">
  <div className="flex flex-col">
  <span className="text-[11px] font-black text-white">{u.email}</span>
- <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">{u._id}</span>
+ <span className="text-[8px] font-bold text-z-secondary uppercase tracking-widest">{u._id}</span>
  </div>
- <span className="text-[7px] font-black uppercase text-gray-600 dark:text-gray-400 border border-gray-500/20 px-2 py-1">{u.role}</span>
+ <span className="text-[7px] font-black uppercase text-gray-600 dark:text-z-muted border border-gray-500/20 px-2 py-1">{u.role}</span>
  </div>
  ))}
  {users.filter(u => u.role === editingRole.roleName || u.role === editingRole.roleType).length === 0 && (
@@ -443,8 +443,8 @@ const SettingsRoles: React.FC<SettingsRolesProps> = ({
  </div>
  </div>
  ) : (
- <div className="min-h-[300px] border border-dashed border-white/[0.08] flex items-center justify-center text-center p-8">
- <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest max-w-xs">
+ <div className="min-h-[300px] border border-dashed border-z-border flex items-center justify-center text-center p-8">
+ <p className="text-[10px] text-z-secondary font-bold uppercase tracking-widest max-w-xs">
  Select a role on the left to view and edit its permission rules.
  </p>
  </div>

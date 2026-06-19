@@ -45,20 +45,20 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
  <div
  className={cn(
  'w-full max-w-md border rounded-none-none shadow-2xl',
- theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
+ theme === 'dark' ? 'bg-black border-z-border' : 'bg-z-panel border-z-border shadow-sm'
  )}
  >
  {/* Header */}
- <div className="flex items-center justify-between px-8 py-6 border-b border-white/[0.08]">
+ <div className="flex items-center justify-between px-8 py-6 border-b border-z-border">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-none-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
- <Key size={18} className="text-gray-600 dark:text-gray-500" />
+ <Key size={18} className="text-gray-600 dark:text-z-secondary" />
  </div>
  <span className="text-[12px] font-black uppercase tracking-wide">
  Generate Access Token
  </span>
  </div>
- <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors">
+ <button onClick={onClose} className="text-z-secondary hover:text-white transition-colors">
  <X size={18} />
  </button>
  </div>
@@ -66,7 +66,7 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
  <form onSubmit={handleGenerate} className="px-8 py-6 space-y-6">
  {/* Name */}
  <div className="space-y-2">
- <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">
+ <label className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary">
  Token Name
  </label>
  <input
@@ -79,15 +79,15 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
  className={cn(
  'w-full border rounded-none-none py-4 px-5 text-[13px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white focus:border-gray-500/50'
- : 'bg-gray-50 border-gray-200 focus:border-gray-500'
+ ? 'bg-z-hover border-z-border text-white focus:border-gray-500/50'
+ : 'bg-z-input border-z-border focus:border-gray-500'
  )}
  />
  </div>
 
  {/* Role */}
  <div className="space-y-2">
- <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">
+ <label className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary">
  Permissions Tier
  </label>
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -99,10 +99,10 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
  className={cn(
  'py-3 text-[9px] font-black uppercase tracking-wider border rounded-none-none transition-all',
  role === r
- ? 'border-gray-500/40 bg-gray-500/10 text-gray-600 dark:text-gray-400'
+ ? 'border-gray-500/40 bg-gray-500/10 text-gray-600 dark:text-z-muted'
  : theme === 'dark'
- ? 'border-white/[0.08] text-gray-500 hover:border-white/[0.08]'
- : 'border-gray-200 text-gray-400 hover:border-gray-300'
+ ? 'border-z-border text-z-secondary hover:border-z-border'
+ : 'border-z-border text-z-muted hover:border-z-border-strong'
  )}
  >
  {r}
@@ -113,7 +113,7 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
 
  {/* Expiry */}
  <div className="space-y-2">
- <label className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">
+ <label className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary">
  Expires After (days)
  </label>
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
@@ -125,10 +125,10 @@ const GenerateKeyModal: React.FC<GenerateKeyModalProps> = ({ onClose, onGenerate
  className={cn(
  'py-3 text-[9px] font-black border rounded-none-none transition-all',
  expiresDays === d
- ? 'border-gray-500/40 bg-gray-500/10 text-gray-600 dark:text-gray-400'
+ ? 'border-gray-500/40 bg-gray-500/10 text-gray-600 dark:text-z-muted'
  : theme === 'dark'
- ? 'border-white/[0.08] text-gray-500 hover:border-white/[0.08]'
- : 'border-gray-200 text-gray-400 hover:border-gray-300'
+ ? 'border-z-border text-z-secondary hover:border-z-border'
+ : 'border-z-border text-z-muted hover:border-z-border-strong'
  )}
  >
  {d}d

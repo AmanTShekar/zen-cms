@@ -67,7 +67,7 @@ const GlobalSearch: React.FC = () => {
  part.toLowerCase() === match.toLowerCase() ? (
  <span
  key={i}
- className="text-gray-600 dark:text-gray-500 font-black underline decoration-2 underline-offset-2"
+ className="text-gray-600 dark:text-z-secondary font-black underline decoration-2 underline-offset-2"
  >
  {part}
  </span>
@@ -114,13 +114,13 @@ const GlobalSearch: React.FC = () => {
   className={cn(
   'flex items-center gap-2 px-4 py-2.5 rounded-none-none transition-all border',
   isFocused
-  ? 'bg-white border-gray-500 text-gray-900 shadow-md ring-4 ring-gray-500/10 dark:bg-black dark:border-gray-500 dark:text-gray-100 dark:ring-gray-500/20'
-  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 shadow-sm dark:bg-black/50 dark:border-white/[0.08] dark:text-gray-400 dark:hover:bg-white/5'
+  ? 'bg-white border-gray-500 text-z-primary shadow-md ring-4 ring-gray-500/10 dark:bg-black dark:border-gray-500 dark:text-gray-100 dark:ring-gray-500/20'
+  : 'bg-z-panel border-z-border text-gray-600 hover:bg-gray-50 shadow-sm dark:bg-black/50 dark:border-z-border dark:text-z-muted dark:hover:bg-z-hover'
   )}
   >
   <Search
   size={16}
-  className={cn('transition-colors', isFocused ? 'text-gray-600 dark:text-gray-500' : 'text-gray-400 dark:text-gray-500')}
+  className={cn('transition-colors', isFocused ? 'text-gray-600 dark:text-z-secondary' : 'text-z-muted dark:text-z-secondary')}
   />
   <input
   type="text"
@@ -128,15 +128,15 @@ const GlobalSearch: React.FC = () => {
   onChange={(e) => setQuery(e.target.value)}
   onFocus={() => setIsFocused(true)}
   placeholder="SEARCH SYSTEM..."
-  className="bg-transparent border-none text-[12px] font-black uppercase tracking-widest flex-1 placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:ring-0 rounded-none-none px-1"
+  className="bg-transparent border-none text-[12px] font-black uppercase tracking-widest flex-1 placeholder:text-z-muted dark:placeholder:text-gray-600 focus:outline-none focus:ring-0 rounded-none-none px-1"
   />
   {query && (
   <button onClick={() => setQuery('')} className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-none-none transition-colors">
-  <X size={14} className="text-gray-500" />
+  <X size={14} className="text-z-secondary" />
   </button>
   )}
   {!isFocused && !query && (
-  <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-none-none border border-gray-200 dark:border-white/[0.08] bg-gray-50 dark:bg-black/40 text-[9px] font-black text-gray-500 dark:text-gray-500">
+  <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-none-none border border-z-border dark:border-z-border bg-gray-50 dark:bg-black/40 text-[9px] font-black text-z-secondary dark:text-z-secondary">
   <span>⌘</span>
   <span>K</span>
   </div>
@@ -150,28 +150,28 @@ const GlobalSearch: React.FC = () => {
   animate={{ opacity: 1, y: 0, scale: 1 }}
   exit={{ opacity: 0, y: 10, scale: 0.98 }}
   transition={{ duration: 0.2, ease: "easeOut" }}
-  className="absolute top-full left-0 right-0 mt-3 bg-white border border-gray-200 dark:bg-[#0a0a0a] dark:border-white/[0.08] rounded-none-none shadow-2xl overflow-hidden flex flex-col text-gray-900 dark:text-gray-100"
+  className="absolute top-full left-0 right-0 mt-3 bg-white border border-z-border dark:bg-[#0a0a0a] dark:border-z-border rounded-none-none shadow-2xl overflow-hidden flex flex-col text-z-primary dark:text-gray-100"
   >
   <div className="max-h-[400px] overflow-y-auto p-2 ">
   {results.length > 0 && (
   <div className="space-y-0.5 mb-2">
-  <div className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
+  <div className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-z-muted dark:text-z-secondary">
   Database Nodes
   </div>
   {results.map((res: any) => (
   <button
   key={res.id}
   onClick={() => handleSelect(`/collections/${res.collection}/${res.id}`)}
-  className="w-full flex items-center gap-3 p-2.5 rounded-none-none hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-left group"
+  className="w-full flex items-center gap-3 p-2.5 rounded-none-none hover:bg-gray-50 dark:hover:bg-z-hover transition-all text-left group"
   >
-  <div className="w-8 h-8 rounded-none-none bg-gray-50 dark:bg-gray-500/10 flex items-center justify-center text-gray-600 dark:text-gray-500 flex-shrink-0 border border-gray-100 dark:border-gray-500/20 group-hover:scale-105 transition-transform">
+  <div className="w-8 h-8 rounded-none-none bg-gray-50 dark:bg-gray-500/10 flex items-center justify-center text-gray-600 dark:text-z-secondary flex-shrink-0 border border-z-border dark:border-gray-500/20 group-hover:scale-105 transition-transform">
   <FileText size={14} />
   </div>
   <div className="flex flex-col min-w-0">
-  <span className="text-[12px] font-black uppercase tracking-tight truncate text-gray-900 dark:text-gray-100">
+  <span className="text-[12px] font-black uppercase tracking-tight truncate text-z-primary dark:text-gray-100">
   {highlightMatch(res.title, query)}
   </span>
-  <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+  <span className="text-[9px] font-bold text-z-muted dark:text-z-secondary uppercase tracking-widest">
   {res.collectionLabel}
   </span>
   </div>
@@ -181,8 +181,8 @@ const GlobalSearch: React.FC = () => {
   )}
 
   {/* System Protocols & Settings Deep Search */}
-  <div className="pt-2 border-t border-gray-100 dark:border-white/[0.05] space-y-0.5">
-  <div className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
+  <div className="pt-2 border-t border-z-border dark:border-white/[0.05] space-y-0.5">
+  <div className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-z-muted dark:text-z-secondary">
   System Protocols
   </div>
   {(() => {
@@ -195,7 +195,7 @@ const GlobalSearch: React.FC = () => {
   return (
   <div className="py-10 text-center flex flex-col items-center justify-center gap-2">
   <Search size={20} className="text-gray-300 dark:text-gray-700" />
-  <span className="text-[11px] font-black uppercase text-gray-400 dark:text-gray-600 tracking-widest">
+  <span className="text-[11px] font-black uppercase text-z-muted dark:text-gray-600 tracking-widest">
   No matching records found
   </span>
   </div>
@@ -206,16 +206,16 @@ const GlobalSearch: React.FC = () => {
   <button
   key={cmd.label}
   onClick={() => handleSelect(cmd.path)}
-  className="w-full flex items-center gap-3 p-2.5 rounded-none-none hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-left group"
+  className="w-full flex items-center gap-3 p-2.5 rounded-none-none hover:bg-gray-50 dark:hover:bg-z-hover transition-all text-left group"
   >
-  <div className="w-8 h-8 rounded-none-none bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-500 dark:text-gray-400 flex-shrink-0 group-hover:bg-gray-500 group-hover:text-white dark:group-hover:bg-gray-500 dark:group-hover:text-white transition-all group-hover:scale-105 border border-transparent dark:border-white/[0.05]">
+  <div className="w-8 h-8 rounded-none-none bg-gray-100 dark:bg-z-hover flex items-center justify-center text-z-secondary dark:text-z-muted flex-shrink-0 group-hover:bg-gray-500 group-hover:text-white dark:group-hover:bg-gray-500 dark:group-hover:text-white transition-all group-hover:scale-105 border border-transparent dark:border-white/[0.05]">
   <cmd.icon size={14} />
   </div>
   <div className="flex flex-col min-w-0">
-  <span className="text-[12px] font-black uppercase tracking-tight truncate text-gray-900 dark:text-gray-100">
+  <span className="text-[12px] font-black uppercase tracking-tight truncate text-z-primary dark:text-gray-100">
   {highlightMatch(cmd.label, query)}
   </span>
-  <span className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest truncate">
+  <span className="text-[9px] font-bold text-z-muted dark:text-z-secondary uppercase tracking-widest truncate">
   {highlightMatch(cmd.sub, query)}
   </span>
   </div>
@@ -225,13 +225,13 @@ const GlobalSearch: React.FC = () => {
   </div>
   </div>
 
-  <div className="px-4 py-2.5 bg-gray-50 dark:bg-black border-t border-gray-200 dark:border-white/[0.08] flex items-center justify-between">
-  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 dark:text-gray-500">
+  <div className="px-4 py-2.5 bg-gray-50 dark:bg-black border-t border-z-border dark:border-z-border flex items-center justify-between">
+  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary dark:text-z-secondary">
   Core_Intelligence_Stream
   </span>
   <div className="flex items-center gap-2">
-  <div className="w-1.5 h-1.5 bg-gray-500 rounded-none-none animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-  <span className="text-[9px] font-black uppercase text-gray-600 dark:text-gray-500">
+  <div className="w-1.5 h-1.5 bg-gray-500 rounded-none-none animate-pulse shadow-[var(--z-active-glow)]" />
+  <span className="text-[9px] font-black uppercase text-gray-600 dark:text-z-secondary">
   Sync_Active
   </span>
   </div>

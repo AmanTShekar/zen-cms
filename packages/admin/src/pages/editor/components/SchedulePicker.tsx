@@ -64,12 +64,12 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
  ref={popoverRef}
  className={cn(
  'absolute top-full mt-2 right-0 w-64 border shadow-2xl z-50 p-3',
- theme === 'dark' ? 'bg-[#0a0a0a] border-white/[0.08]' : 'bg-white border-gray-200'
+ theme === 'dark' ? 'bg-[#0a0a0a] border-z-border' : 'bg-z-panel border-z-border'
  )}
  onClick={(e) => e.stopPropagation()}
  >
  <div className="flex items-center justify-between mb-2">
- <span className={cn('text-xs font-black uppercase tracking-widest', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')}>
+ <span className={cn('text-xs font-black uppercase tracking-widest', theme === 'dark' ? 'text-z-muted' : 'text-z-secondary')}>
  Schedule Publish
  </span>
  <div className="flex items-center gap-1">
@@ -84,7 +84,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
  <button
  onClick={onClose}
  aria-label="Close scheduler"
- className={cn('p-0.5', theme === 'dark' ? 'text-gray-500 hover:text-white' : 'text-gray-400 hover:text-black')}
+ className={cn('p-0.5', theme === 'dark' ? 'text-z-secondary hover:text-white' : 'text-z-muted hover:text-black')}
  >
  <X size={12} aria-hidden="true" />
  </button>
@@ -97,8 +97,8 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
  className={cn(
  'w-full px-2 py-1.5 rounded-none-none border text-xs font-mono',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white'
- : 'bg-gray-50 border-gray-200 text-black'
+ ? 'bg-z-hover border-z-border text-white'
+ : 'bg-z-input border-z-border text-black'
  )}
  />
  <div className="flex gap-2 mt-2">
@@ -106,7 +106,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
  onClick={onClose}
  className={cn(
  'flex-1 py-1.5 border text-xs font-black uppercase text-center transition-all',
- theme === 'dark' ? 'border-white/[0.08] text-gray-400 hover:bg-white/5' : 'border-gray-200 text-gray-500 hover:bg-gray-50'
+ theme === 'dark' ? 'border-z-border text-z-muted hover:bg-z-hover' : 'border-z-border text-z-secondary hover:bg-gray-50'
  )}
  >
  Cancel

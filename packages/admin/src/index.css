@@ -13,73 +13,116 @@
 
 @layer base {
  :root {
- /* Premium Obsidian Glassmorphism Design System */
- --bg-app: #000000;
- --bg-app-rgb: 0 0 0;
- --bg-surface: #111827;
- --bg-surface-rgb: 17 24 39;
- --bg-subtle: #1f2937;
- --bg-subtle-rgb: 31 41 55;
+  /* ══════════════════════════════════════════════════════════════
+     Zenith Complete Token System - Dark Mode Defaults
+     All --z-* variables are the single source of truth.
+     BrandContext injects brand accent tokens.
+     ThemeContext (.light class) overrides bg/text/border tokens.
+  ══════════════════════════════════════════════════════════════ */
 
- --text-primary: #ffffff;
- --text-primary-rgb: 255 255 255;
- --text-secondary: #9ca3af;
- --text-secondary-rgb: 156 163 175;
- --text-muted: #4b5563;
- --text-muted-rgb: 75 85 99;
+  /* -- Backgrounds ------------------------------------------- */
+  --z-bg-base:      #050505;
+  --z-bg-sidebar:   rgba(0,0,0,0.65);
+  --z-bg-header:    rgba(0,0,0,0.65);
+  --z-bg-panel:     rgba(0,0,0,0.65);
+  --z-bg-input:     rgba(0,0,0,0.50);
+  --z-bg-hover:     rgba(255,255,255,0.03);
+  --z-bg-popover:   rgba(5,5,5,0.98);
+  --z-bg-tooltip:   rgba(20,20,20,0.95);
+  --z-bg-modal:     rgba(0,0,0,0.75);
+  --z-bg-row-hover: rgba(255,255,255,0.02);
+  --z-bg-selected:  rgba(255,255,255,0.04);
+  --z-bg-code:      rgba(0,0,0,0.40);
 
- --border: rgba(255, 255, 255, 0.08);
- --border-rgb: 255 255 255;
- --border-strong: rgba(255, 255, 255, 0.15);
+  /* -- Borders ----------------------------------------------- */
+  --z-border:       rgba(255,255,255,0.08);
+  --z-border-strong:rgba(255,255,255,0.15);
+  --z-border-focus: rgba(255,255,255,0.25);
+  --z-border-input: rgba(255,255,255,0.10);
 
- --accent-rgb: 139 92 246; /* Cyber-Purple */
- --color-cyber-purple: #8B5CF6;
- --color-emerald-green: #10B981;
+  /* -- Text -------------------------------------------------- */
+  --z-text-primary:   #ffffff;
+  --z-text-secondary: #9ca3af;
+  --z-text-muted:     #6b7280;
+  --z-text-inverse:   #000000;
 
- /* Tactical Color Injection - High Saturation for observability */
- --status-green: #10B981;
- --status-red: #ef4444;
- --status-orange: #f59e0b;
- --status-blue: #3b82f6;
+  /* -- Scrollbar --------------------------------------------- */
+  --z-scrollbar:       rgba(255,255,255,0.10);
+  --z-scrollbar-hover: rgba(255,255,255,0.20);
 
- --glass-bg: rgba(0, 0, 0, 0.65);
- --glass-border: rgba(255, 255, 255, 0.08);
- --glass-blur: 12px;
+  /* -- Brand Accent (overridden by BrandContext) -------------- */
+  --z-accent:        var(--z-accent);
+  --z-accent-hsl:    160 84% 39%;
+  --z-active-bg:     rgba(16,185,129,0.10);
+  --z-active-border: rgba(16,185,129,0.30);
+  --z-active-text:   rgb(52,211,153);
+  --z-active-glow:   0 0 20px rgba(16,185,129,0.15);
+  --z-logo-bg:       var(--z-accent);
+  --z-logo-text:     #000000;
 
- --shadow-premium: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  /* -- Legacy compat aliases --------------------------------- */
+  --bg-app:         var(--z-bg-base);
+  --bg-surface:     var(--z-bg-panel);
+  --bg-subtle:      var(--z-bg-hover);
+  --text-primary:   var(--z-text-primary);
+  --text-secondary: var(--z-text-secondary);
+  --text-muted:     var(--z-text-muted);
+  --border:         var(--z-border);
+  --border-strong:  var(--z-border-strong);
+  --glass-bg:       var(--z-bg-panel);
+  --glass-border:   var(--z-border);
+  --glass-blur:     12px;
+  --shadow-premium: 0 8px 32px 0 rgba(0,0,0,0.37);
+  --status-green:   var(--z-accent);
+  --status-red:     #ef4444;
+  --status-orange:  #f59e0b;
+  --status-blue:    #3b82f6;
+  --color-cyber-purple: var(--z-accent);
+  --color-emerald-green: var(--z-accent);
  }
 
  .light {
- /* Elegant Obsidian Light Theme */
- --bg-app: #f3f4f6;
- --bg-app-rgb: 243 244 246;
- --bg-surface: #ffffff;
- --bg-surface-rgb: 255 255 255;
- --bg-subtle: #e5e7eb;
- --bg-subtle-rgb: 229 231 235;
+  --z-bg-base:      #f3f4f6;
+  --z-bg-sidebar:   rgba(255,255,255,0.80);
+  --z-bg-header:    rgba(255,255,255,0.85);
+  --z-bg-panel:     #ffffff;
+  --z-bg-input:     #ffffff;
+  --z-bg-hover:     rgba(0,0,0,0.03);
+  --z-bg-popover:   #ffffff;
+  --z-bg-tooltip:   rgba(17,24,39,0.95);
+  --z-bg-modal:     rgba(0,0,0,0.50);
+  --z-bg-row-hover: rgba(0,0,0,0.02);
+  --z-bg-selected:  rgba(0,0,0,0.04);
+  --z-bg-code:      #f8f9fa;
 
- --text-primary: #111827;
- --text-primary-rgb: 17 24 39;
- --text-secondary: #4b5563;
- --text-secondary-rgb: 75 85 99;
- --text-muted: #9ca3af;
- --text-muted-rgb: 156 163 175;
+  --z-border:       rgba(0,0,0,0.08);
+  --z-border-strong:rgba(0,0,0,0.15);
+  --z-border-focus: rgba(0,0,0,0.25);
+  --z-border-input: rgba(0,0,0,0.12);
 
- --border: rgba(17, 24, 39, 0.08);
- --border-rgb: 17 24 39;
- --border-strong: rgba(17, 24, 39, 0.15);
+  --z-text-primary:   #111827;
+  --z-text-secondary: #4b5563;
+  --z-text-muted:     #9ca3af;
+  --z-text-inverse:   #ffffff;
 
- --accent-rgb: 16 185 129;
+  --z-scrollbar:       rgba(0,0,0,0.12);
+  --z-scrollbar-hover: rgba(0,0,0,0.25);
 
- --status-green: #10b981;
- --status-red: #dc2626;
- --status-orange: #d97706;
- --status-blue: #2563eb;
-
- --glass-bg: rgba(255, 255, 255, 0.7);
- --glass-border: rgba(17, 24, 39, 0.08);
-
- --shadow-premium: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  /* compat */
+  --bg-app:         var(--z-bg-base);
+  --bg-surface:     var(--z-bg-panel);
+  --bg-subtle:      var(--z-bg-hover);
+  --text-primary:   var(--z-text-primary);
+  --text-secondary: var(--z-text-secondary);
+  --text-muted:     var(--z-text-muted);
+  --border:         var(--z-border);
+  --glass-bg:       var(--z-bg-panel);
+  --glass-border:   var(--z-border);
+  --shadow-premium: 0 8px 32px 0 rgba(31,38,135,0.07);
+  --status-green:   #059669;
+  --status-red:     #dc2626;
+  --status-orange:  #d97706;
+  --status-blue:    #2563eb;
  }
 
  * {
@@ -114,27 +157,103 @@
  font-size: 15px; /* Precision Operational Font */
  }
 
- /* 💎 Premium Obsidian Glassmorphism Card Style */
- .card {
- background-color: rgba(0, 0, 0, 0.65);
- backdrop-filter: blur(12px);
- -webkit-backdrop-filter: blur(12px);
- border: 1px solid rgba(255, 255, 255, 0.08);
- border-radius: 0px;
- box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
- transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
- overflow: hidden;
- }
+  /* Zenith glassmorphic panel — used by all cards/panels */
+  .z-card {
+  background: var(--z-bg-panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--z-border);
+  border-radius: 0px;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.10);
+  transition: background 0.3s, border-color 0.3s;
+  }
 
- .card-interactive {
- @apply card cursor-pointer;
- }
+  .z-card-interactive {
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .z-card-interactive:hover {
+  transform: scale(1.01);
+  border-color: var(--z-active-border);
+  box-shadow: var(--z-active-glow);
+  }
 
- .card-interactive:hover {
- transform: scale(1.02);
- border-color: rgba(139, 92, 246, 0.4);
- box-shadow: 0 8px 30px rgba(139, 92, 246, 0.15);
- }
+  .z-input {
+  background: var(--z-bg-input);
+  border: 1px solid var(--z-border-input);
+  color: var(--z-text-primary);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .z-input::placeholder { color: var(--z-text-muted); }
+  .z-input:focus {
+  border-color: var(--z-active-border);
+  box-shadow: 0 0 0 3px var(--z-active-bg);
+  }
+
+  .z-panel {
+  background: var(--z-bg-panel);
+  border: 1px solid var(--z-border);
+  }
+
+  .z-sidebar {
+  background: var(--z-bg-sidebar);
+  border-right: 1px solid var(--z-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  }
+
+  .z-header {
+  background: var(--z-bg-header);
+  border-bottom: 1px solid var(--z-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* ── Classic Enterprise Overrides ────────────────────────── */
+  [data-design-style="classic"] .z-card,
+  [data-design-style="classic"] .z-sidebar,
+  [data-design-style="classic"] .z-header,
+  [data-design-style="classic"] .glass,
+  [data-design-style="classic"] .card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  }
+  
+  [data-design-style="classic"] .z-card,
+  [data-design-style="classic"] .glass,
+  [data-design-style="classic"] .card {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+  }
+  
+  [data-design-style="classic"] .z-card-interactive:hover,
+  [data-design-style="classic"] .card-interactive:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+  }
+
+  /* 💎 Legacy card class kept for backward compat */
+  .card {
+  background-color: var(--z-bg-panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--z-border);
+  border-radius: 0px;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.10);
+  transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+  overflow: hidden;
+  }
+
+  .card-interactive {
+  @apply card cursor-pointer;
+  }
+
+  .card-interactive:hover {
+  transform: scale(1.02);
+  border-color: var(--z-active-border);
+  box-shadow: var(--z-active-glow);
+  }
 
  .btn-primary {
  @apply bg-primary text-app hover:brightness-110 active:scale-95 px-6 py-2.5 rounded-lg font-bold transition-all shadow-premium flex items-center justify-center gap-2 text-[14px];
@@ -176,17 +295,24 @@
  }
 
  /* 🎨 Premium Elements */
- .glass {
- background-color: rgba(0, 0, 0, 0.65);
- backdrop-filter: blur(12px);
- -webkit-backdrop-filter: blur(12px);
- border: 1px solid rgba(255, 255, 255, 0.08);
- box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
- }
+  .glass {
+  background-color: var(--z-bg-panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--z-border);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.10);
+  }
 
- .input-premium {
- @apply bg-primary/[0.02] border border-border rounded-lg px-4 h-10 text-[14px] font-medium transition-all outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/[0.02] placeholder:text-primary/40 tracking-tight;
- }
+  .input-premium {
+  background: var(--z-bg-input);
+  border: 1px solid var(--z-border-input);
+  color: var(--z-text-primary);
+  @apply rounded-none px-4 h-10 text-[14px] font-medium transition-all outline-none placeholder:text-muted tracking-tight;
+  }
+  .input-premium:focus {
+  border-color: var(--z-active-border);
+  box-shadow: 0 0 0 3px var(--z-active-bg);
+  }
 
  /* Tactical Status Indicators */
  .indicator-green {
@@ -215,23 +341,46 @@
  color: var(--status-blue);
  }
 
- /* Custom Scrollbar Precision - Global Industrial Theme */
- ::-webkit-scrollbar {
- width: 6px;
- height: 6px;
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+  background-color: var(--z-scrollbar);
+  border-radius: 0px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.2s;
+  }
+  ::-webkit-scrollbar-thumb:hover { background-color: var(--z-scrollbar-hover); }
+
+ /* ── Universal Design Style Overrides ────────────────────────────────────── */
+ /* When data-design-style="classic" is active, we aggressively disable glassmorphism 
+    and apply solid enterprise-grade structures across all semantic classes. */
+ [data-design-style="classic"] * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
  }
- ::-webkit-scrollbar-track {
- background: transparent;
+
+ [data-design-style="classic"] .z-card,
+ [data-design-style="classic"] .z-panel,
+ [data-design-style="classic"] .z-sidebar,
+ [data-design-style="classic"] .z-header,
+ [data-design-style="classic"] .z-modal,
+ [data-design-style="classic"] .z-tooltip,
+ [data-design-style="classic"] .z-popover {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 6px !important;
+  background-color: var(--z-bg-panel) !important;
  }
- ::-webkit-scrollbar-thumb {
- background-color: rgba(139, 92, 246, 0.2);
- border-radius: 0px;
- border: 2px solid transparent;
- background-clip: padding-box;
- transition: background-color 0.2s;
- }
- ::-webkit-scrollbar-thumb:hover {
- background-color: rgba(139, 92, 246, 0.4);
+ 
+ [data-design-style="classic"] .z-sidebar { background-color: var(--z-bg-sidebar) !important; }
+ [data-design-style="classic"] .z-header { background-color: var(--z-bg-header) !important; }
+ [data-design-style="classic"] .z-modal { background-color: var(--z-bg-modal) !important; }
+ [data-design-style="classic"] .z-tooltip { background-color: var(--z-bg-tooltip) !important; }
+ [data-design-style="classic"] .z-popover { background-color: var(--z-bg-popover) !important; }
+
+ [data-design-style="classic"] .z-input {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  border-radius: 4px !important;
  }
 
  .dark ::-webkit-scrollbar-thumb {
@@ -410,9 +559,8 @@
 
 /* ── Link ───────────────────────────────────────────────── */
 .zenith-lexical-editor .lexical-link {
- color: #8B5CF6;
- text-decoration: underline;
- text-underline-offset: 2px;
+ color: var(--z-accent);
+ text-transform: uppercase;
  cursor: pointer;
  transition: color 0.2s;
 }
@@ -493,7 +641,7 @@
 
 .zenith-lexical-editor .lexical-relationship-status--published {
  background: rgba(16, 185, 129, 0.15);
- color: #10b981;
+ color: var(--z-accent);
 }
 
 .zenith-lexical-editor .lexical-relationship-status--draft {
@@ -535,7 +683,7 @@
 
 /* ── Hashtag ────────────────────────────────────────────── */
 .zenith-lexical-editor .lexical-hashtag {
- color: #8B5CF6;
+ color: var(--z-accent);
  font-weight: 600;
  font-size: 0.9em;
 }

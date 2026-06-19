@@ -93,7 +93,7 @@ const CampaignsPage: React.FC = () => {
         actions={
           <button
             onClick={() => setActiveCampaign({ subject: '', body: '', audience: 'all' })}
-            className="flex items-center gap-2 px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] text-white text-[10px] font-black uppercase tracking-widest transition-all"
+            className="flex items-center gap-2 px-6 py-2.5 bg-z-accent hover:bg-z-accent shadow-[var(--z-active-glow)] text-white text-[10px] font-black uppercase tracking-widest transition-all"
           >
             <Plus size={14} />
             New Campaign
@@ -110,10 +110,10 @@ const CampaignsPage: React.FC = () => {
           >
             <Card>
               <div className="p-6 border-b border-white/[0.05] flex justify-between items-center">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-500">Campaign Editor</h3>
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-z-secondary">Campaign Editor</h3>
                 <button
                   onClick={() => setActiveCampaign(null)}
-                  className="text-[9px] font-bold text-gray-500 uppercase hover:text-gray-900 dark:hover:text-white"
+                  className="text-[9px] font-bold text-z-secondary uppercase hover:text-z-primary dark:hover:text-white"
                 >
                   Cancel
                 </button>
@@ -121,26 +121,26 @@ const CampaignsPage: React.FC = () => {
               
               <CardContent className="space-y-4 pt-6">
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Subject Line</label>
+                  <label className="text-[9px] font-bold text-z-secondary uppercase tracking-widest">Subject Line</label>
                   <input
                     type="text"
                     value={activeCampaign.subject || ''}
                     onChange={(e) => setActiveCampaign({ ...activeCampaign, subject: e.target.value })}
                     className={cn(
                       'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 transition-colors',
-                      dark ? 'bg-black border-white/[0.08] focus:border-gray-500' : 'bg-gray-50 border-gray-200 focus:border-gray-500'
+                      'bg-z-input border-z-border focus:border-gray-500'
                     )}
                     placeholder="Subject..."
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Audience</label>
+                  <label className="text-[9px] font-bold text-z-secondary uppercase tracking-widest">Audience</label>
                   <select
                     value={activeCampaign.audience || 'all'}
                     onChange={(e) => setActiveCampaign({ ...activeCampaign, audience: e.target.value })}
                     className={cn(
                       'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 transition-colors',
-                      dark ? 'bg-black border-white/[0.08] focus:border-gray-500 text-white' : 'bg-gray-50 border-gray-200 focus:border-gray-500 text-black'
+                      'bg-z-input border-z-border focus:border-gray-500 text-z-primary'
                     )}
                   >
                     <option value="all" className="text-black">All Subscribers</option>
@@ -149,14 +149,14 @@ const CampaignsPage: React.FC = () => {
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Email Body</label>
+                  <label className="text-[9px] font-bold text-z-secondary uppercase tracking-widest">Email Body</label>
                   <textarea
                     value={activeCampaign.body || ''}
                     onChange={(e) => setActiveCampaign({ ...activeCampaign, body: e.target.value })}
                     rows={10}
                     className={cn(
                       'w-full border p-3 text-[11px] font-mono outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 transition-colors',
-                      dark ? 'bg-black border-white/[0.08] focus:border-gray-500' : 'bg-gray-50 border-gray-200 focus:border-gray-500'
+                      'bg-z-input border-z-border focus:border-gray-500'
                     )}
                     placeholder="Hello {{name}}, we have some exciting news..."
                   />
@@ -166,7 +166,7 @@ const CampaignsPage: React.FC = () => {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] text-white text-[10px] font-black uppercase tracking-widest transition-all"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-z-accent hover:bg-z-accent shadow-[var(--z-active-glow)] text-white text-[10px] font-black uppercase tracking-widest transition-all"
                 >
                   {saving ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />}
                   Save Draft
@@ -177,9 +177,9 @@ const CampaignsPage: React.FC = () => {
         ) : (
           <div className="grid gap-4 max-w-5xl mx-auto">
             {loading ? (
-              <div className="flex justify-center p-8"><Loader2 className="animate-spin text-gray-500" size={24} /></div>
+              <div className="flex justify-center p-8"><Loader2 className="animate-spin text-z-secondary" size={24} /></div>
             ) : campaigns.length === 0 ? (
-              <div className="text-center p-12 border border-dashed border-gray-500/20 text-gray-500">
+              <div className="text-center p-12 border border-dashed border-gray-500/20 text-z-secondary">
                 <p className="text-[12px] font-black uppercase tracking-widest mb-2">No Campaigns</p>
               </div>
             ) : (
@@ -189,10 +189,10 @@ const CampaignsPage: React.FC = () => {
                     <div>
                       <h4 className="text-[12px] font-black uppercase tracking-widest flex items-center gap-2">
                         {c.subject}
-                        {c.status === 'draft' && <span className="px-2 py-0.5 bg-gray-500/20 text-gray-500 text-[8px]">Draft</span>}
-                        {c.status === 'sent' && <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[8px]">Sent</span>}
+                        {c.status === 'draft' && <span className="px-2 py-0.5 bg-gray-500/20 text-z-secondary text-[8px]">Draft</span>}
+                        {c.status === 'sent' && <span className="px-2 py-0.5 bg-z-active-bg text-z-active-text text-[8px]">Sent</span>}
                       </h4>
-                      <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-1">
+                      <p className="text-[9px] font-bold text-z-secondary uppercase tracking-widest mt-1">
                         Audience: {c.audience} • Created: {new Date(c.createdAt).toLocaleDateString()}
                       </p>
                     </div>
@@ -201,14 +201,14 @@ const CampaignsPage: React.FC = () => {
                         <>
                           <button
                             onClick={() => setActiveCampaign(c)}
-                            className="p-2 text-gray-500 hover:bg-gray-500/10 transition-colors"
+                            className="p-2 text-z-secondary hover:bg-gray-500/10 transition-colors"
                             title="Edit"
                           >
                             <Edit size={14} />
                           </button>
                           <button
                             onClick={() => handleSend(c.id)}
-                            className="p-2 text-gray-500 hover:bg-gray-500/10 transition-colors"
+                            className="p-2 text-z-secondary hover:bg-gray-500/10 transition-colors"
                             title="Send Now"
                           >
                             <Send size={14} />

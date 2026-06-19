@@ -9,6 +9,7 @@ import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import Redis from 'ioredis'
 import { webhookCircuitBreaker } from './circuit-breaker'
 import { withTrace } from '../telemetry/tracing'
+import { redisService } from './redis'
 
 export interface WebhookTarget {
   id?: string
@@ -156,9 +157,6 @@ export const WebhookService = {
   init(config: CMSConfig) {
     this.config = config.webhooks || []
     this.destroyed = false
-
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { redisService } = require('./redis')
     
     if (redisService.client) {
       try {

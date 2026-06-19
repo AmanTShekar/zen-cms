@@ -474,7 +474,6 @@ router.get('/counts', requireAuth, async (req: Request, res: Response, next) => 
 router.get(
   '/audit-logs',
   requireAuth,
-  requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()

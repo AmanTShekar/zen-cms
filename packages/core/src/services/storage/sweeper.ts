@@ -28,7 +28,7 @@ export async function pruneOrphanedMedia(
     const dbMediaIds = new Set(dbMediaRecords.map((m) => m.id))
 
     // 2. Identify physical files (for local storage)
-    const provider = StorageService.getProvider()
+    const provider = await StorageService.getProvider()
     const providerType = process.env.STORAGE_PROVIDER || 'local'
 
     if (providerType === 'local') {

@@ -13,25 +13,40 @@ describe('Multi-Tenant Data Isolation', () => {
   let tenantB_ID = 'site_B_456'
 
   beforeAll(async () => {
-    zenith = new Zenith(getTestConfig())
-    await zenith.init()
-    app = zenith.getExpressApp()
+    zenith = new Zenith({ config: getTestConfig() })
+    await zenith.start(0) // Start on random port
+    app = zenith.app
 
-    tenantAToken = jwt.sign({ id: 'user_a', role: 'admin', siteId: tenantA_ID }, process.env.JWT_SECRET || 'secret', { expiresIn: '1h' })
-    tenantBToken = jwt.sign({ id: 'user_b', role: 'admin', siteId: tenantB_ID }, process.env.JWT_SECRET || 'secret', { expiresIn: '1h' })
+    tenantAToken = jwt.sign({ id: '000000000000000000000001', role: 'editor', siteId: tenantA_ID }, process.env.JWT_SECRET || 'dev_fallback_secret_change_in_prod', { expiresIn: '1h' })
+    tenantBToken = jwt.sign({ id: '000000000000000000000002', role: 'editor', siteId: tenantB_ID }, process.env.JWT_SECRET || 'dev_fallback_secret_change_in_prod', { expiresIn: '1h' })
+
+    const adapter = zenith.adapter
+    try {
+      await adapter.deleteMany('z_sites', {})
+      await adapter.deleteMany('posts', {})
+    } catch {}
+    
+    try {
+      await adapter.create('z_sites', { slug: tenantA_ID, name: 'Tenant A', ownerId: '000000000000000000000001' })
+    } catch (err: any) { console.error('Site A create err:', err.message) }
+    try {
+      await adapter.create('z_sites', { slug: tenantB_ID, name: 'Tenant B', ownerId: '000000000000000000000002' })
+    } catch (err: any) { console.error('Site B create err:', err.message) }
 
     // Seed data
-    await request(app)
+    const resA = await request(app)
       .post('/api/v1/posts')
       .set('Authorization', `Bearer ${tenantAToken}`)
       .set('x-zenith-site-id', tenantA_ID)
-      .send({ title: 'Tenant A Post' })
+      .send({ title: 'Tenant A Post', content: 'content A', slug: 'tenant-a-post' })
+    if (resA.status >= 400) console.error('Seed A failed:', resA.body)
 
-    await request(app)
+    const resB = await request(app)
       .post('/api/v1/posts')
       .set('Authorization', `Bearer ${tenantBToken}`)
       .set('x-zenith-site-id', tenantB_ID)
-      .send({ title: 'Tenant B Post' })
+      .send({ title: 'Tenant B Post', content: 'content B', slug: 'tenant-b-post' })
+    if (resB.status >= 400) console.error('Seed B failed:', resB.body)
   })
 
   afterAll(async () => {
@@ -70,6 +85,7 @@ describe('Multi-Tenant Data Isolation', () => {
     
     // Custom auth middleware enforces JWT siteId === header siteId, so this should 403
     // Assuming requireAuth handles this
+    if (![401, 403].includes(res.status)) console.error('Cross-tenant failed:', res.status, res.body)
     expect([401, 403]).toContain(res.status)
   })
 })

@@ -33,7 +33,7 @@ const TabField: React.FC<TabFieldProps> = ({ field, value, onChange, disabled, r
   const currentFields = currentTab?.fields || []
 
   return (
-    <div className="border border-white/10 bg-white/[0.02] backdrop-blur-md">
+    <div className="border border-white/10 bg-z-panel backdrop-blur-md">
       {/* Tab Headers */}
       <div className="flex border-b border-white/10">
         {tabs.map((tab, idx) => (
@@ -44,8 +44,8 @@ const TabField: React.FC<TabFieldProps> = ({ field, value, onChange, disabled, r
             className={cn(
               'px-4 py-2.5 text-[10px] font-black uppercase tracking-wider transition-colors',
               activeTab === idx
-                ? 'text-emerald-400 border-b-2 border-emerald-500 bg-white/[0.03]'
-                : 'text-gray-500 hover:text-gray-300'
+                ? 'text-z-active-text border-b-2 border-z-accent bg-z-hover'
+                : 'text-z-secondary hover:text-gray-300'
             )}
           >
             {tab.label || tab.name}
@@ -58,7 +58,7 @@ const TabField: React.FC<TabFieldProps> = ({ field, value, onChange, disabled, r
         <div className="p-4 space-y-3">
           {currentFields.map((f) => (
             <div key={f.name} className="space-y-1.5">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+              <label className="text-[10px] font-bold text-z-muted uppercase tracking-wider">
                 {f.label || f.name}
                 {(f as any).required && <span className="text-danger ml-1">*</span>}
               </label>

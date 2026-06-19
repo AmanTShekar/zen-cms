@@ -14,8 +14,8 @@ export interface CollabUser {
 }
 
 const YJS_COLORS = [
- '#10b981', // indigo
- '#10B981', // violet
+ 'var(--z-accent)', // indigo
+ 'var(--z-accent)', // violet
  '#ec4899', // pink
  '#f43f5e', // rose
  '#f97316', // orange

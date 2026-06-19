@@ -118,8 +118,8 @@ const LoginPage: React.FC = () => {
  return (
  <div className="min-h-screen flex items-center justify-center p-4 md:p-6 relative overflow-auto font-sans antialiased selection:bg-white selection:text-black bg-black text-white">
  {/* Background elements */}
- <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none-none blur-[120px] pointer-events-none transition-all duration-500 z-0 bg-white/5" />
- <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none-none blur-[120px] pointer-events-none transition-all duration-500 z-0 bg-white/5" />
+ <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none-none blur-[120px] pointer-events-none transition-all duration-500 z-0 bg-z-hover" />
+ <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none-none blur-[120px] pointer-events-none transition-all duration-500 z-0 bg-z-hover" />
 
  <div className="w-full max-w-[400px] relative z-10 flex flex-col gap-6 md:gap-8 py-4">
  {/* Branding Module */}
@@ -134,7 +134,7 @@ const LoginPage: React.FC = () => {
  <h1 className="text-4xl font-black tracking-tighter uppercase leading-none transition-colors text-white">
  ZENITH
  </h1>
- <p className="mt-3 text-[9px] font-black text-gray-400 uppercase tracking-[0.4em] ">
+ <p className="mt-3 text-[9px] font-black text-z-muted uppercase tracking-[0.4em] ">
  Admin_Management_Interface
  </p>
  </motion.div>
@@ -143,14 +143,14 @@ const LoginPage: React.FC = () => {
  <motion.div
  initial={{ opacity: 0, scale: 0.98 }}
  animate={{ opacity: 1, scale: 1 }}
- className="p-8 relative transition-all duration-500 rounded-none-none border bg-black/65 backdrop-blur-[12px] border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.1)]"
+ className="p-8 relative transition-all duration-500 rounded-none-none border bg-z-panel backdrop-blur-[12px] border-z-border shadow-[var(--z-active-glow)]"
  >
  <div className="flex items-center justify-between mb-8">
  <div className="flex flex-col">
  <h2 className="text-xl font-black uppercase tracking-tight transition-colors text-white">
  {needsSetup ? 'Setup Admin' : tempToken ? 'Two-Factor Auth' : 'Sign In'}
  </h2>
- <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-none mt-1">
+ <p className="text-[9px] text-z-muted font-bold uppercase tracking-widest leading-none mt-1">
  {needsSetup ? 'Initialize Workstation' : tempToken ? 'Verify Identity' : 'Access Controlled'}
  </p>
  </div>
@@ -222,14 +222,14 @@ const LoginPage: React.FC = () => {
  </AnimatePresence>
 
  {needsSetup && (
- <div className="p-3 border border-gray-500/20 bg-gray-500/[0.03] text-[9.5px] leading-relaxed text-gray-400 font-bold uppercase tracking-wider ">
+ <div className="p-3 border border-gray-500/20 bg-gray-500/[0.03] text-[9.5px] leading-relaxed text-z-muted font-bold uppercase tracking-wider ">
  No administrative users detected. Create your root administrator account below to provision this Zenith workstation.
  </div>
  )}
 
  {tempToken ? (
  <div className="space-y-1.5">
- <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest px-1">
+ <label className="text-[9px] font-black text-z-muted uppercase tracking-widest px-1">
  6-Digit Authenticator Code
  </label>
  <div className="relative group">
@@ -243,19 +243,19 @@ const LoginPage: React.FC = () => {
  maxLength={6}
  value={twoFactorToken}
  onChange={(e) => setTwoFactorToken(e.target.value.replace(/\D/g, ''))}
- className="w-full border rounded-none-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all tracking-widest text-center bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
+ className="w-full border rounded-none-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all tracking-widest text-center bg-z-hover border-z-border text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
  />
  </div>
  </div>
  ) : (
  <div className="space-y-4">
  <div className="space-y-1.5">
- <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest px-1">
+ <label className="text-[9px] font-black text-z-muted uppercase tracking-widest px-1">
  Email Address
  </label>
  <div className="relative group">
  <Mail
- className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors text-white/20 group-focus-within:text-gray-300 dark:text-gray-400"
+ className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors text-white/20 group-focus-within:text-gray-300 dark:text-z-muted"
  size={16}
  />
  <input
@@ -263,7 +263,7 @@ const LoginPage: React.FC = () => {
  autoComplete="email"
  type="email"
  placeholder="admin@zenith.com"
- className="w-full border rounded-none-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
+ className="w-full border rounded-none-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all bg-z-hover border-z-border text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
  />
  </div>
  {errors.email && (
@@ -275,13 +275,13 @@ const LoginPage: React.FC = () => {
 
  <div className="space-y-1.5">
  <div className="flex items-center justify-between px-1">
- <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest ">
+ <label className="text-[9px] font-black text-z-muted uppercase tracking-widest ">
  Account Password
  </label>
  {!needsSetup && (
  <Link
  to="/forgot-password"
- className="text-[9px] font-black uppercase tracking-widest hover:underline text-gray-400 hover:text-white"
+ className="text-[9px] font-black uppercase tracking-widest hover:underline text-z-muted hover:text-white"
  >
  Forgot Password?
  </Link>
@@ -289,7 +289,7 @@ const LoginPage: React.FC = () => {
  </div>
  <div className="relative group">
  <Lock
- className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors text-white/20 group-focus-within:text-gray-300 dark:text-gray-400"
+ className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors text-white/20 group-focus-within:text-gray-300 dark:text-z-muted"
  size={16}
  />
  <input
@@ -297,7 +297,7 @@ const LoginPage: React.FC = () => {
  autoComplete="current-password"
  type={showPassword ? 'text' : 'password'}
  placeholder="••••••••"
- className="w-full border rounded-none-none py-3 pl-12 pr-12 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all bg-white/5 border-white/[0.08] text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
+ className="w-full border rounded-none-none py-3 pl-12 pr-12 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all bg-z-hover border-z-border text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
  />
  <button
  type="button"
@@ -320,7 +320,7 @@ const LoginPage: React.FC = () => {
   <button
   type="submit"
   disabled={isSubmitting || (tempToken !== null && twoFactorToken.length !== 6)}
-  className="w-full bg-white text-black hover:bg-gray-200 disabled:bg-white/20 disabled:text-white/40 px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_4px_15px_rgba(255,255,255,0.1)] rounded-none-none font-mono"
+  className="w-full bg-white text-black hover:bg-gray-200 disabled:bg-white/20 disabled:text-white/40 px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all duration-300 shadow-[var(--z-active-glow)] rounded-none-none font-mono"
   >
  {isSubmitting ? (
  <Loader2 size={18} className="animate-spin" />
@@ -339,15 +339,15 @@ const LoginPage: React.FC = () => {
 
  {/* SSO/OAuth Provider Module */}
  {!needsSetup && (
- <div className="mt-6 pt-6 border-t border-white/[0.08] space-y-4">
+ <div className="mt-6 pt-6 border-t border-z-border space-y-4">
  <div className="text-center relative">
  <span className={cn(
  'text-[8px] font-black uppercase tracking-widest px-2 relative z-10',
- theme === 'dark' ? 'bg-black text-gray-400' : 'bg-white text-gray-400'
+ theme === 'dark' ? 'bg-black text-z-muted' : 'bg-white text-z-muted'
  )}>
  Or Sign In With Single Sign-On (SSO)
  </span>
- <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-white/5 z-0" />
+ <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-z-hover z-0" />
  </div>
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -368,8 +368,8 @@ const LoginPage: React.FC = () => {
  className={cn(
  'border rounded-none-none py-2 px-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02]',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white hover:bg-white/10'
- : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 hover:bg-gray-100'
+ ? 'bg-z-hover border-z-border text-white hover:bg-white/10'
+ : 'bg-z-input border-z-border shadow-sm text-z-primary hover:bg-gray-100'
  )}
  >
  <span>SAML Okta</span>
@@ -392,8 +392,8 @@ const LoginPage: React.FC = () => {
  className={cn(
  'border rounded-none-none py-2 px-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02]',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white hover:bg-white/10'
- : 'bg-gray-50 border-gray-200 shadow-sm text-gray-900 hover:bg-gray-100'
+ ? 'bg-z-hover border-z-border text-white hover:bg-white/10'
+ : 'bg-z-input border-z-border shadow-sm text-z-primary hover:bg-gray-100'
  )}
  >
  <span>Google OAuth</span>
@@ -403,7 +403,7 @@ const LoginPage: React.FC = () => {
  )}
  </motion.div>
 
- <p className="text-center text-[8px] font-bold text-gray-400 uppercase tracking-[0.2em] ">
+ <p className="text-center text-[8px] font-bold text-z-muted uppercase tracking-[0.2em] ">
  Authorized Personnel Only • Zenith CMS Engine
  </p>
  </div>

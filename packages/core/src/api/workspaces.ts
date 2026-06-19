@@ -20,9 +20,31 @@ router.get('/', async (req: Request, res: Response, next) => {
     // Adapter-agnostic: fetch all then JS-filter by owner/membership
     // ($or with dot-notation 'members.userId' is MongoDB-specific)
     const all = await adapter.find<Record<string, any>>('z_workspaces', {}, { sort: { updatedAt: -1 } })
+    const allSites = await adapter.find<Record<string, any>>('z_sites', {})
+    
+    const userFromDb = await adapter.findOne<Record<string, any>>('users', { _id: user.id }) || 
+                       await adapter.findOne<Record<string, any>>('users', { id: user.id }) || user
+
+    const accessibleWorkspaceIds = new Set<string>()
+    allSites.forEach((s: any) => {
+      if (
+        user.role === 'admin' ||
+        s.ownerId === user.id ||
+        (Array.isArray(s.members) && s.members.some((m: any) => m.userId === user.id)) ||
+        (Array.isArray((userFromDb as any).specialAccess) && (
+          (userFromDb as any).specialAccess.includes(`site:${s.slug}`) ||
+          (userFromDb as any).specialAccess.includes(`site:${s.id || s._id}`)
+        ))
+      ) {
+        if (s.workspaceId) accessibleWorkspaceIds.add(s.workspaceId)
+      }
+    })
+
     let workspaces = all.filter((ws: any) =>
+      user.role === 'admin' ||
       ws.ownerId === user.id ||
-      (Array.isArray(ws.members) && ws.members.some((m: any) => m.userId === user.id))
+      (Array.isArray(ws.members) && ws.members.some((m: any) => m.userId === user.id)) ||
+      accessibleWorkspaceIds.has((ws.id || ws._id).toString())
     )
 
     if (!workspaces || workspaces.length === 0) {
@@ -104,9 +126,25 @@ router.get('/:id', async (req: Request, res: Response, next) => {
       workspace = allByMongoId[0] || null
     }
 
+    const allSites = await adapter.find<Record<string, any>>('z_sites', { workspaceId: id })
+    
+    const userFromDb = await adapter.findOne<Record<string, any>>('users', { _id: user.id }) || 
+                       await adapter.findOne<Record<string, any>>('users', { id: user.id }) || user
+
+    const hasSiteAccess = allSites.some((s: any) => 
+      s.ownerId === user.id ||
+      (Array.isArray(s.members) && s.members.some((m: any) => m.userId === user.id)) ||
+      (Array.isArray((userFromDb as any).specialAccess) && (
+        (userFromDb as any).specialAccess.includes(`site:${s.slug}`) ||
+        (userFromDb as any).specialAccess.includes(`site:${s.id || s._id}`)
+      ))
+    )
+
     const isMember = workspace && (
+      user.role === 'admin' ||
       workspace.ownerId === user.id ||
-      (Array.isArray(workspace.members) && workspace.members.some((m: any) => m.userId === user.id))
+      (Array.isArray(workspace.members) && workspace.members.some((m: any) => m.userId === user.id)) ||
+      hasSiteAccess
     )
     if (!isMember) throw new NotFoundError('Workspace', id)
 

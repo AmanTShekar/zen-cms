@@ -114,21 +114,21 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  {/* Header */}
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2.5">
- <Layers size={16} strokeWidth={2} className="text-gray-600 dark:text-gray-500" />
+ <Layers size={16} strokeWidth={2} className="text-gray-600 dark:text-z-secondary" />
  <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">
  {label}
  </span>
- <span className="px-1.5 py-0.5 text-[9px] font-black bg-gray-500/15 text-gray-600 dark:text-gray-500 border border-gray-500/25 rounded-none-none">
+ <span className="px-1.5 py-0.5 text-[9px] font-black bg-gray-500/15 text-gray-600 dark:text-z-secondary border border-gray-500/25 rounded-none-none">
  {value.length}
  </span>
  </div>
  
  <div className="flex items-center gap-2">
  {value.length > 0 && (
- <div className="flex items-center gap-1.5 border border-white/[0.08] bg-white/[0.02] p-0.5 rounded-none-none mr-2">
- <button type="button" onClick={expandAll} className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-white transition-all hover:bg-white/[0.05]">Expand All</button>
+ <div className="flex items-center gap-1.5 border border-z-border bg-z-panel p-0.5 rounded-none-none mr-2">
+ <button type="button" onClick={expandAll} className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-z-muted hover:text-white transition-all hover:bg-white/[0.05]">Expand All</button>
  <div className="w-px h-3 bg-white/10" />
- <button type="button" onClick={collapseAll} className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-gray-400 hover:text-white transition-all hover:bg-white/[0.05]">Collapse All</button>
+ <button type="button" onClick={collapseAll} className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-z-muted hover:text-white transition-all hover:bg-white/[0.05]">Collapse All</button>
  </div>
  )}
  {!disabled && (
@@ -174,15 +174,15 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  whileDrag={{ scale: 1.01, zIndex: 50, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
  className={cn(
  'group relative bg-app border rounded-none-none overflow-visible shadow-sm transition-colors duration-150',
- isExpanded ? 'border-gray-500/60 shadow-[0_0_0_3px_rgba(16,185,129,0.08)]' : 'border-border hover:border-white/[0.08]'
+ isExpanded ? 'border-gray-500/60 shadow-[var(--z-active-glow)]' : 'border-border hover:border-z-border'
  )}
  >
  {/* Index Badge */}
  <div className={cn(
  'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-none-none flex items-center justify-center text-[8px] font-black border z-10 transition-all',
  isExpanded
- ? 'bg-gray-500 text-white border-gray-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]'
- : 'bg-app text-gray-400 border-border group-hover:border-gray-500/40 group-hover:text-gray-600 dark:text-gray-500'
+ ? 'bg-gray-500 text-white border-gray-500 shadow-[var(--z-active-glow)]'
+ : 'bg-app text-z-muted border-border group-hover:border-gray-500/40 group-hover:text-gray-600 dark:text-z-secondary'
  )}>
  {index + 1}
  </div>
@@ -193,7 +193,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  {/* Header Row */}
  <div className="flex items-center gap-2.5 px-4 py-3 cursor-pointer" onClick={() => toggleItem(itemKey)}>
  {!disabled && (
- <div className="p-1 text-gray-400/30 hover:text-gray-400 cursor-grab active:cursor-grabbing flex-shrink-0" onPointerDown={(e) => e.stopPropagation()}>
+ <div className="p-1 text-z-muted/30 hover:text-z-muted cursor-grab active:cursor-grabbing flex-shrink-0" onPointerDown={(e) => e.stopPropagation()}>
  <GripVertical size={13} />
  </div>
  )}
@@ -211,13 +211,13 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" onClick={(e) => e.stopPropagation()}>
  {!disabled && (
  <>
- <button type="button" onClick={() => moveItem(index, 'up')} disabled={index === 0} title="Move Up" className="p-1.5 text-gray-400 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowUp size={11} /></button>
- <button type="button" onClick={() => moveItem(index, 'down')} disabled={index === items.length - 1} title="Move Down" className="p-1.5 text-gray-400 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowDown size={11} /></button>
- <button type="button" onClick={() => duplicateItem(index)} title="Duplicate" className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 transition-colors"><Copy size={11} /></button>
- <button type="button" onClick={() => removeItem(index)} title="Remove" className="p-1.5 text-gray-400 hover:text-danger transition-colors"><Trash2 size={11} /></button>
+ <button type="button" onClick={() => moveItem(index, 'up')} disabled={index === 0} title="Move Up" className="p-1.5 text-z-muted hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowUp size={11} /></button>
+ <button type="button" onClick={() => moveItem(index, 'down')} disabled={index === items.length - 1} title="Move Down" className="p-1.5 text-z-muted hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowDown size={11} /></button>
+ <button type="button" onClick={() => duplicateItem(index)} title="Duplicate" className="p-1.5 text-z-muted hover:text-gray-600 dark:text-z-secondary transition-colors"><Copy size={11} /></button>
+ <button type="button" onClick={() => removeItem(index)} title="Remove" className="p-1.5 text-z-muted hover:text-danger transition-colors"><Trash2 size={11} /></button>
  </>
  )}
- <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }} className="p-1.5 text-gray-400/50 ml-0.5">
+ <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }} className="p-1.5 text-z-muted/50 ml-0.5">
  <ChevronDown size={13} />
  </motion.div>
  </div>
@@ -239,7 +239,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  const fullWidth = ['richtext','textarea','blocks','array','media','code','collapsible'].includes(f.type)
  return (
  <div key={f.name} className={cn('flex flex-col gap-1.5', fullWidth && 'col-span-2')}>
- <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1">
+ <label className="text-[9px] font-black text-z-muted uppercase tracking-widest flex items-center gap-1">
  {f.label || f.name}
  {f.required && <span className="text-danger">*</span>}
  </label>
@@ -265,7 +265,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  layout
  type="button"
  onClick={addItem}
- className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-gray-400/60 text-[10px] font-black uppercase tracking-wider hover:border-gray-500/50 hover:text-gray-600 dark:text-gray-500 hover:bg-gray-500/5 transition-all rounded-none-none"
+ className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-z-muted/60 text-[10px] font-black uppercase tracking-wider hover:border-gray-500/50 hover:text-gray-600 dark:text-z-secondary hover:bg-gray-500/5 transition-all rounded-none-none"
  >
  <Plus size={11} strokeWidth={2} /> Add {label}
  </motion.button>

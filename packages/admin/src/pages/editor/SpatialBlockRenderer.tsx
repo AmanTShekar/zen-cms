@@ -39,6 +39,7 @@ export const ReorderableSectionBlock = React.memo(
  handleBlockNameChange,
  selectedSections,
  onMultiSelect,
+ collab,
  }: {
  section: Section
  index: number
@@ -108,7 +109,7 @@ export const ReorderableSectionBlock = React.memo(
  zIndex: 50,
  cursor: 'grabbing',
  }}
- className="relative group/item focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
+ className="relative group/item focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:outline-none"
  >
  <div className="relative h-8 group/portal -mt-4">
  <button
@@ -122,7 +123,7 @@ export const ReorderableSectionBlock = React.memo(
  'text-[9px] font-black uppercase flex items-center gap-1.5 tracking-wider',
  theme === 'dark' ? 'text-white/70' : 'text-black/70'
  )}>
- <Plus size={10} className="text-gray-600 dark:text-gray-500" /> Insert
+ <Plus size={10} className="text-gray-600 dark:text-z-secondary" /> Insert
  </span>
  </button>
  </div>

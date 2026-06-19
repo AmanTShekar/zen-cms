@@ -33,8 +33,17 @@ export function maskSettings(settings: any) {
   if (result.smtp?.password) result.smtp.password = MASK_PLACEHOLDER
   if (result.stripe?.secretKey) result.stripe.secretKey = MASK_PLACEHOLDER
   if (result.stripe?.webhookSecret) result.stripe.webhookSecret = MASK_PLACEHOLDER
-  if (result.ai?.openaiKey) result.ai.openaiKey = MASK_PLACEHOLDER
-  if (result.ai?.anthropicKey) result.ai.anthropicKey = MASK_PLACEHOLDER
+  
+  // Mask AI Keys
+  const aiKeys = [
+    'openaiApiKey', 'anthropicApiKey', 'googleApiKey', 'openRouterApiKey',
+    'groqApiKey', 'nvidiaApiKey', 'togetherApiKey', 'mistralApiKey',
+    'cohereApiKey', 'xaiApiKey', 'aiApiKey'
+  ]
+  
+  aiKeys.forEach(key => {
+    if (result[key]) result[key] = MASK_PLACEHOLDER
+  })
   
   return result
 }
@@ -58,15 +67,19 @@ export function unmaskSettings(incoming: any, existing: any) {
     else delete result.stripe.webhookSecret
   }
   
-  if (result.ai && result.ai.openaiKey === MASK_PLACEHOLDER) {
-    if (existing?.ai?.openaiKey) result.ai.openaiKey = existing.ai.openaiKey
-    else delete result.ai.openaiKey
-  }
+  // Unmask AI Keys
+  const aiKeys = [
+    'openaiApiKey', 'anthropicApiKey', 'googleApiKey', 'openRouterApiKey',
+    'groqApiKey', 'nvidiaApiKey', 'togetherApiKey', 'mistralApiKey',
+    'cohereApiKey', 'xaiApiKey', 'aiApiKey'
+  ]
   
-  if (result.ai && result.ai.anthropicKey === MASK_PLACEHOLDER) {
-    if (existing?.ai?.anthropicKey) result.ai.anthropicKey = existing.ai.anthropicKey
-    else delete result.ai.anthropicKey
-  }
+  aiKeys.forEach(key => {
+    if (result[key] === MASK_PLACEHOLDER) {
+      if (existing?.[key]) result[key] = existing[key]
+      else delete result[key]
+    }
+  })
   
   return result
 }
@@ -142,6 +155,86 @@ router.post('/ai/generate', aiLimiter, requireAuth, async (req: Request, res: Re
   try {
     const { prompt } = req.body
     const result = await AIService.generateContent(prompt)
+    res.json(createResponse({ result }))
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.post('/ai/models/fetch', aiLimiter, requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
+  try {
+    const { provider, apiKey } = req.body
+    if (!provider) throw new InvalidPayloadError('Provider is required')
+
+    let finalApiKey = apiKey
+    if (!finalApiKey || finalApiKey === '[MASKED_CREDENTIAL]') {
+      const adapter = (req as any).zenith?.adapter
+      const settings = await adapter?.findOne('z_settings', {})
+      
+      const keyMap: Record<string, string> = {
+        openrouter: 'openRouterApiKey',
+        openai: 'openaiApiKey',
+        anthropic: 'anthropicApiKey',
+        google: 'googleApiKey',
+        groq: 'groqApiKey',
+        nvidia: 'nvidiaApiKey',
+        together: 'togetherApiKey',
+        mistral: 'mistralApiKey',
+        cohere: 'cohereApiKey',
+        xai: 'xaiApiKey'
+      }
+      
+      const dbKey = settings?.[keyMap[provider]]
+      if (dbKey && dbKey !== '[MASKED_CREDENTIAL]') {
+        finalApiKey = dbKey
+      }
+    }
+
+    if (!finalApiKey || finalApiKey === '[MASKED_CREDENTIAL]') {
+      throw new InvalidPayloadError(`No valid API key provided or found for ${provider}`)
+    }
+
+    const models = await AIService.fetchModels(provider, finalApiKey)
+    res.json(createResponse({ models }))
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.post('/ai/test', aiLimiter, requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
+  try {
+    const { provider, model, apiKey } = req.body
+    if (!provider || !model) throw new InvalidPayloadError('Provider and Model are required')
+
+    let finalApiKey = apiKey
+    if (!finalApiKey || finalApiKey === '[MASKED_CREDENTIAL]') {
+      const adapter = (req as any).zenith?.adapter
+      const settings = await adapter?.findOne('z_settings', {})
+      
+      const keyMap: Record<string, string> = {
+        openrouter: 'openRouterApiKey',
+        openai: 'openaiApiKey',
+        anthropic: 'anthropicApiKey',
+        google: 'googleApiKey',
+        groq: 'groqApiKey',
+        nvidia: 'nvidiaApiKey',
+        together: 'togetherApiKey',
+        mistral: 'mistralApiKey',
+        cohere: 'cohereApiKey',
+        xai: 'xaiApiKey'
+      }
+      
+      const dbKey = settings?.[keyMap[provider]]
+      if (dbKey && dbKey !== '[MASKED_CREDENTIAL]') {
+        finalApiKey = dbKey
+      }
+    }
+
+    if (!finalApiKey || finalApiKey === '[MASKED_CREDENTIAL]') {
+      throw new InvalidPayloadError(`No valid API key provided or found for ${provider}`)
+    }
+
+    const result = await AIService.testConnection(provider, model, finalApiKey)
     res.json(createResponse({ result }))
   } catch (err) {
     next(err)

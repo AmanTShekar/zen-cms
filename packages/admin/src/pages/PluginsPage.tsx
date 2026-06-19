@@ -57,7 +57,7 @@ const PluginsPage = () => {
       description: "Synchronizes Zenith's media manager to your Cloudinary cloud bucket with auto-responsive imaging and AVIF/WebP transformations.",
       downloads: 12482,
       verified: true,
-      icon: <Database size={16} className="text-emerald-500" />,
+      icon: <Database size={16} className="text-z-active-text" />,
     },
     {
       id: 'resend-email-engine',
@@ -67,7 +67,7 @@ const PluginsPage = () => {
       description: 'Integrates high-performance transactional email flows via React Email templates and Resend SMTP nodes.',
       downloads: 8912,
       verified: true,
-      icon: <Mail size={16} className="text-gray-500" />,
+      icon: <Mail size={16} className="text-z-secondary" />,
     },
     {
       id: 'algolia-search-matrix',
@@ -77,7 +77,7 @@ const PluginsPage = () => {
       description: 'Automatically indexes newly published content collections to Algolia indexes for instantaneous keyword discovery.',
       downloads: 6104,
       verified: true,
-      icon: <Search size={16} className="text-emerald-500" />,
+      icon: <Search size={16} className="text-z-active-text" />,
     },
     {
       id: 'vercel-deploy-webhook',
@@ -97,7 +97,7 @@ const PluginsPage = () => {
       description: 'Power tip-tap rich text editors with inline content draft generation, grammar correction, and dynamic prompt templates.',
       downloads: 19823,
       verified: true,
-      icon: <Cpu size={16} className="text-gray-500" />,
+      icon: <Cpu size={16} className="text-z-secondary" />,
     },
   ]
 
@@ -125,12 +125,12 @@ const PluginsPage = () => {
 
   const getPluginIcon = (name: string) => {
     const lowercaseName = name.toLowerCase()
-    if (lowercaseName.includes('cloudinary')) return <Database size={16} className="text-emerald-500" />
-    if (lowercaseName.includes('resend') || lowercaseName.includes('mail')) return <Mail size={16} className="text-gray-500" />
-    if (lowercaseName.includes('algolia') || lowercaseName.includes('search')) return <Search size={16} className="text-emerald-500" />
+    if (lowercaseName.includes('cloudinary')) return <Database size={16} className="text-z-active-text" />
+    if (lowercaseName.includes('resend') || lowercaseName.includes('mail')) return <Mail size={16} className="text-z-secondary" />
+    if (lowercaseName.includes('algolia') || lowercaseName.includes('search')) return <Search size={16} className="text-z-active-text" />
     if (lowercaseName.includes('vercel') || lowercaseName.includes('deploy')) return <Activity size={16} className="text-amber-500" />
-    if (lowercaseName.includes('openai') || lowercaseName.includes('copilot') || lowercaseName.includes('ai')) return <Cpu size={16} className="text-gray-500" />
-    return <Puzzle size={16} className="text-gray-500" />
+    if (lowercaseName.includes('openai') || lowercaseName.includes('copilot') || lowercaseName.includes('ai')) return <Cpu size={16} className="text-z-secondary" />
+    return <Puzzle size={16} className="text-z-secondary" />
   }
 
   const togglePlugin = async (id: string | undefined, currentStatus: string | undefined) => {
@@ -177,7 +177,7 @@ const PluginsPage = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-64px)]">
-        <Loader2 size={32} className="animate-spin text-gray-500" />
+        <Loader2 size={32} className="animate-spin text-z-secondary" />
       </div>
     )
   }
@@ -188,23 +188,23 @@ const PluginsPage = () => {
         title="Plugin System"
         actions={
           <div className="flex gap-2">
-            <div className={cn('flex p-1 border', dark ? 'bg-black border-white/[0.05]' : 'bg-white border-gray-200')}>
+            <div className={cn('flex p-1 border', dark ? 'bg-black border-white/[0.05]' : 'bg-z-panel border-z-border')}>
               <button
                 onClick={() => setActiveTab('installed')}
-                className={cn('px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-colors', activeTab === 'installed' ? (dark ? 'bg-white text-black' : 'bg-gray-900 text-white') : 'text-gray-500')}
+                className={cn('px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-colors', activeTab === 'installed' ? (dark ? 'bg-white text-black' : 'bg-gray-900 text-white') : 'text-z-secondary')}
               >
                 Installed
               </button>
               <button
                 onClick={() => setActiveTab('marketplace')}
-                className={cn('px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-colors', activeTab === 'marketplace' ? (dark ? 'bg-white text-black' : 'bg-gray-900 text-white') : 'text-gray-500')}
+                className={cn('px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-colors', activeTab === 'marketplace' ? (dark ? 'bg-white text-black' : 'bg-gray-900 text-white') : 'text-z-secondary')}
               >
                 Marketplace
               </button>
             </div>
             <button
               onClick={fetchPlugins}
-              className={cn('px-3 border text-gray-500 hover:text-white transition-colors', dark ? 'bg-black border-white/[0.05]' : 'bg-white border-gray-200')}
+              className={cn('px-3 border text-z-secondary hover:text-white transition-colors', dark ? 'bg-black border-white/[0.05]' : 'bg-z-panel border-z-border')}
             >
               <RefreshCw size={14} />
             </button>
@@ -220,7 +220,7 @@ const PluginsPage = () => {
                     }).then(() => fetchPlugins())
                   }
                 }}
-                className="flex items-center gap-2 px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] text-white text-[10px] font-black uppercase tracking-widest transition-all"
+                className="flex items-center gap-2 px-6 py-2.5 bg-z-accent hover:bg-z-accent shadow-[var(--z-active-glow)] text-white text-[10px] font-black uppercase tracking-widest transition-all"
               >
                 <Plus size={14} /> Inject Plugin
               </button>
@@ -231,20 +231,20 @@ const PluginsPage = () => {
 
       <div className="flex-1 overflow-auto p-6 md:p-8 space-y-6">
         <div className="max-w-md">
-          <div className={cn('flex items-center gap-3 px-4 py-2 border transition-all', dark ? 'bg-black border-white/[0.05]' : 'bg-white border-gray-200')}>
-            <Search size={14} className="text-gray-500" />
+          <div className={cn('flex items-center gap-3 px-4 py-2 border transition-all', dark ? 'bg-black border-white/[0.05]' : 'bg-z-panel border-z-border')}>
+            <Search size={14} className="text-z-secondary" />
             <input
               type="text"
               placeholder={activeTab === 'installed' ? 'Search installed plugins...' : 'Search marketplace...'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none outline-none text-[10px] font-black text-gray-500 w-full placeholder:text-gray-600 uppercase tracking-widest"
+              className="bg-transparent border-none outline-none text-[10px] font-black text-z-secondary w-full placeholder:text-gray-600 uppercase tracking-widest"
             />
           </div>
         </div>
 
         {displayList.length === 0 ? (
-          <div className="text-center py-20 text-gray-500">
+          <div className="text-center py-20 text-z-secondary">
             <Box size={32} className="mx-auto mb-4 opacity-50" />
             <p className="text-[10px] font-black uppercase tracking-widest">No plugins found</p>
           </div>
@@ -265,12 +265,12 @@ const PluginsPage = () => {
                       <CardContent className="p-5 flex flex-col h-full gap-4">
                         <div className="flex justify-between items-start">
                           <div className="flex gap-3 items-center">
-                            <div className={cn('w-8 h-8 flex items-center justify-center border', dark ? 'bg-black border-white/[0.08]' : 'bg-gray-50 border-gray-200')}>
+                            <div className={cn('w-8 h-8 flex items-center justify-center border', dark ? 'bg-black border-z-border' : 'bg-z-input border-z-border')}>
                               {plugin.icon}
                             </div>
                             <div>
                               <h3 className="text-[11px] font-black tracking-widest uppercase">{plugin.name}</h3>
-                              <p className="text-[8px] text-gray-500 font-bold uppercase tracking-widest">
+                              <p className="text-[8px] text-z-secondary font-bold uppercase tracking-widest">
                                 {plugin.author === 'ROOT_KERNEL' ? 'Zenith Core' : plugin.author} • v{plugin.version}
                               </p>
                             </div>
@@ -279,13 +279,13 @@ const PluginsPage = () => {
 
                         {/* Minimalist features instead of descriptive text */}
                         <div className="flex-1">
-                           <p className="text-[10px] text-gray-500 leading-relaxed line-clamp-2">
+                           <p className="text-[10px] text-z-secondary leading-relaxed line-clamp-2">
                              {plugin.description}
                            </p>
                         </div>
 
                         <div className="flex items-center justify-between pt-4 border-t border-white/[0.05]">
-                          <div className="flex items-center gap-3 text-[9px] text-gray-500 font-bold uppercase tracking-widest">
+                          <div className="flex items-center gap-3 text-[9px] text-z-secondary font-bold uppercase tracking-widest">
                             {plugin.verified && <span className="flex items-center gap-1"><ShieldCheck size={10} /> Verified</span>}
                             <span>{plugin.downloads?.toLocaleString()} DLs</span>
                           </div>
@@ -295,7 +295,7 @@ const PluginsPage = () => {
                               <>
                                 <button
                                   onClick={() => togglePlugin(plugin.id, plugin.status)}
-                                  className={cn('px-3 py-1.5 border text-[9px] font-black uppercase tracking-widest transition-colors', plugin.status === 'active' ? 'text-red-500 border-red-500/20 hover:bg-red-500/10' : 'text-gray-500 border-gray-500/20 hover:bg-gray-500/10')}
+                                  className={cn('px-3 py-1.5 border text-[9px] font-black uppercase tracking-widest transition-colors', plugin.status === 'active' ? 'text-red-500 border-red-500/20 hover:bg-red-500/10' : 'text-z-secondary border-gray-500/20 hover:bg-gray-500/10')}
                                 >
                                   {plugin.status === 'active' ? 'Disable' : 'Enable'}
                                 </button>
@@ -309,7 +309,7 @@ const PluginsPage = () => {
                               <button
                                 disabled={installed || installingId !== null}
                                 onClick={() => installMarketplacePlugin(plugin as any)}
-                                className={cn('px-4 py-1.5 border text-[9px] font-black uppercase tracking-widest transition-colors flex items-center gap-2', installed ? 'text-gray-500 border-gray-500/20 cursor-not-allowed' : 'text-white bg-emerald-500 border-emerald-500 hover:bg-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)]')}
+                                className={cn('px-4 py-1.5 border text-[9px] font-black uppercase tracking-widest transition-colors flex items-center gap-2', installed ? 'text-z-secondary border-gray-500/20 cursor-not-allowed' : 'text-white bg-z-accent border-z-accent hover:bg-z-accent shadow-[var(--z-active-glow)]')}
                               >
                                 {installingId === plugin.id ? <Loader2 size={10} className="animate-spin" /> : <DownloadCloud size={10} />}
                                 {installed ? 'Installed' : 'Install'}

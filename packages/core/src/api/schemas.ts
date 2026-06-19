@@ -26,7 +26,7 @@ const toSchemaDTO = (d: any) => ({
 
 const router: import('express').Router = Router()
 
-router.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
+router.get('/', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const siteId = req.headers['x-zenith-site-id'] as string
     const adapter = getAdapter(req)
@@ -41,7 +41,7 @@ router.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Res
 })
 
 // ── Get schema by ID ─────────────────────────────────────────────────────────
-router.get('/:id', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
+router.get('/:id', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const siteId = req.headers['x-zenith-site-id'] as string
     const adapter = getAdapter(req)

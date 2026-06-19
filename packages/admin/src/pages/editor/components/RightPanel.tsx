@@ -108,8 +108,8 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  'border-l flex flex-col z-50 overflow-hidden shrink-0',
  'md:relative fixed inset-y-0 right-0 max-md:!w-[280px] max-md:z-[100] max-md:shadow-2xl',
  dark
- ? 'bg-black border-white/[0.08]'
- : 'bg-white border-gray-200 shadow-xl'
+ ? 'bg-black border-z-border'
+ : 'bg-z-panel border-z-border shadow-xl'
  )}
  >
  {/* Mobile backdrop */}
@@ -123,7 +123,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  className={cn(
  'absolute left-0 top-0 bottom-0 w-1 cursor-col-resize z-50 transition-colors',
  resizingSide === 'right'
- ? 'bg-gray-500 shadow-[0_0_15px_#10b981]'
+ ? 'bg-gray-500 shadow-[var(--z-active-glow)]'
  : 'bg-transparent hover:bg-gray-500/50'
  )}
  />
@@ -132,7 +132,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  <div
  className={cn(
  'px-3 py-2 border-b flex items-center justify-between shrink-0',
- dark ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
+ dark ? 'border-z-border' : 'border-z-border shadow-sm'
  )}
  >
  <div className="flex items-center gap-4">
@@ -150,7 +150,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  className={cn(
  'text-xs font-black uppercase tracking-[0.2em] ',
  activeRightTab === tab.id
- ? dark ? 'text-gray-600 dark:text-gray-400' : 'text-gray-600'
+ ? dark ? 'text-gray-600 dark:text-z-muted' : 'text-gray-600'
  : dark ? 'text-white' : 'text-black'
  )}
  >
@@ -159,13 +159,13 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  <div
  className="h-0.5 w-full mt-1"
  style={{
- backgroundColor: activeRightTab === tab.id ? '#10b981' : 'transparent',
+ backgroundColor: activeRightTab === tab.id ? 'var(--z-accent)' : 'transparent',
  }}
  />
  </button>
  ))}
  </div>
- <button onClick={() => setRightOpen(false)} className="p-1 hover:text-gray-600 dark:text-gray-500 transition-colors" aria-label="Close panel">
+ <button onClick={() => setRightOpen(false)} className="p-1 hover:text-gray-600 dark:text-z-secondary transition-colors" aria-label="Close panel">
  <X size={16} />
  </button>
  </div>
@@ -177,7 +177,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  {/* Viewport size toggles */}
  <div className={cn(
  'flex items-center justify-center gap-1 px-3 py-2 border-b shrink-0',
- dark ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
+ dark ? 'border-z-border' : 'border-z-border shadow-sm'
  )}>
  {(['desktop', 'tablet', 'mobile'] as const).map((vp) => {
  const vpConfig = VIEWPORT_SIZES[vp]
@@ -191,11 +191,11 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  'flex items-center gap-1.5 px-2.5 py-1 rounded-none-none border text-[10px] font-black uppercase tracking-wider transition-all',
  isActive
  ? dark
- ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400'
- : 'bg-gray-50 border-gray-200 text-gray-600'
+ ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted'
+ : 'bg-z-input border-z-border text-gray-600'
  : dark
- ? 'bg-white/5 border-white/[0.08] text-gray-500 hover:text-gray-300'
- : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-600'
+ ? 'bg-z-hover border-z-border text-z-secondary hover:text-gray-300'
+ : 'bg-z-input border-z-border text-z-muted hover:text-gray-600'
  )}
  aria-label={`${vp} preview`}
  title={`${vp} (${vpConfig.width}×${vpConfig.height})`}
@@ -213,7 +213,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  <div
  className={cn(
  'transition-all duration-300 border overflow-hidden bg-white',
- dark ? 'border-white/[0.08] shadow-[0_0_40px_rgba(0,0,0,0.5)]' : 'border-gray-200 shadow-2xl',
+ dark ? 'border-z-border shadow-[0_0_40px_rgba(0,0,0,0.5)]' : 'border-z-border shadow-2xl',
  isDesktop ? 'w-full h-full' : 'rounded-none-none'
  )}
  style={
@@ -241,7 +241,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  )}>
  <Eye size={28} className={dark ? 'text-gray-600' : 'text-gray-300'} />
  <div>
- <p className={cn('text-xs font-black uppercase ', dark ? 'text-gray-500' : 'text-gray-400')}>
+ <p className={cn('text-xs font-black uppercase ', dark ? 'text-z-secondary' : 'text-z-muted')}>
  Preview unavailable
  </p>
  <p className={cn('text-xs font-bold', dark ? 'text-gray-700' : 'text-gray-300')}>
@@ -279,19 +279,19 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  className={cn(
  'group p-3 rounded-none-none border transition-all cursor-pointer space-y-1',
  dark
- ? 'bg-white/[0.02] border-white/[0.08] hover:bg-white/[0.04]'
- : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+ ? 'bg-z-panel border-z-border hover:bg-z-hover'
+ : 'bg-z-input border-z-border hover:bg-gray-100'
  )}
  >
  <div className="flex items-center justify-between">
  <span className={cn('text-xs font-black uppercase ', dark ? 'text-white' : 'text-black')}>
  {idx === 0 ? 'Current' : `V.${history.length - idx}`}
  </span>
- <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+ <span className="text-xs font-bold text-z-secondary uppercase tracking-widest">
  {new Date(v.createdAt).toLocaleDateString()}
  </span>
  </div>
- <p className="text-xs text-gray-500 font-medium truncate">
+ <p className="text-xs text-z-secondary font-medium truncate">
  {v.changeLog || 'Saved'}
  </p>
  {idx > 0 && (
@@ -301,7 +301,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  className={cn(
  'flex-1 py-1 border text-xs font-black uppercase tracking-widest text-center transition-all',
  dark
- ? 'bg-white/5 border-white/[0.08] text-gray-300 hover:bg-white/10 hover:text-white'
+ ? 'bg-z-hover border-z-border text-gray-300 hover:bg-white/10 hover:text-white'
  : 'bg-gray-100 border-gray-250 text-gray-700 hover:bg-gray-200 hover:text-black'
  )}
  >

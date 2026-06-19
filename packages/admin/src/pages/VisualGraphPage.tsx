@@ -48,21 +48,21 @@ const SchemaNode = ({ data, selected }: any) => {
     <div 
       className={cn(
         'rounded-none-none border shadow-2xl overflow-hidden w-64 text-[10px] transition-all relative',
-        dark ? 'bg-black/90 backdrop-blur-xl border-white/[0.08]' : 'bg-white/95 backdrop-blur-xl border-gray-200',
-        selected ? (dark ? 'border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.15)]' : 'border-emerald-500/50 shadow-lg') : ''
+        dark ? 'bg-z-popover backdrop-blur-xl border-z-border' : 'bg-white/95 backdrop-blur-xl border-z-border',
+        selected ? (dark ? 'border-z-accent/50 shadow-[var(--z-active-glow)]' : 'border-z-accent/50 shadow-lg') : ''
       )}
     >
       <Handle type="target" position={Position.Left} id="target-root" className="!w-0 !h-0 !opacity-0 !border-none" />
       {/* Table Header */}
       <div className={cn(
         'px-3 py-2.5 font-black uppercase flex items-center justify-between tracking-widest',
-        dark ? 'bg-white/5 border-b border-white/[0.08] text-white' : 'bg-gray-50 border-b border-gray-200 text-gray-900'
+        dark ? 'bg-z-hover border-b border-z-border text-white' : 'bg-gray-50 border-b border-z-border text-z-primary'
       )}>
         <div className="flex items-center gap-2">
-          <Database size={10} className="text-emerald-500" />
+          <Database size={10} className="text-z-active-text" />
           <span>{data.label}</span>
         </div>
-        <span className="text-[7px] text-gray-500 font-mono lowercase">{data.slug}</span>
+        <span className="text-[7px] text-z-secondary font-mono lowercase">{data.slug}</span>
       </div>
 
       {/* Fields List */}
@@ -74,7 +74,7 @@ const SchemaNode = ({ data, selected }: any) => {
               key={i} 
               className={cn(
                 'relative flex justify-between items-center px-3 py-2 border-b last:border-b-0 group',
-                dark ? 'border-white/[0.04] hover:bg-white/[0.02]' : 'border-gray-100 hover:bg-gray-50'
+                dark ? 'border-z-border hover:bg-z-panel' : 'border-z-border hover:bg-gray-50'
               )}
             >
               <Handle 
@@ -91,7 +91,7 @@ const SchemaNode = ({ data, selected }: any) => {
               </div>
               <span className={cn(
                 'text-[7px] uppercase font-black tracking-wider px-1 py-0.5 rounded-none-none',
-                isRelation ? 'bg-emerald-500/10 text-emerald-500' : dark ? 'bg-white/5 text-gray-500' : 'bg-gray-100 text-gray-500'
+                isRelation ? 'bg-z-active-bg text-z-active-text' : dark ? 'bg-z-hover text-z-secondary' : 'bg-gray-100 text-z-secondary'
               )}>
                 {field.type}
               </span>
@@ -101,14 +101,14 @@ const SchemaNode = ({ data, selected }: any) => {
                 id={`source-${field.name}`} 
                 className={cn(
                   'w-1.5 h-1.5 !border-none !-right-0.5',
-                  isRelation ? '!bg-emerald-500' : '!bg-gray-500/50'
+                  isRelation ? '!bg-z-accent' : '!bg-gray-500/50'
                 )} 
               />
             </div>
           )
         })}
         {data.fields.length === 0 && (
-          <div className="px-3 py-4 text-center text-gray-500 italic text-[9px]">
+          <div className="px-3 py-4 text-center text-z-secondary italic text-[9px]">
             No fields defined
           </div>
         )}
@@ -215,12 +215,12 @@ export const VisualGraphPage = () => {
                       targetHandle: `target-root`,
                       type: 'smoothstep',
                       animated: true,
-                      style: { stroke: '#10b981', strokeWidth: 2, opacity: 0.8 },
+                      style: { stroke: 'var(--z-accent)', strokeWidth: 2, opacity: 0.8 },
                       markerEnd: {
                         type: MarkerType.ArrowClosed,
                         width: 20,
                         height: 20,
-                        color: '#10b981',
+                        color: 'var(--z-accent)',
                       },
                     })
                   }
@@ -262,7 +262,7 @@ export const VisualGraphPage = () => {
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center h-[calc(100vh-73px)]">
-        <Activity className="animate-spin text-gray-500" size={32} />
+        <Activity className="animate-spin text-z-secondary" size={32} />
       </div>
     )
   }
@@ -282,23 +282,23 @@ export const VisualGraphPage = () => {
       >
         <Background color={dark ? '#333' : '#ccc'} gap={24} size={1} />
         <Controls 
-          className={cn('!rounded-none-none !border !shadow-lg', dark ? '!bg-black/80 !border-white/[0.08] !text-white' : '!bg-white/80 !border-gray-200')}
+          className={cn('!rounded-none-none !border !shadow-lg', dark ? '!bg-black/80 !border-z-border !text-white' : '!bg-white/80 !border-z-border')}
           showInteractive={false}
         />
         <MiniMap 
           nodeColor={dark ? '#333' : '#eee'} 
           maskColor={dark ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.7)'}
-          className="!rounded-none-none !border !border-white/[0.08] !shadow-2xl"
+          className="!rounded-none-none !border !border-z-border !shadow-2xl"
         />
         
         {/* Top HUD */}
         <Panel position="top-center" className="mt-4 pointer-events-auto">
           <div className={cn(
             'flex items-center gap-6 px-6 py-3 border backdrop-blur-xl rounded-none-none shadow-2xl',
-            dark ? 'bg-black/90 border-white/[0.08]' : 'bg-white/95 border-gray-200'
+            dark ? 'bg-z-popover border-z-border' : 'bg-white/95 border-z-border'
           )}>
             <div className="flex items-center gap-2.5">
-              <Database size={16} className={dark ? 'text-gray-400' : 'text-gray-600'} />
+              <Database size={16} className={dark ? 'text-z-muted' : 'text-gray-600'} />
               <div>
                 <p className={cn('text-xs font-black uppercase tracking-widest leading-none', dark ? 'text-white' : 'text-black')}>Schema Graph</p>
               </div>
@@ -307,11 +307,11 @@ export const VisualGraphPage = () => {
             <div className="flex items-center gap-4">
               <div className="text-center">
                 <p className={cn('text-sm font-black tabular-nums leading-none', dark ? 'text-white' : 'text-black')}>{nodes.length}</p>
-                <p className="text-[8px] text-gray-500 uppercase tracking-widest">Collections</p>
+                <p className="text-[8px] text-z-secondary uppercase tracking-widest">Collections</p>
               </div>
               <div className="text-center">
                 <p className="text-sm font-black tabular-nums text-pink-500 leading-none">{edges.length}</p>
-                <p className="text-[8px] text-gray-500 uppercase tracking-widest">Relations</p>
+                <p className="text-[8px] text-z-secondary uppercase tracking-widest">Relations</p>
               </div>
             </div>
           </div>
@@ -320,19 +320,19 @@ export const VisualGraphPage = () => {
         {/* Search Panel */}
         <Panel position="top-right" className="mt-4 mr-4">
           <div className={cn('relative', dark ? '' : '')}>
-            <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-z-secondary" />
             <input
               type="text"
               placeholder="Search schemas..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               className={cn(
-                'pl-8 pr-8 py-2.5 text-[10px] font-black uppercase tracking-widest border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 w-48 shadow-2xl transition-all',
-                dark ? 'bg-black/90 border-white/[0.08] text-white placeholder:text-gray-600 backdrop-blur-xl' : 'bg-white/95 border-gray-200 text-gray-900 focus:border-gray-500'
+                'pl-8 pr-8 py-2.5 text-[10px] font-black uppercase tracking-widest border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-z-active-border w-48 shadow-2xl transition-all',
+                dark ? 'bg-z-popover border-z-border text-white placeholder:text-gray-600 backdrop-blur-xl' : 'bg-white/95 border-z-border text-z-primary focus:border-gray-500'
               )}
             />
             {search && (
-              <button onClick={() => setSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300">
+              <button onClick={() => setSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-z-secondary hover:text-gray-300">
                 <X size={12} />
               </button>
             )}

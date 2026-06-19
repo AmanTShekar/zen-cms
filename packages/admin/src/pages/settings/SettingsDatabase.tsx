@@ -1,220 +1,338 @@
-import React, { useState } from 'react'
-import { HardDrive, Layers, Activity, Trash2, RefreshCw, Scan, Loader2 } from 'lucide-react'
+import React, { useState, useEffect, useCallback } from 'react'
+import {
+  HardDrive, Layers, Activity, Trash2, RefreshCw, Scan, Loader2,
+  Database, Archive, Clock, TrendingUp, AlertTriangle, CheckCircle2,
+  Download, Upload, Eye, Server, Zap, BarChart3
+} from 'lucide-react'
 import { cn } from '../../lib/utils'
 import api from '../../lib/api'
 import toast from 'react-hot-toast'
 
 interface DBStats {
- size?: number
- collections?: number | string
- [key: string]: any
+  size?: number
+  collections?: number | string
+  documents?: number
+  indexes?: number
+  avgObjSize?: number
+  storageSize?: number
+  freeStorageSize?: number
+  [key: string]: any
+}
+
+interface Backup {
+  id: string
+  filename: string
+  size: number
+  createdAt: string
+  status: 'ready' | 'processing' | 'failed'
 }
 
 interface SettingsDatabaseProps {
- dbStats: DBStats | null
- theme: 'light' | 'dark'
+  dbStats: DBStats | null
+  theme: 'light' | 'dark'
 }
 
 const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) => {
- const [sweeping, setSweeping] = useState(false)
- const [testing, setTesting] = useState(false)
- const [dbUri, setDbUri] = useState('')
- const [dbDialect, setDbDialect] = useState<'postgres' | 'mongodb'>('mongodb')
+  const dark = theme === 'dark'
+  const [sweeping, setSweeping] = useState(false)
+  const [testing, setTesting] = useState(false)
+  const [creatingBackup, setCreatingBackup] = useState(false)
+  const [dbUri, setDbUri] = useState('')
+  const [dbDialect, setDbDialect] = useState<'postgres' | 'mongodb'>('mongodb')
+  const [backups, setBackups] = useState<Backup[]>([])
+  const [backupsLoading, setBackupsLoading] = useState(false)
+  const [showBackups, setShowBackups] = useState(false)
+  const [slowQueries, setSlowQueries] = useState<any[]>([])
+  const [slowQueriesLoading, setSlowQueriesLoading] = useState(false)
 
- const handleMediaSweep = async () => {
- setSweeping(true)
- try {
- const res = await api.post<any>('/system/media/sweep', { pruneUnreferencedMedia: true })
- const result = res.data.data
- toast.success(
- `Swept ${result.removed || 0} orphans · ${result.retained || 0} retained`
- )
- } catch (err: any) {
- toast.error(err?.response?.data?.error || 'Sweep failed')
- } finally {
- setSweeping(false)
- }
- }
+  const fetchBackups = useCallback(async () => {
+    setBackupsLoading(true)
+    try {
+      const res = await api.get('/system/backup/list')
+      setBackups(res.data?.data || [])
+    } catch {
+      setBackups([])
+    } finally {
+      setBackupsLoading(false)
+    }
+  }, [])
 
- const handleTestConnection = async (e: React.FormEvent) => {
- e.preventDefault()
- if (!dbUri.trim()) return
- setTesting(true)
- try {
- await api.post('/system/db/test-connection', { uri: dbUri, dialect: dbDialect })
- toast.success('Connection verified')
- } catch (err: any) {
- toast.error(err?.response?.data?.error || 'Connection failed')
- } finally {
- setTesting(false)
- }
- }
+  const fetchSlowQueries = useCallback(async () => {
+    setSlowQueriesLoading(true)
+    try {
+      const res = await api.get('/system/db/slow-queries')
+      setSlowQueries(res.data?.data || [])
+    } catch {
+      setSlowQueries([])
+    } finally {
+      setSlowQueriesLoading(false)
+    }
+  }, [])
 
- const sizeMB = dbStats?.size ? (dbStats.size / 1024 / 1024).toFixed(2) : '0.00'
- const collections = dbStats?.collections || '0'
+  useEffect(() => {
+    if (showBackups) fetchBackups()
+  }, [showBackups, fetchBackups])
 
- const stats = [
- {
- label: 'Cluster Scale',
- value: `${sizeMB} MB`,
- icon: HardDrive,
- color: 'text-gray-600 dark:text-gray-500',
- },
- {
- label: 'Registry Map',
- value: String(collections),
- icon: Layers,
- color: 'text-gray-600 dark:text-gray-500',
- },
- {
- label: 'Pulse Health',
- value: 'OPTIMAL',
- icon: Activity,
- color: 'text-gray-600 dark:text-gray-500',
- },
- ]
+  const handleMediaSweep = async () => {
+    setSweeping(true)
+    try {
+      const res = await api.post<any>('/system/media/sweep', { pruneUnreferencedMedia: true })
+      const result = res.data.data
+      toast.success(`Swept ${result.removed || 0} orphans · ${result.retained || 0} retained`)
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error || 'Sweep failed')
+    } finally {
+      setSweeping(false)
+    }
+  }
 
- return (
- <div className="col-span-full space-y-8">
- {/* Stat cards */}
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
- {stats.map((stat, i) => (
- <div
- key={i}
- className={cn(
- 'p-8 border rounded-none-none flex flex-col gap-6 relative overflow-hidden group transition-all',
- theme === 'dark'
- ? 'bg-white/[0.01] border-white/[0.08] hover:border-gray-500/20'
- : 'bg-gray-50 border-gray-200 shadow-sm shadow-sm'
- )}
- >
- <div className="flex items-center justify-between">
- <div
- className={cn(
- 'w-12 h-12 rounded-none-none flex items-center justify-center border',
- theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-white'
- )}
- >
- <stat.icon size={22} className="text-gray-400 group-hover:text-gray-600 dark:text-gray-500 transition-colors" />
- </div>
- <span className={cn('text-[10px] font-black uppercase tracking-widest ', stat.color)}>
- Synchronized
- </span>
- </div>
- <div className="flex flex-col leading-none">
- <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest ">
- {stat.label}
- </span>
- <span className="text-xl font-black tracking-tighter mt-2">
- {stat.value}
- </span>
- </div>
- </div>
- ))}
- </div>
+  const handleFlushCache = async () => {
+    setSweeping(true)
+    try {
+      await api.post('/system/cache/flush')
+      toast.success('Cache flushed')
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error || 'Failed to flush cache')
+    } finally {
+      setSweeping(false)
+    }
+  }
 
- {/* DB connection test */}
- <div
- className={cn(
- 'p-6 border rounded-none-none',
- theme === 'dark'
- ? 'bg-white/[0.01] border-white/[0.08]'
- : 'bg-gray-50 border-gray-200 shadow-sm'
- )}
- >
- <p className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 mb-4">
- Test New Connection
- </p>
- <form onSubmit={handleTestConnection} className="flex gap-3 items-end">
- <div className="flex-1 space-y-1">
- <label className="text-[8px] font-black uppercase tracking-widest text-gray-600">
- Connection URI
- </label>
- <input
- type="text"
- value={dbUri}
- onChange={(e) => setDbUri(e.target.value)}
- placeholder="postgres://... or mongodb://..."
- className={cn(
- 'w-full border rounded-none-none py-3 px-4 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white focus:border-gray-500/50'
- : 'bg-white border-gray-200 focus:border-gray-500'
- )}
- />
- </div>
- <div className="space-y-1">
- <label className="text-[8px] font-black uppercase tracking-widest text-gray-600">
- Dialect
- </label>
- <div className="flex gap-2">
- {(['postgres', 'mongodb'] as const).map((d) => (
- <button
- key={d}
- type="button"
- onClick={() => setDbDialect(d)}
- className={cn(
- 'px-4 py-3 text-[9px] font-black uppercase border rounded-none-none transition-all',
- dbDialect === d
- ? 'border-gray-500/40 bg-gray-500/10 text-gray-600 dark:text-gray-400'
- : theme === 'dark'
- ? 'border-white/[0.08] text-gray-500'
- : 'border-gray-200 text-gray-400'
- )}
- >
- {d}
- </button>
- ))}
- </div>
- </div>
- <button
- type="submit"
- disabled={testing || !dbUri.trim()}
- className={cn(
- 'px-6 py-3.5 rounded-none-none text-[9px] font-black uppercase tracking-widest border transition-all active:scale-95 disabled:opacity-40 flex items-center gap-2',
- theme === 'dark'
- ? 'border-white/[0.08] hover:border-white/[0.08] text-gray-400 hover:text-white'
- : 'border-gray-200 hover:border-gray-300 text-gray-400'
- )}
- >
- {testing ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
- Validate
- </button>
- </form>
- </div>
+  const handleTestConnection = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!dbUri.trim()) return
+    setTesting(true)
+    try {
+      await api.post('/system/db/test-connection', { uri: dbUri, dialect: dbDialect })
+      toast.success('Connection verified')
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error || 'Connection failed')
+    } finally {
+      setTesting(false)
+    }
+  }
 
- {/* Maintenance actions */}
- <div className="flex flex-wrap gap-4">
- <button
- onClick={async () => {
- setSweeping(true)
- try {
- await api.post('/system/cache/flush')
- toast.success('Cache flushed')
- } catch (err: any) {
- toast.error(err?.response?.data?.error || 'Failed to flush cache')
- } finally {
- setSweeping(false)
- }
- }}
- disabled={sweeping}
- className="flex items-center gap-3 px-8 py-4 rounded-none-none bg-red-500/10 text-red-500 border border-red-500/20 text-[10px] font-black uppercase hover:bg-red-500/20 transition-all active:scale-95 disabled:opacity-40"
- >
- {sweeping ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
- Flush Cache
- </button>
+  const handleCreateBackup = async () => {
+    setCreatingBackup(true)
+    try {
+      await api.post('/system/backup/create')
+      toast.success('Backup created')
+      fetchBackups()
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error || 'Backup failed')
+    } finally {
+      setCreatingBackup(false)
+    }
+  }
 
- <button
- onClick={handleMediaSweep}
- disabled={sweeping}
- className="flex items-center gap-3 px-8 py-4 rounded-none-none bg-gray-500/10 text-gray-600 dark:text-gray-500 border border-gray-500/20 text-[10px] font-black uppercase hover:bg-gray-500/20 transition-all active:scale-95 disabled:opacity-40"
- >
- {sweeping ? <Loader2 size={14} className="animate-spin" /> : <Scan size={14} />}
- Sweep Orphan Media
- </button>
- </div>
- </div>
- )
+  const handleDownloadBackup = async (backup: Backup) => {
+    try {
+      // Use fetch directly for blob download since api instance may not support responseType
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token') || ''
+      const siteId = localStorage.getItem('activeSiteId') || ''
+      const res = await fetch(`/api/v1/system/backup/download/${backup.id}`, {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(siteId ? { 'x-zenith-site-id': siteId } : {}),
+        }
+      })
+      if (!res.ok) throw new Error('Download failed')
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = backup.filename
+      a.click()
+    } catch {
+      toast.error('Download failed')
+    }
+  }
+
+  const sizeMB = dbStats?.size ? (dbStats.size / 1024 / 1024).toFixed(2) : '0.00'
+  const storageMB = dbStats?.storageSize ? (dbStats.storageSize / 1024 / 1024).toFixed(2) : '0.00'
+  const collections = dbStats?.collections || '0'
+  const documents = dbStats?.documents || 0
+  const indexes = dbStats?.indexes || 0
+
+  const stats = [
+    { label: 'Data Size', value: `${sizeMB} MB`, icon: HardDrive, color: 'text-z-active-text', bg: 'bg-z-active-bg', border: 'border-z-active-border' },
+    { label: 'Collections', value: String(collections), icon: Layers, color: 'text-z-active-text', bg: 'bg-z-accent/10', border: 'border-z-accent/20' },
+    { label: 'Documents', value: documents.toLocaleString(), icon: Database, color: 'text-z-active-text', bg: 'bg-z-active-bg', border: 'border-z-accent/20' },
+    { label: 'Indexes', value: String(indexes), icon: BarChart3, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
+    { label: 'Storage Used', value: `${storageMB} MB`, icon: HardDrive, color: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/20' },
+    { label: 'DB Health', value: 'OPTIMAL', icon: Activity, color: 'text-z-active-text', bg: 'bg-z-active-bg', border: 'border-z-accent/20' },
+  ]
+
+  const card = cn(
+    'border rounded-none transition-all',
+    dark ? 'bg-z-panel backdrop-blur-md border-z-border shadow-[var(--z-active-glow)]' : 'bg-z-input border-z-border shadow-sm'
+  )
+
+  const inp = cn(
+    'border rounded-none py-3 px-4 text-[11px] font-mono transition-all outline-none focus:ring-1 focus:ring-z-active-border focus:border-z-accent',
+    dark ? 'bg-black/80 border-z-border text-white placeholder:text-gray-700' : 'bg-z-panel border-z-border'
+  )
+
+  return (
+    <div className="space-y-6">
+      {/* Stat Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        {stats.map((stat, i) => (
+          <div key={i} className={cn(card, 'p-5 flex flex-col gap-4 group')}>
+            <div className="flex items-center justify-between">
+              <div className={cn('w-10 h-10 flex items-center justify-center border', stat.bg, stat.border)}>
+                <stat.icon size={18} className={stat.color} />
+              </div>
+              <span className="text-[8px] font-black text-z-active-text uppercase tracking-widest">Live</span>
+            </div>
+            <div>
+              <p className="text-[8px] font-black text-z-secondary uppercase tracking-widest">{stat.label}</p>
+              <p className={cn('text-xl font-black tracking-tighter mt-1', dark ? 'text-white' : 'text-z-primary')}>{stat.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Test Connection */}
+      <div className={cn(card, 'p-6 space-y-4')}>
+        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary">Test New Connection</p>
+        <form onSubmit={handleTestConnection} className="flex flex-wrap gap-3 items-end">
+          <div className="flex-1 min-w-[200px] space-y-1">
+            <label className="text-[8px] font-black uppercase tracking-widest text-gray-600">Connection URI</label>
+            <input
+              type="text"
+              value={dbUri}
+              onChange={e => setDbUri(e.target.value)}
+              placeholder="postgres://user:pass@host:5432/db or mongodb://..."
+              className={cn(inp, 'w-full')}
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[8px] font-black uppercase tracking-widest text-gray-600">Dialect</label>
+            <div className="flex gap-2">
+              {(['postgres', 'mongodb'] as const).map(d => (
+                <button key={d} type="button" onClick={() => setDbDialect(d)}
+                  className={cn('px-4 py-3 text-[9px] font-black uppercase border transition-all',
+                    dbDialect === d ? dark ? 'border-z-accent/50 bg-z-accent/20 text-z-active-text' : 'border-z-active-border bg-z-active-bg text-z-accent' : dark ? 'border-z-border text-z-secondary' : 'border-z-border text-z-muted')}>
+                  {d}
+                </button>
+              ))}
+            </div>
+          </div>
+          <button type="submit" disabled={testing || !dbUri.trim()}
+            className={cn('px-6 py-3 text-[9px] font-black uppercase tracking-widest border transition-all disabled:opacity-40 flex items-center gap-2',
+              dark ? 'bg-z-accent border-transparent text-white hover:opacity-90 shadow-[var(--z-active-glow)]' : 'bg-gray-900 border-transparent text-white hover:bg-gray-800')}>
+            {testing ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
+            Validate
+          </button>
+        </form>
+      </div>
+
+      {/* Backup Manager */}
+      <div className={cn(card, 'overflow-hidden')}>
+        <div className="flex items-center justify-between p-5">
+          <div className="flex items-center gap-3">
+            <Archive size={16} className="text-z-secondary" />
+            <div>
+              <p className={cn('text-[10px] font-black uppercase tracking-wider', dark ? 'text-gray-200' : 'text-gray-800')}>Database Backups</p>
+              <p className="text-[8px] text-z-secondary uppercase tracking-widest">Create and restore database snapshots</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={() => { setShowBackups(!showBackups) }}
+              className={cn('text-[9px] font-black uppercase tracking-widest px-3 py-2 border transition-all', dark ? 'border-white/10 text-z-muted hover:text-white' : 'border-z-border text-z-secondary')}>
+              {showBackups ? 'Hide' : 'View'} Backups
+            </button>
+            <button onClick={handleCreateBackup} disabled={creatingBackup}
+              className={cn('flex items-center gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-widest border transition-all disabled:opacity-40',
+                dark ? 'bg-z-active-bg border-z-active-border text-z-active-text hover:bg-z-active-bg' : 'bg-z-active-bg border-z-active-border text-z-accent')}>
+              {creatingBackup ? <Loader2 size={11} className="animate-spin" /> : <Archive size={11} />}
+              Create Backup
+            </button>
+          </div>
+        </div>
+        {showBackups && (
+          <div className="border-t" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}>
+            {backupsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 size={20} className="text-z-active-text animate-spin" />
+              </div>
+            ) : backups.length === 0 ? (
+              <div className="py-8 text-center">
+                <p className="text-[9px] text-gray-600 uppercase tracking-widest">No backups yet — create one above</p>
+              </div>
+            ) : (
+              <div className="divide-y" style={{ borderColor: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }}>
+                {backups.map(b => (
+                  <div key={b.id} className="flex items-center gap-4 px-5 py-3">
+                    <Archive size={14} className="text-z-secondary shrink-0" />
+                    <div className="flex-1">
+                      <p className={cn('text-[10px] font-black', dark ? 'text-gray-200' : 'text-gray-800')}>{b.filename}</p>
+                      <p className="text-[8px] text-gray-600">{new Date(b.createdAt).toLocaleString()} · {(b.size / 1024 / 1024).toFixed(2)} MB</p>
+                    </div>
+                    <span className={cn('text-[7px] font-black uppercase tracking-widest px-2 py-0.5 border', b.status === 'ready' ? 'text-z-active-text border-z-active-border bg-z-active-bg' : b.status === 'processing' ? 'text-amber-400 border-amber-500/30 bg-amber-500/10' : 'text-red-400 border-red-500/30 bg-red-500/10')}>
+                      {b.status}
+                    </span>
+                    {b.status === 'ready' && (
+                      <button onClick={() => handleDownloadBackup(b)} className={cn('p-2 transition-colors', dark ? 'text-z-secondary hover:text-z-active-text' : 'text-z-muted hover:text-z-accent')}>
+                        <Download size={14} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Maintenance Actions */}
+      <div className="space-y-2">
+        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary px-1">Maintenance Actions</p>
+        <div className="flex flex-wrap gap-3">
+          <button onClick={handleFlushCache} disabled={sweeping}
+            className={cn('flex items-center gap-2 px-6 py-3.5 border text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-40',
+              dark ? 'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20' : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100')}>
+            {sweeping ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
+            Flush Cache
+          </button>
+          <button onClick={handleMediaSweep} disabled={sweeping}
+            className={cn('flex items-center gap-2 px-6 py-3.5 border text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-40',
+              dark ? 'bg-z-active-bg text-z-active-text border-z-active-border hover:bg-z-active-bg' : 'bg-gray-100 text-gray-700 border-z-border hover:bg-gray-200')}>
+            {sweeping ? <Loader2 size={13} className="animate-spin" /> : <Scan size={13} />}
+            Sweep Orphan Media
+          </button>
+          <button onClick={fetchSlowQueries} disabled={slowQueriesLoading}
+            className={cn('flex items-center gap-2 px-6 py-3.5 border text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-40',
+              dark ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20' : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100')}>
+            {slowQueriesLoading ? <Loader2 size={13} className="animate-spin" /> : <TrendingUp size={13} />}
+            Analyze Slow Queries
+          </button>
+        </div>
+      </div>
+
+      {/* Slow Queries */}
+      {slowQueries.length > 0 && (
+        <div className={cn(card, 'overflow-hidden')}>
+          <div className="p-4 border-b" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}>
+            <p className="text-[9px] font-black uppercase tracking-widest text-amber-400">Slow Query Analysis</p>
+          </div>
+          <div className="divide-y" style={{ borderColor: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }}>
+            {slowQueries.slice(0, 5).map((q, i) => (
+              <div key={i} className="flex items-center gap-4 px-5 py-3">
+                <AlertTriangle size={13} className="text-amber-400 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className={cn('text-[9px] font-mono truncate', dark ? 'text-gray-300' : 'text-gray-700')}>{q.query || q.command || 'Unknown query'}</p>
+                  <p className="text-[8px] text-gray-600">{q.collection || q.table}</p>
+                </div>
+                <span className="text-[9px] font-black text-amber-400 shrink-0">{q.millis || q.duration}ms</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default SettingsDatabase

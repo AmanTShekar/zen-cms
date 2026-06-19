@@ -67,11 +67,11 @@ function ToolbarButton({ onClick, isActive, disabled, title, children }: Toolbar
         'w-9 h-9 flex items-center justify-center transition-all relative active:scale-90',
         isActive
           ? theme === 'dark'
-            ? 'bg-emerald-500/20 text-emerald-400'
-            : 'bg-emerald-50 text-emerald-600'
+            ? 'bg-z-accent/20 text-z-active-text'
+            : 'bg-z-active-bg text-z-accent'
           : theme === 'dark'
-            ? 'text-gray-500 hover:bg-white/5 hover:text-white'
-            : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900',
+            ? 'text-z-secondary hover:bg-z-hover hover:text-white'
+            : 'text-z-secondary hover:bg-gray-100 hover:text-z-primary',
         disabled && 'opacity-30 pointer-events-none',
       )}
     >
@@ -110,8 +110,8 @@ function BlockTypeDropdown({ blockType, onBlockTypeChange }: {
         className={cn(
           'flex items-center gap-2 px-3 py-1.5 text-[11px] font-black uppercase italic tracking-tight transition-all',
           theme === 'dark'
-            ? 'text-white hover:bg-white/5'
-            : 'text-gray-900 hover:bg-gray-100',
+            ? 'text-white hover:bg-z-hover'
+            : 'text-z-primary hover:bg-gray-100',
         )}
       >
         {blockOptions.find((o) => o.value === blockType)?.label || 'Paragraph'}
@@ -126,10 +126,10 @@ function BlockTypeDropdown({ blockType, onBlockTypeChange }: {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
             className={cn(
-              'absolute top-full left-0 mt-1 z-[600] border shadow-[0_20px_60px_rgba(0,0,0,0.4)] p-1 min-w-[160px]',
+              'absolute top-full left-0 mt-1 z-[600] border shadow-[var(--z-active-glow)] p-1 min-w-[160px]',
               theme === 'dark'
                 ? 'bg-[#0b0f19]/95 border-white/10 backdrop-blur-2xl'
-                : 'bg-white border-gray-200 shadow-xl',
+                : 'bg-z-panel border-z-border shadow-xl',
             )}
           >
             {blockOptions.map((opt) => (
@@ -143,11 +143,11 @@ function BlockTypeDropdown({ blockType, onBlockTypeChange }: {
                   'w-full text-left px-3 py-2 text-[10px] font-black uppercase italic transition-all',
                   blockType === opt.value
                     ? theme === 'dark'
-                      ? 'text-emerald-400 bg-emerald-500/10'
-                      : 'text-emerald-600 bg-emerald-50'
+                      ? 'text-z-active-text bg-z-active-bg'
+                      : 'text-z-accent bg-z-active-bg'
                     : theme === 'dark'
-                      ? 'text-gray-400 hover:bg-white/5 hover:text-white'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+                      ? 'text-z-muted hover:bg-z-hover hover:text-white'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-z-primary',
                 )}
               >
                 {opt.label}
@@ -286,7 +286,7 @@ export function Toolbar({ disabled }: { disabled?: boolean }) {
         'flex items-center h-12 border-b px-3 gap-0.5 backdrop-blur-xl z-[100] flex-wrap',
         theme === 'dark'
           ? 'bg-black/60 border-white/5'
-          : 'bg-white/95 border-gray-100 shadow-sm',
+          : 'bg-white/95 border-z-border shadow-sm',
         disabled && 'opacity-50 pointer-events-none',
       )}
     >

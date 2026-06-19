@@ -15,17 +15,17 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  <div className="col-span-1 md:col-span-2 space-y-8">
  <div
  className={cn(
- 'p-8 rounded-none-none border text-center space-y-4',
+ 'p-8 rounded-none border text-center space-y-4 shadow-[var(--z-active-glow)]',
  theme === 'dark'
- ? 'bg-white/[0.01] border-white/[0.08] text-gray-400'
- : 'bg-gray-50 border-gray-200 shadow-sm text-gray-500'
+ ? 'bg-z-panel backdrop-blur-md border-z-border text-z-muted'
+ : 'bg-z-input border-z-border shadow-sm text-z-secondary'
  )}
  >
- <CreditCard size={48} className="mx-auto text-gray-600 dark:text-gray-500 animate-pulse" />
+ <CreditCard size={48} className="mx-auto text-gray-600 dark:text-z-secondary animate-pulse" />
  <h3 className="text-lg font-black uppercase tracking-wider">
  No Active Workspace Selected
  </h3>
- <p className="text-xs font-bold text-gray-500 uppercase tracking-widest max-w-md mx-auto">
+ <p className="text-xs font-bold text-z-secondary uppercase tracking-widest max-w-md mx-auto">
  Select a site from the top-left sidebar switcher or workspace launchpad
  to configure pricing plans, paywalls, and subscription billing keys.
  </p>
@@ -39,18 +39,18 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  {/* Enable Billing Switcher */}
  <div
  className={cn(
- 'p-6 rounded-none-none border flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all group',
+ 'p-6 rounded-none border flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all group shadow-[var(--z-active-glow)]',
  theme === 'dark'
- ? 'bg-white/[0.01] border-white/[0.08] hover:border-gray-500/20'
- : 'bg-white border-gray-200 shadow-sm shadow-sm'
+ ? 'bg-z-panel backdrop-blur-md border-z-border hover:border-z-active-border'
+ : 'bg-z-panel border-z-border shadow-sm'
  )}
  >
  <div className="flex flex-col">
  <span className="text-[12px] font-black uppercase leading-none flex items-center gap-2">
- <Sparkles size={14} className="text-gray-600 dark:text-gray-400" />
+ <Sparkles size={14} className="text-gray-600 dark:text-z-muted" />
  Enable Custom Pricing Plans & Monetization
  </span>
- <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1.5 leading-relaxed">
+ <span className="text-[8px] text-z-secondary font-bold uppercase tracking-widest mt-1.5 leading-relaxed">
  Instantly deploy paywalls, premium plans, and check-out rules for client frontends
  </span>
  </div>
@@ -59,8 +59,8 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  value={activeSite.currency || 'USD'}
  onChange={(e) => setActiveSite({ ...activeSite, currency: e.target.value })}
  className={cn(
- 'border rounded-none-none py-1.5 px-3 text-[11px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200 text-gray-800'
+ 'border rounded-none py-1.5 px-3 text-[11px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark' ? 'bg-black border-z-border text-white' : 'bg-z-panel border-z-border text-gray-800'
  )}
  >
  <option value="USD">USD ($)</option>
@@ -76,7 +76,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  onChange={(e) => setActiveSite({ ...activeSite, billingEnabled: e.target.checked })}
  className="sr-only peer"
  />
- <div className="w-12 h-6 bg-gray-500/20 rounded-none-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-none-none after:h-4 after:w-5 after:transition-all peer-checked:bg-gray-600 dark:bg-gray-600 shadow-inner border border-white/[0.08]"></div>
+ <div className={cn("w-12 h-6 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-none after:h-4 after:w-5 after:transition-all border shadow-inner", theme === 'dark' ? 'bg-black/80 border-z-border peer-checked:bg-z-accent' : 'bg-gray-200 peer-checked:bg-z-accent')}></div>
  </label>
  </div>
  </div>
@@ -93,11 +93,11 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  <div
  key={input.field}
  className={cn(
- 'p-4 rounded-none-none border transition-all space-y-3',
- theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50/50 border-gray-200 shadow-sm'
+ 'p-4 rounded-none border transition-all space-y-3 shadow-[var(--z-active-glow)]',
+ theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-z-border' : 'bg-gray-50/50 border-z-border shadow-sm'
  )}
  >
- <label className="text-[8px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">
+ <label className="text-[8px] font-black text-z-muted uppercase tracking-[0.2em] px-1">
  {input.label}
  </label>
  <input
@@ -106,10 +106,10 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  value={activeSite[input.field] || ''}
  onChange={(e) => setActiveSite({ ...activeSite, [input.field]: e.target.value })}
  className={cn(
- 'w-full border rounded-none-none py-3 px-4 text-[12px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-3 px-4 text-[12px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
- ? 'bg-black border-white/[0.08] text-white focus:border-gray-500'
- : 'bg-white border-gray-200 focus:border-gray-500'
+ ? 'bg-black border-z-border text-white focus:border-z-accent'
+ : 'bg-z-panel border-z-border focus:border-z-accent'
  )}
  />
  </div>
@@ -118,12 +118,12 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
 
  {/* Subscription Plans */}
  <div className="space-y-6">
- <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+ <div className="flex items-center justify-between border-b border-z-border pb-4">
  <div className="flex flex-col">
  <h3 className="text-sm font-black uppercase tracking-wider">
  Subscription Tiers & Paywalls
  </h3>
- <span className="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1">
+ <span className="text-[8px] text-z-secondary font-bold uppercase tracking-widest mt-1">
  Configure subscription plans, features list, and restrict collection access
  </span>
  </div>
@@ -142,7 +142,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  }
  setActiveSite({ ...activeSite, pricingPlans: [...(activeSite.pricingPlans || []), newPlan] })
  }}
- className="flex items-center gap-2 px-4 py-2 border border-gray-500/30 hover:border-gray-500 hover:bg-gray-500/10 text-[10px] font-black uppercase transition-all text-gray-600 dark:text-gray-400 hover:text-white"
+ className="flex items-center gap-2 px-4 py-2 border border-z-active-border hover:border-z-accent hover:bg-z-active-bg text-[10px] font-black uppercase transition-all text-z-accent dark:text-z-active-text hover:text-white"
  >
  <PlusCircle size={12} />
  Add Plan
@@ -154,14 +154,14 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  <div
  key={plan.id || planIndex}
  className={cn(
- 'p-6 border rounded-none-none relative transition-all flex flex-col justify-between space-y-6',
+ 'p-6 border rounded-none relative transition-all flex flex-col justify-between space-y-6 shadow-[var(--z-active-glow)]',
  plan.isPopular
  ? theme === 'dark'
- ? 'bg-gray-500/[0.03] border-gray-500/40 shadow-[0_0_15px_rgba(99,102,241,0.05)]'
- : 'bg-gray-50 border-gray-200'
+ ? 'bg-black/80 backdrop-blur-md border-z-active-border shadow-[var(--z-active-glow)]'
+ : 'bg-z-active-bg border-z-active-border'
  : theme === 'dark'
- ? 'bg-white/[0.01] border-white/[0.08]'
- : 'bg-white border-gray-200 shadow-sm shadow-sm'
+ ? 'bg-z-panel backdrop-blur-md border-z-border'
+ : 'bg-z-panel border-z-border shadow-sm'
  )}
  >
  <div className="space-y-4">
@@ -175,8 +175,8 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
  className={cn(
- 'text-sm font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black border-b border-transparent focus:border-gray-500 bg-transparent w-full mr-4',
- theme === 'dark' ? 'text-white' : 'text-gray-900'
+ 'text-sm font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black border-b border-transparent focus:border-z-accent bg-transparent w-full mr-4',
+ theme === 'dark' ? 'text-white' : 'text-z-primary'
  )}
  />
  <button
@@ -185,7 +185,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  const plans = activeSite.pricingPlans.filter((_: any, idx: number) => idx !== planIndex)
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
- className="text-gray-500 hover:text-red-400 transition-colors shrink-0"
+ className="text-z-secondary hover:text-red-400 transition-colors shrink-0"
  >
  <Trash size={14} />
  </button>
@@ -193,7 +193,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-1.5">
- <label className="text-[7px] font-black text-gray-500 uppercase tracking-wider">Plan Slug</label>
+ <label className="text-[7px] font-black text-z-secondary uppercase tracking-wider">Plan Slug</label>
  <input
  type="text"
  value={plan.slug}
@@ -203,13 +203,13 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
  className={cn(
- 'w-full border rounded-none-none py-1.5 px-3 text-[10px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200'
+ 'w-full border rounded-none py-1.5 px-3 text-[10px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark' ? 'bg-black border-z-border text-white' : 'bg-z-panel border-z-border'
  )}
  />
  </div>
  <div className="space-y-1.5">
- <label className="text-[7px] font-black text-gray-500 uppercase tracking-wider">Pricing ({activeSite.currency || 'USD'})</label>
+ <label className="text-[7px] font-black text-z-secondary uppercase tracking-wider">Pricing ({activeSite.currency || 'USD'})</label>
  <div className="flex items-center gap-1.5">
  <input
  type="number"
@@ -220,8 +220,8 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
  className={cn(
- 'w-full border rounded-none-none py-1.5 px-3 text-[10px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200'
+ 'w-full border rounded-none py-1.5 px-3 text-[10px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark' ? 'bg-black border-z-border text-white' : 'bg-z-panel border-z-border'
  )}
  />
  <select
@@ -232,8 +232,8 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
  className={cn(
- 'border rounded-none-none py-1.5 px-2 text-[9px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-white/[0.08] text-white' : 'bg-white border-gray-200'
+ 'border rounded-none py-1.5 px-2 text-[9px] font-black uppercase outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark' ? 'bg-black border-z-border text-white' : 'bg-z-panel border-z-border'
  )}
  >
  <option value="monthly">/mo</option>
@@ -246,11 +246,11 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
 
  {/* Paywalled Collections */}
  <div className="space-y-2">
- <label className="text-[8px] font-black text-gray-500 uppercase tracking-wider block">Paywall Restricted Collections</label>
+ <label className="text-[8px] font-black text-z-secondary uppercase tracking-wider block">Paywall Restricted Collections</label>
  <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 mt-4">
  {(healthData?.collections || []).length === 0 ? (
- <div className="col-span-full py-4 text-center border border-dashed border-gray-200 dark:border-white/[0.08] rounded-none-none">
- <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">No collections available to monetize</span>
+ <div className="col-span-full py-4 text-center border border-dashed border-z-border dark:border-z-border rounded-none">
+ <span className="text-[10px] font-black uppercase tracking-widest text-z-secondary">No collections available to monetize</span>
  </div>
  ) : (
  (healthData?.collections || []).map((col: any) => {
@@ -267,11 +267,11 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  plans[planIndex] = { ...plan, paywalledCollections: next }
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
- className="rounded-none-none border-white/[0.08] text-gray-600 focus:ring-0 focus:ring-offset-0 bg-black cursor-pointer"
+ className="rounded-none border-z-border text-z-accent focus:ring-0 focus:ring-offset-0 bg-black cursor-pointer"
  />
  <span className={cn(
  'text-[9px] font-black uppercase tracking-widest transition-colors',
- checked ? 'text-gray-600 dark:text-gray-400' : 'text-gray-500 group-hover:text-gray-400'
+ checked ? 'text-gray-600 dark:text-z-muted' : 'text-z-secondary group-hover:text-z-muted'
  )}>
  {col.label || col.slug}
  </span>
@@ -284,11 +284,11 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
 
  {/* Features */}
  <div className="space-y-2">
- <label className="text-[8px] font-black text-gray-500 uppercase tracking-wider block">Plan Features & Deliverables</label>
+ <label className="text-[8px] font-black text-z-secondary uppercase tracking-wider block">Plan Features & Deliverables</label>
  <div className="space-y-1.5">
  {(plan.features || []).map((feat: string, featIdx: number) => (
  <div key={featIdx} className="flex items-center gap-2">
- <span className="text-gray-600 dark:text-gray-500 text-[10px] font-black">•</span>
+ <span className="text-gray-600 dark:text-z-secondary text-[10px] font-black">•</span>
  <input
  type="text"
  value={feat}
@@ -300,7 +300,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
  className={cn(
- 'flex-1 border-b border-transparent focus:border-white/[0.08] bg-transparent text-[10px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-0.5',
+ 'flex-1 border-b border-transparent focus:border-z-border bg-transparent text-[10px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black py-0.5',
  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
  )}
  />
@@ -326,7 +326,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  plans[planIndex] = { ...plan, features: feats }
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
- className="text-[9px] font-black text-gray-600 dark:text-gray-400 hover:text-gray-300 uppercase tracking-widest flex items-center gap-1 mt-1 shrink-0"
+ className="text-[9px] font-black text-gray-600 dark:text-z-muted hover:text-gray-300 uppercase tracking-widest flex items-center gap-1 mt-1 shrink-0"
  >
  <PlusCircleIcon size={10} />
  Add Feature bullet
@@ -336,8 +336,8 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  </div>
 
  {/* Popular switcher */}
- <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between shrink-0">
- <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">Mark Popular / Recommend Plan</span>
+ <div className="pt-4 border-t border-z-border flex items-center justify-between shrink-0">
+ <span className="text-[9px] font-black text-z-secondary uppercase tracking-wider">Mark Popular / Recommend Plan</span>
  <label className="relative inline-flex items-center cursor-pointer">
  <input
  type="checkbox"
@@ -349,7 +349,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  }}
  className="sr-only peer"
  />
- <div className="w-9 h-4 bg-gray-500/20 rounded-none-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none-none after:h-3 after:w-3.5 after:transition-all peer-checked:bg-gray-600 dark:bg-gray-600 shadow-inner border border-white/[0.08]"></div>
+ <div className={cn("w-9 h-4 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-3 after:w-3.5 after:transition-all border shadow-inner", theme === 'dark' ? 'bg-black/80 border-z-border peer-checked:bg-z-accent' : 'bg-gray-200 peer-checked:bg-z-accent')}></div>
  </label>
  </div>
  </div>

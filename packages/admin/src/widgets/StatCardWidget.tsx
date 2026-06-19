@@ -47,20 +47,20 @@ export default function StatCardWidget({ config = {}, theme, title, isPreview }:
  <div
  className={cn(
  'w-9 h-9 rounded-none-none flex items-center justify-center',
- theme === 'dark' ? 'bg-white/5 text-gray-600 dark:text-gray-400' : 'bg-gray-50 text-gray-600'
+ theme === 'dark' ? 'bg-z-hover text-gray-600 dark:text-z-muted' : 'bg-gray-50 text-gray-600'
  )}
  >
  <Database size={16} />
  </div>
  <div>
- <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-1">
+ <p className="text-[8px] font-black text-z-secondary uppercase tracking-widest mb-1">
  {title || config.label || def.label}
  </p>
  <div className="flex items-baseline gap-2">
  <span className="text-3xl font-black tracking-tighter leading-none">
  {loading ? '...' : value}
  </span>
- <ArrowUpRight size={12} className="text-gray-400" />
+ <ArrowUpRight size={12} className="text-z-muted" />
  </div>
  </div>
  </div>

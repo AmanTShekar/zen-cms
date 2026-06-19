@@ -48,7 +48,7 @@ const DemoFeatures = () => {
       <PageHeader
         title="Playground"
         actions={
-          <div className="px-3 py-1.5 border border-emerald-500/30 bg-emerald-500/10 text-emerald-500 text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
+          <div className="px-3 py-1.5 border border-z-active-border bg-z-active-bg text-z-active-text text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
             <Activity size={12} className="animate-pulse" />
             Labs V2.4
           </div>
@@ -67,8 +67,8 @@ const DemoFeatures = () => {
             <Card key={i}>
               <CardContent className="p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <stat.icon className={cn('w-4 h-4', dark ? 'text-gray-500' : 'text-gray-400')} />
-                  <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">{stat.label}</span>
+                  <stat.icon className={cn('w-4 h-4', dark ? 'text-z-secondary' : 'text-z-muted')} />
+                  <span className="text-[9px] font-black uppercase tracking-widest text-z-secondary">{stat.label}</span>
                 </div>
                 <div className="text-2xl font-black uppercase tracking-tight">{stat.value}</div>
               </CardContent>
@@ -81,12 +81,12 @@ const DemoFeatures = () => {
           <Card>
             <CardContent className="p-8 space-y-8 flex flex-col h-full">
               <div className="flex items-center gap-4">
-                <div className={cn('w-12 h-12 flex items-center justify-center border', dark ? 'bg-white/5 border-white/[0.08] text-emerald-500' : 'bg-emerald-50 border-emerald-100 text-emerald-600')}>
+                <div className={cn('w-12 h-12 flex items-center justify-center border', dark ? 'bg-z-hover border-z-border text-z-active-text' : 'bg-z-active-bg border-z-active-border text-z-accent')}>
                   <Sparkles size={20} />
                 </div>
                 <div>
                   <h3 className="text-[14px] font-black uppercase tracking-widest">Neural Engine</h3>
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">Content Synthesis</p>
+                  <p className="text-[10px] font-bold text-z-secondary uppercase tracking-widest mt-1">Content Synthesis</p>
                 </div>
               </div>
 
@@ -96,15 +96,15 @@ const DemoFeatures = () => {
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder="COMMAND ZENITH AI..."
                   className={cn(
-                    'w-full h-32 border p-5 text-xs font-black outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 transition-colors resize-none uppercase tracking-widest',
-                    dark ? 'bg-black border-white/[0.08] text-white focus:border-emerald-500/40' : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-emerald-500'
+                    'w-full h-32 border p-5 text-xs font-black outline-none focus-visible:ring-2 focus-visible:ring-z-active-border transition-colors resize-none uppercase tracking-widest',
+                    dark ? 'bg-black border-z-border text-white focus:border-z-accent/40' : 'bg-z-input border-z-border text-z-primary focus:border-z-accent'
                   )}
                 />
 
                 <button
                   onClick={testAI}
                   disabled={loading || !prompt}
-                  className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white text-[11px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all flex items-center justify-center gap-3"
+                  className="w-full py-4 bg-z-accent hover:bg-z-accent disabled:opacity-50 text-white text-[11px] font-black uppercase tracking-widest shadow-[var(--z-active-glow)] transition-all flex items-center justify-center gap-3"
                 >
                   {loading ? <Activity size={16} className="animate-pulse" /> : <Zap size={16} />}
                   {loading ? 'Synthesizing...' : 'Generate Architecture'}
@@ -115,9 +115,9 @@ const DemoFeatures = () => {
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={cn('p-5 border text-xs font-mono leading-relaxed', dark ? 'bg-white/5 border-white/[0.08] text-gray-300' : 'bg-gray-50 border-gray-200 text-gray-700')}
+                      className={cn('p-5 border text-xs font-mono leading-relaxed', dark ? 'bg-z-hover border-z-border text-gray-300' : 'bg-z-input border-z-border text-gray-700')}
                     >
-                      <p className="text-[9px] font-black uppercase tracking-widest text-emerald-500 mb-2">AI RESULT BUFFER</p>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-z-active-text mb-2">AI RESULT BUFFER</p>
                       {aiResult}
                     </motion.div>
                   )}
@@ -130,12 +130,12 @@ const DemoFeatures = () => {
           <Card>
             <CardContent className="p-8 space-y-8 flex flex-col h-full">
               <div className="flex items-center gap-4">
-                <div className={cn('w-12 h-12 flex items-center justify-center border', dark ? 'bg-white/5 border-white/[0.08] text-emerald-500' : 'bg-emerald-50 border-emerald-100 text-emerald-600')}>
+                <div className={cn('w-12 h-12 flex items-center justify-center border', dark ? 'bg-z-hover border-z-border text-z-active-text' : 'bg-z-active-bg border-z-active-border text-z-accent')}>
                   <Globe size={20} />
                 </div>
                 <div>
                   <h3 className="text-[14px] font-black uppercase tracking-widest">Global Edge</h3>
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">Multi-Region Distribution</p>
+                  <p className="text-[10px] font-bold text-z-secondary uppercase tracking-widest mt-1">Multi-Region Distribution</p>
                 </div>
               </div>
 
@@ -145,15 +145,15 @@ const DemoFeatures = () => {
                   { label: 'Encrypted', detail: 'L4 Hardening', icon: Shield },
                   { label: 'Low Latency', detail: 'Edge Network', icon: Zap }
                 ].map((feature, idx) => (
-                  <div key={idx} className={cn('flex items-center justify-between p-5 border group', dark ? 'bg-black border-white/[0.08] hover:border-white/[0.2]' : 'bg-white border-gray-200 hover:border-gray-400')}>
+                  <div key={idx} className={cn('flex items-center justify-between p-5 border group', dark ? 'bg-black border-z-border hover:border-white/[0.2]' : 'bg-z-panel border-z-border hover:border-gray-400')}>
                     <div className="flex items-center gap-4">
-                      <feature.icon size={16} className={dark ? 'text-gray-500' : 'text-gray-400'} />
+                      <feature.icon size={16} className={dark ? 'text-z-secondary' : 'text-z-muted'} />
                       <div>
                         <p className="text-xs font-black uppercase tracking-widest">{feature.label}</p>
-                        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">{feature.detail}</p>
+                        <p className="text-[9px] font-bold text-z-secondary uppercase tracking-widest mt-0.5">{feature.detail}</p>
                       </div>
                     </div>
-                    <ChevronRight size={16} className="text-gray-500 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                    <ChevronRight size={16} className="text-z-secondary opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                   </div>
                 ))}
               </div>

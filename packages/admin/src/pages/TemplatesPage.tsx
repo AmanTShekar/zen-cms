@@ -52,8 +52,8 @@ const TEMPLATES: Template[] = [
  tags: ['React 19', 'Vite', 'Tailwind CSS', 'Framer Motion', 'Zustand'],
  stars: 382,
  performanceScore: 99,
- primaryColor: 'from-emerald-600 to-emerald-900',
- accentColor: '#10B981',
+ primaryColor: 'from-z-accent to-transparent',
+ accentColor: 'var(--z-accent)',
  features: [
  'Interactive spatial layout engine',
  'Advanced dark mode glassmorphism styles',
@@ -73,8 +73,8 @@ const TEMPLATES: Template[] = [
  tags: ['Next.js 15', 'React 19', 'Tailwind CSS', 'Radix UI', 'SWR'],
  stars: 219,
  performanceScore: 98,
- primaryColor: 'from-emerald-600 to-emerald-900',
- accentColor: '#10B981',
+ primaryColor: 'from-z-accent to-transparent',
+ accentColor: 'var(--z-accent)',
  features: [
  'Stunning asymmetric typography grid',
  'Dynamic SWR-based native API integration',
@@ -94,8 +94,8 @@ const TEMPLATES: Template[] = [
  tags: ['React 19', 'Vite', 'Tailwind CSS', 'SWR'],
  stars: 128,
  performanceScore: 100,
- primaryColor: 'from-emerald-600 to-emerald-800',
- accentColor: '#10B981',
+ primaryColor: 'from-z-accent to-transparent',
+ accentColor: 'var(--z-accent)',
  features: [
  'Pre-integrated SWR data synchronization',
  'Perfect lighthouse readability & layout scores',
@@ -115,8 +115,8 @@ const TEMPLATES: Template[] = [
  tags: ['React 19', 'Vite', 'Tailwind CSS', 'Axios'],
  stars: 145,
  performanceScore: 97,
- primaryColor: 'from-emerald-600 to-emerald-900',
- accentColor: '#10B981',
+ primaryColor: 'from-z-accent to-transparent',
+ accentColor: 'var(--z-accent)',
  features: [
  'Interactive shopping shopping cart system',
  'Real-time bi-directional layout synchronization',
@@ -250,7 +250,7 @@ const TemplatesPage: React.FC = () => {
           <div
             className={cn(
               'p-1 rounded-none-none border flex items-center shadow-sm backdrop-blur-xl',
-              theme === 'dark' ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm'
+              'bg-z-panel border-z-border shadow-sm'
             )}
           >
             {categories.map((cat) => (
@@ -263,7 +263,7 @@ const TemplatesPage: React.FC = () => {
                     ? theme === 'dark'
                       ? 'bg-white text-black shadow-lg'
                       : 'bg-gray-900 text-white shadow-lg'
-                    : 'text-gray-500 hover:text-gray-700'
+                    : 'text-z-secondary hover:text-gray-700'
                 )}
               >
                 {cat}
@@ -275,22 +275,22 @@ const TemplatesPage: React.FC = () => {
 
       <div className={cn(
         'flex-1 overflow-y-auto p-6 md:p-10 space-y-8 transition-colors duration-500 relative pb-12',
-        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-gray-900'
+        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-z-primary'
       )}>
         {/* 🌌 High-Tech Glassmorphic Hero Panel */}
         <div
           className={cn(
             'relative p-6 md:p-8 overflow-hidden border backdrop-blur-xl shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-6 transition-all',
             theme === 'dark'
-              ? 'bg-gradient-to-r from-zinc-950 via-neutral-900 to-zinc-950 border-white/[0.08] shadow-white/5'
-              : 'bg-gradient-to-r from-gray-50 via-white to-gray-50 border-gray-200 shadow-sm'
+              ? 'bg-gradient-to-r from-zinc-950 via-neutral-900 to-zinc-950 border-z-border shadow-white/5'
+              : 'bg-gradient-to-r from-gray-50 via-white to-gray-50 border-z-border shadow-sm'
           )}
         >
           <div className="absolute top-0 right-0 w-80 h-80 bg-gray-500/10 blur-[100px] pointer-events-none rounded-none-none" />
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-gray-500/5 blur-[100px] pointer-events-none rounded-none-none" />
 
           <div className="flex-1 space-y-2 z-10">
-            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-500">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-z-secondary">
               <Sparkles size={16} className="animate-pulse" />
               <span className="text-[10px] font-black uppercase tracking-widest ">
                 Sandbox
@@ -305,27 +305,27 @@ const TemplatesPage: React.FC = () => {
           <div
             className={cn(
               'flex items-center gap-4 px-5 py-3 rounded-none-none border shadow-inner w-full md:max-w-xs transition-all group z-10 shrink-0 self-start md:self-auto',
-              theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-white border-gray-200 shadow-sm shadow-sm'
+              theme === 'dark' ? 'bg-z-hover border-z-border' : 'bg-z-panel border-z-border shadow-sm shadow-sm'
             )}
           >
             <Search
               size={14}
-              className="text-gray-500 group-focus-within:text-gray-600 dark:text-gray-500 transition-colors"
+              className="text-z-secondary group-focus-within:text-gray-600 dark:text-z-secondary transition-colors"
             />
             <input
               type="text"
               placeholder="Filter by tech or tags..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[10px] font-black text-gray-400 w-full placeholder:text-gray-600 uppercase tracking-tight"
+              className="bg-transparent border-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[10px] font-black text-z-muted w-full placeholder:text-gray-600 uppercase tracking-tight"
             />
           </div>
         </div>
 
         {/* 📋 Showcase Cards Grid */}
         {filteredTemplates.length === 0 ? (
-          <div className="py-24 flex flex-col items-center justify-center gap-4 opacity-30 border border-dashed border-white/[0.08]">
-            <Layout size={40} strokeWidth={1} className="text-gray-500 animate-pulse" />
+          <div className="py-24 flex flex-col items-center justify-center gap-4 opacity-30 border border-dashed border-z-border">
+            <Layout size={40} strokeWidth={1} className="text-z-secondary animate-pulse" />
             <p className="text-[10px] font-black uppercase tracking-[0.4em] ">
               No templates matching filters found
             </p>
@@ -353,21 +353,21 @@ const TemplatesPage: React.FC = () => {
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2.5">
-                        <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">
+                        <span className="text-[8px] font-black text-z-secondary uppercase tracking-widest">
                           {template.category}
                         </span>
                         <span className="w-1 h-1 bg-gray-500 rounded-none-none" />
-                        <span className="text-[8px] font-mono font-black text-gray-600 dark:text-gray-400">
+                        <span className="text-[8px] font-mono font-black text-gray-600 dark:text-z-muted">
                           v{template.version}
                         </span>
                         {template.slug === activeSiteSlug && (
-                          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-gray-500/10 text-gray-600 dark:text-gray-400 border border-gray-500/20 text-[7px] font-black uppercase tracking-wider leading-none">
+                          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-gray-500/10 text-gray-600 dark:text-z-muted border border-gray-500/20 text-[7px] font-black uppercase tracking-wider leading-none">
                             <Activity size={8} />
                             Active Workspace / Site
                           </div>
                         )}
                       </div>
-                      <h3 className="text-xl font-black tracking-tight uppercase leading-none group-hover:text-gray-600 dark:text-gray-400 transition-colors mt-1.5">
+                      <h3 className="text-xl font-black tracking-tight uppercase leading-none group-hover:text-gray-600 dark:text-z-muted transition-colors mt-1.5">
                         {template.name}
                       </h3>
                     </div>
@@ -375,14 +375,14 @@ const TemplatesPage: React.FC = () => {
                     {/* Performance Matrix */}
                     <div className="flex items-center gap-3 shrink-0">
                       <div className="flex flex-col items-end">
-                        <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest leading-none">
+                        <span className="text-[8px] font-black text-z-secondary uppercase tracking-widest leading-none">
                           Lighthouse
                         </span>
-                        <span className="text-lg font-black text-gray-600 dark:text-gray-500 mt-1">
+                        <span className="text-lg font-black text-gray-600 dark:text-z-secondary mt-1">
                           {template.performanceScore}%
                         </span>
                       </div>
-                      <div className="w-9 h-9 rounded-none-none border border-gray-500/20 bg-gray-500/5 flex items-center justify-center text-gray-600 dark:text-gray-500 font-bold text-xs ">
+                      <div className="w-9 h-9 rounded-none-none border border-gray-500/20 bg-gray-500/5 flex items-center justify-center text-gray-600 dark:text-z-secondary font-bold text-xs ">
                         {template.performanceScore}
                       </div>
                     </div>
@@ -392,7 +392,7 @@ const TemplatesPage: React.FC = () => {
                   <div
                     className={cn(
                       'w-full h-40 rounded-none-none relative overflow-hidden border transition-all duration-500 flex items-center justify-center group-hover:scale-[1.01]',
-                      theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-gray-50 border-gray-200 shadow-sm'
+                      theme === 'dark' ? 'bg-black border-z-border' : 'bg-z-input border-z-border shadow-sm'
                     )}
                   >
                     {/* Glass Card Vector Grid Backdrop */}
@@ -405,26 +405,26 @@ const TemplatesPage: React.FC = () => {
                     />
 
                     {/* Decorative Elements mimicking UI */}
-                    <div className="w-5/6 h-2/3 border border-white/[0.08] rounded-none-none bg-black/45 backdrop-blur-md p-4 flex flex-col justify-between shadow-2xl relative overflow-hidden">
+                    <div className="w-5/6 h-2/3 border border-z-border rounded-none-none bg-black/45 backdrop-blur-md p-4 flex flex-col justify-between shadow-2xl relative overflow-hidden">
                       <div className="flex items-center justify-between">
                         <div className="flex gap-1.5">
                           <div className="w-2 h-2 rounded-none-none bg-red-500/40" />
                           <div className="w-2 h-2 rounded-none-none bg-yellow-500/40" />
                           <div className="w-2 h-2 rounded-none-none bg-green-500/40" />
                         </div>
-                        <div className="px-2 py-0.5 bg-white/5 border border-white/[0.08] rounded-none-none text-[6px] font-mono text-gray-500 uppercase tracking-widest">
+                        <div className="px-2 py-0.5 bg-z-hover border border-z-border rounded-none-none text-[6px] font-mono text-z-secondary uppercase tracking-widest">
                           SECURE_SSL
                         </div>
                       </div>
 
                       <div className="space-y-1.5 my-2">
                         <div className="h-2 w-1/3 bg-white/10 rounded-none-none" />
-                        <div className="h-1.5 w-2/3 bg-white/5 rounded-none-none" />
-                        <div className="h-1.5 w-1/2 bg-white/5 rounded-none-none" />
+                        <div className="h-1.5 w-2/3 bg-z-hover rounded-none-none" />
+                        <div className="h-1.5 w-1/2 bg-z-hover rounded-none-none" />
                       </div>
 
-                      <div className="flex justify-between items-center pt-2 border-t border-white/[0.08]">
-                        <div className="flex items-center gap-1 text-gray-500 text-[6px] font-black uppercase">
+                      <div className="flex justify-between items-center pt-2 border-t border-z-border">
+                        <div className="flex items-center gap-1 text-z-secondary text-[6px] font-black uppercase">
                           <Layers size={8} /> {template.id === 'storefront-glass' ? 'Glassmorphism' : template.id === 'storefront-editorial' ? 'Editorial' : template.id === 'blog-demo' ? 'Dev Blog' : 'E-Commerce'}
                         </div>
                         <div className="w-8 h-3 bg-white/10 rounded-none-none" />
@@ -434,7 +434,7 @@ const TemplatesPage: React.FC = () => {
 
                   {/* Features Highlights */}
                   <div className="space-y-2">
-                    <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest leading-none">
+                    <span className="text-[8px] font-black text-z-secondary uppercase tracking-widest leading-none">
                       Core Specifications
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
@@ -455,8 +455,8 @@ const TemplatesPage: React.FC = () => {
                         className={cn(
                           'px-2 py-1 text-[8px] font-mono font-black uppercase tracking-wider border rounded-none-none shadow-sm',
                           theme === 'dark'
-                            ? 'bg-white/5 border-white/[0.08] text-gray-300'
-                            : 'bg-gray-100 border-gray-200 text-gray-600'
+                            ? 'bg-z-hover border-z-border text-gray-300'
+                            : 'bg-gray-100 border-z-border text-gray-600'
                         )}
                       >
                         {tag}
@@ -467,10 +467,10 @@ const TemplatesPage: React.FC = () => {
                   {/* Clone Command & Zip Download */}
                   <div className={cn(
                     'p-3 border rounded-none-none flex items-center justify-between gap-3 text-[10px] font-mono',
-                    theme === 'dark' ? 'bg-black border-white/[0.08] text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-600'
+                    theme === 'dark' ? 'bg-black border-z-border text-z-muted' : 'bg-z-input border-z-border text-gray-600'
                   )}>
                     <div className="flex items-center gap-1.5 truncate">
-                      <Terminal size={10} className="text-gray-600 dark:text-gray-400" />
+                      <Terminal size={10} className="text-gray-600 dark:text-z-muted" />
                       <span className="truncate select-all">git clone {template.gitUrl}.git</span>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
@@ -481,7 +481,7 @@ const TemplatesPage: React.FC = () => {
                         }}
                         className={cn(
                           'p-1.5 rounded-none-none border transition-all flex items-center justify-center hover:scale-105 active:scale-95',
-                          theme === 'dark' ? 'border-white/[0.08] bg-white/5 hover:text-white' : 'border-gray-200 bg-white hover:text-black'
+                          theme === 'dark' ? 'border-z-border bg-z-hover hover:text-white' : 'border-z-border bg-white hover:text-black'
                         )}
                         title="Copy clone command"
                       >
@@ -491,7 +491,7 @@ const TemplatesPage: React.FC = () => {
                         href={`${template.gitUrl}/archive/refs/heads/main.zip`}
                         className={cn(
                           'p-1.5 rounded-none-none border transition-all flex items-center justify-center hover:scale-105 active:scale-95',
-                          theme === 'dark' ? 'border-white/[0.08] bg-white/5 text-gray-400 hover:text-white' : 'border-gray-200 bg-white text-gray-600 hover:text-black'
+                          theme === 'dark' ? 'border-z-border bg-z-hover text-z-muted hover:text-white' : 'border-z-border bg-white text-gray-600 hover:text-black'
                         )}
                         title="Download ZIP"
                       >
@@ -501,7 +501,7 @@ const TemplatesPage: React.FC = () => {
                   </div>
 
                   {/* Git Action Panel */}
-                  <div className="pt-4 border-t border-white/[0.08] mt-auto flex items-center justify-between gap-4">
+                  <div className="pt-4 border-t border-z-border mt-auto flex items-center justify-between gap-4">
                     <a
                       href={template.gitUrl}
                       target="_blank"
@@ -509,8 +509,8 @@ const TemplatesPage: React.FC = () => {
                       className={cn(
                         'px-4 py-3 border rounded-none-none text-[9px] font-black uppercase tracking-widest transition-all leading-none flex items-center gap-2 group/git',
                         theme === 'dark'
-                          ? 'border-white/[0.08] bg-white/[0.02] text-gray-400 hover:text-white hover:border-white/[0.08]'
-                          : 'border-gray-200 bg-white text-gray-600 hover:text-black hover:border-gray-300 shadow-sm'
+                          ? 'border-z-border bg-z-panel text-z-muted hover:text-white hover:border-z-border'
+                          : 'border-z-border bg-white text-gray-600 hover:text-black hover:border-z-border-strong shadow-sm'
                       )}
                     >
                       <GitFork size={12} className="group-hover/git:rotate-12 transition-transform" />
@@ -572,7 +572,7 @@ const TemplatesPage: React.FC = () => {
                 transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                 className={cn(
                   'w-full max-w-2xl border rounded-none-none p-6 md:p-8 flex flex-col gap-6 relative shadow-2xl overflow-hidden z-10',
-                  theme === 'dark' ? 'bg-black border-white/[0.08]' : 'bg-white border-gray-200'
+                  theme === 'dark' ? 'bg-black border-z-border' : 'bg-z-panel border-z-border'
                 )}
               >
                 {/* Top Accent Gradient Bar */}
@@ -588,8 +588,8 @@ const TemplatesPage: React.FC = () => {
                   <button
                     onClick={() => setIsDeployModalOpen(false)}
                     className={cn(
-                      'absolute top-6 right-6 w-8 h-8 rounded-none-none border flex items-center justify-center text-gray-500 hover:text-white transition-all',
-                      theme === 'dark' ? 'bg-white/5 border-white/[0.08]' : 'bg-gray-50 border-gray-200'
+                      'absolute top-6 right-6 w-8 h-8 rounded-none-none border flex items-center justify-center text-z-secondary hover:text-white transition-all',
+                      theme === 'dark' ? 'bg-z-hover border-z-border' : 'bg-z-input border-z-border'
                     )}
                   >
                     ✕
@@ -607,7 +607,7 @@ const TemplatesPage: React.FC = () => {
                     <Server size={18} />
                   </div>
                   <div>
-                    <span className="text-[8px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-[0.25em] block">
+                    <span className="text-[8px] font-black text-gray-600 dark:text-z-secondary uppercase tracking-[0.25em] block">
                       Zero-Config Handshake
                     </span>
                     <h3 className="text-xl font-black uppercase tracking-tight leading-none mt-1">
@@ -617,7 +617,7 @@ const TemplatesPage: React.FC = () => {
                 </div>
 
                 {/* Active Deployment Stepper */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 border-b border-white/[0.08] pb-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 border-b border-z-border pb-5">
                   {[
                     { label: 'Configure', activeStep: 0 },
                     { label: 'Connect Repo', activeStep: 1 },
@@ -632,10 +632,10 @@ const TemplatesPage: React.FC = () => {
                           className={cn(
                             'h-1 w-full rounded-none-none transition-all duration-500',
                             isCompleted
-                              ? 'bg-gray-500 shadow-[0_0_8px_#10b981]'
+                              ? 'bg-gray-500 shadow-[var(--z-active-glow)]'
                               : isActive
                                 ? 'bg-amber-500 animate-pulse'
-                                : 'bg-white/5'
+                                : 'bg-z-hover'
                           )}
                         />
                         <span
@@ -657,7 +657,7 @@ const TemplatesPage: React.FC = () => {
                     <div className="space-y-5">
                       {/* Provider Select Cards */}
                       <div className="space-y-2">
-                        <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest leading-none">
+                        <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest leading-none">
                           1. Select Cloud Deployment Target
                         </label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -672,8 +672,8 @@ const TemplatesPage: React.FC = () => {
                               className={cn(
                                 'border p-3 flex flex-col items-center justify-center gap-2 rounded-none-none transition-all group relative',
                                 provider === prov.id
-                                  ? 'bg-gray-500/10 border-gray-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.15)]'
-                                  : 'bg-white/[0.01] border-white/[0.08] text-gray-500 hover:text-gray-300 hover:border-white/[0.08]'
+                                  ? 'bg-gray-500/10 border-gray-500 text-white shadow-[var(--z-active-glow)]'
+                                  : 'bg-white/[0.01] border-z-border text-z-secondary hover:text-gray-300 hover:border-z-border'
                               )}
                             >
                               <span className="text-xs font-black uppercase tracking-tight ">
@@ -683,8 +683,8 @@ const TemplatesPage: React.FC = () => {
                                 className={cn(
                                   'text-[7px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded-none-none border',
                                   provider === prov.id
-                                    ? 'border-gray-500/30 text-gray-600 dark:text-gray-400 bg-gray-500/5'
-                                    : 'border-white/[0.08] text-gray-600 bg-white/5'
+                                    ? 'border-gray-500/30 text-gray-600 dark:text-z-muted bg-gray-500/5'
+                                    : 'border-z-border text-gray-600 bg-z-hover'
                                 )}
                               >
                                 {prov.latency}
@@ -698,27 +698,27 @@ const TemplatesPage: React.FC = () => {
                       <div
                         className={cn(
                           'p-4 border rounded-none-none flex items-center justify-between gap-4',
-                          theme === 'dark' ? 'bg-white/[0.01] border-white/[0.08]' : 'bg-gray-50 border-gray-200 shadow-sm'
+                          theme === 'dark' ? 'bg-white/[0.01] border-z-border' : 'bg-z-input border-z-border shadow-sm'
                         )}
                       >
                         <div className="flex items-center gap-3">
-                          <GitBranch size={16} className="text-gray-600 dark:text-gray-400" />
+                          <GitBranch size={16} className="text-gray-600 dark:text-z-muted" />
                           <div className="flex flex-col">
                             <span className="text-[10px] font-black uppercase tracking-tight leading-none text-white">
                               AmanTShekar/{selectedTemplate.slug}
                             </span>
-                            <span className="text-[7px] font-bold text-gray-500 uppercase tracking-widest mt-1">
+                            <span className="text-[7px] font-bold text-z-secondary uppercase tracking-widest mt-1">
                               GitHub Repository Handshake
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1 text-[8px] font-mono text-gray-600 dark:text-gray-400 px-2 py-1 bg-gray-500/5 border border-gray-500/20">
+                        <div className="flex items-center gap-1 text-[8px] font-mono text-gray-600 dark:text-z-muted px-2 py-1 bg-gray-500/5 border border-gray-500/20">
                           ● CONNECTED
                         </div>
                       </div>
 
                       {/* Actions */}
-                      <div className="pt-4 border-t border-white/[0.08] flex justify-end">
+                      <div className="pt-4 border-t border-z-border flex justify-end">
                         <button
                           onClick={handleStartDeployment}
                           className={cn(
@@ -738,8 +738,8 @@ const TemplatesPage: React.FC = () => {
                     <div className="space-y-4 flex-1 flex flex-col">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
-                          <Terminal size={14} className="text-gray-600 dark:text-gray-400" />
-                          <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">
+                          <Terminal size={14} className="text-gray-600 dark:text-z-muted" />
+                          <span className="text-[8px] font-black text-z-secondary uppercase tracking-widest">
                             Simulated Edge Console Output
                           </span>
                         </div>
@@ -756,7 +756,7 @@ const TemplatesPage: React.FC = () => {
                       </div>
 
                       {/* Console Logger */}
-                      <div className="flex-1 min-h-[160px] bg-black border border-white/[0.08] p-4 font-mono text-[9px] text-gray-400 overflow-y-auto space-y-1.5  scroll-smooth">
+                      <div className="flex-1 min-h-[160px] bg-black border border-z-border p-4 font-mono text-[9px] text-z-muted overflow-y-auto space-y-1.5  scroll-smooth">
                         {terminalLogs.map((log, idx) => (
                           <div
                             key={idx}
@@ -767,7 +767,7 @@ const TemplatesPage: React.FC = () => {
                                 : log.startsWith('[build]')
                                   ? 'text-gray-300'
                                   : log.startsWith('[network]')
-                                    ? 'text-emerald-300'
+                                    ? 'text-z-active-text'
                                     : 'text-gray-300'
                             )}
                           >
@@ -791,7 +791,7 @@ const TemplatesPage: React.FC = () => {
                         initial={{ scale: 0.5, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                        className="w-16 h-16 bg-gray-500/10 border border-gray-500/30 rounded-none-none flex items-center justify-center mx-auto text-gray-600 dark:text-gray-500 shadow-[0_0_30px_rgba(16,185,129,0.25)]"
+                        className="w-16 h-16 bg-gray-500/10 border border-gray-500/30 rounded-none-none flex items-center justify-center mx-auto text-gray-600 dark:text-z-secondary shadow-[var(--z-active-glow)]"
                       >
                         <CheckCircle2 size={32} strokeWidth={2.5} />
                       </motion.div>
@@ -800,7 +800,7 @@ const TemplatesPage: React.FC = () => {
                         <h4 className="text-lg font-black uppercase tracking-tight leading-none text-white">
                           Production Live Ready
                         </h4>
-                        <p className="text-[10px] text-gray-500 uppercase tracking-widest max-w-sm mx-auto leading-relaxed">
+                        <p className="text-[10px] text-z-secondary uppercase tracking-widest max-w-sm mx-auto leading-relaxed">
                           Continuous deployment webhook registered. Updates pushed to git main will trigger
                           regenerations.
                         </p>
@@ -810,11 +810,11 @@ const TemplatesPage: React.FC = () => {
                       <div
                         className={cn(
                           'max-w-md mx-auto p-4 border rounded-none-none flex items-center justify-between gap-4 bg-black/40',
-                          theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
+                          theme === 'dark' ? 'border-z-border' : 'border-z-border shadow-sm'
                         )}
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <Globe size={16} className="text-gray-600 dark:text-gray-400 shrink-0" />
+                          <Globe size={16} className="text-gray-600 dark:text-z-muted shrink-0" />
                           <span className="text-[10px] font-black tracking-tight text-white uppercase truncate font-mono">
                             {liveUrl}
                           </span>
@@ -824,22 +824,22 @@ const TemplatesPage: React.FC = () => {
                           className={cn(
                             'p-2.5 rounded-none-none border transition-all flex items-center justify-center shrink-0',
                             copied
-                              ? 'bg-gray-500/10 border-gray-500/30 text-gray-600 dark:text-gray-400'
-                              : 'bg-white/5 border-white/[0.08] text-gray-400 hover:text-white'
+                              ? 'bg-gray-500/10 border-gray-500/30 text-gray-600 dark:text-z-muted'
+                              : 'bg-z-hover border-z-border text-z-muted hover:text-white'
                           )}
                         >
                           {copied ? <Check size={14} /> : <Copy size={14} />}
                         </button>
                       </div>
 
-                      <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between gap-4 max-w-md mx-auto">
+                      <div className="pt-4 border-t border-z-border flex items-center justify-between gap-4 max-w-md mx-auto">
                         <button
                           onClick={() => setIsDeployModalOpen(false)}
                           className={cn(
                             'w-full py-3.5 border rounded-none-none text-[9px] font-black uppercase tracking-widest transition-all leading-none',
                             theme === 'dark'
-                              ? 'border-white/[0.08] bg-white/[0.01] text-gray-400 hover:text-white hover:border-white/[0.08]'
-                              : 'border-gray-200 bg-white text-gray-600 hover:text-black hover:border-gray-300'
+                              ? 'border-z-border bg-white/[0.01] text-z-muted hover:text-white hover:border-z-border'
+                              : 'border-z-border bg-white text-gray-600 hover:text-black hover:border-z-border-strong'
                           )}
                         >
                           Dismiss Console

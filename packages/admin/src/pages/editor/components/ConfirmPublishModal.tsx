@@ -30,8 +30,8 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
  className={cn(
  'w-full max-w-sm border rounded-none-none shadow-2xl p-6',
  theme === 'dark'
- ? 'bg-black border-white/[0.08] text-white'
- : 'bg-white border-gray-200 text-gray-900'
+ ? 'bg-black border-z-border text-white'
+ : 'bg-z-panel border-z-border text-z-primary'
  )}
  >
  <div className="flex items-start gap-4">
@@ -45,14 +45,14 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
  </div>
  <div className="flex-1">
  <h3 className="text-sm font-black uppercase tracking-wider">Publish Document</h3>
- <p className={cn('text-xs font-bold mt-2 leading-relaxed', theme === 'dark' ? 'text-gray-400' : 'text-gray-600')}>
+ <p className={cn('text-xs font-bold mt-2 leading-relaxed', theme === 'dark' ? 'text-z-muted' : 'text-gray-600')}>
  This will make the content live and visible to all visitors. Are you sure you want to publish?
  </p>
  </div>
  <button
  onClick={onCancel}
  aria-label="Close"
- className={cn('shrink-0 p-1 transition-colors', theme === 'dark' ? 'text-gray-500 hover:text-white' : 'text-gray-400 hover:text-black')}
+ className={cn('shrink-0 p-1 transition-colors', theme === 'dark' ? 'text-z-secondary hover:text-white' : 'text-z-muted hover:text-black')}
  >
  <X size={16} />
  </button>
@@ -63,8 +63,8 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
  className={cn(
  'flex-1 py-2.5 text-xs font-black uppercase tracking-widest border rounded-none-none transition-all',
  theme === 'dark'
- ? 'border-white/[0.08] text-gray-400 hover:border-white/[0.08] hover:text-white'
- : 'border-gray-200 text-gray-600 hover:border-gray-300 hover:text-black'
+ ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
+ : 'border-z-border text-gray-600 hover:border-z-border-strong hover:text-black'
  )}
  >
  Cancel

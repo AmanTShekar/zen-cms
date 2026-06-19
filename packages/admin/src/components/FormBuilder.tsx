@@ -316,20 +316,20 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
  return (
  <div key={field.name} data-field={fieldName} className={`space-y-2 ${isFullWidth ? 'col-span-2' : ''}`}>
  <div className="flex items-center justify-between">
- <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2">
+ <label className="text-[10px] font-black text-z-secondary uppercase tracking-[0.2em] flex items-center gap-2">
  {field.label || field.name.replace(/([A-Z])/g, ' $1')}
  {field.required && <span className="text-rose-500">*</span>}
  {field.localized && (
- <span className="px-1.5 py-0.5 text-[8px] font-black tracking-widest text-gray-600 dark:text-gray-400 bg-gray-500/10 border border-gray-500/20 rounded-none-none uppercase">
+ <span className="px-1.5 py-0.5 text-[8px] font-black tracking-widest text-gray-600 dark:text-z-muted bg-gray-500/10 border border-gray-500/20 rounded-none-none uppercase">
  {isFieldDisabled ? readOnlyLocale || currentLocale : currentLocale}
  </span>
  )}
  {isFieldDisabled && !isReadOnly && (
- <Lock size={10} className="text-gray-500 ml-1" />
+ <Lock size={10} className="text-z-secondary ml-1" />
  )}
  </label>
  {field.admin?.description && (
- <span className="text-[10px] text-gray-400">{field.admin.description}</span>
+ <span className="text-[10px] text-z-muted">{field.admin.description}</span>
  )}
  </div>
 
@@ -369,8 +369,8 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
 
  {/* Submit Button */}
  {!hideSubmitButton && (
- <div className="mt-10 pt-6 border-t border-gray-200 shadow-sm flex items-center justify-between">
- <p className="text-xs text-gray-400">
+ <div className="mt-10 pt-6 border-t border-z-border shadow-sm flex items-center justify-between">
+ <p className="text-xs text-z-muted">
  Fields marked with <span className="text-danger">*</span> are required.
  </p>
  <div className="flex gap-3">

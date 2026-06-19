@@ -144,8 +144,8 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  className={cn(
  'w-full px-4 py-3 flex items-center justify-between border text-xs font-bold transition-all rounded-none-none',
  theme === 'dark'
- ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-gray-400 hover:bg-gray-500/20'
- : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+ ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted hover:bg-gray-500/20'
+ : 'bg-z-input border-z-border text-gray-600 hover:bg-gray-100'
  )}
  >
  <span className="flex items-center gap-2">
@@ -170,20 +170,20 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  'fixed z-[900] w-80 border rounded-none-none shadow-2xl overflow-hidden flex flex-col',
  theme === 'dark'
  ? 'bg-black/98 backdrop-blur-xl border-white/8 text-white'
- : 'bg-white/98 backdrop-blur-xl border-gray-200 text-gray-900'
+ : 'bg-white/98 backdrop-blur-xl border-z-border text-z-primary'
  )}
  >
  {/* Header */}
  <div className={cn(
  'px-4 py-3 border-b flex items-center justify-between shrink-0',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
+ theme === 'dark' ? 'border-z-border' : 'border-z-border shadow-sm'
  )}>
- <span className="text-xs font-black uppercase tracking-widest text-gray-600 dark:text-gray-400">
+ <span className="text-xs font-black uppercase tracking-widest text-gray-600 dark:text-z-muted">
  Content Relations
  </span>
  <div className="flex items-center gap-1.5">
  {selectedCount > 0 && (
- <span className="text-xs font-black text-gray-600 dark:text-gray-400 uppercase ">
+ <span className="text-xs font-black text-gray-600 dark:text-z-muted uppercase ">
  {selectedCount} selected
  </span>
  )}
@@ -192,7 +192,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  aria-label="Clear all selected relations"
  className={cn(
  'p-1 transition-colors',
- theme === 'dark' ? 'text-gray-500 hover:text-rose-400' : 'text-gray-400 hover:text-rose-500'
+ theme === 'dark' ? 'text-z-secondary hover:text-rose-400' : 'text-z-muted hover:text-rose-500'
  )}
  >
  <X size={11} aria-hidden="true" />
@@ -202,7 +202,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  aria-label="Close relation picker"
  className={cn(
  'p-1 transition-colors',
- theme === 'dark' ? 'text-gray-500 hover:text-white' : 'text-gray-400 hover:text-black'
+ theme === 'dark' ? 'text-z-secondary hover:text-white' : 'text-z-muted hover:text-black'
  )}
  >
  <X size={12} aria-hidden="true" />
@@ -212,15 +212,15 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
 
  {!collection ? (
  <div className="p-6 text-center">
- <p className="text-xs font-black uppercase text-gray-600 dark:text-gray-400 mb-1">No collection configured</p>
- <p className="text-xs text-gray-500">Set <code className="text-xs">relationTo</code> on the field to enable inline relation picker.</p>
+ <p className="text-xs font-black uppercase text-gray-600 dark:text-z-muted mb-1">No collection configured</p>
+ <p className="text-xs text-z-secondary">Set <code className="text-xs">relationTo</code> on the field to enable inline relation picker.</p>
  </div>
  ) : (
  <>
  {/* Search */}
  <div className="shrink-0 px-3 pt-3 pb-2">
  <div className="relative">
- <Search size={11} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+ <Search size={11} className="absolute left-3 top-1/2 -translate-y-1/2 text-z-secondary" />
  <input
  ref={searchInputRef}
  type="text"
@@ -233,8 +233,8 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  className={cn(
  'w-full rounded-none-none py-2 pl-9 pr-3 text-xs font-bold border transition-all',
  theme === 'dark'
- ? 'bg-white/5 border-white/[0.08] text-white placeholder-gray-600'
- : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+ ? 'bg-z-hover border-z-border text-white placeholder-gray-600'
+ : 'bg-z-input border-z-border text-z-primary placeholder-gray-400'
  )}
  />
  </div>
@@ -244,12 +244,12 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  <div className="flex-1 overflow-y-auto max-h-56 custom-editor-scrollbar px-2 pb-2 space-y-0.5">
  {loading ? (
  <div className="flex items-center justify-center py-8 gap-2">
- <Loader2 size={14} className="animate-spin text-gray-600 dark:text-gray-500" />
- <span className="text-xs font-bold text-gray-500 uppercase animate-pulse">Searching...</span>
+ <Loader2 size={14} className="animate-spin text-gray-600 dark:text-z-secondary" />
+ <span className="text-xs font-bold text-z-secondary uppercase animate-pulse">Searching...</span>
  </div>
  ) : results.length === 0 ? (
  <div className="py-8 text-center">
- <p className="text-xs font-black uppercase text-gray-500">No results found</p>
+ <p className="text-xs font-black uppercase text-z-secondary">No results found</p>
  <p className="text-xs text-gray-600 mt-1">Try a different search term</p>
  </div>
  ) : (
@@ -267,10 +267,10 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  isSelected
  ? theme === 'dark'
  ? 'bg-gray-500/15 border-gray-500/20 text-gray-300'
- : 'bg-gray-50 border-gray-200 text-gray-700'
+ : 'bg-z-input border-z-border text-gray-700'
  : theme === 'dark'
- ? 'border-white/0 text-gray-300 hover:bg-white/5 hover:border-white/[0.08]'
- : 'border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-200 shadow-sm'
+ ? 'border-white/0 text-gray-300 hover:bg-z-hover hover:border-z-border'
+ : 'border-transparent text-gray-700 hover:bg-gray-50 hover:border-z-border shadow-sm'
  )}
  >
  {/* Selection indicator */}
@@ -279,8 +279,8 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  isSelected
  ? 'bg-gray-500 border-gray-500 text-white'
  : theme === 'dark'
- ? 'border-white/[0.08] bg-white/5'
- : 'border-gray-300 bg-white'
+ ? 'border-z-border bg-z-hover'
+ : 'border-z-border-strong bg-white'
  )}>
  {isSelected && <Check size={9} />}
  </div>
@@ -294,7 +294,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  <span className={cn(
  'text-[7px] font-bold uppercase ',
  item._status === 'published'
- ? 'text-gray-600 dark:text-gray-500'
+ ? 'text-gray-600 dark:text-z-secondary'
  : 'text-amber-500'
  )}>
  {item._status}
@@ -305,7 +305,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  {/* +/- for hasMany */}
  {hasMany && isSelected && (
  <div className="shrink-0 ml-1">
- <Minus size={10} className="text-gray-600 dark:text-gray-400" />
+ <Minus size={10} className="text-gray-600 dark:text-z-muted" />
  </div>
  )}
  
@@ -319,8 +319,8 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  className={cn(
  'shrink-0 p-1.5 ml-2 transition-colors border',
  theme === 'dark'
- ? 'border-white/[0.08] hover:bg-white/10 text-white'
- : 'border-gray-200 hover:bg-gray-100 text-black'
+ ? 'border-z-border hover:bg-white/10 text-white'
+ : 'border-z-border hover:bg-gray-100 text-black'
  )}
  title="Edit Document"
  >
@@ -336,15 +336,15 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  {/* Footer */}
  <div className={cn(
  'px-3 py-2.5 border-t flex items-center gap-2 shrink-0',
- theme === 'dark' ? 'border-white/[0.08]' : 'border-gray-200 shadow-sm'
+ theme === 'dark' ? 'border-z-border' : 'border-z-border shadow-sm'
  )}>
  <button
  onClick={handleClear}
  className={cn(
  'flex-1 py-1.5 text-xs font-black uppercase border rounded-none-none transition-all',
  theme === 'dark'
- ? 'border-white/[0.08] text-gray-500 hover:border-rose-500/20 hover:text-rose-400'
- : 'border-gray-200 text-gray-400 hover:border-rose-200 hover:text-rose-500'
+ ? 'border-z-border text-z-secondary hover:border-rose-500/20 hover:text-rose-400'
+ : 'border-z-border text-z-muted hover:border-rose-200 hover:text-rose-500'
  )}
  >
  Clear

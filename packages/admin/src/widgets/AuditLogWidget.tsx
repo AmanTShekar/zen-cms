@@ -28,7 +28,7 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center text-[11px] text-gray-500 font-bold uppercase tracking-widest gap-2">
+      <div className="h-full flex items-center justify-center text-[11px] text-z-secondary font-bold uppercase tracking-widest gap-2">
         <Activity size={14} className="animate-spin" /> Fetching Logs...
       </div>
     )
@@ -38,7 +38,7 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
     <div className="flex flex-col justify-between">
       <div className="flex items-center justify-between mb-4">
         <p className="text-[12px] font-bold text-gray-800 dark:text-gray-200 uppercase tracking-tight flex items-center gap-2">
-          <History size={14} className="text-gray-500" /> {title || 'Audit & Activity Log'}
+          <History size={14} className="text-z-secondary" /> {title || 'Audit & Activity Log'}
         </p>
       </div>
 
@@ -47,7 +47,7 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
           <thead>
             <tr className={cn(
               "text-[9px] font-black uppercase tracking-widest border-b",
-              theme === 'dark' ? 'border-white/[0.08] text-gray-500' : 'border-gray-200 text-gray-400'
+              'border-z-border text-z-secondary'
             )}>
               <th className="pb-2 font-black">Action</th>
               <th className="pb-2 font-black">Resource</th>
@@ -58,7 +58,7 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
           <tbody>
             {logs.length === 0 && (
               <tr>
-                <td colSpan={4} className="py-8 text-center text-[11px] text-gray-500">
+                <td colSpan={4} className="py-8 text-center text-[11px] text-z-secondary">
                   No recent activity recorded.
                 </td>
               </tr>
@@ -68,16 +68,16 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
                 key={log._id || i}
                 onClick={() => window.location.href = '/audit-log'}
                 className={cn(
-                  "border-b last:border-b-0 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.02] cursor-pointer group",
-                  theme === 'dark' ? 'border-white/[0.04]' : 'border-gray-100'
+                  "border-b last:border-b-0 transition-colors hover:bg-black/[0.02] dark:hover:bg-z-panel cursor-pointer group",
+                  'border-z-border'
                 )}
               >
                 <td className="py-2.5">
                   <span className={cn(
                     "text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-none-none",
-                    log.action === 'create' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' :
+                    log.action === 'create' ? 'bg-z-active-bg text-z-accent dark:text-z-active-text' :
                     log.action === 'delete' ? 'bg-red-500/10 text-red-600 dark:text-red-400' :
-                    'bg-gray-500/10 text-gray-600 dark:text-gray-400'
+                    'bg-gray-500/10 text-gray-600 dark:text-z-muted'
                   )}>
                     {log.action}
                   </span>
@@ -85,10 +85,10 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
                 <td className="py-2.5 text-[11px] font-medium text-gray-700 dark:text-gray-300">
                   {(log.collection || 'system').replace(/-/g, ' ')}
                 </td>
-                <td className="py-2.5 text-[11px] text-gray-500 truncate max-w-[100px]">
+                <td className="py-2.5 text-[11px] text-z-secondary truncate max-w-[100px]">
                   {log.user?.email || 'System'}
                 </td>
-                <td className="py-2.5 text-[10px] text-gray-400 font-medium text-right whitespace-nowrap">
+                <td className="py-2.5 text-[10px] text-z-muted font-medium text-right whitespace-nowrap">
                   {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                 </td>
               </tr>
@@ -102,8 +102,8 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
         className={cn(
           'w-full py-3 text-[11px] font-bold uppercase tracking-widest transition-all border text-center flex items-center justify-center gap-2 group',
           theme === 'dark'
-            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
-            : 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100'
+            ? 'bg-z-active-bg border-z-accent/20 text-z-active-text hover:bg-z-active-bg'
+            : 'bg-z-active-bg border-z-active-border text-z-accent hover:bg-z-active-bg'
         )}
       >
         View Full Audit Log <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
