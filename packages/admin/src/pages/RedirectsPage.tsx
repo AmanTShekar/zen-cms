@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
-  ArrowLeftRight,
+  ArrowRightLeft,
   Plus,
   Search,
   Trash2,
@@ -143,11 +143,14 @@ const RedirectsPage = () => {
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden">
       <PageHeader
-        title="Redirects"
+        title="URL Redirects"
+        description="Manage 301 and 302 traffic routing."
+        icon={<ArrowRightLeft size={24} />}
+        backLink={{ to: '/', label: 'Dashboard' }}
         actions={
           <button
             onClick={openCreate}
-            className="flex items-center gap-2 px-6 py-2.5 bg-z-accent hover:opacity-90 shadow-[var(--z-active-glow)] text-white text-[10px] font-black uppercase tracking-widest transition-all rounded-none"
+            className="flex items-center gap-2 px-6 py-2.5 bg-z-accent hover:opacity-90 shadow-sm text-white text-sm font-semibold transition-all rounded-none"
           >
             <Plus size={14} />
             Add Redirect
@@ -164,7 +167,7 @@ const RedirectsPage = () => {
             onChange={(e) => { setSearch(e.target.value); setPage(1) }}
             placeholder="Search redirect paths..."
             className={cn(
-              'w-full pl-10 pr-4 py-2.5 text-[10px] font-black uppercase tracking-widest border outline-none focus-visible:ring-2 focus-visible:ring-z-active-border transition-colors rounded-none shadow-[var(--z-active-glow)]',
+              'w-full pl-10 pr-4 py-2.5 text-sm font-semibold   border outline-none focus-visible:ring-2 focus-visible:ring-z-active-border transition-colors rounded-none shadow-sm',
               'z-input'
             )}
           />
@@ -177,8 +180,8 @@ const RedirectsPage = () => {
             </div>
           ) : rules.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 gap-4 opacity-50">
-              <ArrowLeftRight size={32} className="text-z-secondary" />
-              <p className="text-[10px] font-black uppercase tracking-widest text-z-secondary">
+              <ArrowRightLeft size={32} className="text-z-secondary" />
+              <p className="text-sm font-semibold text-z-secondary">
                 {search ? 'No matching redirects' : 'No redirects configured'}
               </p>
             </div>
@@ -187,7 +190,7 @@ const RedirectsPage = () => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className={cn(
-                    'text-[9px] font-black uppercase tracking-widest border-b',
+                    'text-sm font-semibold   border-b',
                     dark ? 'text-z-secondary border-z-border' : 'text-z-secondary border-z-border'
                   )}>
                     <th className="px-5 py-4 font-normal">From</th>
@@ -222,7 +225,7 @@ const RedirectsPage = () => {
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <span className={cn('inline-block px-2 py-0.5 text-[10px] font-black font-mono border', typeColor(rule.type))}>
+                        <span className={cn('inline-block px-2 py-0.5 text-sm font-semibold font-mono border', typeColor(rule.type))}>
                           {rule.type}
                         </span>
                       </td>
@@ -235,7 +238,7 @@ const RedirectsPage = () => {
                         </div>
                       </td>
                       <td className="px-5 py-4 hidden lg:table-cell">
-                        <span className={cn('text-[11px] font-mono', dark ? 'text-gray-600' : 'text-z-muted')}>
+                        <span className={cn('text-sm font-mono', dark ? 'text-gray-600' : 'text-z-muted')}>
                           {rule.lastHitAt ? new Date(rule.lastHitAt).toLocaleString() : '—'}
                         </span>
                       </td>
@@ -266,21 +269,21 @@ const RedirectsPage = () => {
 
           {totalPages > 1 && (
             <div className={cn('flex items-center justify-between px-5 py-4 border-t', dark ? 'border-z-border' : 'border-z-border')}>
-              <span className={cn('text-[10px] font-bold', dark ? 'text-z-secondary' : 'text-z-muted')}>
+              <span className={cn('text-sm font-bold', dark ? 'text-z-secondary' : 'text-z-muted')}>
                 Page {page} of {totalPages}
               </span>
               <div className="flex gap-2">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1}
-                  className={cn('px-4 py-2 text-[10px] font-black uppercase tracking-widest border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white disabled:opacity-30' : 'border-z-border text-z-secondary hover:text-black disabled:opacity-30')}
+                  className={cn('px-4 py-2 text-sm font-semibold   border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white disabled:opacity-30' : 'border-z-border text-z-secondary hover:text-black disabled:opacity-30')}
                 >
                   Prev
                 </button>
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page >= totalPages}
-                  className={cn('px-4 py-2 text-[10px] font-black uppercase tracking-widest border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white disabled:opacity-30' : 'border-z-border text-z-secondary hover:text-black disabled:opacity-30')}
+                  className={cn('px-4 py-2 text-sm font-semibold   border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white disabled:opacity-30' : 'border-z-border text-z-secondary hover:text-black disabled:opacity-30')}
                 >
                   Next
                 </button>
@@ -306,7 +309,7 @@ const RedirectsPage = () => {
               >
                 <Card>
                   <div className={cn('px-6 py-4 border-b flex items-center justify-between', dark ? 'border-z-border' : 'border-z-border')}>
-                    <h2 className="text-[10px] font-black uppercase tracking-widest text-z-secondary">
+                    <h2 className="text-sm font-semibold text-z-secondary">
                       {editing ? 'Edit Redirect' : 'New Redirect'}
                     </h2>
                     <button onClick={() => setShowEditor(false)} className="text-z-secondary hover:text-z-primary dark:hover:text-white">
@@ -316,7 +319,7 @@ const RedirectsPage = () => {
 
                   <CardContent className="p-6 space-y-4">
                     <div>
-                      <label className="block text-[9px] font-black uppercase tracking-widest mb-1.5 text-z-secondary">From Path</label>
+                      <label className="block text-sm font-semibold mb-1.5 text-z-secondary">From Path</label>
                       <input
                         type="text"
                         value={formFrom}
@@ -327,7 +330,7 @@ const RedirectsPage = () => {
                     </div>
 
                     <div>
-                      <label className="block text-[9px] font-black uppercase tracking-widest mb-1.5 text-z-secondary">To URL</label>
+                      <label className="block text-sm font-semibold mb-1.5 text-z-secondary">To URL</label>
                       <input
                         type="text"
                         value={formTo}
@@ -338,15 +341,15 @@ const RedirectsPage = () => {
                     </div>
 
                     <div>
-                      <label className="block text-[9px] font-black uppercase tracking-widest mb-1.5 text-z-secondary">Redirect Type</label>
+                      <label className="block text-sm font-semibold mb-1.5 text-z-secondary">Redirect Type</label>
                       <div className="flex gap-2">
                         {REDIRECT_TYPES.map((t) => (
                           <button
                             key={t}
                             onClick={() => setFormType(t)}
                             className={cn(
-                              'flex-1 py-2.5 text-[10px] font-black font-mono border rounded-none transition-all',
-                              formType === t ? (dark ? 'border-z-accent text-z-active-text bg-z-active-bg shadow-[var(--z-active-glow)]' : 'border-z-accent text-z-accent bg-z-active-bg shadow-sm') : (dark ? 'border-z-border text-z-secondary hover:text-white hover:bg-z-hover' : 'border-z-border text-z-muted hover:text-z-primary hover:bg-gray-50')
+                              'flex-1 py-2.5 text-sm font-semibold font-mono border rounded-none transition-all',
+                              formType === t ? (dark ? 'border-z-accent text-z-active-text bg-z-active-bg shadow-sm' : 'border-z-accent text-z-accent bg-z-active-bg shadow-sm') : (dark ? 'border-z-border text-z-secondary hover:text-white hover:bg-z-hover' : 'border-z-border text-z-muted hover:text-z-primary hover:bg-gray-50')
                             )}
                           >
                             {t}
@@ -359,14 +362,14 @@ const RedirectsPage = () => {
                   <div className={cn('px-6 py-4 border-t flex justify-end gap-3', dark ? 'border-z-border' : 'border-z-border')}>
                     <button
                       onClick={() => setShowEditor(false)}
-                      className={cn('px-5 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors rounded-none', dark ? 'text-z-secondary hover:text-white hover:bg-z-hover' : 'text-z-secondary hover:text-black hover:bg-gray-50')}
+                      className={cn('px-5 py-2.5 text-sm font-semibold   transition-colors rounded-none', dark ? 'text-z-secondary hover:text-white hover:bg-z-hover' : 'text-z-secondary hover:text-black hover:bg-gray-50')}
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleSave}
                       disabled={saving || !formFrom || !formTo}
-                      className="px-6 py-2.5 bg-z-accent hover:opacity-90 disabled:opacity-50 text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-[var(--z-active-glow)] rounded-none flex items-center gap-2"
+                      className="px-6 py-2.5 bg-z-accent hover:opacity-90 disabled:opacity-50 text-white text-sm font-semibold transition-all shadow-sm rounded-none flex items-center gap-2"
                     >
                       {saving && <Loader2 size={12} className="animate-spin" />}
                       {editing ? 'Update' : 'Create'}
@@ -396,20 +399,20 @@ const RedirectsPage = () => {
                 <Card>
                   <CardContent className="p-8 text-center">
                     <AlertTriangle size={32} className="mx-auto mb-4 text-red-500" />
-                    <h3 className="text-[12px] font-black uppercase tracking-widest mb-2 text-white">Delete Redirect?</h3>
-                    <p className="text-[10px] font-bold text-z-secondary uppercase tracking-widest mb-6">
+                    <h3 className="text-sm font-semibold mb-2 text-white">Delete Redirect?</h3>
+                    <p className="text-sm font-bold text-z-secondary mb-6">
                       This action cannot be undone.
                     </p>
                     <div className="flex gap-3 justify-center">
                       <button
                         onClick={() => setDeleteConfirm(null)}
-                        className={cn('px-5 py-2.5 text-[10px] font-black uppercase tracking-widest border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white' : 'border-z-border text-z-secondary hover:text-black')}
+                        className={cn('px-5 py-2.5 text-sm font-semibold   border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white' : 'border-z-border text-z-secondary hover:text-black')}
                       >
                         Cancel
                       </button>
                       <button
                         onClick={() => handleDelete(deleteConfirm)}
-                        className="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white text-[10px] font-black uppercase tracking-widest transition-all rounded-none shadow-[var(--z-active-glow)]"
+                        className="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-all rounded-none shadow-sm"
                       >
                         Delete
                       </button>

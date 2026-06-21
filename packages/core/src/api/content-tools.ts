@@ -63,7 +63,8 @@ router.post('/ai/generate', aiLimiter, async (req: Request, res: Response, next)
   try {
     const { prompt } = req.body
     if (!prompt) throw new InvalidPayloadError('"prompt" is required')
-    const result = await AIService.generateContent(prompt)
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined
+    const result = await AIService.generateContent(prompt, siteId)
     res.json(createResponse({ text: result }))
   } catch (err) {
     next(err)
@@ -76,7 +77,8 @@ router.post('/ai/improve', aiLimiter, async (req: Request, res: Response, next) 
     const { text, instruction } = req.body
     if (!text || !instruction)
       throw new InvalidPayloadError('"text" and "instruction" are required')
-    const result = await AIService.improveText(text, instruction)
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined
+    const result = await AIService.improveText(text, instruction, siteId)
     res.json(createResponse({ text: result }))
   } catch (err) {
     next(err)
@@ -88,7 +90,8 @@ router.post('/ai/meta-description', aiLimiter, async (req: Request, res: Respons
   try {
     const { title, content } = req.body
     if (!title || !content) throw new InvalidPayloadError('"title" and "content" are required')
-    const description = await AIService.generateMetaDescription(title, content)
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined
+    const description = await AIService.generateMetaDescription(title, content, siteId)
     res.json(createResponse({ description }))
   } catch (err) {
     next(err)
@@ -100,7 +103,8 @@ router.post('/ai/alt-text', aiLimiter, async (req: Request, res: Response, next)
   try {
     const { imageUrl, context } = req.body
     if (!imageUrl) throw new InvalidPayloadError('"imageUrl" is required')
-    const altText = await AIService.generateAltText(imageUrl, context)
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined
+    const altText = await AIService.generateAltText(imageUrl, context, siteId)
     res.json(createResponse({ altText }))
   } catch (err) {
     next(err)

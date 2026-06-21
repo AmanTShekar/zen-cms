@@ -162,14 +162,14 @@ function BlockRow({
       whileDrag={{ scale: 1.01, zIndex: 50, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
       className={cn(
         'group relative bg-app border rounded-none-none overflow-visible shadow-sm transition-colors duration-150',
-        isExpanded ? 'border-accent/60 shadow-[var(--z-active-glow)]' : 'border-border hover:border-white/20'
+        isExpanded ? 'border-accent/60 shadow-sm' : 'border-border hover:border-white/20'
       )}
     >
       {/* Index Badge */}
       <div className={cn(
-        'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-none-full flex items-center justify-center text-[8px] font-black border z-10 transition-all',
+        'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-none-full flex items-center justify-center text-sm font-semibold border z-10 transition-all',
         isExpanded
-          ? 'bg-accent text-white border-accent shadow-[var(--z-active-glow)]'
+          ? 'bg-accent text-white border-accent shadow-sm'
           : 'bg-app text-z-muted border-border group-hover:border-accent/40 group-hover:text-accent'
       )}>
         {index + 1}
@@ -194,15 +194,15 @@ function BlockRow({
         {/* Labels */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold text-white truncate">
+            <span className="text-sm font-bold text-white truncate">
               {previewText || blockDef?.labels?.singular || block.blockType}
             </span>
-            <span className="flex-shrink-0 px-1.5 py-px text-[8px] font-black uppercase tracking-wider text-z-muted bg-white/[0.05] border border-border rounded-none">
+            <span className="flex-shrink-0 px-1.5 py-px text-sm font-semibold text-z-muted bg-white/[0.05] border border-border rounded-none">
               {block.blockType}
             </span>
           </div>
           {blockDef?.admin?.description && (
-            <p className="text-[9px] text-z-muted/70 truncate mt-0.5">{blockDef.admin.description}</p>
+            <p className="text-sm text-z-muted/70 truncate mt-0.5">{blockDef.admin.description}</p>
           )}
         </div>
 
@@ -239,7 +239,7 @@ function BlockRow({
                     const fullWidth = ['richtext','textarea','blocks','array','media','code','collapsible'].includes(f.type)
                     return (
                       <div key={f.name} className={cn('flex flex-col gap-1.5', fullWidth && 'col-span-2')}>
-                        <label className="text-[9px] font-black text-z-muted uppercase tracking-widest flex items-center gap-1">
+                        <label className="text-sm font-semibold text-z-muted flex items-center gap-1">
                           {f.label || f.name}
                           {f.required && <span className="text-danger">*</span>}
                         </label>
@@ -318,7 +318,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
         >
           <h3
             className={cn(
-              'text-lg font-black uppercase italic leading-none',
+              'text-lg font-semibold  italic leading-none',
               theme === 'dark' ? 'text-white' : 'text-black',
             )}
           >
@@ -380,7 +380,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                 type="button" 
                 onClick={() => setActiveCategory(cat)} 
                 className={cn(
-                  'flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase italic tracking-wider transition-all border rounded-none-none whitespace-nowrap',
+                  'flex items-center gap-2 px-4 py-2 text-sm font-semibold  italic  transition-all border rounded-none-none whitespace-nowrap',
                   activeCategory === cat
                     ? theme === 'dark'
                       ? 'bg-z-accent/20 border-z-active-border text-z-active-text'
@@ -409,7 +409,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                 {activeCategory === 'All' && (
                   <div className="flex items-center gap-3 mb-4">
                     <span className="h-px flex-1 bg-border" />
-                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-z-muted">{category}</span>
+                    <span className="text-sm font-semibold text-z-muted">{category}</span>
                     <span className="h-px flex-1 bg-border" />
                   </div>
                 )}
@@ -423,7 +423,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.97 }}
                         onClick={() => onSelect(stock.slug)}
-                        className="flex flex-col text-left group border border-border bg-app hover:border-accent/60 hover:shadow-[var(--z-active-glow)] transition-all overflow-hidden rounded-none-none"
+                        className="flex flex-col text-left group border border-border bg-app hover:border-accent/60 hover:shadow-sm transition-all overflow-hidden rounded-none-none"
                       >
                         <div className="w-full h-24 overflow-hidden relative flex-shrink-0">
                           {stock.admin?.imageURL ? (
@@ -436,7 +436,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                             </div>
                           )}
                           {stock.admin?.category && (
-                            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-black/60 backdrop-blur text-white/80 rounded-none-none">
+                            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-sm font-semibold bg-black/60 backdrop-blur text-white/80 rounded-none-none">
                               {stock.admin.category}
                             </span>
                           )}
@@ -447,8 +447,8 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                           )}
                         </div>
                         <div className="p-3 flex-1 bg-app group-hover:bg-accent/5 transition-colors">
-                          <p className="text-[11px] font-black text-white mb-0.5">{stock.labels?.singular || stock.slug}</p>
-                          <p className="text-[9px] text-z-muted leading-relaxed line-clamp-2">{stock.admin?.description || `Add ${stock.slug} to your page.`}</p>
+                          <p className="text-sm font-semibold text-white mb-0.5">{stock.labels?.singular || stock.slug}</p>
+                          <p className="text-sm text-z-muted leading-relaxed line-clamp-2">{stock.admin?.description || `Add ${stock.slug} to your page.`}</p>
                         </div>
                       </motion.button>
                     )
@@ -552,9 +552,9 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <Layers size={16} className="text-accent" />
-            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Page Components</span>
+            <span className="text-sm font-semibold text-white">Page Components</span>
             {blocks.length > 0 && (
-              <span className="px-1.5 py-0.5 text-[9px] font-black bg-accent/15 text-accent border border-accent/25 rounded-none-full">
+              <span className="px-1.5 py-0.5 text-sm font-semibold bg-accent/15 text-accent border border-accent/25 rounded-none-full">
                 {blocks.length}
               </span>
             )}
@@ -564,7 +564,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
               type="button"
               onClick={() => setShowPreview(!showPreview)}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all rounded-none-none border",
+                "flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold   transition-all rounded-none-none border",
                 showPreview ? "bg-z-active-bg text-z-active-text border-z-active-border" : "bg-z-panel text-z-muted border-white/5 hover:text-white"
               )}
             >
@@ -576,7 +576,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
                 <button
                   type="button"
                   onClick={expandAll}
-                  className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-z-muted hover:text-white transition-all hover:bg-white/[0.05]"
+                  className="px-2.5 py-1 text-sm font-semibold text-z-muted hover:text-white transition-all hover:bg-white/[0.05]"
                 >
                   Expand All
                 </button>
@@ -584,14 +584,14 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
                 <button
                   type="button"
                   onClick={collapseAll}
-                  className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-z-muted hover:text-white transition-all hover:bg-white/[0.05]"
+                  className="px-2.5 py-1 text-sm font-semibold text-z-muted hover:text-white transition-all hover:bg-white/[0.05]"
                 >
                   Collapse All
                 </button>
               </div>
             )}
             {!disabled && (
-              <button type="button" onClick={handleOpenPicker} className="flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white text-[10px] font-black uppercase tracking-wider hover:bg-accent/90 transition-all shadow-sm shadow-accent/20 rounded-none-none">
+              <button type="button" onClick={handleOpenPicker} className="flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white text-sm font-semibold hover:bg-accent/90 transition-all shadow-sm shadow-accent/20 rounded-none-none">
                 <Plus size={11} /> Add Component
               </button>
             )}
@@ -609,7 +609,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
             <p className="text-xs text-z-muted max-w-xs leading-relaxed">Build your page by stacking components — hero sections, feature grids, pricing tables and more.</p>
           </div>
           {!disabled && (
-            <button type="button" onClick={handleOpenPicker} className="flex items-center gap-2 px-4 py-2 bg-accent text-white text-[10px] font-black uppercase tracking-wider hover:bg-accent/90 transition-all shadow-sm shadow-accent/20 mt-1 rounded-none-none">
+            <button type="button" onClick={handleOpenPicker} className="flex items-center gap-2 px-4 py-2 bg-accent text-white text-sm font-semibold hover:bg-accent/90 transition-all shadow-sm shadow-accent/20 mt-1 rounded-none-none">
               <Plus size={12} /> Add Your First Component
             </button>
           )}
@@ -653,7 +653,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
           type="button"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           onClick={handleOpenPicker}
-          className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-z-muted/60 text-[10px] font-black uppercase tracking-wider hover:border-accent/50 hover:text-accent hover:bg-accent/5 transition-all rounded-none-none"
+          className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-z-muted/60 text-sm font-semibold hover:border-accent/50 hover:text-accent hover:bg-accent/5 transition-all rounded-none-none"
         >
           <Plus size={11} /> Add Component
         </motion.button>
@@ -664,11 +664,11 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
       {showPreview && (
         <div className="w-full h-full min-h-[700px] border border-white/10 rounded-none-none overflow-hidden sticky top-4 bg-[#0B0F19] shadow-2xl flex flex-col">
           <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between shrink-0">
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-z-active-text italic flex items-center gap-2">
-              <div className="w-2 h-2 rounded-none-full bg-z-accent animate-pulse shadow-[var(--z-active-glow)]" />
+            <span className="text-sm font-semibold text-z-active-text italic flex items-center gap-2">
+              <div className="w-2 h-2 rounded-none-full bg-z-accent animate-pulse shadow-sm" />
               Live Preview Connected
             </span>
-            <span className="text-[9px] font-mono text-z-secondary">{previewUrl}</span>
+            <span className="text-sm font-mono text-z-secondary">{previewUrl}</span>
           </div>
           <iframe 
              src={previewUrl} 

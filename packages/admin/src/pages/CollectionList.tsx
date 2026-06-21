@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
  Plus, Search, ChevronLeft, ChevronRight, Loader2, Edit, Trash2, Send, Archive,
- Database, Download, Layers, Fingerprint, Activity as ActivityIcon,
+ Database, Download, Layers, Activity as ActivityIcon, KeyRound,
  ShieldCheck, CheckSquare, Square, Upload, LayoutList, LayoutGrid, Kanban
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -27,14 +27,14 @@ const EmptyCollectionState = ({ slug, theme }: { slug: string, theme: string }) 
  <Database size={28} />
  </div>
  <div>
- <h3 className="text-lg font-black tracking-tighter uppercase mb-2">Collection is Empty</h3>
+ <h3 className="text-lg font-semibold mb-2">Collection is Empty</h3>
  <p className={cn("text-sm max-w-sm mx-auto font-medium", theme === 'dark' ? 'text-z-muted' : 'text-gray-600')}>
  This collection doesn't have any records yet. Initialize the first record to launch the page builder.
  </p>
  </div>
  <Link 
  to={`/collections/${slug}/new`}
- className={cn("px-8 py-4 rounded-none-none font-black text-[11px] uppercase tracking-widest shadow-xl transition-all leading-none flex items-center gap-3", theme === 'dark' ? 'bg-gray-500 text-white hover:bg-gray-400 hover:shadow-[var(--z-active-glow)]/20' : 'bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-700 hover:shadow-gray-600/20')}
+ className={cn("px-8 py-4 rounded-none-none font-semibold text-sm   shadow-xl transition-all leading-none flex items-center gap-3", theme === 'dark' ? 'bg-gray-500 text-white hover:bg-gray-400 hover:shadow-sm/20' : 'bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-700 hover:shadow-gray-600/20')}
  >
  <Plus size={16} strokeWidth={3} /> Launch Page Builder
  </Link>
@@ -223,11 +223,11 @@ const CollectionList: React.FC = () => {
  {/* Header */}
  <PageHeader 
    title={slug?.replace(/-/g, '_')}
-   description={`Registry Collection • ${total} Total Records`}
+   description={`Manage ${slug} • ${total} Total Records`}
    icon={<Layers size={24} />}
    actions={
      <div className="flex items-center gap-6">
-       <Link to={`/collections/${slug}/new`} className={cn('px-8 py-4 rounded-none-none font-black text-[11px] uppercase tracking-widest shadow-xl transition-all leading-none flex items-center gap-3', theme === 'dark' ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-600 dark:bg-gray-600 text-white shadow-gray-600/10')}>
+       <Link to={`/collections/${slug}/new`} className={cn('px-8 py-4 rounded-none-none font-semibold text-sm   shadow-xl transition-all leading-none flex items-center gap-3', theme === 'dark' ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-600 dark:bg-gray-600 text-white shadow-gray-600/10')}>
          <Plus size={16} strokeWidth={3} /> {hasSpatialEditor ? 'Launch Page Builder' : 'New Record'}
        </Link>
      </div>
@@ -236,23 +236,46 @@ const CollectionList: React.FC = () => {
 
  <div className="p-10 space-y-10">
 
- {/* Compact Dynamic Stats Bar */}
- <div className={cn("grid grid-cols-2 md:grid-cols-4 gap-4 p-4 border transition-all", 'bg-z-panel border-z-border')}>
-   <div className="flex flex-col gap-1">
-     <span className="text-[9px] font-black text-z-secondary uppercase tracking-widest flex items-center gap-2"><Database size={10} /> Total Units</span>
-     <span className="text-sm font-black">{total}</span>
+ {/* Dashboard-Style Stats Bar */}
+ <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+   <div className="flex flex-col justify-between gap-2 p-5 border transition-colors z-panel backdrop-blur-md shadow-sm">
+     <div className="flex items-center justify-between">
+       <span className="text-sm font-semibold text-z-secondary">Total Records</span>
+       <Database size={13} className="text-gray-600" />
+     </div>
+     <span className="text-2xl font-semibold leading-none tabular-nums text-z-primary dark:text-white">
+       {total}
+     </span>
    </div>
-   <div className="flex flex-col gap-1">
-     <span className="text-[9px] font-black text-z-secondary uppercase tracking-widest flex items-center gap-2"><Fingerprint size={10} /> Registry ID</span>
-     <span className="text-sm font-black uppercase">{slug?.substring(0, 8)}</span>
+
+   <div className="flex flex-col justify-between gap-2 p-5 border transition-colors z-panel backdrop-blur-md shadow-sm">
+     <div className="flex items-center justify-between">
+       <span className="text-sm font-semibold text-z-secondary">Collection ID</span>
+       <KeyRound size={13} className="text-gray-600" />
+     </div>
+     <span className="text-2xl font-semibold leading-none tabular-nums text-z-primary dark:text-white uppercase">
+       {slug?.substring(0, 8)}
+     </span>
    </div>
-   <div className="flex flex-col gap-1">
-     <span className="text-[9px] font-black text-z-secondary uppercase tracking-widest flex items-center gap-2"><Search size={10} /> Search Filter</span>
-     <span className="text-sm font-black">{searchQuery ? 'Active' : 'None'}</span>
+
+   <div className="flex flex-col justify-between gap-2 p-5 border transition-colors z-panel backdrop-blur-md shadow-sm">
+     <div className="flex items-center justify-between">
+       <span className="text-sm font-semibold text-z-secondary">Search Filter</span>
+       <Search size={13} className="text-gray-600" />
+     </div>
+     <span className="text-2xl font-semibold leading-none tabular-nums text-z-primary dark:text-white">
+       {searchQuery ? 'Active' : 'None'}
+     </span>
    </div>
-   <div className="flex flex-col gap-1">
-     <span className="text-[9px] font-black text-z-secondary uppercase tracking-widest flex items-center gap-2"><Layers size={10} /> View Mode</span>
-     <span className="text-sm font-black uppercase">{viewMode}</span>
+
+   <div className="flex flex-col justify-between gap-2 p-5 border transition-colors z-panel backdrop-blur-md shadow-sm">
+     <div className="flex items-center justify-between">
+       <span className="text-sm font-semibold text-z-secondary">View Mode</span>
+       <Layers size={13} className="text-gray-600" />
+     </div>
+     <span className="text-2xl font-semibold leading-none tabular-nums text-z-primary dark:text-white capitalize">
+       {viewMode}
+     </span>
    </div>
  </div>
 
@@ -274,13 +297,13 @@ const CollectionList: React.FC = () => {
  <div className="flex items-center gap-4 border-b border-z-border dark:border-z-border mb-4 pb-2">
  <button
  onClick={() => { setViewMode('active'); setPage(1); }}
- className={cn("px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-colors", viewMode === 'active' ? 'text-gray-600 dark:text-z-secondary border-b-2 border-gray-500' : 'text-z-secondary hover:text-z-primary dark:hover:text-white')}
+ className={cn("px-4 py-2 text-sm font-semibold   transition-colors", viewMode === 'active' ? 'text-gray-600 dark:text-z-secondary border-b-2 border-gray-500' : 'text-z-secondary hover:text-z-primary dark:hover:text-white')}
  >
  Active Records
  </button>
  <button
  onClick={() => { setViewMode('trash'); setPage(1); }}
- className={cn("px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-colors flex items-center gap-2", viewMode === 'trash' ? 'text-red-500 border-b-2 border-red-500' : 'text-z-secondary hover:text-red-400')}
+ className={cn("px-4 py-2 text-sm font-semibold   transition-colors flex items-center gap-2", viewMode === 'trash' ? 'text-red-500 border-b-2 border-red-500' : 'text-z-secondary hover:text-red-400')}
  >
  <Trash2 size={12} /> Recycle Bin
  </button>
@@ -292,13 +315,13 @@ const CollectionList: React.FC = () => {
  <div className={cn('px-6 py-4 border-b flex items-center justify-between', theme === 'dark' ? 'bg-z-panel border-z-border' : 'bg-gray-50/20')}>
  <div className="relative w-full max-w-sm">
  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-z-secondary" size={14} />
- <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="NEURAL_SEARCH_KERNEL..."
- className={cn('w-full border rounded-none-none py-2.5 pl-10 pr-4 text-[9px] font-black focus:ring-4 transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black uppercase tracking-widest', theme === 'dark' ? 'bg-black border-z-border text-white focus:ring-gray-500/20' : 'bg-z-panel border-z-border shadow-sm focus:ring-gray-500/10')}
+ <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search records..."
+ className={cn('w-full border rounded-none-none py-2.5 pl-10 pr-4 text-sm font-semibold focus:ring-4 transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black  ', theme === 'dark' ? 'bg-black border-z-border text-white focus:ring-gray-500/20' : 'bg-z-panel border-z-border shadow-sm focus:ring-gray-500/10')}
  />
  </div>
  <div className="flex items-center gap-2 relative">
  <div className="flex items-center gap-2 mr-4">
- <span className="text-[8px] font-black text-z-secondary uppercase tracking-widest ">{filteredData.length} Matches</span>
+ <span className="text-sm font-semibold text-z-secondary">{filteredData.length} Matches</span>
  </div>
  <div className="relative">
  <button onClick={() => setColumnMenuOpen(!columnMenuOpen)} className="p-2.5 border rounded-none-none text-z-secondary hover:text-gray-600 dark:text-z-secondary transition-colors">
@@ -309,13 +332,13 @@ const CollectionList: React.FC = () => {
  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
  className={cn('absolute right-0 top-full mt-2 w-64 border rounded-none-none shadow-2xl z-50 p-4 backdrop-blur-3xl', 'bg-z-popover border-z-border shadow-sm')}
  >
- <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-gray-600 dark:text-z-secondary">Column_Orchestration</h4>
- <div className="space-y-2 max-h-64 overflow-y-auto ">
+ <h4 className="text-sm font-semibold mb-4 text-gray-600 dark:text-z-secondary">Visible Columns</h4>
+ <div className="space-y-2 max-h-64 overflow-y-auto">
  {availableColumns.map((col) => (
  <button key={col} onClick={() => setVisibleColumns((prev) => prev.includes(col) ? prev.filter((c) => c !== col) : [...prev, col])}
  className="w-full flex items-center justify-between p-2 rounded-none-none hover:bg-z-hover transition-all group"
  >
- <span className="text-[9px] font-bold uppercase tracking-widest text-z-secondary group-hover:text-white">{col.replace(/_/g, ' ')}</span>
+ <span className="text-sm font-bold text-z-secondary group-hover:text-white">{col.replace(/_/g, ' ')}</span>
  <div className={cn('w-3 h-3 rounded-none-none border transition-all', visibleColumns.includes(col) ? 'bg-gray-500 border-gray-500' : 'border-z-border')} />
  </button>
  ))}
@@ -339,13 +362,13 @@ const CollectionList: React.FC = () => {
  <div className="overflow-x-auto">
  <div className="overflow-x-auto min-w-full pb-4"><table className="w-full">
  <thead>
- <tr className={cn('border-b text-left text-[8px] font-black text-z-secondary uppercase tracking-[0.4em] ', 'border-z-border')}>
+ <tr className={cn('border-b text-left text-sm font-semibold text-z-secondary   ', 'border-z-border')}>
  <th className="px-4 py-4 w-10">
  <button onClick={(e) => { e.stopPropagation(); toggleSelectAll(); }} className="flex items-center justify-center" title={selectedIds.size === filteredData.length && filteredData.length > 0 ? 'Deselect all' : 'Select all'}>
  {selectedIds.size === filteredData.length && filteredData.length > 0 ? <CheckSquare size={14} className="text-gray-600 dark:text-z-secondary" /> : <Square size={14} className={cn('text-z-secondary', selectedIds.size > 0 && 'text-gray-600 dark:text-z-muted')} />}
  </button>
  </th>
- <th className="px-6 py-4">Node_ID</th>
+ <th className="px-6 py-4">ID</th>
  {availableColumns.filter((c) => visibleColumns.includes(c)).map((col) => (<th key={col} className="px-6 py-4">{col.toUpperCase()}</th>))}
  <th className="px-6 py-4 text-right">Actions</th>
  </tr>
@@ -370,12 +393,12 @@ const CollectionList: React.FC = () => {
  <td className="px-6 py-4">
  <div className="flex items-center gap-2">
  <div className={cn("w-1.5 h-1.5 rounded-none-none", isSelected ? 'bg-gray-400' : 'bg-gray-500')} />
- <span className="text-[9px] font-black text-gray-600 dark:text-z-secondary uppercase ">#{String(itemId).slice(-6)}</span>
+ <span className="text-sm font-semibold text-gray-600 dark:text-z-secondary">#{String(itemId).slice(-6)}</span>
  </div>
  </td>
  {availableColumns.filter((c) => visibleColumns.includes(c)).map((col) => (
  <td key={col} className="px-6 py-4">
- <span className={cn('text-[10px] font-black uppercase ', col === '_status' && item[col] === 'published' ? 'text-gray-600 dark:text-z-muted' : col === '_status' && item[col] === 'draft' ? 'text-amber-400' : '')}>
+ <span className={cn('text-sm font-semibold  ', col === '_status' && item[col] === 'published' ? 'text-gray-600 dark:text-z-muted' : col === '_status' && item[col] === 'draft' ? 'text-amber-400' : '')}>
  {typeof item[col] === 'object' ? '[Complex_Object]' : String(item[col] || '—')}
  </span>
  </td>
@@ -398,8 +421,8 @@ const CollectionList: React.FC = () => {
  </>
  ) : (
  <>
- <button onClick={(e) => { e.stopPropagation(); handleRestore(itemId); }} className="px-3 py-1 rounded-none-none border hover:bg-gray-500 hover:text-white hover:border-gray-500 text-[9px] uppercase font-bold tracking-widest transition-all">Restore</button>
- <button onClick={(e) => { e.stopPropagation(); handleDelete(itemId, true); }} className="px-3 py-1 rounded-none-none border hover:bg-red-500 hover:text-white hover:border-red-500 text-[9px] uppercase font-bold tracking-widest transition-all">Delete Forever</button>
+ <button onClick={(e) => { e.stopPropagation(); handleRestore(itemId); }} className="px-3 py-1 rounded-none-none border hover:bg-gray-500 hover:text-white hover:border-gray-500 text-sm font-bold transition-all">Restore</button>
+ <button onClick={(e) => { e.stopPropagation(); handleDelete(itemId, true); }} className="px-3 py-1 rounded-none-none border hover:bg-red-500 hover:text-white hover:border-red-500 text-sm font-bold transition-all">Delete Forever</button>
  </>
  )}
  </div>
@@ -417,7 +440,7 @@ const CollectionList: React.FC = () => {
  {loading ? (
  <div className="py-20 flex justify-center"><Loader2 size={24} className="animate-spin text-gray-600 dark:text-z-secondary opacity-20" /></div>
  ) : filteredData.length === 0 ? (
- <div className="py-20 text-center opacity-20 text-[9px] font-black uppercase tracking-[0.4em]">No_Records_Found</div>
+ <div className="py-20 text-center opacity-20 text-sm font-semibold">No_Records_Found</div>
  ) : (
  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
  {filteredData.map((item: any) => {
@@ -430,7 +453,7 @@ const CollectionList: React.FC = () => {
  <button onClick={(e) => { e.stopPropagation(); toggleSelect(itemId); }}>
  {isSelected ? <CheckSquare size={14} className="text-gray-600 dark:text-z-secondary" /> : <Square size={14} className="text-z-muted" />}
  </button>
- <span className="text-[10px] font-black text-gray-600 dark:text-z-secondary uppercase tracking-wider">#{String(itemId).slice(-8)}</span>
+ <span className="text-sm font-semibold text-gray-600 dark:text-z-secondary">#{String(itemId).slice(-8)}</span>
  </div>
  <div className="flex gap-2">
  {viewMode === 'active' ? (
@@ -448,14 +471,14 @@ const CollectionList: React.FC = () => {
  <button onClick={(e) => { e.stopPropagation(); handleDelete(itemId); }} className="text-z-muted hover:text-red-500"><Trash2 size={12} /></button>
  </>
  ) : (
- <button onClick={(e) => { e.stopPropagation(); handleRestore(itemId); }} className="text-[9px] uppercase font-bold text-gray-600 dark:text-z-secondary">Restore</button>
+ <button onClick={(e) => { e.stopPropagation(); handleRestore(itemId); }} className="text-sm font-bold text-gray-600 dark:text-z-secondary">Restore</button>
  )}
  </div>
  </div>
  <div className="space-y-3">
  {availableColumns.filter((c) => visibleColumns.includes(c)).slice(0, 4).map((col) => (
  <div key={col} className="flex flex-col">
- <span className="text-[8px] font-black text-z-secondary uppercase tracking-widest">{col.replace(/_/g, ' ')}</span>
+ <span className="text-sm font-semibold text-z-secondary">{col.replace(/_/g, ' ')}</span>
  <span className={cn('text-xs font-medium truncate', col === '_status' && item[col] === 'published' ? 'text-gray-600 dark:text-z-secondary' : '')}>
  {typeof item[col] === 'object' ? '[Object]' : String(item[col] || '—')}
  </span>
@@ -475,7 +498,7 @@ const CollectionList: React.FC = () => {
  {loading ? (
  <div className="py-20 flex justify-center"><Loader2 size={24} className="animate-spin text-gray-600 dark:text-z-secondary opacity-20" /></div>
  ) : filteredData.length === 0 ? (
- <div className="py-20 text-center opacity-20 text-[9px] font-black uppercase tracking-[0.4em]">No_Records_Found</div>
+ <div className="py-20 text-center opacity-20 text-sm font-semibold">No_Records_Found</div>
  ) : (
  <div className="flex gap-6 min-w-max pb-4">
  {(() => {
@@ -496,27 +519,27 @@ const CollectionList: React.FC = () => {
  return Object.entries(groups).map(([status, items]) => (
  <div key={status} className={cn("w-80 flex flex-col border rounded-none-none", theme === 'dark' ? 'bg-black/50 border-z-border' : 'bg-z-input border-z-border shadow-sm')}>
  <div className="p-4 flex items-center justify-between border-b border-inherit">
- <span className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
+ <span className="text-sm font-semibold flex items-center gap-2">
  <div className={cn("w-2 h-2 rounded-none-none shadow-[0_0_8px_currentColor]", status === 'published' ? 'bg-gray-500 text-gray-600 dark:text-z-secondary' : status === 'draft' ? 'bg-amber-500 text-amber-500' : 'bg-gray-500 text-z-secondary')} />
  {status}
  </span>
- <span className="text-[9px] font-bold text-z-secondary bg-z-hover px-2 py-0.5 rounded-none-none">{items.length}</span>
+ <span className="text-sm font-bold text-z-secondary bg-z-hover px-2 py-0.5 rounded-none-none">{items.length}</span>
  </div>
- <div className="p-4 flex flex-col gap-3 h-full max-h-[60vh] overflow-y-auto ">
+ <div className="p-4 flex flex-col gap-3 h-full max-h-[60vh] overflow-y-auto">
  {items.map(item => {
  const itemId = item._id || item.id
  const isSelected = selectedIds.has(itemId)
  return (
  <div key={itemId} onClick={() => navigate(`/collections/${slug}/${itemId}`)} className={cn("p-4 border rounded-none-none cursor-pointer transition-all hover:shadow-lg", theme === 'dark' ? 'bg-[#0a0a0a] border-z-border hover:border-z-border' : 'bg-z-panel border-z-border hover:border-gray-500/30', isSelected && 'ring-1 ring-gray-500')}>
  <div className="flex items-center justify-between mb-3">
- <span className="text-[9px] font-black text-z-secondary ">#{String(itemId).slice(-6)}</span>
+ <span className="text-sm font-semibold text-z-secondary">#{String(itemId).slice(-6)}</span>
  <button onClick={(e) => { e.stopPropagation(); toggleSelect(itemId); }}>
  {isSelected ? <CheckSquare size={12} className="text-gray-600 dark:text-z-secondary" /> : <Square size={12} className="text-z-muted" />}
  </button>
  </div>
  {availableColumns.filter((c) => visibleColumns.includes(c) && c !== statusField).slice(0, 2).map((col) => (
  <div key={col} className="mb-1">
- <div className="text-[8px] font-bold text-z-secondary uppercase">{col}</div>
+ <div className="text-sm font-bold text-z-secondary">{col}</div>
  <div className="text-xs truncate text-ellipsis">{String(item[col] || '—')}</div>
  </div>
  ))}
@@ -532,8 +555,8 @@ const CollectionList: React.FC = () => {
  </div>
  )}
 
- <div className={cn('p-4 border-t flex items-center justify-between text-[8px] font-black text-z-secondary uppercase ', 'border-z-border')}>
- <div className="flex items-center gap-2"><Fingerprint size={10} /><span>REG_0x{slug?.length}•STABLE</span></div>
+ <div className={cn('p-4 border-t flex items-center justify-between text-sm font-semibold text-z-secondary  ', 'border-z-border')}>
+ <div className="flex items-center gap-2"><KeyRound size={10} /><span>{slug?.toUpperCase()}</span></div>
  <div className="flex items-center gap-3">
  <button disabled={page === 1} onClick={() => setPage(page - 1)} className="p-1.5 border rounded-none-none disabled:opacity-20"><ChevronLeft size={14} /></button>
  <span className={cn('px-3 py-1 rounded-none-none text-white', theme === 'dark' ? 'bg-white/10' : 'bg-gray-900')}>{page}</span>

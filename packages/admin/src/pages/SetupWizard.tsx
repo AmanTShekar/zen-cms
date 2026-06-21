@@ -125,7 +125,7 @@ export default function SetupWizard() {
 
  const skip = async () => {
  await api.post('/system/onboarding', { skipped: true }).catch(() => {})
- navigate('/')
+ window.location.href = '/'
  }
 
  const testDbConnection = async () => {
@@ -204,7 +204,7 @@ export default function SetupWizard() {
  content: (
  <div className="space-y-6">
  <div className="space-y-3">
- <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
+ <label className="text-sm font-semibold text-z-muted">
  Your Project Name
  </label>
  <input
@@ -216,10 +216,10 @@ export default function SetupWizard() {
  input
  )}
  />
- <p className="text-[8px] text-z-secondary">This will appear in your admin panel header.</p>
+ <p className="text-sm text-z-secondary">This will appear in your admin panel header.</p>
  </div>
  <div className="space-y-3">
- <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
+ <label className="text-sm font-semibold text-z-muted">
  Your Website URL
  </label>
  <input
@@ -231,7 +231,7 @@ export default function SetupWizard() {
  input
  )}
  />
- <p className="text-[8px] text-z-secondary">
+ <p className="text-sm text-z-secondary">
  Where your website or app is hosted. Used to configure CORS.
  </p>
  </div>
@@ -261,7 +261,7 @@ export default function SetupWizard() {
  )}
  >
  <span className="text-2xl">{pt.icon}</span>
- <span className="text-[10px] font-black uppercase ">{pt.label}</span>
+ <span className="text-sm font-semibold">{pt.label}</span>
  </button>
  ))}
  </div>
@@ -297,14 +297,14 @@ export default function SetupWizard() {
  )}
  >
  <span>{col.icon}</span>
- <span className="text-[11px] font-black uppercase ">{col.label}</span>
+ <span className="text-sm font-semibold">{col.label}</span>
  {selected && <Check size={12} className="text-gray-600 dark:text-z-muted ml-auto shrink-0" />}
  </button>
  )
  })}
  </div>
  {state.selectedCollections.length === 0 && (
- <p className="text-[9px] text-amber-500 font-black uppercase text-center py-2">
+ <p className="text-sm text-amber-500 font-semibold text-center py-2">
  No collections selected — you can add them later from the Collections menu.
  </p>
  )}
@@ -319,7 +319,7 @@ export default function SetupWizard() {
  content: (
  <div className="space-y-4">
  <div className="space-y-2">
- <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
+ <label className="text-sm font-semibold text-z-muted">
  Database Dialect
  </label>
  <div className="flex gap-2">
@@ -341,7 +341,7 @@ export default function SetupWizard() {
  })
  }}
  className={cn(
- 'flex-1 py-3 border text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all',
+ 'flex-1 py-3 border text-sm font-semibold   rounded-none-none transition-all',
  state.dbDialect === dialect
  ? 'border-gray-500 bg-gray-500/10 text-white'
  : 'border-z-border hover:border-z-border text-z-muted'
@@ -354,7 +354,7 @@ export default function SetupWizard() {
  </div>
 
  <div className="space-y-2">
- <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
+ <label className="text-sm font-semibold text-z-muted">
  Connection URL
  </label>
  <input
@@ -366,7 +366,7 @@ export default function SetupWizard() {
  : 'postgresql://postgres:postgres@localhost:5432/zenith'
  }
  className={cn(
- 'w-full px-4 py-3 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[12px] font-mono transition-colors',
+ 'w-full px-4 py-3 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-mono transition-colors',
  input
  )}
  />
@@ -377,7 +377,7 @@ export default function SetupWizard() {
  type="button"
  onClick={testDbConnection}
  disabled={state.dbTestStatus === 'testing'}
- className="flex-1 py-3 border border-z-border hover:border-white/30 text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all flex items-center justify-center gap-2"
+ className="flex-1 py-3 border border-z-border hover:border-white/30 text-sm font-semibold rounded-none-none transition-all flex items-center justify-center gap-2"
  >
  {state.dbTestStatus === 'testing' ? (
  <Loader2 size={12} className="animate-spin" />
@@ -391,7 +391,7 @@ export default function SetupWizard() {
  onClick={saveDbConnection}
  disabled={state.dbTestStatus !== 'success' || state.dbSaved}
  className={cn(
- 'flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all flex items-center justify-center gap-2',
+ 'flex-1 py-3 text-sm font-semibold   rounded-none-none transition-all flex items-center justify-center gap-2',
  state.dbTestStatus === 'success' && !state.dbSaved
  ? 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white shadow-lg shadow-gray-600/20'
  : 'bg-z-hover border border-z-border text-z-secondary cursor-not-allowed'
@@ -404,7 +404,7 @@ export default function SetupWizard() {
  {state.dbTestStatus !== 'idle' && (
  <div
  className={cn(
- 'p-4 border rounded-none-none text-[10px] font-bold uppercase tracking-wide ',
+ 'p-4 border rounded-none-none text-sm font-bold  tracking-wide ',
  state.dbTestStatus === 'success'
  ? 'bg-gray-500/5 border-gray-500/20 text-gray-600 dark:text-z-muted'
  : state.dbTestStatus === 'testing'
@@ -430,14 +430,14 @@ export default function SetupWizard() {
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-2">
  <div className="flex justify-between items-center">
- <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
+ <label className="text-sm font-semibold text-z-muted">
  OpenRouter API Key
  </label>
  <a
  href="https://openrouter.ai/keys"
  target="_blank"
  rel="noreferrer"
- className="text-[8px] font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
+ className="text-sm font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
  >
  Get Key <HelpCircle size={8} />
  </a>
@@ -448,7 +448,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ openRouterApiKey: e.target.value })}
  placeholder="sk-or-..."
  className={cn(
- 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
+ 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-mono transition-colors',
  input
  )}
  />
@@ -456,14 +456,14 @@ export default function SetupWizard() {
 
  <div className="space-y-2">
  <div className="flex justify-between items-center">
- <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
+ <label className="text-sm font-semibold text-z-muted">
  OpenAI API Key
  </label>
  <a
  href="https://platform.openai.com/api-keys"
  target="_blank"
  rel="noreferrer"
- className="text-[8px] font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
+ className="text-sm font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
  >
  Get Key <HelpCircle size={8} />
  </a>
@@ -474,7 +474,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ openaiApiKey: e.target.value })}
  placeholder="sk-proj-..."
  className={cn(
- 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
+ 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-mono transition-colors',
  input
  )}
  />
@@ -482,14 +482,14 @@ export default function SetupWizard() {
 
  <div className="space-y-2">
  <div className="flex justify-between items-center">
- <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
+ <label className="text-sm font-semibold text-z-muted">
  Anthropic API Key
  </label>
  <a
  href="https://console.anthropic.com/settings/keys"
  target="_blank"
  rel="noreferrer"
- className="text-[8px] font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
+ className="text-sm font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
  >
  Get Key <HelpCircle size={8} />
  </a>
@@ -500,7 +500,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ anthropicApiKey: e.target.value })}
  placeholder="sk-ant-..."
  className={cn(
- 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
+ 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-mono transition-colors',
  input
  )}
  />
@@ -508,14 +508,14 @@ export default function SetupWizard() {
 
  <div className="space-y-2">
  <div className="flex justify-between items-center">
- <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
+ <label className="text-sm font-semibold text-z-muted">
  xAI (Grok) API Key
  </label>
  <a
  href="https://console.x.ai"
  target="_blank"
  rel="noreferrer"
- className="text-[8px] font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
+ className="text-sm font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
  >
  Get Key <HelpCircle size={8} />
  </a>
@@ -526,7 +526,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ xaiApiKey: e.target.value })}
  placeholder="xai-..."
  className={cn(
- 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[11px] font-mono transition-colors',
+ 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-mono transition-colors',
  input
  )}
  />
@@ -536,10 +536,10 @@ export default function SetupWizard() {
  <div className="p-3 border border-gray-500/20 bg-gray-500/[0.03] rounded-none-none flex items-start gap-2.5">
  <Info size={14} className="text-gray-600 dark:text-z-muted shrink-0 mt-0.5" />
  <div>
- <p className="text-[9px] font-black uppercase text-gray-600 dark:text-z-muted ">
+ <p className="text-sm font-semibold text-gray-600 dark:text-z-muted">
  Free AI Keys Available
  </p>
- <p className="text-[8px] text-z-muted leading-normal mt-1">
+ <p className="text-sm text-z-muted leading-normal mt-1">
  Need keys? Get a key from{' '}
  <a
  href="https://openrouter.ai"
@@ -556,7 +556,7 @@ export default function SetupWizard() {
  </div>
 
  <div className="pt-2">
- <p className="text-[9px] font-black uppercase tracking-widest text-z-secondary mb-2">
+ <p className="text-sm font-semibold text-z-secondary mb-2">
  NATIVE AI CAPABILITIES INTEGRATED
  </p>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -585,7 +585,7 @@ export default function SetupWizard() {
  <div key={i} className="p-2.5 border border-z-border bg-white/[0.01] rounded-none-none flex gap-2">
  <span className="text-base">{feat.icon}</span>
  <div>
- <p className="text-[9px] font-black uppercase leading-none">{feat.title}</p>
+ <p className="text-sm font-semibold leading-none">{feat.title}</p>
  <p className="text-[7.5px] text-z-secondary leading-tight mt-1">{feat.desc}</p>
  </div>
  </div>
@@ -605,7 +605,7 @@ export default function SetupWizard() {
  {!state.generatedKey ? (
  <div className="space-y-4">
  <div className="space-y-2">
- <label className="text-[9px] font-black uppercase tracking-widest text-z-muted">
+ <label className="text-sm font-semibold text-z-muted">
  Key Name
  </label>
  <input
@@ -617,14 +617,14 @@ export default function SetupWizard() {
  input
  )}
  />
- <p className="text-[8px] text-z-secondary">
+ <p className="text-sm text-z-secondary">
  Give it a name so you can identify it later (e.g. "Production Site").
  </p>
  </div>
  <button
  onClick={handleComplete}
  disabled={loading}
- className="w-full flex items-center justify-center gap-3 py-4 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-[11px] font-black uppercase rounded-none-none transition-all shadow-lg shadow-gray-600/20"
+ className="w-full flex items-center justify-center gap-3 py-4 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-sm font-semibold rounded-none-none transition-all shadow-lg shadow-gray-600/20"
  >
  {loading ? <Loader2 size={16} className="animate-spin" /> : <Key size={16} />}
  {loading ? 'Generating...' : 'Generate API Key'}
@@ -640,12 +640,12 @@ export default function SetupWizard() {
  : 'bg-gray-50 border-z-border'
  )}
  >
- <p className="text-[9px] font-black uppercase text-gray-600 dark:text-z-secondary ">
+ <p className="text-sm font-semibold text-gray-600 dark:text-z-secondary">
  ✓ Key generated — copy it now. It will not be shown again.
  </p>
  <div
  className={cn(
- 'flex items-center gap-3 p-3 border rounded-none-none font-mono text-[11px] break-all',
+ 'flex items-center gap-3 p-3 border rounded-none-none font-mono text-sm break-all',
  isDark ? 'bg-black border-z-border' : 'bg-gray-100 border-z-border'
  )}
  >
@@ -653,7 +653,7 @@ export default function SetupWizard() {
  <button
  onClick={copyKey}
  className={cn(
- 'shrink-0 px-3 py-1.5 border rounded-none-none text-[9px] font-black uppercase transition-all',
+ 'shrink-0 px-3 py-1.5 border rounded-none-none text-sm font-semibold  transition-all',
  state.keyCopied
  ? 'border-gray-50 text-gray-600 dark:text-z-secondary'
  : isDark
@@ -697,7 +697,7 @@ export default function SetupWizard() {
  <div className="w-full max-w-2xl flex justify-end mb-4">
  <button
  onClick={skip}
- className="flex items-center gap-1 text-[9px] font-black uppercase text-z-secondary hover:text-gray-300 transition-colors "
+ className="flex items-center gap-1 text-sm font-semibold text-z-secondary hover:text-gray-300 transition-colors"
  >
  Skip setup <X size={11} />
  </button>
@@ -718,7 +718,7 @@ export default function SetupWizard() {
  isDark ? 'text-z-secondary' : 'text-z-muted'
  )}
  >
- <span className="text-[8px] font-black uppercase tracking-widest">
+ <span className="text-sm font-semibold">
  Step {step + 1} of {TOTAL_STEPS}
  </span>
  <div className="flex gap-1 ml-auto">
@@ -754,10 +754,10 @@ export default function SetupWizard() {
  {current.icon}
  </div>
  <div>
- <h2 className="text-[22px] font-black uppercase leading-tight">
+ <h2 className="text-[22px] font-semibold leading-tight">
  {current.title}
  </h2>
- <p className="text-[10px] text-z-muted mt-1">{current.subtitle}</p>
+ <p className="text-sm text-z-muted mt-1">{current.subtitle}</p>
  </div>
  </div>
  <div>{current.content}</div>
@@ -775,7 +775,7 @@ export default function SetupWizard() {
  onClick={back}
  disabled={step === 0}
  className={cn(
- 'flex items-center gap-2 px-5 py-2.5 border text-[10px] font-black uppercase rounded-none-none transition-all',
+ 'flex items-center gap-2 px-5 py-2.5 border text-sm font-semibold  rounded-none-none transition-all',
  step === 0
  ? 'opacity-30 cursor-not-allowed'
  : isDark
@@ -787,8 +787,8 @@ export default function SetupWizard() {
  </button>
  {step === TOTAL_STEPS - 1 ? (
  <button
- onClick={() => navigate('/')}
- className="flex items-center gap-2 px-8 py-2.5 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-[10px] font-black uppercase rounded-none-none transition-all shadow-lg shadow-gray-600/20"
+ onClick={() => { window.location.href = '/' }}
+ className="flex items-center gap-2 px-8 py-2.5 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-sm font-semibold rounded-none-none transition-all shadow-lg shadow-gray-600/20"
  >
  <CheckCircle2 size={14} /> Go to Dashboard
  </button>
@@ -797,7 +797,7 @@ export default function SetupWizard() {
  onClick={next}
  disabled={!current.canNext}
  className={cn(
- 'flex items-center gap-2 px-8 py-2.5 text-[10px] font-black uppercase rounded-none-none transition-all',
+ 'flex items-center gap-2 px-8 py-2.5 text-sm font-semibold  rounded-none-none transition-all',
  current.canNext
  ? 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white shadow-lg shadow-gray-600/20'
  : 'opacity-30 cursor-not-allowed bg-gray-600 text-gray-300'

@@ -478,8 +478,8 @@ export function SlashCommandPlugin() {
       className={cn(
         'fixed z-[2500] w-72 max-h-[360px] overflow-y-auto border shadow-2xl backdrop-blur-2xl',
         theme === 'dark'
-          ? 'bg-[#0b0f19]/95 border-white/10 shadow-[var(--z-active-glow)]'
-          : 'bg-white/95 border-z-border shadow-[var(--z-active-glow)]',
+          ? 'bg-[#0b0f19]/95 border-white/10 shadow-sm'
+          : 'bg-white/95 border-z-border shadow-sm',
       )}
       style={{ top: position.top, left: position.left }}
     >
@@ -491,7 +491,7 @@ export function SlashCommandPlugin() {
       >
         <span
           className={cn(
-            'text-[8px] font-black uppercase tracking-[0.2em] italic',
+            'text-sm font-semibold   italic',
             theme === 'dark' ? 'text-z-secondary' : 'text-z-muted',
           )}
         >
@@ -499,7 +499,7 @@ export function SlashCommandPlugin() {
         </span>
         <span
           className={cn(
-            'text-[7px] font-bold px-1.5 py-0.5 border rounded-none uppercase',
+            'text-sm font-bold px-1.5 py-0.5 border rounded-none ',
             theme === 'dark'
               ? 'text-z-active-text border-z-accent/20'
               : 'text-z-active-text border-z-active-border',
@@ -546,7 +546,7 @@ export function SlashCommandPlugin() {
               <div className="flex flex-col min-w-0">
                 <span
                   className={cn(
-                    'text-[11px] font-black uppercase tracking-tight italic',
+                    'text-sm font-semibold   italic',
                     theme === 'dark' ? 'text-white' : 'text-z-primary',
                   )}
                 >
@@ -554,7 +554,7 @@ export function SlashCommandPlugin() {
                 </span>
                 <span
                   className={cn(
-                    'text-[10px] leading-tight truncate mt-0.5',
+                    'text-sm leading-tight truncate mt-0.5',
                     theme === 'dark' ? 'text-z-secondary' : 'text-z-muted',
                   )}
                 >

@@ -86,7 +86,7 @@ const DocumentEditModal: React.FC<DocumentEditModalProps> = ({
  >
  <h3
  className={cn(
- 'text-lg font-black uppercase leading-none',
+ 'text-lg font-semibold  leading-none',
  theme === 'dark' ? 'text-white' : 'text-black',
  )}
  >
@@ -108,7 +108,7 @@ const DocumentEditModal: React.FC<DocumentEditModalProps> = ({
  {loading ? (
  <div className="h-full flex items-center justify-center flex-col gap-4">
  <Loader2 className="animate-spin text-gray-600 dark:text-z-secondary" size={32} />
- <span className="text-[10px] font-black uppercase tracking-widest text-z-secondary ">
+ <span className="text-sm font-semibold text-z-secondary">
  Loading Document...
  </span>
  </div>
@@ -120,7 +120,7 @@ const DocumentEditModal: React.FC<DocumentEditModalProps> = ({
  isSubmitting={saving}
  />
  ) : (
- <div className="h-full flex items-center justify-center text-z-secondary font-black uppercase tracking-widest text-xs">
+ <div className="h-full flex items-center justify-center text-z-secondary font-semibold text-xs">
  Failed to load schema or data.
  </div>
  )}

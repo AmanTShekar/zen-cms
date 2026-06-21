@@ -178,12 +178,12 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  'px-4 py-3 border-b flex items-center justify-between shrink-0',
  theme === 'dark' ? 'border-z-border' : 'border-z-border shadow-sm'
  )}>
- <span className="text-xs font-black uppercase tracking-widest text-gray-600 dark:text-z-muted">
+ <span className="text-xs font-semibold text-gray-600 dark:text-z-muted">
  Content Relations
  </span>
  <div className="flex items-center gap-1.5">
  {selectedCount > 0 && (
- <span className="text-xs font-black text-gray-600 dark:text-z-muted uppercase ">
+ <span className="text-xs font-semibold text-gray-600 dark:text-z-muted">
  {selectedCount} selected
  </span>
  )}
@@ -212,7 +212,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
 
  {!collection ? (
  <div className="p-6 text-center">
- <p className="text-xs font-black uppercase text-gray-600 dark:text-z-muted mb-1">No collection configured</p>
+ <p className="text-xs font-semibold text-gray-600 dark:text-z-muted mb-1">No collection configured</p>
  <p className="text-xs text-z-secondary">Set <code className="text-xs">relationTo</code> on the field to enable inline relation picker.</p>
  </div>
  ) : (
@@ -245,11 +245,11 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  {loading ? (
  <div className="flex items-center justify-center py-8 gap-2">
  <Loader2 size={14} className="animate-spin text-gray-600 dark:text-z-secondary" />
- <span className="text-xs font-bold text-z-secondary uppercase animate-pulse">Searching...</span>
+ <span className="text-xs font-bold text-z-secondary animate-pulse">Searching...</span>
  </div>
  ) : results.length === 0 ? (
  <div className="py-8 text-center">
- <p className="text-xs font-black uppercase text-z-secondary">No results found</p>
+ <p className="text-xs font-semibold text-z-secondary">No results found</p>
  <p className="text-xs text-gray-600 mt-1">Try a different search term</p>
  </div>
  ) : (
@@ -287,12 +287,12 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
 
  {/* Item title */}
  <div className="flex-1 min-w-0">
- <p className="truncate font-black uppercase tracking-tight">
+ <p className="truncate font-semibold">
  {String(title)}
  </p>
  {item._status && (
  <span className={cn(
- 'text-[7px] font-bold uppercase ',
+ 'text-sm font-bold  ',
  item._status === 'published'
  ? 'text-gray-600 dark:text-z-secondary'
  : 'text-amber-500'
@@ -341,7 +341,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  <button
  onClick={handleClear}
  className={cn(
- 'flex-1 py-1.5 text-xs font-black uppercase border rounded-none-none transition-all',
+ 'flex-1 py-1.5 text-xs font-semibold  border rounded-none-none transition-all',
  theme === 'dark'
  ? 'border-z-border text-z-secondary hover:border-rose-500/20 hover:text-rose-400'
  : 'border-z-border text-z-muted hover:border-rose-200 hover:text-rose-500'
@@ -352,7 +352,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  <button
  onClick={handleApply}
  className={cn(
- 'flex-1 py-1.5 text-xs font-black uppercase rounded-none-none transition-all bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-500'
+ 'flex-1 py-1.5 text-xs font-semibold  rounded-none-none transition-all bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-500'
  )}
  >
  Done

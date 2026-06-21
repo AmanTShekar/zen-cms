@@ -4,9 +4,11 @@ import { Resource } from '@opentelemetry/resources';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 import { trace, Span } from '@opentelemetry/api';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
+import { env } from '../config/env';
+
 
 const exporter = new OTLPTraceExporter({
-  url: process.env.OTLP_TRACE_URL || 'http://localhost:4318/v1/traces',
+  url: env.OTLP_TRACE_URL || 'http://localhost:4318/v1/traces',
 });
 
 const sdk = new NodeSDK({

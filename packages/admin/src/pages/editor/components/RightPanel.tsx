@@ -123,7 +123,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  className={cn(
  'absolute left-0 top-0 bottom-0 w-1 cursor-col-resize z-50 transition-colors',
  resizingSide === 'right'
- ? 'bg-gray-500 shadow-[var(--z-active-glow)]'
+ ? 'bg-gray-500 shadow-sm'
  : 'bg-transparent hover:bg-gray-500/50'
  )}
  />
@@ -148,7 +148,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  >
  <span
  className={cn(
- 'text-xs font-black uppercase tracking-[0.2em] ',
+ 'text-xs font-semibold   ',
  activeRightTab === tab.id
  ? dark ? 'text-gray-600 dark:text-z-muted' : 'text-gray-600'
  : dark ? 'text-white' : 'text-black'
@@ -188,7 +188,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  key={vp}
  onClick={() => setPreviewMode(vp)}
  className={cn(
- 'flex items-center gap-1.5 px-2.5 py-1 rounded-none-none border text-[10px] font-black uppercase tracking-wider transition-all',
+ 'flex items-center gap-1.5 px-2.5 py-1 rounded-none-none border text-sm font-semibold   transition-all',
  isActive
  ? dark
  ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted'
@@ -212,8 +212,8 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  {resolvedStorefrontUrl ? (
  <div
  className={cn(
- 'transition-all duration-300 border overflow-hidden bg-white',
- dark ? 'border-z-border shadow-[0_0_40px_rgba(0,0,0,0.5)]' : 'border-z-border shadow-2xl',
+ 'transition-all duration-300 border overflow-hidden',
+ dark ? 'border-z-border bg-[#030303] shadow-[0_0_40px_rgba(0,0,0,0.5)]' : 'border-z-border bg-white shadow-2xl',
  isDesktop ? 'w-full h-full' : 'rounded-none-none'
  )}
  style={
@@ -241,7 +241,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  )}>
  <Eye size={28} className={dark ? 'text-gray-600' : 'text-gray-300'} />
  <div>
- <p className={cn('text-xs font-black uppercase ', dark ? 'text-z-secondary' : 'text-z-muted')}>
+ <p className={cn('text-xs font-semibold  ', dark ? 'text-z-secondary' : 'text-z-muted')}>
  Preview unavailable
  </p>
  <p className={cn('text-xs font-bold', dark ? 'text-gray-700' : 'text-gray-300')}>
@@ -284,10 +284,10 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  )}
  >
  <div className="flex items-center justify-between">
- <span className={cn('text-xs font-black uppercase ', dark ? 'text-white' : 'text-black')}>
+ <span className={cn('text-xs font-semibold  ', dark ? 'text-white' : 'text-black')}>
  {idx === 0 ? 'Current' : `V.${history.length - idx}`}
  </span>
- <span className="text-xs font-bold text-z-secondary uppercase tracking-widest">
+ <span className="text-xs font-bold text-z-secondary">
  {new Date(v.createdAt).toLocaleDateString()}
  </span>
  </div>
@@ -299,7 +299,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  <button
  onClick={(e) => { e.stopPropagation(); onCompareDiff(v._id, history.length - idx) }}
  className={cn(
- 'flex-1 py-1 border text-xs font-black uppercase tracking-widest text-center transition-all',
+ 'flex-1 py-1 border text-xs font-semibold   text-center transition-all',
  dark
  ? 'bg-z-hover border-z-border text-gray-300 hover:bg-white/10 hover:text-white'
  : 'bg-gray-100 border-gray-250 text-gray-700 hover:bg-gray-200 hover:text-black'
@@ -309,7 +309,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  </button>
  <button
  onClick={(e) => { e.stopPropagation(); handleRestore(v._id) }}
- className="flex-1 py-1 bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white text-xs font-black uppercase tracking-widest text-center transition-all"
+ className="flex-1 py-1 bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white text-xs font-semibold text-center transition-all"
  >
  Restore
  </button>

@@ -67,7 +67,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  <div className="w-10 h-10 rounded-none-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
  <Users size={18} className="text-gray-600 dark:text-z-secondary" />
  </div>
- <span className="text-[12px] font-black uppercase tracking-wide">
+ <span className="text-sm font-semibold tracking-wide">
  Initialize Operator
  </span>
  </div>
@@ -81,10 +81,10 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  <div className="w-16 h-16 mx-auto rounded-none-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
  <Users size={28} className="text-gray-600 dark:text-z-secondary" />
  </div>
- <p className="text-[11px] font-black uppercase tracking-widest text-gray-600 dark:text-z-secondary">
+ <p className="text-sm font-semibold text-gray-600 dark:text-z-secondary">
  Invitation Dispatched
  </p>
- <p className="text-[9px] text-z-secondary uppercase tracking-widest">
+ <p className="text-sm text-z-secondary">
  {email} — check inbox for password reset link
  </p>
  </div>
@@ -92,7 +92,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  <form onSubmit={handleInvite} className="px-8 py-6 space-y-6">
  {/* Email */}
  <div className="space-y-2">
- <label className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary">
+ <label className="text-sm font-semibold text-z-secondary">
  Operator Email
  </label>
  <input
@@ -103,7 +103,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  autoFocus
  placeholder="operator@example.com"
  className={cn(
- 'w-full border rounded-none-none py-4 px-5 text-[13px] font-black transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-4 px-5 text-[13px] font-semibold transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
  ? 'bg-z-hover border-z-border text-white focus:border-gray-500/50'
  : 'bg-z-input border-z-border focus:border-gray-500'
@@ -113,7 +113,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
 
  {/* Role */}
  <div className="space-y-2">
- <label className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary">
+ <label className="text-sm font-semibold text-z-secondary">
  Auth Tier
  </label>
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -123,7 +123,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  type="button"
  onClick={() => setRole(r)}
  className={cn(
- 'py-3 text-[9px] font-black uppercase tracking-wider border rounded-none-none transition-all',
+ 'py-3 text-sm font-semibold   border rounded-none-none transition-all',
  role === r
  ? 'border-gray-500/40 bg-gray-500/10 text-gray-600 dark:text-z-muted'
  : theme === 'dark'
@@ -142,7 +142,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  type="submit"
  disabled={loading || !email.trim()}
  className={cn(
- 'w-full py-4 rounded-none-none text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 disabled:opacity-40',
+ 'w-full py-4 rounded-none-none text-sm font-semibold   shadow-lg transition-all active:scale-95 disabled:opacity-40',
  theme === 'dark'
  ? 'bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 text-white'
  : 'bg-gray-900 hover:bg-gray-800 text-white'
@@ -161,7 +161,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  )}
 
  <div className="px-8 pb-6">
- <p className="text-[8px] text-gray-600 uppercase tracking-widest text-center ">
+ <p className="text-sm text-gray-600 text-center">
  48h expiring token · sent via SMTP relay · password set on first login
  </p>
  </div>

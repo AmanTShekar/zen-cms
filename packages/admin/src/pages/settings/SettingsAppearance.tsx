@@ -16,10 +16,10 @@ const card = (dark: boolean) =>
   cn('p-6 border transition-all', 'z-card')
 
 const inp = (dark: boolean) =>
-  cn('w-full border py-2 px-3 text-[11px] font-black outline-none transition-all focus:ring-1 focus:ring-z-active-border focus:border-z-accent',
+  cn('w-full border py-2 px-3 text-sm font-semibold outline-none transition-all focus:ring-1 focus:ring-z-active-border focus:border-z-accent',
     dark ? 'bg-black border-z-border text-white' : 'bg-z-panel border-z-border text-z-primary')
 
-const label = 'text-[9px] font-black uppercase tracking-widest text-z-secondary block mb-2'
+const label = 'text-sm font-semibold   text-z-secondary block mb-2'
 
 export default function SettingsAppearance({ settings, setSettings, theme }: Props) {
   const dark = theme === 'dark'
@@ -50,7 +50,7 @@ export default function SettingsAppearance({ settings, setSettings, theme }: Pro
               <Paintbrush size={15} className="text-z-active-text" />
             </div>
             <div>
-              <h3 className="text-[11px] font-black uppercase tracking-wider">Brand Identity</h3>
+              <h3 className="text-sm font-semibold">Brand Identity</h3>
               <p className={label + ' mt-0.5 mb-0'}>White-label your CMS</p>
             </div>
           </div>
@@ -84,20 +84,20 @@ export default function SettingsAppearance({ settings, setSettings, theme }: Pro
               {brand.logoUrl ? (
                 <img src={brand.logoUrl} alt="Logo" className="w-10 h-10 object-contain border" style={{ borderColor: dark ? 'rgba(255,255,255,0.08)' : '#e5e7eb' }} />
               ) : (
-                <div className="w-10 h-10 border flex items-center justify-center text-gray-600 text-[9px] font-black uppercase tracking-wider"
+                <div className="w-10 h-10 border flex items-center justify-center text-gray-600 text-sm font-semibold"
                   style={{ borderColor: dark ? 'rgba(255,255,255,0.08)' : '#e5e7eb' }}>
                   None
                 </div>
               )}
               <div className="flex-1 flex gap-2">
                 <button onClick={() => logoRef.current?.click()}
-                  className={cn('flex-1 flex items-center justify-center gap-2 py-2 border text-[9px] font-black uppercase tracking-widest transition-all',
+                  className={cn('flex-1 flex items-center justify-center gap-2 py-2 border text-sm font-semibold   transition-all',
                     dark ? 'border-z-border text-z-muted hover:text-white hover:border-white/20' : 'border-z-border text-z-secondary hover:text-z-primary')}>
                   <Upload size={11} /> Upload
                 </button>
                 {brand.logoUrl && (
                   <button onClick={() => setBrand({ logoUrl: '' })}
-                    className="px-3 py-2 border border-red-500/20 text-red-400 text-[9px] font-black uppercase tracking-widest hover:bg-red-500/10 transition-all">
+                    className="px-3 py-2 border border-red-500/20 text-red-400 text-sm font-semibold hover:bg-red-500/10 transition-all">
                     <RotateCcw size={11} />
                   </button>
                 )}
@@ -113,11 +113,11 @@ export default function SettingsAppearance({ settings, setSettings, theme }: Pro
               {brand.faviconUrl ? (
                 <img src={brand.faviconUrl} alt="Favicon" className="w-8 h-8 object-contain border" style={{ borderColor: dark ? 'rgba(255,255,255,0.08)' : '#e5e7eb' }} />
               ) : (
-                <div className="w-8 h-8 border flex items-center justify-center text-gray-600 text-[8px]"
+                <div className="w-8 h-8 border flex items-center justify-center text-gray-600 text-sm"
                   style={{ borderColor: dark ? 'rgba(255,255,255,0.08)' : '#e5e7eb' }}>ico</div>
               )}
               <button onClick={() => faviconRef.current?.click()}
-                className={cn('flex items-center gap-2 px-4 py-2 border text-[9px] font-black uppercase tracking-widest transition-all',
+                className={cn('flex items-center gap-2 px-4 py-2 border text-sm font-semibold   transition-all',
                   dark ? 'border-z-border text-z-muted hover:text-white hover:border-white/20' : 'border-z-border text-z-secondary hover:text-z-primary')}>
                 <Upload size={11} /> Upload
               </button>
@@ -143,7 +143,7 @@ export default function SettingsAppearance({ settings, setSettings, theme }: Pro
               {['light', 'dark'].map(t => (
                 <button key={t} type="button"
                   onClick={() => setSettings({ ...settings, theme: t })}
-                  className={cn('flex items-center justify-center gap-2 py-2.5 border text-[10px] font-black uppercase tracking-wider transition-all',
+                  className={cn('flex items-center justify-center gap-2 py-2.5 border text-sm font-semibold   transition-all',
                     (settings.theme === t || (!settings.theme && t === 'dark'))
                       ? 'border-z-accent bg-z-active-bg text-z-active-text'
                       : dark ? 'border-z-border text-z-secondary hover:border-z-active-border' : 'border-z-border text-z-secondary')}>
@@ -162,7 +162,7 @@ export default function SettingsAppearance({ settings, setSettings, theme }: Pro
               <Paintbrush size={15} className="text-z-active-text" />
             </div>
             <div>
-              <h3 className="text-[11px] font-black uppercase tracking-wider">Accent Theme</h3>
+              <h3 className="text-sm font-semibold">Accent Theme</h3>
               <p className={label + ' mt-0.5 mb-0'}>Plug-and-play presets</p>
             </div>
           </div>
@@ -177,13 +177,13 @@ export default function SettingsAppearance({ settings, setSettings, theme }: Pro
                       ? 'border-z-accent/50 bg-z-accent/5'
                       : dark ? 'border-z-border hover:border-white/20' : 'border-z-border hover:border-gray-400')}>
                   {/* Swatch */}
-                  <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center font-black text-[10px] shadow-lg"
+                  <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center font-semibold text-sm shadow-lg"
                     style={{ backgroundColor: p.accentHex, color: p.logoIconText }}>
                     {p.name[0]}
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className={cn('text-[10px] font-black uppercase tracking-wider truncate', active ? 'text-z-active-text' : dark ? 'text-gray-300' : 'text-gray-700')}>{p.name}</span>
-                    <span className="text-[8px] font-mono text-z-secondary">{p.accentHex}</span>
+                    <span className={cn('text-sm font-semibold   truncate', active ? 'text-z-active-text' : dark ? 'text-gray-300' : 'text-gray-700')}>{p.name}</span>
+                    <span className="text-sm font-mono text-z-secondary">{p.accentHex}</span>
                   </div>
                   {active && <Check size={11} className="absolute top-2 right-2 text-z-active-text" />}
                 </button>
@@ -199,20 +199,20 @@ export default function SettingsAppearance({ settings, setSettings, theme }: Pro
               <div className="flex items-center gap-3 px-3 py-2 border"
                 style={{ background: preset.activeBg, borderColor: preset.activeBorder, boxShadow: preset.activeGlow }}>
                 <div className="w-2 h-2" style={{ background: preset.activeText }} />
-                <span className="text-[10px] font-black uppercase tracking-wider" style={{ color: preset.activeText }}>{brand.appName || 'Zenith'}</span>
+                <span className="text-sm font-semibold" style={{ color: preset.activeText }}>{brand.appName || 'Zenith'}</span>
               </div>
               {/* Simulated sidebar item default */}
               <div className={cn('flex items-center gap-3 px-3 py-2 border', dark ? 'border-z-border' : 'border-z-border')}>
                 <div className="w-2 h-2 bg-gray-600" />
-                <span className={cn('text-[10px] font-black uppercase tracking-wider', dark ? 'text-z-secondary' : 'text-z-muted')}>Collections</span>
+                <span className={cn('text-sm font-semibold  ', dark ? 'text-z-secondary' : 'text-z-muted')}>Collections</span>
               </div>
               {/* Simulated logo badge */}
               <div className="flex items-center gap-2 pt-1">
-                <div className="w-7 h-7 flex items-center justify-center font-black text-[11px]"
+                <div className="w-7 h-7 flex items-center justify-center font-semibold text-sm"
                   style={{ background: preset.logoIconBg, color: preset.logoIconText }}>
                   {(brand.appName || 'Z')[0]}
                 </div>
-                <span className="text-[11px] font-black uppercase tracking-tight" style={{ color: dark ? '#fff' : '#000' }}>
+                <span className="text-sm font-semibold" style={{ color: dark ? '#fff' : '#000' }}>
                   {brand.appName || 'Zenith'}
                 </span>
               </div>
@@ -229,11 +229,11 @@ export default function SettingsAppearance({ settings, setSettings, theme }: Pro
               <Code2 size={15} className="text-z-active-text" />
             </div>
             <div>
-              <h3 className="text-[11px] font-black uppercase tracking-wider">CSS Override</h3>
+              <h3 className="text-sm font-semibold">CSS Override</h3>
               <p className={label + ' mt-0.5 mb-0'}>Global stylesheet injection</p>
             </div>
           </div>
-          <span className="text-[9px] font-black uppercase tracking-widest text-z-active-text border border-z-accent/20 bg-z-accent/10 px-2 py-1">Live</span>
+          <span className="text-sm font-semibold text-z-active-text border border-z-accent/20 bg-z-accent/10 px-2 py-1">Live</span>
         </div>
         <textarea
           value={settings.customCSS}

@@ -4,6 +4,8 @@ import { BasicTracerProvider, BatchSpanProcessor, ConsoleSpanExporter } from '@o
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
 import { Resource } from '@opentelemetry/resources'
 import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions'
+import { env } from '../config/env';
+
 
 export interface TraceContext {
   traceId: string
@@ -19,13 +21,13 @@ const provider = new BasicTracerProvider({
   }),
 })
 
-if (process.env.OTEL_EXPORTER_OTLP_ENDPOINT) {
+if (env.OTEL_EXPORTER_OTLP_ENDPOINT) {
   const exporter = new OTLPTraceExporter({
-    url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT, 
+    url: env.OTEL_EXPORTER_OTLP_ENDPOINT, 
     // e.g. 'http://localhost:4318/v1/traces'
   })
   provider.addSpanProcessor(new BatchSpanProcessor(exporter))
-  console.log(`[Zenith] OTLP Tracing enabled: ${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}`)
+  console.log(`[Zenith] OTLP Tracing enabled: ${env.OTEL_EXPORTER_OTLP_ENDPOINT}`)
 } else {
   // Optional fallback for debugging if needed, but omitted to prevent console spam
 }

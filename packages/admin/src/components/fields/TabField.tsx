@@ -42,7 +42,7 @@ const TabField: React.FC<TabFieldProps> = ({ field, value, onChange, disabled, r
             type="button"
             onClick={() => setActiveTab(idx)}
             className={cn(
-              'px-4 py-2.5 text-[10px] font-black uppercase tracking-wider transition-colors',
+              'px-4 py-2.5 text-sm font-semibold   transition-colors',
               activeTab === idx
                 ? 'text-z-active-text border-b-2 border-z-accent bg-z-hover'
                 : 'text-z-secondary hover:text-gray-300'
@@ -58,7 +58,7 @@ const TabField: React.FC<TabFieldProps> = ({ field, value, onChange, disabled, r
         <div className="p-4 space-y-3">
           {currentFields.map((f) => (
             <div key={f.name} className="space-y-1.5">
-              <label className="text-[10px] font-bold text-z-muted uppercase tracking-wider">
+              <label className="text-sm font-bold text-z-muted">
                 {f.label || f.name}
                 {(f as any).required && <span className="text-danger ml-1">*</span>}
               </label>

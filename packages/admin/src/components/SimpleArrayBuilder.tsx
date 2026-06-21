@@ -115,10 +115,10 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2.5">
  <Layers size={16} strokeWidth={2} className="text-gray-600 dark:text-z-secondary" />
- <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">
+ <span className="text-sm font-semibold text-white">
  {label}
  </span>
- <span className="px-1.5 py-0.5 text-[9px] font-black bg-gray-500/15 text-gray-600 dark:text-z-secondary border border-gray-500/25 rounded-none-none">
+ <span className="px-1.5 py-0.5 text-sm font-semibold bg-gray-500/15 text-gray-600 dark:text-z-secondary border border-gray-500/25 rounded-none-none">
  {value.length}
  </span>
  </div>
@@ -126,16 +126,16 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  <div className="flex items-center gap-2">
  {value.length > 0 && (
  <div className="flex items-center gap-1.5 border border-z-border bg-z-panel p-0.5 rounded-none-none mr-2">
- <button type="button" onClick={expandAll} className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-z-muted hover:text-white transition-all hover:bg-white/[0.05]">Expand All</button>
+ <button type="button" onClick={expandAll} className="px-2.5 py-1 text-sm font-semibold text-z-muted hover:text-white transition-all hover:bg-white/[0.05]">Expand All</button>
  <div className="w-px h-3 bg-white/10" />
- <button type="button" onClick={collapseAll} className="px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-z-muted hover:text-white transition-all hover:bg-white/[0.05]">Collapse All</button>
+ <button type="button" onClick={collapseAll} className="px-2.5 py-1 text-sm font-semibold text-z-muted hover:text-white transition-all hover:bg-white/[0.05]">Collapse All</button>
  </div>
  )}
  {!disabled && (
  <button
  type="button"
  onClick={addItem}
- className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-600 dark:bg-gray-600 text-white text-[10px] font-black uppercase tracking-wider hover:bg-gray-500 transition-all shadow-sm shadow-gray-900/20 rounded-none-none"
+ className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-600 dark:bg-gray-600 text-white text-sm font-semibold hover:bg-gray-500 transition-all shadow-sm shadow-gray-900/20 rounded-none-none"
  >
  <Plus size={11} strokeWidth={2} /> Add Component
  </button>
@@ -174,14 +174,14 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  whileDrag={{ scale: 1.01, zIndex: 50, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
  className={cn(
  'group relative bg-app border rounded-none-none overflow-visible shadow-sm transition-colors duration-150',
- isExpanded ? 'border-gray-500/60 shadow-[var(--z-active-glow)]' : 'border-border hover:border-z-border'
+ isExpanded ? 'border-gray-500/60 shadow-sm' : 'border-border hover:border-z-border'
  )}
  >
  {/* Index Badge */}
  <div className={cn(
- 'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-none-none flex items-center justify-center text-[8px] font-black border z-10 transition-all',
+ 'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-none-none flex items-center justify-center text-sm font-semibold border z-10 transition-all',
  isExpanded
- ? 'bg-gray-500 text-white border-gray-500 shadow-[var(--z-active-glow)]'
+ ? 'bg-gray-500 text-white border-gray-500 shadow-sm'
  : 'bg-app text-z-muted border-border group-hover:border-gray-500/40 group-hover:text-gray-600 dark:text-z-secondary'
  )}>
  {index + 1}
@@ -201,7 +201,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  {/* Labels */}
  <div className="flex-1 min-w-0">
  <div className="flex items-center gap-2">
- <span className="text-[11px] font-bold text-white truncate">
+ <span className="text-sm font-bold text-white truncate">
  {previewText}
  </span>
  </div>
@@ -239,7 +239,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  const fullWidth = ['richtext','textarea','blocks','array','media','code','collapsible'].includes(f.type)
  return (
  <div key={f.name} className={cn('flex flex-col gap-1.5', fullWidth && 'col-span-2')}>
- <label className="text-[9px] font-black text-z-muted uppercase tracking-widest flex items-center gap-1">
+ <label className="text-sm font-semibold text-z-muted flex items-center gap-1">
  {f.label || f.name}
  {f.required && <span className="text-danger">*</span>}
  </label>
@@ -265,7 +265,7 @@ const SimpleArrayBuilder: React.FC<SimpleArrayBuilderProps> = ({
  layout
  type="button"
  onClick={addItem}
- className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-z-muted/60 text-[10px] font-black uppercase tracking-wider hover:border-gray-500/50 hover:text-gray-600 dark:text-z-secondary hover:bg-gray-500/5 transition-all rounded-none-none"
+ className="flex items-center justify-center gap-2 w-full py-2.5 border border-dashed border-border text-z-muted/60 text-sm font-semibold hover:border-gray-500/50 hover:text-gray-600 dark:text-z-secondary hover:bg-gray-500/5 transition-all rounded-none-none"
  >
  <Plus size={11} strokeWidth={2} /> Add {label}
  </motion.button>

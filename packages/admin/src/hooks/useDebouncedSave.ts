@@ -69,7 +69,7 @@ export function useDebouncedSave(
  save(slug, id, isGlobal, getPayload).catch(() => { /* ignore unmount-flush errors */ })
  }
  }
- // eslint-disable-next-line react-hooks/exhaustive-deps
+  
  }, [id, isGlobal])
 
  return { trigger, flush, cancel, get isPending() { return isPendingRef.current } }

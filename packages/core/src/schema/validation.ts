@@ -88,7 +88,7 @@ export function createZodSchema(fields: FieldConfig[], config?: any) {
       case 'email': {
         // RFC-5321 compliant pattern — stricter than Zod default
         const emailRegex = /^(?!.*\.\.)[\w!#$%&'*+/=?^`{|}~-](?:[\w!#$%&'*+/=?^`{|}~.-]*[\w!#$%&'*+/=?^`{|}~-])?@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}$/i
-        schema = z.string().regex(emailRegex, { message: 'Please enter a valid email address' })
+        schema = z.string().max(254).regex(emailRegex, { message: 'Please enter a valid email address' })
         break
       }
 

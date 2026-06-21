@@ -442,7 +442,7 @@ const AIWriterPage = () => {
                     'flex-1 py-3 font-black uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-2.5',
                     'bg-z-accent hover:opacity-90 text-white',
                     'disabled:opacity-40 disabled:cursor-not-allowed',
-                    'shadow-[var(--z-active-glow)] hover:shadow-[var(--z-active-glow)]'
+                    'shadow-sm hover:shadow-sm'
                   )}
                 >
                   {loading
@@ -462,7 +462,7 @@ const AIWriterPage = () => {
             <div className="flex items-center gap-2.5">
               <Sparkles size={12} className={result ? 'text-z-active-text' : 'text-z-secondary'} />
               <span className="text-[8px] font-black uppercase tracking-[0.3em] text-z-secondary">Output</span>
-              {result && <div className="w-1.5 h-1.5 rounded-full bg-z-accent shadow-[var(--z-active-glow)]" />}
+              {result && <div className="w-1.5 h-1.5 rounded-full bg-z-accent shadow-sm" />}
             </div>
             {result && (
               <div className="flex items-center gap-1">
@@ -548,7 +548,7 @@ const AIWriterPage = () => {
                     <button
                       onClick={saveSchemaToDb}
                       disabled={savingSchema}
-                      className="px-5 py-2 bg-z-accent hover:opacity-90 text-white text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all disabled:opacity-50 shadow-[var(--z-active-glow)]"
+                      className="px-5 py-2 bg-z-accent hover:opacity-90 text-white text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all disabled:opacity-50 shadow-sm"
                     >
                       {savingSchema ? <Loader2 size={11} className="animate-spin" /> : <Save size={11} />}
                       Save Collection

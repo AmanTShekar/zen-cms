@@ -53,7 +53,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
 
  initData();
  // Only run on mount — store setters are intentionally excluded
- // eslint-disable-next-line react-hooks/exhaustive-deps
+  
  }, []);
 
  const fetchSitesForWorkspace = async (wsId: string): Promise<any[]> => {
@@ -152,7 +152,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  onClick={toggle}
  className={cn(
  "w-full flex items-center justify-between text-left transition-all duration-300 p-2.5",
- "relative overflow-hidden shadow-[var(--z-active-glow)]",
+ "relative overflow-hidden shadow-sm",
  theme === 'dark' 
  ? "bg-z-panel backdrop-blur-[12px] text-white border border-z-border hover:border-[var(--z-accent)]/50 hover:bg-black/85" 
  : "bg-white/65 backdrop-blur-[12px] text-z-primary border border-black/[0.08] hover:border-[var(--z-accent)]/30 hover:bg-white/85",
@@ -172,10 +172,10 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  
  {isSidebarOpen && (
  <div className="flex flex-col min-w-0">
- <span className="text-[8px] font-black text-[var(--z-accent)] uppercase tracking-[0.2em] font-mono leading-none mb-1">
+ <span className="text-sm font-semibold text-[var(--z-accent)] font-mono leading-none mb-1">
  WORKSPACE
  </span>
- <span className="text-xs font-black uppercase tracking-wide truncate leading-none">
+ <span className="text-xs font-semibold tracking-wide truncate leading-none">
  {activeLabel}
  </span>
  </div>
@@ -205,7 +205,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  onClick={toggle}
  className={cn(
  "w-full flex items-center justify-between text-left transition-all duration-300 p-2.5",
- "relative overflow-hidden shadow-[var(--z-active-glow)]",
+ "relative overflow-hidden shadow-sm",
  theme === 'dark' 
  ? "bg-z-panel backdrop-blur-[12px] text-white border border-z-border hover:border-[var(--z-accent)]/50 hover:bg-black/85" 
  : "bg-white/65 backdrop-blur-[12px] text-z-primary border border-black/[0.08] hover:border-[var(--z-accent)]/30 hover:bg-white/85",
@@ -225,10 +225,10 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  
  {isSidebarOpen && (
  <div className="flex flex-col min-w-0">
- <span className="text-[8px] font-black text-[var(--z-accent)] uppercase tracking-[0.2em] font-mono leading-none mb-1">
+ <span className="text-sm font-semibold text-[var(--z-accent)] font-mono leading-none mb-1">
  TENANT / SITE
  </span>
- <span className="text-xs font-black uppercase tracking-wide truncate leading-none">
+ <span className="text-xs font-semibold tracking-wide truncate leading-none">
  {activeLabel}
  </span>
  </div>
@@ -262,11 +262,11 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  <span className="text-base flex-shrink-0">{option.icon}</span>
  <div className="flex flex-col min-w-0">
  <span className="text-xs font-bold truncate">{option.label}</span>
- <span className="text-[9px] text-z-muted font-mono tracking-wider">/{option.slug}</span>
+ <span className="text-sm text-z-muted font-mono">/{option.slug}</span>
  </div>
  </div>
  {isSelected && (
- <span className="w-1.5 h-1.5 rounded-none-none bg-[var(--z-accent)] shadow-[var(--z-active-glow)]" />
+ <span className="w-1.5 h-1.5 rounded-none-none bg-[var(--z-accent)] shadow-sm" />
  )}
  </button>
  );
@@ -286,11 +286,11 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  <span className="text-base flex-shrink-0">{option.icon}</span>
  <div className="flex flex-col min-w-0">
  <span className="text-xs font-bold truncate">{option.label}</span>
- <span className="text-[9px] text-z-muted font-mono tracking-wider">/{option.slug}</span>
+ <span className="text-sm text-z-muted font-mono">/{option.slug}</span>
  </div>
  </div>
  {isSelected && (
- <span className="w-1.5 h-1.5 rounded-none-none bg-[var(--z-accent)] shadow-[var(--z-active-glow)]" />
+ <span className="w-1.5 h-1.5 rounded-none-none bg-[var(--z-accent)] shadow-sm" />
  )}
  </button>
  );
@@ -300,7 +300,7 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  <Link
  to="/sites"
  className={cn(
- "w-full px-4 py-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest font-mono transition-colors",
+ "w-full px-4 py-3 flex items-center justify-center gap-2 text-sm font-semibold   font-mono transition-colors",
  theme === 'dark' 
  ? "text-z-muted hover:text-white hover:bg-z-hover" 
  : "text-gray-600 hover:text-black hover:bg-black/[0.02]"
@@ -314,7 +314,8 @@ export const SiteSelector: React.FC<SiteSelectorProps> = ({ isSidebarOpen = true
  return (
  <div 
  className={cn(
- "px-4 py-3 flex flex-col gap-3 transition-all duration-300",
+ "py-3 flex flex-col gap-3 transition-all duration-300",
+ isSidebarOpen ? "px-4" : "px-2",
  theme === 'dark' ? 'bg-black/10' : 'bg-gray-50/20'
  )}
  >

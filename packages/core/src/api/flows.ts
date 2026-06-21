@@ -14,7 +14,9 @@ const router: Router = Router()
 router.get('/', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const adapter = (req as any).zenith?.adapter
-    const flows = await adapter.find('flows', {}, { sort: { createdAt: -1 } })
+    const siteId = req.headers['x-zenith-site-id'] as string
+    const query = siteId ? { siteId } : {}
+    const flows = await adapter.find('flows', query, { sort: { createdAt: -1 } })
     res.json(createResponse(flows))
   } catch (err) {
     next(err)
@@ -25,7 +27,11 @@ router.get('/', requireAuth, async (req: Request, res: Response, next) => {
 router.get('/:id', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const adapter = (req as any).zenith?.adapter
-    const flow = await adapter.findOne('flows', { _id: req.params.id })
+    const siteId = req.headers['x-zenith-site-id'] as string
+    const query: any = { _id: req.params.id }
+    if (siteId) query.siteId = siteId
+
+    const flow = await adapter.findOne('flows', query)
     if (!flow) throw new NotFoundError('Flow', req.params.id)
     res.json(createResponse(flow))
   } catch (err) {
@@ -48,15 +54,53 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
       )
     }
 
-    const flow = await adapter.create('flows', validation.data)
+    const siteId = req.headers['x-zenith-site-id'] as string
+    const payload = { ...validation.data }
+    if (siteId) payload.siteId = siteId
+
+    const flow = await adapter.create('flows', payload)
     res.status(201).json(createResponse(flow))
   } catch (err) {
     next(err)
   }
 })
 
+// ── GET /api/v1/flows/:id/logs ──────────────────────────────────────────────────
+router.get(
+  '/:id/logs',
+  requireAuth,
+  async (req: Request, res: Response, next) => {
+    try {
+      const adapter = (req as any).zenith?.adapter
+      const siteId = req.headers['x-zenith-site-id'] as string
+      
+      // ISOLATION FIX: verify the parent flow belongs to this tenant before fetching its logs
+      const flowQuery: any = { _id: req.params.id }
+      if (siteId) flowQuery.siteId = siteId
+      const flow = await adapter.findOne('flows', flowQuery)
+      if (!flow) throw new NotFoundError('Flow', req.params.id)
+
+      // Fetch runs for this verified flow
+      const runs = await adapter.find('z_flow_runs', { flowId: req.params.id }, { sort: { createdAt: -1 }, limit: 20 })
+      
+      // Fetch logs for these runs — avoid MongoDB-specific $in for adapter compat
+      const runIds = runs.map((r: any) => String(r._id || r.id))
+      const logs = runIds.length > 0
+        ? (await Promise.all(
+            runIds.map((rid: string) =>
+              adapter.find('z_flow_logs', { runId: rid }, { sort: { timestamp: -1 }, limit: 20 })
+            )
+          )).flat().slice(0, 100)
+        : []
+      
+      res.json(createResponse({ runs, logs }))
+    } catch (err) {
+      next(err)
+    }
+  }
+)
+
 // ── POST /api/v1/flows/:id/test ──────────────────────────────────────────────
-// Executes a flow with a synthetic test payload and streams back execution logs
 router.post(
   '/:id/test',
   requireAuth,
@@ -64,66 +108,28 @@ router.post(
   async (req: Request, res: Response, next) => {
     try {
       const adapter = (req as any).zenith?.adapter
-      const flow = await adapter.findOne('flows', { _id: req.params.id })
+      const siteId = req.headers['x-zenith-site-id'] as string
+      const query: any = { _id: req.params.id }
+      if (siteId) query.siteId = siteId
+
+      const flow = await adapter.findOne('flows', query)
       if (!flow) throw new NotFoundError('Flow', req.params.id)
 
       const testPayload = req.body?.payload || { test: true, timestamp: new Date().toISOString() }
-      const logs: Array<{ level: string; msg: string }> = []
-
-      logs.push({ level: 'info', msg: `Starting test run for "${flow.name}"` })
-      logs.push({ level: 'info', msg: `Trigger type: ${flow.nodes?.find((n: any) => n.type === 'trigger')?.data?.triggerType || 'webhook'}` })
-      logs.push({ level: 'info', msg: `Graph: ${flow.nodes?.length || 0} nodes, ${flow.edges?.length || 0} edges` })
-
-      // Dry-run: trace the graph without actually calling external services
-      const nodes: any[] = flow.nodes || []
-      const edges: any[] = flow.edges || []
-      const triggerNode = nodes.find((n: any) => n.type === 'trigger')
       
-      if (!triggerNode) {
-        logs.push({ level: 'error', msg: 'No trigger node found in flow' })
-      } else {
-        const visited = new Set<string>()
-        const queue = [triggerNode]
-
-        while (queue.length > 0) {
-          const current = queue.shift()
-          if (visited.has(current.id)) {
-            logs.push({ level: 'error', msg: `Cycle detected at node ${current.id}` })
-            break
-          }
-          visited.add(current.id)
-
-          if (current.type === 'action') {
-            const actionType = current.data?.actionType || 'unknown'
-            logs.push({ level: 'info', msg: `[DRY RUN] Would execute "${current.data?.label || actionType}" (${actionType})` })
-
-            // Validate required fields per action type
-            if (actionType === 'http' && !current.data?.url) {
-              logs.push({ level: 'error', msg: `  ⚠ HTTP node "${current.data?.label}" is missing endpoint URL` })
-            } else if (actionType === 'slack' && !current.data?.webhookUrl) {
-              logs.push({ level: 'error', msg: `  ⚠ Slack node "${current.data?.label}" is missing webhook URL` })
-            } else if (actionType === 'email' && (!current.data?.to || !current.data?.subject)) {
-              logs.push({ level: 'error', msg: `  ⚠ Email node "${current.data?.label}" is missing To or Subject` })
-            } else if (actionType === 'update_content' && !current.data?.collection) {
-              logs.push({ level: 'error', msg: `  ⚠ Database node "${current.data?.label}" is missing collection slug` })
-            } else {
-              logs.push({ level: 'success', msg: `  ✓ Node "${current.data?.label || actionType}" configuration looks valid` })
-            }
-          }
-
-          const children = edges
-            .filter((e: any) => e.source === current.id)
-            .map((e: any) => nodes.find((n: any) => n.id === e.target))
-            .filter(Boolean)
-          queue.push(...children)
-        }
-
-        logs.push({ level: 'success', msg: `Test run complete — ${visited.size} nodes evaluated` })
-      }
-
-      res.json(createResponse({ logs, testPayload }))
-    } catch (err) {
-      next(err)
+      // Import dynamically to avoid circular dependencies if any
+      const { FlowEngine } = await import('../services/flow-engine')
+      
+      // Kick off a real test run
+      const runId = await FlowEngine.createRun(flow, testPayload)
+      // Process it completely in the background
+      FlowEngine.processRun(runId).catch((err: any) => console.error(err))
+      
+      // Just return success and let the frontend poll logs
+      res.json(createResponse({ runId, message: 'Test execution started. Check logs for details.' }))
+    } catch (err: any) {
+      // Send error back to frontend to debug
+      res.status(500).json({ error: err.message, stack: err.stack, success: false })
     }
   }
 )
@@ -147,8 +153,15 @@ router.patch(
         )
       }
 
+      const siteId = req.headers['x-zenith-site-id'] as string
+      const query: any = { _id: req.params.id }
+      if (siteId) query.siteId = siteId
+
+      // Check if it exists for this site first
+      const existingFlow = await adapter.findOne('flows', query)
+      if (!existingFlow) throw new NotFoundError('Flow', req.params.id)
+
       const flow = await adapter.update('flows', req.params.id, validation.data)
-      if (!flow) throw new NotFoundError('Flow', req.params.id)
       res.json(createResponse(flow))
     } catch (err) {
       next(err)
@@ -164,8 +177,15 @@ router.delete(
   async (req: Request, res: Response, next) => {
     try {
       const adapter = (req as any).zenith?.adapter
+      const siteId = req.headers['x-zenith-site-id'] as string
+      const query: any = { _id: req.params.id }
+      if (siteId) query.siteId = siteId
+
+      // Verify ownership before deleting
+      const existingFlow = await adapter.findOne('flows', query)
+      if (!existingFlow) throw new NotFoundError('Flow', req.params.id)
+
       const deleted = await adapter.delete('flows', req.params.id)
-      if (!deleted) throw new NotFoundError('Flow', req.params.id)
       res.json(createResponse({ success: true }))
     } catch (err) {
       next(err)
@@ -177,12 +197,21 @@ router.delete(
 router.post('/hooks/:id', async (req: Request, res: Response, next) => {
   try {
     const adapter = (req as any).zenith?.adapter
-    const flow = await adapter.findOne('flows', { _id: req.params.id })
-    if (!flow) throw new NotFoundError('Flow', req.params.id)
+    const siteId = req.headers['x-zenith-site-id'] as string
+    const query: any = { _id: req.params.id }
+    if (siteId) query.siteId = siteId
 
-    // Trigger flow execution asynchronously
-    // In a real system, this would queue a background job
-    res.status(202).json(createResponse({ accepted: true }))
+    const flow = await adapter.findOne('flows', query)
+    if (!flow) throw new NotFoundError('Flow', req.params.id)
+    if (!flow.active) return res.status(400).json({ success: false, message: 'Automation is disabled' })
+
+    const { FlowEngine } = await import('../services/flow-engine')
+    
+    // Kick off real durable execution using the inbound payload
+    const runId = await FlowEngine.createRun(flow, req.body || {})
+    FlowEngine.processRun(runId).catch((err: any) => console.error(err))
+
+    res.status(202).json(createResponse({ accepted: true, runId }))
   } catch (err) {
     next(err)
   }

@@ -160,18 +160,18 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  {/* Header */}
  <div className="flex items-center justify-between border-b border-z-border pb-4">
  <div className="flex flex-col">
- <h3 className="text-sm font-black uppercase tracking-wider flex items-center gap-3">
+ <h3 className="text-sm font-semibold flex items-center gap-3">
  <Puzzle size={16} className="text-gray-600 dark:text-z-muted" />
  Plugin Registry
  </h3>
- <span className="text-[8px] text-z-secondary font-bold uppercase tracking-widest mt-1">
+ <span className="text-sm text-z-secondary font-bold mt-1">
  {plugins.length} installed · {enabledCount} active · Community extensibility framework
  </span>
  </div>
  <button
  type="button"
  onClick={() => setShowInstallForm(!showInstallForm)}
- className="flex items-center gap-2 px-4 py-2 border border-z-active-border hover:border-z-accent hover:bg-z-active-bg text-[10px] font-black uppercase transition-all text-z-accent dark:text-z-active-text hover:text-white"
+ className="flex items-center gap-2 px-4 py-2 border border-z-active-border hover:border-z-accent hover:bg-z-active-bg text-sm font-semibold transition-all text-z-accent dark:text-z-active-text hover:text-white"
  >
  <Plus size={12} />
  Install Plugin
@@ -186,95 +186,95 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  animate={{ opacity: 1, height: 'auto' }}
  exit={{ opacity: 0, height: 0 }}
  className={cn(
- 'border rounded-none overflow-hidden shadow-[var(--z-active-glow)]',
+ 'border rounded-none overflow-hidden shadow-sm',
  theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-z-border' : 'bg-z-input border-z-border'
  )}
  >
  <div className="p-6 space-y-4">
  <div className="flex items-center justify-between">
- <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-z-muted">
+ <span className="text-sm font-semibold text-gray-600 dark:text-z-muted">
  Register New Plugin
  </span>
- <button onClick={() => setShowInstallForm(false)} className="text-z-secondary hover:text-white text-[10px] font-black uppercase">
+ <button onClick={() => setShowInstallForm(false)} className="text-z-secondary hover:text-white text-sm font-semibold">
  Cancel
  </button>
  </div>
 
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">Plugin ID *</label>
+ <label className="text-sm font-semibold text-z-secondary">Plugin ID *</label>
  <input
  type="text"
  value={installForm.id}
  onChange={(e) => setInstallForm(prev => ({ ...prev, id: e.target.value }))}
  placeholder="acme-analytics"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-2.5 px-3 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
  </div>
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">Display Name *</label>
+ <label className="text-sm font-semibold text-z-secondary">Display Name *</label>
  <input
  type="text"
  value={installForm.name}
  onChange={(e) => setInstallForm(prev => ({ ...prev, name: e.target.value }))}
  placeholder="ACME Analytics"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-2.5 px-3 text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
  </div>
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">Version</label>
+ <label className="text-sm font-semibold text-z-secondary">Version</label>
  <input
  type="text"
  value={installForm.version}
  onChange={(e) => setInstallForm(prev => ({ ...prev, version: e.target.value }))}
  placeholder="1.0.0"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-2.5 px-3 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
  </div>
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">Author</label>
+ <label className="text-sm font-semibold text-z-secondary">Author</label>
  <input
  type="text"
  value={installForm.author}
  onChange={(e) => setInstallForm(prev => ({ ...prev, author: e.target.value }))}
  placeholder="ACME Corp"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-2.5 px-3 text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
  </div>
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">Homepage URL</label>
+ <label className="text-sm font-semibold text-z-secondary">Homepage URL</label>
  <input
  type="url"
  value={installForm.homepage}
  onChange={(e) => setInstallForm(prev => ({ ...prev, homepage: e.target.value }))}
  placeholder="https://example.com/plugin"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-2.5 px-3 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
  </div>
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">NPM Package</label>
+ <label className="text-sm font-semibold text-z-secondary">NPM Package</label>
  <input
  type="text"
  value={installForm.packageName}
  onChange={(e) => setInstallForm(prev => ({ ...prev, packageName: e.target.value }))}
  placeholder="zenith-plugin-acme-analytics"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-2.5 px-3 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
@@ -282,14 +282,14 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  </div>
 
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">Description</label>
+ <label className="text-sm font-semibold text-z-secondary">Description</label>
  <textarea
  value={installForm.description}
  onChange={(e) => setInstallForm(prev => ({ ...prev, description: e.target.value }))}
  placeholder="What does this plugin do?"
  rows={2}
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
+ 'w-full border rounded-none py-2.5 px-3 text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
  theme === 'dark' ? 'bg-black border-z-border text-white focus:border-z-accent' : 'bg-z-panel border-z-border focus:border-z-accent'
  )}
  />
@@ -299,7 +299,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <button
  onClick={handleInstall}
  disabled={saving === 'install'}
- className={cn("flex items-center gap-2 px-6 py-3 text-white text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-40", theme === 'dark' ? 'bg-z-accent hover:opacity-90 shadow-[var(--z-active-glow)]' : 'bg-gray-900 hover:bg-gray-800')}
+ className={cn("flex items-center gap-2 px-6 py-3 text-white text-sm font-semibold   transition-all disabled:opacity-40", theme === 'dark' ? 'bg-z-accent hover:opacity-90 shadow-sm' : 'bg-gray-900 hover:bg-gray-800')}
  >
  {saving === 'install' ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
  Install Plugin
@@ -319,7 +319,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  className={cn(
- 'w-full border rounded-none py-3 pl-11 pr-4 text-[11px] font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-3 pl-11 pr-4 text-sm font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black/40 border-z-border text-white focus:border-z-accent' : 'bg-z-panel border-z-border focus:border-z-accent'
  )}
  />
@@ -336,10 +336,10 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  theme === 'dark' ? 'border-z-border' : 'border-z-border'
  )}>
  <Package size={40} className="mx-auto text-gray-600" />
- <p className="text-[10px] font-black text-z-secondary uppercase tracking-widest">
+ <p className="text-sm font-semibold text-z-secondary">
  {plugins.length === 0 ? 'No plugins installed' : 'No plugins match your search'}
  </p>
- <p className="text-[9px] text-gray-600 uppercase tracking-wider">
+ <p className="text-sm text-gray-600">
  {plugins.length === 0
  ? 'Install plugins to extend Zenith CMS functionality'
  : 'Try a different search term'}
@@ -355,7 +355,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  key={plugin.id}
  layout
  className={cn(
- 'border rounded-none overflow-hidden transition-all shadow-[var(--z-active-glow)]',
+ 'border rounded-none overflow-hidden transition-all shadow-sm',
  plugin.enabled
  ? theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-z-border' : 'bg-z-panel border-z-border shadow-sm'
  : theme === 'dark' ? 'bg-black/30 backdrop-blur-sm border-white/[0.03] opacity-60' : 'bg-z-input border-z-border shadow-sm opacity-60'
@@ -374,24 +374,24 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  </div>
  <div className="flex flex-col">
  <div className="flex items-center gap-2">
- <span className="text-[12px] font-black uppercase tracking-tight text-white">{plugin.name}</span>
- <span className="text-[8px] font-black text-z-secondary font-mono">v{plugin.version}</span>
+ <span className="text-sm font-semibold text-white">{plugin.name}</span>
+ <span className="text-sm font-semibold text-z-secondary font-mono">v{plugin.version}</span>
  {plugin.enabled
  ? <CheckCircle2 size={12} className="text-gray-600 dark:text-z-secondary" />
  : <XCircle size={12} className="text-gray-600" />
  }
  </div>
  <div className="flex items-center gap-2 mt-0.5">
- <span className="text-[8px] font-bold text-z-secondary uppercase tracking-widest font-mono">{plugin.id}</span>
+ <span className="text-sm font-bold text-z-secondary font-mono">{plugin.id}</span>
  {plugin.author && (
  <>
  <span className="text-gray-700">·</span>
- <span className="text-[8px] font-bold text-z-secondary uppercase tracking-widest">{plugin.author}</span>
+ <span className="text-sm font-bold text-z-secondary">{plugin.author}</span>
  </>
  )}
  </div>
  {plugin.description && (
- <p className="text-[9px] text-z-muted mt-1 max-w-lg">{plugin.description}</p>
+ <p className="text-sm text-z-muted mt-1 max-w-lg">{plugin.description}</p>
  )}
  </div>
  </div>
@@ -467,15 +467,15 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  theme === 'dark' ? 'border-z-border bg-black/20' : 'border-z-border shadow-sm bg-gray-50/50'
  )}
  >
- <span className="text-[9px] font-black uppercase tracking-widest text-z-muted">Plugin Settings</span>
+ <span className="text-sm font-semibold text-z-muted">Plugin Settings</span>
  {Object.entries(plugin.configSchema).map(([key, schema]) => (
  <div key={key} className="space-y-1.5">
- <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">
+ <label className="text-sm font-semibold text-z-secondary">
  {schema.label}
  {schema.required && <span className="text-red-400 ml-1">*</span>}
  </label>
  {schema.description && (
- <p className="text-[8px] text-gray-600 ">{schema.description}</p>
+ <p className="text-sm text-gray-600">{schema.description}</p>
  )}
  {schema.type === 'boolean' ? (
  <button
@@ -488,14 +488,14 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  )}
  >
  {plugin.config?.[key] ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
- <span className="text-[9px] font-black uppercase">{plugin.config?.[key] ? 'Enabled' : 'Disabled'}</span>
+ <span className="text-sm font-semibold">{plugin.config?.[key] ? 'Enabled' : 'Disabled'}</span>
  </button>
  ) : schema.type === 'select' ? (
  <select
  value={plugin.config?.[key] || schema.default || ''}
  onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-2.5 px-3 text-sm font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  >
@@ -510,7 +510,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
  placeholder="••••••••"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-2.5 px-3 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
@@ -520,7 +520,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  value={plugin.config?.[key] || schema.default || ''}
  onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-[11px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-2.5 px-3 text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
@@ -531,7 +531,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <button
  onClick={() => handleSaveConfig(plugin)}
  disabled={saving === plugin.id}
- className={cn("flex items-center gap-2 px-5 py-2.5 text-white text-[9px] font-black uppercase tracking-wider transition-all disabled:opacity-40", theme === 'dark' ? 'bg-z-accent hover:opacity-90 shadow-[var(--z-active-glow)]' : 'bg-gray-900 hover:bg-gray-800')}
+ className={cn("flex items-center gap-2 px-5 py-2.5 text-white text-sm font-semibold   transition-all disabled:opacity-40", theme === 'dark' ? 'bg-z-accent hover:opacity-90 shadow-sm' : 'bg-gray-900 hover:bg-gray-800')}
  >
  {saving === plugin.id ? <Loader2 size={10} className="animate-spin" /> : null}
  Save Settings
@@ -553,9 +553,9 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  )}>
  <div className="flex items-center gap-3">
  <AlertTriangle size={14} className="text-amber-400" />
- <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">Developer Note</span>
+ <span className="text-sm font-semibold text-amber-400">Developer Note</span>
  </div>
- <ul className="space-y-1.5 text-[9px] text-z-muted font-bold uppercase tracking-widest leading-relaxed">
+ <ul className="space-y-1.5 text-sm text-z-muted font-bold leading-relaxed">
  <li>• Plugins are registered in the database and managed via this UI</li>
  <li>• Plugin code must be loaded at engine startup via cms.config.ts</li>
  <li>• Community plugins should be published as <code className="text-gray-600 dark:text-z-muted font-mono">zenith-plugin-*</code> on npm</li>

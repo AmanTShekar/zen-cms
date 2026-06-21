@@ -1,5 +1,7 @@
 import { logger } from '../../services/logger'
 import { eventHub } from '../../services/event-hub'
+import { env } from '../../config/env';
+
 
 /**
  * Strapi Global Polyfill & Adapter Proxies
@@ -110,7 +112,7 @@ export function setupStrapiGlobal(zenithEngine: any) {
         if (key.startsWith('server.')) {
           const subKey = key.split('.')[1]
           if (subKey === 'host') return process.env.HOST || '0.0.0.0'
-          if (subKey === 'port') return process.env.PORT || 3000
+          if (subKey === 'port') return env.PORT || 3000
         }
         return defaultValue
       },

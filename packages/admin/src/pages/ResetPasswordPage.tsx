@@ -103,13 +103,13 @@ const ResetPasswordPage: React.FC = () => {
  </div>
  <h1
  className={cn(
- 'text-4xl font-black tracking-tighter uppercase leading-none transition-colors',
+ 'text-4xl font-semibold   leading-none transition-colors',
  theme === 'dark' ? 'text-white' : 'text-z-primary'
  )}
  >
  ZENITH
  </h1>
- <p className="mt-3 text-[9px] font-black text-z-muted uppercase tracking-[0.4em] ">
+ <p className="mt-3 text-sm font-semibold text-z-muted">
  Access_Recovery_Interface
  </p>
  </motion.div>
@@ -127,13 +127,13 @@ const ResetPasswordPage: React.FC = () => {
  <div className="flex flex-col">
  <h2
  className={cn(
- 'text-xl font-black uppercase tracking-tight transition-colors',
+ 'text-xl font-semibold   transition-colors',
  theme === 'dark' ? 'text-white' : 'text-z-primary'
  )}
  >
  Reset Password
  </h2>
- <p className="text-[9px] text-z-muted font-bold uppercase tracking-widest leading-none mt-1">
+ <p className="text-sm text-z-muted font-bold leading-none mt-1">
  Initialize New Password
  </p>
  </div>
@@ -177,7 +177,7 @@ const ResetPasswordPage: React.FC = () => {
  </div>
  <p
  className={cn(
- 'text-xs font-bold uppercase tracking-wide px-2 leading-relaxed text-red-500'
+ 'text-xs font-bold  tracking-wide px-2 leading-relaxed text-red-500'
  )}
  >
  Token Verification Failure: Missing or Expired Security Payload in URL.
@@ -185,7 +185,7 @@ const ResetPasswordPage: React.FC = () => {
  <button
  onClick={() => navigate('/forgot-password')}
  className={cn(
- 'w-full rounded-none-none py-4 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-xl transition-all group',
+ 'w-full rounded-none-none py-4 flex items-center justify-center gap-3 text-xs font-semibold   shadow-xl transition-all group',
  theme === 'dark'
  ? 'bg-white text-black hover:bg-gray-100 shadow-white/5'
  : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
@@ -202,7 +202,7 @@ const ResetPasswordPage: React.FC = () => {
  </div>
  <p
  className={cn(
- 'text-xs font-bold uppercase tracking-wide px-2 leading-relaxed',
+ 'text-xs font-bold  tracking-wide px-2 leading-relaxed',
  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
  )}
  >
@@ -211,7 +211,7 @@ const ResetPasswordPage: React.FC = () => {
  <button
  onClick={() => navigate('/login')}
  className={cn(
- 'w-full rounded-none-none py-4 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-xl transition-all group',
+ 'w-full rounded-none-none py-4 flex items-center justify-center gap-3 text-xs font-semibold   shadow-xl transition-all group',
  theme === 'dark'
  ? 'bg-white text-black hover:bg-gray-100 shadow-white/5'
  : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
@@ -233,14 +233,14 @@ const ResetPasswordPage: React.FC = () => {
  )}
  >
  <AlertCircle size={14} className="shrink-0" />
- <span className="text-[10px] font-bold uppercase tracking-wide">{error}</span>
+ <span className="text-sm font-bold tracking-wide">{error}</span>
  </div>
  )}
 
  <div className="space-y-4">
  {/* Password field */}
  <div className="space-y-1.5">
- <label className="text-[9px] font-black text-z-muted uppercase tracking-widest px-1">
+ <label className="text-sm font-semibold text-z-muted px-1">
  New Password
  </label>
  <div className="relative group">
@@ -278,7 +278,7 @@ const ResetPasswordPage: React.FC = () => {
  </button>
  </div>
  {errors.password && (
- <p className="text-[9px] text-red-500 font-bold mt-1 px-1">
+ <p className="text-sm text-red-500 font-bold mt-1 px-1">
  {errors.password.message}
  </p>
  )}
@@ -286,7 +286,7 @@ const ResetPasswordPage: React.FC = () => {
 
  {/* Confirm Password field */}
  <div className="space-y-1.5">
- <label className="text-[9px] font-black text-z-muted uppercase tracking-widest px-1">
+ <label className="text-sm font-semibold text-z-muted px-1">
  Confirm Password
  </label>
  <div className="relative group">
@@ -312,7 +312,7 @@ const ResetPasswordPage: React.FC = () => {
  />
  </div>
  {errors.confirmPassword && (
- <p className="text-[9px] text-red-500 font-bold mt-1 px-1">
+ <p className="text-sm text-red-500 font-bold mt-1 px-1">
  {errors.confirmPassword.message}
  </p>
  )}
@@ -323,7 +323,7 @@ const ResetPasswordPage: React.FC = () => {
  type="submit"
  disabled={isSubmitting}
  className={cn(
- 'w-full rounded-none-none py-4 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-xl transition-all group disabled:opacity-50 disabled:pointer-events-none',
+ 'w-full rounded-none-none py-4 flex items-center justify-center gap-3 text-xs font-semibold   shadow-xl transition-all group disabled:opacity-50 disabled:pointer-events-none',
  theme === 'dark'
  ? 'bg-white text-black hover:bg-gray-100 shadow-white/5'
  : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
@@ -346,7 +346,7 @@ const ResetPasswordPage: React.FC = () => {
  <Link
  to="/login"
  className={cn(
- 'text-[9px] font-black uppercase tracking-widest hover:underline flex items-center justify-center gap-2 transition-colors',
+ 'text-sm font-semibold   hover:underline flex items-center justify-center gap-2 transition-colors',
  theme === 'dark'
  ? 'text-gray-600 dark:text-z-muted hover:text-gray-300'
  : 'text-gray-600 hover:text-gray-700'
@@ -360,7 +360,7 @@ const ResetPasswordPage: React.FC = () => {
  )}
  </motion.div>
 
- <p className="text-center text-[8px] font-bold text-z-muted uppercase tracking-[0.2em] ">
+ <p className="text-center text-sm font-bold text-z-muted">
  Authorized Personnel Only • Zenith CMS Engine
  </p>
  </div>

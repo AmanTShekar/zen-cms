@@ -4,6 +4,8 @@ import { z } from 'zod'
 import { logger } from './logger'
 import { ADMIN_URL } from './auth'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { env } from '../config/env';
+
 
 const recipientSchema = z.string().email().max(254)
 
@@ -22,14 +24,14 @@ export interface EmailOptions {
  * Development: Logs email to console if no config is found.
  */
 export class EmailService {
-  private static async resolveConfig(overrideSettings?: any) {
-    let config = {
-      resendKey: process.env.RESEND_API_KEY,
-      smtpHost: process.env.SMTP_HOST,
-      smtpPort: parseInt(process.env.SMTP_PORT || '587', 10),
-      smtpUser: process.env.SMTP_USER,
-      smtpPass: process.env.SMTP_PASS,
-      fromEmail: process.env.EMAIL_FROM || 'Zenith CMS <noreply@zenith.local>'
+  private static async resolveConfig(overrideSettings?: any, siteId?: string) {
+    const config = {
+      resendKey: env.RESEND_API_KEY,
+      smtpHost: env.SMTP_HOST,
+      smtpPort: env.SMTP_PORT || 587,
+      smtpUser: env.SMTP_USER,
+      smtpPass: env.SMTP_PASS,
+      fromEmail: env.EMAIL_FROM || 'Zenith CMS <noreply@zenith.local>'
     }
 
     if (overrideSettings) {
@@ -44,7 +46,8 @@ export class EmailService {
     try {
       const adapter = AdapterFactory.getActiveAdapter()
       if (adapter) {
-        const settings = await adapter.findOne<Record<string, any>>('z_settings', {})
+        const query = siteId ? { siteId } : {}
+        const settings = await adapter.findOne<Record<string, any>>('z_settings', query)
         if (settings) {
           if (settings.smtpHost) config.smtpHost = settings.smtpHost
           if (settings.smtpPort) config.smtpPort = settings.smtpPort
@@ -59,8 +62,8 @@ export class EmailService {
     return config
   }
 
-  static async testConnection(overrideSettings: any): Promise<boolean> {
-    const config = await this.resolveConfig(overrideSettings)
+  static async testConnection(overrideSettings: any, siteId?: string): Promise<boolean> {
+    const config = await this.resolveConfig(overrideSettings, siteId)
     if (!config.smtpHost) throw new Error('SMTP Host is required')
     
     const transporter = nodemailer.createTransport({
@@ -77,7 +80,7 @@ export class EmailService {
     return true
   }
 
-  static async send(options: EmailOptions, overrideSettings?: any): Promise<void> {
+  static async send(options: EmailOptions, overrideSettings?: any, siteId?: string): Promise<void> {
     const recipients = Array.isArray(options.to) ? options.to : [options.to]
     for (const addr of recipients) {
       const result = recipientSchema.safeParse(addr)
@@ -87,7 +90,7 @@ export class EmailService {
       }
     }
 
-    const config = await this.resolveConfig(overrideSettings)
+    const config = await this.resolveConfig(overrideSettings, siteId)
     const from = options.from || config.fromEmail
     const to = recipients
 
@@ -144,19 +147,28 @@ export class EmailService {
     logger.info('────────────────────────────────────────────────────')
   }
 
-  static async sendWelcomeEmail(email: string, name: string): Promise<void> {
+  static async sendWelcomeEmail(email: string, name: string, siteId?: string): Promise<void> {
+    const safeName = name.replace(/[&<>'"]/g, 
+      tag => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+      }[tag] || tag)
+    );
     await this.send({
       to: email,
-      subject: `Welcome to Zenith CMS, ${name}!`,
+      subject: `Welcome to Zenith CMS, ${safeName}!`,
       html: `
-        <h1>Welcome, ${name}!</h1>
+        <h1>Welcome, ${safeName}!</h1>
         <p>You've been successfully added to the <strong>Zenith CMS</strong>.</p>
         <p>Log in at <a href="${ADMIN_URL}">${ADMIN_URL}</a></p>
       `,
-    })
+    }, undefined, siteId)
   }
 
-  static async sendPasswordResetEmail(email: string, resetUrl: string): Promise<void> {
+  static async sendPasswordResetEmail(email: string, resetUrl: string, siteId?: string): Promise<void> {
     await this.send({
       to: email,
       subject: 'Reset your Zenith CMS password',
@@ -170,6 +182,6 @@ export class EmailService {
         <hr/>
         <small>Or copy this link: ${resetUrl}</small>
       `,
-    })
+    }, undefined, siteId)
   }
 }

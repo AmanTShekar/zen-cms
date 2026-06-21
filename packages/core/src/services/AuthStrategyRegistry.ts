@@ -62,7 +62,9 @@ passport.use(
       getSamlOptions: async (req, done) => {
         try {
           const adapter = AdapterFactory.getActiveAdapter()
-          const settings = await adapter.findOne<Record<string, any>>('z_settings', {})
+          const siteId = (req.headers['x-zenith-site-id'] || req.query.siteId || req.body.siteId) as string | undefined
+          const query = siteId ? { siteId } : {}
+          const settings = await adapter.findOne<Record<string, any>>('z_settings', query)
           
           if (!settings || !settings.saml) {
             // Fallback to env vars if database settings are missing

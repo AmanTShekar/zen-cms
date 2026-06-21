@@ -9,7 +9,8 @@ export async function resolveRelations(
   depth: number,
   adapter: DatabaseAdapter,
   currentDepth = 0,
-  configRegistry?: any
+  configRegistry?: any,
+  siteId?: string
 ) {
   if (currentDepth >= depth || !docs || docs.length === 0) return
 
@@ -66,11 +67,13 @@ export async function resolveRelations(
           // Use adapter-agnostic per-ID fetching instead of MongoDB-specific $in operator.
           // This works correctly with both Mongoose and Postgres adapters.
           const fetched = await Promise.all(
-            idsArray.map((id) =>
-              adapter.findOne(relationTo, { id }).catch(() =>
-                adapter.findOne(relationTo, { _id: id }).catch(() => null)
+            idsArray.map((id) => {
+              const query1 = siteId ? { id, siteId } : { id }
+              const query2 = siteId ? { _id: id, siteId } : { _id: id }
+              return adapter.findOne(relationTo, query1).catch(() =>
+                adapter.findOne(relationTo, query2).catch(() => null)
               )
-            )
+            })
           )
           relatedDocs = fetched.filter(Boolean) as any[]
         } catch (err) {
@@ -108,7 +111,8 @@ export async function resolveRelations(
             depth,
             adapter,
             currentDepth + 1,
-            configRegistry
+            configRegistry,
+            siteId
           )
         }
 
@@ -148,7 +152,8 @@ export async function resolveRelations(
         depth,
         adapter,
         currentDepth,
-        configRegistry
+        configRegistry,
+        siteId
       )
     } else if (field.type === 'array' && docs) {
       const nestedDocs: any[] = []
@@ -168,7 +173,8 @@ export async function resolveRelations(
         depth,
         adapter,
         currentDepth,
-        configRegistry
+        configRegistry,
+        siteId
       )
     } else if (field.type === 'blocks' && docs) {
       const nestedPopulate = hasWildcard
@@ -195,7 +201,8 @@ export async function resolveRelations(
             depth,
             adapter,
             currentDepth,
-            configRegistry
+            configRegistry,
+            siteId
           )
         }
       }

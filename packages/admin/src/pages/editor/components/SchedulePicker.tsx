@@ -69,14 +69,14 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
  onClick={(e) => e.stopPropagation()}
  >
  <div className="flex items-center justify-between mb-2">
- <span className={cn('text-xs font-black uppercase tracking-widest', theme === 'dark' ? 'text-z-muted' : 'text-z-secondary')}>
+ <span className={cn('text-xs font-semibold  ', theme === 'dark' ? 'text-z-muted' : 'text-z-secondary')}>
  Schedule Publish
  </span>
  <div className="flex items-center gap-1">
  {scheduledAt && (
  <button
  onClick={handleClear}
- className="text-xs font-black uppercase text-red-400 hover:text-red-300"
+ className="text-xs font-semibold text-red-400 hover:text-red-300"
  >
  Clear
  </button>
@@ -105,7 +105,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
  <button
  onClick={onClose}
  className={cn(
- 'flex-1 py-1.5 border text-xs font-black uppercase text-center transition-all',
+ 'flex-1 py-1.5 border text-xs font-semibold  text-center transition-all',
  theme === 'dark' ? 'border-z-border text-z-muted hover:bg-z-hover' : 'border-z-border text-z-secondary hover:bg-gray-50'
  )}
  >
@@ -115,7 +115,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
  onClick={handleApply}
  disabled={!scheduleInput}
  className={cn(
- 'flex-1 py-1.5 text-xs font-black uppercase text-center transition-all disabled:opacity-40',
+ 'flex-1 py-1.5 text-xs font-semibold  text-center transition-all disabled:opacity-40',
  theme === 'dark' ? 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white'
  )}
  >

@@ -22,8 +22,8 @@ describe('Multi-Tenant Data Isolation', () => {
 
     const adapter = zenith.adapter
     try {
-      await adapter.deleteMany('z_sites', {})
-      await adapter.deleteMany('posts', {})
+      await adapter.deleteMany('z_sites', { slug: { $in: [tenantA_ID, tenantB_ID] } })
+      await adapter.deleteMany('posts', { siteId: { $in: [tenantA_ID, tenantB_ID] } })
     } catch {}
     
     try {

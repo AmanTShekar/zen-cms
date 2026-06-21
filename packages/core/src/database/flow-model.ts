@@ -14,6 +14,9 @@ export interface IFlow extends Document {
     config: unknown
     next?: string
   }>
+  nodes?: any[]
+  edges?: any[]
+  siteId?: string
   createdAt: Date
   updatedAt: Date
 }
@@ -51,8 +54,11 @@ const FlowSchema = new Schema<IFlow>(
         next: String,
       },
     ],
+    nodes: { type: [Schema.Types.Mixed], default: [] },
+    edges: { type: [Schema.Types.Mixed], default: [] },
+    siteId: { type: String, index: true },
   },
-  { timestamps: true }
+  { timestamps: true, strict: false }
 )
 
 export const FlowModel = mongoose.models.Flow || mongoose.model<IFlow>('Flow', FlowSchema)

@@ -75,6 +75,30 @@ packages/sdk/index.d.ts
 # 🛠️ Scratch Files & Directories
 scratch-*.*
 scratch/
+test_*.ts
+test_*.js
+drop_test_db.js
+restore_db.js
+e2e/storageState.json
+failed-layout-payload.json
+test-results/
+refactor*.js
+patch-vite*.js
+semantic-accent-purge*.js
+extract.js
+check-diff.js
+update-theme-preview.js
+
+# 🧩 Dynamic Blocks & Media
+config/blocks/*.ts
+packages/core/media/
+scripts/seed*.ts
+scripts/fix*.ts
+scripts/clean-duplicates.ts
+packages/core/scripts/seed-collections.ts
+packages/core/scripts/restore.ts
+packages/core/src/database/seed*.ts
+packages/core/migrate_media.ts
 
 # 📦 Compiled TypeScript output in types package
 packages/types/src/**/*.js

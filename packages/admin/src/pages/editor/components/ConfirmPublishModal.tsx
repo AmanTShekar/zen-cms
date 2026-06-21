@@ -44,7 +44,7 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
  <AlertTriangle size={18} />
  </div>
  <div className="flex-1">
- <h3 className="text-sm font-black uppercase tracking-wider">Publish Document</h3>
+ <h3 className="text-sm font-semibold">Publish Document</h3>
  <p className={cn('text-xs font-bold mt-2 leading-relaxed', theme === 'dark' ? 'text-z-muted' : 'text-gray-600')}>
  This will make the content live and visible to all visitors. Are you sure you want to publish?
  </p>
@@ -61,7 +61,7 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
  <button
  onClick={onCancel}
  className={cn(
- 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest border rounded-none-none transition-all',
+ 'flex-1 py-2.5 text-xs font-semibold   border rounded-none-none transition-all',
  theme === 'dark'
  ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
  : 'border-z-border text-gray-600 hover:border-z-border-strong hover:text-black'
@@ -71,7 +71,7 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
  </button>
  <button
  onClick={onConfirm}
- className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-600 dark:bg-gray-600 text-white text-xs font-black uppercase tracking-widest rounded-none-none hover:bg-gray-500 transition-all"
+ className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-600 dark:bg-gray-600 text-white text-xs font-semibold rounded-none-none hover:bg-gray-500 transition-all"
  >
  <Rocket size={12} />
  Publish Now

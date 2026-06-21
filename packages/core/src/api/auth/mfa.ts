@@ -9,13 +9,15 @@ import { requireAuth } from '../../middleware/auth'
 import { createResponse } from '../utils'
 import { InvalidPayloadError, NotFoundError, InvalidTokenError } from '../../errors'
 import rateLimit from 'express-rate-limit'
+import { env } from '../../config/env';
+
 
 const mfaLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })
 
 export const mfaRouter: Router = Router()
@@ -98,14 +100,14 @@ mfaRouter.post('/verify-login', mfaLimiter, async (req: Request, res: Response, 
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 15 * 60 * 1000,
     })

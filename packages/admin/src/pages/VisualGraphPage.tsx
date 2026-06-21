@@ -19,6 +19,7 @@ import api from '../lib/api'
 import { useTheme } from '../context/ThemeContext'
 import { cn } from '../lib/utils'
 import { Database, Activity, Search, X } from 'lucide-react'
+import { PageHeader } from '../components/ui/PageHeader'
 
 // Types
 interface FieldDef {
@@ -47,22 +48,22 @@ const SchemaNode = ({ data, selected }: any) => {
   return (
     <div 
       className={cn(
-        'rounded-none-none border shadow-2xl overflow-hidden w-64 text-[10px] transition-all relative',
-        dark ? 'bg-z-popover backdrop-blur-xl border-z-border' : 'bg-white/95 backdrop-blur-xl border-z-border',
-        selected ? (dark ? 'border-z-accent/50 shadow-[var(--z-active-glow)]' : 'border-z-accent/50 shadow-lg') : ''
+        'rounded-md border shadow-sm overflow-hidden w-72 text-sm transition-all relative',
+        dark ? 'bg-[#1c1c1c] border-gray-800' : 'bg-white border-gray-300',
+        selected ? (dark ? 'ring-2 ring-z-accent border-z-accent' : 'ring-2 ring-z-accent border-z-accent') : ''
       )}
     >
       <Handle type="target" position={Position.Left} id="target-root" className="!w-0 !h-0 !opacity-0 !border-none" />
       {/* Table Header */}
       <div className={cn(
-        'px-3 py-2.5 font-black uppercase flex items-center justify-between tracking-widest',
-        dark ? 'bg-z-hover border-b border-z-border text-white' : 'bg-gray-50 border-b border-z-border text-z-primary'
+        'px-4 py-3 font-bold flex items-center justify-between',
+        dark ? 'bg-[#2c2c2c] border-b border-gray-800 text-white' : 'bg-gray-50 border-b border-gray-300 text-gray-900'
       )}>
         <div className="flex items-center gap-2">
-          <Database size={10} className="text-z-active-text" />
+          <Database size={14} className="text-gray-500" />
           <span>{data.label}</span>
         </div>
-        <span className="text-[7px] text-z-secondary font-mono lowercase">{data.slug}</span>
+        <span className="text-xs text-gray-500 font-mono lowercase">{data.slug}</span>
       </div>
 
       {/* Fields List */}
@@ -73,8 +74,8 @@ const SchemaNode = ({ data, selected }: any) => {
             <div 
               key={i} 
               className={cn(
-                'relative flex justify-between items-center px-3 py-2 border-b last:border-b-0 group',
-                dark ? 'border-z-border hover:bg-z-panel' : 'border-z-border hover:bg-gray-50'
+                'relative flex justify-between items-center px-4 py-2 border-b last:border-b-0 group',
+                dark ? 'border-gray-800/50 hover:bg-[#2c2c2c]' : 'border-gray-200 hover:bg-gray-50'
               )}
             >
               <Handle 
@@ -84,14 +85,14 @@ const SchemaNode = ({ data, selected }: any) => {
                 className="w-1.5 h-1.5 !bg-gray-500/50 !border-none !-left-0.5" 
               />
               <div className="flex items-center gap-1.5">
-                <span className={cn('font-mono font-bold', dark ? 'text-gray-300' : 'text-gray-700')}>
+                <span className={cn('font-mono font-medium text-xs', dark ? 'text-gray-200' : 'text-gray-800')}>
                   {field.name}
                 </span>
-                {field.required && <span className="text-red-500 text-[8px]">*</span>}
+                {field.required && <span className="text-red-500 text-xs">*</span>}
               </div>
               <span className={cn(
-                'text-[7px] uppercase font-black tracking-wider px-1 py-0.5 rounded-none-none',
-                isRelation ? 'bg-z-active-bg text-z-active-text' : dark ? 'bg-z-hover text-z-secondary' : 'bg-gray-100 text-z-secondary'
+                'text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-sm',
+                isRelation ? 'text-emerald-500' : 'text-gray-500'
               )}>
                 {field.type}
               </span>
@@ -101,14 +102,14 @@ const SchemaNode = ({ data, selected }: any) => {
                 id={`source-${field.name}`} 
                 className={cn(
                   'w-1.5 h-1.5 !border-none !-right-0.5',
-                  isRelation ? '!bg-z-accent' : '!bg-gray-500/50'
+                  isRelation ? '!bg-emerald-500' : '!bg-gray-500/50'
                 )} 
               />
             </div>
           )
         })}
         {data.fields.length === 0 && (
-          <div className="px-3 py-4 text-center text-z-secondary italic text-[9px]">
+          <div className="px-4 py-4 text-center text-gray-500 italic text-xs">
             No fields defined
           </div>
         )}
@@ -130,9 +131,9 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => 
   dagreGraph.setGraph({ rankdir: direction, ranker: 'longest-path', marginx: 50, marginy: 50, nodesep: 50, edgesep: 10, ranksep: 200 })
 
   nodes.forEach((node) => {
-    // estimate height based on fields: header ~35px, each field ~30px
-    const estimatedHeight = 35 + ((node.data.fields as any[])?.length || 1) * 30
-    dagreGraph.setNode(node.id, { width: 256, height: estimatedHeight })
+    // estimate height based on fields: header ~45px, each field ~36px
+    const estimatedHeight = 45 + ((node.data.fields as any[])?.length || 1) * 36
+    dagreGraph.setNode(node.id, { width: 288, height: estimatedHeight })
   })
 
   edges.forEach((edge) => {
@@ -215,12 +216,12 @@ export const VisualGraphPage = () => {
                       targetHandle: `target-root`,
                       type: 'smoothstep',
                       animated: true,
-                      style: { stroke: 'var(--z-accent)', strokeWidth: 2, opacity: 0.8 },
+                      style: { stroke: '#10B981', strokeWidth: 2, opacity: 0.8 },
                       markerEnd: {
                         type: MarkerType.ArrowClosed,
                         width: 20,
                         height: 20,
-                        color: 'var(--z-accent)',
+                        color: '#10B981',
                       },
                     })
                   }
@@ -268,7 +269,12 @@ export const VisualGraphPage = () => {
   }
 
   return (
-    <div className={cn('-m-6 md:-m-10 h-[calc(100vh-73px)] relative', dark ? 'bg-black' : 'bg-[#fafafa]')}>
+    <div className="space-y-6">
+      <PageHeader 
+        title="Schema Graph" 
+        description="Visualize your database collections and relationships"
+      />
+      <div className={cn('h-[calc(100vh-200px)] relative rounded-lg border shadow-sm overflow-hidden', dark ? 'bg-[#121212] border-gray-800' : 'bg-white border-gray-200')}>
       <ReactFlow
         nodes={filteredNodes}
         edges={edges}
@@ -282,36 +288,36 @@ export const VisualGraphPage = () => {
       >
         <Background color={dark ? '#333' : '#ccc'} gap={24} size={1} />
         <Controls 
-          className={cn('!rounded-none-none !border !shadow-lg', dark ? '!bg-black/80 !border-z-border !text-white' : '!bg-white/80 !border-z-border')}
+          className={cn('!rounded-md !border !shadow-sm overflow-hidden', dark ? '!bg-[#1c1c1c] !border-gray-800 !text-white' : '!bg-white !border-gray-300 !text-gray-900')}
           showInteractive={false}
         />
         <MiniMap 
           nodeColor={dark ? '#333' : '#eee'} 
           maskColor={dark ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.7)'}
-          className="!rounded-none-none !border !border-z-border !shadow-2xl"
+          className={cn('!rounded-md !border !shadow-sm', dark ? '!bg-[#1c1c1c] !border-gray-800' : '!bg-white !border-gray-300')}
         />
         
         {/* Top HUD */}
         <Panel position="top-center" className="mt-4 pointer-events-auto">
           <div className={cn(
-            'flex items-center gap-6 px-6 py-3 border backdrop-blur-xl rounded-none-none shadow-2xl',
-            dark ? 'bg-z-popover border-z-border' : 'bg-white/95 border-z-border'
+            'flex items-center gap-6 px-6 py-3 border rounded-md shadow-sm',
+            dark ? 'bg-[#1c1c1c] border-gray-800' : 'bg-white border-gray-300'
           )}>
             <div className="flex items-center gap-2.5">
-              <Database size={16} className={dark ? 'text-z-muted' : 'text-gray-600'} />
+              <Database size={16} className={dark ? 'text-gray-400' : 'text-gray-600'} />
               <div>
-                <p className={cn('text-xs font-black uppercase tracking-widest leading-none', dark ? 'text-white' : 'text-black')}>Schema Graph</p>
+                <p className={cn('text-sm font-bold leading-none', dark ? 'text-white' : 'text-gray-900')}>Schema Graph</p>
               </div>
             </div>
-            <div className="w-px h-6 bg-gray-500/20" />
-            <div className="flex items-center gap-4">
-              <div className="text-center">
-                <p className={cn('text-sm font-black tabular-nums leading-none', dark ? 'text-white' : 'text-black')}>{nodes.length}</p>
-                <p className="text-[8px] text-z-secondary uppercase tracking-widest">Collections</p>
+            <div className={cn("w-px h-6", dark ? "bg-gray-800" : "bg-gray-200")} />
+            <div className="flex items-center gap-6">
+              <div className="flex flex-col items-center">
+                <p className={cn('text-lg font-bold tabular-nums leading-none', dark ? 'text-white' : 'text-gray-900')}>{nodes.length}</p>
+                <p className="text-xs font-semibold text-gray-500 mt-1">Collections</p>
               </div>
-              <div className="text-center">
-                <p className="text-sm font-black tabular-nums text-pink-500 leading-none">{edges.length}</p>
-                <p className="text-[8px] text-z-secondary uppercase tracking-widest">Relations</p>
+              <div className="flex flex-col items-center">
+                <p className="text-lg font-bold tabular-nums text-emerald-500 leading-none">{edges.length}</p>
+                <p className="text-xs font-semibold text-gray-500 mt-1">Relations</p>
               </div>
             </div>
           </div>
@@ -319,26 +325,27 @@ export const VisualGraphPage = () => {
 
         {/* Search Panel */}
         <Panel position="top-right" className="mt-4 mr-4">
-          <div className={cn('relative', dark ? '' : '')}>
-            <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-z-secondary" />
+          <div className="relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             <input
               type="text"
               placeholder="Search schemas..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               className={cn(
-                'pl-8 pr-8 py-2.5 text-[10px] font-black uppercase tracking-widest border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-z-active-border w-48 shadow-2xl transition-all',
-                dark ? 'bg-z-popover border-z-border text-white placeholder:text-gray-600 backdrop-blur-xl' : 'bg-white/95 border-z-border text-z-primary focus:border-gray-500'
+                'pl-9 pr-8 py-2.5 text-sm font-medium border rounded-md outline-none focus-visible:ring-2 focus-visible:ring-z-accent w-64 shadow-sm transition-all',
+                dark ? 'bg-[#1c1c1c] border-gray-800 text-white placeholder:text-gray-600' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'
               )}
             />
             {search && (
-              <button onClick={() => setSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-z-secondary hover:text-gray-300">
-                <X size={12} />
+              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                <X size={14} />
               </button>
             )}
           </div>
         </Panel>
       </ReactFlow>
+    </div>
     </div>
   )
 }

@@ -36,7 +36,7 @@ export default function QuickActionsWidget({ config = {}, theme }: WidgetProps) 
               <div className="opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-110 duration-300">
                 <Icon size={28} strokeWidth={2} />
               </div>
-              <p className="text-[11px] font-black uppercase tracking-widest leading-none mt-1 opacity-90 group-hover:opacity-100">
+              <p className="text-sm font-semibold leading-none mt-1 opacity-90 group-hover:opacity-100">
                 {a.title}
               </p>
             </button>

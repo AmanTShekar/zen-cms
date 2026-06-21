@@ -502,7 +502,7 @@ export class ContentService<T = unknown> {
     }
 
     eventHub
-      .emit('content.deleted', { collection: this.config.slug, documentId: id })
+      .emit('content.deleted', { collection: this.config.slug, documentId: id, siteId: options.siteId })
       .catch((err) => {
         logger.error({ err }, 'Error emitting content.deleted event')
       })

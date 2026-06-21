@@ -12,6 +12,7 @@ import { parseQueryParams } from './query-parser'
 import { NotFoundError, ForbiddenError, ValidationError } from '../errors'
 import { eventHub } from '../services/event-hub'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { mutationLimiter } from '../middleware/rate-limit'
 
 /**
  * Helper to dynamically query and verify granular role permissions in the database.
@@ -27,7 +28,8 @@ async function verifyGranularAccess(
   user: any,
   resource: string,
   action: string,
-  _adapter: DatabaseAdapter
+  _adapter: DatabaseAdapter,
+  siteId?: string
 ): Promise<GranularAccessResult | null> {
   if (!user || !user.role) return null
   if (user.role === 'admin') return { allowed: true }
@@ -50,7 +52,7 @@ async function verifyGranularAccess(
   }
 
   try {
-    const hasAccess = await RBACEngine.checkAccess(user.role, resource, action as any)
+    const hasAccess = await RBACEngine.checkAccess(user.role, resource, action as any, siteId)
     if (hasAccess === null) {
       // No custom role found, but they passed specialAccess. Allow fallback to schema access fns.
       return null
@@ -59,7 +61,7 @@ async function verifyGranularAccess(
     // ── Field-Level Permissions (Payload CMS parity) ──────────────────────────
     // Load the per-collection, per-field permission map from the role definition.
     // This is the key wire-up that makes fieldPermissions in z_roles actually work.
-    const fieldPermissions = await RBACEngine.getFieldPermissions(user.role, resource)
+    const fieldPermissions = await RBACEngine.getFieldPermissions(user.role, resource, siteId)
 
     return { allowed: hasAccess, fieldPermissions }
   } catch (err) {
@@ -107,12 +109,12 @@ export function createCollectionRouter(
 
   // ── Access Control Helper ──────────────────────────────────────────────────
 
-  const verifyAccess = async (user: any, action: keyof NonNullable<CollectionConfig['access']>) => {
+  const verifyAccess = async (user: any, action: keyof NonNullable<CollectionConfig['access']>, siteId?: string) => {
     let fieldPermissions: Record<string, any> = {}
     if (config.publicRead && action === 'read' && !user) return fieldPermissions
 
     // Dynamic Role Permissions Check
-    const granularAccess = await verifyGranularAccess(user, config.slug, action as string, adapter)
+    const granularAccess = await verifyGranularAccess(user, config.slug, action as string, adapter, siteId)
     if (granularAccess) {
       if (granularAccess.allowed === false) throw new ForbiddenError()
       fieldPermissions = granularAccess.fieldPermissions || {}
@@ -179,6 +181,7 @@ export function createCollectionRouter(
     if (req.method === 'GET') return next() // read handled per-route via verifyAccess
 
     const user = (req as any).user
+    const siteId = (req as any).siteId
     if (!user) return next() // will be caught by requireAuth above
 
     let action = 'read'
@@ -187,7 +190,7 @@ export function createCollectionRouter(
     if (req.method === 'DELETE') action = 'delete'
 
     try {
-      const granularAccess = await verifyGranularAccess(user, config.slug, action, adapter)
+      const granularAccess = await verifyGranularAccess(user, config.slug, action, adapter, siteId)
       if (granularAccess) {
         if (granularAccess.allowed === false) {
           return res.status(403).json({ error: { message: `Access Denied: Role permissions deny "${action}" on resource "${config.slug}".` } })
@@ -245,7 +248,7 @@ export function createCollectionRouter(
       const user = (req as any).user
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       const siteId = req.headers['x-zenith-site-id'] as string
-      const fieldPermissions = await verifyAccess(user, 'read')
+      const fieldPermissions = await verifyAccess(user, 'read', req.siteId)
 
       if (config.singleton) {
         const doc = await contentService.findById('singleton', { user, locale, siteId })
@@ -344,7 +347,7 @@ export function createCollectionRouter(
       const user = (req as any).user
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       const siteId = req.headers['x-zenith-site-id'] as string
-      const fieldPermissions = await verifyAccess(user, 'read')
+      const fieldPermissions = await verifyAccess(user, 'read', req.siteId)
 
       const doc = await contentService.findById(req.params.id, { user, locale, siteId })
       if (!doc) throw new NotFoundError(config.name, req.params.id)
@@ -380,13 +383,13 @@ export function createCollectionRouter(
     }
   })
 
-  router.post('/', async (req, res, next) => {
+  router.post('/', mutationLimiter, async (req, res, next) => {
     try {
       const { schema, contentService } = getContext()
       const user = (req as any).user
       const siteId = req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
-      const fieldPermissions = await verifyAccess(user, 'create')
+      const fieldPermissions = await verifyAccess(user, 'create', req.siteId)
       req.body = enforceWritePermissions(req.body, fieldPermissions)
 
       const validation = schema.safeParse(req.body)
@@ -416,7 +419,7 @@ export function createCollectionRouter(
       const user = (req as any).user
       const siteId = req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
-      const fieldPermissions = await verifyAccess(user, 'update')
+      const fieldPermissions = await verifyAccess(user, 'update', req.siteId)
       req.body = enforceWritePermissions(req.body, fieldPermissions)
 
       const validation = schema.partial().safeParse(req.body)
@@ -443,13 +446,13 @@ export function createCollectionRouter(
     }
   })
 
-  router.patch('/:id', async (req, res, next) => {
+  router.patch('/:id', mutationLimiter, async (req, res, next) => {
     try {
       const { schema, contentService } = getContext()
       const user = (req as any).user
       const siteId = req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
-      const fieldPermissions = await verifyAccess(user, 'update')
+      const fieldPermissions = await verifyAccess(user, 'update', req.siteId)
       req.body = enforceWritePermissions(req.body, fieldPermissions)
 
       const validation = schema.partial().safeParse(req.body)
@@ -476,12 +479,12 @@ export function createCollectionRouter(
     }
   })
 
-  router.delete('/:id', async (req, res, next) => {
+  router.delete('/:id', mutationLimiter, async (req, res, next) => {
     try {
       const { contentService } = getContext()
       const user = (req as any).user
       const siteId = req.headers['x-zenith-site-id'] as string
-      await verifyAccess(user, 'delete')
+      await verifyAccess(user, 'delete', req.siteId)
 
       await contentService.delete(req.params.id, { user, siteId })
       CacheService.invalidateTag(config.slug)
@@ -498,7 +501,7 @@ export function createCollectionRouter(
       const { schema, contentService } = getContext()
       const user = (req as any).user
       const siteId = req.headers['x-zenith-site-id'] as string
-      await verifyAccess(user, 'create')
+      await verifyAccess(user, 'create', req.siteId)
 
       const records = req.body
       if (!Array.isArray(records)) {
@@ -585,7 +588,7 @@ export function createCollectionRouter(
       const { contentService } = getContext()
       const user = (req as any).user
       const siteId = req.headers['x-zenith-site-id'] as string
-      await verifyAccess(user, 'read')
+      await verifyAccess(user, 'read', req.siteId)
 
       // Cap at 1000 records per export request to prevent V8 heap exhaustion.
       // For larger datasets, use the pagination query params (?page=N) and call repeatedly.
@@ -618,6 +621,14 @@ export function createCollectionRouter(
   if (config.versions) {
     router.get('/:id/versions', async (req, res, next) => {
       try {
+        const { contentService } = getContext()
+        const user = (req as any).user
+        const siteId = req.headers['x-zenith-site-id'] as string
+        const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
+        
+        // ISOLATION FIX: Verify user can read this document first
+        await contentService.findById(req.params.id, { user, locale, siteId })
+
         const versions = await adapter.getVersions(config.slug, req.params.id)
         res.json(createResponse(versions))
       } catch (err) {

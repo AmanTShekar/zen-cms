@@ -35,11 +35,11 @@ export default function ApiStatusWidget({ theme, title, isPreview }: WidgetProps
   return (
     <div className="flex flex-col justify-between gap-4">
       <div className="flex items-center justify-between">
-        <p className="text-[12px] font-bold text-gray-800 dark:text-gray-200 uppercase tracking-tight flex items-center gap-2">
+        <p className="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
           <Activity size={14} className={isOk ? "text-z-active-text" : "text-z-muted"} /> 
           {title || 'API Health & Connectivity'}
         </p>
-        <span className="text-[10px] text-z-secondary flex items-center gap-1 font-medium">
+        <span className="text-sm text-z-secondary flex items-center gap-1 font-medium">
           <Clock size={10} /> {lastChecked.toLocaleTimeString()}
         </span>
       </div>
@@ -61,13 +61,13 @@ export default function ApiStatusWidget({ theme, title, isPreview }: WidgetProps
           </div>
           <div className="flex flex-col">
             <span className={cn(
-                'text-[15px] font-black uppercase tracking-tight leading-none mb-1',
+                'text-[15px] font-semibold   leading-none mb-1',
                 isChecking ? 'text-z-secondary' : isOk ? 'text-z-accent dark:text-z-active-text' : 'text-red-500'
               )}
             >
               {isChecking ? 'Verifying...' : isOk ? 'All Systems Operational' : 'API Degraded'}
             </span>
-            <span className="text-[11px] text-z-secondary font-medium">
+            <span className="text-sm text-z-secondary font-medium">
               Core Engine v{version}
             </span>
           </div>
@@ -75,8 +75,8 @@ export default function ApiStatusWidget({ theme, title, isPreview }: WidgetProps
 
         {latency !== null && !isChecking && (
           <div className="flex flex-col items-end border-l pl-4 border-z-border dark:border-gray-800">
-            <span className="text-[10px] text-z-secondary uppercase font-bold tracking-widest mb-1">Latency</span>
-            <span className="text-xl font-black tabular-nums tracking-tighter text-gray-800 dark:text-gray-100 leading-none">
+            <span className="text-sm text-z-secondary font-bold mb-1">Latency</span>
+            <span className="text-xl font-semibold tabular-nums text-gray-800 dark:text-gray-100 leading-none">
               {latency}<span className="text-sm font-medium text-z-muted ml-0.5">ms</span>
             </span>
           </div>

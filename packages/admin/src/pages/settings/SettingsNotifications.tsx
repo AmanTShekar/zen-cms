@@ -103,11 +103,11 @@ const SettingsNotifications: React.FC<SettingsNotificationsProps> = ({
 
   const card = cn(
     'p-5 border rounded-none transition-all',
-    dark ? 'bg-z-panel backdrop-blur-md border-z-border shadow-[var(--z-active-glow)]' : 'bg-gray-50/50 border-z-border shadow-sm'
+    dark ? 'bg-z-panel backdrop-blur-md border-z-border shadow-sm' : 'bg-gray-50/50 border-z-border shadow-sm'
   )
 
   const inp = cn(
-    'w-full border rounded-none py-2.5 px-4 text-[11px] outline-none transition-all focus:ring-1 focus:ring-z-active-border focus:border-z-accent',
+    'w-full border rounded-none py-2.5 px-4 text-sm outline-none transition-all focus:ring-1 focus:ring-z-active-border focus:border-z-accent',
     dark ? 'bg-black/80 border-z-border text-white placeholder:text-gray-700' : 'bg-z-panel border-z-border'
   )
 
@@ -117,14 +117,14 @@ const SettingsNotifications: React.FC<SettingsNotificationsProps> = ({
     <div className="space-y-5">
       {/* Provider Presets */}
       <div className="space-y-2">
-        <p className="text-[8px] font-black uppercase tracking-widest text-z-secondary px-1">Quick Configure</p>
+        <p className="text-sm font-semibold text-z-secondary px-1">Quick Configure</p>
         <div className="flex flex-wrap gap-2">
           {SMTP_PROVIDERS.map(p => (
             <button
               key={p.id}
               onClick={() => handlePresetSelect(p.id)}
               className={cn(
-                'px-3 py-1.5 text-[9px] font-black uppercase tracking-widest border transition-all',
+                'px-3 py-1.5 text-sm font-semibold   border transition-all',
                 selectedProvider === p.id
                   ? dark ? 'bg-z-accent/20 border-z-active-border text-z-active-text' : 'bg-z-active-bg border-z-active-border text-z-accent'
                   : dark ? 'bg-z-hover border-white/10 text-z-secondary hover:text-gray-300' : 'bg-z-input border-z-border text-z-secondary'
@@ -140,7 +140,7 @@ const SettingsNotifications: React.FC<SettingsNotificationsProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Host */}
         <div className={cn(card, 'space-y-2')}>
-          <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">SMTP Relay Host</label>
+          <label className="text-sm font-semibold text-z-secondary">SMTP Relay Host</label>
           <div className="flex items-center gap-2">
             <Server size={12} className="text-z-secondary shrink-0" />
             <input type="text" value={settings.smtpHost || ''} onChange={e => setSettings({ ...settings, smtpHost: e.target.value })} className={inp} placeholder="smtp.example.com" />
@@ -150,13 +150,13 @@ const SettingsNotifications: React.FC<SettingsNotificationsProps> = ({
         {/* Port + TLS */}
         <div className={cn(card, 'space-y-2')}>
           <div className="flex items-center justify-between">
-            <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Port & Encryption</label>
-            <span className={cn('text-[7px] font-black uppercase tracking-widest px-2 py-0.5 border', portMode === 'SSL' ? 'text-z-active-text border-z-active-border bg-z-active-bg' : portMode === 'TLS/STARTTLS' ? 'text-z-active-text border-z-accent/30 bg-z-accent/10' : 'text-z-secondary border-white/10 bg-z-hover')}>{portMode}</span>
+            <label className="text-sm font-semibold text-z-secondary">Port & Encryption</label>
+            <span className={cn('text-sm font-semibold   px-2 py-0.5 border', portMode === 'SSL' ? 'text-z-active-text border-z-active-border bg-z-active-bg' : portMode === 'TLS/STARTTLS' ? 'text-z-active-text border-z-accent/30 bg-z-accent/10' : 'text-z-secondary border-white/10 bg-z-hover')}>{portMode}</span>
           </div>
           <div className="flex gap-2">
             {[25, 465, 587, 2525].map(p => (
               <button key={p} onClick={() => setSettings({ ...settings, smtpPort: p })}
-                className={cn('px-3 py-2 text-[9px] font-black border transition-all', settings.smtpPort === p ? dark ? 'bg-z-accent/20 border-z-active-border text-z-active-text' : 'bg-z-active-bg border-z-active-border text-z-accent' : dark ? 'bg-z-hover border-white/10 text-z-secondary' : 'bg-z-input border-z-border text-z-secondary')}>
+                className={cn('px-3 py-2 text-sm font-semibold border transition-all', settings.smtpPort === p ? dark ? 'bg-z-accent/20 border-z-active-border text-z-active-text' : 'bg-z-active-bg border-z-active-border text-z-accent' : dark ? 'bg-z-hover border-white/10 text-z-secondary' : 'bg-z-input border-z-border text-z-secondary')}>
                 {p}
               </button>
             ))}
@@ -166,13 +166,13 @@ const SettingsNotifications: React.FC<SettingsNotificationsProps> = ({
 
         {/* User */}
         <div className={cn(card, 'space-y-2')}>
-          <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">SMTP Username</label>
+          <label className="text-sm font-semibold text-z-secondary">SMTP Username</label>
           <input type="text" value={settings.smtpUser || ''} onChange={e => setSettings({ ...settings, smtpUser: e.target.value })} className={inp} placeholder="user@example.com" />
         </div>
 
         {/* Password */}
         <div className={cn(card, 'space-y-2')}>
-          <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">SMTP Password</label>
+          <label className="text-sm font-semibold text-z-secondary">SMTP Password</label>
           <div className="relative">
             <input type={showPass ? 'text' : 'password'} value={settings.smtpPass || ''} onChange={e => setSettings({ ...settings, smtpPass: e.target.value })} className={cn(inp, 'pr-10')} placeholder="••••••••" />
             <button onClick={() => setShowPass(!showPass)} type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-z-secondary hover:text-gray-300 transition-colors">
@@ -183,29 +183,29 @@ const SettingsNotifications: React.FC<SettingsNotificationsProps> = ({
 
         {/* From Email */}
         <div className={cn(card, 'space-y-2')}>
-          <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">From Email Address</label>
+          <label className="text-sm font-semibold text-z-secondary">From Email Address</label>
           <input type="email" value={settings.fromEmail || ''} onChange={e => setSettings({ ...settings, fromEmail: e.target.value })} className={inp} placeholder="noreply@yoursite.com" />
         </div>
 
         {/* From Name */}
         <div className={cn(card, 'space-y-2')}>
-          <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">From Display Name</label>
+          <label className="text-sm font-semibold text-z-secondary">From Display Name</label>
           <input type="text" value={settings.smtpFromName || ''} onChange={e => setSettings({ ...settings, smtpFromName: e.target.value })} className={inp} placeholder="Zenith CMS" />
         </div>
       </div>
 
       {/* Subject Prefix */}
       <div className={cn(card, 'space-y-2')}>
-        <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Email Subject Prefix (optional)</label>
+        <label className="text-sm font-semibold text-z-secondary">Email Subject Prefix (optional)</label>
         <input type="text" value={settings.emailSubjectPrefix || ''} onChange={e => setSettings({ ...settings, emailSubjectPrefix: e.target.value })} className={inp} placeholder="[MyApp] " />
-        <p className="text-[8px] text-gray-600">Prepended to all outgoing email subjects, e.g. "[Zenith] Password Reset"</p>
+        <p className="text-sm text-gray-600">Prepended to all outgoing email subjects, e.g. "[Zenith] Password Reset"</p>
       </div>
 
       {/* SSL Toggle */}
       <div className={cn('flex items-center justify-between p-4 border', dark ? 'bg-black/40 border-z-border' : 'bg-gray-50 border-z-border')}>
         <div>
-          <p className={cn('text-[10px] font-black uppercase tracking-wider', dark ? 'text-gray-200' : 'text-gray-800')}>Force SSL/TLS</p>
-          <p className="text-[8px] text-z-secondary uppercase tracking-widest mt-0.5">Use implicit TLS (port 465). Disable for STARTTLS (port 587)</p>
+          <p className={cn('text-sm font-semibold  ', dark ? 'text-gray-200' : 'text-gray-800')}>Force SSL/TLS</p>
+          <p className="text-sm text-z-secondary mt-0.5">Use implicit TLS (port 465). Disable for STARTTLS (port 587)</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input type="checkbox" checked={!!settings.smtpSecure} onChange={e => setSettings({ ...settings, smtpSecure: e.target.checked, smtpPort: e.target.checked ? 465 : 587 })} className="sr-only peer" />
@@ -217,7 +217,7 @@ const SettingsNotifications: React.FC<SettingsNotificationsProps> = ({
       {lastTestResult && (
         <div className={cn('flex items-center gap-3 p-4 border', lastTestResult.ok ? dark ? 'bg-z-accent/5 border-z-accent/20' : 'bg-z-active-bg border-z-active-border' : dark ? 'bg-red-500/5 border-red-500/20' : 'bg-red-50 border-red-200')}>
           {lastTestResult.ok ? <CheckCircle2 size={14} className="text-z-active-text shrink-0" /> : <AlertTriangle size={14} className="text-red-400 shrink-0" />}
-          <p className={cn('text-[9px] font-black uppercase tracking-widest', lastTestResult.ok ? 'text-z-active-text' : 'text-red-400')}>{lastTestResult.msg}</p>
+          <p className={cn('text-sm font-semibold  ', lastTestResult.ok ? 'text-z-active-text' : 'text-red-400')}>{lastTestResult.msg}</p>
         </div>
       )}
 
@@ -226,15 +226,15 @@ const SettingsNotifications: React.FC<SettingsNotificationsProps> = ({
         <button
           onClick={handleTestSmtp}
           disabled={testingSmtp}
-          className={cn('flex items-center gap-2 px-6 py-3 text-[10px] font-black uppercase tracking-widest border transition-all active:scale-95',
-            dark ? 'bg-z-accent border-transparent text-white hover:opacity-90 shadow-[var(--z-active-glow)]' : 'bg-gray-900 text-white border-transparent hover:bg-gray-800')}
+          className={cn('flex items-center gap-2 px-6 py-3 text-sm font-semibold   border transition-all active:scale-95',
+            dark ? 'bg-z-accent border-transparent text-white hover:opacity-90 shadow-sm' : 'bg-gray-900 text-white border-transparent hover:bg-gray-800')}
         >
           {testingSmtp ? <Loader2 size={13} className="animate-spin" /> : <Zap size={13} />}
           Test Connection
         </button>
         <button
           onClick={() => setTestEmailOpen(!testEmailOpen)}
-          className={cn('flex items-center gap-2 px-4 py-3 text-[10px] font-black uppercase tracking-widest border transition-all',
+          className={cn('flex items-center gap-2 px-4 py-3 text-sm font-semibold   border transition-all',
             dark ? 'border-white/10 text-z-muted hover:text-white' : 'border-z-border text-z-secondary')}
         >
           <Send size={12} />
@@ -245,7 +245,7 @@ const SettingsNotifications: React.FC<SettingsNotificationsProps> = ({
       {/* Test Email Inline Form */}
       {testEmailOpen && (
         <div className={cn('p-4 border space-y-3', dark ? 'bg-black/40 border-z-border' : 'bg-z-input border-z-border')}>
-          <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Test Recipient Email</label>
+          <label className="text-sm font-semibold text-z-secondary">Test Recipient Email</label>
           <div className="flex gap-3">
             <input
               type="email"
@@ -258,14 +258,14 @@ const SettingsNotifications: React.FC<SettingsNotificationsProps> = ({
             <button
               onClick={handleSendTestEmail}
               disabled={sendingTest || !testEmail.trim()}
-              className={cn('flex items-center gap-2 px-5 py-2.5 text-[9px] font-black uppercase border transition-all disabled:opacity-40',
+              className={cn('flex items-center gap-2 px-5 py-2.5 text-sm font-semibold  border transition-all disabled:opacity-40',
                 dark ? 'bg-z-accent text-white border-transparent hover:opacity-90' : 'bg-gray-900 text-white border-transparent hover:bg-gray-800')}
             >
               {sendingTest ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
               Send
             </button>
           </div>
-          <p className="text-[8px] text-gray-600">A sample email will be sent using the SMTP settings above.</p>
+          <p className="text-sm text-gray-600">A sample email will be sent using the SMTP settings above.</p>
         </div>
       )}
     </div>

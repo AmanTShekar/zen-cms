@@ -90,13 +90,13 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  <AlertTriangle size={18} />
  </div>
  <div className="flex-1">
- <h2 className="text-xs font-black uppercase tracking-widest text-rose-400">
+ <h2 className="text-xs font-semibold text-rose-400">
  Conflict Detected
  </h2>
  <p className="text-xs font-bold text-z-secondary mt-1 leading-relaxed">
  Another editor saved changes to this document while you were editing.
  <br />
- Version mismatch: you had <span className="font-black text-gray-600 dark:text-z-muted">v{localVersion ?? '?'}</span>, server now at <span className="font-black text-amber-400">v{serverVersion ?? '?'}</span>.
+ Version mismatch: you had <span className="font-semibold text-gray-600 dark:text-z-muted">v{localVersion ?? '?'}</span>, server now at <span className="font-semibold text-amber-400">v{serverVersion ?? '?'}</span>.
  </p>
  {conflictMessage && (
  <p className="text-xs font-bold text-rose-400/70 mt-1.5 tracking-wide">
@@ -123,8 +123,8 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  ? 'bg-white/3 border-z-border text-z-muted'
  : 'bg-z-input border-z-border shadow-sm text-gray-600'
  )}>
- <p>Choose <span className="font-black text-white">"Use Their Version"</span> to discard your unsaved changes and reload the server's latest content.</p>
- <p className="mt-2">Choose <span className="font-black text-white">"Keep My Changes"</span> to overwrite the server's changes with yours (the server will update its version to match).</p>
+ <p>Choose <span className="font-semibold text-white">"Use Their Version"</span> to discard your unsaved changes and reload the server's latest content.</p>
+ <p className="mt-2">Choose <span className="font-semibold text-white">"Keep My Changes"</span> to overwrite the server's changes with yours (the server will update its version to match).</p>
  </div>
 
  {/* Version comparison */}
@@ -133,12 +133,12 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  theme === 'dark' ? 'border-z-border' : 'border-z-border'
  )}>
  <div className="text-center">
- <p className="text-[7px] font-black uppercase text-gray-600 tracking-widest mb-1">Your Version</p>
- <p className="text-lg font-black text-gray-600 dark:text-z-muted">v{localVersion ?? '?'}</p>
+ <p className="text-sm font-semibold text-gray-600 mb-1">Your Version</p>
+ <p className="text-lg font-semibold text-gray-600 dark:text-z-muted">v{localVersion ?? '?'}</p>
  </div>
  <div className="text-center">
- <p className="text-[7px] font-black uppercase text-gray-600 tracking-widest mb-1">Server Version</p>
- <p className="text-lg font-black text-amber-400">v{serverVersion ?? '?'}</p>
+ <p className="text-sm font-semibold text-gray-600 mb-1">Server Version</p>
+ <p className="text-lg font-semibold text-amber-400">v{serverVersion ?? '?'}</p>
  </div>
  </div>
  </div>
@@ -153,7 +153,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  disabled={loading}
  onClick={handleReload}
  className={cn(
- 'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-black uppercase tracking-widest border rounded-none-none transition-all',
+ 'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-semibold   border rounded-none-none transition-all',
  theme === 'dark'
  ? 'border-amber-500/30 text-amber-400 hover:bg-amber-500/10 hover:border-amber-500/50'
  : 'border-amber-300 text-amber-600 hover:bg-amber-50 hover:border-amber-400',
@@ -168,7 +168,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  disabled={loading}
  onClick={handleForceSave}
  className={cn(
- 'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-black uppercase tracking-widest rounded-none-none transition-all bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-500 border border-gray-600',
+ 'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-semibold   rounded-none-none transition-all bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-500 border border-gray-600',
  loading && 'opacity-50 cursor-not-allowed'
  )}
  >

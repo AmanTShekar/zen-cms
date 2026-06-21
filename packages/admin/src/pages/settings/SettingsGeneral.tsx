@@ -101,7 +101,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
 
   const card = cn(
     'p-5 border rounded-none transition-all space-y-3',
-    dark ? 'bg-z-panel backdrop-blur-md border-z-border shadow-[var(--z-active-glow)]' : 'bg-gray-50/50 border-z-border shadow-sm'
+    dark ? 'bg-z-panel backdrop-blur-md border-z-border shadow-sm' : 'bg-gray-50/50 border-z-border shadow-sm'
   )
 
   const inp = cn(
@@ -113,7 +113,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
     field, label, value, uploading, setUploading
   }: { field: 'logoUrl' | 'faviconUrl' | 'ogImageUrl'; label: string; value: string; uploading: boolean; setUploading: (v: boolean) => void }) => (
     <div className={card}>
-      <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">{label}</label>
+      <label className="text-sm font-semibold text-z-secondary">{label}</label>
       <div className="flex gap-3 items-start">
         {/* Preview */}
         <div className={cn('w-16 h-16 flex-shrink-0 border flex items-center justify-center overflow-hidden', dark ? 'bg-black/80 border-z-border' : 'bg-gray-100 border-z-border')}>
@@ -131,7 +131,7 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
             placeholder="https://..."
             className={inp}
           />
-          <label className={cn('flex items-center gap-2 cursor-pointer text-[9px] font-black uppercase tracking-widest border px-3 py-2 w-fit transition-all', dark ? 'border-white/10 text-z-muted hover:text-white hover:border-white/20' : 'border-z-border text-z-secondary hover:text-gray-800')}>
+          <label className={cn('flex items-center gap-2 cursor-pointer text-sm font-semibold   border px-3 py-2 w-fit transition-all', dark ? 'border-white/10 text-z-muted hover:text-white hover:border-white/20' : 'border-z-border text-z-secondary hover:text-gray-800')}>
             {uploading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
             Upload File
             <input
@@ -152,11 +152,11 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
   return (
     <div className="space-y-4">
       {/* Site ID Banner */}
-      <div className={cn('p-5 border space-y-3', dark ? 'bg-z-panel backdrop-blur-md border-z-border shadow-[var(--z-active-glow)]' : 'bg-z-input border-z-border')}>
+      <div className={cn('p-5 border space-y-3', dark ? 'bg-z-panel backdrop-blur-md border-z-border shadow-sm' : 'bg-z-input border-z-border')}>
         <div className="flex items-center gap-2">
           <Link2 size={12} className="text-z-secondary" />
-          <span className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Site Identifier</span>
-          <span className="ml-auto text-[7px] text-gray-600 uppercase tracking-widest">{activeSiteName}</span>
+          <span className="text-sm font-semibold text-z-secondary">Site Identifier</span>
+          <span className="ml-auto text-sm text-gray-600">{activeSiteName}</span>
         </div>
         <div className="flex items-center gap-3">
           <code className={cn('flex-1 font-mono text-sm px-3 py-2 border truncate', dark ? 'bg-black/80 border-z-border text-z-active-text' : 'bg-z-panel border-z-border text-gray-700')}>
@@ -166,14 +166,14 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
             onClick={handleCopy}
             disabled={!activeSiteId}
             className={cn('flex items-center gap-2 px-4 py-2 text-xs font-bold border transition-all', activeSiteId
-              ? dark ? 'bg-z-accent hover:opacity-90 text-white border-transparent shadow-[var(--z-active-glow)]' : 'bg-gray-800 text-white border-transparent hover:bg-gray-700'
+              ? dark ? 'bg-z-accent hover:opacity-90 text-white border-transparent shadow-sm' : 'bg-gray-800 text-white border-transparent hover:bg-gray-700'
               : 'bg-z-hover text-z-secondary cursor-not-allowed border-white/5')}
           >
             {copied ? <Check size={13} /> : <Copy size={13} />}
             {copied ? 'Copied!' : 'Copy'}
           </button>
         </div>
-        <p className={cn('text-[8px] leading-relaxed', dark ? 'text-z-secondary' : 'text-z-secondary')}>
+        <p className={cn('text-sm leading-relaxed', dark ? 'text-z-secondary' : 'text-z-secondary')}>
           Use this as <code className="px-1 py-0.5 bg-white/10">VITE_CMS_SITE_ID</code> in template <code className="px-1 py-0.5 bg-white/10">.env</code> files to connect storefronts to this site.
         </p>
       </div>
@@ -181,29 +181,29 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
       {/* Core Identity */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className={card}>
-          <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Application Name</label>
+          <label className="text-sm font-semibold text-z-secondary">Application Name</label>
           <input type="text" value={settings.siteName || ''} onChange={e => setSettings({ ...settings, siteName: e.target.value })} className={inp} placeholder="My CMS" />
         </div>
         <div className={card}>
-          <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Support Email</label>
+          <label className="text-sm font-semibold text-z-secondary">Support Email</label>
           <input type="email" value={settings.supportEmail || ''} onChange={e => setSettings({ ...settings, supportEmail: e.target.value })} className={inp} placeholder="support@company.com" />
         </div>
       </div>
 
       <div className={card}>
-        <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Site Description</label>
+        <label className="text-sm font-semibold text-z-secondary">Site Description</label>
         <textarea value={settings.siteDescription || ''} onChange={e => setSettings({ ...settings, siteDescription: e.target.value })} rows={3} className={cn(inp, 'resize-none')} placeholder="A short description of your platform..." />
       </div>
 
       <div className={card}>
-        <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Public API Endpoint</label>
+        <label className="text-sm font-semibold text-z-secondary">Public API Endpoint</label>
         <input type="url" value={settings.publicUrl || ''} onChange={e => setSettings({ ...settings, publicUrl: e.target.value })} className={inp} placeholder="https://api.yoursite.com" />
-        <p className="text-[8px] text-gray-600">The publicly-accessible URL where your CMS API is hosted.</p>
+        <p className="text-sm text-gray-600">The publicly-accessible URL where your CMS API is hosted.</p>
       </div>
 
       {/* Media Branding */}
       <div className="space-y-1.5">
-        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary px-1">Branding Assets</p>
+        <p className="text-sm font-semibold text-z-secondary px-1">Branding Assets</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <ImageUploadField field="logoUrl" label="Site Logo" value={settings.logoUrl} uploading={uploadingLogo} setUploading={setUploadingLogo} />
           <ImageUploadField field="faviconUrl" label="Favicon" value={settings.faviconUrl} uploading={uploadingFavicon} setUploading={setUploadingFavicon} />
@@ -213,22 +213,22 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
 
       {/* Localization */}
       <div className="space-y-1.5">
-        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary px-1">Localization</p>
+        <p className="text-sm font-semibold text-z-secondary px-1">Localization</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className={card}>
-            <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Default Locale</label>
+            <label className="text-sm font-semibold text-z-secondary">Default Locale</label>
             <select value={settings.defaultLocale || 'en'} onChange={e => setSettings({ ...settings, defaultLocale: e.target.value })} className={inp}>
               {LOCALES.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
             </select>
           </div>
           <div className={card}>
-            <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Timezone</label>
+            <label className="text-sm font-semibold text-z-secondary">Timezone</label>
             <select value={settings.timezone || 'UTC'} onChange={e => setSettings({ ...settings, timezone: e.target.value })} className={inp}>
               {TIMEZONES.map(tz => <option key={tz} value={tz}>{tz}</option>)}
             </select>
           </div>
           <div className={card}>
-            <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Date Format</label>
+            <label className="text-sm font-semibold text-z-secondary">Date Format</label>
             <select value={settings.dateFormat || 'MM/DD/YYYY'} onChange={e => setSettings({ ...settings, dateFormat: e.target.value })} className={inp}>
               {['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD', 'MMMM D, YYYY', 'D MMMM YYYY'].map(f => (
                 <option key={f} value={f}>{f}</option>
@@ -239,10 +239,10 @@ const SettingsGeneral: React.FC<SettingsGeneralProps> = ({ settings, setSettings
       </div>
 
       {/* Maintenance Mode */}
-      <div className={cn('p-5 border flex items-center justify-between transition-all group', dark ? 'bg-z-panel backdrop-blur-md border-z-border shadow-[var(--z-active-glow)] hover:border-red-500/30' : 'bg-gray-50/50 border-z-border shadow-sm')}>
+      <div className={cn('p-5 border flex items-center justify-between transition-all group', dark ? 'bg-z-panel backdrop-blur-md border-z-border shadow-sm hover:border-red-500/30' : 'bg-gray-50/50 border-z-border shadow-sm')}>
         <div>
-          <span className={cn('text-[11px] font-black uppercase tracking-wider', dark ? 'text-gray-200' : 'text-gray-800')}>Maintenance Protocol</span>
-          <p className="text-[9px] text-z-secondary mt-1">Restrict public access to the system while active. Admins can still log in.</p>
+          <span className={cn('text-sm font-semibold  ', dark ? 'text-gray-200' : 'text-gray-800')}>Maintenance Protocol</span>
+          <p className="text-sm text-z-secondary mt-1">Restrict public access to the system while active. Admins can still log in.</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
           <input type="checkbox" checked={settings.maintenanceMode} onChange={e => setSettings({ ...settings, maintenanceMode: e.target.checked })} className="sr-only peer" />

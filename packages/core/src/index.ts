@@ -11,8 +11,7 @@ import { CMSConfig } from '@zenith-open/zenithcms-types'
 import { applyPlugins, createPluginContext, ZenithPlugin } from './plugins'
 import { logger } from './services/logger'
 import { SchedulerService } from './services/scheduler'
-import { seedInitialData } from './database/seed'
-import { seedDummyData } from './database/seed-dummy'
+import { runStartupReconciliation } from './bootstrap/reconciliation'
 import { ContentService } from './services/content'
 import { FlowEngine } from './services/flow-engine'
 import { WebhookService } from './services/webhook'
@@ -25,7 +24,7 @@ import { AuthService } from './services/auth'
 import './database/registry'
 
 // ── Middleware ───────────────────────────────────────────────────────────────
-import { rateLimitMiddleware } from './middleware/rate-limit'
+import { rateLimitMiddleware, websocketLimiter } from './middleware/rate-limit'
 import { apiKeyMiddleware } from './middleware/api-key'
 import { globalErrorHandler } from './middleware/error-handler'
 import { csrfProtection } from './middleware/csrf'
@@ -85,6 +84,8 @@ import { DatabaseAdapter } from './database/adapters/BaseAdapter'
 import { TypeSynthesizer } from './services/type-synthesizer'
 import { AdapterFactory } from './database/adapters/AdapterFactory'
 import { AotBridge } from './database/adapters/AotBridge'
+import { env } from './config/env';
+
 
 export interface ZenithOptions {
   config: CMSConfig
@@ -119,6 +120,7 @@ export class ZenithEngine {
   private servicesMap = new Map<string, ContentService>()
   private apiRouter: express.Router = express.Router()
   public server: import('http').Server | null = null;
+  public io: import('socket.io').Server | null = null;
   public auditInterval: ReturnType<typeof setInterval> | null = null;
 
   /**
@@ -198,7 +200,7 @@ export class ZenithEngine {
     // Default to 1 (one reverse proxy) rather than `true` (trust all) to prevent
     // X-Forwarded-For header spoofing that would bypass IP-based rate limiting.
     // Set TRUST_PROXY=2 for two-layer setups (e.g., CDN → load balancer → app).
-    const trustProxy = process.env.TRUST_PROXY
+    const trustProxy = env.TRUST_PROXY
     if (trustProxy) {
       this.app.set('trust proxy', trustProxy === 'true' ? 1 : trustProxy === 'false' ? false : Number(trustProxy) || trustProxy)
     } else {
@@ -225,7 +227,7 @@ export class ZenithEngine {
       ['PREVIEW_SECRET', 'Preview token signing secret'],
     ]
 
-    if (process.env.NODE_ENV === 'production') {
+    if (env.NODE_ENV === 'production') {
       for (const [key, desc] of requiredInProduction) {
         if (!process.env[key]) {
           throw new Error(`[Zenith] FATAL: ${key} (${desc}) must be set in production.`)
@@ -293,25 +295,39 @@ export class ZenithEngine {
         contentSecurityPolicy: {
           directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'"], // unsafe-inline needed for Swagger UI
-            styleSrc: ["'self'", "'unsafe-inline'"], // unsafe-inline needed for Swagger UI
+            scriptSrc: ["'self'"],
+            styleSrc: ["'self'"],
             imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
             connectSrc: ["'self'", "ws:", "wss:"],
             fontSrc: ["'self'", 'https://fonts.gstatic.com'],
             objectSrc: ["'none'"],
             frameAncestors: ["'none'"],
-            upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null,
+            upgradeInsecureRequests: env.NODE_ENV === 'production' ? [] : null,
           },
         },
         crossOriginEmbedderPolicy: false, // Allow embedding in admin iframe previews
+        hsts: {
+          maxAge: 31536000,
+          includeSubDomains: true,
+          preload: true
+        },
+        frameguard: {
+          action: 'deny'
+        },
+        xContentTypeOptions: true,
       })
     )
+    
+    // Add WebSocket rate limiter to Socket.io engine
+    if (this.io) {
+      this.io.engine.use((req: any, res: any, next: any) => websocketLimiter(req, res, next))
+    }
     this.app.use(
       cors({
         origin:
           this.corsOptions?.origins ||
-          process.env.CORS_ORIGINS?.split(',').map((o) => o.trim()) ||
-          (process.env.NODE_ENV === 'production'
+          env.CORS_ORIGINS?.split(',').map((o) => o.trim()) ||
+          (env.NODE_ENV === 'production'
             // Security: deny all cross-origin requests in production when CORS_ORIGINS is unset.
             // Never fall back to localhost origins in production — that would allow any
             // localhost-based attacker to make authenticated cross-origin requests.
@@ -320,13 +336,13 @@ export class ZenithEngine {
         credentials: this.corsOptions?.credentials ?? true,
       })
     )
-    if (process.env.NODE_ENV === 'production' && !process.env.CORS_ORIGINS) {
+    if (env.NODE_ENV === 'production' && !env.CORS_ORIGINS) {
       logger.warn('CORS_ORIGINS is not set in production — all cross-origin requests will be blocked. Set the CORS_ORIGINS env var to allow your frontend origins.')
     }
     this.app.use(compression())
-    this.app.use(express.json({ limit: '50mb' }))
+    this.app.use(express.json({ limit: '1mb' }))
     this.app.use(auditMiddleware)
-    this.app.use(express.urlencoded({ extended: true, limit: '50mb' }))
+    this.app.use(express.urlencoded({ extended: true, limit: '1mb' }))
     this.app.use(cookieParser())
     this.app.use(csrfProtection)
     // Only apply MongoDB operator injection sanitizer when running with the Mongoose adapter.
@@ -569,7 +585,7 @@ export class ZenithEngine {
     logger.info(`Schema exported → ${fullPath}`)
   }
 
-  public async start(port = this.port || Number(process.env.PORT) || 3000) {
+  public async start(port = this.port || Number(env.PORT) || 3000) {
     try {
       await this._initPlugins() // Phase 2: Call onInit hooks
 
@@ -615,81 +631,8 @@ export class ZenithEngine {
         logger.info({ err: err.message }, '[Zenith Engine] No dynamic collections found or z_collections not yet initialized')
       }
 
-      // Sync static configs to database registry
-      try {
-        const hardcoded = [
-          ...(this.config.collections || []).map((c: any) => ({ ...c, isGlobal: false })),
-          ...(this.config.globals || []).map((g: any) => ({ ...g, isGlobal: true }))
-        ]
-        
-        for (const hc of hardcoded) {
-          if (hc.slug === 'z_users' || hc.slug === 'z_sites' || hc.slug === 'z_collections' || hc.slug === 'z_schemas' || hc.slug === 'z_webhook_configs') continue
-
-          const existing = dbCollections.find(dbC => dbC.slug === hc.slug)
-          const payload = {
-            name: hc.name,
-            slug: hc.slug,
-            labels: hc.labels || { singular: hc.name, plural: hc.name + 's' },
-            isGlobal: hc.isGlobal,
-            drafts: hc.drafts ?? false,
-            timestamps: hc.timestamps ?? true,
-            publicRead: hc.publicRead ?? false,
-            fields: hc.fields || []
-          }
-          if (!existing) {
-            const newDoc = await this.adapter.create('z_collections', payload)
-            dbCollections.push(newDoc)
-            logger.info(`[Startup Reconciliation] Synced static schema ${hc.slug} to z_collections registry`)
-          } else {
-            await this.adapter.update('z_collections', existing.id || existing._id, payload)
-            logger.info(`[Startup Reconciliation] Updated existing schema ${hc.slug} in z_collections registry`)
-            Object.assign(existing, payload)
-          }
-        }
-      } catch (err: any) {
-        logger.warn({ err: err.message }, '[Zenith Engine] Failed to sync static collections to z_collections')
-      }
-
-      // Startup Reconciliation Check for Blocks
-      try {
-        const blocksDir = path.resolve(__dirname, '../../../config/blocks')
-        const tsSlugs = new Set<string>()
-        try {
-          await fs.access(blocksDir)
-          const files = await fs.readdir(blocksDir)
-          files.filter(f => f.endsWith('.ts')).forEach(f => tsSlugs.add(f.replace(/\.ts$/, '')))
-        } catch (e) {
-          // blocksDir does not exist, ignore
-        }
-        
-        let dbSchemas: any[] = []
-        try {
-          dbSchemas = await this.adapter.find<any>('z_schemas', {})
-        } catch (e) {
-           // z_schemas might not exist yet
-        }
-
-        const dbSlugs = new Set(dbSchemas.map((s: any) => s.slug))
-        
-        // 1. Check for orphaned .ts files (File exists, DB missing)
-        for (const slug of tsSlugs) {
-          if (!dbSlugs.has(slug)) {
-            logger.error(`[Startup Reconciliation] CRITICAL: Orphaned file ${slug}.ts found in config/blocks without a corresponding z_schemas DB record. Action Required: Manually run a reconciliation command or re-generate the block via the builder.`)
-          }
-        }
-
-        // 2. Check for missing .ts files (DB exists, File missing)
-        // DEPRECATED: We now support fully dynamic DB-backed blocks, so we do not enforce .ts file existence.
-        /*
-        for (const dbSchema of dbSchemas) {
-          if (!tsSlugs.has(dbSchema.slug)) {
-            logger.error(`[Startup Reconciliation] CRITICAL: Missing file ${dbSchema.slug}.ts for DB record in z_schemas. Action Required: Manually delete the DB record or restore the .ts file from version control.`)
-          }
-        }
-        */
-      } catch (err: any) {
-        logger.warn({ err: err.message }, '[Zenith Engine] Block reconciliation check failed or z_schemas not yet initialized')
-      }
+      // Run Startup Reconciliation
+      dbCollections = await runStartupReconciliation(this.adapter, this.config);
 
       // Merge dynamic collections into core config registries
       for (const dbCol of dbCollections) {
@@ -834,13 +777,7 @@ export class ZenithEngine {
         }
       }
 
-      await seedInitialData()
       await seedSystemRoles()
-
-      // Optional high-fidelity dummy seeding for demos
-      if (process.env.ZENITH_SEED === 'true') {
-        await seedDummyData(this.config.collections, this.adapter)
-      }
 
       SchedulerService.init(this.config.collections, this.adapter)
       DeploymentService.init(this.config)
@@ -934,17 +871,17 @@ export class ZenithEngine {
           cors: {
             origin:
               this.corsOptions?.origins ||
-              process.env.CORS_ORIGINS?.split(',').map((o) => o.trim()) ||
+              env.CORS_ORIGINS?.split(',').map((o) => o.trim()) ||
               '*',
             credentials: true,
           },
         }
 
-        if (process.env.REDIS_URL) {
+        if (env.REDIS_URL) {
           const { createClient } = await import('redis')
           const { createAdapter } = await import('@socket.io/redis-adapter')
           
-          const pubClient = createClient({ url: process.env.REDIS_URL })
+          const pubClient = createClient({ url: env.REDIS_URL })
           const subClient = pubClient.duplicate()
 
           await Promise.all([pubClient.connect(), subClient.connect()])

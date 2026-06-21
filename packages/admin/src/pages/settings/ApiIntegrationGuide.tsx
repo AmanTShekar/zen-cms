@@ -45,11 +45,11 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  return (
  <div className="mt-12 pt-12 border-t border-z-border space-y-8">
  <div className="flex flex-col gap-2">
- <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-3">
+ <h3 className="text-xl font-semibold flex items-center gap-3">
  <Terminal className="text-gray-600 dark:text-z-secondary" size={24} />
  Developer Integration Guide
  </h3>
- <p className="text-[12px] text-z-secondary font-bold uppercase tracking-widest max-w-2xl">
+ <p className="text-sm text-z-secondary font-bold max-w-2xl">
  Everything you need to connect your frontend to Zenith CMS. Follow these steps to fetch your content dynamically.
  </p>
  </div>
@@ -62,9 +62,9 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
  <Server size={48} />
  </div>
- <div className="w-10 h-10 bg-gray-500/20 text-gray-600 dark:text-z-secondary flex items-center justify-center rounded-none-none mb-4 font-black">1</div>
- <h4 className="text-[14px] font-black uppercase mb-2">Generate a Key</h4>
- <p className="text-[11px] text-z-secondary font-medium leading-relaxed">
+ <div className="w-10 h-10 bg-gray-500/20 text-gray-600 dark:text-z-secondary flex items-center justify-center rounded-none-none mb-4 font-semibold">1</div>
+ <h4 className="text-[14px] font-semibold mb-2">Generate a Key</h4>
+ <p className="text-sm text-z-secondary font-medium leading-relaxed">
  Create an API key above. Make sure to copy the secret key immediately, as it will only be shown once for security reasons.
  </p>
  </div>
@@ -76,9 +76,9 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
  <Info size={48} />
  </div>
- <div className="w-10 h-10 bg-gray-500/20 text-gray-600 dark:text-z-secondary flex items-center justify-center rounded-none-none mb-4 font-black">2</div>
- <h4 className="text-[14px] font-black uppercase mb-2">Site Identification</h4>
- <p className="text-[11px] text-z-secondary font-medium leading-relaxed">
+ <div className="w-10 h-10 bg-gray-500/20 text-gray-600 dark:text-z-secondary flex items-center justify-center rounded-none-none mb-4 font-semibold">2</div>
+ <h4 className="text-[14px] font-semibold mb-2">Site Identification</h4>
+ <p className="text-sm text-z-secondary font-medium leading-relaxed">
  Include the <strong>X-Zenith-Site-Id</strong> header in all your requests. Your current site ID is <code className="bg-black/20 px-1 py-0.5 rounded-none text-gray-600 dark:text-z-secondary">{activeSiteId}</code>.
  </p>
  </div>
@@ -90,9 +90,9 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
  <Database size={48} />
  </div>
- <div className="w-10 h-10 bg-gray-500/20 text-gray-600 dark:text-z-secondary flex items-center justify-center rounded-none-none mb-4 font-black">3</div>
- <h4 className="text-[14px] font-black uppercase mb-2">Fetch Collections</h4>
- <p className="text-[11px] text-z-secondary font-medium leading-relaxed">
+ <div className="w-10 h-10 bg-gray-500/20 text-gray-600 dark:text-z-secondary flex items-center justify-center rounded-none-none mb-4 font-semibold">3</div>
+ <h4 className="text-[14px] font-semibold mb-2">Fetch Collections</h4>
+ <p className="text-sm text-z-secondary font-medium leading-relaxed">
  Query the endpoints to retrieve your data. Replace <code>posts</code> in the URL with the name of your specific collection.
  </p>
  </div>
@@ -109,7 +109,7 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  key={lang}
  onClick={() => setActiveLang(lang)}
  className={cn(
- "px-4 py-1.5 text-[11px] font-black uppercase tracking-wider rounded-none-none transition-all",
+ "px-4 py-1.5 text-sm font-semibold   rounded-none-none transition-all",
  activeLang === lang 
  ? "bg-gray-500/20 text-gray-600 dark:text-z-muted border border-gray-500/30" 
  : "text-z-secondary hover:text-gray-300 border border-transparent"
@@ -121,7 +121,7 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  </div>
  <button
  onClick={handleCopy}
- className="text-z-muted hover:text-white transition-colors flex items-center gap-2 text-[11px] font-bold uppercase"
+ className="text-z-muted hover:text-white transition-colors flex items-center gap-2 text-sm font-bold"
  >
  {copied ? <Check size={14} className="text-gray-600 dark:text-z-secondary" /> : <Copy size={14} />}
  {copied ? 'Copied!' : 'Copy Code'}
@@ -145,11 +145,11 @@ axios.get('${baseUrl}/api/sites/${activeSiteId}/collections/posts/items', {
  "p-6 border-l-4 border-gray-500 bg-gray-500/5 mt-6",
  theme === 'dark' ? "text-gray-100" : "text-gray-800"
  )}>
- <h4 className="flex items-center gap-2 text-[14px] font-black uppercase mb-2 text-gray-600 dark:text-z-secondary">
+ <h4 className="flex items-center gap-2 text-[14px] font-semibold mb-2 text-gray-600 dark:text-z-secondary">
  <Sparkles size={16} />
  Pro Tip for Next.js / React Users
  </h4>
- <p className="text-[12px] font-medium leading-relaxed opacity-80">
+ <p className="text-sm font-medium leading-relaxed opacity-80">
  Never expose your API keys in the browser! Always make calls to Zenith CMS from a secure environment like Next.js API Routes, Server Actions, or getServerSideProps. Use environment variables (e.g., <code>process.env.ZENITH_API_KEY</code>) to store your keys safely.
  </p>
  </div>

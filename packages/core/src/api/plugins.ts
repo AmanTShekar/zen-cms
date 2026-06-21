@@ -15,8 +15,10 @@ const router: import('express').Router = Router()
 // ── List all installed plugins ────────────────────────────────────────────────
 router.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
+    const siteId = req.headers['x-zenith-site-id'] as string
+    if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
     const adapter = getAdapter(req)
-    const docs = await adapter.find<Record<string, any>>(PLUGINS_COLLECTION, {})
+    const docs = await adapter.find<Record<string, any>>(PLUGINS_COLLECTION, { siteId })
     res.json(createResponse(docs))
   } catch (err) {
     next(err)
@@ -31,10 +33,12 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
     if (!id) throw new InvalidPayloadError('Plugin id is required')
     if (!name) throw new InvalidPayloadError('Plugin name is required')
 
+    const siteId = req.headers['x-zenith-site-id'] as string
+    if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
     const adapter = getAdapter(req)
 
     // Check if plugin already exists
-    const existing = await adapter.findOne<Record<string, any>>(PLUGINS_COLLECTION, { id })
+    const existing = await adapter.findOne<Record<string, any>>(PLUGINS_COLLECTION, { id, siteId })
     if (existing) throw new InvalidPayloadError(`Plugin "${id}" is already installed`)
 
     const doc = await adapter.create<Record<string, any>>(PLUGINS_COLLECTION, {
@@ -48,6 +52,7 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
       configSchema: configSchema || {},
       config: config || {},
       enabled: enabled !== false,
+      siteId,
       installedAt: new Date(),
     })
 
@@ -61,8 +66,13 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
 router.put('/:id', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const { id } = req.params
+    const siteId = req.headers['x-zenith-site-id'] as string
+    if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
     const { config, enabled, ...rest } = req.body
     const adapter = getAdapter(req)
+    
+    const existing = await adapter.findOne<Record<string, any>>(PLUGINS_COLLECTION, { _id: id, siteId })
+    if (!existing) throw new InvalidPayloadError(`Plugin "${id}" not found`)
 
     const update: Record<string, unknown> = { updatedAt: new Date(), ...rest }
     if (config !== undefined) update.config = config
@@ -81,7 +91,12 @@ router.put('/:id', requireAuth, requireRole('admin'), async (req: Request, res: 
 router.delete('/:id', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const { id } = req.params
+    const siteId = req.headers['x-zenith-site-id'] as string
+    if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
     const adapter = getAdapter(req)
+
+    const existing = await adapter.findOne<Record<string, any>>(PLUGINS_COLLECTION, { _id: id, siteId })
+    if (!existing) throw new InvalidPayloadError(`Plugin "${id}" not found`)
 
     const deleted = await adapter.delete(PLUGINS_COLLECTION, id)
     if (!deleted) throw new InvalidPayloadError(`Plugin "${id}" not found`)

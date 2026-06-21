@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express'
 import { requireAuth } from '../middleware/auth'
 import { eventHub } from '../services/event-hub'
+import { env } from '../config/env';
+
 
 const router: import('express').Router = Router()
 router.use(requireAuth)
@@ -15,7 +17,7 @@ router.use(requireAuth)
 router.get('/', (req: Request, res: Response) => {
   // Set headers for SSE — tie CORS to configured origins or restrict to same-origin
   const origin = req.headers.origin || ''
-  const allowedOrigins = process.env.CORS_ORIGINS?.split(',').map(o => o.trim()) || []
+  const allowedOrigins = env.CORS_ORIGINS?.split(',').map(o => o.trim()) || []
   const corsOrigin = allowedOrigins.includes(origin) ? origin : req.headers.host || 'same-origin'
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -32,16 +34,21 @@ router.get('/', (req: Request, res: Response) => {
     res.write(':\n\n')
   }, 30000)
 
+  const siteId = req.headers['x-zenith-site-id'] as string | undefined
+
   // Handlers for different content events
   const onCreated = (payload: any) => {
+    if (siteId && payload.document?.siteId && payload.document.siteId !== siteId) return
     res.write(`event: content.created\ndata: ${JSON.stringify(payload)}\n\n`)
   }
   
   const onUpdated = (payload: any) => {
+    if (siteId && payload.document?.siteId && payload.document.siteId !== siteId) return
     res.write(`event: content.updated\ndata: ${JSON.stringify(payload)}\n\n`)
   }
   
   const onDeleted = (payload: any) => {
+    if (siteId && payload.siteId && payload.siteId !== siteId) return
     res.write(`event: content.deleted\ndata: ${JSON.stringify(payload)}\n\n`)
   }
 

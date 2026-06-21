@@ -2,14 +2,16 @@ import { v2 as cloudinary, UploadApiResponse } from 'cloudinary'
 import multer from 'multer'
 import { logger } from './logger'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { env } from '../config/env';
 
-let isConfiguredGlobal = false;
 
-const resolveConfig = async (overrideSettings?: any) => {
-  let config = {
-    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-    apiKey: process.env.CLOUDINARY_API_KEY,
-    apiSecret: process.env.CLOUDINARY_API_SECRET
+const isConfiguredGlobal = false;
+
+const resolveConfig = async (overrideSettings?: any, siteId?: string) => {
+  const config = {
+    cloudName: env.CLOUDINARY_CLOUD_NAME,
+    apiKey: env.CLOUDINARY_API_KEY,
+    apiSecret: env.CLOUDINARY_API_SECRET
   }
   
   if (overrideSettings) {
@@ -22,7 +24,8 @@ const resolveConfig = async (overrideSettings?: any) => {
   try {
     const adapter = AdapterFactory.getActiveAdapter()
     if (adapter) {
-      const settings = await adapter.findOne<Record<string, any>>('z_settings', {})
+      const query = siteId ? { siteId } : {}
+      const settings = await adapter.findOne<Record<string, any>>('z_settings', query)
       if (settings) {
         if (settings.cloudinaryCloudName) config.cloudName = settings.cloudinaryCloudName
         if (settings.cloudinaryApiKey) config.apiKey = settings.cloudinaryApiKey
@@ -42,8 +45,8 @@ export const upload = multer({
 })
 
 export const MediaService = {
-  async testConnection(overrideSettings: any): Promise<boolean> {
-    const config = await resolveConfig(overrideSettings)
+  async testConnection(overrideSettings: any, siteId?: string): Promise<boolean> {
+    const config = await resolveConfig(overrideSettings, siteId)
     if (!config.cloudName || !config.apiKey || !config.apiSecret) {
       throw new Error('Cloudinary credentials missing')
     }
@@ -58,9 +61,9 @@ export const MediaService = {
 
   async uploadFile(
     fileInput: Buffer | string,
-    options: { folder?: string; filename?: string; mimetype?: string } = {}
+    options: { folder?: string; filename?: string; mimetype?: string; siteId?: string } = {}
   ): Promise<UploadApiResponse> {
-    const config = await resolveConfig()
+    const config = await resolveConfig(undefined, options.siteId)
     if (!config.cloudName || !config.apiKey || !config.apiSecret) {
       throw new Error('Media service is not configured (missing Cloudinary credentials)')
     }
@@ -99,13 +102,13 @@ export const MediaService = {
 
   async uploadBuffer(
     buffer: Buffer,
-    options: { folder?: string; filename?: string; mimetype?: string } = {}
+    options: { folder?: string; filename?: string; mimetype?: string; siteId?: string } = {}
   ): Promise<UploadApiResponse> {
     return this.uploadFile(buffer, options)
   },
 
-  async deleteFile(publicId: string): Promise<void> {
-    const config = await resolveConfig()
+  async deleteFile(publicId: string, siteId?: string): Promise<void> {
+    const config = await resolveConfig(undefined, siteId)
     if (!config.cloudName || !config.apiKey || !config.apiSecret) {
       throw new Error('Media service is not configured')
     }
@@ -118,8 +121,8 @@ export const MediaService = {
     logger.info({ publicId }, 'Media file deleted')
   },
 
-  async getHealth(): Promise<'ok' | 'disabled'> {
-    const config = await resolveConfig()
+  async getHealth(siteId?: string): Promise<'ok' | 'disabled'> {
+    const config = await resolveConfig(undefined, siteId)
     return (config.cloudName && config.apiKey && config.apiSecret) ? 'ok' : 'disabled'
   },
 }

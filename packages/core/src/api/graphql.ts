@@ -340,7 +340,7 @@ ${typeFields}
           : []
         const effectiveDepth = depth !== undefined ? depth : (popArr.length > 0 ? 5 : 0)
         if (effectiveDepth > 0 || popArr.length > 0) {
-          await resolveRelations([doc], col.fields, popArr, effectiveDepth, adapter, 0, config)
+          await resolveRelations([doc], col.fields, popArr, effectiveDepth, adapter, 0, config, context.siteId)
         }
 
         return decorators[slug](doc, context)
@@ -373,7 +373,7 @@ ${typeFields}
           : []
         const effectiveDepth = depth !== undefined ? depth : (popArr.length > 0 ? 5 : 0)
         if (effectiveDepth > 0 || popArr.length > 0) {
-          await resolveRelations(docs, col.fields, popArr, effectiveDepth, adapter, 0, config)
+          await resolveRelations(docs, col.fields, popArr, effectiveDepth, adapter, 0, config, context.siteId)
         }
 
         return {
@@ -537,11 +537,13 @@ ${typeFields}
                 new SimpleDataLoader(async (keys: string[]) => {
                   // Adapter-safe per-ID fetching (avoids MongoDB $in for Postgres parity)
                   const fetched = await Promise.all(
-                    keys.map((id) =>
-                      adapter.findOne(slug, { id }).catch(() =>
-                        adapter.findOne(slug, { _id: id }).catch(() => null)
+                    keys.map((id) => {
+                      const query1 = siteId ? { id, siteId } : { id }
+                      const query2 = siteId ? { _id: id, siteId } : { _id: id }
+                      return adapter.findOne(slug, query1).catch(() =>
+                        adapter.findOne(slug, query2).catch(() => null)
                       )
-                    )
+                    })
                   )
                   const docs = fetched.filter(Boolean)
                   const docMap = new Map(docs.map((d: any) => [d._id?.toString() || d.id, d]))

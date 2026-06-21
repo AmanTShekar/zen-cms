@@ -17,18 +17,18 @@ class ErrorBoundary extends React.Component<
  if (this.state.hasError) {
  return this.props.fallback ?? (
  <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-6 p-8">
- <div className="text-[80px] leading-none select-none text-white/5 font-black font-mono">
+ <div className="text-[80px] leading-none select-none text-white/5 font-semibold font-mono">
  500
  </div>
- <p className="text-[10px] font-black uppercase tracking-[0.5em] text-red-500/60 ">
+ <p className="text-sm font-semibold text-red-500/60">
  Unexpected Error
  </p>
- <p className="text-[9px] text-gray-600 uppercase tracking-widest font-bold">
+ <p className="text-sm text-gray-600 font-bold">
  An unexpected error occurred. Please refresh the page or contact support.
  </p>
  <button
  onClick={() => window.location.reload()}
- className="mt-4 px-6 py-2 border border-z-border text-[9px] font-black uppercase tracking-widest hover:border-red-500/30 hover:text-red-400 transition-all"
+ className="mt-4 px-6 py-2 border border-z-border text-sm font-semibold hover:border-red-500/30 hover:text-red-400 transition-all"
  >
  Reload
  </button>
@@ -62,13 +62,12 @@ const CollectionsPage = lazy(() => import('./pages/CollectionsPage'))
 const CollectionHooksPage = lazy(() => import('./pages/CollectionHooksPage'))
 const AuditLogPage = lazy(() => import('./pages/AuditLogPage'))
 const MediaLibrary = lazy(() => import('./pages/MediaLibrary'))
-const DemoFeatures = lazy(() => import('./pages/DemoFeatures'))
 const SpatialEditor = lazy(() => import('./pages/SpatialEditor'))
-const FlowBuilderPage = lazy(() => import('./pages/FlowBuilderPage'))
 const ComponentBuilderPage = lazy(() => import('./pages/ComponentBuilderPage'))
-const SettingsPage = lazy(() => import('./pages/SettingsPage'))
-const SystemHealthPage = lazy(() => import('./pages/SystemHealthPage'))
+const FlowBuilderPage = lazy(() => import('./pages/FlowBuilderPage'))
 const AIWriterPage = lazy(() => import('./pages/AIWriterPage'))
+const VisualGraphPage = lazy(() => import('./pages/VisualGraphPage'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const PluginsPage = lazy(() => import('./pages/PluginsPage'))
 const SchemaBuilderPage = lazy(() => import('./pages/SchemaBuilderPage'))
 const BlockBuilderPage = lazy(() => import('./pages/BlockBuilderPage'))
@@ -78,8 +77,6 @@ const SetupWizard = lazy(() => import('./pages/SetupWizard'))
 const RedirectsPage = lazy(() => import('./pages/RedirectsPage'))
 const TrashPage = lazy(() => import('./pages/TrashPage'))
 const BuilderPage = lazy(() => import('./pages/BuilderPage'))
-const CampaignsPage = lazy(() => import('./pages/CampaignsPage'))
-const VisualGraphPage = lazy(() => import('./pages/VisualGraphPage'))
 
 const PageLoader = () => (
  <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-8">
@@ -87,10 +84,17 @@ const PageLoader = () => (
  <Cpu size={64} className="text-white animate-pulse" strokeWidth={0.5} />
  <div className="absolute inset-0 blur-3xl bg-white/10 animate-pulse" />
  </div>
- <p className="text-[12px] font-black uppercase tracking-[0.6em] text-white/20 animate-pulse">
+ <p className="text-sm font-semibold text-white/20 animate-pulse">
  Loading Module...
  </p>
  </div>
+)
+
+const InnerPageLoader = () => (
+  <div className="flex-1 flex flex-col items-center justify-center h-full gap-4 opacity-50">
+    <Cpu size={32} className="text-z-secondary animate-pulse" />
+    <p className="text-xs font-semibold text-z-secondary animate-pulse">Loading...</p>
+  </div>
 )
 
 const queryClient = new QueryClient({
@@ -129,7 +133,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
  <Cpu size={64} className="text-white animate-pulse" strokeWidth={0.5} />
  <div className="absolute inset-0 blur-3xl bg-white/10 animate-pulse"></div>
  </div>
- <p className="text-[12px] font-black uppercase tracking-[0.6em] text-white/20 animate-pulse">
+ <p className="text-sm font-semibold text-white/20 animate-pulse">
  Initializing System...
  </p>
  </div>
@@ -173,7 +177,7 @@ const App: React.FC = () => {
  border: '1px solid rgba(255,255,255,0.05)',
  fontSize: '11px',
  fontWeight: '900',
- textTransform: 'uppercase',
+ textTransform: '',
  letterSpacing: '0.2em',
  padding: '16px 24px',
  borderRadius: '0px',
@@ -279,7 +283,7 @@ const App: React.FC = () => {
  <ProtectedRoute>
  <ErrorBoundary>
  <DashboardLayout>
- <Suspense fallback={<PageLoader />}>
+ <Suspense fallback={<InnerPageLoader />}>
  <Routes>
  <Route path="/" element={<DashboardBuilder />} />
  <Route path="/collections" element={<CollectionsPage />} />
@@ -287,24 +291,21 @@ const App: React.FC = () => {
  <Route path="/collections/:slug/hooks" element={<CollectionHooksPage />} />
  <Route path="/audit-log" element={<AuditLogPage />} />
  <Route path="/media" element={<MediaLibrary />} />
- <Route path="/playground" element={<DemoFeatures />} />
  <Route
  path="/members"
  element={<Navigate to="/collections/members" replace />}
  />
  <Route path="/automations" element={<FlowBuilderPage />} />
+ <Route path="/graph" element={<VisualGraphPage />} />
+ <Route path="/ai-architect" element={<AIWriterPage />} />
  <Route path="/templates" element={<TemplatesPage />} />
  <Route path="/plugins" element={<PluginsPage />} />
  <Route path="/schema-builder" element={<SchemaBuilderPage />} />
  <Route path="/block-builder" element={<BlockBuilderPage />} />
  <Route path="/settings" element={<SettingsPage />} />
- <Route path="/ai-architect" element={<AIWriterPage />} />
  <Route path="/redirects" element={<RedirectsPage />} />
  <Route path="/trash" element={<TrashPage />} />
- <Route path="/system" element={<SystemHealthPage />} />
  <Route path="/component-builder" element={<ComponentBuilderPage />} />
- <Route path="/campaigns" element={<CampaignsPage />} />
- <Route path="/graph" element={<VisualGraphPage />} />
  <Route path="*" element={<Navigate to="/" replace />} />
  </Routes>
  </Suspense>

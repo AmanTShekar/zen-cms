@@ -1,16 +1,18 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand, HeadBucketCommand } from '@aws-sdk/client-s3'
 import { logger } from './logger'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { env } from '../config/env';
+
 
 export class S3StorageService {
-  private static async resolveConfig(overrideSettings?: any) {
-    let config = {
-      bucket: process.env.S3_BUCKET || '',
-      region: process.env.S3_REGION || 'us-east-1',
-      accessKey: process.env.S3_ACCESS_KEY || '',
-      secretKey: process.env.S3_SECRET_KEY || '',
-      endpoint: process.env.S3_ENDPOINT,
-      forcePathStyle: process.env.S3_FORCE_PATH_STYLE === 'true'
+  private static async resolveConfig(overrideSettings?: any, siteId?: string) {
+    const config = {
+      bucket: env.S3_BUCKET || '',
+      region: env.S3_REGION || 'us-east-1',
+      accessKey: env.S3_ACCESS_KEY || '',
+      secretKey: env.S3_SECRET_KEY || '',
+      endpoint: env.S3_ENDPOINT,
+      forcePathStyle: env.S3_FORCE_PATH_STYLE === 'true'
     }
 
     if (overrideSettings) {
@@ -25,7 +27,8 @@ export class S3StorageService {
     try {
       const adapter = AdapterFactory.getActiveAdapter()
       if (adapter) {
-        const settings = await adapter.findOne<Record<string, any>>('z_settings', {})
+        const query = siteId ? { siteId } : {}
+        const settings = await adapter.findOne<Record<string, any>>('z_settings', query)
         if (settings) {
           if (settings.s3Bucket) config.bucket = settings.s3Bucket
           if (settings.s3Region) config.region = settings.s3Region
@@ -52,8 +55,8 @@ export class S3StorageService {
     })
   }
 
-  static async testConnection(overrideSettings: any): Promise<boolean> {
-    const config = await this.resolveConfig(overrideSettings)
+  static async testConnection(overrideSettings: any, siteId?: string): Promise<boolean> {
+    const config = await this.resolveConfig(overrideSettings, siteId)
     if (!config.bucket || !config.accessKey || !config.secretKey) {
       throw new Error('Missing required S3 credentials or bucket name')
     }
@@ -62,8 +65,8 @@ export class S3StorageService {
     return true
   }
 
-  static async write(key: string, body: string) {
-    const config = await this.resolveConfig()
+  static async write(key: string, body: string, siteId?: string) {
+    const config = await this.resolveConfig(undefined, siteId)
     if (!config.bucket) return
     const client = this.getClient(config)
     try {
@@ -80,8 +83,8 @@ export class S3StorageService {
     }
   }
 
-  static async delete(key: string) {
-    const config = await this.resolveConfig()
+  static async delete(key: string, siteId?: string) {
+    const config = await this.resolveConfig(undefined, siteId)
     if (!config.bucket) return
     const client = this.getClient(config)
     try {
@@ -96,8 +99,8 @@ export class S3StorageService {
     }
   }
 
-  static async read(key: string): Promise<string | null> {
-    const config = await this.resolveConfig()
+  static async read(key: string, siteId?: string): Promise<string | null> {
+    const config = await this.resolveConfig(undefined, siteId)
     if (!config.bucket) return null
     const client = this.getClient(config)
     try {

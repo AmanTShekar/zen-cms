@@ -3,70 +3,75 @@ import { S3StorageProvider } from './storage/s3'
 import { StorageProvider } from './storage/base'
 import { logger } from './logger'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { env } from '../config/env';
 
-let activeProvider: StorageProvider
-let lastSettingsHash: string = ''
 
-async function resolveActiveProviderAsync(): Promise<StorageProvider> {
+const providerCache = new Map<string, { hash: string; provider: StorageProvider }>()
+
+async function resolveActiveProviderAsync(siteId?: string): Promise<StorageProvider> {
   const adapter = AdapterFactory.getActiveAdapter()
   let settings: any = {}
   
   if (adapter) {
     try {
-      settings = await adapter.findOne('z_settings', {}) || {}
+      const query = siteId ? { siteId } : {}
+      settings = await adapter.findOne('z_settings', query) || {}
     } catch {
       // z_settings may not be initialized yet
     }
   }
 
-  const providerType = settings.mediaProvider || process.env.STORAGE_PROVIDER || 'local'
-  const s3Bucket = settings.s3Bucket || process.env.S3_BUCKET
+  const providerType = settings.mediaProvider || env.STORAGE_PROVIDER || 'local'
+  const s3Bucket = settings.s3Bucket || env.S3_BUCKET
   
   // Create a hash of the current settings to detect changes
   const currentHash = `${providerType}-${s3Bucket}-${settings.s3Region}-${settings.s3Endpoint}-${settings.s3AccessKey}-${settings.s3SecretKey}`
 
-  // If we already have an active provider and settings haven't changed, reuse it
-  if (activeProvider && lastSettingsHash === currentHash) {
-    return activeProvider
+  // If we already have an active provider for this cache key and settings haven't changed, reuse it
+  const cacheKey = siteId || 'global'
+  const cached = providerCache.get(cacheKey)
+  if (cached && cached.hash === currentHash) {
+    return cached.provider
   }
 
-  lastSettingsHash = currentHash
+  let newProvider: StorageProvider
 
   if (providerType === 's3' || s3Bucket) {
     try {
       const config = {
         bucket: s3Bucket,
-        region: settings.s3Region || process.env.S3_REGION || 'us-east-1',
-        endpoint: settings.s3Endpoint || process.env.S3_ENDPOINT,
+        region: settings.s3Region || env.S3_REGION || 'us-east-1',
+        endpoint: settings.s3Endpoint || env.S3_ENDPOINT,
         accessKeyId: settings.s3AccessKey || process.env.S3_ACCESS_KEY_ID,
         secretAccessKey: settings.s3SecretKey || process.env.S3_SECRET_ACCESS_KEY,
         publicUrl: settings.s3PublicUrl || process.env.S3_PUBLIC_URL
       }
-      activeProvider = new S3StorageProvider(config)
-      logger.info('Zenith Storage Engine: AWS S3 / Cloudflare R2 active provider loaded')
+      newProvider = new S3StorageProvider(config)
+      logger.info(`Zenith Storage Engine: AWS S3 / Cloudflare R2 active provider loaded for ${cacheKey}`)
     } catch (err: any) {
       logger.error({ error: err.message }, 'Failed to load S3 Storage Provider. Falling back to Local Filesystem.')
-      activeProvider = new LocalStorageProvider()
+      newProvider = new LocalStorageProvider()
     }
   } else {
-    activeProvider = new LocalStorageProvider()
-    logger.info('Zenith Storage Engine: Local Filesystem active provider loaded')
+    newProvider = new LocalStorageProvider()
+    logger.info(`Zenith Storage Engine: Local Filesystem active provider loaded for ${cacheKey}`)
   }
 
-  return activeProvider
+  providerCache.set(cacheKey, { hash: currentHash, provider: newProvider })
+  return newProvider
 }
 
 export const StorageService = {
-  async getProvider(): Promise<StorageProvider> {
-    return await resolveActiveProviderAsync()
+  async getProvider(siteId?: string): Promise<StorageProvider> {
+    return await resolveActiveProviderAsync(siteId)
   },
 
   async saveFile(
     fileInput: Buffer | string,
     filename: string,
-    options: { mimetype?: string } = {}
+    options: { mimetype?: string; siteId?: string } = {}
   ): Promise<{ url: string; id: string }> {
-    const provider = await resolveActiveProviderAsync()
+    const provider = await resolveActiveProviderAsync(options.siteId)
     const result = await provider.upload(fileInput, {
       filename,
       mimetype: options.mimetype || 'application/octet-stream',
@@ -77,8 +82,8 @@ export const StorageService = {
     }
   },
 
-  async deleteFile(fileId: string): Promise<void> {
-    const provider = await resolveActiveProviderAsync()
+  async deleteFile(fileId: string, siteId?: string): Promise<void> {
+    const provider = await resolveActiveProviderAsync(siteId)
     await provider.delete(fileId)
   },
 }

@@ -77,7 +77,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  <div className="text-center max-w-md">
  <h2
  className={cn(
- 'text-sm font-black uppercase tracking-widest mb-2',
+ 'text-sm font-semibold   mb-2',
  theme === 'dark' ? 'text-white' : 'text-black'
  )}
  >
@@ -97,7 +97,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  <button
  onClick={onReset}
  className={cn(
- 'flex items-center gap-2 px-4 py-2 text-xs font-black uppercase border rounded-none-none transition-all',
+ 'flex items-center gap-2 px-4 py-2 text-xs font-semibold  border rounded-none-none transition-all',
  'bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white border-gray-600'
  )}
  >
@@ -107,7 +107,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  <button
  onClick={onCopy}
  className={cn(
- 'flex items-center gap-2 px-3 py-2 text-xs font-black uppercase border rounded-none-none transition-all',
+ 'flex items-center gap-2 px-3 py-2 text-xs font-semibold  border rounded-none-none transition-all',
  theme === 'dark'
  ? 'border-z-border text-z-muted hover:bg-z-hover'
  : 'border-z-border text-z-secondary hover:bg-gray-50'
@@ -122,7 +122,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  <details className="w-full max-w-2xl">
  <summary
  className={cn(
- 'text-[10px] font-black uppercase tracking-widest cursor-pointer mb-1',
+ 'text-sm font-semibold   cursor-pointer mb-1',
  theme === 'dark' ? 'text-z-secondary' : 'text-z-muted'
  )}
  >
@@ -130,7 +130,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  </summary>
  <pre
  className={cn(
- 'w-full text-[9px] font-mono p-3 border rounded-none-none overflow-x-auto max-h-48',
+ 'w-full text-sm font-mono p-3 border rounded-none-none overflow-x-auto max-h-48',
  theme === 'dark' ? 'bg-z-hover border-z-border text-z-secondary' : 'bg-z-input border-z-border text-z-secondary'
  )}
  >

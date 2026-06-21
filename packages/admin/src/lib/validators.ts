@@ -85,7 +85,7 @@ export const hexColorValidator = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Must be 
 export function validatePasswordStrength(password: string): string[] {
  const errors: string[] = []
  if (password.length < 8) errors.push('At least 8 characters')
- if (!/[A-Z]/.test(password)) errors.push('At least one uppercase letter')
+ if (!/[A-Z]/.test(password)) errors.push('At least one  letter')
  if (!/[a-z]/.test(password)) errors.push('At least one lowercase letter')
  if (!/[0-9]/.test(password)) errors.push('At least one number')
  if (!/[^A-Za-z0-9]/.test(password)) errors.push('At least one special character')

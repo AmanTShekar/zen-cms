@@ -72,7 +72,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
 
  const renderValuePreview = (val: any) => {
  if (val === null || val === undefined) {
- return <span className=" text-z-secondary text-xs">None / Empty</span>
+ return <span className="text-z-secondary text-xs">None / Empty</span>
  }
  if (typeof val === 'object') {
  return (
@@ -85,9 +85,9 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  if (valStr.startsWith('<') && valStr.endsWith('>')) {
  // Basic HTML tags strip for preview
  const cleanText = valStr.replace(/<\/?[^>]+(>|$)/g, "")
- return <span className="text-[11px] leading-relaxed">{cleanText}</span>
+ return <span className="text-sm leading-relaxed">{cleanText}</span>
  }
- return <span className="text-[11px] leading-relaxed">{valStr}</span>
+ return <span className="text-sm leading-relaxed">{valStr}</span>
  }
 
  const isDark = theme === 'dark'
@@ -117,10 +117,10 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  <ArrowLeftRight size={16} />
  </div>
  <div>
- <h3 className="text-base font-black uppercase tracking-tighter">
+ <h3 className="text-base font-semibold">
  Compare Differences — V.{versionNumber}
  </h3>
- <p className="text-xs text-z-secondary uppercase tracking-widest mt-0.5">
+ <p className="text-xs text-z-secondary mt-0.5">
  Compare historical version snapshot with current working draft
  </p>
  </div>
@@ -142,7 +142,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  {loading ? (
  <div className="h-full flex flex-col items-center justify-center gap-4">
  <Loader2 size={32} className="animate-spin text-gray-600 dark:text-z-secondary" />
- <p className="text-xs font-black uppercase tracking-[0.4em] text-z-secondary animate-pulse">
+ <p className="text-xs font-semibold text-z-secondary animate-pulse">
  Analyzing delta changes...
  </p>
  </div>
@@ -150,8 +150,8 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  <div className="h-full flex flex-col items-center justify-center gap-3 text-center">
  <CheckCircle2 size={36} className="text-gray-600 dark:text-z-secondary" />
  <div>
- <h4 className="text-xs font-black uppercase ">No Differences Detected</h4>
- <p className="text-xs text-z-secondary uppercase tracking-widest mt-1">
+ <h4 className="text-xs font-semibold">No Differences Detected</h4>
+ <p className="text-xs text-z-secondary mt-1">
  This version snapshot matches the current working copy exactly.
  </p>
  </div>
@@ -173,14 +173,14 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  )}>
  <div className="flex items-center gap-2">
  <FileText size={13} className="text-gray-600 dark:text-z-muted" />
- <span className="text-xs font-black uppercase tracking-wider">
+ <span className="text-xs font-semibold">
  {diff.field.replace(':', ' ➔ ').toUpperCase()}
  </span>
  </div>
  <button
  onClick={() => handleRollbackField(diff.field)}
  disabled={rollingBackField === diff.field}
- className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-black uppercase bg-gray-600/10 hover:bg-gray-600 dark:bg-gray-600 border border-gray-500/20 hover:border-gray-500 text-gray-600 dark:text-z-muted hover:text-white transition-all disabled:opacity-50"
+ className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold bg-gray-600/10 hover:bg-gray-600 dark:bg-gray-600 border border-gray-500/20 hover:border-gray-500 text-gray-600 dark:text-z-muted hover:text-white transition-all disabled:opacity-50"
  >
  {rollingBackField === diff.field ? (
  <Loader2 size={10} className="animate-spin" />
@@ -195,7 +195,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-white/5">
  {/* Old Version Val (Red Tint) */}
  <div className="p-4 bg-red-500/[0.01] flex flex-col gap-2">
- <span className="text-xs font-black text-rose-500 uppercase tracking-widest block ">
+ <span className="text-xs font-semibold text-rose-500 block">
  Previous Value (V.{versionNumber})
  </span>
  <div className="flex-1 bg-red-500/[0.03] border border-red-500/10 rounded-none p-3 text-red-100/90 min-h-16 overflow-x-auto custom-editor-scrollbar">
@@ -205,7 +205,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
 
  {/* Current Value (Green Tint) */}
  <div className="p-4 bg-gray-500/[0.01] flex flex-col gap-2">
- <span className="text-xs font-black text-gray-600 dark:text-z-secondary uppercase tracking-widest block ">
+ <span className="text-xs font-semibold text-gray-600 dark:text-z-secondary block">
  Current Value
  </span>
  <div className="flex-1 bg-gray-500/[0.03] border border-gray-500/10 rounded-none p-3 text-gray-100/90 min-h-16 overflow-x-auto custom-editor-scrollbar">
@@ -223,7 +223,7 @@ export const DocumentDiffModal: React.FC<DocumentDiffModalProps> = ({
  <div className="p-4 border-t border-z-border flex items-center justify-end bg-gradient-to-r from-transparent to-gray-500/5">
  <button
  onClick={onClose}
- className="px-5 py-2 border border-z-border hover:border-z-border text-xs font-black uppercase tracking-widest hover:bg-z-hover transition-all text-z-muted hover:text-white"
+ className="px-5 py-2 border border-z-border hover:border-z-border text-xs font-semibold hover:bg-z-hover transition-all text-z-muted hover:text-white"
  >
  Close Comparison
  </button>

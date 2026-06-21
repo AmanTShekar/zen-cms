@@ -28,7 +28,10 @@ const router: import('express').Router = Router()
 router.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const adapter = getAdapter(req)
-    const docs = await adapter.find<Record<string, any>>(CAMPAIGNS_COLLECTION, {})
+    const siteId = req.headers['x-zenith-site-id'] as string
+    // ISOLATION FIX: scope to siteId
+    const filter: Record<string, unknown> = siteId ? { siteId } : {}
+    const docs = await adapter.find<Record<string, any>>(CAMPAIGNS_COLLECTION, filter)
     res.json(createResponse(docs.map(toCampaignDTO)))
   } catch (err) {
     next(err)
@@ -39,7 +42,11 @@ router.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Res
 router.get('/:id', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const adapter = getAdapter(req)
-    const docs = await adapter.find<Record<string, any>>(CAMPAIGNS_COLLECTION, { id: req.params.id })
+    const siteId = req.headers['x-zenith-site-id'] as string
+    // ISOLATION FIX: scope to siteId
+    const filter: Record<string, unknown> = { id: req.params.id }
+    if (siteId) filter.siteId = siteId
+    const docs = await adapter.find<Record<string, any>>(CAMPAIGNS_COLLECTION, filter)
     const doc = docs[0]
     if (!doc) throw new NotFoundError(`Campaign "${req.params.id}" not found`)
     res.json(createResponse(toCampaignDTO(doc)))
@@ -55,12 +62,15 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
     if (!subject) throw new InvalidPayloadError('Campaign subject is required')
 
     const adapter = getAdapter(req)
+    const siteId = req.headers['x-zenith-site-id'] as string
     
     const doc = await adapter.create<Record<string, any>>(CAMPAIGNS_COLLECTION, {
       subject,
       body: body || '',
       status: 'draft',
-      audience: audience || 'all'
+      audience: audience || 'all',
+      // ISOLATION FIX: stamp siteId on creation
+      ...(siteId ? { siteId } : {}),
     })
 
     res.status(201).json(createResponse(toCampaignDTO(doc)))
@@ -75,6 +85,11 @@ router.put('/:id', requireAuth, requireRole('admin'), async (req: Request, res: 
     const { id } = req.params
     const { subject, body, audience } = req.body
     const adapter = getAdapter(req)
+    const siteId = req.headers['x-zenith-site-id'] as string
+    if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
+
+    const existing = await adapter.findOne<Record<string, any>>(CAMPAIGNS_COLLECTION, { _id: id, siteId })
+    if (!existing) throw new NotFoundError(`Campaign "${id}" not found`)
 
     const update: Record<string, unknown> = { updated_at: new Date() }
     if (subject !== undefined) update.subject = subject
@@ -95,6 +110,11 @@ router.post('/:id/send', requireAuth, requireRole('admin'), async (req: Request,
   try {
     const { id } = req.params
     const adapter = getAdapter(req)
+    const siteId = req.headers['x-zenith-site-id'] as string
+    if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
+
+    const existing = await adapter.findOne<Record<string, any>>(CAMPAIGNS_COLLECTION, { _id: id, siteId })
+    if (!existing) throw new NotFoundError(`Campaign "${id}" not found`)
 
     const doc = await adapter.update<Record<string, any>>(CAMPAIGNS_COLLECTION, id, { 
       status: 'sent', 
@@ -118,6 +138,11 @@ router.delete('/:id', requireAuth, requireRole('admin'), async (req: Request, re
   try {
     const { id } = req.params
     const adapter = getAdapter(req)
+    const siteId = req.headers['x-zenith-site-id'] as string
+    if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
+
+    const existing = await adapter.findOne<Record<string, any>>(CAMPAIGNS_COLLECTION, { _id: id, siteId })
+    if (!existing) throw new NotFoundError(`Campaign "${id}" not found`)
 
     const deleted = await adapter.delete(CAMPAIGNS_COLLECTION, id)
     if (!deleted) throw new NotFoundError(`Campaign "${id}" not found`)

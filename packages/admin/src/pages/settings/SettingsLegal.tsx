@@ -112,12 +112,12 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
   const card = cn(
     'border rounded-none transition-all',
     dark
-      ? 'bg-z-panel backdrop-blur-md border-z-border shadow-[var(--z-active-glow)]'
+      ? 'bg-z-panel backdrop-blur-md border-z-border shadow-sm'
       : 'bg-z-panel border-z-border shadow-sm'
   )
 
   const inp = cn(
-    'w-full border rounded-none py-2.5 px-4 text-[11px] font-mono outline-none transition-all focus:ring-1 focus:ring-z-active-border focus:border-z-accent',
+    'w-full border rounded-none py-2.5 px-4 text-sm font-mono outline-none transition-all focus:ring-1 focus:ring-z-active-border focus:border-z-accent',
     dark ? 'bg-black/80 border-z-border text-white placeholder:text-gray-700' : 'bg-z-panel border-z-border text-z-primary'
   )
 
@@ -138,8 +138,8 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
           <Icon size={18} />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className={cn('text-[11px] font-black uppercase tracking-wider', dark ? 'text-white' : 'text-z-primary')}>{title}</h3>
-          <p className="text-[9px] text-z-secondary uppercase tracking-widest mt-0.5">{desc}</p>
+          <h3 className={cn('text-sm font-semibold  ', dark ? 'text-white' : 'text-z-primary')}>{title}</h3>
+          <p className="text-sm text-z-secondary mt-0.5">{desc}</p>
         </div>
         {expanded === id ? <ChevronUp size={16} className="text-z-secondary" /> : <ChevronDown size={16} className="text-z-secondary" />}
       </button>
@@ -156,8 +156,8 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
   }: { label: string; desc: string; value: boolean; onChange: (v: boolean) => void; disabled?: boolean }) => (
     <div className={cn('flex items-center justify-between p-4 border', dark ? 'bg-black/40 border-z-border' : 'bg-gray-50 border-z-border')}>
       <div>
-        <p className={cn('text-[10px] font-black uppercase tracking-wider', dark ? 'text-gray-200' : 'text-gray-800')}>{label}</p>
-        <p className="text-[8px] text-z-secondary uppercase tracking-widest mt-0.5">{desc}</p>
+        <p className={cn('text-sm font-semibold  ', dark ? 'text-gray-200' : 'text-gray-800')}>{label}</p>
+        <p className="text-sm text-z-secondary mt-0.5">{desc}</p>
       </div>
       <Toggle checked={value} onChange={disabled ? () => {} : onChange} />
     </div>
@@ -189,14 +189,14 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
               className={cn(
                 'flex items-center gap-3 p-4 border text-left transition-all',
                 enabled
-                  ? dark ? `bg-${color}-500/10 border-${color}-500/30 shadow-[var(--z-active-glow)]` : `bg-${color}-50 border-${color}-200`
+                  ? dark ? `bg-${color}-500/10 border-${color}-500/30 shadow-sm` : `bg-${color}-50 border-${color}-200`
                   : dark ? 'bg-black/40 border-z-border hover:border-white/20' : 'bg-z-input border-z-border hover:border-z-border-strong'
               )}
             >
               <Icon size={16} className={enabled ? `text-${color}-400` : 'text-gray-600'} />
               <div>
-                <p className={cn('text-[10px] font-black uppercase tracking-wider', enabled ? dark ? `text-${color}-300` : `text-${color}-700` : dark ? 'text-z-muted' : 'text-gray-600')}>{label}</p>
-                <p className="text-[8px] text-gray-600 uppercase tracking-widest">{enabled ? 'Enabled' : 'Disabled'}</p>
+                <p className={cn('text-sm font-semibold  ', enabled ? dark ? `text-${color}-300` : `text-${color}-700` : dark ? 'text-z-muted' : 'text-gray-600')}>{label}</p>
+                <p className="text-sm text-gray-600">{enabled ? 'Enabled' : 'Disabled'}</p>
               </div>
             </button>
           )
@@ -224,7 +224,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
           onChange={v => setSettings(prev => ({ ...prev, autoDeleteExpiredData: v }))}
         />
         <div className="space-y-1.5">
-          <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Data Retention Period (days)</label>
+          <label className="text-sm font-semibold text-z-secondary">Data Retention Period (days)</label>
           <input
             type="number"
             value={settings.dataRetentionDays}
@@ -232,7 +232,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
             className={inp}
             placeholder="365"
           />
-          <p className="text-[8px] text-gray-600">User content and logs older than this will be eligible for deletion. Default: 365 days.</p>
+          <p className="text-sm text-gray-600">User content and logs older than this will be eligible for deletion. Default: 365 days.</p>
         </div>
       </Section>
 
@@ -245,7 +245,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
           onChange={v => setSettings(prev => ({ ...prev, cookieConsentEnabled: v }))}
         />
         <div className="space-y-1.5">
-          <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Cookie Categories</label>
+          <label className="text-sm font-semibold text-z-secondary">Cookie Categories</label>
           <div className="space-y-2">
             {COOKIE_CATEGORIES.map(cat => {
               const isEnabled = settings.cookieConsentCategories.includes(cat.id)
@@ -264,10 +264,10 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
                     className="mt-0.5 accent-z-accent"
                   />
                   <div>
-                    <p className={cn('text-[9px] font-black uppercase tracking-wider', dark ? 'text-gray-200' : 'text-gray-800')}>
+                    <p className={cn('text-sm font-semibold  ', dark ? 'text-gray-200' : 'text-gray-800')}>
                       {cat.label} {cat.forced && <span className="text-z-secondary">(Required)</span>}
                     </p>
-                    <p className="text-[8px] text-z-secondary mt-0.5">{cat.desc}</p>
+                    <p className="text-sm text-z-secondary mt-0.5">{cat.desc}</p>
                   </div>
                 </div>
               )
@@ -275,7 +275,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
           </div>
         </div>
         <div className="space-y-1.5">
-          <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Cookie Expiry (days)</label>
+          <label className="text-sm font-semibold text-z-secondary">Cookie Expiry (days)</label>
           <input
             type="number"
             value={settings.cookieExpiryDays}
@@ -295,10 +295,10 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
         ].map(({ key, label, placeholder }) => (
           <div key={key} className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">{label}</label>
+              <label className="text-sm font-semibold text-z-secondary">{label}</label>
               {(settings as any)[key] && (
                 <a href={(settings as any)[key]} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-[8px] text-z-active-text hover:text-z-active-text">
+                  className="flex items-center gap-1 text-sm text-z-active-text hover:text-z-active-text">
                   Preview <ExternalLink size={9} />
                 </a>
               )}
@@ -323,7 +323,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
             { key: 'companyName', label: 'Legal Entity Name', placeholder: 'Acme Corp Ltd.' },
           ].map(({ key, label, placeholder }) => (
             <div key={key} className="space-y-1.5">
-              <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">{label}</label>
+              <label className="text-sm font-semibold text-z-secondary">{label}</label>
               <input
                 type={key === 'dpoEmail' ? 'email' : 'text'}
                 value={(settings as any)[key] || ''}
@@ -334,7 +334,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
             </div>
           ))}
           <div className="space-y-1.5 md:col-span-2">
-            <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Registered Business Address</label>
+            <label className="text-sm font-semibold text-z-secondary">Registered Business Address</label>
             <textarea
               value={settings.companyAddress || ''}
               onChange={e => setSettings(prev => ({ ...prev, companyAddress: e.target.value }))}
@@ -350,7 +350,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
       <Section id="certs" icon={Scale} title="Compliance Certifications" desc="Declare certification status for your enterprise compliance posture">
         <div className={cn('p-4 border flex items-start gap-3', dark ? 'bg-z-accent/5 border-z-accent/20' : 'bg-z-active-bg border-z-active-border')}>
           <Info size={14} className="text-z-active-text mt-0.5 flex-shrink-0" />
-          <p className="text-[8px] text-z-active-text uppercase tracking-widest leading-relaxed">
+          <p className="text-sm text-z-active-text leading-relaxed">
             These flags are informational declarations only — enabling them does not automatically enforce the certification. Ensure your infrastructure and processes meet the actual certification requirements.
           </p>
         </div>
@@ -378,7 +378,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
       <Section id="rights" icon={Database} title="Data Subject Rights" desc="Handle GDPR data export and deletion requests">
         <div className={cn('p-4 border flex items-start gap-3', dark ? 'bg-amber-500/5 border-amber-500/20' : 'bg-amber-50 border-amber-200')}>
           <AlertTriangle size={14} className="text-amber-400 mt-0.5 flex-shrink-0" />
-          <p className="text-[8px] text-amber-400 uppercase tracking-widest leading-relaxed">
+          <p className="text-sm text-amber-400 leading-relaxed">
             GDPR Articles 15-17 require you to fulfill data access, portability, and deletion requests within 30 days.
           </p>
         </div>
@@ -395,7 +395,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
                 setRequestLoading(false)
               }
             }}
-            className={cn('flex items-center justify-center gap-2 p-4 border text-[9px] font-black uppercase tracking-widest transition-all', dark ? 'bg-z-hover border-white/10 text-gray-300 hover:border-z-active-border hover:text-z-active-text' : 'bg-z-input border-z-border text-gray-700 hover:bg-z-active-bg hover:text-z-accent')}
+            className={cn('flex items-center justify-center gap-2 p-4 border text-sm font-semibold   transition-all', dark ? 'bg-z-hover border-white/10 text-gray-300 hover:border-z-active-border hover:text-z-active-text' : 'bg-z-input border-z-border text-gray-700 hover:bg-z-active-bg hover:text-z-accent')}
           >
             {requestLoading ? <Loader2 size={13} className="animate-spin" /> : <Download size={13} />}
             Export All User Data
@@ -413,7 +413,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
                 setRequestLoading(false)
               }
             }}
-            className={cn('flex items-center justify-center gap-2 p-4 border text-[9px] font-black uppercase tracking-widest transition-all', dark ? 'bg-red-500/5 border-red-500/20 text-red-400 hover:bg-red-500/10' : 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100')}
+            className={cn('flex items-center justify-center gap-2 p-4 border text-sm font-semibold   transition-all', dark ? 'bg-red-500/5 border-red-500/20 text-red-400 hover:bg-red-500/10' : 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100')}
           >
             {requestLoading ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
             Purge Expired Records
@@ -426,7 +426,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
         <button
           onClick={handleSave}
           disabled={saving}
-          className={cn('flex items-center gap-2 px-8 py-3 text-[10px] font-black uppercase tracking-widest transition-all', dark ? 'bg-z-accent hover:opacity-90 text-white shadow-[var(--z-active-glow)]' : 'bg-z-accent text-white hover:opacity-90')}
+          className={cn('flex items-center gap-2 px-8 py-3 text-sm font-semibold   transition-all', dark ? 'bg-z-accent hover:opacity-90 text-white shadow-sm' : 'bg-z-accent text-white hover:opacity-90')}
         >
           {saving ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
           Save Compliance Config

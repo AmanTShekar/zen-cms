@@ -46,7 +46,6 @@ import SettingsApiKeyModal from './settings/SettingsApiKeyModal'
 import SettingsWebhookLogs from './settings/SettingsWebhookLogs'
 import SettingsLegal from './settings/SettingsLegal'
 import SettingsSystem from './settings/SettingsSystem'
-import SettingsThemeStore from './settings/SettingsThemeStore'
 
 interface Settings {
   siteName: string
@@ -269,7 +268,6 @@ const SettingsPage = () => {
  tabs: [
  { id: 'general', label: 'General Info', icon: Globe, sub: 'Site Profile' },
  { id: 'appearance', label: 'Appearance', icon: Palette, sub: 'White-Label' },
- { id: 'themes', label: 'Theme Store', icon: Palette, sub: 'Plug-and-Play Themes' },
  { id: 'media', label: 'Storage', icon: Image, sub: 'Storage Config' },
  { id: 'billing', label: 'Billing', icon: CreditCard, sub: 'Site Monetization' },
  ]
@@ -327,8 +325,6 @@ const SettingsPage = () => {
  return <SettingsDatabase dbStats={dbStats} theme={theme} />
  case 'roles':
  return <SettingsRoles roles={roles} setRoles={setRoles} editingRole={editingRole} setEditingRole={setEditingRole} roleFilter={roleFilter} setRoleFilter={setRoleFilter} healthData={healthData} users={users} theme={theme} />
- case 'themes':
- return <SettingsThemeStore theme={theme} />
  case 'appearance':
  return <SettingsAppearance settings={settings} setSettings={setSettings} theme={theme} />
  case 'webhooks':
@@ -360,13 +356,14 @@ const SettingsPage = () => {
    title="Settings"
    description="Configure environment preferences, integrations, and access control."
    icon={<SettingsIcon size={24} />}
+   backLink={{ to: '/', label: 'Dashboard' }}
    actions={
      <button
        onClick={handleSave}
        disabled={saving}
        className={cn(
          'flex items-center justify-center gap-2 px-6 py-2.5 rounded-none text-sm font-bold transition-all disabled:opacity-50',
-         theme === 'dark' ? 'bg-z-accent hover:opacity-90 text-white shadow-[var(--z-active-glow)]' : 'bg-z-accent text-white hover:opacity-90'
+         theme === 'dark' ? 'bg-z-accent hover:opacity-90 text-white shadow-sm' : 'bg-z-accent text-white hover:opacity-90'
        )}
      >
        {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
@@ -383,7 +380,7 @@ const SettingsPage = () => {
      <div className="p-6 space-y-8 h-full overflow-y-auto pb-24">
        {tabGroups.map((group) => (
          <div key={group.label}>
-           <h3 className="text-[10px] font-black text-z-muted uppercase tracking-widest mb-3 px-3">
+           <h3 className="text-sm font-semibold text-z-muted mb-3 px-3">
              {group.label}
            </h3>
            <div className="space-y-1">
@@ -394,13 +391,13 @@ const SettingsPage = () => {
                  className={cn(
                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-none transition-all group border',
                    activeTab === tab.id
-                     ? theme === 'dark' ? 'bg-z-active-bg border-z-active-border text-z-active-text shadow-[var(--z-active-glow)] transform scale-[1.02]' : 'bg-z-active-bg border-z-active-border shadow-sm text-z-accent'
+                     ? theme === 'dark' ? 'bg-z-active-bg border-z-active-border text-z-active-text shadow-sm transform scale-[1.02]' : 'bg-z-active-bg border-z-active-border shadow-sm text-z-accent'
                      : theme === 'dark' ? 'text-z-muted border-transparent hover:bg-z-panel hover:text-gray-200' : 'text-z-secondary border-transparent hover:bg-gray-50'
                  )}
                >
                  <div className={cn(
                    "w-8 h-8 flex items-center justify-center transition-colors",
-                   activeTab === tab.id ? "bg-z-accent text-white shadow-[var(--z-active-glow)]" : "bg-z-hover text-z-muted group-hover:text-gray-300"
+                   activeTab === tab.id ? "bg-z-accent text-white shadow-sm" : "bg-z-hover text-z-muted group-hover:text-gray-300"
                  )}>
                    <tab.icon size={16} />
                  </div>
@@ -430,7 +427,7 @@ const SettingsPage = () => {
                 {activeTabDetails?.icon && <activeTabDetails.icon size={20} />}
               </div>
              <div>
-               <h2 className={cn("text-xl font-bold tracking-tight", theme === 'dark' ? 'text-white' : 'text-z-primary')}>
+               <h2 className={cn("text-xl font-bold ", theme === 'dark' ? 'text-white' : 'text-z-primary')}>
                  {activeTabDetails?.label}
                </h2>
                <p className={cn("text-xs mt-1", theme === 'dark' ? 'text-z-muted' : 'text-z-secondary')}>{activeTabDetails?.sub}</p>

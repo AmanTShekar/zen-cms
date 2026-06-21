@@ -259,7 +259,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
   const toggleKey = (id: string) => setShowKeys(prev => ({ ...prev, [id]: !prev[id] }))
 
     const inp = (dark: boolean) => cn(
-      'w-full border px-3 py-2.5 text-[12px] font-black outline-none transition-colors rounded-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+      'w-full border px-3 py-2.5 text-sm font-semibold outline-none transition-colors rounded-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
       dark
         ? 'bg-black border-z-border text-white placeholder:text-gray-700 focus:border-z-accent'
         : 'bg-z-panel border-z-border text-z-primary placeholder:text-z-muted focus:border-z-accent'
@@ -268,16 +268,16 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
   return (
     <div className="space-y-6">
       {/* Active Model Picker */}
-      <div className={cn('p-5 border space-y-4 shadow-[var(--z-active-glow)]', dark ? 'bg-z-panel backdrop-blur-md border-z-border' : 'bg-z-input border-z-border')}>
+      <div className={cn('p-5 border space-y-4 shadow-sm', dark ? 'bg-z-panel backdrop-blur-md border-z-border' : 'bg-z-input border-z-border')}>
         <div className="flex items-center gap-2.5">
           <Cpu size={14} className="text-z-active-text" />
-          <span className={cn('text-[10px] font-black uppercase tracking-[0.3em]', dark ? 'text-white' : 'text-z-primary')}>Active Model</span>
-          <span className="ml-auto text-[8px] text-z-secondary uppercase tracking-widest">Used by all AI features</span>
+          <span className={cn('text-sm font-semibold  ', dark ? 'text-white' : 'text-z-primary')}>Active Model</span>
+          <span className="ml-auto text-sm text-z-secondary">Used by all AI features</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">AI Provider</label>
+            <label className="text-sm font-semibold text-z-secondary">AI Provider</label>
             <select
               value={settings.aiProvider || 'openrouter'}
               onChange={e => setSettings({ ...settings, aiProvider: e.target.value, aiModel: PROVIDERS.find(p => p.id === e.target.value)?.models[0]?.value || '' })}
@@ -287,7 +287,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
             </select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Model</label>
+            <label className="text-sm font-semibold text-z-secondary">Model</label>
             <select
               value={settings.aiModel || ''}
               onChange={e => setSettings({ ...settings, aiModel: e.target.value })}
@@ -305,13 +305,13 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
           <button
             onClick={handleValidate}
             disabled={validating}
-            className="px-4 py-2 bg-z-accent hover:opacity-90 shadow-[var(--z-active-glow)] text-white text-[9px] font-black uppercase tracking-widest flex items-center gap-2 disabled:opacity-50 transition-all"
+            className="px-4 py-2 bg-z-accent hover:opacity-90 shadow-sm text-white text-sm font-semibold flex items-center gap-2 disabled:opacity-50 transition-all"
           >
             {validating ? <Loader2 size={11} className="animate-spin" /> : <TestTube2 size={11} />}
             Test Connection
           </button>
           {testResult && (
-            <div className={cn('flex items-center gap-2 text-[9px] font-black uppercase tracking-widest', testResult.ok ? 'text-z-active-text' : 'text-red-400')}>
+            <div className={cn('flex items-center gap-2 text-sm font-semibold  ', testResult.ok ? 'text-z-active-text' : 'text-red-400')}>
               {testResult.ok ? <CheckCircle2 size={11} /> : <AlertCircle size={11} />}
               {testResult.msg}
             </div>
@@ -323,8 +323,8 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
       <div className="space-y-2">
         <div className="flex items-center gap-2 mb-3">
           <Lock size={12} className="text-z-secondary" />
-          <span className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary">Provider API Keys</span>
-          <span className="ml-auto text-[8px] text-gray-600 uppercase tracking-widest">All keys encrypted at rest</span>
+          <span className="text-sm font-semibold text-z-secondary">Provider API Keys</span>
+          <span className="ml-auto text-sm text-gray-600">All keys encrypted at rest</span>
         </div>
 
         {PROVIDERS.map(provider => {
@@ -337,9 +337,9 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
             <div
               key={provider.id}
               className={cn(
-                'border transition-all shadow-[var(--z-active-glow)]',
+                'border transition-all shadow-sm',
                 isExpanded
-                  ? (dark ? 'border-white/15 bg-black/80 backdrop-blur-md shadow-[var(--z-active-glow)]' : 'border-z-border-strong bg-white')
+                  ? (dark ? 'border-white/15 bg-black/80 backdrop-blur-md shadow-sm' : 'border-z-border-strong bg-white')
                   : ('z-card-interactive')
               )}
             >
@@ -349,18 +349,18 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
                 className="w-full flex items-center gap-3 px-4 py-3 text-left"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className={cn('w-2 h-2 rounded-full flex-shrink-0', hasKey || isMasked ? 'bg-z-accent shadow-[var(--z-active-glow)]' : 'bg-gray-700')} />
-                  <div className={cn('text-[10px] font-black', provider.color)}>{provider.name}</div>
+                  <div className={cn('w-2 h-2 rounded-full flex-shrink-0', hasKey || isMasked ? 'bg-z-accent shadow-sm' : 'bg-gray-700')} />
+                  <div className={cn('text-sm font-semibold', provider.color)}>{provider.name}</div>
                   {provider.badge && (
-                    <span className="text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 bg-z-active-bg border border-z-active-border text-z-active-text">
+                    <span className="text-sm font-semibold px-1.5 py-0.5 bg-z-active-bg border border-z-active-border text-z-active-text">
                       {provider.badge}
                     </span>
                   )}
-                  <span className="text-[8px] text-gray-600 truncate hidden sm:block">{provider.description}</span>
+                  <span className="text-sm text-gray-600 truncate hidden sm:block">{provider.description}</span>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  {isMasked && <span className="text-[7px] text-z-active-text uppercase tracking-widest font-black">Configured</span>}
-                  {hasKey && !isMasked && <span className="text-[7px] text-z-active-text uppercase tracking-widest font-black">Active</span>}
+                  {isMasked && <span className="text-sm text-z-active-text font-semibold">Configured</span>}
+                  {hasKey && !isMasked && <span className="text-sm text-z-active-text font-semibold">Active</span>}
                   <ChevronRight size={12} className={cn('text-z-secondary transition-transform', isExpanded && 'rotate-90')} />
                 </div>
               </button>
@@ -368,16 +368,16 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
               {/* Expanded Config */}
               {isExpanded && (
                 <div className="px-4 pb-4 space-y-3 border-t" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}>
-                  <p className="text-[8px] text-z-secondary uppercase tracking-widest pt-3">{provider.description}</p>
+                  <p className="text-sm text-z-secondary pt-3">{provider.description}</p>
 
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">API Key</label>
+                      <label className="text-sm font-semibold text-z-secondary">API Key</label>
                       <a
                         href={provider.docsUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[8px] text-z-active-text hover:text-z-active-text flex items-center gap-1 transition-colors"
+                        className="text-sm text-z-active-text hover:text-z-active-text flex items-center gap-1 transition-colors"
                       >
                         Get Key <ExternalLink size={9} />
                       </a>
@@ -399,7 +399,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
                       </button>
                     </div>
                     {isMasked && (
-                      <p className="text-[8px] text-amber-500/70 uppercase tracking-widest flex items-center gap-1">
+                      <p className="text-sm text-amber-500/70 flex items-center gap-1">
                         <Lock size={9} /> Key is stored — enter a new value to replace it
                       </p>
                     )}
@@ -408,14 +408,14 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
                   {/* Models preview */}
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">
+                      <label className="text-sm font-semibold text-z-secondary">
                         Available Models {dynamicModels[provider.id] ? `(${dynamicModels[provider.id].length})` : ''}
                       </label>
                       <button
                         type="button"
                         onClick={() => handleFetchModels(provider.id, provider.keyField)}
                         disabled={fetchingModels === provider.id || (!hasKey && !isMasked)}
-                        className="text-[8px] text-z-active-text hover:text-z-active-text flex items-center gap-1 disabled:opacity-50 transition-colors"
+                        className="text-sm text-z-active-text hover:text-z-active-text flex items-center gap-1 disabled:opacity-50 transition-colors"
                       >
                         {fetchingModels === provider.id ? <Loader2 size={9} className="animate-spin" /> : <Zap size={9} />}
                         Fetch Models
@@ -426,7 +426,7 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
                         <span
                           key={m.value}
                           title={m.value}
-                          className={cn('text-[7px] font-black uppercase tracking-widest px-2 py-1 border', m.tier ? TIER_BADGE[m.tier] : 'bg-z-hover border-white/10 text-z-muted')}
+                          className={cn('text-sm font-semibold   px-2 py-1 border', m.tier ? TIER_BADGE[m.tier] : 'bg-z-hover border-white/10 text-z-muted')}
                         >
                           {m.label}
                         </span>
@@ -444,8 +444,8 @@ const SettingsAi: React.FC<SettingsAiProps> = ({ settings, setSettings, theme })
       <div className={cn('flex gap-3 p-4 border', dark ? 'bg-z-accent/5 border-z-accent/15' : 'bg-z-active-bg border-z-active-border')}>
         <Info size={12} className="text-z-active-text flex-shrink-0 mt-0.5" />
         <div className="space-y-1">
-          <p className="text-[9px] font-black uppercase tracking-widest text-z-active-text">Provider Priority</p>
-          <p className="text-[8px] text-z-secondary leading-relaxed">
+          <p className="text-sm font-semibold text-z-active-text">Provider Priority</p>
+          <p className="text-sm text-z-secondary leading-relaxed">
             The AI engine auto-selects providers in this order: OpenRouter → xAI → NVIDIA NIM → Groq → Together AI → Mistral → Cohere → OpenAI → Anthropic → Google Gemini.
             Set the "Active Model" above to override. Keys are never sent to the client.
           </p>

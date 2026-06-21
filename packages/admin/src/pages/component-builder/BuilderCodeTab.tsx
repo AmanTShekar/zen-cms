@@ -12,16 +12,16 @@ export const BuilderCodeTab = ({
 }: any) => {
   return (
     <motion.div key="code" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
-      <div className={cn('p-6 border rounded-none shadow-[var(--z-active-glow)] transition-all', 'z-panel')}>
-        <h3 className="text-[10px] font-black uppercase tracking-widest text-z-active-text mb-1 flex items-center gap-2">
+      <div className={cn('p-6 border rounded-none shadow-sm transition-all', 'z-panel')}>
+        <h3 className="text-sm font-semibold text-z-active-text mb-1 flex items-center gap-2">
           <Code size={12} /> Import from Code / JSON
         </h3>
-        <p className={cn('text-[10px] mb-4 font-medium', dark ? 'text-z-muted' : 'text-z-secondary')}>
+        <p className={cn('text-sm mb-4 font-medium', dark ? 'text-z-muted' : 'text-z-secondary')}>
           Paste a JSON component definition, a TypeScript interface, or a raw fields array. The parser will auto-detect the format.
         </p>
 
         {/* Format examples */}
-        <div className={cn('p-4 rounded-none text-[10px] font-mono mb-4 text-gray-600 dark:text-z-muted border shadow-inner', dark ? 'bg-z-popover border-z-border' : 'bg-gray-900 border-gray-700')}>
+        <div className={cn('p-4 rounded-none text-sm font-mono mb-4 text-gray-600 dark:text-z-muted border shadow-inner', dark ? 'bg-z-popover border-z-border' : 'bg-gray-900 border-gray-700')}>
           <p className="text-z-secondary mb-2">// JSON format (recommended)</p>
           {`{
   "slug": "hero-section",
@@ -50,21 +50,21 @@ export const BuilderCodeTab = ({
           <button
             onClick={handleCodeImport}
             disabled={!codeImport.trim()}
-            className="flex items-center gap-2 px-5 py-2.5 bg-z-accent hover:opacity-90 text-white text-[10px] font-black uppercase tracking-widest rounded-none transition-all disabled:opacity-40 shadow-[var(--z-active-glow)]"
+            className="flex items-center gap-2 px-5 py-2.5 bg-z-accent hover:opacity-90 text-white text-sm font-semibold rounded-none transition-all disabled:opacity-40 shadow-sm"
           >
             <ChevronRight size={14} /> Import to Visual Editor
           </button>
           <button
             onClick={handleRegisterCode}
             disabled={!codeImport.trim()}
-            className="flex items-center gap-2 px-5 py-2.5 bg-z-accent hover:opacity-90 text-white text-[10px] font-black uppercase tracking-widest rounded-none transition-all disabled:opacity-40 shadow-[var(--z-active-glow)]"
+            className="flex items-center gap-2 px-5 py-2.5 bg-z-accent hover:opacity-90 text-white text-sm font-semibold rounded-none transition-all disabled:opacity-40 shadow-sm"
             title="Save directly to database without going through visual editor"
           >
             <Save size={14} /> Register Directly
           </button>
           <button
             onClick={() => setCodeImport('')}
-            className={cn('flex items-center gap-2 px-4 py-2.5 border text-[10px] font-black uppercase tracking-widest rounded-none transition-all', dark ? 'border-z-border hover:bg-z-hover' : 'border-z-border hover:bg-gray-50')}
+            className={cn('flex items-center gap-2 px-4 py-2.5 border text-sm font-semibold   rounded-none transition-all', dark ? 'border-z-border hover:bg-z-hover' : 'border-z-border hover:bg-gray-50')}
           >
             <X size={14} /> Clear
           </button>

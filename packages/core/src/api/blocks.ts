@@ -6,10 +6,20 @@ import { NotFoundError } from '../errors'
 import fs from 'fs'
 import path from 'path'
 import { z } from 'zod'
+import rateLimit from 'express-rate-limit'
 import { getBlockStorage } from '../services/s3-storage'
+import { env } from '../config/env'
 
 const router: Router = Router()
 const generationLocks = new Map<string, boolean>()
+
+const blocksLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
+})
 
 // NOTE: Block definitions are read-only catalogue data — no auth required for GET.
 // Future write endpoints (POST/PUT/DELETE) should add requireAuth individually.
@@ -50,7 +60,7 @@ const FieldSchema: z.ZodType<FieldType> = baseFieldSchema.extend({
 })
 
 const BlockPayloadSchema = z.object({
-  slug: z.string(),
+  slug: z.string().regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
   title: z.string(),
   description: z.string().optional(),
   category: z.string().optional().default('General'),
@@ -122,7 +132,7 @@ router.get('/:slug', requireAuth, async (req: Request, res: Response, next) => {
 })
 
 // ── POST /api/v1/blocks/generate ─────────────
-router.post('/generate', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
+router.post('/generate', blocksLimiter, requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
     // siteId is optional. If missing, it generates a global block.
@@ -229,7 +239,7 @@ ${fieldsCode}
 
     try {
       if (storage) {
-        await storage.write(blockLocation, fileContent)
+        await storage.write(blockLocation, fileContent, siteId)
       } else {
         await fs.promises.mkdir(blockLocation, { recursive: true })
         const filePath = path.join(blockLocation, fileName)
@@ -263,7 +273,7 @@ ${fieldsCode}
       // Rollback: Database failed, delete the orphaned object
       if (storage) {
         try {
-          await storage.delete(`blocks/${siteId || 'global'}/${fileName}`)
+          await storage.delete(`blocks/${siteId || 'global'}/${fileName}`, siteId)
         } catch (deleteErr) {
           console.error(`[Rollback] S3 delete failed: ${(deleteErr as any).message}`)
         }

@@ -108,7 +108,7 @@ function BlockTypeDropdown({ blockType, onBlockTypeChange }: {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          'flex items-center gap-2 px-3 py-1.5 text-[11px] font-black uppercase italic tracking-tight transition-all',
+          'flex items-center gap-2 px-3 py-1.5 text-sm font-semibold  italic  transition-all',
           theme === 'dark'
             ? 'text-white hover:bg-z-hover'
             : 'text-z-primary hover:bg-gray-100',
@@ -126,7 +126,7 @@ function BlockTypeDropdown({ blockType, onBlockTypeChange }: {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
             className={cn(
-              'absolute top-full left-0 mt-1 z-[600] border shadow-[var(--z-active-glow)] p-1 min-w-[160px]',
+              'absolute top-full left-0 mt-1 z-[600] border shadow-sm p-1 min-w-[160px]',
               theme === 'dark'
                 ? 'bg-[#0b0f19]/95 border-white/10 backdrop-blur-2xl'
                 : 'bg-z-panel border-z-border shadow-xl',
@@ -140,7 +140,7 @@ function BlockTypeDropdown({ blockType, onBlockTypeChange }: {
                   setIsOpen(false)
                 }}
                 className={cn(
-                  'w-full text-left px-3 py-2 text-[10px] font-black uppercase italic transition-all',
+                  'w-full text-left px-3 py-2 text-sm font-semibold  italic transition-all',
                   blockType === opt.value
                     ? theme === 'dark'
                       ? 'text-z-active-text bg-z-active-bg'

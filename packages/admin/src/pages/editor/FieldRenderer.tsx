@@ -81,7 +81,7 @@ const ReorderableArrayItem = React.memo(({ item, idx, theme, onRemove, onChange,
  <div onPointerDown={(e) => dragControls.start(e)} className="cursor-grab">
  <GripVertical size={12} className={cn('opacity-30', theme === 'dark' ? 'text-z-secondary' : 'text-z-muted')} />
  </div>
- <span className={cn('text-[9px] font-black uppercase tracking-widest ', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
+ <span className={cn('text-sm font-semibold   ', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
  #{idx + 1}
  </span>
  <button
@@ -100,7 +100,7 @@ const ReorderableArrayItem = React.memo(({ item, idx, theme, onRemove, onChange,
  <div className="space-y-3">
  {field.fields?.map((subField: any) => (
  <div key={subField.name} className="space-y-1">
- <label className="text-xs font-black text-z-muted uppercase tracking-widest block">
+ <label className="text-xs font-semibold text-z-muted block">
  {humanize(subField.name)}
  </label>
  <FieldRenderer
@@ -272,7 +272,7 @@ export const FieldRenderer = React.memo(({
  type="button"
  onClick={() => setIsAuto(!isAuto)}
  className={cn(
- 'px-2.5 py-2.5 text-[9px] font-black uppercase border rounded-none-none transition-all shrink-0',
+ 'px-2.5 py-2.5 text-sm font-semibold  border rounded-none-none transition-all shrink-0',
  isAuto
  ? 'bg-gray-500/10 border-gray-500/30 text-gray-600 dark:text-z-muted'
  : theme === 'dark'
@@ -285,7 +285,7 @@ export const FieldRenderer = React.memo(({
  </button>
  </div>
  {isAuto && (
- <p className={cn('text-[9px] font-bold px-1', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
+ <p className={cn('text-sm font-bold px-1', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
  Will be auto-generated from the "{sourceField}" field
  </p>
  )}
@@ -313,7 +313,7 @@ export const FieldRenderer = React.memo(({
  onChange={(e) => onChange(e.target.value)}
  placeholder="#000000"
  className={cn(
- "flex-1 px-4 py-2.5 text-xs font-mono transition-all rounded-none-none uppercase",
+ "flex-1 px-4 py-2.5 text-xs font-mono transition-all rounded-none-none ",
  theme === 'dark'
  ? "bg-black border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
  : "bg-white border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
@@ -406,7 +406,7 @@ export const FieldRenderer = React.memo(({
  )}>
  {collapsibleFields.map((subField) => (
  <div key={subField.name} className="space-y-1">
- <label className="text-xs font-black text-z-muted uppercase tracking-widest block">
+ <label className="text-xs font-semibold text-z-muted block">
  {humanize(subField.name)}
  </label>
  <FieldRenderer
@@ -441,7 +441,7 @@ export const FieldRenderer = React.memo(({
  return (
  <div className="flex gap-2">
  <div className="flex-1 space-y-1">
- <label className="text-xs font-black text-z-secondary uppercase tracking-widest">Lng</label>
+ <label className="text-xs font-semibold text-z-secondary">Lng</label>
  <input
  type="number"
  value={coords[0]}
@@ -456,7 +456,7 @@ export const FieldRenderer = React.memo(({
  />
  </div>
  <div className="flex-1 space-y-1">
- <label className="text-xs font-black text-z-secondary uppercase tracking-widest">Lat</label>
+ <label className="text-xs font-semibold text-z-secondary">Lat</label>
  <input
  type="number"
  value={coords[1]}
@@ -516,7 +516,7 @@ export const FieldRenderer = React.memo(({
  <div className="flex gap-2 items-end">
  {rowFields.map((subField) => (
  <div key={subField.name} className="flex-1 space-y-1">
- <label className="text-xs font-black text-z-muted uppercase tracking-widest block">
+ <label className="text-xs font-semibold text-z-muted block">
  {humanize(subField.name)}
  </label>
  <FieldRenderer
@@ -646,7 +646,7 @@ export const FieldRenderer = React.memo(({
  <button
  type="button"
  onClick={() => onChange([])}
- className={cn('w-full text-left px-3 py-1.5 text-[10px] font-black uppercase ', theme === 'dark' ? 'text-z-secondary hover:bg-z-hover' : 'text-z-muted hover:bg-gray-50')}
+ className={cn('w-full text-left px-3 py-1.5 text-sm font-semibold  ', theme === 'dark' ? 'text-z-secondary hover:bg-z-hover' : 'text-z-muted hover:bg-gray-50')}
  >Clear all</button>
  )}
  {options.map((opt: string | { label: string; value: any }) => {
@@ -732,14 +732,14 @@ export const FieldRenderer = React.memo(({
  return (
  <div className="space-y-4">
  <div className="flex items-center justify-between">
- <span className="text-xs font-black tracking-widest text-gray-600 dark:text-z-muted uppercase ">
+ <span className="text-xs font-semibold text-gray-600 dark:text-z-muted">
  {items.length} {items.length === 1 ? 'Item' : 'Items'}
  </span>
  <button
  type="button"
  onClick={handleAddArrayItem}
  className={cn(
- 'flex items-center gap-1 px-2.5 py-1 text-xs font-black uppercase tracking-wider transition-all border',
+ 'flex items-center gap-1 px-2.5 py-1 text-xs font-semibold   transition-all border',
  theme === 'dark'
  ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted hover:bg-gray-500/20'
  : 'bg-z-input border-z-border text-gray-600 hover:bg-gray-100'
@@ -782,7 +782,7 @@ export const FieldRenderer = React.memo(({
  <div className="border-l border-gray-500/20 pl-3 space-y-3">
  {field.fields?.map((subField) => (
  <div key={subField.name} className="space-y-1">
- <label className="text-xs font-black text-z-muted uppercase tracking-widest block">
+ <label className="text-xs font-semibold text-z-muted block">
  {humanize(subField.name)}
  </label>
  <FieldRenderer
@@ -818,9 +818,9 @@ export const FieldRenderer = React.memo(({
  <div className="flex items-center gap-2">
  <span className={cn(
  "inline-block w-1.5 h-1.5 rounded-none-none",
- jsonValid === true ? "bg-gray-500 shadow-[var(--z-active-glow)]" : jsonValid === false ? "bg-red-500 shadow-[0_0_6px_#ef4444]" : "bg-gray-600"
+ jsonValid === true ? "bg-gray-500 shadow-sm" : jsonValid === false ? "bg-red-500 shadow-[0_0_6px_#ef4444]" : "bg-gray-600"
  )} />
- <span className="text-xs font-bold uppercase tracking-widest " style={{ color: jsonValid === true ? 'var(--z-accent)' : jsonValid === false ? '#ef4444' : '#6b7280' }}>
+ <span className="text-xs font-bold" style={{ color: jsonValid === true ? 'var(--z-accent)' : jsonValid === false ? '#ef4444' : '#6b7280' }}>
  {jsonValid === true ? 'Valid JSON' : jsonValid === false ? 'Invalid JSON' : 'JSON'}
  </span>
  </div>
@@ -852,7 +852,7 @@ export const FieldRenderer = React.memo(({
  theme === 'dark' ? 'bg-z-panel border-z-border' : 'bg-gray-100/50 border-z-border'
  )}>
  <span className={cn(
- 'text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 border rounded-none-none',
+ 'text-sm font-semibold   px-1.5 py-0.5 border rounded-none-none',
  theme === 'dark' ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted' : 'bg-z-input border-z-border text-gray-700'
  )}>
  {blockDef?.labels?.singular || humanize(blockType || 'block')}
@@ -872,7 +872,7 @@ export const FieldRenderer = React.memo(({
  <div className="px-3 py-3 space-y-3">
  {blockFields.map((subField: FieldDefinition) => (
  <div key={subField.name} className="space-y-1">
- <label className="text-xs font-black text-z-muted uppercase tracking-widest block">
+ <label className="text-xs font-semibold text-z-muted block">
  {subField.label || humanize(subField.name)}
  </label>
  <FieldRenderer
@@ -916,7 +916,7 @@ export const FieldRenderer = React.memo(({
  )}>
  <Plus size={14} className="stroke-[3]" />
  </div>
- <span className="text-[10px] font-black uppercase tracking-widest ">
+ <span className="text-sm font-semibold">
  Add Block
  </span>
  </button>
@@ -942,7 +942,7 @@ export const FieldRenderer = React.memo(({
  type="button"
  onClick={() => setActiveTab(idx)}
  className={cn(
- 'px-3 py-1.5 text-[9px] font-black uppercase tracking-wider transition-all',
+ 'px-3 py-1.5 text-sm font-semibold   transition-all',
  activeTab === idx
  ? theme === 'dark'
  ? 'bg-white/10 text-white'
@@ -961,7 +961,7 @@ export const FieldRenderer = React.memo(({
  <div className="space-y-3">
  {tabs[activeTab].fields?.map((subField: FieldDefinition) => (
  <div key={subField.name} className="space-y-1">
- <label className="text-xs font-black text-z-muted uppercase tracking-widest block">
+ <label className="text-xs font-semibold text-z-muted block">
  {subField.label || humanize(subField.name)}
  </label>
  <FieldRenderer
@@ -1020,11 +1020,11 @@ export const FieldRenderer = React.memo(({
  >
  {showFieldIndicators && (
  <div className="stega-field-indicator">
- {isSelected ? <Settings2 size={10} /> : <span className="text-[7px]">⚡</span>}
+ {isSelected ? <Settings2 size={10} /> : <span className="text-sm">⚡</span>}
  </div>
  )}
  {field.description && (
- <p className={cn('text-[11px] font-medium mt-0.5 mb-1', theme === 'dark' ? 'text-z-secondary' : 'text-z-muted')}>
+ <p className={cn('text-sm font-medium mt-0.5 mb-1', theme === 'dark' ? 'text-z-secondary' : 'text-z-muted')}>
  {field.description}
  </p>
  )}

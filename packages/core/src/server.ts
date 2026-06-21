@@ -9,18 +9,20 @@ import * as Sentry from '@sentry/node'
 import { ZenithEngine } from './index'
 import { logger } from './services/logger'
 
-if (process.env.NODE_ENV === 'production' && !process.env.REDIS_URL) {
+if (env.NODE_ENV === 'production' && !env.REDIS_URL) {
   logger.fatal('REDIS_URL is strictly required in production for horizontal scaling. Failing boot.')
   process.exit(1)
 }
 
 import './services/telemetry'
 import { nodeProfilingIntegration } from '@sentry/profiling-node'
+import { env } from './config/env';
+
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
-    environment: process.env.NODE_ENV || 'development',
+    environment: env.NODE_ENV || 'development',
     integrations: [
       nodeProfilingIntegration(),
     ],
@@ -83,8 +85,8 @@ process.on('SIGINT', () => shutdown('SIGINT'))
 engine = new ZenithEngine({
   config,
   cors: {
-    origins: process.env.CORS_ORIGINS
-      ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
+    origins: env.CORS_ORIGINS
+      ? env.CORS_ORIGINS.split(',').map((o) => o.trim())
       : [
           'http://localhost:5173',
           'http://localhost:5174',

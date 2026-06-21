@@ -120,7 +120,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdated,
             <div className="w-10 h-10 rounded-none-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
               <UserCog size={18} className="text-gray-600 dark:text-z-secondary" />
             </div>
-            <span className="text-[12px] font-black uppercase tracking-wide text-inherit">Edit Operator</span>
+            <span className="text-sm font-semibold tracking-wide text-inherit">Edit Operator</span>
           </div>
           <button onClick={onClose} className="text-z-secondary hover:text-z-active-text transition-colors">
             <X size={18} />
@@ -130,15 +130,15 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdated,
         <div className="flex-1 overflow-y-auto">
           <form onSubmit={handleUpdate} className="px-8 py-6 space-y-8">
             <div className="space-y-1">
-              <p className="text-[14px] font-black">{user.email}</p>
-              <p className="text-[10px] uppercase text-z-secondary tracking-widest">
+              <p className="text-[14px] font-semibold">{user.email}</p>
+              <p className="text-sm text-z-secondary">
                 ID: {user._id}
               </p>
             </div>
 
             {/* Role */}
             <div className="space-y-3">
-              <label className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary">
+              <label className="text-sm font-semibold text-z-secondary">
                 Auth Tier
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -148,7 +148,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdated,
                     type="button"
                     onClick={() => setRole(r)}
                     className={cn(
-                      'py-3 text-[9px] font-black uppercase tracking-wider border rounded-none-none transition-all',
+                      'py-3 text-sm font-semibold   border rounded-none-none transition-all',
                       role === r
                         ? 'border-z-accent/40 bg-z-active-bg text-z-active-text'
                         : theme === 'dark'
@@ -164,7 +164,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdated,
 
             {/* Color */}
             <div className="space-y-3">
-              <label className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary">
+              <label className="text-sm font-semibold text-z-secondary">
                 Profile Color
               </label>
               <div className="flex items-center gap-3 flex-wrap">
@@ -192,7 +192,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdated,
                 />
               </div>
               {!color && (
-                <p className="text-[9px] text-z-secondary uppercase tracking-widest">
+                <p className="text-sm text-z-secondary">
                   Currently auto-assigned deterministically
                 </p>
               )}
@@ -200,10 +200,10 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdated,
 
             {/* Special Access Scopes */}
             <div className="space-y-3">
-              <label className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary">
+              <label className="text-sm font-semibold text-z-secondary">
                 Restrict Content Access
               </label>
-              <p className="text-[9px] text-z-secondary tracking-wider mb-2">
+              <p className="text-sm text-z-secondary mb-2">
                 Select exactly which collections this operator can view/edit. If none are selected, they default to standard role constraints.
               </p>
               <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
@@ -224,7 +224,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdated,
                     )}
                   >
                     <span className={cn(
-                      'text-[10px] font-black uppercase tracking-widest',
+                      'text-sm font-semibold  ',
                       specialAccess.has(scope.id) 
                         ? 'text-amber-500' 
                         : 'text-z-secondary'
@@ -241,7 +241,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdated,
                     </div>
                   </button>
                 )) : (
-                  <p className="text-[10px] text-z-secondary uppercase">No collections available to restrict.</p>
+                  <p className="text-sm text-z-secondary">No collections available to restrict.</p>
                 )}
               </div>
             </div>
@@ -252,7 +252,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdated,
                 type="submit"
                 disabled={loading}
                 className={cn(
-                  'w-full py-4 rounded-none-none text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 disabled:opacity-40',
+                  'w-full py-4 rounded-none-none text-sm font-semibold   shadow-lg transition-all active:scale-95 disabled:opacity-40',
                   theme === 'dark'
                     ? 'bg-z-accent hover:bg-z-accent text-black'
                     : 'bg-z-accent hover:opacity-90 text-white'

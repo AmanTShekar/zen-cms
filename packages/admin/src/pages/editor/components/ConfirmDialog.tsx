@@ -63,7 +63,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
  <AlertTriangle size={16} />
  </div>
  <div className="flex-1 min-w-0">
- <h3 className="text-sm font-black uppercase tracking-wider">{title}</h3>
+ <h3 className="text-sm font-semibold">{title}</h3>
  <p className={cn('text-xs font-bold mt-1.5 leading-relaxed', dark ? 'text-z-muted' : 'text-gray-600')}>
  {message}
  </p>
@@ -81,7 +81,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
  onClick={onCancel}
  aria-label="Cancel action"
  className={cn(
- 'flex-1 py-2 text-xs font-black uppercase tracking-widest border rounded-none-none transition-all',
+ 'flex-1 py-2 text-xs font-semibold   border rounded-none-none transition-all',
  dark
  ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
  : 'border-z-border text-gray-600 hover:border-z-border-strong hover:text-black'
@@ -93,7 +93,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
  onClick={onConfirm}
  aria-label={confirmLabel}
  className={cn(
- 'flex-1 py-2 text-xs font-black uppercase tracking-widest rounded-none-none transition-all',
+ 'flex-1 py-2 text-xs font-semibold   rounded-none-none transition-all',
  danger
  ? 'bg-rose-600 hover:bg-rose-500 text-white'
  : 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white'

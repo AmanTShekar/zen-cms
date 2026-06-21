@@ -71,7 +71,7 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
  'p-1.5 border rounded-none-none shadow-2xl backdrop-blur-xl relative',
  theme === 'dark'
  ? 'bg-black/95 border-white/8 text-white'
- : 'bg-white/95 border-z-border text-z-primary shadow-[var(--z-active-glow)]/50'
+ : 'bg-white/95 border-z-border text-z-primary shadow-sm/50'
  )}
  >
  {/* Transform Submenu Trigger */}
@@ -147,7 +147,7 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
 
  {/* Align Submenu */}
  <div className={cn('h-px my-1', theme === 'dark' ? 'bg-z-hover' : 'bg-gray-100')} />
- <div className="px-3 py-1.5 text-xs font-black uppercase tracking-wider opacity-40">Alignment</div>
+ <div className="px-3 py-1.5 text-xs font-semibold opacity-40">Alignment</div>
  <div className="flex gap-1 px-1.5 pb-1">
  <button
  onClick={() => { onAlign('left'); onClose() }}

@@ -86,11 +86,11 @@ function LexicalEditorInner({ mode, placeholder, disabled, autoFocus }: {
                 'prose prose-indigo max-w-none',
                 theme === 'dark' ? 'prose-invert text-white' : 'text-z-primary',
                 mode === 'heading'
-                  ? 'text-5xl md:text-7xl font-black italic tracking-tighter p-0 min-h-0 uppercase leading-[0.85]'
+                  ? 'text-5xl md:text-7xl font-semibold italic  p-0 min-h-0  leading-[0.85]'
                   : mode === 'inline'
-                    ? 'text-2xl font-bold p-0 min-h-0 italic tracking-tight'
+                    ? 'text-2xl font-bold p-0 min-h-0 italic '
                     : mode === 'micro'
-                      ? 'text-[12px] font-black uppercase tracking-[0.2em] p-4 min-h-0 italic opacity-80'
+                      ? 'text-sm font-semibold   p-4 min-h-0 italic opacity-80'
                       : 'min-h-[280px] px-4 py-6 text-[16px] leading-relaxed',
               )}
             />

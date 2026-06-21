@@ -8,9 +8,10 @@ export interface PageHeaderProps {
   icon?: React.ReactNode;
   actions?: React.ReactNode;
   className?: string;
+  backLink?: { to: string; label: string };
 }
 
-export function PageHeader({ title, description, icon, actions, className }: PageHeaderProps) {
+export function PageHeader({ title, description, icon, actions, className, backLink }: PageHeaderProps) {
   const { theme } = useTheme();
 
   return (
@@ -20,6 +21,11 @@ export function PageHeader({ title, description, icon, actions, className }: Pag
       className
     )}>
       <div className="flex items-center gap-4">
+        {backLink && (
+          <a href={backLink.to} className="flex items-center justify-center p-2 rounded-none border border-transparent hover:border-z-border hover:bg-z-hover transition-all text-z-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          </a>
+        )}
         {icon && (
           <div className={cn(
             "p-2.5 rounded-none-none border",
@@ -30,7 +36,7 @@ export function PageHeader({ title, description, icon, actions, className }: Pag
         )}
         <div>
           <h1 className={cn(
-            "text-xl font-black uppercase tracking-widest leading-none",
+            "text-xl font-semibold   leading-none",
             theme === 'dark' ? 'text-white' : 'text-z-primary'
           )}>
             {title}

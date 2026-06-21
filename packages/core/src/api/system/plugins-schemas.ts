@@ -77,7 +77,7 @@ const searchLimiter = rateLimit({
   max: 30,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })
 
 const aiLimiter = rateLimit({
@@ -85,7 +85,7 @@ const aiLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })
 
 // ── AI Architect Schema Validator ─────────────────────────────────────────────
@@ -120,6 +120,8 @@ const AICollectionSchema = z.object({
 
 
 import { Router as ERouter } from 'express';
+import { env } from '../../config/env';
+
 export const systemRouter1: ERouter = ERouter();
 const router = systemRouter1;
 
@@ -436,7 +438,7 @@ router.get('/health', async (req: Request, res: Response) => {
     uptime: Math.floor(process.uptime()),
     database: dbHealth,
     version: process.env.ZENITH_VERSION || '1.0.0',
-    environment: process.env.NODE_ENV || 'development',
+    environment: env.NODE_ENV || 'development',
     memory: {
       rss: Math.round(mem.rss / 1024 / 1024) + 'MB',
       heapUsed: Math.round(mem.heapUsed / 1024 / 1024) + 'MB',
@@ -474,6 +476,7 @@ router.get('/counts', requireAuth, async (req: Request, res: Response, next) => 
 router.get(
   '/audit-logs',
   requireAuth,
+  requireRole('admin'), // ISOLATION FIX: only admins should read audit logs
   async (req: Request, res: Response, next) => {
     try {
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
@@ -592,8 +595,12 @@ router.get(
   async (req: Request, res: Response, next) => {
     try {
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const siteId = req.headers['x-zenith-site-id'] as string
       const { id } = req.params
-      const log = await adapter.findOne<any>('audit_logs', { id })
+      // ISOLATION FIX: scope by siteId to prevent cross-tenant audit log access
+      const query: Record<string, unknown> = { id }
+      if (siteId) query.siteId = siteId
+      const log = await adapter.findOne<any>('audit_logs', query)
       if (!log) return res.status(404).json(createErrorResponse(404, 'Audit log not found'))
       res.json(createResponse(log))
     } catch (err) {
@@ -613,7 +620,10 @@ router.post(
       const siteId = req.headers['x-zenith-site-id'] as string
 
       const query: Record<string, unknown> = {}
-      if (before) query.timestamp = { $lt: new Date(before) }
+      if (before) {
+        // Timestamps are stored as ISO strings in the DB, so we compare lexically.
+        query.timestamp = { $lt: new Date(before).toISOString() }
+      }
       if (action) query.action = action
       if (filterStatus) query.status = filterStatus
       if (siteId) query.siteId = siteId

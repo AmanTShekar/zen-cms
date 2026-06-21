@@ -8,6 +8,8 @@ import { HttpInstrumentation } from '@opentelemetry/instrumentation-http'
 import { ExpressInstrumentation } from '@opentelemetry/instrumentation-express'
 import { logger } from './logger'
 import { traceContextStorage } from './tracer'
+import { env } from '../config/env';
+
 
 function getOtelProvider() {
   try {
@@ -17,7 +19,7 @@ function getOtelProvider() {
     if (existing) return null
   } catch { /* opentelemetry not available */ }
 
-  if (process.env.OTEL_EXPORTER_OTLP_ENDPOINT || process.env.ENABLE_TRACING === 'true') {
+  if (env.OTEL_EXPORTER_OTLP_ENDPOINT || env.ENABLE_TRACING === 'true') {
     const provider = new NodeTracerProvider({
       resource: new Resource({
         [SemanticResourceAttributes.SERVICE_NAME]: 'zenith-cms-core',
@@ -25,8 +27,8 @@ function getOtelProvider() {
       }) as any,
     })
 
-    const exporter = process.env.OTEL_EXPORTER_OTLP_ENDPOINT
-      ? new OTLPTraceExporter({ url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT })
+    const exporter = env.OTEL_EXPORTER_OTLP_ENDPOINT
+      ? new OTLPTraceExporter({ url: env.OTEL_EXPORTER_OTLP_ENDPOINT })
       : undefined
 
     if (exporter) {

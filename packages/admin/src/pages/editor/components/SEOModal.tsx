@@ -128,7 +128,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <h3
  id={modalTitleId}
  className={cn(
- 'text-lg font-black uppercase leading-none',
+ 'text-lg font-semibold  leading-none',
  theme === 'dark' ? 'text-white' : 'text-black',
  )}
  >
@@ -157,7 +157,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  onClick={() => setPreviewTab(tab.id)}
  aria-label={`${tab.label} preview`}
  className={cn(
- 'flex items-center gap-2 px-3 py-2 text-xs font-black uppercase tracking-wider transition-all border rounded-none-none flex-1 justify-center',
+ 'flex items-center gap-2 px-3 py-2 text-xs font-semibold   transition-all border rounded-none-none flex-1 justify-center',
  previewTab === tab.id
  ? theme === 'dark'
  ? 'bg-white/10 border-z-border text-white'
@@ -237,12 +237,12 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  >
  {/* Header */}
  <div className="flex items-center gap-3 px-3 py-2">
- <div className="w-8 h-8 rounded-none-none bg-gray-500 flex items-center justify-center text-white text-xs font-black shrink-0">
+ <div className="w-8 h-8 rounded-none-none bg-gray-500 flex items-center justify-center text-white text-xs font-semibold shrink-0">
  Z
  </div>
  <div className="min-w-0">
  <div className="flex items-center gap-1">
- <span className={cn('text-[11px] font-black', theme === 'dark' ? 'text-white' : 'text-black')}>
+ <span className={cn('text-sm font-semibold', theme === 'dark' ? 'text-white' : 'text-black')}>
  Zenith CMS
  </span>
  <span className={cn('text-xs', theme === 'dark' ? 'text-z-secondary' : 'text-z-muted')}>@zenith·now</span>
@@ -251,7 +251,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  </div>
  </div>
  {/* Card content */}
- <div className={cn('px-3 pb-2 text-[12px] leading-4 font-normal', theme === 'dark' ? 'text-white' : 'text-black')}>
+ <div className={cn('px-3 pb-2 text-sm leading-4 font-normal', theme === 'dark' ? 'text-white' : 'text-black')}>
  {seoTitle}
  </div>
  {/* Image */}
@@ -298,7 +298,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  theme === 'dark' ? 'bg-[#242526] border-z-border' : 'bg-z-input border-z-border'
  )}
  >
- <div className="text-xs font-black uppercase tracking-wider text-z-muted mb-1">
+ <div className="text-xs font-semibold text-z-muted mb-1">
  {siteUrl.replace(/^https?:\/\//, '')}
  </div>
  <div
@@ -312,7 +312,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  </div>
  <div
  className={cn(
- 'text-[11px] leading-3 line-clamp-2',
+ 'text-sm leading-3 line-clamp-2',
  theme === 'dark' ? 'text-z-muted' : 'text-z-secondary'
  )}
  style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}
@@ -332,13 +332,13 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <div className="flex items-center justify-between">
  <label
  htmlFor={`seo-${field}`}
- className="text-xs font-black text-z-secondary uppercase tracking-widest px-1"
+ className="text-xs font-semibold text-z-secondary px-1"
  >
  {humanize(field)}
  </label>
  {field === 'description' && (
  <span className={cn(
- 'text-xs font-black ',
+ 'text-xs font-semibold ',
  charCount(localMeta.description) > 155
  ? 'text-rose-500'
  : 'text-gray-600'
@@ -348,7 +348,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  )}
  {field === 'title' && (
  <span className={cn(
- 'text-xs font-black ',
+ 'text-xs font-semibold ',
  charCount(localMeta.title) > 60
  ? 'text-rose-500'
  : 'text-gray-600'
@@ -365,7 +365,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  handleFieldChange(field, e.target.value)
  }
  className={cn(
- 'w-full rounded-none-none py-3 px-4 text-xs font-black h-24 resize-none transition-all border',
+ 'w-full rounded-none-none py-3 px-4 text-xs font-semibold h-24 resize-none transition-all border',
  theme === 'dark'
  ? 'bg-z-hover border-z-border text-white focus-visible:border-gray-500/30'
  : 'bg-z-input border-z-border text-black focus-visible:border-gray-600/30',
@@ -381,7 +381,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  handleFieldChange(field, e.target.value)
  }
  className={cn(
- 'w-full rounded-none-none py-3 px-4 text-xs font-black transition-all border',
+ 'w-full rounded-none-none py-3 px-4 text-xs font-semibold transition-all border',
  theme === 'dark'
  ? 'bg-z-hover border-z-border text-white focus-visible:border-gray-500/30'
  : 'bg-z-input border-z-border text-black focus-visible:border-gray-600/30',
@@ -406,7 +406,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  onClick={resetToDefaults}
  aria-label="Reset SEO fields"
  className={cn(
- 'flex items-center gap-2 px-4 py-2 text-xs font-black uppercase rounded-none-none border transition-all',
+ 'flex items-center gap-2 px-4 py-2 text-xs font-semibold  rounded-none-none border transition-all',
  theme === 'dark'
  ? 'border-z-border text-z-muted hover:border-rose-500/20 hover:text-rose-400'
  : 'border-z-border text-z-secondary hover:border-rose-200 hover:text-rose-500',
@@ -420,7 +420,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  onClick={() => setSeoOpen(false)}
  aria-label="Cancel and close"
  className={cn(
- 'px-4 py-2 text-xs font-black uppercase rounded-none-none border transition-all',
+ 'px-4 py-2 text-xs font-semibold  rounded-none-none border transition-all',
  theme === 'dark'
  ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
  : 'border-z-border text-gray-600 hover:border-z-border-strong hover:text-black',
@@ -431,7 +431,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <button
  onClick={commitAndClose}
  aria-label="Save SEO and close"
- className="flex items-center gap-2 px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-black uppercase rounded-none-none hover:bg-gray-500 transition-all"
+ className="flex items-center gap-2 px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-semibold rounded-none-none hover:bg-gray-500 transition-all"
  >
  <Save size={12} aria-hidden="true" />
  Save & Close

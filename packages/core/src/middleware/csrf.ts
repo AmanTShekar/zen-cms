@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import crypto from 'crypto'
+import { env } from '../config/env';
+
 
 /**
  * Zenith CSRF Protection Middleware
@@ -16,7 +18,7 @@ export function csrfProtection(req: Request, res: Response, next: NextFunction) 
       res.cookie('XSRF-TOKEN', token, {
         httpOnly: false,
         sameSite: 'strict',
-        secure: process.env.NODE_ENV === 'production',
+        secure: env.NODE_ENV === 'production',
         path: '/',
       })
     }
@@ -30,7 +32,7 @@ export function csrfProtection(req: Request, res: Response, next: NextFunction) 
     res.cookie('XSRF-TOKEN', csrfToken, {
       httpOnly: false, // Must be accessible to client JS/Axios
       sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
+      secure: env.NODE_ENV === 'production',
       path: '/',
     })
   }

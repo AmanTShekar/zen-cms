@@ -191,13 +191,13 @@ const PluginsPage = () => {
             <div className={cn('flex p-1 border', dark ? 'bg-black border-white/[0.05]' : 'bg-z-panel border-z-border')}>
               <button
                 onClick={() => setActiveTab('installed')}
-                className={cn('px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-colors', activeTab === 'installed' ? (dark ? 'bg-white text-black' : 'bg-gray-900 text-white') : 'text-z-secondary')}
+                className={cn('px-4 py-1.5 text-sm font-semibold   transition-colors', activeTab === 'installed' ? (dark ? 'bg-white text-black' : 'bg-gray-900 text-white') : 'text-z-secondary')}
               >
                 Installed
               </button>
               <button
                 onClick={() => setActiveTab('marketplace')}
-                className={cn('px-4 py-1.5 text-[9px] font-black uppercase tracking-widest transition-colors', activeTab === 'marketplace' ? (dark ? 'bg-white text-black' : 'bg-gray-900 text-white') : 'text-z-secondary')}
+                className={cn('px-4 py-1.5 text-sm font-semibold   transition-colors', activeTab === 'marketplace' ? (dark ? 'bg-white text-black' : 'bg-gray-900 text-white') : 'text-z-secondary')}
               >
                 Marketplace
               </button>
@@ -220,7 +220,7 @@ const PluginsPage = () => {
                     }).then(() => fetchPlugins())
                   }
                 }}
-                className="flex items-center gap-2 px-6 py-2.5 bg-z-accent hover:bg-z-accent shadow-[var(--z-active-glow)] text-white text-[10px] font-black uppercase tracking-widest transition-all"
+                className="flex items-center gap-2 px-6 py-2.5 bg-z-accent hover:bg-z-accent shadow-sm text-white text-sm font-semibold transition-all"
               >
                 <Plus size={14} /> Inject Plugin
               </button>
@@ -238,7 +238,7 @@ const PluginsPage = () => {
               placeholder={activeTab === 'installed' ? 'Search installed plugins...' : 'Search marketplace...'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none outline-none text-[10px] font-black text-z-secondary w-full placeholder:text-gray-600 uppercase tracking-widest"
+              className="bg-transparent border-none outline-none text-sm font-semibold text-z-secondary w-full placeholder:text-gray-600"
             />
           </div>
         </div>
@@ -246,7 +246,7 @@ const PluginsPage = () => {
         {displayList.length === 0 ? (
           <div className="text-center py-20 text-z-secondary">
             <Box size={32} className="mx-auto mb-4 opacity-50" />
-            <p className="text-[10px] font-black uppercase tracking-widest">No plugins found</p>
+            <p className="text-sm font-semibold">No plugins found</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -269,8 +269,8 @@ const PluginsPage = () => {
                               {plugin.icon}
                             </div>
                             <div>
-                              <h3 className="text-[11px] font-black tracking-widest uppercase">{plugin.name}</h3>
-                              <p className="text-[8px] text-z-secondary font-bold uppercase tracking-widest">
+                              <h3 className="text-sm font-semibold">{plugin.name}</h3>
+                              <p className="text-sm text-z-secondary font-bold">
                                 {plugin.author === 'ROOT_KERNEL' ? 'Zenith Core' : plugin.author} • v{plugin.version}
                               </p>
                             </div>
@@ -279,13 +279,13 @@ const PluginsPage = () => {
 
                         {/* Minimalist features instead of descriptive text */}
                         <div className="flex-1">
-                           <p className="text-[10px] text-z-secondary leading-relaxed line-clamp-2">
+                           <p className="text-sm text-z-secondary leading-relaxed line-clamp-2">
                              {plugin.description}
                            </p>
                         </div>
 
                         <div className="flex items-center justify-between pt-4 border-t border-white/[0.05]">
-                          <div className="flex items-center gap-3 text-[9px] text-z-secondary font-bold uppercase tracking-widest">
+                          <div className="flex items-center gap-3 text-sm text-z-secondary font-bold">
                             {plugin.verified && <span className="flex items-center gap-1"><ShieldCheck size={10} /> Verified</span>}
                             <span>{plugin.downloads?.toLocaleString()} DLs</span>
                           </div>
@@ -295,7 +295,7 @@ const PluginsPage = () => {
                               <>
                                 <button
                                   onClick={() => togglePlugin(plugin.id, plugin.status)}
-                                  className={cn('px-3 py-1.5 border text-[9px] font-black uppercase tracking-widest transition-colors', plugin.status === 'active' ? 'text-red-500 border-red-500/20 hover:bg-red-500/10' : 'text-z-secondary border-gray-500/20 hover:bg-gray-500/10')}
+                                  className={cn('px-3 py-1.5 border text-sm font-semibold   transition-colors', plugin.status === 'active' ? 'text-red-500 border-red-500/20 hover:bg-red-500/10' : 'text-z-secondary border-gray-500/20 hover:bg-gray-500/10')}
                                 >
                                   {plugin.status === 'active' ? 'Disable' : 'Enable'}
                                 </button>
@@ -309,7 +309,7 @@ const PluginsPage = () => {
                               <button
                                 disabled={installed || installingId !== null}
                                 onClick={() => installMarketplacePlugin(plugin as any)}
-                                className={cn('px-4 py-1.5 border text-[9px] font-black uppercase tracking-widest transition-colors flex items-center gap-2', installed ? 'text-z-secondary border-gray-500/20 cursor-not-allowed' : 'text-white bg-z-accent border-z-accent hover:bg-z-accent shadow-[var(--z-active-glow)]')}
+                                className={cn('px-4 py-1.5 border text-sm font-semibold   transition-colors flex items-center gap-2', installed ? 'text-z-secondary border-gray-500/20 cursor-not-allowed' : 'text-white bg-z-accent border-z-accent hover:bg-z-accent shadow-sm')}
                               >
                                 {installingId === plugin.id ? <Loader2 size={10} className="animate-spin" /> : <DownloadCloud size={10} />}
                                 {installed ? 'Installed' : 'Install'}

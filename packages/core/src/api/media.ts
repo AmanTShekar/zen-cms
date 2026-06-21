@@ -7,6 +7,7 @@ import { requireAuth } from '../middleware/auth'
 import { createResponse } from './utils'
 import { InvalidPayloadError, NotFoundError } from '../errors'
 import { ImageCdnService } from '../services/image-cdn'
+import { AdapterFactory } from '../database/adapters/AdapterFactory'
 
 const router: Router = Router()
 const fsPromises = fs.promises
@@ -110,7 +111,10 @@ router.get('/:id/transform', async (req: Request, res: Response, next) => {
     const adapter = (req as any).zenith?.adapter
     if (!adapter) return next(new Error('No database adapter available'))
     
-    const media = await adapter.findOne('media', { _id: req.params.id })
+    const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
+    if (!siteId) return res.status(400).json({ error: { message: 'Missing siteId' } })
+    
+    const media = await adapter.findOne('media', { _id: req.params.id, siteId })
     if (!media) throw new NotFoundError('Media', req.params.id)
 
     const { w, h, format, q } = req.query
@@ -154,8 +158,21 @@ router.get('/:id/transform', async (req: Request, res: Response, next) => {
 
 router.get('/:filename', requireAuth, async (req: Request, res: Response, next) => {
   try {
+    const adapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
+    if (!siteId) return res.status(400).json({ error: { message: 'Missing siteId' } })
+
     // Guard Rail: Prevent directory traversal attack
     const filename = path.basename(req.params.filename)
+    
+    // ISOLATION FIX: Verify tenant owns this media file
+    const record = await adapter.findOne('media', { id: filename, siteId })
+    if (!record) {
+      // Fallback for Mongoose ID match if id mapping differs
+      const recordById = await adapter.findOne('media', { _id: filename, siteId })
+      if (!recordById) throw new NotFoundError('Media', filename)
+    }
+
     const filePath = path.join(mediaDir, filename)
 
     if (!fs.existsSync(filePath)) {

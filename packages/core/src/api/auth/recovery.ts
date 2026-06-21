@@ -8,6 +8,8 @@ import { createResponse } from '../utils'
 import { InvalidPayloadError, NotFoundError, InvalidTokenError } from '../../errors'
 import rateLimit from 'express-rate-limit'
 import { z } from 'zod'
+import { env } from '../../config/env';
+
 
 const emailSchema = z.string().email().max(254)
 
@@ -16,14 +18,14 @@ const recoveryLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })
 
 export const recoveryRouter: Router = Router()
 
 function getAdminUrl(): string {
-  if (process.env.ADMIN_URL) return process.env.ADMIN_URL
-  if (process.env.NODE_ENV === 'production') {
+  if (env.ADMIN_URL) return env.ADMIN_URL
+  if (env.NODE_ENV === 'production') {
     throw new Error('ADMIN_URL environment variable is required in production')
   }
   return 'http://localhost:5173'
@@ -55,8 +57,9 @@ recoveryRouter.post('/forgot-password', recoveryLimiter, async (req: Request, re
     await adapter.deleteMany('z_password_resets', { userId }) // Clear old tokens
     await adapter.create('z_password_resets', { userId, token: tokenHash, expiresAt })
 
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined
     const resetUrl = `${getAdminUrl()}/reset-password?token=${token}`
-    await EmailService.sendPasswordResetEmail(user.email, resetUrl)
+    await EmailService.sendPasswordResetEmail(user.email, resetUrl, siteId)
 
     res.json(createResponse({ message: 'If that email exists, a reset link has been sent.' }))
   } catch (err) {
@@ -120,11 +123,12 @@ recoveryRouter.post('/resend-verification', recoveryLimiter, requireAuth, async 
 
     const verifyToken = await AuthService.generateVerificationToken(userId)
     const verifyUrl = `${getAdminUrl()}/verify-email?token=${verifyToken}`
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined
     await EmailService.send({
       to: user.email,
       subject: 'Verify your Zenith CMS email address',
       html: `<p>Please verify your email by clicking <a href="${verifyUrl}">this link</a>. It expires in 24 hours.</p>`,
-    })
+    }, undefined, siteId)
 
     res.json(createResponse({ message: 'Verification email sent.' }))
   } catch (err) {

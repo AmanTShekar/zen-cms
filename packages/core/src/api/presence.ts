@@ -20,7 +20,8 @@ router.use(requireAuth)
 
 router.get('/', async (req: Request, res: Response, next) => {
   try {
-    const users = await PresenceService.getAllActiveUsers()
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined
+    const users = await PresenceService.getAllActiveUsers(siteId)
     
     // Attach customized colors from the users table
     const { AdapterFactory } = await import('../database/adapters/AdapterFactory')
@@ -52,7 +53,8 @@ router.post('/heartbeat', async (req: Request, res: Response, next) => {
     }
 
     const user = (req as any).user
-    await PresenceService.heartbeat(user.id, user.email, collection, documentId)
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined
+    await PresenceService.heartbeat(user.id, user.email, collection, documentId, siteId)
     res.json(createResponse({ ok: true }))
   } catch (err) {
     next(err)
@@ -61,7 +63,8 @@ router.post('/heartbeat', async (req: Request, res: Response, next) => {
 
 router.get('/:collection/:id', async (req: Request, res: Response, next) => {
   try {
-    const users = await PresenceService.getActiveUsers(req.params.collection, req.params.id)
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined
+    const users = await PresenceService.getActiveUsers(req.params.collection, req.params.id, siteId)
     const currentUserId = (req as any).user.id
 
     // Filter out the current user from the response (they know they're here)
@@ -102,7 +105,8 @@ router.delete('/:collection/:id', async (req: Request, res: Response, next) => {
     // The database TTL will expire the presence automatically,
     // but we can call leave immediately for a snappier UX
     const user = (req as any).user
-    await PresenceService.leave(user.id, req.params.collection, req.params.id)
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined
+    await PresenceService.leave(user.id, req.params.collection, req.params.id, siteId)
     res.json(createResponse({ ok: true }))
   } catch (err) {
     next(err)

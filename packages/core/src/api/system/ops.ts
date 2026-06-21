@@ -7,6 +7,18 @@ import { createResponse, createErrorResponse } from '../utils';
 import { AdapterFactory } from '../../database/adapters/AdapterFactory';
 import { DatabaseAdapter } from '../../database/adapters/BaseAdapter';
 import { logger } from '../../services/logger';
+import { env } from '../../config/env';
+import rateLimit from 'express-rate-limit';
+import { exportLimiter } from '../../middleware/rate-limit';
+
+const backupLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 1, // 1 request per 10 minutes
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
+});
+
 
 export const systemRouter6: Router = Router();
 
@@ -73,7 +85,7 @@ systemRouter6.get('/ops/logs', requireAuth, requireRole('admin'), async (req: Re
     // Return placeholder if no log file found
     res.json(createResponse([
       `[${new Date().toISOString()}] [INFO] Log streaming active`,
-      `[${new Date().toISOString()}] [INFO] Server environment: ${process.env.NODE_ENV || 'production'}`,
+      `[${new Date().toISOString()}] [INFO] Server environment: ${env.NODE_ENV || 'production'}`,
       `[${new Date().toISOString()}] [INFO] Node.js ${process.version}`,
       `[${new Date().toISOString()}] [INFO] Uptime: ${Math.floor(process.uptime())}s`,
       `[${new Date().toISOString()}] [INFO] Memory: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB heap used`,
@@ -95,6 +107,32 @@ const BACKUP_DIR = path.resolve(process.cwd(), '.backups');
 async function ensureBackupDir() {
   await fs.mkdir(BACKUP_DIR, { recursive: true });
 }
+
+// GET /system/export
+systemRouter6.get('/export', exportLimiter, requireAuth, requireRole('admin'), async (req: Request, res: Response) => {
+  try {
+    await ensureBackupDir();
+    const files = await fs.readdir(BACKUP_DIR);
+    const backups = await Promise.all(
+      files
+        .filter(f => f.endsWith('.json') || f.endsWith('.gz') || f.endsWith('.jsonl'))
+        .map(async f => {
+          const stat = await fs.stat(path.join(BACKUP_DIR, f));
+          return {
+            id: Buffer.from(f).toString('base64url'),
+            filename: f,
+            size: stat.size,
+            createdAt: stat.birthtime.toISOString(),
+            status: 'ready' as const,
+          };
+        })
+    );
+    backups.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    res.json(createResponse(backups));
+  } catch (err: any) {
+    res.json(createResponse([]));
+  }
+});
 
 // GET /system/backup/list
 systemRouter6.get('/backup/list', requireAuth, requireRole('admin'), async (req: Request, res: Response) => {
@@ -123,7 +161,7 @@ systemRouter6.get('/backup/list', requireAuth, requireRole('admin'), async (req:
 });
 
 // POST /system/backup/create
-systemRouter6.post('/backup/create', requireAuth, requireRole('admin'), async (req: Request, res: Response) => {
+systemRouter6.post('/backup/create', backupLimiter, requireAuth, requireRole('admin'), async (req: Request, res: Response) => {
   try {
     await ensureBackupDir();
     const adapter = getAdapter(req);
@@ -134,10 +172,12 @@ systemRouter6.post('/backup/create', requireAuth, requireRole('admin'), async (r
     const filename = `backup-${timestamp}.json`;
     const filepath = path.join(BACKUP_DIR, filename);
 
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined;
     const data: Record<string, any[]> = {};
     for (const col of collections) {
       try {
-        data[col] = await adapter.find<any>(col, {});
+        const query = siteId ? { siteId } : {};
+        data[col] = await adapter.find<any>(col, query);
       } catch {
         data[col] = [];
       }
@@ -200,7 +240,7 @@ systemRouter6.post('/smtp/send-test', requireAuth, requireRole('admin'), async (
           <p style="color: #6b7280; font-size: 11px;">Sent at: ${new Date().toISOString()}</p>
         </div>
       `,
-    });
+    }, { smtpHost, smtpPort, smtpUser, smtpPass, fromEmail }, req.headers['x-zenith-site-id'] as string | undefined);
 
     res.json(createResponse({ message: `Test email sent to ${to}` }));
   } catch (err: any) {

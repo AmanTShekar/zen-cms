@@ -242,7 +242,7 @@ const ComponentBuilderPage: React.FC = () => {
  }
 
  const inputCls = cn(
- 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none',
+ 'w-full border p-3 text-sm font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none',
  'bg-z-input border-z-border focus:border-gray-500 text-z-primary'
  )
 
@@ -251,7 +251,7 @@ const ComponentBuilderPage: React.FC = () => {
  {/* ── Sidebar List ──────────────────────────────────────────────── */}
  <div className={cn('w-64 border-r shrink-0 flex flex-col', 'border-z-border bg-z-panel')}>
  <div className="p-4 border-b border-inherit flex items-center justify-between">
- <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+ <h2 className="text-sm font-semibold flex items-center gap-2">
  <Box size={14} className="text-gray-600 dark:text-z-secondary" /> Components
  </h2>
  <button
@@ -269,7 +269,7 @@ const ComponentBuilderPage: React.FC = () => {
  <button
  onClick={() => { setActiveComponent(c); setActiveTab('visual') }}
  className={cn(
- 'flex-1 text-left px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors overflow-hidden text-ellipsis whitespace-nowrap rounded-none',
+ 'flex-1 text-left px-3 py-2 text-sm font-bold   transition-colors overflow-hidden text-ellipsis whitespace-nowrap rounded-none',
  activeComponent?.id === c.id
  ? 'bg-gray-500 text-white'
  : dark ? 'text-z-muted hover:bg-z-hover hover:text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-black'
@@ -296,7 +296,7 @@ const ComponentBuilderPage: React.FC = () => {
  </div>
  ))}
  {!loading && components.length === 0 && (
- <div className="p-4 text-center text-[9px] text-z-secondary uppercase tracking-widest ">
+ <div className="p-4 text-center text-sm text-z-secondary">
  No components found
  </div>
  )}
@@ -312,17 +312,22 @@ const ComponentBuilderPage: React.FC = () => {
  className="max-w-4xl mx-auto p-8 space-y-6"
  >
  {/* Header */}
- <div className="flex items-center justify-between">
+ <div className="flex items-center justify-between pb-6 border-b border-z-border">
  <div>
- <h1 className="text-2xl font-black uppercase tracking-widest ">Component Builder</h1>
- <p className={cn('text-[10px] uppercase tracking-widest font-bold mt-1', dark ? 'text-z-secondary' : 'text-z-muted')}>
+ <div className="flex items-center gap-3">
+   <a href="/" className="text-z-secondary hover:text-z-primary transition-colors">
+     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+   </a>
+   <h1 className="text-2xl font-semibold">Component Builder</h1>
+ </div>
+ <p className={cn('text-sm   font-bold mt-1 ml-8', dark ? 'text-z-secondary' : 'text-z-muted')}>
  {activeComponent.id ? 'Editing existing component' : 'Creating new component'}
  </p>
  </div>
  <div className="flex items-center gap-2">
   <button
   onClick={() => setShowPreview(!showPreview)}
-  className={cn('flex items-center gap-2 px-4 py-2.5 border text-[10px] font-black uppercase tracking-widest rounded-none transition-all shadow-[var(--z-active-glow)]', dark ? 'bg-z-panel backdrop-blur-md border-z-border hover:border-z-active-border' : 'bg-z-panel border-z-border hover:bg-gray-50')}
+  className={cn('flex items-center gap-2 px-4 py-2.5 border text-sm font-semibold   rounded-none transition-all shadow-sm', dark ? 'bg-z-panel backdrop-blur-md border-z-border hover:border-z-active-border' : 'bg-z-panel border-z-border hover:bg-gray-50')}
   >
  {showPreview ? <EyeOff size={14} /> : <Eye size={14} />}
  {showPreview ? 'Hide' : 'Preview'}
@@ -330,7 +335,7 @@ const ComponentBuilderPage: React.FC = () => {
   <button
   onClick={handleSave}
   disabled={saving}
-  className="flex items-center gap-2 px-6 py-2.5 bg-z-accent hover:opacity-90 text-white text-[10px] font-black uppercase tracking-widest shadow-[var(--z-active-glow)] rounded-none transition-all disabled:opacity-50"
+  className="flex items-center gap-2 px-6 py-2.5 bg-z-accent hover:opacity-90 text-white text-sm font-semibold shadow-sm rounded-none transition-all disabled:opacity-50"
   >
   {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
   Save Component
@@ -339,7 +344,7 @@ const ComponentBuilderPage: React.FC = () => {
  </div>
 
   {/* Tab navigation */}
-  <div className={cn('flex items-center gap-1 p-1 border rounded-none w-fit shadow-[var(--z-active-glow)]', 'z-panel')}>
+  <div className={cn('flex items-center gap-1 p-1 border rounded-none w-fit shadow-sm', 'z-panel')}>
  {([
  { key: 'visual', label: 'Visual Editor', icon: Box },
  { key: 'code', label: 'Code / JSON Import', icon: Code },
@@ -351,9 +356,9 @@ const ComponentBuilderPage: React.FC = () => {
   key={tab.key}
   onClick={() => setActiveTab(tab.key)}
   className={cn(
-  'flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-none transition-all',
+  'flex items-center gap-2 px-4 py-2 text-sm font-semibold   rounded-none transition-all',
   activeTab === tab.key
-  ? 'bg-z-accent text-white shadow-[var(--z-active-glow)]'
+  ? 'bg-z-accent text-white shadow-sm'
   : dark ? 'text-z-secondary hover:text-gray-300' : 'text-z-secondary hover:text-z-primary'
   )}
   >
@@ -404,21 +409,27 @@ const ComponentBuilderPage: React.FC = () => {
  ) : (
  <div className="h-full flex items-center justify-center">
   <div className="text-center space-y-5 max-w-md px-8">
-  <div className="w-16 h-16 mx-auto rounded-none bg-black/40 border border-z-border flex items-center justify-center shadow-[var(--z-active-glow)]">
+  <div className="w-16 h-16 mx-auto rounded-none bg-black/40 border border-z-border flex items-center justify-center shadow-sm">
   <Box size={28} className="text-z-active-text" strokeWidth={1.5} />
   </div>
+ <div className="flex items-center justify-center mb-6">
+   <a href="/" className="flex items-center gap-2 text-sm font-semibold text-z-secondary hover:text-z-primary transition-colors">
+     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+     Back to Dashboard
+   </a>
+ </div>
  <div>
- <p className="text-[14px] font-black uppercase tracking-[0.2em] ">Component Builder</p>
- <p className={cn('text-[11px] font-medium mt-2 leading-relaxed', dark ? 'text-z-secondary' : 'text-z-muted')}>
+ <p className="text-[14px] font-semibold">Component Builder</p>
+ <p className={cn('text-sm font-medium mt-2 leading-relaxed', dark ? 'text-z-secondary' : 'text-z-muted')}>
  Create reusable components like Navbars, Cards, and Hero Sections to use in Dynamic Zones and Blocks.
  Import from JSON, TypeScript interfaces, or let AI generate them.
  </p>
  </div>
   <div className="flex gap-3 justify-center">
-  <button onClick={handleCreateNew} className="flex items-center gap-2 px-5 py-3 bg-z-accent hover:opacity-90 text-white text-[10px] font-black uppercase tracking-widest rounded-none transition-all shadow-[var(--z-active-glow)]">
+  <button onClick={handleCreateNew} className="flex items-center gap-2 px-5 py-3 bg-z-accent hover:opacity-90 text-white text-sm font-semibold rounded-none transition-all shadow-sm">
   <Plus size={14} /> New Component
   </button>
-  <button onClick={() => { handleCreateNew(); setTimeout(() => setActiveTab('ai'), 50) }} className="flex items-center gap-2 px-5 py-3 bg-z-accent hover:opacity-90 text-white text-[10px] font-black uppercase tracking-widest rounded-none transition-all shadow-[var(--z-active-glow)]">
+  <button onClick={() => { handleCreateNew(); setTimeout(() => setActiveTab('ai'), 50) }} className="flex items-center gap-2 px-5 py-3 bg-z-accent hover:opacity-90 text-white text-sm font-semibold rounded-none transition-all shadow-sm">
   <Sparkles size={14} /> AI Generate
   </button>
   </div>

@@ -3,12 +3,14 @@ import passport from 'passport'
 import { AdapterFactory } from '../../database/adapters/AdapterFactory'
 import { AuthService } from '../../services/auth'
 import { AuthenticationError } from '../../errors'
+import { env } from '../../config/env';
+
 
 export const ssoRouter: Router = express.Router()
 
 function getAdminUrl(): string {
-  if (process.env.ADMIN_URL) return process.env.ADMIN_URL
-  if (process.env.NODE_ENV === 'production') {
+  if (env.ADMIN_URL) return env.ADMIN_URL
+  if (env.NODE_ENV === 'production') {
     throw new Error('ADMIN_URL environment variable is required in production')
   }
   return 'http://localhost:5173'
@@ -44,14 +46,14 @@ async function handleSsoSuccess(req: Request, res: Response, next: NextFunction)
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 15 * 60 * 1000,
     })

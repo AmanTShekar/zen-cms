@@ -12,17 +12,17 @@ export const BuilderAITab = ({
 }: any) => {
   return (
     <motion.div key="ai" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
-      <div className={cn('p-6 border rounded-none shadow-[var(--z-active-glow)] transition-all', 'z-panel')}>
-        <h3 className="text-[10px] font-black uppercase tracking-widest text-z-active-text mb-1 flex items-center gap-2">
+      <div className={cn('p-6 border rounded-none shadow-sm transition-all', 'z-panel')}>
+        <h3 className="text-sm font-semibold text-z-active-text mb-1 flex items-center gap-2">
           <Sparkles size={12} /> AI Component Architect
         </h3>
-        <p className={cn('text-[10px] mb-6 font-medium', dark ? 'text-z-muted' : 'text-z-secondary')}>
+        <p className={cn('text-sm mb-6 font-medium', dark ? 'text-z-muted' : 'text-z-secondary')}>
           Describe a component and the AI will generate its complete field schema. Works best with detailed descriptions.
         </p>
 
         <div className="space-y-4">
           <div>
-            <label className="text-[9px] font-black uppercase tracking-widest text-z-secondary block mb-2">Describe your component</label>
+            <label className="text-sm font-semibold text-z-secondary block mb-2">Describe your component</label>
             <textarea
               rows={5}
               value={aiPrompt}
@@ -43,7 +43,7 @@ export const BuilderAITab = ({
               <button
                 key={suggestion}
                 onClick={() => setAiPrompt(suggestion)}
-                className={cn('text-[9px] font-black uppercase tracking-widest px-3 py-1.5 border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white hover:border-z-accent/50 hover:bg-z-active-bg' : 'border-z-border text-z-secondary hover:text-black hover:border-z-active-border')}
+                className={cn('text-sm font-semibold   px-3 py-1.5 border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white hover:border-z-accent/50 hover:bg-z-active-bg' : 'border-z-border text-z-secondary hover:text-black hover:border-z-active-border')}
               >
                 {suggestion.slice(0, 40)}...
               </button>
@@ -53,7 +53,7 @@ export const BuilderAITab = ({
           <button
             disabled={isAIGenerating || !aiPrompt.trim()}
             onClick={handleAIGenerate}
-            className="w-full py-4 bg-z-accent hover:opacity-90 text-white text-[10px] font-black uppercase tracking-widest flex justify-center items-center gap-2 transition-all rounded-none disabled:opacity-50 shadow-[var(--z-active-glow)]"
+            className="w-full py-4 bg-z-accent hover:opacity-90 text-white text-sm font-semibold flex justify-center items-center gap-2 transition-all rounded-none disabled:opacity-50 shadow-sm"
           >
             {isAIGenerating
               ? <><Loader2 size={14} className="animate-spin" /> Generating with AI...</>

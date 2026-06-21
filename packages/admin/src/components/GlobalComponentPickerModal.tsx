@@ -117,7 +117,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
             exit={{ opacity: 0, scale: 0.96, y: 16 }}
             transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
             className={cn(
-              'relative w-full max-w-3xl flex flex-col overflow-hidden rounded-none-none shadow-[var(--z-active-glow)] max-h-[90vh] border',
+              'relative w-full max-w-3xl flex flex-col overflow-hidden rounded-none-none shadow-sm max-h-[90vh] border',
               isDark
                 ? 'bg-[#08080a] border-white/10'
                 : 'bg-z-panel border-z-border'
@@ -134,13 +134,13 @@ export const GlobalComponentPickerModal: React.FC = () => {
             <div className={cn('px-6 pt-6 pb-4 border-b flex-shrink-0', isDark ? 'border-white/5' : 'border-z-border')}>
               <div className="flex items-start justify-between mb-5">
                 <div>
-                  <p className="text-[9px] font-black text-z-active-text uppercase tracking-[0.4em] mb-1.5">
+                  <p className="text-sm font-semibold text-z-active-text mb-1.5">
                     Zenith Page Builder
                   </p>
-                  <h3 className={cn('text-2xl font-black', isDark ? 'text-white' : 'text-black')}>
+                  <h3 className={cn('text-2xl font-semibold', isDark ? 'text-white' : 'text-black')}>
                     Add a Component
                   </h3>
-                  <p className={cn('text-[11px] mt-1', isDark ? 'text-z-muted' : 'text-z-secondary')}>
+                  <p className={cn('text-sm mt-1', isDark ? 'text-z-muted' : 'text-z-secondary')}>
                     Choose a component to add to your layout
                   </p>
                 </div>
@@ -199,9 +199,9 @@ export const GlobalComponentPickerModal: React.FC = () => {
                     type="button"
                     onClick={() => setCategory(cat)}
                     className={cn(
-                      'px-3 py-1.5 text-[9px] font-black uppercase tracking-wider whitespace-nowrap flex-shrink-0 transition-all rounded-none-none border',
+                      'px-3 py-1.5 text-sm font-semibold   whitespace-nowrap flex-shrink-0 transition-all rounded-none-none border',
                       activeCategory === cat
-                        ? 'bg-z-accent border-z-accent text-white shadow-[var(--z-active-glow)]'
+                        ? 'bg-z-accent border-z-accent text-white shadow-sm'
                         : isDark
                           ? 'bg-z-hover border-white/8 text-z-muted hover:text-white hover:border-z-active-border'
                           : 'bg-z-input border-z-border text-z-secondary hover:text-black hover:border-z-active-border/50'
@@ -231,7 +231,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
                     {activeCategory === 'All' && (
                       <div className="flex items-center gap-3 mb-4">
                         <span className={cn('h-px flex-1', isDark ? 'bg-z-hover' : 'bg-gray-100')} />
-                        <span className={cn('text-[9px] font-black uppercase tracking-[0.3em]', isDark ? 'text-z-secondary' : 'text-z-muted')}>
+                        <span className={cn('text-sm font-semibold  ', isDark ? 'text-z-secondary' : 'text-z-muted')}>
                           {category}
                         </span>
                         <span className={cn('h-px flex-1', isDark ? 'bg-z-hover' : 'bg-gray-100')} />
@@ -251,8 +251,8 @@ export const GlobalComponentPickerModal: React.FC = () => {
                             className={cn(
                               'flex flex-col text-left group border overflow-hidden rounded-none-none transition-all',
                               isDark
-                                ? 'bg-z-panel border-white/8 hover:border-z-accent/50 hover:shadow-[var(--z-active-glow)]'
-                                : 'bg-z-panel border-z-border hover:border-z-active-border hover:shadow-[var(--z-active-glow)]'
+                                ? 'bg-z-panel border-white/8 hover:border-z-accent/50 hover:shadow-sm'
+                                : 'bg-z-panel border-z-border hover:border-z-active-border hover:shadow-sm'
                             )}
                           >
                             {/* Preview area */}
@@ -261,7 +261,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
                                 <Icon size={16} />
                               </div>
                               {block.category && (
-                                <span className="absolute top-2 left-2 px-1.5 py-0.5 text-[7px] font-black uppercase tracking-wider bg-black/50 backdrop-blur text-white/80 rounded-none-none">
+                                <span className="absolute top-2 left-2 px-1.5 py-0.5 text-sm font-semibold bg-black/50 backdrop-blur text-white/80 rounded-none-none">
                                   {block.category}
                                 </span>
                               )}
@@ -274,10 +274,10 @@ export const GlobalComponentPickerModal: React.FC = () => {
 
                             {/* Info */}
                             <div className={cn('p-3 flex-1 transition-colors', isDark ? 'group-hover:opacity-90/5' : 'group-hover:bg-z-active-bg/50')}>
-                              <p className={cn('text-[11px] font-black uppercase italic tracking-tight mb-0.5', isDark ? 'text-white' : 'text-black')}>
+                              <p className={cn('text-sm font-semibold  italic  mb-0.5', isDark ? 'text-white' : 'text-black')}>
                                 {block.title}
                               </p>
-                              <p className={cn('text-[9px] leading-relaxed line-clamp-2', isDark ? 'text-z-secondary' : 'text-z-muted')}>
+                              <p className={cn('text-sm leading-relaxed line-clamp-2', isDark ? 'text-z-secondary' : 'text-z-muted')}>
                                 {block.description}
                               </p>
                             </div>
@@ -292,12 +292,12 @@ export const GlobalComponentPickerModal: React.FC = () => {
 
             {/* Footer */}
             <div className={cn('px-6 py-3 border-t flex items-center justify-between flex-shrink-0', isDark ? 'border-white/5 bg-z-panel' : 'border-z-border bg-gray-50/50')}>
-              <p className={cn('text-[9px]', isDark ? 'text-z-secondary' : 'text-z-muted')}>
+              <p className={cn('text-sm', isDark ? 'text-z-secondary' : 'text-z-muted')}>
                 {filtered.length} component{filtered.length !== 1 ? 's' : ''} available
               </p>
-              <p className={cn('text-[9px]', isDark ? 'text-z-secondary' : 'text-z-muted')}>
+              <p className={cn('text-sm', isDark ? 'text-z-secondary' : 'text-z-muted')}>
                 Press{' '}
-                <kbd className={cn('px-1.5 py-0.5 font-mono rounded-none-none text-[8px] border', isDark ? 'bg-z-hover border-white/10' : 'bg-z-panel border-z-border')}>
+                <kbd className={cn('px-1.5 py-0.5 font-mono rounded-none-none text-sm border', isDark ? 'bg-z-hover border-white/10' : 'bg-z-panel border-z-border')}>
                   Esc
                 </kbd>{' '}
                 to close

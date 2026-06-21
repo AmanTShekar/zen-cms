@@ -56,7 +56,9 @@ const router: import('express').Router = Router()
 router.get('/', async (req: Request, res: Response, next) => {
   try {
     const adapter = getAdapter(req)
-    const docs = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, {})
+    const siteId = req.headers['x-zenith-site-id'] as string
+    const filter: Record<string, unknown> = siteId ? { siteId } : {}
+    const docs = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, filter)
     res.json(createResponse(docs.map(toDTO)))
   } catch (err) {
     next(err)
@@ -67,7 +69,10 @@ router.get('/', async (req: Request, res: Response, next) => {
 router.get('/:slug', async (req: Request, res: Response, next) => {
   try {
     const adapter = getAdapter(req)
-    const docs = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, { slug: req.params.slug })
+    const siteId = req.headers['x-zenith-site-id'] as string
+    const filter: Record<string, unknown> = { slug: req.params.slug }
+    if (siteId) filter.siteId = siteId
+    const docs = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, filter)
     const doc = docs[0]
     if (!doc) throw new NotFoundError(`Component "${req.params.slug}" not found`)
     res.json(createResponse(toDTO(doc)))
@@ -92,18 +97,24 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
       throw new InvalidPayloadError(`Slug "${cleanSlug}" is reserved`)
 
     const adapter = getAdapter(req)
-    const existing = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, { slug: cleanSlug })
+    const siteId = req.headers['x-zenith-site-id'] as string
+    const filter: Record<string, unknown> = { slug: cleanSlug }
+    if (siteId) filter.siteId = siteId
+    const existing = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, filter)
     if (existing.length > 0)
       throw new InvalidPayloadError(`Component with slug "${cleanSlug}" already exists`)
 
-    const doc = await adapter.create<Record<string, any>>(COMPONENTS_COLLECTION, {
+    const payload: Record<string, any> = {
       slug: cleanSlug,
       displayName,
       category: category || 'General',
       icon: icon || 'Box',
       description: description || '',
       fields: fields || [],
-    })
+    }
+    if (siteId) payload.siteId = siteId
+
+    const doc = await adapter.create<Record<string, any>>(COMPONENTS_COLLECTION, payload)
 
     res.status(201).json(createResponse(toDTO(doc)))
   } catch (err) {
@@ -125,7 +136,14 @@ router.put('/:id', requireAuth, requireRole('admin'), async (req: Request, res: 
     if (description !== undefined) update.description = description
     if (fields !== undefined)      update.fields = fields
 
-    const doc = await adapter.update<Record<string, any>>(COMPONENTS_COLLECTION, id, update)
+    const siteId = req.headers['x-zenith-site-id'] as string
+    if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
+
+    // Find first to check isolation
+    const existing = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, { _id: id, siteId })
+    if (existing.length === 0) throw new NotFoundError(`Component "${id}" not found`)
+
+    const doc = await adapter.update<Record<string, any>>(COMPONENTS_COLLECTION, id, update, { siteId })
     if (!doc) throw new NotFoundError(`Component "${id}" not found`)
 
     res.json(createResponse(toDTO(doc)))
@@ -139,7 +157,13 @@ router.delete('/:id', requireAuth, requireRole('admin'), async (req: Request, re
   try {
     const { id } = req.params
     const adapter = getAdapter(req)
-    const deleted = await adapter.delete(COMPONENTS_COLLECTION, id)
+    const siteId = req.headers['x-zenith-site-id'] as string
+    if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
+
+    const existing = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, { _id: id, siteId })
+    if (existing.length === 0) throw new NotFoundError(`Component "${id}" not found`)
+
+    const deleted = await adapter.delete(COMPONENTS_COLLECTION, id, { siteId })
     if (!deleted) throw new NotFoundError(`Component "${id}" not found`)
     res.json(createResponse({ message: 'Component deleted' }))
   } catch (err) {
@@ -152,7 +176,10 @@ router.post('/:id/duplicate', requireAuth, requireRole('admin'), async (req: Req
   try {
     const { id } = req.params
     const adapter = getAdapter(req)
-    const docs = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, { _id: id })
+    const siteId = req.headers['x-zenith-site-id'] as string
+    if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
+
+    const docs = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, { _id: id, siteId })
     const original = docs[0]
     if (!original) throw new NotFoundError(`Component "${id}" not found`)
 
@@ -164,6 +191,7 @@ router.post('/:id/duplicate', requireAuth, requireRole('admin'), async (req: Req
       icon: original.icon,
       description: original.description,
       fields: original.fields,
+      siteId
     })
     res.status(201).json(createResponse(toDTO(doc)))
   } catch (err) {
@@ -192,7 +220,10 @@ router.post('/register-code', requireAuth, requireRole('admin'), async (req: Req
     const adapter = getAdapter(req)
 
     // Upsert: if component already exists, update it (idempotent registration)
-    const existing = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, { slug: cleanSlug })
+    const siteId = req.headers['x-zenith-site-id'] as string
+    if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
+
+    const existing = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, { slug: cleanSlug, siteId })
     let doc: any
     if (existing.length > 0) {
       doc = await adapter.update<Record<string, any>>(COMPONENTS_COLLECTION, String(existing[0]._id ?? existing[0].id), {
@@ -202,7 +233,7 @@ router.post('/register-code', requireAuth, requireRole('admin'), async (req: Req
         description: description || existing[0].description,
         fields: fields || existing[0].fields,
         updatedAt: new Date(),
-      })
+      }, { siteId })
       return res.json(createResponse({ ...toDTO(doc), registered: 'updated' }))
     }
 
@@ -213,6 +244,7 @@ router.post('/register-code', requireAuth, requireRole('admin'), async (req: Req
       icon: icon || 'Box',
       description: description || '',
       fields: fields || [],
+      siteId
     })
 
     res.status(201).json(createResponse({ ...toDTO(doc), registered: 'created' }))

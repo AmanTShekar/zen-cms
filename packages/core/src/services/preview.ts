@@ -1,9 +1,11 @@
 import jwt from 'jsonwebtoken'
 import { CollectionConfig } from '@zenith-open/zenithcms-types'
+import { env } from '../config/env';
 
-const PREVIEW_SECRET = process.env.PREVIEW_SECRET || 'zenith_preview_secret_v1'
 
-if (process.env.NODE_ENV === 'production' && PREVIEW_SECRET === 'zenith_preview_secret_v1') {
+const PREVIEW_SECRET = env.PREVIEW_SECRET || 'zenith_preview_secret_v1'
+
+if (env.NODE_ENV === 'production' && PREVIEW_SECRET === 'zenith_preview_secret_v1') {
   throw new Error('[Zenith] FATAL: PREVIEW_SECRET must be configured in production for security.')
 }
 

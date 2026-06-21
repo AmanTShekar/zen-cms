@@ -6,6 +6,7 @@ export interface EnvironmentNode {
   name: string
   apiUrl: string
   apiKey: string
+  siteId?: string
 }
 
 export class PromotionService {
@@ -16,7 +17,7 @@ export class PromotionService {
    */
   static registerEnvironment(node: EnvironmentNode): void {
     LicensingService.assertFeature('SAML/SSO Identity Mapping') // Re-use EE gating for promo
-    const exists = this.registeredEnvironments.find((e) => e.apiUrl === node.apiUrl)
+    const exists = this.registeredEnvironments.find((e) => e.apiUrl === node.apiUrl && e.siteId === node.siteId)
     if (!exists) {
       this.registeredEnvironments.push(node)
       logger.info({ node: node.name }, '[Promotion] Registered environment node successfully')
@@ -26,8 +27,8 @@ export class PromotionService {
   /**
    * Returns all active target environment nodes.
    */
-  static getEnvironments(): EnvironmentNode[] {
-    return this.registeredEnvironments
+  static getEnvironments(siteId?: string): EnvironmentNode[] {
+    return this.registeredEnvironments.filter(e => e.siteId === siteId || !e.siteId)
   }
 
   /**
@@ -36,12 +37,15 @@ export class PromotionService {
   static async calculateDiff(
     adapter: DatabaseAdapter,
     collectionSlug: string,
-    targetUrl: string
+    targetUrl: string,
+    siteId?: string
   ): Promise<{ added: any[]; modified: any[]; totalLocal: number }> {
     logger.info({ collectionSlug, targetUrl }, '[Promotion] Calculating content diff vs target')
     
-    // Fetch local records
-    const localRecords = await adapter.find(collectionSlug, {})
+    // Fetch local records with tenant isolation
+    const filter: any = {}
+    if (siteId) filter.siteId = siteId
+    const localRecords = await adapter.find(collectionSlug, filter)
     
     // Simulate remote environment check (or return local records marked as "Added/Modified" if remote returns mock/empty)
     const added = localRecords.map((r: any) => ({
@@ -64,15 +68,18 @@ export class PromotionService {
     adapter: DatabaseAdapter,
     collectionSlug: string,
     documentId: string,
-    targetNode: EnvironmentNode
+    targetNode: EnvironmentNode,
+    siteId?: string
   ): Promise<{ success: boolean; promotedId: string }> {
     logger.info(
       { collectionSlug, documentId, target: targetNode.name },
       '[Promotion] Promoting document transactionally'
     )
 
-    // Retrieve full document with populated fields from the source environment
-    const document = await adapter.findOne(collectionSlug, { _id: documentId })
+    // Retrieve full document with populated fields from the source environment, isolated by site
+    const filter: any = { _id: documentId }
+    if (siteId) filter.siteId = siteId
+    const document = await adapter.findOne(collectionSlug, filter)
     if (!document) {
       throw new Error(`[Promotion Error] Source document "${documentId}" not found in collection "${collectionSlug}".`)
     }

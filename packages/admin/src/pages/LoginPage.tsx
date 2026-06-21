@@ -131,10 +131,10 @@ const LoginPage: React.FC = () => {
  <div className="w-14 h-14 mb-6 rounded-none-none flex items-center justify-center shadow-2xl relative group cursor-pointer overflow-hidden transition-all duration-500 hover:scale-105 bg-white text-black">
  <Logo size="sm" className="scale-75" />
  </div>
- <h1 className="text-4xl font-black tracking-tighter uppercase leading-none transition-colors text-white">
+ <h1 className="text-4xl font-semibold leading-none transition-colors text-white">
  ZENITH
  </h1>
- <p className="mt-3 text-[9px] font-black text-z-muted uppercase tracking-[0.4em] ">
+ <p className="mt-3 text-sm font-semibold text-z-muted">
  Admin_Management_Interface
  </p>
  </motion.div>
@@ -143,14 +143,14 @@ const LoginPage: React.FC = () => {
  <motion.div
  initial={{ opacity: 0, scale: 0.98 }}
  animate={{ opacity: 1, scale: 1 }}
- className="p-8 relative transition-all duration-500 rounded-none-none border bg-z-panel backdrop-blur-[12px] border-z-border shadow-[var(--z-active-glow)]"
+ className="p-8 relative transition-all duration-500 rounded-none-none border bg-z-panel backdrop-blur-[12px] border-z-border shadow-sm"
  >
  <div className="flex items-center justify-between mb-8">
  <div className="flex flex-col">
- <h2 className="text-xl font-black uppercase tracking-tight transition-colors text-white">
+ <h2 className="text-xl font-semibold transition-colors text-white">
  {needsSetup ? 'Setup Admin' : tempToken ? 'Two-Factor Auth' : 'Sign In'}
  </h2>
- <p className="text-[9px] text-z-muted font-bold uppercase tracking-widest leading-none mt-1">
+ <p className="text-sm text-z-muted font-bold leading-none mt-1">
  {needsSetup ? 'Initialize Workstation' : tempToken ? 'Verify Identity' : 'Access Controlled'}
  </p>
  </div>
@@ -173,7 +173,7 @@ const LoginPage: React.FC = () => {
  ) : (
  <AlertCircle size={14} className="shrink-0" />
  )}
- <span className="text-[10px] font-bold uppercase tracking-wide">
+ <span className="text-sm font-bold tracking-wide">
  {error.message}
  </span>
  </div>
@@ -188,11 +188,11 @@ const LoginPage: React.FC = () => {
  className="h-full bg-current rounded-none-none"
  />
  </div>
- <span className="text-[9px] font-black tabular-nums">
+ <span className="text-sm font-semibold tabular-nums">
  {error.data.remainingMin}m
  </span>
  </div>
- <p className="text-[8px] font-bold opacity-70 uppercase tracking-wider">
+ <p className="text-sm font-bold opacity-70">
  Cooldown remaining
  </p>
  </div>
@@ -212,7 +212,7 @@ const LoginPage: React.FC = () => {
  />
  ))}
  </div>
- <span className="text-[8px] font-bold opacity-70 uppercase tracking-wider">
+ <span className="text-sm font-bold opacity-70">
  {error.data.attemptsLeft} of {error.data.maxAttempts || 5} remaining
  </span>
  </div>
@@ -222,14 +222,14 @@ const LoginPage: React.FC = () => {
  </AnimatePresence>
 
  {needsSetup && (
- <div className="p-3 border border-gray-500/20 bg-gray-500/[0.03] text-[9.5px] leading-relaxed text-z-muted font-bold uppercase tracking-wider ">
+ <div className="p-3 border border-gray-500/20 bg-gray-500/[0.03] text-[9.5px] leading-relaxed text-z-muted font-bold">
  No administrative users detected. Create your root administrator account below to provision this Zenith workstation.
  </div>
  )}
 
  {tempToken ? (
  <div className="space-y-1.5">
- <label className="text-[9px] font-black text-z-muted uppercase tracking-widest px-1">
+ <label className="text-sm font-semibold text-z-muted px-1">
  6-Digit Authenticator Code
  </label>
  <div className="relative group">
@@ -243,14 +243,14 @@ const LoginPage: React.FC = () => {
  maxLength={6}
  value={twoFactorToken}
  onChange={(e) => setTwoFactorToken(e.target.value.replace(/\D/g, ''))}
- className="w-full border rounded-none-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all tracking-widest text-center bg-z-hover border-z-border text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
+ className="w-full border rounded-none-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all text-center bg-z-hover border-z-border text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20"
  />
  </div>
  </div>
  ) : (
  <div className="space-y-4">
  <div className="space-y-1.5">
- <label className="text-[9px] font-black text-z-muted uppercase tracking-widest px-1">
+ <label className="text-sm font-semibold text-z-muted px-1">
  Email Address
  </label>
  <div className="relative group">
@@ -267,7 +267,7 @@ const LoginPage: React.FC = () => {
  />
  </div>
  {errors.email && (
- <p className="text-[9px] text-red-500 font-bold mt-1 px-1">
+ <p className="text-sm text-red-500 font-bold mt-1 px-1">
  {errors.email.message}
  </p>
  )}
@@ -275,13 +275,13 @@ const LoginPage: React.FC = () => {
 
  <div className="space-y-1.5">
  <div className="flex items-center justify-between px-1">
- <label className="text-[9px] font-black text-z-muted uppercase tracking-widest ">
+ <label className="text-sm font-semibold text-z-muted">
  Account Password
  </label>
  {!needsSetup && (
  <Link
  to="/forgot-password"
- className="text-[9px] font-black uppercase tracking-widest hover:underline text-z-muted hover:text-white"
+ className="text-sm font-semibold hover:underline text-z-muted hover:text-white"
  >
  Forgot Password?
  </Link>
@@ -308,7 +308,7 @@ const LoginPage: React.FC = () => {
  </button>
  </div>
  {errors.password && (
- <p className="text-[9px] text-red-500 font-bold mt-1 px-1">
+ <p className="text-sm text-red-500 font-bold mt-1 px-1">
  {errors.password.message}
  </p>
  )}
@@ -320,7 +320,7 @@ const LoginPage: React.FC = () => {
   <button
   type="submit"
   disabled={isSubmitting || (tempToken !== null && twoFactorToken.length !== 6)}
-  className="w-full bg-white text-black hover:bg-gray-200 disabled:bg-white/20 disabled:text-white/40 px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all duration-300 shadow-[var(--z-active-glow)] rounded-none-none font-mono"
+  className="w-full bg-white text-black hover:bg-gray-200 disabled:bg-white/20 disabled:text-white/40 px-6 py-4 text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-sm rounded-none-none font-mono"
   >
  {isSubmitting ? (
  <Loader2 size={18} className="animate-spin" />
@@ -342,7 +342,7 @@ const LoginPage: React.FC = () => {
  <div className="mt-6 pt-6 border-t border-z-border space-y-4">
  <div className="text-center relative">
  <span className={cn(
- 'text-[8px] font-black uppercase tracking-widest px-2 relative z-10',
+ 'text-sm font-semibold   px-2 relative z-10',
  theme === 'dark' ? 'bg-black text-z-muted' : 'bg-white text-z-muted'
  )}>
  Or Sign In With Single Sign-On (SSO)
@@ -366,7 +366,7 @@ const LoginPage: React.FC = () => {
  }
  }}
  className={cn(
- 'border rounded-none-none py-2 px-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02]',
+ 'border rounded-none-none py-2 px-3 flex items-center justify-center gap-2 text-sm font-semibold   transition-all hover:scale-[1.02]',
  theme === 'dark'
  ? 'bg-z-hover border-z-border text-white hover:bg-white/10'
  : 'bg-z-input border-z-border shadow-sm text-z-primary hover:bg-gray-100'
@@ -390,7 +390,7 @@ const LoginPage: React.FC = () => {
  }
  }}
  className={cn(
- 'border rounded-none-none py-2 px-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02]',
+ 'border rounded-none-none py-2 px-3 flex items-center justify-center gap-2 text-sm font-semibold   transition-all hover:scale-[1.02]',
  theme === 'dark'
  ? 'bg-z-hover border-z-border text-white hover:bg-white/10'
  : 'bg-z-input border-z-border shadow-sm text-z-primary hover:bg-gray-100'
@@ -403,7 +403,7 @@ const LoginPage: React.FC = () => {
  )}
  </motion.div>
 
- <p className="text-center text-[8px] font-bold text-z-muted uppercase tracking-[0.2em] ">
+ <p className="text-center text-sm font-bold text-z-muted">
  Authorized Personnel Only • Zenith CMS Engine
  </p>
  </div>

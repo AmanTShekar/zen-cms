@@ -1,6 +1,8 @@
 import rateLimit, { Store, ClientRateLimitInfo, Options } from 'express-rate-limit'
 import { logger } from '../services/logger'
 import { redisService } from '../services/redis'
+import { env } from '../config/env';
+
 
 /**
  * Custom Redis Rate Limit Store
@@ -65,7 +67,7 @@ if (redisService.client) {
     logger.warn('Redis unavailable for rate limiting — falling back to in-memory store')
   }
 } else {
-  if (process.env.NODE_ENV === 'production') {
+  if (env.NODE_ENV === 'production') {
     throw new Error('FATAL: Redis is required in production for rate limiting. Set the REDIS_URL environment variable. Running without Redis in production allows clients to bypass rate limits across instances.')
   }
   logger.warn('Rate limiter: Redis unavailable — using in-memory store (not safe for horizontally scaled deployments)')
@@ -108,7 +110,7 @@ export const rateLimitMiddleware = rateLimit({
   standardHeaders: true,
   legacyHeaders: true,
   store: rateLimitStore,
-  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })
 
 // Alias for clarity
@@ -123,5 +125,41 @@ export const authRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: true,
   store: rateLimitStore,
-  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
+})
+
+// Mutation Routes (POST/PUT/PATCH/DELETE): 50 requests per minute
+export const mutationLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 50,
+  keyGenerator: getRateLimitKey,
+  message: { error: 'Too many data mutations, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: true,
+  store: rateLimitStore,
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
+})
+
+// Tenant Export Routes: 1 request per 30 minutes
+export const exportLimiter = rateLimit({
+  windowMs: 30 * 60 * 1000,
+  max: 1,
+  keyGenerator: getRateLimitKey,
+  message: { error: 'Too many exports, please wait 30 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: true,
+  store: rateLimitStore,
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
+})
+
+// WebSocket connection establishments: 10 per minute
+export const websocketLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  keyGenerator: getRateLimitKey,
+  message: { error: 'Too many WebSocket connection attempts.' },
+  standardHeaders: true,
+  legacyHeaders: true,
+  store: rateLimitStore,
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })

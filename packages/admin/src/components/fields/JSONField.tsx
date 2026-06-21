@@ -74,10 +74,10 @@ const JSONField: React.FC<JSONFieldProps> = ({ value, onChange, disabled, rows =
         <div className="flex items-center gap-2">
           <span className={cn(
             'inline-block w-1.5 h-1.5 rounded-none-full',
-            jsonValid === true ? 'bg-z-accent shadow-[var(--z-active-glow)]' : jsonValid === false ? 'bg-red-500 shadow-[0_0_6px_#ef4444]' : 'bg-gray-600'
+            jsonValid === true ? 'bg-z-accent shadow-sm' : jsonValid === false ? 'bg-red-500 shadow-[0_0_6px_#ef4444]' : 'bg-gray-600'
           )} />
           <span className={cn(
-            'text-[9px] font-bold uppercase tracking-widest',
+            'text-sm font-bold  ',
             jsonValid === true ? 'text-z-active-text' : jsonValid === false ? 'text-red-400' : 'text-z-secondary'
           )}>
             {jsonValid === true ? 'Valid JSON' : jsonValid === false ? 'Invalid JSON' : 'JSON'}
@@ -87,7 +87,7 @@ const JSONField: React.FC<JSONFieldProps> = ({ value, onChange, disabled, rows =
           <button
             type="button"
             onClick={handleFormat}
-            className="text-[9px] font-bold uppercase tracking-wider text-z-secondary hover:text-z-active-text transition-colors"
+            className="text-sm font-bold text-z-secondary hover:text-z-active-text transition-colors"
           >
             Format
           </button>

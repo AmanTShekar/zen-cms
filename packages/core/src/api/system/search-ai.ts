@@ -90,7 +90,7 @@ const searchLimiter = rateLimit({
   max: 30,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })
 
 const aiLimiter = rateLimit({
@@ -98,7 +98,7 @@ const aiLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })
 
 // ── AI Architect Schema Validator ─────────────────────────────────────────────
@@ -133,6 +133,8 @@ const AICollectionSchema = z.object({
 
 
 import { Router as ERouter } from 'express';
+import { env } from '../../config/env';
+
 export const systemRouter3: ERouter = ERouter();
 const router = systemRouter3;
 
@@ -169,7 +171,10 @@ router.post('/ai/models/fetch', aiLimiter, requireAuth, requireRole('admin'), as
     let finalApiKey = apiKey
     if (!finalApiKey || finalApiKey === '[MASKED_CREDENTIAL]') {
       const adapter = (req as any).zenith?.adapter
-      const settings = await adapter?.findOne('z_settings', {})
+      const siteId = req.headers['x-zenith-site-id'] as string
+      // ISOLATION FIX: scope settings lookup to siteId
+      const settingsQuery = siteId ? { siteId } : {}
+      const settings = await adapter?.findOne('z_settings', settingsQuery)
       
       const keyMap: Record<string, string> = {
         openrouter: 'openRouterApiKey',
@@ -209,7 +214,10 @@ router.post('/ai/test', aiLimiter, requireAuth, requireRole('admin'), async (req
     let finalApiKey = apiKey
     if (!finalApiKey || finalApiKey === '[MASKED_CREDENTIAL]') {
       const adapter = (req as any).zenith?.adapter
-      const settings = await adapter?.findOne('z_settings', {})
+      const siteId = req.headers['x-zenith-site-id'] as string
+      // ISOLATION FIX: scope settings lookup to siteId
+      const settingsQuery = siteId ? { siteId } : {}
+      const settings = await adapter?.findOne('z_settings', settingsQuery)
       
       const keyMap: Record<string, string> = {
         openrouter: 'openRouterApiKey',

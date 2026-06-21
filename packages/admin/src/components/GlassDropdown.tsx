@@ -107,7 +107,7 @@ export const GlassDropdown = <T,>({
  disabled={disabled}
  className={cn(
  "w-full flex items-center justify-between text-left transition-all duration-300 p-2.5",
- "relative overflow-hidden shadow-[var(--z-active-glow)]",
+ "relative overflow-hidden shadow-sm",
  theme === 'dark'
  ? "bg-z-panel backdrop-blur-[12px] text-white border border-z-border hover:border-gray-500/50 hover:bg-black/85"
  : "bg-white/65 backdrop-blur-[12px] text-z-primary border border-black/[0.08] hover:border-gray-500/30 hover:bg-white/85",
@@ -130,11 +130,11 @@ export const GlassDropdown = <T,>({
  {isSidebarOpen && (
  <div className="flex flex-col min-w-0">
  {selectedOption?.description && (
- <span className="text-[8px] font-black text-gray-600 dark:text-z-muted dark:text-z-muted uppercase tracking-[0.2em] font-mono leading-none mb-1">
+ <span className="text-sm font-semibold text-gray-600 dark:text-z-muted dark:text-z-muted font-mono leading-none mb-1">
  {selectedOption.description}
  </span>
  )}
- <span className="text-xs font-black uppercase tracking-wide truncate leading-none">
+ <span className="text-xs font-semibold tracking-wide truncate leading-none">
  {selectedOption ? selectedOption.label : placeholder}
  </span>
  </div>
@@ -178,7 +178,7 @@ export const GlassDropdown = <T,>({
  WebkitBackdropFilter: 'blur(12px)',
  }}
  className={cn(
- "rounded-none-none overflow-hidden shadow-[var(--z-active-glow)] border",
+ "rounded-none-none overflow-hidden shadow-sm border",
  theme === 'dark'
  ? "border-z-border text-white"
  : "border-black/[0.08] text-z-primary",
@@ -190,7 +190,7 @@ export const GlassDropdown = <T,>({
  "px-4 py-2.5 border-b bg-white/[0.01]",
  theme === 'dark' ? "border-white/[0.05]" : "border-black/[0.05]"
  )}>
- <span className="text-[9px] font-black text-z-muted uppercase tracking-widest font-mono">
+ <span className="text-sm font-semibold text-z-muted font-mono">
  {headerText}
  </span>
  </div>
@@ -222,7 +222,7 @@ export const GlassDropdown = <T,>({
  <div className="flex flex-col min-w-0">
  <span className="text-xs font-bold truncate">{option.label}</span>
  {option.description && (
- <span className="text-[9px] text-z-muted font-mono tracking-wider">
+ <span className="text-sm text-z-muted font-mono">
  {option.description}
  </span>
  )}

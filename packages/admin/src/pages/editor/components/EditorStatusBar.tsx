@@ -55,23 +55,23 @@ export const EditorStatusBar: React.FC = () => {
  : 'bg-white/90 border-z-border shadow-sm text-z-muted'
  )}
  >
- <div className="flex items-center gap-4 text-xs font-black uppercase tracking-widest ">
+ <div className="flex items-center gap-4 text-xs font-semibold">
  <span>
- <span className="font-black">{stats.words.toLocaleString()}</span>{' '}
+ <span className="font-semibold">{stats.words.toLocaleString()}</span>{' '}
  <span className={stats.words === 0 ? 'text-rose-500/50' : ''}>words</span>
  </span>
  <span className="w-px h-3 bg-white/10" />
  <span>
- <span className="font-black">{stats.chars.toLocaleString()}</span>{' '}
+ <span className="font-semibold">{stats.chars.toLocaleString()}</span>{' '}
  <span className={stats.chars === 0 ? 'text-rose-500/50' : ''}>chars</span>
  </span>
  <span className="w-px h-3 bg-white/10" />
  <span>
- <span className="font-black">{stats.blocks}</span>{' '}
+ <span className="font-semibold">{stats.blocks}</span>{' '}
  {stats.blocks === 1 ? 'block' : 'blocks'}
  </span>
  </div>
- <div className="flex items-center gap-4 text-xs font-black uppercase tracking-widest text-gray-600/50">
+ <div className="flex items-center gap-4 text-xs font-semibold text-gray-600/50">
  <span>ZENITH EDITOR</span>
  <span>v0.2</span>
  </div>

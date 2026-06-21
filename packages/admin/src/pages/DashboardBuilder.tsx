@@ -115,20 +115,17 @@ function StatPill({
 
   return (
     <div className={cn(
-      'flex flex-col justify-between gap-2 p-5 border transition-colors',
-      theme === 'dark'
-        ? 'bg-z-panel backdrop-blur-[12px] border-z-border'
-        : 'bg-white/80 backdrop-blur-[12px] border-z-border/60 shadow-sm'
-    )}>
+      'flex flex-col justify-between gap-2 p-5 border transition-colors z-panel backdrop-blur-md shadow-sm'
+    )} style={{ background: 'var(--z-bg-panel)', borderColor: 'var(--z-border)' }}>
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-black uppercase tracking-[0.12em] text-z-secondary">{label}</span>
+        <span className="text-sm font-semibold text-z-secondary">{label}</span>
         <Icon size={13} className="text-gray-600" />
       </div>
       <div>
-        <span className={cn('text-2xl font-black tracking-tighter leading-none tabular-nums', accentClass)}>
+        <span className={cn('text-2xl font-semibold  leading-none tabular-nums', accentClass)}>
           {loading ? <span className="text-gray-600 text-base">—</span> : value}
         </span>
-        {sub && <p className="text-[10px] text-gray-600 mt-1">{sub}</p>}
+        {sub && <p className="text-sm text-gray-600 mt-1">{sub}</p>}
       </div>
     </div>
   )
@@ -140,7 +137,7 @@ function EnvBadge({ env }: { env?: string }) {
   const isProd = env === 'production'
   return (
     <span className={cn(
-      'inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest border',
+      'inline-flex items-center gap-1.5 px-2.5 py-1 text-sm font-semibold   border',
       isProd
         ? 'bg-rose-500/10 border-rose-500/20 text-rose-400'
         : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
@@ -245,9 +242,9 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className={cn('h-full w-full flex flex-col items-center justify-center gap-4', theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]')}>
+      <div className="h-full w-full flex flex-col items-center justify-center gap-4">
         <Loader2 size={26} className="animate-spin text-gray-600" strokeWidth={1.5} />
-        <p className="text-[10px] font-black uppercase tracking-[0.6em] text-z-secondary animate-pulse">Loading…</p>
+        <p className="text-sm font-semibold text-z-secondary animate-pulse">Loading…</p>
       </div>
     )
   }
@@ -262,7 +259,7 @@ export default function Dashboard() {
   ]
 
   return (
-    <div className={cn('min-h-full transition-colors duration-300', theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-z-primary')}>
+    <div className="min-h-full transition-colors duration-300">
       <div className="p-6 space-y-5 max-w-screen-2xl mx-auto">
 
         {/* Page Header */}
@@ -274,7 +271,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               <EnvBadge env={health?.environment} />
               {health?.version && (
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">
+                <span className="text-sm font-semibold text-gray-600">
                   v{health.version}
                 </span>
               )}
@@ -330,7 +327,7 @@ export default function Dashboard() {
                 key={a.label}
                 onClick={() => navigate(a.path)}
                 className={cn(
-                  'flex items-center gap-2.5 px-3 py-2.5 text-[11px] font-black uppercase tracking-wide transition-all',
+                  'flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold  tracking-wide transition-all',
                   a.color
                 )}
               >
@@ -350,7 +347,7 @@ export default function Dashboard() {
             icon={<Database size={13} />}
             noPadding
             action={
-              <Link to="/schema-builder" className={cn('text-[10px] font-black uppercase tracking-widest flex items-center gap-1 transition-colors', theme === 'dark' ? 'text-gray-600 hover:text-gray-300' : 'text-z-muted hover:text-gray-700')}>
+              <Link to="/schema-builder" className={cn('text-sm font-semibold   flex items-center gap-1 transition-colors', theme === 'dark' ? 'text-gray-600 hover:text-gray-300' : 'text-z-muted hover:text-gray-700')}>
                 Manage <ArrowRight size={11} />
               </Link>
             }
@@ -359,10 +356,10 @@ export default function Dashboard() {
               <div className="flex flex-col items-center justify-center py-14 gap-4 px-6">
                 <Database size={32} className="text-gray-700" strokeWidth={1} />
                 <div className="text-center">
-                  <p className="text-[12px] font-bold text-z-muted">No collections yet</p>
-                  <p className="text-[11px] text-gray-600 mt-1">Create your first collection to start managing content.</p>
+                  <p className="text-sm font-bold text-z-muted">No collections yet</p>
+                  <p className="text-sm text-gray-600 mt-1">Create your first collection to start managing content.</p>
                 </div>
-                <Link to="/schema-builder" className="px-5 py-2.5 bg-z-accent hover:opacity-90 text-white text-[10px] font-black uppercase tracking-widest transition-colors">
+                <Link to="/schema-builder" className="px-5 py-2.5 bg-z-accent hover:opacity-90 text-white text-sm font-semibold transition-colors">
                   + Create Collection
                 </Link>
               </div>
@@ -382,11 +379,11 @@ export default function Dashboard() {
                         <Layers size={11} />
                       </div>
                       <div>
-                        <span className={cn('text-[12px] font-bold capitalize', theme === 'dark' ? 'text-gray-200' : 'text-gray-800')}>
+                        <span className={cn('text-sm font-bold capitalize', theme === 'dark' ? 'text-gray-200' : 'text-gray-800')}>
                           {col.label || col.name}
                         </span>
                         {col.drafts && (
-                          <span className="ml-2 text-[8px] font-black uppercase tracking-widest text-amber-500 bg-amber-500/10 px-1.5 py-0.5">
+                          <span className="ml-2 text-sm font-semibold text-amber-500 bg-amber-500/10 px-1.5 py-0.5">
                             Drafts
                           </span>
                         )}
@@ -394,7 +391,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex items-center gap-3">
                       {col.count != null && (
-                        <span className="text-[11px] font-black tabular-nums text-gray-600">
+                        <span className="text-sm font-semibold tabular-nums text-gray-600">
                           {col.count.toLocaleString()}
                         </span>
                       )}
@@ -404,13 +401,13 @@ export default function Dashboard() {
                 ))}
                 {collections.length > 8 && (
                   <div className={cn('px-5 py-3 border-t', 'border-z-border')}>
-                    <Link to="/schema-builder" className="text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-z-active-text transition-colors">
+                    <Link to="/schema-builder" className="text-sm font-semibold text-gray-600 hover:text-z-active-text transition-colors">
                       +{collections.length - 8} more collections →
                     </Link>
                   </div>
                 )}
                 <div className={cn('px-5 py-3 border-t', 'border-z-border')}>
-                  <Link to="/schema-builder" className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-z-active-text transition-colors w-fit">
+                  <Link to="/schema-builder" className="flex items-center gap-1.5 text-sm font-semibold text-gray-600 hover:text-z-active-text transition-colors w-fit">
                     <Plus size={11} /> New Collection
                   </Link>
                 </div>
@@ -424,7 +421,7 @@ export default function Dashboard() {
             icon={<History size={13} />}
             noPadding
             action={
-              <Link to="/audit-log" className={cn('text-[10px] font-black uppercase tracking-widest flex items-center gap-1 transition-colors', theme === 'dark' ? 'text-gray-600 hover:text-gray-300' : 'text-z-muted hover:text-gray-700')}>
+              <Link to="/audit-log" className={cn('text-sm font-semibold   flex items-center gap-1 transition-colors', theme === 'dark' ? 'text-gray-600 hover:text-gray-300' : 'text-z-muted hover:text-gray-700')}>
                 Full Log <ArrowRight size={11} />
               </Link>
             }
@@ -432,7 +429,7 @@ export default function Dashboard() {
             {auditLogs.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-14 gap-2">
                 <History size={28} className="text-gray-700" strokeWidth={1} />
-                <p className="text-[11px] text-gray-600">No activity recorded yet.</p>
+                <p className="text-sm text-gray-600">No activity recorded yet.</p>
               </div>
             ) : (
               <div>
@@ -454,22 +451,22 @@ export default function Dashboard() {
                       )}
                     >
                       {/* Avatar */}
-                      <div className={cn('w-6 h-6 flex items-center justify-center text-white text-[9px] font-black shrink-0', INITIALS_COLORS[colorIdx])}>
+                      <div className={cn('w-6 h-6 flex items-center justify-center text-white text-sm font-semibold shrink-0', INITIALS_COLORS[colorIdx])}>
                         {initials}
                       </div>
                       {/* Action badge */}
                       <span className={cn(
-                        'inline-flex px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest shrink-0',
+                        'inline-flex px-1.5 py-0.5 text-sm font-semibold   shrink-0',
                         isFailed ? 'text-rose-400 bg-rose-500/10' : (ACTION_PALETTE[log.action?.toLowerCase()] || 'text-z-muted bg-gray-500/10')
                       )}>
                         {log.action}
                       </span>
                       {/* Collection */}
-                      <span className={cn('text-[11px] font-medium flex-1 truncate capitalize', theme === 'dark' ? 'text-z-muted' : 'text-gray-600')}>
+                      <span className={cn('text-sm font-medium flex-1 truncate capitalize', theme === 'dark' ? 'text-z-muted' : 'text-gray-600')}>
                         {collection}
                       </span>
                       {/* Time */}
-                      <span className="text-[10px] text-gray-600 shrink-0 tabular-nums">{timeAgo(log.timestamp)}</span>
+                      <span className="text-sm text-gray-600 shrink-0 tabular-nums">{timeAgo(log.timestamp)}</span>
                     </div>
                   )
                 })}
@@ -487,7 +484,7 @@ export default function Dashboard() {
             {membersOnline.length === 0 ? (
               <div className="flex items-center gap-2.5">
                 <div className={cn('w-2 h-2 rounded-full', theme === 'dark' ? 'bg-white/10' : 'bg-gray-200')} />
-                <p className="text-[11px] text-gray-600">No one else is editing right now.</p>
+                <p className="text-sm text-gray-600">No one else is editing right now.</p>
               </div>
             ) : (
               <div className="space-y-2.5">
@@ -505,7 +502,7 @@ export default function Dashboard() {
                       {/* Avatar with live pulse */}
                       <div className="relative shrink-0">
                         <div
-                          className="w-7 h-7 flex items-center justify-center text-white text-[10px] font-black"
+                          className="w-7 h-7 flex items-center justify-center text-white text-sm font-semibold"
                           style={{ backgroundColor: avatarColor }}
                           title={email}
                         >
@@ -515,21 +512,21 @@ export default function Dashboard() {
                       </div>
                       {/* Info */}
                       <div className="flex-1 min-w-0">
-                        <p className={cn('text-[12px] font-bold truncate', theme === 'dark' ? 'text-gray-200' : 'text-gray-800')}>
+                        <p className={cn('text-sm font-bold truncate', theme === 'dark' ? 'text-gray-200' : 'text-gray-800')}>
                           {name}
                         </p>
                         {collection ? (
-                          <p className="text-[10px] text-z-secondary truncate">
+                          <p className="text-sm text-z-secondary truncate">
                             Editing <span className="capitalize font-medium text-z-muted">{collection}</span>
                           </p>
                         ) : (
-                          <p className="text-[10px] text-gray-600">Browsing the CMS</p>
+                          <p className="text-sm text-gray-600">Browsing the CMS</p>
                         )}
                       </div>
                       {/* Live indicator */}
                       <div className="flex items-center gap-1.5 shrink-0">
                         <span className="w-1.5 h-1.5 rounded-full bg-z-accent animate-pulse" />
-                        <span className="text-[10px] text-gray-600">Live</span>
+                        <span className="text-sm text-gray-600">Live</span>
                       </div>
                     </div>
                   )
@@ -565,18 +562,18 @@ export default function Dashboard() {
                     {item.ok
                       ? <CheckCircle2 size={13} className="text-z-active-text shrink-0" />
                       : <AlertTriangle size={13} className="text-rose-400 shrink-0" />}
-                    <span className={cn('text-[12px] font-bold', theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>{item.label}</span>
+                    <span className={cn('text-sm font-bold', theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>{item.label}</span>
                   </div>
-                  <span className="text-[11px] text-gray-600">{item.detail}</span>
+                  <span className="text-sm text-gray-600">{item.detail}</span>
                 </div>
               ))}
               {health?.uptime != null && (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Clock size={13} className="text-gray-600 shrink-0" />
-                    <span className={cn('text-[12px] font-bold', theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>Uptime</span>
+                    <span className={cn('text-sm font-bold', theme === 'dark' ? 'text-gray-300' : 'text-gray-700')}>Uptime</span>
                   </div>
-                  <span className="text-[11px] text-gray-600">{uptimeStr(health.uptime)}</span>
+                  <span className="text-sm text-gray-600">{uptimeStr(health.uptime)}</span>
                 </div>
               )}
             </div>

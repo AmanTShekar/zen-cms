@@ -134,12 +134,15 @@ const TrashPage = () => {
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden">
       <PageHeader
-        title="Trash"
+        title="Trash / Graveyard"
+        description="Recover deleted documents."
+        icon={<Trash2 size={24} className="text-red-500" />}
+        backLink={{ to: '/', label: 'Dashboard' }}
         actions={
           total > 0 && (
             <button
               onClick={() => setEmptyConfirm(true)}
-              className="flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-500 shadow-[var(--z-active-glow)] text-white text-[10px] font-black uppercase tracking-widest transition-all rounded-none"
+              className="flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-500 shadow-sm text-white text-sm font-semibold transition-all rounded-none"
             >
               <Trash2 size={14} />
               Empty Trash
@@ -157,7 +160,7 @@ const TrashPage = () => {
             onChange={(e) => { setSearch(e.target.value); setPage(1) }}
             placeholder="Search trashed items..."
             className={cn(
-              'w-full pl-10 pr-4 py-2.5 text-[10px] font-black uppercase tracking-widest border outline-none focus-visible:ring-2 focus-visible:ring-red-500/50 transition-colors rounded-none shadow-[var(--z-active-glow)]',
+              'w-full pl-10 pr-4 py-2.5 text-sm font-semibold   border outline-none focus-visible:ring-2 focus-visible:ring-red-500/50 transition-colors rounded-none shadow-sm',
               'z-input'
             )}
           />
@@ -171,7 +174,7 @@ const TrashPage = () => {
           ) : items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 gap-4 opacity-50">
               <Trash2 size={32} className="text-z-secondary" />
-              <p className="text-[10px] font-black uppercase tracking-widest text-z-secondary">
+              <p className="text-sm font-semibold text-z-secondary">
                 {search ? 'No matching items' : 'Trash is empty'}
               </p>
             </div>
@@ -180,7 +183,7 @@ const TrashPage = () => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className={cn(
-                    'text-[9px] font-black uppercase tracking-widest border-b',
+                    'text-sm font-semibold   border-b',
                     dark ? 'text-z-secondary border-z-border' : 'text-z-secondary border-z-border'
                   )}>
                     <th className="px-5 py-4 font-normal">Title</th>
@@ -205,7 +208,7 @@ const TrashPage = () => {
                       </td>
                       <td className="px-5 py-4 hidden sm:table-cell">
                         <span className={cn(
-                          'inline-flex items-center gap-1.5 px-2 py-1 text-[10px] font-black uppercase tracking-wider',
+                          'inline-flex items-center gap-1.5 px-2 py-1 text-sm font-semibold  ',
                           dark ? 'bg-z-hover text-z-muted' : 'bg-gray-100 text-z-secondary'
                         )}>
                           <Database size={10} />
@@ -213,7 +216,7 @@ const TrashPage = () => {
                         </span>
                       </td>
                       <td className="px-5 py-4 hidden md:table-cell">
-                        <span className={cn('text-[11px] font-mono', dark ? 'text-gray-600' : 'text-z-muted')}>
+                        <span className={cn('text-sm font-mono', dark ? 'text-gray-600' : 'text-z-muted')}>
                           {formatDate(item.deletedAt)}
                         </span>
                       </td>
@@ -244,21 +247,21 @@ const TrashPage = () => {
 
           {totalPages > 1 && (
             <div className={cn('flex items-center justify-between px-5 py-4 border-t', dark ? 'border-z-border' : 'border-z-border')}>
-              <span className={cn('text-[10px] font-bold', dark ? 'text-z-secondary' : 'text-z-muted')}>
+              <span className={cn('text-sm font-bold', dark ? 'text-z-secondary' : 'text-z-muted')}>
                 Page {page} of {totalPages}
               </span>
               <div className="flex gap-2">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1}
-                  className={cn('px-4 py-2 text-[10px] font-black uppercase tracking-widest border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white disabled:opacity-30' : 'border-z-border text-z-secondary hover:text-black disabled:opacity-30')}
+                  className={cn('px-4 py-2 text-sm font-semibold   border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white disabled:opacity-30' : 'border-z-border text-z-secondary hover:text-black disabled:opacity-30')}
                 >
                   Prev
                 </button>
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page >= totalPages}
-                  className={cn('px-4 py-2 text-[10px] font-black uppercase tracking-widest border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white disabled:opacity-30' : 'border-z-border text-z-secondary hover:text-black disabled:opacity-30')}
+                  className={cn('px-4 py-2 text-sm font-semibold   border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white disabled:opacity-30' : 'border-z-border text-z-secondary hover:text-black disabled:opacity-30')}
                 >
                   Next
                 </button>
@@ -285,21 +288,21 @@ const TrashPage = () => {
                 <Card>
                   <CardContent className="p-8 text-center">
                     <RotateCcw size={32} className="mx-auto mb-4 text-z-active-text" />
-                    <h3 className="text-[12px] font-black uppercase tracking-widest mb-2 text-white">Restore Document?</h3>
-                    <p className="text-[10px] font-bold text-z-secondary uppercase tracking-widest mb-6">
+                    <h3 className="text-sm font-semibold mb-2 text-white">Restore Document?</h3>
+                    <p className="text-sm font-bold text-z-secondary mb-6">
                       {restoreConfirm.title}
                     </p>
                     <div className="flex gap-3 justify-center">
                       <button
                         onClick={() => setRestoreConfirm(null)}
-                        className={cn('px-5 py-2.5 text-[10px] font-black uppercase tracking-widest border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white' : 'border-z-border text-z-secondary hover:text-black')}
+                        className={cn('px-5 py-2.5 text-sm font-semibold   border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white' : 'border-z-border text-z-secondary hover:text-black')}
                       >
                         Cancel
                       </button>
                       <button
                         onClick={handleRestore}
                         disabled={restoreLoading}
-                        className="px-5 py-2.5 bg-z-accent hover:opacity-90 text-white text-[10px] font-black uppercase tracking-widest transition-all rounded-none shadow-[var(--z-active-glow)] flex items-center gap-2"
+                        className="px-5 py-2.5 bg-z-accent hover:opacity-90 text-white text-sm font-semibold transition-all rounded-none shadow-sm flex items-center gap-2"
                       >
                         {restoreLoading && <Loader2 size={12} className="animate-spin" />}
                         Restore
@@ -330,21 +333,21 @@ const TrashPage = () => {
                 <Card>
                   <CardContent className="p-8 text-center">
                     <AlertTriangle size={32} className="mx-auto mb-4 text-red-500" />
-                    <h3 className="text-[12px] font-black uppercase tracking-widest mb-2 text-white">Permanently Delete?</h3>
-                    <p className="text-[10px] font-bold text-z-secondary uppercase tracking-widest mb-6">
+                    <h3 className="text-sm font-semibold mb-2 text-white">Permanently Delete?</h3>
+                    <p className="text-sm font-bold text-z-secondary mb-6">
                       {purgeConfirm.title}
                     </p>
                     <div className="flex gap-3 justify-center">
                       <button
                         onClick={() => setPurgeConfirm(null)}
-                        className={cn('px-5 py-2.5 text-[10px] font-black uppercase tracking-widest border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white' : 'border-z-border text-z-secondary hover:text-black')}
+                        className={cn('px-5 py-2.5 text-sm font-semibold   border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white' : 'border-z-border text-z-secondary hover:text-black')}
                       >
                         Cancel
                       </button>
                       <button
                         onClick={handlePurge}
                         disabled={purgeLoading}
-                        className="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white text-[10px] font-black uppercase tracking-widest transition-all rounded-none shadow-[var(--z-active-glow)] flex items-center gap-2"
+                        className="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-all rounded-none shadow-sm flex items-center gap-2"
                       >
                         {purgeLoading && <Loader2 size={12} className="animate-spin" />}
                         Delete
@@ -375,21 +378,21 @@ const TrashPage = () => {
                 <Card>
                   <CardContent className="p-8 text-center">
                     <AlertTriangle size={32} className="mx-auto mb-4 text-red-500" />
-                    <h3 className="text-[12px] font-black uppercase tracking-widest mb-2 text-white">Empty Trash?</h3>
-                    <p className="text-[10px] font-bold text-z-secondary uppercase tracking-widest mb-6">
+                    <h3 className="text-sm font-semibold mb-2 text-white">Empty Trash?</h3>
+                    <p className="text-sm font-bold text-z-secondary mb-6">
                       Delete all {total} items permanently.
                     </p>
                     <div className="flex gap-3 justify-center">
                       <button
                         onClick={() => setEmptyConfirm(false)}
-                        className={cn('px-5 py-2.5 text-[10px] font-black uppercase tracking-widest border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white' : 'border-z-border text-z-secondary hover:text-black')}
+                        className={cn('px-5 py-2.5 text-sm font-semibold   border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white' : 'border-z-border text-z-secondary hover:text-black')}
                       >
                         Cancel
                       </button>
                       <button
                         onClick={handleEmptyTrash}
                         disabled={emptyLoading}
-                        className="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white text-[10px] font-black uppercase tracking-widest transition-all rounded-none shadow-[var(--z-active-glow)] flex items-center gap-2"
+                        className="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-all rounded-none shadow-sm flex items-center gap-2"
                       >
                         {emptyLoading && <Loader2 size={12} className="animate-spin" />}
                         Delete All

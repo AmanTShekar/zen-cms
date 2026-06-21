@@ -4,6 +4,8 @@ import { AdapterFactory } from '../../database/adapters/AdapterFactory'
 import { DatabaseAdapter } from '../../database/adapters/BaseAdapter'
 import { createResponse } from '../utils'
 import { AuthenticationError } from '../../errors'
+import { env } from '../../config/env';
+
 
 export const login = async (req: Request, res: Response, next: any) => {
   try {
@@ -21,7 +23,7 @@ export const login = async (req: Request, res: Response, next: any) => {
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: env.NODE_ENV === 'production',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 

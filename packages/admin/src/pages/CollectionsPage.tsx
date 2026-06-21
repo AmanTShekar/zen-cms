@@ -13,7 +13,7 @@ import {
  Check,
  Code2,
 } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { cn } from '../lib/utils'
 import api from '../lib/api'
@@ -24,6 +24,7 @@ import { PageHeader } from '../components/ui/PageHeader'
 
 const CollectionsPage: React.FC = () => {
  const { theme } = useTheme()
+ const navigate = useNavigate()
  // --- REGISTRY STATE: CONTENT INFRASTRUCTURE ---
  const [collections, setCollections] = useState<any[]>([])
  const [loading, setLoading] = useState(true)
@@ -199,7 +200,7 @@ const CollectionsPage: React.FC = () => {
           <div className="flex items-center gap-4 w-full md:w-auto flex-wrap">
             <button
               onClick={() => setIsVisualModalOpen(true)}
-              className="flex items-center gap-2 px-6 py-4 bg-z-accent text-white text-[10px] font-black uppercase tracking-widest hover:bg-z-accent transition-colors shadow-lg shadow-[var(--z-active-glow)]"
+              className="flex items-center gap-2 px-6 py-4 bg-z-accent text-white text-sm font-semibold hover:bg-z-accent transition-colors shadow-lg shadow-sm"
             >
               <Plus size={14} />
               Create Collection
@@ -208,7 +209,7 @@ const CollectionsPage: React.FC = () => {
             <button
               onClick={() => setIsAIModalOpen(true)}
               className={cn(
-                "flex items-center gap-2 px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-colors",
+                "flex items-center gap-2 px-6 py-4 text-sm font-semibold   transition-colors",
                 'bg-z-panel hover:bg-z-hover text-z-primary border-z-border'
               )}
             >
@@ -224,7 +225,7 @@ const CollectionsPage: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={cn(
-                  'w-full border rounded-none-none py-4 pl-12 pr-4 text-[10px] font-black transition-all outline-none uppercase tracking-widest',
+                  'w-full border rounded-none-none py-4 pl-12 pr-4 text-sm font-semibold transition-all outline-none  ',
                   theme === 'dark'
                     ? 'bg-z-hover border-z-border text-white focus:border-z-accent/50 focus:bg-z-hover'
                     : 'bg-z-panel border-z-border focus:border-z-accent/50'
@@ -262,14 +263,14 @@ const CollectionsPage: React.FC = () => {
               <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                 <item.icon size={80} />
               </div>
-              <span className="text-[10px] font-black text-z-secondary uppercase tracking-widest ">
+              <span className="text-sm font-semibold text-z-secondary">
                 {item.label}
               </span>
               <div className="flex items-baseline gap-3">
-                <span className="text-4xl font-black tracking-tighter">
+                <span className="text-4xl font-semibold">
                   {item.value}
                 </span>
-                <span className="text-[9px] font-bold text-gray-600 dark:text-z-secondary uppercase tracking-widest">
+                <span className="text-sm font-bold text-gray-600 dark:text-z-secondary">
                   {item.sub}
                 </span>
               </div>
@@ -286,60 +287,54 @@ const CollectionsPage: React.FC = () => {
               transition={{ delay: i * 0.05 }}
               key={col.slug}
             >
-              <Link
-                to={`/collections/${col.slug}`}
+              <div
+                onClick={() => navigate(`/collections/${col.slug}`)}
                 className={cn(
-                  'group p-6 border rounded-none-none flex flex-col gap-6 transition-all hover:-translate-y-1 relative',
+                  'group p-8 border flex flex-col items-center text-center gap-5 transition-all duration-500 relative overflow-hidden cursor-pointer',
                   theme === 'dark'
-                    ? 'bg-black border-z-border hover:border-gray-500/50'
-                    : 'bg-z-panel border-z-border shadow-sm hover:border-gray-500 shadow-sm'
+                    ? 'bg-black/65 backdrop-blur-xl border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.1)] hover:scale-[1.02] hover:border-z-accent/50 hover:shadow-[0_8px_40px_rgba(139,92,246,0.15)]'
+                    : 'bg-white/80 backdrop-blur-xl border-black/5 shadow-[0_4px_30px_rgba(0,0,0,0.05)] hover:scale-[1.02] hover:border-z-accent/50 hover:shadow-[0_8px_40px_rgba(139,92,246,0.15)]'
                 )}
               >
-                <div className="flex items-start justify-between">
-                  <div
-                    className={cn(
-                      'w-12 h-12 flex items-center justify-center transition-all',
-                      theme === 'dark'
-                        ? 'bg-z-hover text-z-muted group-hover:bg-white group-hover:text-black'
-                        : 'bg-gray-50 text-z-muted group-hover:bg-gray-900 group-hover:text-white'
-                    )}
-                  >
-                    <Layers size={20} />
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className="text-[9px] font-black text-gray-600 dark:text-z-secondary uppercase tracking-widest ">
-                      Registry_Node
-                    </span>
-                    <span className="text-lg font-black tracking-tighter">
-                      #{stats[col.slug] || 0}
-                    </span>
-                  </div>
+                {/* Micro-animation gradient background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-z-accent/0 to-z-accent/0 group-hover:from-z-accent/5 group-hover:to-transparent transition-all duration-500" />
+                
+                <div
+                  className={cn(
+                    'w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 relative z-10',
+                    theme === 'dark'
+                      ? 'bg-white/5 text-z-muted group-hover:bg-z-accent/20 group-hover:text-z-active-text'
+                      : 'bg-black/5 text-z-muted group-hover:bg-z-accent/10 group-hover:text-z-accent'
+                  )}
+                >
+                  <Layers size={24} strokeWidth={1.5} />
                 </div>
 
-                <div>
-                  <h3 className="text-xl font-black uppercase tracking-tighter leading-none mb-2 group-hover:text-gray-600 dark:text-z-secondary transition-colors">
+                <div className="relative z-10 flex flex-col items-center w-full">
+                  <h3 className="text-xl font-black tracking-tight leading-none mb-3 group-hover:text-z-active-text transition-colors duration-500">
                     {col.label.replace(/-/g, ' ')}
                   </h3>
-                  <p className="text-[9px] font-bold text-z-secondary uppercase tracking-widest leading-relaxed">
-                    System collection for managing {col.label.toLowerCase()} entries and metadata.
+                  <div className="flex items-center justify-center mb-4">
+                    <span className={cn('px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest', theme === 'dark' ? 'bg-white/10 text-white' : 'bg-black/5 text-black')}>
+                      {stats[col.slug] || 0} Entries
+                    </span>
+                  </div>
+                  <p className="text-[11px] font-medium text-z-secondary leading-relaxed max-w-[90%]">
+                    Manage and organize your {col.label.toLowerCase()} documents.
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-z-border">
+                <div className="w-full flex items-center justify-center pt-5 mt-auto border-t border-z-border/50 relative z-10">
                   <Link
                     to={`/collections/${col.slug}/hooks`}
                     onClick={(e) => e.stopPropagation()}
-                    className="flex items-center gap-1.5 text-[8px] font-black text-z-secondary hover:text-gray-600 dark:text-z-muted uppercase tracking-[0.2em] transition-colors"
+                    className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-z-secondary hover:text-z-active-text transition-colors duration-300"
                   >
-                    <Code2 size={10} />
-                    Hooks
+                    <Code2 size={12} />
+                    Manage Hooks
                   </Link>
-                  <ArrowRight
-                    size={14}
-                    className="text-gray-600 dark:text-z-secondary -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all"
-                  />
                 </div>
-              </Link>
+              </div>
             </motion.div>
           ))}
         </div>
@@ -360,10 +355,10 @@ const CollectionsPage: React.FC = () => {
               >
                 ✕
               </button>
-              <h2 className="text-2xl font-black uppercase tracking-tighter mb-4 flex items-center gap-2">
+              <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
                 <Zap className="text-gray-600 dark:text-z-secondary" /> AI Schema Architect
               </h2>
-              <p className="text-[10px] font-bold text-z-secondary uppercase tracking-widest mb-6">
+              <p className="text-sm font-bold text-z-secondary mb-6">
                 Describe the collection you want to create and let AI build the schema configuration.
               </p>
 
@@ -380,7 +375,7 @@ const CollectionsPage: React.FC = () => {
               <button
                 onClick={handleAIGenerate}
                 disabled={aiLoading}
-                className="w-full py-4 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white font-black uppercase tracking-widest flex items-center justify-center gap-2"
+                className="w-full py-4 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white font-semibold flex items-center justify-center gap-2"
               >
                 {aiLoading ? <Loader2 className="animate-spin" size={16} /> : <Database size={16} />}
                 {aiLoading ? 'Synthesizing Architecture...' : 'Generate Schema'}
@@ -388,7 +383,7 @@ const CollectionsPage: React.FC = () => {
 
               {aiResult && (
                 <div className="mt-6 border-t border-z-border pt-6">
-                  <p className="text-[10px] font-bold text-z-muted uppercase tracking-widest mb-2">
+                  <p className="text-sm font-bold text-z-muted mb-2">
                     Generated Schema Configuration (Copy to cms.config.ts)
                   </p>
                   <div className="relative">
@@ -397,7 +392,7 @@ const CollectionsPage: React.FC = () => {
                     </pre>
                     <button
                       onClick={() => navigator.clipboard.writeText(JSON.stringify(aiResult, null, 2))}
-                      className="absolute top-2 right-2 px-3 py-1 bg-white/10 hover:bg-white/20 text-[10px] font-black uppercase text-white"
+                      className="absolute top-2 right-2 px-3 py-1 bg-white/10 hover:bg-white/20 text-sm font-semibold text-white"
                     >
                       Copy
                     </button>
@@ -423,17 +418,17 @@ const CollectionsPage: React.FC = () => {
               >
                 ✕
               </button>
-              <h2 className="text-3xl font-black uppercase tracking-tighter mb-4 flex items-center gap-3">
+              <h2 className="text-3xl font-semibold mb-4 flex items-center gap-3">
                 <Database className="text-gray-600 dark:text-z-secondary animate-pulse" /> Visual Schema Builder
               </h2>
-              <p className="text-[10px] font-black text-z-secondary uppercase tracking-widest mb-8 border-b border-z-border pb-4 ">
+              <p className="text-sm font-semibold text-z-secondary mb-8 border-b border-z-border pb-4">
                 Define collection specifications, fields, types, and constraints visually without
                 writing code.
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-z-secondary block">
+                  <label className="text-sm font-semibold text-gray-600 dark:text-z-secondary block">
                     Collection Name
                   </label>
                   <input
@@ -443,7 +438,7 @@ const CollectionsPage: React.FC = () => {
                     onChange={(e) => handleNameChange(e.target.value)}
                     placeholder="e.g. Review"
                     className={cn(
-                      'w-full px-4 py-3 text-sm font-bold border rounded-none-none focus:ring-2 focus:ring-gray-500 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all uppercase tracking-widest ',
+                      'w-full px-4 py-3 text-sm font-bold border rounded-none-none focus:ring-2 focus:ring-gray-500 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all   ',
                       theme === 'dark'
                         ? 'bg-black border-z-border text-white'
                         : 'bg-z-input border-z-border'
@@ -452,7 +447,7 @@ const CollectionsPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-z-secondary block">
+                  <label className="text-sm font-semibold text-gray-600 dark:text-z-secondary block">
                     Slug
                   </label>
                   <input
@@ -462,7 +457,7 @@ const CollectionsPage: React.FC = () => {
                     onChange={(e) => setNewColSlug(e.target.value)}
                     placeholder="e.g. reviews"
                     className={cn(
-                      'w-full px-4 py-3 text-sm font-bold border rounded-none-none focus:ring-2 focus:ring-gray-500 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all lowercase tracking-widest ',
+                      'w-full px-4 py-3 text-sm font-bold border rounded-none-none focus:ring-2 focus:ring-gray-500 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all lowercase  ',
                       theme === 'dark'
                         ? 'bg-black border-z-border text-z-muted'
                         : 'bg-z-input border-z-border text-z-secondary'
@@ -481,7 +476,7 @@ const CollectionsPage: React.FC = () => {
                 />
                 <label
                   htmlFor="enable-drafts-checkbox"
-                  className="text-[10px] font-black uppercase tracking-widest text-z-muted cursor-pointer select-none"
+                  className="text-sm font-semibold text-z-muted cursor-pointer select-none"
                 >
                   Enable Draft/Publish Workflow
                 </label>
@@ -489,12 +484,12 @@ const CollectionsPage: React.FC = () => {
 
               <div className="space-y-6">
                 <div className="flex items-center justify-between border-b border-z-border pb-3">
-                  <h3 className="text-xs font-black uppercase tracking-widest text-z-muted ">
+                  <h3 className="text-xs font-semibold text-z-muted">
                     Field Definitions
                   </h3>
                   <button
                     onClick={handleAddField}
-                    className="px-4 py-2 border border-dashed border-gray-500/30 text-gray-600 dark:text-z-muted hover:bg-gray-500/5 text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-2"
+                    className="px-4 py-2 border border-dashed border-gray-500/30 text-gray-600 dark:text-z-muted hover:bg-gray-500/5 text-sm font-semibold transition-all flex items-center gap-2"
                   >
                     <Plus size={12} /> Add Field
                   </button>
@@ -512,7 +507,7 @@ const CollectionsPage: React.FC = () => {
                       )}
                     >
                       <div className="space-y-2">
-                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-600 dark:text-z-secondary block">
+                        <label className="text-sm font-semibold text-gray-600 dark:text-z-secondary block">
                           Field Name
                         </label>
                         <input
@@ -531,7 +526,7 @@ const CollectionsPage: React.FC = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-[8px] font-black uppercase tracking-widest text-gray-600 dark:text-z-secondary block">
+                        <label className="text-sm font-semibold text-gray-600 dark:text-z-secondary block">
                           Type
                         </label>
                         <select
@@ -556,7 +551,7 @@ const CollectionsPage: React.FC = () => {
 
                       {field.type === 'select' ? (
                         <div className="space-y-2">
-                          <label className="text-[8px] font-black uppercase tracking-widest text-gray-600 dark:text-z-secondary block">
+                          <label className="text-sm font-semibold text-gray-600 dark:text-z-secondary block">
                             Options (Comma separated)
                           </label>
                           <input
@@ -574,7 +569,7 @@ const CollectionsPage: React.FC = () => {
                         </div>
                       ) : field.type === 'relationship' ? (
                         <div className="space-y-2">
-                          <label className="text-[8px] font-black uppercase tracking-widest text-gray-600 dark:text-z-secondary block">
+                          <label className="text-sm font-semibold text-gray-600 dark:text-z-secondary block">
                             Relate To Collection
                           </label>
                           <select
@@ -607,7 +602,7 @@ const CollectionsPage: React.FC = () => {
                           />
                           <label
                             htmlFor={`required-checkbox-${index}`}
-                            className="text-[8px] font-black uppercase tracking-widest text-z-muted cursor-pointer select-none"
+                            className="text-sm font-semibold text-z-muted cursor-pointer select-none"
                           >
                             Required Field
                           </label>
@@ -632,7 +627,7 @@ const CollectionsPage: React.FC = () => {
                 <button
                   onClick={() => setIsVisualModalOpen(false)}
                   className={cn(
-                    'px-6 py-3 font-black text-[9px] uppercase tracking-widest transition-all leading-none border',
+                    'px-6 py-3 font-semibold text-sm   transition-all leading-none border',
                     theme === 'dark'
                       ? 'bg-z-hover border-z-border text-z-muted hover:text-white'
                       : 'bg-z-panel border-z-border text-z-muted hover:text-z-primary'
@@ -643,7 +638,7 @@ const CollectionsPage: React.FC = () => {
                 <button
                   onClick={handleCreateCollection}
                   disabled={visualLoading}
-                  className="px-8 py-3 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white rounded-none-none text-[9px] font-black uppercase tracking-widest shadow-xl shadow-gray-600/20 transition-all flex items-center gap-2 leading-none"
+                  className="px-8 py-3 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white rounded-none-none text-sm font-semibold shadow-xl shadow-gray-600/20 transition-all flex items-center gap-2 leading-none"
                 >
                   {visualLoading ? (
                     <Loader2 size={12} className="animate-spin" />

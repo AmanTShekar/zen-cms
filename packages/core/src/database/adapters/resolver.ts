@@ -1,9 +1,11 @@
 import { logger } from '../../services/logger'
+import { env } from '../../config/env';
+
 
 export function resolveDatabaseConfig(customUri?: string, customType?: 'mongodb' | 'postgres'): { type: 'mongodb' | 'postgres'; uri: string } {
   const mongoUri = process.env.MONGODB_URI
   const postgresUri = process.env.POSTGRES_URI || process.env.DATABASE_URL
-  const dbType = customType || process.env.DATABASE_TYPE
+  const dbType = customType || env.DATABASE_TYPE
 
   // Direct explicit selection
   if (dbType === 'postgres') {

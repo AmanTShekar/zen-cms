@@ -135,7 +135,7 @@ function MiniPreview({ p, label }: { p: ThemePreset; label?: string }) {
     <div className="border overflow-hidden" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
       {label && (
         <div
-          className="px-2 py-1 text-[7px] font-black uppercase tracking-widest text-z-secondary border-b"
+          className="px-2 py-1 text-sm font-semibold text-z-secondary border-b"
           style={{ borderColor: 'rgba(255,255,255,0.06)' }}
         >
           {label}
@@ -148,7 +148,7 @@ function MiniPreview({ p, label }: { p: ThemePreset; label?: string }) {
           style={{ background: p.sidebarBg }}
         >
           <div
-            className="w-6 h-6 flex items-center justify-center text-[7px] font-black mb-1"
+            className="w-6 h-6 flex items-center justify-center text-sm font-semibold mb-1"
             style={{ background: p.logoIconBg, color: p.logoIconText, borderRadius: v.radius }}
           >
             Z
@@ -198,7 +198,7 @@ function MiniPreview({ p, label }: { p: ThemePreset; label?: string }) {
             />
           </div>
           <div
-            className="h-4 border flex items-center justify-center text-[7px] font-black"
+            className="h-4 border flex items-center justify-center text-sm font-semibold"
             style={{
               borderColor: p.activeBorder,
               background: p.activeBg,
@@ -258,7 +258,7 @@ function ThemeCard({
             style={{ background: preset.sidebarBg }}
           >
             <div
-              className="w-5 h-5 flex items-center justify-center text-[7px] font-black mb-1"
+              className="w-5 h-5 flex items-center justify-center text-sm font-semibold mb-1"
               style={{
                 background: preset.logoIconBg,
                 color: preset.logoIconText,
@@ -345,7 +345,7 @@ function ThemeCard({
         <div className="absolute top-0 right-3 -translate-y-1/2 flex items-center">
           <span
             className={cn(
-              'px-2 py-0.5 text-[6px] font-black uppercase tracking-widest border shadow-sm backdrop-blur-sm',
+              'px-2 py-0.5 text-sm font-semibold   border shadow-sm backdrop-blur-sm',
               preset.designStyle === 'classic'
                 ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
                 : 'bg-fuchsia-500/10 border-fuchsia-500/30 text-fuchsia-400'
@@ -364,7 +364,7 @@ function ThemeCard({
             <div className="flex items-center gap-1.5">
               <span
                 className={cn(
-                  'text-[10px] font-black uppercase tracking-wide truncate',
+                  'text-sm font-semibold  tracking-wide truncate',
                   dark ? 'text-white' : 'text-z-primary'
                 )}
               >
@@ -373,7 +373,7 @@ function ThemeCard({
               {isActive && <Check size={9} style={{ color: preset.activeText, flexShrink: 0 }} />}
             </div>
             {preset.description && (
-              <p className="text-[8px] text-z-secondary mt-0.5 line-clamp-1">
+              <p className="text-sm text-z-secondary mt-0.5 line-clamp-1">
                 {preset.description}
               </p>
             )}
@@ -382,7 +382,7 @@ function ThemeCard({
                 {preset.tags.slice(0, 3).map((t) => (
                   <span
                     key={t}
-                    className="text-[7px] font-black uppercase tracking-wider px-1 py-0.5 border text-z-secondary rounded-sm"
+                    className="text-sm font-semibold px-1 py-0.5 border text-z-secondary rounded-sm"
                     style={{ borderColor: dark ? 'rgba(255,255,255,0.07)' : '#e5e7eb' }}
                   >
                     {t}
@@ -427,7 +427,7 @@ function ThemeCard({
       {/* Apply / Active badge */}
       {isActive ? (
         <div
-          className="absolute top-2 right-2 px-2 py-0.5 text-[7px] font-black uppercase tracking-widest border"
+          className="absolute top-2 right-2 px-2 py-0.5 text-sm font-semibold border"
           style={{
             background: preset.activeBg,
             borderColor: preset.activeBorder,
@@ -440,7 +440,7 @@ function ThemeCard({
       ) : (
         <button
           onClick={onApply}
-          className="absolute bottom-3 right-3 px-2.5 py-1.5 text-[7px] font-black uppercase tracking-widest border opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute bottom-3 right-3 px-2.5 py-1.5 text-sm font-semibold border opacity-0 group-hover:opacity-100 transition-opacity"
           style={{
             borderColor: dark ? 'rgba(255,255,255,0.1)' : '#d1d5db',
             color: dark ? '#ccc' : '#555',
@@ -531,12 +531,12 @@ function ThemeCreatorWizard({
   }
 
   const inp = cn(
-    'w-full border py-2 px-3 text-[10px] font-black outline-none focus:ring-1 focus:ring-z-active-border transition-all',
+    'w-full border py-2 px-3 text-sm font-semibold outline-none focus:ring-1 focus:ring-z-active-border transition-all',
     dark
       ? 'bg-black border-z-border text-white placeholder:text-gray-600'
       : 'bg-z-panel border-z-border text-z-primary'
   )
-  const lbl = 'text-[8px] font-black uppercase tracking-widest text-z-secondary block mb-1.5'
+  const lbl = 'text-sm font-semibold   text-z-secondary block mb-1.5'
 
   const steps = [
     { label: 'Identity', icon: Info },
@@ -569,10 +569,10 @@ function ThemeCreatorWizard({
           style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : '#e5e7eb' }}
         >
           <div>
-            <h3 className="text-[12px] font-black uppercase tracking-wider">
+            <h3 className="text-sm font-semibold">
               {editing ? 'Edit Theme' : 'Theme Creator'}
             </h3>
-            <p className="text-[8px] text-z-secondary uppercase tracking-widest mt-0.5">
+            <p className="text-sm text-z-secondary mt-0.5">
               Step {step + 1} of {steps.length}
             </p>
           </div>
@@ -595,7 +595,7 @@ function ThemeCreatorWizard({
               key={i}
               onClick={() => (i < step || canProceed ? setStep(i) : null)}
               className={cn(
-                'flex-1 flex items-center justify-center gap-1.5 py-3 text-[8px] font-black uppercase tracking-widest border-b-2 transition-all',
+                'flex-1 flex items-center justify-center gap-1.5 py-3 text-sm font-semibold   border-b-2 transition-all',
                 i === step
                   ? 'border-z-accent text-z-active-text'
                   : i < step
@@ -605,7 +605,7 @@ function ThemeCreatorWizard({
             >
               <Icon size={10} />
               <span className="hidden sm:block">{label}</span>
-              <span className="text-[7px] opacity-50">{i + 1}</span>
+              <span className="text-sm opacity-50">{i + 1}</span>
             </button>
           ))}
         </div>
@@ -682,11 +682,11 @@ function ThemeCreatorWizard({
                 </div>
                 <div
                   className={cn(
-                    'p-3 border text-[9px] text-z-secondary',
+                    'p-3 border text-sm text-z-secondary',
                     dark ? 'border-z-border bg-z-panel' : 'border-z-border bg-gray-50'
                   )}
                 >
-                  <p className="font-black uppercase tracking-widest text-z-active-text mb-1">
+                  <p className="font-semibold text-z-active-text mb-1">
                     Tip
                   </p>
                   Give your theme a memorable name. The ID will be auto-generated. Tags help users
@@ -705,10 +705,10 @@ function ThemeCreatorWizard({
                 className="space-y-6"
               >
                 <div>
-                  <h3 className="text-[12px] font-black uppercase tracking-wider mb-1 text-z-primary">
+                  <h3 className="text-sm font-semibold mb-1 text-z-primary">
                     Design Paradigm
                   </h3>
-                  <p className="text-[9px] text-z-secondary mb-4">
+                  <p className="text-sm text-z-secondary mb-4">
                     Choose the foundational layout structure for your theme. This completely changes
                     how backgrounds, borders, and shadows behave.
                   </p>
@@ -731,7 +731,7 @@ function ThemeCreatorWizard({
                       <div className="flex items-center justify-between mb-2">
                         <span
                           className={cn(
-                            'text-[10px] font-black uppercase tracking-widest',
+                            'text-sm font-semibold  ',
                             draft.designStyle !== 'classic'
                               ? 'text-[var(--z-active-text)]'
                               : 'text-z-muted'
@@ -743,7 +743,7 @@ function ThemeCreatorWizard({
                           <Check size={14} className="text-[var(--z-active-text)]" />
                         )}
                       </div>
-                      <p className="text-[8px] text-z-secondary uppercase tracking-widest leading-relaxed">
+                      <p className="text-sm text-z-secondary leading-relaxed">
                         Translucent panels, deep blurs, and glowing layered shadows.
                       </p>
                     </button>
@@ -765,7 +765,7 @@ function ThemeCreatorWizard({
                       <div className="flex items-center justify-between mb-2">
                         <span
                           className={cn(
-                            'text-[10px] font-black uppercase tracking-widest',
+                            'text-sm font-semibold  ',
                             draft.designStyle === 'classic'
                               ? 'text-[var(--z-active-text)]'
                               : 'text-z-muted'
@@ -777,7 +777,7 @@ function ThemeCreatorWizard({
                           <Check size={14} className="text-[var(--z-active-text)]" />
                         )}
                       </div>
-                      <p className="text-[8px] text-z-secondary uppercase tracking-widest leading-relaxed">
+                      <p className="text-sm text-z-secondary leading-relaxed">
                         Solid backgrounds, strict borders, standard shadows. No blur.
                       </p>
                     </button>
@@ -803,10 +803,10 @@ function ThemeCreatorWizard({
                   )}
                 >
                   <div>
-                    <p className="text-[9px] font-black uppercase tracking-widest">
+                    <p className="text-sm font-semibold">
                       Auto-derive all colors
                     </p>
-                    <p className="text-[8px] text-z-secondary mt-0.5">
+                    <p className="text-sm text-z-secondary mt-0.5">
                       Compute all tokens from your single accent hex
                     </p>
                   </div>
@@ -851,7 +851,7 @@ function ThemeCreatorWizard({
                       className={cn(inp, 'flex-1')}
                       placeholder="var(--z-accent)"
                     />
-                    <div className="text-[8px] text-z-secondary font-mono">
+                    <div className="text-sm text-z-secondary font-mono">
                       HSL: {hexToHsl(hex)}
                     </div>
                   </div>
@@ -900,7 +900,7 @@ function ThemeCreatorWizard({
                           updateToken('sidebarBg', s.value)
                         }}
                         className={cn(
-                          'py-1.5 border text-[7px] font-black uppercase tracking-wider transition-all',
+                          'py-1.5 border text-sm font-semibold   transition-all',
                           preview.sidebarBg === s.value
                             ? 'border-z-accent/50 text-z-active-text'
                             : dark
@@ -977,21 +977,21 @@ function ThemeCreatorWizard({
                     onChange={(e) => update('customCSS', e.target.value)}
                     rows={6}
                     spellCheck={false}
-                    className={cn(inp, 'resize-none font-mono text-[10px]')}
+                    className={cn(inp, 'resize-none font-mono text-sm')}
                     placeholder={`:root {\n  /* Available vars:\n     --brand-accent  --brand-active-bg\n     --brand-active-border  --brand-active-text\n     --brand-logo-bg  --brand-logo-text\n  */\n}\n\n/* Custom styles */\n.custom-glow { box-shadow: 0 0 40px var(--brand-active-bg); }`}
                   />
-                  <p className="text-[8px] text-z-secondary mt-1.5 uppercase tracking-wider">
+                  <p className="text-sm text-z-secondary mt-1.5">
                     Injected into &lt;head&gt; when this theme is active
                   </p>
                 </div>
 
                 <div
                   className={cn(
-                    'p-3 border text-[8px]',
+                    'p-3 border text-sm',
                     dark ? 'border-z-border bg-z-panel' : 'border-z-border bg-gray-50'
                   )}
                 >
-                  <p className="font-black uppercase tracking-widest text-z-active-text mb-1">
+                  <p className="font-semibold text-z-active-text mb-1">
                     CSS Variables Available
                   </p>
                   <div className="grid grid-cols-2 gap-1 font-mono text-z-secondary">
@@ -1026,7 +1026,7 @@ function ThemeCreatorWizard({
                 {/* Token summary */}
                 <div
                   className={cn(
-                    'border divide-y text-[9px] font-mono',
+                    'border divide-y text-sm font-mono',
                     dark ? 'border-z-border divide-white/[0.04]' : 'border-z-border divide-gray-100'
                   )}
                 >
@@ -1043,7 +1043,7 @@ function ThemeCreatorWizard({
                     <div key={k} className="flex items-center gap-3 px-3 py-2">
                       <span
                         className={cn(
-                          'w-24 shrink-0 font-black uppercase tracking-widest text-[8px]',
+                          'w-24 shrink-0 font-semibold   text-sm',
                           dark ? 'text-z-secondary' : 'text-z-muted'
                         )}
                       >
@@ -1058,11 +1058,11 @@ function ThemeCreatorWizard({
 
                 {/* Export JSON preview */}
                 <details
-                  className={cn('border text-[8px]', dark ? 'border-z-border' : 'border-z-border')}
+                  className={cn('border text-sm', dark ? 'border-z-border' : 'border-z-border')}
                 >
                   <summary
                     className={cn(
-                      'px-3 py-2 cursor-pointer font-black uppercase tracking-widest',
+                      'px-3 py-2 cursor-pointer font-semibold  ',
                       dark ? 'text-z-secondary hover:text-gray-300' : 'text-z-secondary'
                     )}
                   >
@@ -1070,7 +1070,7 @@ function ThemeCreatorWizard({
                   </summary>
                   <pre
                     className={cn(
-                      'p-3 font-mono text-[8px] overflow-auto max-h-40 border-t',
+                      'p-3 font-mono text-sm overflow-auto max-h-40 border-t',
                       dark
                         ? 'border-z-border text-z-muted bg-black/30'
                         : 'border-z-border text-gray-600 bg-gray-50'
@@ -1096,7 +1096,7 @@ function ThemeCreatorWizard({
           <button
             onClick={onClose}
             className={cn(
-              'px-4 py-2.5 border text-[9px] font-black uppercase tracking-wider transition-all',
+              'px-4 py-2.5 border text-sm font-semibold   transition-all',
               dark
                 ? 'border-z-border text-z-muted hover:text-white'
                 : 'border-z-border text-z-secondary'
@@ -1108,7 +1108,7 @@ function ThemeCreatorWizard({
             <button
               onClick={() => setStep((s) => s - 1)}
               className={cn(
-                'px-4 py-2.5 border text-[9px] font-black uppercase tracking-wider flex items-center gap-2 transition-all',
+                'px-4 py-2.5 border text-sm font-semibold   flex items-center gap-2 transition-all',
                 dark
                   ? 'border-z-border text-z-muted hover:text-white'
                   : 'border-z-border text-z-secondary'
@@ -1123,7 +1123,7 @@ function ThemeCreatorWizard({
               disabled={!canProceed}
               onClick={() => setStep((s) => s + 1)}
               className={cn(
-                'px-6 py-2.5 text-[9px] font-black uppercase tracking-wider flex items-center gap-2 transition-all',
+                'px-6 py-2.5 text-sm font-semibold   flex items-center gap-2 transition-all',
                 canProceed
                   ? 'bg-z-accent text-white hover:opacity-90'
                   : 'bg-gray-700 text-z-secondary cursor-not-allowed'
@@ -1150,7 +1150,7 @@ function ThemeCreatorWizard({
                 }
                 onSave(final)
               }}
-              className="px-6 py-2.5 text-[9px] font-black uppercase tracking-wider flex items-center gap-2 transition-all"
+              className="px-6 py-2.5 text-sm font-semibold flex items-center gap-2 transition-all"
               style={{ background: preview.accentHex, color: preview.logoIconText }}
             >
               <Check size={12} /> {editing ? 'Save Changes' : 'Create & Apply'}
@@ -1241,8 +1241,8 @@ export default function SettingsThemeStore({ theme }: Props) {
               <Paintbrush size={18} className="text-z-active-text" />
             </div>
             <div>
-              <h2 className="text-[13px] font-black uppercase tracking-wider">Theme Store</h2>
-              <p className="text-[8px] text-z-secondary uppercase tracking-widest mt-0.5">
+              <h2 className="text-[13px] font-semibold">Theme Store</h2>
+              <p className="text-sm text-z-secondary mt-0.5">
                 {BUILTIN_PRESETS.length + COMMUNITY_PRESETS.length + customThemes.length} themes ·
                 plug-and-play · import/export JSON
               </p>
@@ -1252,7 +1252,7 @@ export default function SettingsThemeStore({ theme }: Props) {
             <button
               onClick={() => fileRef.current?.click()}
               className={cn(
-                'flex items-center gap-2 px-3 py-2 border text-[9px] font-black uppercase tracking-widest transition-all',
+                'flex items-center gap-2 px-3 py-2 border text-sm font-semibold   transition-all',
                 dark
                   ? 'border-z-border text-z-muted hover:text-white'
                   : 'border-z-border text-z-secondary hover:text-z-primary'
@@ -1265,7 +1265,7 @@ export default function SettingsThemeStore({ theme }: Props) {
                 setEditingTheme(undefined)
                 setShowCreator(true)
               }}
-              className="flex items-center gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-widest transition-all"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all"
               style={{
                 background: 'rgba(139,92,246,0.15)',
                 border: '1px solid rgba(139,92,246,0.3)',
@@ -1284,15 +1284,15 @@ export default function SettingsThemeStore({ theme }: Props) {
           >
             <div className="w-3 h-3" style={{ background: activeP.accentHex }} />
             <span
-              className="text-[9px] font-black uppercase tracking-wider"
+              className="text-sm font-semibold"
               style={{ color: activeP.activeText }}
             >
               Active: {activeP.name}
             </span>
-            <span className="text-[8px] text-z-secondary ml-1">{activeP.description || ''}</span>
+            <span className="text-sm text-z-secondary ml-1">{activeP.description || ''}</span>
             <button
               onClick={() => exportTheme(activeP)}
-              className="ml-auto flex items-center gap-1 text-[8px] font-black uppercase tracking-widest"
+              className="ml-auto flex items-center gap-1 text-sm font-semibold"
               style={{ color: activeP.activeText, opacity: 0.7 }}
             >
               <Download size={9} /> Export
@@ -1309,7 +1309,7 @@ export default function SettingsThemeStore({ theme }: Props) {
               key={id}
               onClick={() => setTab(id)}
               className={cn(
-                'flex items-center gap-2 px-4 py-2 border text-[9px] font-black uppercase tracking-widest transition-all',
+                'flex items-center gap-2 px-4 py-2 border text-sm font-semibold   transition-all',
                 tab === id
                   ? 'border-z-active-border bg-z-active-bg text-z-active-text'
                   : dark
@@ -1317,7 +1317,7 @@ export default function SettingsThemeStore({ theme }: Props) {
                     : 'border-z-border text-z-secondary hover:text-gray-700'
               )}
             >
-              <Icon size={10} /> {label} <span className="text-[7px] opacity-50">({count})</span>
+              <Icon size={10} /> {label} <span className="text-sm opacity-50">({count})</span>
             </button>
           ))}
         </div>
@@ -1328,7 +1328,7 @@ export default function SettingsThemeStore({ theme }: Props) {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search..."
             className={cn(
-              'pl-8 pr-3 py-2 border text-[10px] font-black outline-none w-44 focus:ring-1 focus:ring-z-active-border',
+              'pl-8 pr-3 py-2 border text-sm font-semibold outline-none w-44 focus:ring-1 focus:ring-z-active-border',
               dark
                 ? 'bg-black border-z-border text-white placeholder:text-gray-600'
                 : 'bg-z-panel border-z-border'
@@ -1372,7 +1372,7 @@ export default function SettingsThemeStore({ theme }: Props) {
           >
             <div
               className={cn(
-                'mb-4 px-4 py-3 border flex items-center gap-3 text-[9px] font-black uppercase tracking-widest',
+                'mb-4 px-4 py-3 border flex items-center gap-3 text-sm font-semibold  ',
                 dark
                   ? 'border-amber-500/20 bg-amber-500/5 text-amber-400'
                   : 'border-amber-500/20 bg-amber-50 text-amber-600'
@@ -1424,13 +1424,13 @@ export default function SettingsThemeStore({ theme }: Props) {
                 <div className="text-center">
                   <p
                     className={cn(
-                      'text-[11px] font-black uppercase tracking-widest mb-1',
+                      'text-sm font-semibold   mb-1',
                       dark ? 'text-z-muted' : 'text-gray-600'
                     )}
                   >
                     No Custom Themes Yet
                   </p>
-                  <p className="text-[9px] text-gray-600 uppercase tracking-widest">
+                  <p className="text-sm text-gray-600">
                     Create one with the wizard, or import a <code>.json</code> file
                   </p>
                 </div>
@@ -1438,7 +1438,7 @@ export default function SettingsThemeStore({ theme }: Props) {
                   <button
                     onClick={() => fileRef.current?.click()}
                     className={cn(
-                      'flex items-center gap-2 px-4 py-2 border text-[9px] font-black uppercase tracking-widest',
+                      'flex items-center gap-2 px-4 py-2 border text-sm font-semibold  ',
                       dark
                         ? 'border-z-border text-z-muted hover:text-white'
                         : 'border-z-border text-z-secondary'
@@ -1451,7 +1451,7 @@ export default function SettingsThemeStore({ theme }: Props) {
                       setEditingTheme(undefined)
                       setShowCreator(true)
                     }}
-                    className="flex items-center gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-widest"
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-semibold"
                     style={{
                       background: 'rgba(139,92,246,0.15)',
                       border: '1px solid rgba(139,92,246,0.3)',
@@ -1499,7 +1499,7 @@ export default function SettingsThemeStore({ theme }: Props) {
                   )}
                 >
                   <Wand2 size={20} />
-                  <span className="text-[9px] font-black uppercase tracking-widest">New Theme</span>
+                  <span className="text-sm font-semibold">New Theme</span>
                 </button>
               </div>
             )}

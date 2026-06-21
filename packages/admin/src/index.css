@@ -51,14 +51,14 @@
   --z-scrollbar-hover: rgba(255,255,255,0.20);
 
   /* -- Brand Accent (overridden by BrandContext) -------------- */
-  --z-accent:        var(--z-accent);
-  --z-accent-hsl:    160 84% 39%;
-  --z-active-bg:     rgba(16,185,129,0.10);
-  --z-active-border: rgba(16,185,129,0.30);
-  --z-active-text:   rgb(52,211,153);
-  --z-active-glow:   0 0 20px rgba(16,185,129,0.15);
+  --z-accent:        #01398a;
+  --z-accent-hsl:    215 98% 27%;
+  --z-active-bg:     rgba(1, 57, 138, 0.10);
+  --z-active-border: rgba(1, 57, 138, 0.30);
+  --z-active-text:   #01398a;
+  --z-active-glow:   0 0 20px rgba(1, 57, 138, 0.15);
   --z-logo-bg:       var(--z-accent);
-  --z-logo-text:     #000000;
+  --z-logo-text:     #ffffff;
 
   /* -- Legacy compat aliases --------------------------------- */
   --bg-app:         var(--z-bg-base);

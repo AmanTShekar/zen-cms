@@ -106,7 +106,7 @@ const BuilderPage: React.FC = () => {
  theme === 'dark' ? 'border-z-border bg-black' : 'border-z-border bg-gray-50'
  )}>
  <div className="p-4 border-b border-inherit flex items-center justify-between">
- <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+ <h2 className="text-sm font-semibold flex items-center gap-2">
  <Database size={14} /> Models
  </h2>
  <button
@@ -124,7 +124,7 @@ const BuilderPage: React.FC = () => {
  key={s.id}
  onClick={() => setActiveSchema(s)}
  className={cn(
- 'w-full text-left px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors',
+ 'w-full text-left px-3 py-2 text-sm font-bold   transition-colors',
  activeSchema?.id === s.id
  ? 'bg-gray-500 text-white'
  : theme === 'dark'
@@ -136,7 +136,7 @@ const BuilderPage: React.FC = () => {
  </button>
  ))}
  {!loading && schemas.length === 0 && (
- <div className="p-4 text-center text-[9px] text-z-secondary uppercase tracking-widest ">
+ <div className="p-4 text-center text-sm text-z-secondary">
  No schemas found
  </div>
  )}
@@ -153,13 +153,13 @@ const BuilderPage: React.FC = () => {
  >
  <div className="flex items-center justify-between">
  <div>
- <h1 className="text-2xl font-black uppercase tracking-widest ">Content-Type Builder</h1>
- <p className="text-[10px] text-z-secondary uppercase tracking-widest font-bold mt-1">Design your database schema visually</p>
+ <h1 className="text-2xl font-semibold">Content-Type Builder</h1>
+ <p className="text-sm text-z-secondary font-bold mt-1">Design your database schema visually</p>
  </div>
  <button
  onClick={handleSave}
  disabled={saving}
- className="flex items-center gap-2 px-6 py-3 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-[10px] font-black uppercase tracking-widest shadow-lg transition-all"
+ className="flex items-center gap-2 px-6 py-3 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-sm font-semibold shadow-lg transition-all"
  >
  {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
  Save Schema
@@ -170,43 +170,43 @@ const BuilderPage: React.FC = () => {
  'p-6 border space-y-4',
  'bg-z-panel border-z-border shadow-sm'
  )}>
- <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-z-secondary mb-4 border-b border-gray-500/20 pb-2">General Info</h3>
+ <h3 className="text-sm font-semibold text-gray-600 dark:text-z-secondary mb-4 border-b border-gray-500/20 pb-2">General Info</h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="space-y-1">
- <label className="text-[9px] font-bold text-z-secondary uppercase tracking-widest">Singular Name</label>
+ <label className="text-sm font-bold text-z-secondary">Singular Name</label>
  <input
  type="text"
  value={activeSchema.singular}
  onChange={(e) => setActiveSchema({ ...activeSchema, singular: e.target.value })}
  className={cn(
- 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
+ 'w-full border p-3 text-sm font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
  theme === 'dark' ? 'bg-black border-z-border focus:border-gray-500' : 'bg-z-input border-z-border focus:border-gray-500'
  )}
  placeholder="e.g. Article"
  />
  </div>
  <div className="space-y-1">
- <label className="text-[9px] font-bold text-z-secondary uppercase tracking-widest">Plural Name</label>
+ <label className="text-sm font-bold text-z-secondary">Plural Name</label>
  <input
  type="text"
  value={activeSchema.plural}
  onChange={(e) => setActiveSchema({ ...activeSchema, plural: e.target.value })}
  className={cn(
- 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
+ 'w-full border p-3 text-sm font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
  theme === 'dark' ? 'bg-black border-z-border focus:border-gray-500' : 'bg-z-input border-z-border focus:border-gray-500'
  )}
  placeholder="e.g. Articles"
  />
  </div>
  <div className="space-y-1 col-span-2">
- <label className="text-[9px] font-bold text-z-secondary uppercase tracking-widest">Database Slug (API Route)</label>
+ <label className="text-sm font-bold text-z-secondary">Database Slug (API Route)</label>
  <input
  type="text"
  value={activeSchema.slug}
  onChange={(e) => setActiveSchema({ ...activeSchema, slug: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '') })}
  disabled={!!activeSchema.id}
  className={cn(
- 'w-full border p-3 text-[11px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
+ 'w-full border p-3 text-sm font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
  theme === 'dark' ? 'bg-black border-z-border focus:border-gray-500 disabled:opacity-50' : 'bg-z-input border-z-border focus:border-gray-500 disabled:opacity-50'
  )}
  placeholder="e.g. articles"
@@ -220,10 +220,10 @@ const BuilderPage: React.FC = () => {
  'bg-z-panel border-z-border shadow-sm'
  )}>
  <div className="flex items-center justify-between mb-4 border-b border-gray-500/20 pb-2">
- <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-z-secondary">Fields Configuration</h3>
+ <h3 className="text-sm font-semibold text-gray-600 dark:text-z-secondary">Fields Configuration</h3>
  <button
  onClick={addField}
- className="flex items-center gap-1 text-[9px] font-black text-gray-600 dark:text-z-muted hover:text-gray-300 uppercase tracking-widest"
+ className="flex items-center gap-1 text-sm font-semibold text-gray-600 dark:text-z-muted hover:text-gray-300"
  >
  <Plus size={12} /> Add Field
  </button>
@@ -240,16 +240,16 @@ const BuilderPage: React.FC = () => {
  value={field.name}
  onChange={e => updateField(idx, 'name', e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
  placeholder="field_name"
- className="flex-1 bg-transparent border-b border-transparent focus:border-gray-500 text-[11px] font-mono outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1"
+ className="flex-1 bg-transparent border-b border-transparent focus:border-gray-500 text-sm font-mono outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1"
  />
  <select
  value={field.type}
  onChange={e => updateField(idx, 'type', e.target.value)}
- className="w-32 bg-transparent border-b border-transparent focus:border-gray-500 text-[10px] font-black uppercase tracking-widest outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1"
+ className="w-32 bg-transparent border-b border-transparent focus:border-gray-500 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1"
  >
  {FIELD_TYPES.map(t => <option key={t} value={t} className="text-black">{t}</option>)}
  </select>
- <label className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-z-muted">
+ <label className="flex items-center gap-2 text-sm font-bold text-z-muted">
  <input
  type="checkbox"
  checked={field.required || false}
@@ -273,8 +273,8 @@ const BuilderPage: React.FC = () => {
  <div className="h-full flex items-center justify-center">
  <div className="text-center space-y-4 max-w-sm">
  <Database size={48} className="mx-auto text-white/5 dark:text-white/10" strokeWidth={1} />
- <p className="text-[12px] font-black uppercase tracking-[0.3em] text-z-muted ">Schema Architect</p>
- <p className="text-[10px] font-bold text-z-secondary uppercase tracking-widest leading-relaxed">
+ <p className="text-sm font-semibold text-z-muted">Schema Architect</p>
+ <p className="text-sm font-bold text-z-secondary leading-relaxed">
  Select an existing collection model from the sidebar to edit, or deploy a new visual schema.
  </p>
  </div>

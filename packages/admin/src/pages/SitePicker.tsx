@@ -193,10 +193,10 @@ export default function SitePicker() {
  <div className="absolute inset-0 blur-lg bg-white/10 rounded-none-none"></div>
  </div>
  <div>
- <span className="text-[12px] font-black tracking-[0.4em] uppercase text-white">
+ <span className="text-sm font-semibold text-white">
  Zenith
  </span>
- <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-white/40 block -mt-1 font-mono">
+ <span className="text-sm font-medium text-white/40 block -mt-1 font-mono">
  Platform Nucleus
  </span>
  </div>
@@ -204,7 +204,7 @@ export default function SitePicker() {
 
  <button
  onClick={handleLogout}
- className="flex items-center gap-2 px-4 py-2 border border-z-border bg-z-panel hover:bg-white/10 text-[10px] font-black uppercase tracking-widest text-white/60 hover:text-white transition-all duration-300 font-mono"
+ className="flex items-center gap-2 px-4 py-2 border border-z-border bg-z-panel hover:bg-white/10 text-sm font-semibold text-white/60 hover:text-white transition-all duration-300 font-mono"
  >
  <LogOut size={12} />
  Sign Out
@@ -214,10 +214,10 @@ export default function SitePicker() {
  {/* 🔮 Cosmic Launchpad Core */}
  <main className="max-w-6xl w-full mx-auto px-6 py-12 flex-grow flex flex-col justify-center">
  <div className="max-w-2xl mb-12">
- <div className="inline-flex items-center gap-2 px-3 py-1 border border-z-border bg-z-hover text-[9px] font-black uppercase tracking-widest text-white/50 mb-4 rounded-none-none font-mono">
+ <div className="inline-flex items-center gap-2 px-3 py-1 border border-z-border bg-z-hover text-sm font-semibold text-white/50 mb-4 rounded-none-none font-mono">
  <Globe size={10} className="animate-spin-slow" /> Hierarchical Workspace & Tenant Select
  </div>
- <h1 className="text-4xl md:text-5xl font-black uppercase tracking-[0.05em] leading-[1.1] mb-4">
+ <h1 className="text-4xl md:text-5xl font-semibold leading-[1.1] mb-4">
  Select Site Tenant
  </h1>
  <p className="text-white/45 text-[13px] leading-relaxed">
@@ -229,7 +229,7 @@ export default function SitePicker() {
  {loading ? (
  <div className="flex flex-col items-center justify-center py-24 gap-4">
  <Loader2 size={32} className="animate-spin text-white/50" />
- <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-white/40 font-mono">
+ <p className="text-sm font-bold text-white/40 font-mono">
  Querying active workspaces...
  </p>
  </div>
@@ -238,7 +238,7 @@ export default function SitePicker() {
  {/* 📁 Workspace Selector Tabs */}
  <div className="border border-z-border bg-white/[0.01] p-6 rounded-none-none backdrop-blur-[12px]">
  <div className="flex items-center justify-between mb-4">
- <span className="text-[9px] font-black uppercase tracking-widest text-white/40 font-mono">
+ <span className="text-sm font-semibold text-white/40 font-mono">
  Workspaces
  </span>
  </div>
@@ -257,16 +257,16 @@ export default function SitePicker() {
  }}
  className={`flex items-center gap-3 px-5 py-3 transition-all duration-300 border ${
  isActive
- ? 'border-[var(--z-accent)] bg-[var(--z-accent)]/10 text-white shadow-[var(--z-active-glow)]'
+ ? 'border-[var(--z-accent)] bg-[var(--z-accent)]/10 text-white shadow-sm'
  : 'border-z-border bg-z-panel text-white/60 hover:border-z-border hover:text-white'
  } rounded-none-none`}
  >
  <Briefcase size={14} className={isActive ? 'text-[var(--z-accent)]' : 'text-white/40'} />
  <div className="text-left">
- <span className="text-xs font-black uppercase tracking-wider block leading-tight">
+ <span className="text-xs font-semibold block leading-tight">
  {ws.name}
  </span>
- <span className="text-[8px] font-mono text-white/30 tracking-widest block font-bold uppercase">
+ <span className="text-sm font-mono text-white/30 block font-bold">
  /{ws.slug}
  </span>
  </div>
@@ -276,7 +276,7 @@ export default function SitePicker() {
 
  <button
  onClick={() => setShowNewWorkspaceModal(true)}
- className="flex items-center gap-2 px-5 py-3 border border-dashed border-z-border hover:border-[var(--z-accent)]/50 text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-[var(--z-accent)] transition-all duration-300 font-mono rounded-none-none"
+ className="flex items-center gap-2 px-5 py-3 border border-dashed border-z-border hover:border-[var(--z-accent)]/50 text-sm font-semibold text-white/50 hover:text-[var(--z-accent)] transition-all duration-300 font-mono rounded-none-none"
  >
  <Plus size={14} />
  New Workspace
@@ -294,7 +294,7 @@ export default function SitePicker() {
  <div
  key={siteId}
  onClick={() => handleSelectSite(site)}
- className="group relative border border-z-border bg-gradient-to-br from-white/[0.01] to-white/[0.03] hover:border-[var(--z-accent)]/50 p-6 flex flex-col justify-between h-full min-h-[12rem] cursor-pointer transition-all duration-500 overflow-hidden rounded-none-none shadow-[var(--z-active-glow)]"
+ className="group relative border border-z-border bg-gradient-to-br from-white/[0.01] to-white/[0.03] hover:border-[var(--z-accent)]/50 p-6 flex flex-col justify-between h-full min-h-[12rem] cursor-pointer transition-all duration-500 overflow-hidden rounded-none-none shadow-sm"
  >
  {/* Glassmorph glow on hover */}
  <div className="absolute inset-0 bg-white/[0.01] group-hover:bg-z-hover transition-colors duration-500"></div>
@@ -304,22 +304,22 @@ export default function SitePicker() {
  <span className="text-3xl filter saturate-50 group-hover:saturate-100 transition-all duration-300 flex-shrink-0">
  {site.icon || '🌐'}
  </span>
- <span className="text-[9px] font-bold tracking-widest text-white/30 font-mono uppercase bg-z-hover px-2 py-1 truncate max-w-[60%]">
+ <span className="text-sm font-bold text-white/30 font-mono bg-z-hover px-2 py-1 truncate max-w-[60%]">
  {site.slug}
  </span>
  </div>
 
  <div className="relative z-10 mt-6 flex-grow">
- <h3 className="text-lg font-black uppercase tracking-wider group-hover:text-[var(--z-accent)] transition-colors duration-300 break-words line-clamp-3">
+ <h3 className="text-lg font-semibold group-hover:text-[var(--z-accent)] transition-colors duration-300 break-words line-clamp-3">
  {site.name}
  </h3>
- <p className="text-white/40 text-[11px] mt-1 line-clamp-3 leading-relaxed break-words">
+ <p className="text-white/40 text-sm mt-1 line-clamp-3 leading-relaxed break-words">
  {site.description || 'No description provided.'}
  </p>
  </div>
 
  <div className="relative z-10 flex items-center justify-between border-t border-white/[0.05] pt-3 mt-4">
- <span className="text-[9px] font-black uppercase tracking-widest text-white/30 group-hover:text-white/80 transition-colors duration-300 flex items-center gap-1 font-mono">
+ <span className="text-sm font-semibold text-white/30 group-hover:text-white/80 transition-colors duration-300 flex items-center gap-1 font-mono">
  Enter Site{' '}
  <ArrowRight
  size={10}
@@ -335,10 +335,10 @@ export default function SitePicker() {
  <div className="col-span-2 border border-dashed border-z-border p-12 text-center flex flex-col items-center justify-center gap-4 rounded-none-none">
  <Globe size={40} className="text-white/20" />
  <div>
- <h3 className="text-[12px] font-black uppercase tracking-widest">
+ <h3 className="text-sm font-semibold">
  No sites inside workspace
  </h3>
- <p className="text-white/40 text-[11px] mt-1 max-w-xs mx-auto">
+ <p className="text-white/40 text-sm mt-1 max-w-xs mx-auto">
  Create your first site tenant on the right to start building under this workspace.
  </p>
  </div>
@@ -348,7 +348,7 @@ export default function SitePicker() {
 
  {/* Right Column: Panel for Creating New Site inside active workspace */}
  <div 
- className="p-8 shadow-[var(--z-active-glow)]"
+ className="p-8 shadow-sm"
  style={{
  backgroundColor: 'rgba(17, 24, 39, 0.65)',
  backdropFilter: 'blur(12px)',
@@ -359,12 +359,12 @@ export default function SitePicker() {
  >
  <div className="flex items-center gap-2 mb-6">
  <Plus size={16} className="text-[var(--z-accent)]" />
- <h2 className="text-[12px] font-black uppercase tracking-[0.2em]">New Site Tenant</h2>
+ <h2 className="text-sm font-semibold">New Site Tenant</h2>
  </div>
 
  <form onSubmit={handleCreateSite} className="space-y-4">
  <div>
- <label className="block text-[9px] font-black uppercase tracking-widest text-white/40 mb-1.5 font-mono">
+ <label className="block text-sm font-semibold text-white/40 mb-1.5 font-mono">
  Site Name
  </label>
  <input
@@ -378,12 +378,12 @@ export default function SitePicker() {
  }
  }}
  placeholder="e.g. Zenith E-Commerce"
- className="w-full bg-z-panel border border-z-border focus:border-[var(--z-accent)]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none placeholder:text-white/25 text-white"
+ className="w-full bg-z-panel border border-z-border focus:border-[var(--z-accent)]/50 px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none placeholder:text-white/25 text-white"
  />
  </div>
 
  <div>
- <label className="block text-[9px] font-black uppercase tracking-widest text-white/40 mb-1.5 font-mono">
+ <label className="block text-sm font-semibold text-white/40 mb-1.5 font-mono">
  Unique Slug / Identifier
  </label>
  <input
@@ -394,13 +394,13 @@ export default function SitePicker() {
  setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
  }
  placeholder="e.g. zenith-commerce"
- className="w-full bg-z-panel border border-z-border focus:border-[var(--z-accent)]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none placeholder:text-white/25 text-white"
+ className="w-full bg-z-panel border border-z-border focus:border-[var(--z-accent)]/50 px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none placeholder:text-white/25 text-white"
  />
  </div>
 
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
  <div className="col-span-1">
- <label className="block text-[9px] font-black uppercase tracking-widest text-white/40 mb-1.5 font-mono">
+ <label className="block text-sm font-semibold text-white/40 mb-1.5 font-mono">
  Icon
  </label>
  <select
@@ -418,7 +418,7 @@ export default function SitePicker() {
  </select>
  </div>
  <div className="col-span-3">
- <label className="block text-[9px] font-black uppercase tracking-widest text-white/40 mb-1.5 font-mono">
+ <label className="block text-sm font-semibold text-white/40 mb-1.5 font-mono">
  Description
  </label>
  <input
@@ -426,7 +426,7 @@ export default function SitePicker() {
  value={description}
  onChange={(e) => setDescription(e.target.value)}
  placeholder="e.g. Storefront platform"
- className="w-full bg-z-panel border border-z-border focus:border-[var(--z-accent)]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none placeholder:text-white/25 text-white"
+ className="w-full bg-z-panel border border-z-border focus:border-[var(--z-accent)]/50 px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none placeholder:text-white/25 text-white"
  />
  </div>
  </div>
@@ -434,7 +434,7 @@ export default function SitePicker() {
  <button
  type="submit"
  disabled={creating || !activeWorkspaceId}
- className="w-full bg-white text-black hover:bg-white/90 disabled:bg-white/20 disabled:text-white/40 px-6 py-3.5 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all duration-300 font-mono shadow-[var(--z-active-glow)]"
+ className="w-full bg-white text-black hover:bg-white/90 disabled:bg-white/20 disabled:text-white/40 px-6 py-3.5 text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 font-mono shadow-sm"
  >
  {creating ? (
  <>
@@ -456,7 +456,7 @@ export default function SitePicker() {
  {showNewWorkspaceModal && (
  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md">
  <div
- className="w-full max-w-md p-8 relative overflow-hidden shadow-[var(--z-active-glow)]"
+ className="w-full max-w-md p-8 relative overflow-hidden shadow-sm"
  style={{
  backgroundColor: 'rgba(17, 24, 39, 0.85)',
  backdropFilter: 'blur(16px)',
@@ -468,7 +468,7 @@ export default function SitePicker() {
  <div className="flex items-center justify-between mb-6">
  <div className="flex items-center gap-2">
  <Briefcase size={16} className="text-[var(--z-accent)]" />
- <h2 className="text-[12px] font-black uppercase tracking-[0.2em]">New Workspace</h2>
+ <h2 className="text-sm font-semibold">New Workspace</h2>
  </div>
  <button
  onClick={() => setShowNewWorkspaceModal(false)}
@@ -480,7 +480,7 @@ export default function SitePicker() {
 
  <form onSubmit={handleCreateWorkspace} className="space-y-4">
  <div>
- <label className="block text-[9px] font-black uppercase tracking-widest text-white/40 mb-1.5 font-mono">
+ <label className="block text-sm font-semibold text-white/40 mb-1.5 font-mono">
  Workspace Name
  </label>
  <input
@@ -494,12 +494,12 @@ export default function SitePicker() {
  }
  }}
  placeholder="e.g. Zenith Studio"
- className="w-full bg-z-panel border border-z-border focus:border-[var(--z-accent)]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none placeholder:text-white/25 text-white"
+ className="w-full bg-z-panel border border-z-border focus:border-[var(--z-accent)]/50 px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none placeholder:text-white/25 text-white"
  />
  </div>
 
  <div>
- <label className="block text-[9px] font-black uppercase tracking-widest text-white/40 mb-1.5 font-mono">
+ <label className="block text-sm font-semibold text-white/40 mb-1.5 font-mono">
  Unique Slug / Identifier
  </label>
  <input
@@ -510,7 +510,7 @@ export default function SitePicker() {
  setWsSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
  }
  placeholder="e.g. zenith-studio"
- className="w-full bg-z-panel border border-z-border focus:border-[var(--z-accent)]/50 px-4 py-3 text-[12px] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none placeholder:text-white/25 text-white"
+ className="w-full bg-z-panel border border-z-border focus:border-[var(--z-accent)]/50 px-4 py-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none-none placeholder:text-white/25 text-white"
  />
  </div>
 
@@ -518,13 +518,13 @@ export default function SitePicker() {
  <button
  type="button"
  onClick={() => setShowNewWorkspaceModal(false)}
- className="flex-1 border border-z-border hover:bg-z-hover px-6 py-3.5 text-[10px] font-black uppercase tracking-[0.2em] text-white transition-colors duration-300 font-mono"
+ className="flex-1 border border-z-border hover:bg-z-hover px-6 py-3.5 text-sm font-semibold text-white transition-colors duration-300 font-mono"
  >
  Cancel
  </button>
  <button
  type="submit"
- className="flex-1 bg-[var(--z-accent)] text-white hover:bg-[#059669] px-6 py-3.5 text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-300 font-mono shadow-[var(--z-active-glow)]"
+ className="flex-1 bg-[var(--z-accent)] text-white hover:bg-[#059669] px-6 py-3.5 text-sm font-semibold transition-colors duration-300 font-mono shadow-sm"
  >
  Create
  </button>
@@ -535,7 +535,7 @@ export default function SitePicker() {
  )}
 
  {/* 🌑 Footer */}
- <footer className="border-t border-z-border px-8 py-6 flex flex-col md:flex-row items-center justify-between text-[9px] font-bold uppercase tracking-widest text-white/35 font-mono">
+ <footer className="border-t border-z-border px-8 py-6 flex flex-col md:flex-row items-center justify-between text-sm font-bold text-white/35 font-mono">
  <div>Zenith Engine v2.4.0-CORE-OS</div>
  <div className="flex items-center gap-6 mt-4 md:mt-0">
  <a href="#" className="hover:text-white transition-colors">

@@ -132,7 +132,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  key={tab.id}
  onClick={() => setActiveTab(tab.id as any)}
  className={cn(
- 'flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-none-none transition-all',
+ 'flex-1 flex items-center justify-center gap-1.5 py-1.5 text-sm font-semibold   rounded-none-none transition-all',
  isActive
  ? theme === 'dark' ? 'bg-gray-500/20 text-gray-600 dark:text-z-muted' : 'bg-gray-100 text-gray-700'
  : theme === 'dark' ? 'text-z-secondary hover:text-gray-300 hover:bg-z-hover' : 'text-z-secondary hover:text-gray-700 hover:bg-gray-100'
@@ -148,7 +148,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  <div className="flex-1 overflow-hidden flex flex-col">
  {activeTab === 'url' && (
  <div className="p-4 space-y-3">
- <p className="text-[10px] uppercase font-black tracking-widest text-z-secondary">Custom URL</p>
+ <p className="text-sm font-semibold text-z-secondary">Custom URL</p>
  <input
  type="text"
  value={value}
@@ -165,11 +165,11 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  {activeTab === 'anchors' && (
  <div className="flex flex-col h-56">
  <div className="p-3 pb-1 border-b border-z-border">
- <p className="text-[10px] uppercase font-black tracking-widest text-gray-600 dark:text-z-secondary mb-2">On this page</p>
+ <p className="text-sm font-semibold text-gray-600 dark:text-z-secondary mb-2">On this page</p>
  </div>
  <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-editor-scrollbar">
  {anchors.length === 0 ? (
- <p className="text-[10px] uppercase font-black tracking-widest text-z-secondary text-center py-6">No anchors found</p>
+ <p className="text-sm font-semibold text-z-secondary text-center py-6">No anchors found</p>
  ) : (
  anchors.map(anchor => (
  <button
@@ -211,9 +211,9 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  </div>
  <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-editor-scrollbar">
  {loading ? (
- <p className="text-[10px] uppercase font-black tracking-widest text-gray-600 dark:text-z-secondary text-center py-6 animate-pulse">Searching...</p>
+ <p className="text-sm font-semibold text-gray-600 dark:text-z-secondary text-center py-6 animate-pulse">Searching...</p>
  ) : pages.length === 0 ? (
- <p className="text-[10px] uppercase font-black tracking-widest text-z-secondary text-center py-6">No pages found</p>
+ <p className="text-sm font-semibold text-z-secondary text-center py-6">No pages found</p>
  ) : (
  pages.map(page => (
  <button
@@ -231,7 +231,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  )}
  >
  <span className={cn("text-xs font-bold", theme === 'dark' ? 'text-gray-200' : 'text-gray-800')}>{page.title}</span>
- <span className="text-[10px] font-mono text-gray-600 dark:text-z-secondary">/{page.slug}</span>
+ <span className="text-sm font-mono text-gray-600 dark:text-z-secondary">/{page.slug}</span>
  </button>
  ))
  )}
@@ -246,7 +246,7 @@ export const LinkBuilderField: React.FC<LinkBuilderFieldProps> = ({
  )}>
  <button
  onClick={() => setOpen(false)}
- className="px-4 py-1.5 text-[10px] uppercase font-black tracking-widest bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white transition-colors"
+ className="px-4 py-1.5 text-sm font-semibold bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white transition-colors"
  >
  Done
  </button>

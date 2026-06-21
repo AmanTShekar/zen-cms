@@ -23,7 +23,7 @@ export const AutoSaveIndicator: React.FC = () => {
  animate={{ opacity: 1, scale: 1 }}
  exit={{ opacity: 0, scale: 0.9 }}
  className={cn(
- 'px-2.5 py-1 flex items-center gap-1.5 border text-xs font-black uppercase tracking-wider rounded-none-none',
+ 'px-2.5 py-1 flex items-center gap-1.5 border text-xs font-semibold   rounded-none-none',
  theme === 'dark'
  ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted'
  : 'bg-z-input border-z-border text-gray-600'
@@ -41,7 +41,7 @@ export const AutoSaveIndicator: React.FC = () => {
  animate={{ opacity: 1, scale: 1 }}
  exit={{ opacity: 0, scale: 0.9 }}
  className={cn(
- 'px-2.5 py-1 flex items-center gap-1.5 border text-xs font-black uppercase tracking-wider rounded-none-none',
+ 'px-2.5 py-1 flex items-center gap-1.5 border text-xs font-semibold   rounded-none-none',
  theme === 'dark'
  ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
  : 'bg-amber-50 border-amber-200 text-amber-600'
@@ -59,7 +59,7 @@ export const AutoSaveIndicator: React.FC = () => {
  animate={{ opacity: 1, scale: 1 }}
  exit={{ opacity: 0, scale: 0.9 }}
  className={cn(
- 'px-2.5 py-1 flex items-center gap-1.5 border text-xs font-black uppercase tracking-wider rounded-none-none',
+ 'px-2.5 py-1 flex items-center gap-1.5 border text-xs font-semibold   rounded-none-none',
  theme === 'dark'
  ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted'
  : 'bg-z-input border-z-border text-gray-600'

@@ -131,7 +131,7 @@ export const MediaLibraryModal: React.FC = () => {
  <h3
  id={modalTitleId}
  className={cn(
- 'text-lg font-black uppercase leading-none',
+ 'text-lg font-semibold  leading-none',
  theme === 'dark' ? 'text-white' : 'text-black',
  )}
  >
@@ -183,7 +183,7 @@ export const MediaLibraryModal: React.FC = () => {
  value={mediaTypeFilter}
  onChange={(e) => setMediaTypeFilter(e.target.value)}
  className={cn(
- 'rounded-none-none border py-3 px-4 text-xs font-black uppercase transition-all',
+ 'rounded-none-none border py-3 px-4 text-xs font-semibold  transition-all',
  theme === 'dark'
  ? 'bg-z-hover border-z-border text-z-muted focus-visible:border-gray-500/40'
  : 'bg-gray-55 border-z-border text-gray-600 focus-visible:border-gray-400'
@@ -199,7 +199,7 @@ export const MediaLibraryModal: React.FC = () => {
 
  {/* Upload button */}
  <label className={cn(
- 'flex items-center gap-2 px-5 py-3 rounded-none-none border cursor-pointer transition-all text-xs font-black uppercase tracking-wider',
+ 'flex items-center gap-2 px-5 py-3 rounded-none-none border cursor-pointer transition-all text-xs font-semibold  ',
  theme === 'dark'
  ? 'bg-gray-600/20 border-gray-500/30 text-gray-300 hover:bg-gray-600/30 hover:border-gray-500/50'
  : 'bg-z-input border-z-border text-gray-700 hover:bg-gray-100 hover:border-z-border-strong'
@@ -233,7 +233,7 @@ export const MediaLibraryModal: React.FC = () => {
  {mediaLoading ? (
  <div className="flex flex-col items-center justify-center h-full gap-5">
  <Loader2 size={36} className="animate-spin text-gray-600 dark:text-z-secondary" />
- <span className="text-xs font-black uppercase text-gray-600 dark:text-z-muted tracking-[0.3em] animate-pulse">
+ <span className="text-xs font-semibold text-gray-600 dark:text-z-muted animate-pulse">
  Loading Registry...
  </span>
  </div>
@@ -249,13 +249,13 @@ export const MediaLibraryModal: React.FC = () => {
  <ImageIcon size={28} />
  </div>
  <p className={cn(
- 'text-xs font-black uppercase tracking-wider',
+ 'text-xs font-semibold  ',
  theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
  )}>
  No assets in the registry
  </p>
  <span className={cn(
- 'text-xs font-bold uppercase tracking-widest',
+ 'text-xs font-bold  ',
  theme === 'dark' ? 'text-gray-700' : 'text-gray-300'
  )}>
  Upload files using the ingest button above
@@ -269,7 +269,7 @@ export const MediaLibraryModal: React.FC = () => {
  <div className="flex flex-col items-center justify-center h-40 gap-3">
  <Search size={28} className={theme === 'dark' ? 'text-gray-700' : 'text-gray-300'} />
  <span className={cn(
- 'text-xs font-black uppercase ',
+ 'text-xs font-semibold  ',
  theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
  )}>
  No assets match your filter
@@ -319,7 +319,7 @@ export const MediaLibraryModal: React.FC = () => {
  )}>
  <File size={24} className={theme === 'dark' ? 'text-z-secondary' : 'text-z-muted'} />
  <span className={cn(
- 'text-[7px] font-black uppercase tracking-widest text-center px-1 truncate w-full',
+ 'text-sm font-semibold   text-center px-1 truncate w-full',
  theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
  )}>
  {(file.mimetype || 'file').split('/')[1]?.toUpperCase().slice(0, 4) || 'FILE'}
@@ -331,11 +331,11 @@ export const MediaLibraryModal: React.FC = () => {
  'absolute inset-0 flex flex-col items-start justify-end p-2 opacity-0 group-hover:opacity-100 transition-opacity',
  theme === 'dark' ? 'bg-gradient-to-t from-black/90 via-black/40' : 'bg-gradient-to-t from-black/80 via-black/20'
  )}>
- <p className="text-white text-xs font-black uppercase truncate w-full leading-tight">
+ <p className="text-white text-xs font-semibold truncate w-full leading-tight">
  {file.name}
  </p>
  {file.size && (
- <span className="text-white/50 text-xs font-bold uppercase ">
+ <span className="text-white/50 text-xs font-bold">
  {(file.size / 1024).toFixed(1)} KB
  </span>
  )}
@@ -348,7 +348,7 @@ export const MediaLibraryModal: React.FC = () => {
  toast.success('URL copied')
  }}
  className={cn(
- 'mt-1.5 px-2 py-1 rounded-none-none border text-xs font-black uppercase transition-all',
+ 'mt-1.5 px-2 py-1 rounded-none-none border text-xs font-semibold  transition-all',
  theme === 'dark'
  ? 'border-z-border text-white/70 hover:border-white/40 hover:text-white bg-z-hover'
  : 'border-white/30 text-white/80 hover:border-z-border0 hover:text-white bg-white/10'
@@ -374,7 +374,7 @@ export const MediaLibraryModal: React.FC = () => {
  toast.success('Media selected')
  }}
  className={cn(
- 'mt-1 px-2 py-1 rounded-none-none border text-xs font-black uppercase transition-all',
+ 'mt-1 px-2 py-1 rounded-none-none border text-xs font-semibold  transition-all',
  'border-gray-500/40 text-gray-600 dark:text-z-muted hover:border-gray-500 hover:text-gray-300 bg-gray-500/10'
  )}
  >
@@ -383,7 +383,7 @@ export const MediaLibraryModal: React.FC = () => {
  </div>
  {/* Type badge */}
  <div className={cn(
- 'absolute top-1.5 left-1.5 px-1.5 py-0.5 text-[6px] font-black uppercase border rounded-none-none',
+ 'absolute top-1.5 left-1.5 px-1.5 py-0.5 text-sm font-semibold  border rounded-none-none',
  theme === 'dark'
  ? 'bg-black/60 border-z-border text-z-muted'
  : 'bg-white/80 border-z-border text-z-secondary'
@@ -405,7 +405,7 @@ export const MediaLibraryModal: React.FC = () => {
  theme === 'dark' ? 'border-z-border bg-white/[0.015]' : 'border-z-border shadow-sm bg-gray-50'
  )}>
  <span className={cn(
- 'text-xs font-bold uppercase tracking-widest',
+ 'text-xs font-bold  ',
  theme === 'dark' ? 'text-gray-655' : 'text-z-muted'
  )}>
  Click any asset to copy its URL • Supports images, video, audio, PDF
@@ -414,7 +414,7 @@ export const MediaLibraryModal: React.FC = () => {
  onClick={() => setMediaLibraryOpen(false)}
  aria-label="Close media library"
  className={cn(
- 'px-5 py-2 text-xs font-black uppercase rounded-none-none border transition-all',
+ 'px-5 py-2 text-xs font-semibold  rounded-none-none border transition-all',
  theme === 'dark'
  ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
  : 'border-z-border text-gray-600 hover:border-z-border-strong hover:text-black'

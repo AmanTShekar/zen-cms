@@ -108,6 +108,12 @@ router.put('/:id', requireAuth, requireRole('admin'), async (req: Request, res: 
     const { id } = req.params
     const { url, secret, events, enabled } = req.body
     const adapter = getAdapter(req)
+    const siteId = req.headers['x-zenith-site-id'] as string
+    if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
+
+    // CRITICAL FIX: scope webhook lookup to siteId to prevent cross-tenant update
+    const existing = await adapter.findOne<Record<string, any>>(WEBHOOK_COLLECTION, { _id: id, siteId })
+    if (!existing) throw new InvalidPayloadError(`Webhook "${id}" not found`)
 
     const update: Record<string, unknown> = { updatedAt: new Date() }
     if (url !== undefined) update.url = url
@@ -207,7 +213,7 @@ router.post('/:id/deliveries/:deliveryId/replay', requireAuth, requireRole('admi
     if (!doc) throw new InvalidPayloadError(`Webhook "${id}" not found`)
 
     // Webhook delivery table is z_webhook_deliveries
-    const delivery = await adapter.findOne<Record<string, any>>('z_webhook_deliveries', { _id: deliveryId })
+    const delivery = await adapter.findOne<Record<string, any>>('z_webhook_deliveries', { _id: deliveryId, webhookId: id })
     if (!delivery) throw new InvalidPayloadError(`Delivery "${deliveryId}" not found`)
 
     const webhook = { id: String(doc._id ?? doc.id), url: doc.url, secret: doc.secret, events: doc.events, enabled: doc.enabled }

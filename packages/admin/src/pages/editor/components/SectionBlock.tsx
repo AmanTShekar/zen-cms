@@ -137,8 +137,8 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  default: '',
  light: 'bg-white/90 text-black border-z-border shadow-sm',
  dark: 'bg-z-popover text-white border-z-border shadow-lg',
- 'cyber-gray': 'bg-gradient-to-br from-gray-950/70 via-gray-900/50 to-black/80 text-white border-gray-500/20 shadow-[var(--z-active-glow)]/5',
- glassmorphic: 'bg-gray-900/65 backdrop-blur-[12px] border-white/8 shadow-[var(--z-active-glow)] text-white'
+ 'cyber-gray': 'bg-gradient-to-br from-gray-950/70 via-gray-900/50 to-black/80 text-white border-gray-500/20 shadow-sm/5',
+ glassmorphic: 'bg-gray-900/65 backdrop-blur-[12px] border-white/8 shadow-sm text-white'
  }[blockTheme as 'default' | 'light' | 'dark' | 'cyber-gray' | 'glassmorphic'] || ''
 
  const paddingClasses = {
@@ -227,7 +227,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
 
  {/* Index badge */}
  <span className={cn(
- 'text-[10px] font-black leading-none w-5 text-center',
+ 'text-sm font-semibold leading-none w-5 text-center',
  theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
  )}>
  {String(index + 1).padStart(2, '0')}
@@ -235,7 +235,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
 
  {/* Block type pill — human-readable */}
  <span className={cn(
- 'px-2 py-0.5 text-[8px] font-black uppercase tracking-wider border shrink-0',
+ 'px-2 py-0.5 text-sm font-semibold   border shrink-0',
  theme === 'dark' ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted' : 'bg-z-input border-z-border text-gray-700'
  )}>
  {humanize(section.blockType)}
@@ -252,7 +252,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  onKeyDown={handleBlockNameKeyDown}
  onClick={(e) => e.stopPropagation()}
  className={cn(
- 'text-xs font-black uppercase bg-transparent border-b px-1 min-w-[80px] max-w-[200px]',
+ 'text-xs font-semibold  bg-transparent border-b px-1 min-w-[80px] max-w-[200px]',
  theme === 'dark' ? 'text-white border-z-border' : 'text-black border-z-border-strong'
  )}
  placeholder="Block name..."
@@ -265,7 +265,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  setTimeout(() => blockNameInputRef.current?.focus(), 0)
  }}
  className={cn(
- 'text-xs font-black uppercase truncate cursor-text px-1 flex items-center gap-1.5',
+ 'text-xs font-semibold  truncate cursor-text px-1 flex items-center gap-1.5',
  section.blockName
  ? theme === 'dark' ? 'text-white' : 'text-black'
  : theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
@@ -278,7 +278,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
 
  {/* Error pill */}
  {sectionErrorCount > 0 && (
- <span className="px-1.5 py-0.5 text-[8px] font-black uppercase bg-rose-500/10 border border-rose-500/20 text-rose-500 shrink-0">
+ <span className="px-1.5 py-0.5 text-sm font-semibold bg-rose-500/10 border border-rose-500/20 text-rose-500 shrink-0">
  {sectionErrorCount} error{sectionErrorCount !== 1 ? 's' : ''}
  </span>
  )}
@@ -362,7 +362,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  <div className="flex items-center gap-1">
  <span
  className={cn(
- 'text-[8px] font-bold uppercase tracking-wider select-none',
+ 'text-sm font-bold   select-none',
  theme === 'dark' ? 'text-gray-700' : 'text-z-muted'
  )}
  title="Use Ctrl+Z / Ctrl+Y to undo or redo changes"
@@ -382,7 +382,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  <span className="w-2.5 h-2.5 rounded-none-none bg-amber-500" />
  <span className="w-2.5 h-2.5 rounded-none-none bg-gray-500" />
  </div>
- <span className="text-xs font-black uppercase tracking-wider text-z-secondary ">
+ <span className="text-xs font-semibold text-z-secondary">
  {section.content?.language || 'javascript'} terminal
  </span>
  </div>
@@ -510,11 +510,11 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  >
  <div className="space-y-0.5">
  <div className="flex items-center gap-2">
- <label className="text-xs font-black text-z-secondary uppercase tracking-[0.3em] px-1 opacity-50">
+ <label className="text-xs font-semibold text-z-secondary px-1 opacity-50">
  {field.label || field.name}
  </label>
  <span className={cn(
- 'px-1.5 py-0.5 text-[6px] font-black uppercase rounded-none-none',
+ 'px-1.5 py-0.5 text-sm font-semibold  rounded-none-none',
  theme === 'dark'
  ? 'bg-z-hover text-gray-600'
  : 'bg-gray-100 text-z-muted'
@@ -522,13 +522,13 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  {field.type}
  </span>
  {fieldErrors[errorKey] && (
- <span className="text-[8px] font-black text-rose-500 uppercase ml-auto">
+ <span className="text-sm font-semibold text-rose-500 ml-auto">
  {fieldErrors[errorKey]}
  </span>
  )}
  </div>
  {field.description && (
- <p className={cn('text-[10px] font-medium px-1 opacity-40', theme === 'dark' ? 'text-z-muted' : 'text-z-secondary')}>
+ <p className={cn('text-sm font-medium px-1 opacity-40', theme === 'dark' ? 'text-z-muted' : 'text-z-secondary')}>
  {field.description}
  </p>
  )}
@@ -561,7 +561,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  'pt-6 mt-6 border-t',
  theme === 'dark' ? 'border-z-border' : 'border-z-border'
  )}>
- <h4 className="text-[10px] font-black uppercase tracking-widest text-z-secondary/50 mb-4 px-1">
+ <h4 className="text-sm font-semibold text-z-secondary/50 mb-4 px-1">
  Layout & Styling
  </h4>
  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -575,7 +575,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  return (
  <div key={field.name} className="space-y-2">
  <div className="flex items-center gap-2">
- <label className="text-[10px] font-black text-z-secondary uppercase tracking-[0.2em] px-1 opacity-60">
+ <label className="text-sm font-semibold text-z-secondary px-1 opacity-60">
  {field.label || field.name}
  </label>
  </div>
@@ -651,7 +651,7 @@ const ActionItem: React.FC<{
  <button
  onClick={onClick}
  className={cn(
- 'w-full flex items-center gap-3 px-3 py-2 text-[11px] font-black uppercase tracking-wider transition-all',
+ 'w-full flex items-center gap-3 px-3 py-2 text-sm font-semibold   transition-all',
  danger
  ? 'text-rose-500 hover:bg-rose-500/10'
  : theme === 'dark'

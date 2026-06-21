@@ -3,7 +3,7 @@ import { textCasingStyle } from '../../lib/form-utils'
 import type { FieldConfig, TextFieldConfig } from '@zenith-open/zenithcms-types'
 
 type TextareaFieldWithExtras = TextFieldConfig & {
-  casing?: 'uppercase' | 'lowercase' | 'capitalize'
+  casing?: '' | 'lowercase' | 'capitalize'
 }
 
 interface Props {
@@ -17,7 +17,7 @@ const TextareaField: React.FC<Props> = ({ field, value, onChange, disabled }) =>
   const cf = field as TextareaFieldWithExtras
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     let val: string = e.target.value
-    if (cf.casing === 'uppercase') val = val.toUpperCase()
+    if (cf.casing === '') val = val.toUpperCase()
     else if (cf.casing === 'lowercase') val = val.toLowerCase()
     else if (cf.casing === 'capitalize')
       val = val.replace(/\b\w/g, (c) => c.toUpperCase())
@@ -37,7 +37,7 @@ const TextareaField: React.FC<Props> = ({ field, value, onChange, disabled }) =>
         placeholder={`Enter ${cf.name}...`}
       />
       {cf.maxLength && (
-        <span className="absolute bottom-2 right-3 text-[9px] font-bold text-z-secondary font-mono uppercase">
+        <span className="absolute bottom-2 right-3 text-sm font-bold text-z-secondary font-mono">
           {((value as string) || '').length} / {cf.maxLength}
         </span>
       )}

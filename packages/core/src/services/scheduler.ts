@@ -3,6 +3,8 @@ import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { logger } from './logger'
 import { publishReleaseContent } from '../api/releases'
 import { AUDIT_RETENTION_POLICIES, getAuditCutoffDate } from './audit-rotation'
+import { env } from '../config/env';
+
 
 let lockClient: any = null
 
@@ -11,7 +13,7 @@ let lockClient: any = null
  * If Redis is not configured, it gracefully defaults to true for single-node setups.
  */
 async function acquireLock(lockKey: string, ttlMs: number): Promise<boolean> {
-  const redisUrl = process.env.REDIS_URL
+  const redisUrl = env.REDIS_URL
   if (!redisUrl) {
     // Single node setup: lock is always acquired locally
     return true

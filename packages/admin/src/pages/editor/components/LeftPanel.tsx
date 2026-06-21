@@ -129,7 +129,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  <div className={cn('px-3 py-3 border-b flex items-center justify-between',
  dark ? 'border-z-border' : 'border-z-border shadow-sm'
  )}>
- <span className="text-xs font-black uppercase tracking-[0.2em] text-z-muted ">
+ <span className="text-xs font-semibold text-z-muted">
  Layers
  </span>
  <div className="flex items-center gap-2">
@@ -192,7 +192,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  )}
 
  {/* Layers List */}
- <div className="flex-1 overflow-y-auto  custom-editor-scrollbar px-2 pt-3 pb-4 space-y-2">
+ <div className="flex-1 overflow-y-auto custom-editor-scrollbar px-2 pt-3 pb-4 space-y-2">
  {filteredSections.length === 0 ? (
  <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-4">
  {data?.sections?.length === 0 ? (
@@ -235,12 +235,12 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  ? ''
  : dark ? 'text-z-muted/60' : 'text-z-secondary/60'
  )} />
- <span className="text-xs font-black uppercase tracking-tight truncate flex-1">
+ <span className="text-xs font-semibold truncate flex-1">
  {section.blockName || section.title || humanize(section.blockType)}
  </span>
  {section.blockType !== humanize(section.blockType) && (
  <span className={cn(
- 'text-[8px] font-black uppercase tracking-wider shrink-0',
+ 'text-sm font-semibold   shrink-0',
  activeSection === section.id
  ? 'opacity-60'
  : dark ? 'text-gray-600' : 'text-z-muted'
@@ -290,12 +290,12 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  ? ''
  : dark ? 'text-z-muted/60' : 'text-z-secondary/60'
  )} aria-hidden="true" />
- <span className="text-xs font-black uppercase tracking-tight truncate flex-1">
+ <span className="text-xs font-semibold truncate flex-1">
  {section.blockName || section.title || humanize(section.blockType)}
  </span>
  {section.blockType !== humanize(section.blockType) && (
  <span className={cn(
- 'text-[8px] font-black uppercase tracking-wider shrink-0',
+ 'text-sm font-semibold   shrink-0',
  activeSection === section.id
  ? dark ? 'text-z-muted/80' : 'text-gray-600/80'
  : 'text-z-muted'

@@ -77,7 +77,7 @@ const searchLimiter = rateLimit({
   max: 30,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })
 
 const aiLimiter = rateLimit({
@@ -85,7 +85,7 @@ const aiLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })
 
 // ── AI Architect Schema Validator ─────────────────────────────────────────────
@@ -120,6 +120,8 @@ const AICollectionSchema = z.object({
 
 
 import { Router as ERouter } from 'express';
+import { env } from '../../config/env';
+
 export const systemRouter5: ERouter = ERouter();
 const router = systemRouter5;
 
@@ -127,7 +129,8 @@ const router = systemRouter5;
 router.get('/onboarding', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const state = await adapter.findOne<any>('z_onboarding', {})
+    const siteId = req.headers['x-zenith-site-id'] as string
+    const state = await adapter.findOne<any>('z_onboarding', siteId ? { siteId } : {})
     if (!state)
       return res.json(
         createResponse({
@@ -155,12 +158,13 @@ router.post('/onboarding', requireAuth, async (req: Request, res: Response, next
       ...(answers && { answers }),
       ...(skipped !== undefined && { skipped }),
     }
+    const siteId = req.headers['x-zenith-site-id'] as string
     
-    let state = await adapter.findOne<any>('z_onboarding', {})
+    let state = await adapter.findOne<any>('z_onboarding', siteId ? { siteId } : {})
     if (state) {
       state = await adapter.update('z_onboarding', (state.id || state._id).toString(), updateData)
     } else {
-      state = await adapter.create('z_onboarding', updateData)
+      state = await adapter.create('z_onboarding', { ...updateData, siteId })
     }
     res.json(createResponse(state))
   } catch (err) {
@@ -187,22 +191,29 @@ router.post(
         siteId
       })
       
-      const state = await adapter.findOne<any>('z_onboarding', {})
+      const state = await adapter.findOne<any>('z_onboarding', siteId ? { siteId } : {})
       const updateData = { completedAt: new Date(), answers: { ...(state?.answers || {}), generatedApiKeyId: apiKey.id || apiKey._id } }
       if (state) {
         await adapter.update('z_onboarding', (state.id || state._id).toString(), updateData)
       } else {
-        await adapter.create('z_onboarding', updateData)
+        await adapter.create('z_onboarding', { ...updateData, siteId })
       }
 
       // Dynamic custom schema seeding based on vertical onboarding selection
       const projectType = state?.answers?.projectType || 'custom'
+      
+      // Prevent Path Traversal and Command Injection
+      if (!/^[a-zA-Z0-9-]+$/.test(projectType)) {
+        throw new Error('Invalid project type identifier')
+      }
+
       if (projectType && projectType !== 'custom') {
         const { execSync } = await import('child_process')
         const path = await import('path')
-        const scriptPath = path.resolve(__dirname, `../../../templates/${projectType}/backend/setup.ts`)
+        const templateFolder = projectType === 'blog' ? 'blog-demo' : projectType
+        const scriptPath = path.resolve(__dirname, `../../../templates/${templateFolder}/backend/setup.ts`)
         try {
-          execSync(`npx tsx ${scriptPath}`, { stdio: 'inherit' })
+          execSync(`npx tsx "${scriptPath}"`, { stdio: 'inherit' })
         } catch (e) {
           console.error(`[Setup] Failed to seed template data for ${projectType}`, e)
         }

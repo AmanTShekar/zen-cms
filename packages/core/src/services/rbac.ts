@@ -4,11 +4,12 @@ export class RBACEngine {
   constructor() {}
   enforce(action: string, resource: string) { return true }
   
-  static async checkAccess(role: string, resource: string, action: string): Promise<boolean> {
+  static async checkAccess(role: string, resource: string, action: string, siteId?: string): Promise<boolean> {
     if (role === 'admin') return true
 
     const adapter = AdapterFactory.getActiveAdapter()
-    const roles = await adapter.find<any>('z_roles', { roleName: role })
+    const query = siteId ? { roleName: role, siteId } : { roleName: role }
+    const roles = await adapter.find<any>('z_roles', query)
     
     if (roles && roles.length > 0) {
       const dbRole = roles[0]
@@ -43,12 +44,13 @@ export class RBACEngine {
     return false
   }
   
-  static async getFieldPermissions(role: string, resource: string): Promise<Record<string, { read?: boolean; write?: boolean }>> {
+  static async getFieldPermissions(role: string, resource: string, siteId?: string): Promise<Record<string, { read?: boolean; write?: boolean }>> {
     if (role === 'admin') return {}
     
     try {
       const adapter = AdapterFactory.getActiveAdapter()
-      const roles = await adapter.find<any>('z_roles', { roleName: role })
+      const query = siteId ? { roleName: role, siteId } : { roleName: role }
+      const roles = await adapter.find<any>('z_roles', query)
       if (!roles || roles.length === 0) return {}
       
       const dbRole = roles[0]

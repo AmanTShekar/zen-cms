@@ -304,7 +304,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  }
  window.addEventListener('keydown', handleKeyDown)
  return () => window.removeEventListener('keydown', handleKeyDown)
- }, []) // eslint-disable-line react-hooks/exhaustive-deps
+ }, [])  
 
  // Task 03: Auto-save with ref-based state capture to avoid stale closures
   const {
@@ -464,7 +464,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  setSelectedSections(new Set([firstSectionId]))
  initialFocusDoneRef.current = true
  }
- // eslint-disable-next-line react-hooks/exhaustive-deps
+  
  }, [focusedSectionId, data?.sections?.length])
 
  // Issue 7: Reset injectionIndex when BlockPicker closes (via any path)
@@ -790,7 +790,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  return (
  <div className={cn('h-screen w-full flex flex-col items-center justify-center gap-8', theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]')}>
  <Cpu size={48} className="text-z-accent dark:text-z-active-text animate-spin" />
- <p className="text-[10px] font-black uppercase tracking-[0.8em] text-z-secondary animate-pulse ">Initializing Canvas...</p>
+ <p className="text-sm font-semibold text-z-secondary animate-pulse">Initializing Canvas...</p>
  </div>
  )
 
@@ -846,7 +846,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  <button
  onClick={handleCollapseAll}
  className={cn(
- 'flex items-center gap-1.5 px-2 py-1 text-[8px] font-black uppercase rounded-none-none border transition-all',
+ 'flex items-center gap-1.5 px-2 py-1 text-sm font-semibold  rounded-none-none border transition-all',
  theme === 'dark'
  ? 'border-z-border text-z-secondary hover:text-z-accent dark:text-z-active-text hover:border-z-accent/20'
  : 'border-z-border text-z-muted hover:text-z-accent hover:border-z-active-border'
@@ -917,7 +917,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  {/* Add Section Button */}
  <button onClick={() => { setInjectionIndex(null); setBlockPickerOpen(true) }} className={cn('w-full py-10 rounded-none-none border-2 border-dashed transition-all flex flex-col items-center gap-4 group', theme === 'dark' ? 'border-z-border hover:border-z-accent/40 hover:opacity-90/5' : 'border-z-border hover:border-z-active-border hover:bg-z-active-bg')}>
  <div className={cn('w-12 h-12 rounded-none-none border-2 border-dashed flex items-center justify-center group-hover:scale-110 transition-all', theme === 'dark' ? 'border-z-active-border bg-z-accent/5' : 'border-z-active-border bg-z-active-bg/50')}><Plus size={22} className="text-z-accent dark:text-z-active-text" /></div>
- <p className="text-[11px] font-black uppercase tracking-[0.3em] text-z-secondary group-hover:text-z-accent dark:text-z-active-text transition-colors">Append Section</p>
+ <p className="text-sm font-semibold text-z-secondary group-hover:text-z-accent dark:text-z-active-text transition-colors">Append Section</p>
  </button>
  </>
  )}

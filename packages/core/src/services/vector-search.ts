@@ -1,5 +1,7 @@
 import { logger } from './logger'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { env } from '../config/env';
+
 
 export interface VectorDocument {
   id: string
@@ -46,7 +48,7 @@ export class VectorSearchService {
     const trimmed = text.substring(0, 8000) // embedding models have token limits
 
     // Try OpenAI embeddings
-    const openaiKey = process.env.OPENAI_API_KEY
+    const openaiKey = env.OPENAI_API_KEY || process.env.OPENAI_API_KEY
     if (openaiKey) {
       const res = await fetch('https://api.openai.com/v1/embeddings', {
         method: 'POST',
@@ -67,14 +69,14 @@ export class VectorSearchService {
     }
 
     // Try OpenRouter embeddings
-    const orKey = process.env.OPENROUTER_API_KEY
+    const orKey = env.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY
     if (orKey) {
       const res = await fetch('https://openrouter.ai/api/v1/embeddings', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${orKey}`,
           'Content-Type': 'application/json',
-          'HTTP-Referer': process.env.ADMIN_URL || 'http://localhost:3000',
+          'HTTP-Referer': env.ADMIN_URL || 'http://localhost:3000',
           'X-Title': 'Zenith CMS',
         },
         body: JSON.stringify({
@@ -210,6 +212,6 @@ export class VectorSearchService {
    * Check if vector search is available (has an embedding provider configured).
    */
   static isAvailable(): boolean {
-    return !!(process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY)
+    return !!(env.OPENAI_API_KEY || process.env.OPENAI_API_KEY || env.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY)
   }
 }

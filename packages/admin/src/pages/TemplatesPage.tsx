@@ -258,7 +258,7 @@ const TemplatesPage: React.FC = () => {
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={cn(
-                  'px-4 py-2 text-[9px] font-black uppercase tracking-widest rounded-none-none transition-all leading-none whitespace-nowrap',
+                  'px-4 py-2 text-sm font-semibold   rounded-none-none transition-all leading-none whitespace-nowrap',
                   activeCategory === cat
                     ? theme === 'dark'
                       ? 'bg-white text-black shadow-lg'
@@ -292,11 +292,11 @@ const TemplatesPage: React.FC = () => {
           <div className="flex-1 space-y-2 z-10">
             <div className="flex items-center gap-2 text-gray-600 dark:text-z-secondary">
               <Sparkles size={16} className="animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-widest ">
+              <span className="text-sm font-semibold">
                 Sandbox
               </span>
             </div>
-            <h2 className="text-2xl font-black uppercase tracking-tight leading-tight">
+            <h2 className="text-2xl font-semibold leading-tight">
               Deploy Templates
             </h2>
           </div>
@@ -317,7 +317,7 @@ const TemplatesPage: React.FC = () => {
               placeholder="Filter by tech or tags..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[10px] font-black text-z-muted w-full placeholder:text-gray-600 uppercase tracking-tight"
+              className="bg-transparent border-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-semibold text-z-muted w-full placeholder:text-gray-600"
             />
           </div>
         </div>
@@ -326,7 +326,7 @@ const TemplatesPage: React.FC = () => {
         {filteredTemplates.length === 0 ? (
           <div className="py-24 flex flex-col items-center justify-center gap-4 opacity-30 border border-dashed border-z-border">
             <Layout size={40} strokeWidth={1} className="text-z-secondary animate-pulse" />
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] ">
+            <p className="text-sm font-semibold">
               No templates matching filters found
             </p>
           </div>
@@ -353,21 +353,21 @@ const TemplatesPage: React.FC = () => {
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2.5">
-                        <span className="text-[8px] font-black text-z-secondary uppercase tracking-widest">
+                        <span className="text-sm font-semibold text-z-secondary">
                           {template.category}
                         </span>
                         <span className="w-1 h-1 bg-gray-500 rounded-none-none" />
-                        <span className="text-[8px] font-mono font-black text-gray-600 dark:text-z-muted">
+                        <span className="text-sm font-mono font-semibold text-gray-600 dark:text-z-muted">
                           v{template.version}
                         </span>
                         {template.slug === activeSiteSlug && (
-                          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-gray-500/10 text-gray-600 dark:text-z-muted border border-gray-500/20 text-[7px] font-black uppercase tracking-wider leading-none">
+                          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-gray-500/10 text-gray-600 dark:text-z-muted border border-gray-500/20 text-sm font-semibold leading-none">
                             <Activity size={8} />
                             Active Workspace / Site
                           </div>
                         )}
                       </div>
-                      <h3 className="text-xl font-black tracking-tight uppercase leading-none group-hover:text-gray-600 dark:text-z-muted transition-colors mt-1.5">
+                      <h3 className="text-xl font-semibold leading-none group-hover:text-gray-600 dark:text-z-muted transition-colors mt-1.5">
                         {template.name}
                       </h3>
                     </div>
@@ -375,14 +375,14 @@ const TemplatesPage: React.FC = () => {
                     {/* Performance Matrix */}
                     <div className="flex items-center gap-3 shrink-0">
                       <div className="flex flex-col items-end">
-                        <span className="text-[8px] font-black text-z-secondary uppercase tracking-widest leading-none">
+                        <span className="text-sm font-semibold text-z-secondary leading-none">
                           Lighthouse
                         </span>
-                        <span className="text-lg font-black text-gray-600 dark:text-z-secondary mt-1">
+                        <span className="text-lg font-semibold text-gray-600 dark:text-z-secondary mt-1">
                           {template.performanceScore}%
                         </span>
                       </div>
-                      <div className="w-9 h-9 rounded-none-none border border-gray-500/20 bg-gray-500/5 flex items-center justify-center text-gray-600 dark:text-z-secondary font-bold text-xs ">
+                      <div className="w-9 h-9 rounded-none-none border border-gray-500/20 bg-gray-500/5 flex items-center justify-center text-gray-600 dark:text-z-secondary font-bold text-xs">
                         {template.performanceScore}
                       </div>
                     </div>
@@ -412,7 +412,7 @@ const TemplatesPage: React.FC = () => {
                           <div className="w-2 h-2 rounded-none-none bg-yellow-500/40" />
                           <div className="w-2 h-2 rounded-none-none bg-green-500/40" />
                         </div>
-                        <div className="px-2 py-0.5 bg-z-hover border border-z-border rounded-none-none text-[6px] font-mono text-z-secondary uppercase tracking-widest">
+                        <div className="px-2 py-0.5 bg-z-hover border border-z-border rounded-none-none text-sm font-mono text-z-secondary">
                           SECURE_SSL
                         </div>
                       </div>
@@ -424,7 +424,7 @@ const TemplatesPage: React.FC = () => {
                       </div>
 
                       <div className="flex justify-between items-center pt-2 border-t border-z-border">
-                        <div className="flex items-center gap-1 text-z-secondary text-[6px] font-black uppercase">
+                        <div className="flex items-center gap-1 text-z-secondary text-sm font-semibold">
                           <Layers size={8} /> {template.id === 'storefront-glass' ? 'Glassmorphism' : template.id === 'storefront-editorial' ? 'Editorial' : template.id === 'blog-demo' ? 'Dev Blog' : 'E-Commerce'}
                         </div>
                         <div className="w-8 h-3 bg-white/10 rounded-none-none" />
@@ -434,14 +434,14 @@ const TemplatesPage: React.FC = () => {
 
                   {/* Features Highlights */}
                   <div className="space-y-2">
-                    <span className="text-[8px] font-black text-z-secondary uppercase tracking-widest leading-none">
+                    <span className="text-sm font-semibold text-z-secondary leading-none">
                       Core Specifications
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
                       {template.features.map((feat, idx) => (
                         <div key={idx} className="flex items-center gap-2 text-xs text-gray-300">
                           <div className="w-1.5 h-1.5 bg-gray-500/40 border border-gray-500 rounded-none-none shrink-0" />
-                          <span className="uppercase tracking-tight truncate">{feat}</span>
+                          <span className="truncate">{feat}</span>
                         </div>
                       ))}
                     </div>
@@ -453,7 +453,7 @@ const TemplatesPage: React.FC = () => {
                       <span
                         key={tag}
                         className={cn(
-                          'px-2 py-1 text-[8px] font-mono font-black uppercase tracking-wider border rounded-none-none shadow-sm',
+                          'px-2 py-1 text-sm font-mono font-semibold   border rounded-none-none shadow-sm',
                           theme === 'dark'
                             ? 'bg-z-hover border-z-border text-gray-300'
                             : 'bg-gray-100 border-z-border text-gray-600'
@@ -466,7 +466,7 @@ const TemplatesPage: React.FC = () => {
 
                   {/* Clone Command & Zip Download */}
                   <div className={cn(
-                    'p-3 border rounded-none-none flex items-center justify-between gap-3 text-[10px] font-mono',
+                    'p-3 border rounded-none-none flex items-center justify-between gap-3 text-sm font-mono',
                     theme === 'dark' ? 'bg-black border-z-border text-z-muted' : 'bg-z-input border-z-border text-gray-600'
                   )}>
                     <div className="flex items-center gap-1.5 truncate">
@@ -507,7 +507,7 @@ const TemplatesPage: React.FC = () => {
                       target="_blank"
                       rel="noreferrer"
                       className={cn(
-                        'px-4 py-3 border rounded-none-none text-[9px] font-black uppercase tracking-widest transition-all leading-none flex items-center gap-2 group/git',
+                        'px-4 py-3 border rounded-none-none text-sm font-semibold   transition-all leading-none flex items-center gap-2 group/git',
                         theme === 'dark'
                           ? 'border-z-border bg-z-panel text-z-muted hover:text-white hover:border-z-border'
                           : 'border-z-border bg-white text-gray-600 hover:text-black hover:border-z-border-strong shadow-sm'
@@ -525,7 +525,7 @@ const TemplatesPage: React.FC = () => {
                         setIsDeployModalOpen(true)
                       }}
                       className={cn(
-                        'px-5 py-3 rounded-none-none text-[9px] font-black uppercase tracking-[0.15em] shadow-lg transition-all leading-none flex items-center gap-2 active:scale-95 text-white',
+                        'px-5 py-3 rounded-none-none text-sm font-semibold   shadow-lg transition-all leading-none flex items-center gap-2 active:scale-95 text-white',
                         template.primaryColor
                       )}
                       style={{
@@ -607,10 +607,10 @@ const TemplatesPage: React.FC = () => {
                     <Server size={18} />
                   </div>
                   <div>
-                    <span className="text-[8px] font-black text-gray-600 dark:text-z-secondary uppercase tracking-[0.25em] block">
+                    <span className="text-sm font-semibold text-gray-600 dark:text-z-secondary block">
                       Zero-Config Handshake
                     </span>
-                    <h3 className="text-xl font-black uppercase tracking-tight leading-none mt-1">
+                    <h3 className="text-xl font-semibold leading-none mt-1">
                       {deployStep === 4 ? 'Deploy Successful!' : `Deploying ${selectedTemplate.name}`}
                     </h3>
                   </div>
@@ -632,7 +632,7 @@ const TemplatesPage: React.FC = () => {
                           className={cn(
                             'h-1 w-full rounded-none-none transition-all duration-500',
                             isCompleted
-                              ? 'bg-gray-500 shadow-[var(--z-active-glow)]'
+                              ? 'bg-gray-500 shadow-sm'
                               : isActive
                                 ? 'bg-amber-500 animate-pulse'
                                 : 'bg-z-hover'
@@ -640,7 +640,7 @@ const TemplatesPage: React.FC = () => {
                         />
                         <span
                           className={cn(
-                            'text-[8px] font-black uppercase tracking-wider leading-none mt-0.5',
+                            'text-sm font-semibold   leading-none mt-0.5',
                             isCompleted || isActive ? 'text-white' : 'text-gray-600'
                           )}
                         >
@@ -657,7 +657,7 @@ const TemplatesPage: React.FC = () => {
                     <div className="space-y-5">
                       {/* Provider Select Cards */}
                       <div className="space-y-2">
-                        <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest leading-none">
+                        <label className="text-sm font-semibold text-z-secondary leading-none">
                           1. Select Cloud Deployment Target
                         </label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -672,16 +672,16 @@ const TemplatesPage: React.FC = () => {
                               className={cn(
                                 'border p-3 flex flex-col items-center justify-center gap-2 rounded-none-none transition-all group relative',
                                 provider === prov.id
-                                  ? 'bg-gray-500/10 border-gray-500 text-white shadow-[var(--z-active-glow)]'
+                                  ? 'bg-gray-500/10 border-gray-500 text-white shadow-sm'
                                   : 'bg-white/[0.01] border-z-border text-z-secondary hover:text-gray-300 hover:border-z-border'
                               )}
                             >
-                              <span className="text-xs font-black uppercase tracking-tight ">
+                              <span className="text-xs font-semibold">
                                 {prov.name}
                               </span>
                               <span
                                 className={cn(
-                                  'text-[7px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded-none-none border',
+                                  'text-sm font-mono   px-1.5 py-0.5 rounded-none-none border',
                                   provider === prov.id
                                     ? 'border-gray-500/30 text-gray-600 dark:text-z-muted bg-gray-500/5'
                                     : 'border-z-border text-gray-600 bg-z-hover'
@@ -704,15 +704,15 @@ const TemplatesPage: React.FC = () => {
                         <div className="flex items-center gap-3">
                           <GitBranch size={16} className="text-gray-600 dark:text-z-muted" />
                           <div className="flex flex-col">
-                            <span className="text-[10px] font-black uppercase tracking-tight leading-none text-white">
+                            <span className="text-sm font-semibold leading-none text-white">
                               AmanTShekar/{selectedTemplate.slug}
                             </span>
-                            <span className="text-[7px] font-bold text-z-secondary uppercase tracking-widest mt-1">
+                            <span className="text-sm font-bold text-z-secondary mt-1">
                               GitHub Repository Handshake
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1 text-[8px] font-mono text-gray-600 dark:text-z-muted px-2 py-1 bg-gray-500/5 border border-gray-500/20">
+                        <div className="flex items-center gap-1 text-sm font-mono text-gray-600 dark:text-z-muted px-2 py-1 bg-gray-500/5 border border-gray-500/20">
                           ● CONNECTED
                         </div>
                       </div>
@@ -722,7 +722,7 @@ const TemplatesPage: React.FC = () => {
                         <button
                           onClick={handleStartDeployment}
                           className={cn(
-                            'px-8 py-3.5 rounded-none-none text-[9px] font-black uppercase tracking-[0.2em] shadow-lg transition-all leading-none flex items-center gap-2 active:scale-95 text-white',
+                            'px-8 py-3.5 rounded-none-none text-sm font-semibold   shadow-lg transition-all leading-none flex items-center gap-2 active:scale-95 text-white',
                             selectedTemplate.primaryColor
                           )}
                         >
@@ -739,13 +739,13 @@ const TemplatesPage: React.FC = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
                           <Terminal size={14} className="text-gray-600 dark:text-z-muted" />
-                          <span className="text-[8px] font-black text-z-secondary uppercase tracking-widest">
+                          <span className="text-sm font-semibold text-z-secondary">
                             Simulated Edge Console Output
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="w-1.5 h-1.5 rounded-none-none bg-amber-500 animate-ping" />
-                          <span className="text-[8px] font-mono text-amber-500 uppercase font-black">
+                          <span className="text-sm font-mono text-amber-500 font-semibold">
                             {deployStep === 1
                               ? 'GIT_FETCH'
                               : deployStep === 2
@@ -756,12 +756,12 @@ const TemplatesPage: React.FC = () => {
                       </div>
 
                       {/* Console Logger */}
-                      <div className="flex-1 min-h-[160px] bg-black border border-z-border p-4 font-mono text-[9px] text-z-muted overflow-y-auto space-y-1.5  scroll-smooth">
+                      <div className="flex-1 min-h-[160px] bg-black border border-z-border p-4 font-mono text-sm text-z-muted overflow-y-auto space-y-1.5 scroll-smooth">
                         {terminalLogs.map((log, idx) => (
                           <div
                             key={idx}
                             className={cn(
-                              'leading-relaxed uppercase tracking-tight',
+                              'leading-relaxed  ',
                               log.startsWith('[error]')
                                 ? 'text-red-500'
                                 : log.startsWith('[build]')
@@ -791,16 +791,16 @@ const TemplatesPage: React.FC = () => {
                         initial={{ scale: 0.5, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                        className="w-16 h-16 bg-gray-500/10 border border-gray-500/30 rounded-none-none flex items-center justify-center mx-auto text-gray-600 dark:text-z-secondary shadow-[var(--z-active-glow)]"
+                        className="w-16 h-16 bg-gray-500/10 border border-gray-500/30 rounded-none-none flex items-center justify-center mx-auto text-gray-600 dark:text-z-secondary shadow-sm"
                       >
                         <CheckCircle2 size={32} strokeWidth={2.5} />
                       </motion.div>
 
                       <div className="space-y-2">
-                        <h4 className="text-lg font-black uppercase tracking-tight leading-none text-white">
+                        <h4 className="text-lg font-semibold leading-none text-white">
                           Production Live Ready
                         </h4>
-                        <p className="text-[10px] text-z-secondary uppercase tracking-widest max-w-sm mx-auto leading-relaxed">
+                        <p className="text-sm text-z-secondary max-w-sm mx-auto leading-relaxed">
                           Continuous deployment webhook registered. Updates pushed to git main will trigger
                           regenerations.
                         </p>
@@ -815,7 +815,7 @@ const TemplatesPage: React.FC = () => {
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <Globe size={16} className="text-gray-600 dark:text-z-muted shrink-0" />
-                          <span className="text-[10px] font-black tracking-tight text-white uppercase truncate font-mono">
+                          <span className="text-sm font-semibold text-white truncate font-mono">
                             {liveUrl}
                           </span>
                         </div>
@@ -836,7 +836,7 @@ const TemplatesPage: React.FC = () => {
                         <button
                           onClick={() => setIsDeployModalOpen(false)}
                           className={cn(
-                            'w-full py-3.5 border rounded-none-none text-[9px] font-black uppercase tracking-widest transition-all leading-none',
+                            'w-full py-3.5 border rounded-none-none text-sm font-semibold   transition-all leading-none',
                             theme === 'dark'
                               ? 'border-z-border bg-white/[0.01] text-z-muted hover:text-white hover:border-z-border'
                               : 'border-z-border bg-white text-gray-600 hover:text-black hover:border-z-border-strong'
@@ -849,7 +849,7 @@ const TemplatesPage: React.FC = () => {
                           target="_blank"
                           rel="noreferrer"
                           className={cn(
-                            'w-full py-3.5 rounded-none-none text-[9px] font-black uppercase tracking-widest transition-all leading-none flex items-center justify-center gap-2 text-white',
+                            'w-full py-3.5 rounded-none-none text-sm font-semibold   transition-all leading-none flex items-center justify-center gap-2 text-white',
                             selectedTemplate.primaryColor
                           )}
                         >

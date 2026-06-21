@@ -12,9 +12,10 @@ router.use(requireAuth)
 const BACKUP_DIR = path.join(process.cwd(), 'backups')
 
 // ── GET /api/v1/system/backup — List backups ────────────────────────────────
-router.get('/', requireRole('admin'), async (_req: Request, res: Response, next) => {
+router.get('/', requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
-    const backups = await BackupService.list(BACKUP_DIR)
+    const siteId = req.headers['x-zenith-site-id'] as string
+    const backups = await BackupService.list(BACKUP_DIR, siteId)
     const data = backups.map((b) => ({
       name: b.name,
       size: b.size,
@@ -32,8 +33,9 @@ router.post('/export', requireRole('admin'), async (req: Request, res: Response,
     const engine = req.app.get('zenith_engine')
     const collections = engine?.config?.collections?.map((c: any) => c.slug) || []
     const includeSystem = req.query.includeSystem === 'true'
+    const siteId = req.headers['x-zenith-site-id'] as string
 
-    const result = await BackupService.export(collections, BACKUP_DIR, includeSystem)
+    const result = await BackupService.export(collections, BACKUP_DIR, includeSystem, siteId)
 
     res.json(createResponse<BackupManifest>(result.manifest))
   } catch (err) {
@@ -54,9 +56,10 @@ router.post('/import', requireRole('admin'), async (req: Request, res: Response,
     // Prevent directory traversal attacks
     const safeName = path.basename(filename)
     const filePath = path.join(BACKUP_DIR, safeName)
+    const siteId = req.headers['x-zenith-site-id'] as string
 
     const adapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const result = await BackupService.import(filePath, adapter)
+    const result = await BackupService.import(filePath, adapter, siteId)
 
     res.json(createResponse(result))
   } catch (err) {
@@ -68,6 +71,10 @@ router.post('/import', requireRole('admin'), async (req: Request, res: Response,
 router.get('/download/:filename', requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const safeName = path.basename(req.params.filename)
+    const siteId = req.headers['x-zenith-site-id'] as string
+    if (siteId && !safeName.includes(`-${siteId}-`)) {
+      return res.status(404).json(createErrorResponse(404, 'Backup file not found'))
+    }
     const filePath = path.join(BACKUP_DIR, safeName)
     res.download(filePath, safeName, (err) => {
       if (err) {
@@ -86,6 +93,10 @@ router.get('/download/:filename', requireRole('admin'), async (req: Request, res
 router.delete('/:filename', requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const safeName = path.basename(req.params.filename)
+    const siteId = req.headers['x-zenith-site-id'] as string
+    if (siteId && !safeName.includes(`-${siteId}-`)) {
+      return res.status(404).json(createErrorResponse(404, 'Backup file not found'))
+    }
     const filePath = path.join(BACKUP_DIR, safeName)
 
     const fs = await import('fs/promises')

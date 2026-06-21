@@ -26,7 +26,7 @@ export const BlockPickerModal: React.FC<BlockPickerModalProps> = ({ addBlock }) 
  })
  setBlockPickerOpen(false)
  }
- }, [blockPickerOpen]) // eslint-disable-line react-hooks/exhaustive-deps
+ }, [blockPickerOpen])  
 
  return null
 }

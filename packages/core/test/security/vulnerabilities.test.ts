@@ -8,7 +8,7 @@ describe('Security Vulnerabilities Test Suite', () => {
   let app: any
   let zenith: Zenith
   let validToken: string
-  let siteId = 'test_site'
+  let siteId = `test_site_${Math.random().toString(36).substring(2, 9)}`
 
   beforeAll(async () => {
     zenith = new Zenith({ config: getTestConfig() })
@@ -19,12 +19,12 @@ describe('Security Vulnerabilities Test Suite', () => {
 
     const adapter = zenith.adapter
     try {
-      await adapter.deleteMany('sites', {})
-      await adapter.deleteMany('posts', {})
+      await adapter.deleteMany('z_sites', { slug: siteId })
+      await adapter.deleteMany('posts', { siteId })
     } catch {}
 
     try {
-      await adapter.create('sites', { slug: siteId, name: 'Test Site', ownerId: '000000000000000000000003' })
+      await adapter.create('z_sites', { slug: siteId, name: 'Test Site', ownerId: '000000000000000000000003' })
     } catch (err: any) { console.error('Site create err:', err.message) }
   })
 
@@ -61,7 +61,7 @@ describe('Security Vulnerabilities Test Suite', () => {
       .send({
         title: 'XSS Test',
         content: '<script>alert("xss")</script> <p>Clean content</p>',
-        slug: 'xss-test'
+        slug: `xss-test-${Math.random().toString(36).substring(2, 9)}`
       })
 
     if (res.status !== 201) console.error('XSS fail:', res.status, res.body)

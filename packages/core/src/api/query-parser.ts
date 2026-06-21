@@ -182,6 +182,11 @@ export function parseQueryParams(
     } else {
       parsed.populate = pStr.split(',').map((s: string) => s.trim()).filter(Boolean)
     }
+  } else {
+    // Default: auto-populate all direct relation fields
+    parsed.populate = config.fields
+      .filter((f: any) => f.type === 'relation')
+      .map((f: any) => f.name)
   }
 
   // normalize filter operators

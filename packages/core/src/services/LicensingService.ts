@@ -1,4 +1,6 @@
 import { logger } from './logger'
+import { env } from '../config/env';
+
 
 /**
  * Zenith Enterprise Licensing Engine
@@ -15,8 +17,8 @@ export class LicensingService {
    * Evaluates if the current environment runs under authenticated Enterprise parameters.
    */
   static isEnterpriseEdition(): boolean {
-    const hasLicense = !!process.env.ZENITH_LICENSE_KEY
-    const isEEFlag = process.env.IS_EE === 'true'
+    const hasLicense = !!env.ZENITH_LICENSE_KEY
+    const isEEFlag = env.IS_EE === 'true'
     return hasLicense || isEEFlag
   }
 

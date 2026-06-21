@@ -138,12 +138,12 @@ export default function SettingsWebhookLogs({ theme = 'dark' }: SettingsWebhookL
   const card = cn(
     'border rounded-none transition-all',
     dark
-      ? 'bg-z-panel backdrop-blur-md border-z-border shadow-[var(--z-active-glow)]'
+      ? 'bg-z-panel backdrop-blur-md border-z-border shadow-sm'
       : 'bg-z-panel border-z-border shadow-sm'
   )
 
   const inp = cn(
-    'border rounded-none py-2 px-3 text-[11px] font-mono outline-none transition-all focus:ring-1 focus:ring-z-active-border focus:border-z-accent',
+    'border rounded-none py-2 px-3 text-sm font-mono outline-none transition-all focus:ring-1 focus:ring-z-active-border focus:border-z-accent',
     dark ? 'bg-black/80 border-z-border text-white placeholder:text-gray-700' : 'bg-z-panel border-z-border text-z-primary'
   )
 
@@ -167,8 +167,8 @@ export default function SettingsWebhookLogs({ theme = 'dark' }: SettingsWebhookL
               <Icon size={16} className={color} />
             </div>
             <div>
-              <div className={cn('text-lg font-black', dark ? 'text-white' : 'text-z-primary')}>{value}</div>
-              <div className="text-[8px] font-black uppercase tracking-widest text-z-secondary">{label}</div>
+              <div className={cn('text-lg font-semibold', dark ? 'text-white' : 'text-z-primary')}>{value}</div>
+              <div className="text-sm font-semibold text-z-secondary">{label}</div>
             </div>
           </div>
         ))}
@@ -191,7 +191,7 @@ export default function SettingsWebhookLogs({ theme = 'dark' }: SettingsWebhookL
               key={f}
               onClick={() => { setFilter(f); setPage(1) }}
               className={cn(
-                'px-3 py-1.5 text-[8px] font-black uppercase tracking-widest border transition-all',
+                'px-3 py-1.5 text-sm font-semibold   border transition-all',
                 filter === f
                   ? dark ? 'bg-z-accent/20 border-z-active-border text-z-active-text' : 'bg-z-active-bg border-z-active-border text-z-accent'
                   : dark ? 'bg-z-hover border-white/10 text-z-secondary hover:text-gray-300' : 'bg-z-input border-z-border text-z-secondary'
@@ -211,7 +211,7 @@ export default function SettingsWebhookLogs({ theme = 'dark' }: SettingsWebhookL
           </button>
           <button
             onClick={handleExport}
-            className={cn('flex items-center gap-1.5 px-3 py-2 text-[8px] font-black uppercase tracking-widest border transition-all', dark ? 'border-white/10 text-z-muted hover:text-white hover:border-white/20' : 'border-z-border text-z-secondary hover:text-gray-800')}
+            className={cn('flex items-center gap-1.5 px-3 py-2 text-sm font-semibold   border transition-all', dark ? 'border-white/10 text-z-muted hover:text-white hover:border-white/20' : 'border-z-border text-z-secondary hover:text-gray-800')}
           >
             <Download size={11} />
             Export CSV
@@ -222,7 +222,7 @@ export default function SettingsWebhookLogs({ theme = 'dark' }: SettingsWebhookL
       {/* Log Table */}
       <div className={cn(card, 'overflow-hidden')}>
         {/* Header */}
-        <div className={cn('grid grid-cols-12 px-4 py-2 text-[8px] font-black uppercase tracking-widest text-z-secondary border-b', dark ? 'border-z-border' : 'border-z-border')}>
+        <div className={cn('grid grid-cols-12 px-4 py-2 text-sm font-semibold   text-z-secondary border-b', dark ? 'border-z-border' : 'border-z-border')}>
           <div className="col-span-1">Status</div>
           <div className="col-span-3">Event</div>
           <div className="col-span-4">Endpoint URL</div>
@@ -241,8 +241,8 @@ export default function SettingsWebhookLogs({ theme = 'dark' }: SettingsWebhookL
               <Activity size={28} />
             </div>
             <div className="text-center">
-              <p className={cn('text-[11px] font-black uppercase tracking-widest', dark ? 'text-z-muted' : 'text-gray-600')}>No Event Logs</p>
-              <p className="text-[9px] text-gray-600 mt-1 uppercase tracking-widest">Webhook deliveries will appear here</p>
+              <p className={cn('text-sm font-semibold  ', dark ? 'text-z-muted' : 'text-gray-600')}>No Event Logs</p>
+              <p className="text-sm text-gray-600 mt-1">Webhook deliveries will appear here</p>
             </div>
           </div>
         ) : (
@@ -267,30 +267,30 @@ export default function SettingsWebhookLogs({ theme = 'dark' }: SettingsWebhookL
                     </div>
                     {/* Event */}
                     <div className="col-span-3">
-                      <span className={cn('text-[10px] font-black uppercase tracking-wider', dark ? 'text-gray-200' : 'text-gray-800')}>
+                      <span className={cn('text-sm font-semibold  ', dark ? 'text-gray-200' : 'text-gray-800')}>
                         {log.event}
                       </span>
                       {log.responseStatus && (
-                        <span className={cn('ml-2 text-[8px] font-black px-1.5 py-0.5 border', getStatusClass(log.responseStatus))}>
+                        <span className={cn('ml-2 text-sm font-semibold px-1.5 py-0.5 border', getStatusClass(log.responseStatus))}>
                           {log.responseStatus}
                         </span>
                       )}
                     </div>
                     {/* URL */}
                     <div className="col-span-4">
-                      <span className={cn('text-[9px] font-mono truncate block', dark ? 'text-z-secondary' : 'text-z-secondary')}>
+                      <span className={cn('text-sm font-mono truncate block', dark ? 'text-z-secondary' : 'text-z-secondary')}>
                         {log.url || '—'}
                       </span>
                     </div>
                     {/* Time */}
                     <div className="col-span-2">
-                      <span className="text-[9px] text-z-secondary">
+                      <span className="text-sm text-z-secondary">
                         {log.timestamp ? new Date(log.timestamp).toLocaleString() : '—'}
                       </span>
                     </div>
                     {/* Latency */}
                     <div className="col-span-1">
-                      <span className={cn('text-[9px] font-mono', log.durationMs && log.durationMs > 1000 ? 'text-amber-400' : 'text-z-secondary')}>
+                      <span className={cn('text-sm font-mono', log.durationMs && log.durationMs > 1000 ? 'text-amber-400' : 'text-z-secondary')}>
                         {log.durationMs ? `${log.durationMs}ms` : '—'}
                       </span>
                     </div>
@@ -316,28 +316,28 @@ export default function SettingsWebhookLogs({ theme = 'dark' }: SettingsWebhookL
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {log.requestBody && (
                           <div className="space-y-1.5">
-                            <p className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Request Payload</p>
-                            <pre className={cn('text-[9px] font-mono p-3 border overflow-auto max-h-32 rounded-none', dark ? 'bg-black/60 border-z-border text-gray-300' : 'bg-z-panel border-z-border text-gray-700')}>
+                            <p className="text-sm font-semibold text-z-secondary">Request Payload</p>
+                            <pre className={cn('text-sm font-mono p-3 border overflow-auto max-h-32 rounded-none', dark ? 'bg-black/60 border-z-border text-gray-300' : 'bg-z-panel border-z-border text-gray-700')}>
                               {(() => { try { return JSON.stringify(JSON.parse(log.requestBody), null, 2) } catch { return log.requestBody } })()}
                             </pre>
                           </div>
                         )}
                         {log.responseBody && (
                           <div className="space-y-1.5">
-                            <p className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Response Body</p>
-                            <pre className={cn('text-[9px] font-mono p-3 border overflow-auto max-h-32 rounded-none', dark ? 'bg-black/60 border-z-border text-gray-300' : 'bg-z-panel border-z-border text-gray-700')}>
+                            <p className="text-sm font-semibold text-z-secondary">Response Body</p>
+                            <pre className={cn('text-sm font-mono p-3 border overflow-auto max-h-32 rounded-none', dark ? 'bg-black/60 border-z-border text-gray-300' : 'bg-z-panel border-z-border text-gray-700')}>
                               {(() => { try { return JSON.stringify(JSON.parse(log.responseBody), null, 2) } catch { return log.responseBody } })()}
                             </pre>
                           </div>
                         )}
                         {!log.requestBody && !log.responseBody && (
-                          <p className="text-[9px] text-gray-600 italic uppercase tracking-widest">No payload data available for this entry</p>
+                          <p className="text-sm text-gray-600 italic">No payload data available for this entry</p>
                         )}
                       </div>
                       {log.retryCount !== undefined && log.retryCount > 0 && (
                         <div className="flex items-center gap-2">
                           <AlertTriangle size={11} className="text-amber-400" />
-                          <span className="text-[9px] text-amber-400 font-black uppercase tracking-widest">
+                          <span className="text-sm text-amber-400 font-semibold">
                             {log.retryCount} Retry {log.retryCount === 1 ? 'Attempt' : 'Attempts'}
                           </span>
                         </div>
@@ -354,21 +354,21 @@ export default function SettingsWebhookLogs({ theme = 'dark' }: SettingsWebhookL
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <span className="text-[9px] text-z-secondary uppercase tracking-widest">
+          <span className="text-sm text-z-secondary">
             Page {page} of {totalPages} · {totalCount} events
           </span>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
-              className={cn('px-3 py-1.5 text-[9px] font-black uppercase border transition-all disabled:opacity-30', dark ? 'border-white/10 text-z-muted hover:text-white' : 'border-z-border text-z-secondary')}
+              className={cn('px-3 py-1.5 text-sm font-semibold  border transition-all disabled:opacity-30', dark ? 'border-white/10 text-z-muted hover:text-white' : 'border-z-border text-z-secondary')}
             >
               Prev
             </button>
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className={cn('px-3 py-1.5 text-[9px] font-black uppercase border transition-all disabled:opacity-30', dark ? 'border-white/10 text-z-muted hover:text-white' : 'border-z-border text-z-secondary')}
+              className={cn('px-3 py-1.5 text-sm font-semibold  border transition-all disabled:opacity-30', dark ? 'border-white/10 text-z-muted hover:text-white' : 'border-z-border text-z-secondary')}
             >
               Next
             </button>

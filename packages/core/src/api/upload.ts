@@ -12,6 +12,8 @@ import { validateMagicBytes } from './magic-bytes'
 import { MediaVisionPipeline } from '../services/MediaVisionPipeline'
 import { InvalidPayloadError } from '../errors'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { env } from '../config/env';
+
 
 const router: Router = Router()
 
@@ -78,11 +80,12 @@ router.post('/', requireAuth, upload.single('file'), async (req: any, res, next)
     }
 
     // 1. Upload to cloud media service or standardized storage provider
-    if (process.env.CLOUDINARY_URL || process.env.CLOUDINARY_CLOUD_NAME) {
+    if (process.env.CLOUDINARY_URL || env.CLOUDINARY_CLOUD_NAME) {
       // Cloudinary active
       const result = await MediaService.uploadFile(finalPath, {
         filename: req.file.originalname,
         mimetype: finalMimetype,
+        siteId: req.headers['x-zenith-site-id'] as string,
       })
       url = result.secure_url
       fileId = result.public_id
@@ -90,6 +93,7 @@ router.post('/', requireAuth, upload.single('file'), async (req: any, res, next)
       // Standard active storage provider (dynamic Local or AWS S3 / Cloudflare R2)
       const result = await StorageService.saveFile(finalPath, req.file.originalname, {
         mimetype: finalMimetype,
+        siteId: req.headers['x-zenith-site-id'] as string
       })
       url = result.url
       fileId = result.id
@@ -97,14 +101,14 @@ router.post('/', requireAuth, upload.single('file'), async (req: any, res, next)
 
     // 2. Auto-generate Alt Text & Smart Tags if AI is enabled
     let tags: string[] = []
-    if (process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY) {
+    if (process.env.ANTHROPIC_API_KEY || env.OPENROUTER_API_KEY || env.OPENAI_API_KEY) {
       try {
-        altText = await AIService.generateAltText(url, 'uploaded media')
+        altText = await AIService.generateAltText(url, 'uploaded media', req.headers['x-zenith-site-id'] as string)
       } catch (e) {
         console.error('Failed to generate alt text', e)
       }
       try {
-        const tagResult = await AIService.generateImageTags(url)
+        const tagResult = await AIService.generateImageTags(url, req.headers['x-zenith-site-id'] as string)
         tags = tagResult.tags
         // Use AI description as alt text if none generated
         if (!altText && tagResult.description) {
@@ -153,7 +157,7 @@ router.post('/', requireAuth, upload.single('file'), async (req: any, res, next)
       alt: altText,
       tags,
       focalPoint,
-      siteId: req.siteId,
+      siteId: req.headers['x-zenith-site-id'] as string,
     })
 
     res.json(createResponse(doc))

@@ -62,21 +62,21 @@ const CommentItem: React.FC<{
  'w-7 h-7 rounded-none-none flex items-center justify-center shrink-0 mt-0.5',
  theme === 'dark' ? 'bg-gray-500/10 border border-gray-500/20' : 'bg-gray-50 border border-z-border'
  )}>
- <span className="text-xs font-black text-gray-600 dark:text-z-muted uppercase">
+ <span className="text-xs font-semibold text-gray-600 dark:text-z-muted">
  {comment.author?.[0] || '?'}
  </span>
  </div>
  <div className="flex-1 min-w-0">
  <div className="flex items-center gap-2 flex-wrap">
- <span className="text-xs font-black text-gray-300 uppercase ">
+ <span className="text-xs font-semibold text-gray-300">
  {comment.author}
  </span>
- <span className="text-[7px] text-gray-600 font-bold uppercase tracking-widest">
+ <span className="text-sm text-gray-600 font-bold">
  {timeAgo(comment.createdAt)}
  </span>
  {comment.resolved && (
  <span className={cn(
- 'text-[7px] font-black uppercase px-1.5 py-0.5 rounded-none-none',
+ 'text-sm font-semibold  px-1.5 py-0.5 rounded-none-none',
  theme === 'dark' ? 'bg-gray-500/10 text-gray-600 dark:text-z-muted' : 'bg-gray-100 text-gray-600'
  )}>
  Resolved
@@ -84,7 +84,7 @@ const CommentItem: React.FC<{
  )}
  {comment.blockId && (
  <span className={cn(
- 'text-[7px] font-mono px-1 py-0.5 rounded-none-none',
+ 'text-sm font-mono px-1 py-0.5 rounded-none-none',
  theme === 'dark' ? 'bg-amber-500/10 text-amber-400' : 'bg-amber-50 text-amber-600'
  )}>
  Block: {comment.blockId}
@@ -109,7 +109,7 @@ const CommentItem: React.FC<{
  <button
  onClick={() => setRepliesOpen((v) => !v)}
  className={cn(
- 'w-full flex items-center gap-1.5 px-3 py-1.5 text-xs font-black uppercase tracking-widest transition-colors',
+ 'w-full flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold   transition-colors',
  theme === 'dark' ? 'text-z-secondary hover:text-gray-300' : 'text-z-muted hover:text-gray-600'
  )}
  >
@@ -135,8 +135,8 @@ const CommentItem: React.FC<{
  )}>
  <div className="flex-1 min-w-0">
  <div className="flex items-center gap-1.5">
- <span className="text-xs font-black text-z-muted">{reply.author}</span>
- <span className="text-[7px] text-gray-600">{timeAgo(reply.createdAt)}</span>
+ <span className="text-xs font-semibold text-z-muted">{reply.author}</span>
+ <span className="text-sm text-gray-600">{timeAgo(reply.createdAt)}</span>
  </div>
  <p className="text-xs text-z-secondary font-medium">{reply.content}</p>
  </div>
@@ -157,7 +157,7 @@ const CommentItem: React.FC<{
  <button
  onClick={() => setReplyOpen((v) => !v)}
  className={cn(
- 'flex items-center gap-1 text-xs font-black uppercase tracking-wider transition-colors',
+ 'flex items-center gap-1 text-xs font-semibold   transition-colors',
  theme === 'dark' ? 'text-z-secondary hover:text-gray-300' : 'text-z-muted hover:text-gray-600'
  )}
  >
@@ -168,7 +168,7 @@ const CommentItem: React.FC<{
  <button
  onClick={() => onResolve(comment._id, !comment.resolved)}
  className={cn(
- 'flex items-center gap-1 text-xs font-black uppercase tracking-wider transition-colors',
+ 'flex items-center gap-1 text-xs font-semibold   transition-colors',
  comment.resolved
  ? theme === 'dark' ? 'text-gray-600 dark:text-z-muted hover:text-gray-300' : 'text-gray-600 dark:text-z-secondary hover:text-gray-600'
  : theme === 'dark' ? 'text-z-muted/50 hover:text-gray-300' : 'text-gray-300 hover:text-gray-600 dark:text-z-secondary'
@@ -182,7 +182,7 @@ const CommentItem: React.FC<{
  <button
  onClick={() => onDelete(comment._id)}
  className={cn(
- 'flex items-center gap-1 text-xs font-black uppercase tracking-wider transition-colors ml-auto',
+ 'flex items-center gap-1 text-xs font-semibold   transition-colors ml-auto',
  theme === 'dark' ? 'text-gray-600 hover:text-rose-400' : 'text-z-muted hover:text-rose-500'
  )}
  >
@@ -225,7 +225,7 @@ const CommentItem: React.FC<{
  disabled={posting || !replyContent.trim()}
  aria-label="Send reply"
  className={cn(
- 'px-2.5 py-1.5 text-xs font-black uppercase tracking-wider border transition-all rounded-none-none disabled:opacity-50',
+ 'px-2.5 py-1.5 text-xs font-semibold   border transition-all rounded-none-none disabled:opacity-50',
  theme === 'dark'
  ? 'bg-gray-500/20 border-gray-500/20 text-gray-300 hover:bg-gray-500/30'
  : 'bg-z-input border-z-border text-gray-600 hover:bg-gray-100'
@@ -237,7 +237,7 @@ const CommentItem: React.FC<{
  onClick={() => { setReplyOpen(false); setReplyContent('') }}
  aria-label="Cancel reply"
  className={cn(
- 'px-2 py-1.5 text-xs font-black uppercase tracking-wider border rounded-none-none',
+ 'px-2 py-1.5 text-xs font-semibold   border rounded-none-none',
  theme === 'dark' ? 'border-z-border text-gray-600' : 'border-z-border text-z-muted'
  )}
  >
@@ -280,11 +280,11 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2">
  <MessageSquare size={11} className="text-gray-600 dark:text-z-muted" />
- <span className="text-xs font-black uppercase tracking-widest text-gray-600 dark:text-z-muted">
+ <span className="text-xs font-semibold text-gray-600 dark:text-z-muted">
  Review
  </span>
  <span className={cn(
- 'px-1.5 py-0.5 text-[7px] font-black rounded-none-none',
+ 'px-1.5 py-0.5 text-sm font-semibold rounded-none-none',
  theme === 'dark' ? 'bg-z-hover text-z-secondary' : 'bg-gray-100 text-z-secondary'
  )}>
  {comments.filter((c) => !c.resolved).length} open / {comments.length} total
@@ -293,7 +293,7 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  <button
  onClick={() => setShowResolved((v) => !v)}
  className={cn(
- 'text-xs font-black uppercase tracking-wider transition-colors',
+ 'text-xs font-semibold   transition-colors',
  theme === 'dark' ? 'text-z-secondary hover:text-gray-300' : 'text-z-muted hover:text-gray-600'
  )}
  >
@@ -320,12 +320,12 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  )}
  />
  <div className="flex items-center justify-between mt-1.5">
- <span className="text-[7px] text-gray-600 font-bold">Cmd+Enter to submit</span>
+ <span className="text-sm text-gray-600 font-bold">Cmd+Enter to submit</span>
  <button
  onClick={handleCreate}
  disabled={posting || !newComment.trim()}
  className={cn(
- 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-black uppercase tracking-wider border rounded-none-none transition-all disabled:opacity-50',
+ 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold   border rounded-none-none transition-all disabled:opacity-50',
  theme === 'dark'
  ? 'bg-gray-500/20 border-gray-500/30 text-gray-300 hover:bg-gray-500/30 hover:border-gray-500/50'
  : 'bg-z-input border-z-border text-gray-600 hover:bg-gray-100 hover:border-z-border-strong'
@@ -351,7 +351,7 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  theme === 'dark' ? 'border-z-border' : 'border-z-border'
  )}>
  <MessageSquare size={16} className="mx-auto text-gray-600 mb-1.5" />
- <p className="text-xs text-z-secondary font-bold ">No comments yet</p>
+ <p className="text-xs text-z-secondary font-bold">No comments yet</p>
  <p className="text-xs text-gray-600 mt-0.5">Be the first to leave a review note</p>
  </div>
  ) : (

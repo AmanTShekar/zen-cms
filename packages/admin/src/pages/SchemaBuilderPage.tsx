@@ -109,7 +109,7 @@ function FieldTypePicker({ value, onChange, theme }: { value: FieldType; onChang
  type="button"
  onClick={() => setOpen(!open)}
  className={cn(
- 'flex items-center gap-2 px-3 py-2 border text-[10px] font-black uppercase tracking-widest transition-all w-full shadow-[var(--z-active-glow)] rounded-none',
+ 'flex items-center gap-2 px-3 py-2 border text-sm font-semibold   transition-all w-full shadow-sm rounded-none',
  'z-card-interactive'
  )}
  >
@@ -124,7 +124,7 @@ function FieldTypePicker({ value, onChange, theme }: { value: FieldType; onChang
  animate={{ opacity: 1, y: 0 }}
  exit={{ opacity: 0, y: 4 }}
  className={cn(
- 'absolute z-50 top-full left-0 mt-1 w-64 border shadow-[var(--z-active-glow)] max-h-72 overflow-y-auto rounded-none',
+ 'absolute z-50 top-full left-0 mt-1 w-64 border shadow-sm max-h-72 overflow-y-auto rounded-none',
  theme === 'dark' ? 'bg-z-popover backdrop-blur-xl border-z-border' : 'bg-z-panel border-z-border'
  )}
  >
@@ -136,7 +136,7 @@ function FieldTypePicker({ value, onChange, theme }: { value: FieldType; onChang
  type="button"
  onClick={() => { onChange(ft.value); setOpen(false) }}
  className={cn(
- 'w-full flex items-center gap-3 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all rounded-none',
+ 'w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold   transition-all rounded-none',
  value === ft.value
  ? 'bg-z-accent text-white'
  : theme === 'dark' ? 'text-z-muted hover:bg-z-hover hover:text-white' : 'text-gray-600 hover:bg-gray-50'
@@ -154,6 +154,68 @@ function FieldTypePicker({ value, onChange, theme }: { value: FieldType; onChang
  )
 }
 
+// ── Nested Fields Editor ──────────────────────────────────────────────────────
+function NestedFieldsEditor({
+  fields, onUpdate, theme, availableCollections
+}: {
+  fields: FieldConfig[]
+  onUpdate: (fields: FieldConfig[]) => void
+  theme: string
+  availableCollections: string[]
+}) {
+  const inputClass = cn(
+    'w-full border p-2 text-sm font-mono outline-none focus-visible:ring-2 focus-visible:ring-z-active-border transition-colors rounded-none shadow-sm',
+    'z-input'
+  )
+  
+  const addField = () => onUpdate([...fields, { name: `field${fields.length + 1}`, type: 'text', label: `Field ${fields.length + 1}` }])
+  const removeField = (index: number) => onUpdate(fields.filter((_, i) => i !== index))
+  const updateField = (index: number, key: string, value: any) => {
+    const next = [...fields]
+    next[index] = { ...next[index], [key]: value }
+    onUpdate(next)
+  }
+
+  return (
+    <div className="space-y-4 mt-4 border-l-2 border-z-accent/50 pl-4">
+      <div className="flex items-center justify-between">
+        <label className="text-sm font-bold text-z-secondary">Nested Fields Configuration</label>
+        <button type="button" onClick={addField} className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-none transition-all">
+          <Plus size={12} /> Add Sub-field
+        </button>
+      </div>
+
+      <div className="space-y-3">
+        {fields.map((field, i) => (
+          <div key={i} className="p-4 relative group rounded-none bg-black/20 border border-white/10">
+            <button type="button" onClick={() => removeField(i)} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1 text-red-500/50 hover:text-red-500 transition-all rounded-none">
+              <Trash2 size={12} />
+            </button>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pr-6">
+              <div>
+                <label className="text-xs font-semibold text-z-secondary block mb-1">Field Name</label>
+                <input type="text" value={field.name} onChange={e => updateField(i, 'name', e.target.value.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, ''))} className={inputClass} placeholder="name" />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-z-secondary block mb-1">Field Type</label>
+                <FieldTypePicker value={field.type} onChange={v => updateField(i, 'type', v)} theme={theme} />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-z-secondary block mb-1">Display Label</label>
+                <input type="text" value={field.label || ''} onChange={e => updateField(i, 'label', e.target.value)} className={inputClass} placeholder="Label" />
+              </div>
+            </div>
+            
+            <div className="mt-2">
+               <FieldAdvancedPanel field={field} onUpdate={(key, value) => updateField(i, key, value)} theme={theme} availableCollections={availableCollections} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // ── Advanced Field Panel ──────────────────────────────────────────────────────
 function FieldAdvancedPanel({
  field, onUpdate, theme, availableCollections
@@ -165,18 +227,18 @@ function FieldAdvancedPanel({
 }) {
  const [open, setOpen] = useState(false)
  const inputClass = cn(
- 'w-full border p-2 text-[11px] font-mono outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none shadow-[var(--z-active-glow)]',
+ 'w-full border p-2 text-sm font-mono outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none shadow-sm',
  'z-input'
  )
  const checkClass = 'accent-gray-500 w-3.5 h-3.5'
- const labelClass = 'text-[9px] font-black uppercase tracking-widest text-z-secondary'
+ const labelClass = 'text-sm font-semibold   text-z-secondary'
 
  return (
  <div className="mt-2">
  <button
  type="button"
  onClick={() => setOpen(!open)}
- className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-z-secondary hover:text-gray-600 dark:text-z-secondary transition-colors"
+ className="flex items-center gap-1.5 text-sm font-semibold text-z-secondary hover:text-gray-600 dark:text-z-secondary transition-colors"
  >
  {open ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
  Advanced Options
@@ -189,7 +251,7 @@ function FieldAdvancedPanel({
  exit={{ height: 0, opacity: 0 }}
  className="overflow-hidden"
  >
- <div className={cn('mt-3 p-4 border space-y-4 rounded-none shadow-[var(--z-active-glow)]', 'z-panel shadow-sm')}>
+ <div className={cn('mt-3 p-4 border space-y-4 rounded-none shadow-sm', 'z-panel shadow-sm')}>
  {/* Flags */}
  <div className="flex flex-wrap gap-x-6 gap-y-2">
  {[
@@ -287,6 +349,16 @@ function FieldAdvancedPanel({
  </div>
  )}
 
+ {/* Nested fields for array/group */}
+ {(field.type === 'array' || field.type === 'group') && (
+ <NestedFieldsEditor
+ fields={field.fields || []}
+ onUpdate={newFields => onUpdate('fields', newFields)}
+ theme={theme}
+ availableCollections={availableCollections}
+ />
+ )}
+
  {/* Select options editor */}
  {field.type === 'select' && (
  <div>
@@ -328,7 +400,7 @@ function FieldAdvancedPanel({
  <button
  type="button"
  onClick={() => onUpdate('options', [...(field.options || []), { label: '', value: '' }])}
- className="flex items-center gap-1 text-[9px] font-black text-gray-600 dark:text-z-secondary hover:text-gray-600 dark:text-z-muted uppercase tracking-widest"
+ className="flex items-center gap-1 text-sm font-semibold text-gray-600 dark:text-z-secondary hover:text-gray-600 dark:text-z-muted"
  >
  <Plus size={10} /> Add Option
  </button>
@@ -395,8 +467,12 @@ export default function SchemaBuilderPage() {
  }))
  : []
 
- // Combine and sort
- const combined = [...systemList, ...dbList].sort((a, b) => a.slug.localeCompare(b.slug))
+ // Combine and deduplicate (System Code-First schemas override DB schemas)
+ const schemaMap = new Map<string, SavedSchema>()
+ for (const s of [...dbList, ...systemList]) {
+   schemaMap.set(s.slug, s)
+ }
+ const combined = Array.from(schemaMap.values()).sort((a, b) => a.slug.localeCompare(b.slug))
  setSavedSchemas(combined)
  } catch {
  setSavedSchemas([])
@@ -565,7 +641,7 @@ ${fieldsCode}
  }
 
   const inputClass = cn(
-  'border outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-bold transition-colors py-2.5 px-3 rounded-none shadow-[var(--z-active-glow)]',
+  'border outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-bold transition-colors py-2.5 px-3 rounded-none shadow-sm',
   'z-input'
   )
 
@@ -575,8 +651,8 @@ ${fieldsCode}
  {/* ── Schemas Sidebar ─────────────────────────────────────────────── */}
  <div className={cn('w-64 flex-shrink-0 border-r flex flex-col', 'border-z-border bg-z-panel')}>
  <div className="p-4 border-b border-inherit flex items-center justify-between">
- <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
- <Database size={14} className="text-gray-600 dark:text-z-secondary" /> Schemas
+ <h2 className="text-sm font-bold text-z-primary">
+ Schemas
  </h2>
  <button
  onClick={resetEditor}
@@ -590,7 +666,7 @@ ${fieldsCode}
  {loadingSchemas ? (
  <div className="p-4 flex justify-center"><Loader2 className="animate-spin text-z-muted" size={16} /></div>
  ) : savedSchemas.length === 0 ? (
- <div className="p-4 text-center text-[9px] text-z-secondary uppercase tracking-widest ">
+ <div className="p-4 text-center text-sm text-z-secondary">
  No schemas yet
  </div>
  ) : savedSchemas.map(schema => {
@@ -601,8 +677,8 @@ ${fieldsCode}
  <button
  onClick={() => loadSchema(schema)}
  className={cn(
- 'flex-1 flex items-center justify-between text-left px-3 py-2.5 text-[10px] font-black uppercase tracking-widest transition-colors rounded-none truncate',
- isActive ? 'bg-z-accent text-white shadow-[var(--z-active-glow)]' : dark ? 'text-z-muted hover:bg-z-hover hover:text-white' : 'text-gray-600 hover:bg-gray-50'
+ 'flex-1 flex items-center justify-between text-left px-3 py-2.5 text-sm font-semibold   transition-colors rounded-none truncate',
+ isActive ? 'bg-z-accent text-white shadow-sm' : dark ? 'text-z-muted hover:bg-z-hover hover:text-white' : 'text-gray-600 hover:bg-gray-50'
  )}
  >
  <span>{schema.slug}</span>
@@ -626,35 +702,34 @@ ${fieldsCode}
  <div className="flex-1 flex flex-col overflow-hidden">
   {/* Header toolbar */}
   <PageHeader
-    title="Visual Schema Architect"
-    description="Construct, mutate, and compile robust data topologies in real-time."
+    title="Schema Builder"
+    backLink={{ to: '/', label: 'Dashboard' }}
     actions={
       <div className="flex items-center gap-2">
         <button
           onClick={() => setShowAI(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black uppercase tracking-widest rounded-none transition-all shadow-lg shadow-purple-900/30"
+          className="px-4 py-2 bg-purple-600/10 text-purple-500 hover:bg-purple-600/20 text-sm font-bold rounded-none transition-all"
         >
-          <Sparkles size={14} /> AI Generate
+          AI Generate
         </button>
         <button
           onClick={() => setShowIntrospect(true)}
-          className={cn('flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-none transition-all border', dark ? 'border-z-border hover:bg-z-hover' : 'border-z-border hover:bg-gray-50')}
+          className="px-4 py-2 text-sm font-bold border border-z-border hover:bg-z-hover rounded-none transition-all"
         >
-          <Database size={14} /> Introspect DB
+          Introspect DB
         </button>
         <button
           onClick={() => setShowCode(true)}
-          className={cn('flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-none transition-all border shadow-[var(--z-active-glow)]', 'z-card-interactive')}
+          className="px-4 py-2 text-sm font-bold border border-z-border hover:bg-z-hover rounded-none transition-all"
         >
-          <Code size={14} /> View Code
+          View Code
         </button>
         <button
           onClick={handleSave}
           disabled={saving || isCodeFirst}
-          className="flex items-center gap-2 px-4 py-2 bg-z-accent hover:opacity-90 text-white text-[10px] font-black uppercase tracking-widest rounded-none transition-all shadow-[var(--z-active-glow)] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-z-accent hover:bg-z-accent/90 text-white text-sm font-bold rounded-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-          {isCodeFirst ? 'Locked' : 'Save Schema'}
+          {saving ? 'Saving...' : isCodeFirst ? 'Locked' : 'Save'}
         </button>
       </div>
     }
@@ -662,25 +737,20 @@ ${fieldsCode}
 
   <div className="flex-1 overflow-auto p-6 space-y-6 custom-editor-scrollbar">
  {isCodeFirst && (
- <div className="p-4 rounded-none border border-amber-500/30 bg-amber-500/10 flex items-start gap-3">
- <Lock className="text-amber-500 mt-0.5 shrink-0" size={16} />
- <div>
- <h4 className="text-[11px] font-black uppercase tracking-widest text-amber-500 mb-1">Code-First Schema</h4>
- <p className="text-xs text-amber-500/80 font-bold leading-relaxed">
- This architecture is locked by the development team in JSON configuration files to ensure application stability. It cannot be modified visually.
- </p>
- </div>
+ <div className="px-4 py-3 border border-amber-500/30 bg-amber-500/10 text-amber-500 text-sm font-bold flex items-center justify-between">
+   <span>Code-First Schema (Read Only)</span>
+   <Lock size={14} />
  </div>
  )}
 
  {/* Collection Meta */}
- <div className={cn('rounded-none border p-6 space-y-4 shadow-[var(--z-active-glow)] transition-all', 'z-panel')}>
- <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-z-secondary flex items-center gap-2">
- <Settings size={12} /> Collection Settings
+ <div className={cn('rounded-none border p-6 space-y-4 shadow-sm transition-all', 'z-panel')}>
+ <h3 className="text-sm font-bold text-z-primary">
+ Collection Settings
  </h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
- <label className="text-[9px] font-black uppercase tracking-widest text-z-secondary block mb-1.5">Display Name</label>
+ <label className="text-sm font-semibold text-z-secondary block mb-1.5">Display Name</label>
  <input
  type="text"
  value={collectionName}
@@ -695,7 +765,7 @@ ${fieldsCode}
  />
  </div>
  <div>
- <label className="text-[9px] font-black uppercase tracking-widest text-z-secondary block mb-1.5">Slug (API ID)</label>
+ <label className="text-sm font-semibold text-z-secondary block mb-1.5">Slug (API ID)</label>
  <input
  type="text"
  value={slug}
@@ -730,7 +800,7 @@ ${fieldsCode}
  settings[key] ? 'left-4' : 'left-0.5'
  )} />
  </div>
- <span className="text-[10px] font-bold capitalize text-z-muted group-hover:text-gray-200 transition-colors">
+ <span className="text-sm font-bold capitalize text-z-muted group-hover:text-gray-200 transition-colors">
  {key.replace(/([A-Z])/g, ' $1').trim()}
  </span>
  </label>
@@ -739,15 +809,15 @@ ${fieldsCode}
  </div>
 
  {/* Fields */}
- <div className={cn('rounded-none border shadow-[var(--z-active-glow)] transition-all', 'z-panel')}>
+ <div className={cn('rounded-none border shadow-sm transition-all', 'z-panel')}>
  <div className="px-6 py-4 border-b border-inherit flex items-center justify-between">
- <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-z-secondary flex items-center gap-2">
- <Layers size={12} /> Fields ({fields.length})
+ <h3 className="text-sm font-bold text-z-primary">
+ Fields ({fields.length})
  </h3>
  {!isCodeFirst && (
  <button
  onClick={addField}
- className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-500/10 hover:bg-gray-500/20 text-gray-600 dark:text-z-secondary text-[10px] font-black uppercase tracking-widest rounded-none transition-all"
+ className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-500/10 hover:bg-gray-500/20 text-gray-600 dark:text-z-secondary text-sm font-semibold rounded-none transition-all"
  >
  <Plus size={12} /> Add Field
  </button>
@@ -763,7 +833,7 @@ ${fieldsCode}
  initial={{ opacity: 0, y: 8 }}
  animate={{ opacity: 1, y: 0 }}
  exit={{ opacity: 0, scale: 0.97 }}
- className={cn('p-4 border rounded-none relative group', dark ? 'bg-black/40 border-z-border' : 'bg-z-input border-z-border shadow-sm', isCodeFirst && 'opacity-70')}
+ className={cn('p-4 relative group z-panel', isCodeFirst && 'opacity-70')}
  >
  {/* Delete button */}
  {!isCodeFirst && (
@@ -778,7 +848,7 @@ ${fieldsCode}
  {/* Main row */}
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pr-8">
  <div>
- <label className="text-[9px] font-black uppercase tracking-widest text-z-secondary block mb-1.5">Field Name (key)</label>
+ <label className="text-sm font-semibold text-z-secondary block mb-1.5">Field Name (key)</label>
  <input
  type="text"
  value={field.name}
@@ -787,12 +857,12 @@ ${fieldsCode}
  if (isCodeFirst) return
  updateField(i, 'name', e.target.value.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, ''))
  }}
- className={cn(inputClass, 'w-full rounded-none-none font-mono text-[11px]', isCodeFirst && 'cursor-not-allowed')}
+ className={cn(inputClass, 'w-full rounded-none-none font-mono text-sm', isCodeFirst && 'cursor-not-allowed')}
  placeholder="fieldName"
  />
  </div>
  <div>
- <label className="text-[9px] font-black uppercase tracking-widest text-z-secondary block mb-1.5">Field Type</label>
+ <label className="text-sm font-semibold text-z-secondary block mb-1.5">Field Type</label>
  <div className={cn(isCodeFirst && 'opacity-70 pointer-events-none')}>
  <FieldTypePicker
  value={field.type}
@@ -802,7 +872,7 @@ ${fieldsCode}
  </div>
  </div>
  <div>
- <label className="text-[9px] font-black uppercase tracking-widest text-z-secondary block mb-1.5">Display Label</label>
+ <label className="text-sm font-semibold text-z-secondary block mb-1.5">Display Label</label>
  <input
  type="text"
  value={field.label || ''}
@@ -831,7 +901,7 @@ ${fieldsCode}
  }}
  className="accent-gray-500 w-3 h-3 disabled:opacity-50 disabled:cursor-not-allowed"
  />
- <span className="text-[9px] font-black uppercase tracking-widest text-z-secondary">{l}</span>
+ <span className="text-sm font-semibold text-z-secondary">{l}</span>
  </label>
  ))}
  </div>
@@ -852,8 +922,8 @@ ${fieldsCode}
  {fields.length === 0 && (
  <div className="py-16 text-center">
  <Layers size={40} className="mx-auto text-gray-700 mb-4" strokeWidth={1} />
- <p className="text-[11px] font-black uppercase tracking-widest text-gray-600 ">No fields yet</p>
- <p className="text-[10px] text-gray-600 mt-1">Click "Add Field" or use AI Generate to get started</p>
+ <p className="text-sm font-semibold text-gray-600">No fields yet</p>
+ <p className="text-sm text-gray-600 mt-1">Click "Add Field" or use AI Generate to get started</p>
  </div>
  )}
  </div>
@@ -867,7 +937,7 @@ ${fieldsCode}
  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
  <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-3xl border rounded-none-none shadow-2xl p-6 relative flex flex-col h-[80vh] bg-black border-z-border">
  <button onClick={() => setShowCode(false)} className="absolute top-4 right-4 text-z-secondary hover:text-white"><X size={20} /></button>
- <h2 className="text-xl font-black tracking-tight uppercase mb-4 flex items-center gap-3">
+ <h2 className="text-xl font-semibold mb-4 flex items-center gap-3">
  <Code className="text-gray-600 dark:text-z-secondary" /> Generated TypeScript
  </h2>
  <div className="flex-1 bg-[#1E1E1E] border border-z-border p-5 overflow-auto text-sm font-mono text-gray-600 dark:text-z-muted relative rounded-none-none">
@@ -890,10 +960,10 @@ ${fieldsCode}
  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
  <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none-none shadow-2xl p-6 relative bg-black border-z-border">
  <button onClick={() => setShowAI(false)} className="absolute top-4 right-4 text-z-secondary hover:text-white"><X size={20} /></button>
- <h2 className="text-xl font-black tracking-tight uppercase mb-2 flex items-center gap-3">
+ <h2 className="text-xl font-semibold mb-2 flex items-center gap-3">
  <Sparkles className="text-purple-400" /> AI Schema Architect
  </h2>
- <p className="text-[11px] text-z-muted mb-5 font-medium">
+ <p className="text-sm text-z-muted mb-5 font-medium">
  Describe what you need — the AI will generate a complete schema with fields, types, and relations.
  </p>
  <textarea
@@ -906,7 +976,7 @@ ${fieldsCode}
  <button
  disabled={isAIGenerating || !aiPrompt}
  onClick={handleAIGenerate}
- className="w-full py-3.5 bg-purple-600 hover:bg-purple-500 text-white text-[10px] font-black uppercase tracking-widest flex justify-center items-center gap-2 transition-all rounded-none-none disabled:opacity-50"
+ className="w-full py-3.5 bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold flex justify-center items-center gap-2 transition-all rounded-none-none disabled:opacity-50"
  >
  {isAIGenerating ? <><Loader2 size={14} className="animate-spin" /> Generating...</> : <><Sparkles size={14} /> Generate Schema</>}
  </button>
@@ -921,10 +991,10 @@ ${fieldsCode}
  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
  <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none-none shadow-2xl p-6 relative bg-black border-z-border">
  <button onClick={() => setShowIntrospect(false)} className="absolute top-4 right-4 text-z-secondary hover:text-white"><X size={20} /></button>
- <h2 className="text-xl font-black tracking-tight uppercase mb-2 flex items-center gap-3">
+ <h2 className="text-xl font-semibold mb-2 flex items-center gap-3">
  <Database className="text-gray-600 dark:text-z-secondary" /> DB Introspection
  </h2>
- <p className="text-[11px] text-z-muted mb-5 font-medium">
+ <p className="text-sm text-z-muted mb-5 font-medium">
  Connect to a Postgres database to reverse-engineer tables into Zenith schema fields.
  </p>
  <input
@@ -937,7 +1007,7 @@ ${fieldsCode}
  <button
  disabled={isIntrospecting}
  onClick={handleIntrospect}
- className="w-full py-3.5 bg-gray-500 hover:bg-gray-400 text-white text-[10px] font-black uppercase tracking-widest flex justify-center items-center gap-2 transition-all rounded-none-none"
+ className="w-full py-3.5 bg-gray-500 hover:bg-gray-400 text-white text-sm font-semibold flex justify-center items-center gap-2 transition-all rounded-none-none"
  >
  {isIntrospecting ? <><Loader2 size={14} className="animate-spin" /> Scanning...</> : <><RefreshCw size={14} /> Analyze Database</>}
  </button>

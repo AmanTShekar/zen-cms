@@ -233,7 +233,7 @@ export default function MediaLibrary() {
     return (
       <div className={cn('flex-1 h-full w-full flex flex-col items-center justify-center p-12 transition-colors duration-500', theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-z-primary')}>
         <Database size={48} className="text-z-secondary/30 mb-6" />
-        <h2 className="text-xl font-black uppercase tracking-widest text-z-muted mb-2">No Site Selected</h2>
+        <h2 className="text-xl font-semibold text-z-muted mb-2">No Site Selected</h2>
         <p className="text-sm font-medium text-z-secondary">Please select a site to manage its media registry.</p>
       </div>
     )
@@ -250,14 +250,14 @@ export default function MediaLibrary() {
               <HardDrive size={20} />
             </div>
             <div>
-              <h1 className="text-2xl font-black tracking-tighter uppercase leading-none">Storage</h1>
-              <p className="text-[10px] font-black uppercase tracking-widest text-z-secondary mt-1">Enterprise Media Registry</p>
+              <h1 className="text-2xl font-semibold leading-none">Storage</h1>
+              <p className="text-sm font-semibold text-z-secondary mt-1">Enterprise Media Registry</p>
             </div>
           </div>
           
           <div className="flex items-center gap-3">
             <label className={cn(
-              'px-5 py-2.5 font-black text-[10px] uppercase tracking-widest transition-all leading-none flex items-center gap-2 cursor-pointer shadow-sm',
+              'px-5 py-2.5 font-semibold text-sm   transition-all leading-none flex items-center gap-2 cursor-pointer shadow-sm',
               theme === 'dark' ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-900 text-white hover:bg-black'
             )}>
               <Plus size={14} strokeWidth={3} />
@@ -270,25 +270,25 @@ export default function MediaLibrary() {
         {/* Metrics Strip */}
         <div className={cn('grid grid-cols-2 md:grid-cols-4 gap-4 p-5 border shadow-sm', theme === 'dark' ? 'bg-z-panel backdrop-blur-[12px] border-z-border' : 'bg-z-panel border-z-border/60')}>
           <div className="flex flex-col justify-between">
-            <span className="text-[9px] font-black uppercase tracking-widest text-z-secondary flex items-center gap-1.5"><Server size={11} /> Adapter</span>
-            <span className={cn('text-lg font-black tracking-tighter mt-1', theme === 'dark' ? 'text-white' : 'text-z-primary')}>
+            <span className="text-sm font-semibold text-z-secondary flex items-center gap-1.5"><Server size={11} /> Adapter</span>
+            <span className={cn('text-lg font-semibold  mt-1', theme === 'dark' ? 'text-white' : 'text-z-primary')}>
               {import.meta.env.VITE_S3_BUCKET ? 'AWS S3' : 'Local File System'}
             </span>
           </div>
           <div className="flex flex-col justify-between">
-            <span className="text-[9px] font-black uppercase tracking-widest text-z-secondary flex items-center gap-1.5"><Database size={11} /> Mass</span>
-            <span className={cn('text-lg font-black tracking-tighter mt-1 tabular-nums', theme === 'dark' ? 'text-white' : 'text-z-primary')}>
-              {files.length} <span className="text-[10px] text-z-secondary ml-1">Assets</span>
+            <span className="text-sm font-semibold text-z-secondary flex items-center gap-1.5"><Database size={11} /> Mass</span>
+            <span className={cn('text-lg font-semibold  mt-1 tabular-nums', theme === 'dark' ? 'text-white' : 'text-z-primary')}>
+              {files.length} <span className="text-sm text-z-secondary ml-1">Assets</span>
             </span>
           </div>
           <div className="flex flex-col justify-between">
-            <span className="text-[9px] font-black uppercase tracking-widest text-z-secondary flex items-center gap-1.5"><HardDrive size={11} /> Volume</span>
-            <span className={cn('text-lg font-black tracking-tighter mt-1 tabular-nums text-z-active-text')}>
+            <span className="text-sm font-semibold text-z-secondary flex items-center gap-1.5"><HardDrive size={11} /> Volume</span>
+            <span className={cn('text-lg font-semibold  mt-1 tabular-nums text-z-active-text')}>
               {formatBytes(metrics.total)}
             </span>
           </div>
           <div className="flex flex-col justify-end gap-1.5">
-            <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-z-secondary">
+            <div className="flex justify-between text-sm font-semibold text-z-secondary">
               <span>Images</span>
               <span>Data</span>
             </div>
@@ -311,13 +311,13 @@ export default function MediaLibrary() {
         
         {/* Left Sidebar - Folders */}
         <div className="hidden md:flex w-48 shrink-0 flex-col space-y-1 overflow-y-auto">
-          <div className="text-[9px] font-black uppercase tracking-widest text-z-secondary px-3 py-2">
+          <div className="text-sm font-semibold text-z-secondary px-3 py-2">
             Directories
           </div>
           <button
             onClick={() => setActiveFolder(null)}
             className={cn(
-              'w-full flex items-center justify-between px-3 py-2.5 transition-all text-[11px] font-bold',
+              'w-full flex items-center justify-between px-3 py-2.5 transition-all text-sm font-bold',
               activeFolder === null
                 ? (theme === 'dark' ? 'bg-z-hover text-white border-l-2 border-z-accent' : 'bg-gray-100 text-z-primary border-l-2 border-z-accent')
                 : 'text-z-secondary hover:text-gray-700 hover:bg-gray-50 border-l-2 border-transparent dark:hover:bg-z-panel'
@@ -333,7 +333,7 @@ export default function MediaLibrary() {
               key={folder}
               onClick={() => setActiveFolder(folder)}
               className={cn(
-                'w-full flex items-center justify-between px-3 py-2.5 transition-all text-[11px] font-bold capitalize',
+                'w-full flex items-center justify-between px-3 py-2.5 transition-all text-sm font-bold capitalize',
                 activeFolder === folder
                   ? (theme === 'dark' ? 'bg-z-hover text-white border-l-2 border-z-accent' : 'bg-gray-100 text-z-primary border-l-2 border-z-accent')
                   : 'text-z-secondary hover:text-gray-700 hover:bg-gray-50 border-l-2 border-transparent dark:hover:bg-z-panel'
@@ -365,7 +365,7 @@ export default function MediaLibrary() {
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   className={cn(
-                    'pl-8 pr-3 py-1.5 text-[11px] font-medium w-48 transition-all outline-none border',
+                    'pl-8 pr-3 py-1.5 text-sm font-medium w-48 transition-all outline-none border',
                     theme === 'dark' ? 'bg-z-panel border-white/10 text-white placeholder:text-gray-600 focus:border-z-accent/50' : 'bg-z-input border-z-border focus:border-z-accent/50'
                   )}
                 />
@@ -373,7 +373,7 @@ export default function MediaLibrary() {
 
               {selectedIds.size > 0 && (
                 <div className="flex items-center gap-2 ml-2 border-l pl-4 border-z-border dark:border-white/10">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-z-active-text">
+                  <span className="text-sm font-semibold text-z-active-text">
                     {selectedIds.size} Selected
                   </span>
                   <button onClick={bulkDelete} className="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded transition-colors" title="Delete Selected">
@@ -400,11 +400,11 @@ export default function MediaLibrary() {
           {/* Asset View */}
           <div className="flex-1 overflow-y-auto p-4">
             {loading && files.length === 0 ? (
-              <div className="h-full flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-z-muted animate-pulse">Scanning...</div>
+              <div className="h-full flex items-center justify-center text-sm font-semibold text-z-muted animate-pulse">Scanning...</div>
             ) : filteredFiles.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-z-muted gap-3">
                 <Archive size={32} className="opacity-20" />
-                <p className="text-[11px] font-bold">No assets found</p>
+                <p className="text-sm font-bold">No assets found</p>
               </div>
             ) : viewMode === 'grid' ? (
               // GRID VIEW
@@ -439,8 +439,8 @@ export default function MediaLibrary() {
                         )}
                       </div>
                       <div className="p-3 border-t border-z-border dark:border-z-border">
-                        <p className="text-[10px] font-bold truncate text-z-primary dark:text-gray-200">{file.name || 'Unnamed'}</p>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-z-secondary mt-1">{formatBytes(file.size)}</p>
+                        <p className="text-sm font-bold truncate text-z-primary dark:text-gray-200">{file.name || 'Unnamed'}</p>
+                        <p className="text-sm font-semibold text-z-secondary mt-1">{formatBytes(file.size)}</p>
                       </div>
                     </div>
                   )
@@ -449,7 +449,7 @@ export default function MediaLibrary() {
             ) : (
               // LIST VIEW
               <div className="w-full text-left">
-                <div className="grid grid-cols-[auto_1fr_100px_100px_100px] gap-4 px-4 py-2 border-b border-z-border dark:border-white/10 text-[9px] font-black uppercase tracking-widest text-z-secondary sticky top-0 bg-white dark:bg-black/40 backdrop-blur z-10">
+                <div className="grid grid-cols-[auto_1fr_100px_100px_100px] gap-4 px-4 py-2 border-b border-z-border dark:border-white/10 text-sm font-semibold text-z-secondary sticky top-0 bg-white dark:bg-black/40 backdrop-blur z-10">
                   <div className="w-4"></div>
                   <div>Name</div>
                   <div>Size</div>
@@ -475,11 +475,11 @@ export default function MediaLibrary() {
                         <div className="w-6 h-6 shrink-0 bg-gray-100 dark:bg-white/10 flex items-center justify-center overflow-hidden">
                            {isImage ? <img src={getFullUrl(file.url)} className="w-full h-full object-cover" /> : <FileText size={12} className="text-z-muted" />}
                         </div>
-                        <span className="text-[11px] font-bold truncate text-z-primary dark:text-gray-200">{file.name || 'Unnamed'}</span>
+                        <span className="text-sm font-bold truncate text-z-primary dark:text-gray-200">{file.name || 'Unnamed'}</span>
                       </div>
-                      <span className="text-[10px] text-gray-600 font-medium tabular-nums">{formatBytes(file.size)}</span>
-                      <span className="text-[9px] font-black uppercase tracking-widest text-z-secondary truncate">{file.mimetype?.split('/')[1] || 'DATA'}</span>
-                      <span className="text-[10px] text-gray-600 tabular-nums">{timeAgo(file.createdAt)}</span>
+                      <span className="text-sm text-gray-600 font-medium tabular-nums">{formatBytes(file.size)}</span>
+                      <span className="text-sm font-semibold text-z-secondary truncate">{file.mimetype?.split('/')[1] || 'DATA'}</span>
+                      <span className="text-sm text-gray-600 tabular-nums">{timeAgo(file.createdAt)}</span>
                     </div>
                   )
                 })}
@@ -498,7 +498,7 @@ export default function MediaLibrary() {
               className="shrink-0 h-full border bg-white dark:bg-black/60 backdrop-blur-xl border-z-border dark:border-z-border shadow-2xl flex flex-col overflow-hidden relative z-20"
             >
               <div className="flex items-center justify-between p-4 border-b border-z-border dark:border-white/10">
-                <span className="text-[10px] font-black uppercase tracking-widest text-z-secondary flex items-center gap-2">
+                <span className="text-sm font-semibold text-z-secondary flex items-center gap-2">
                   <Target size={12} /> Details
                 </span>
                 <button onClick={() => setSelectedFile(null)} className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded transition-colors">
@@ -545,10 +545,10 @@ export default function MediaLibrary() {
                 {isFocalMode && focalPoint && selectedFile.mimetype?.startsWith('image') && (
                   <div className="flex flex-col gap-2 p-3 bg-z-active-bg dark:bg-z-active-bg border border-z-active-border dark:border-z-accent/20">
                     <div className="flex items-center justify-between">
-                      <span className="text-[9px] font-black uppercase tracking-widest text-z-accent dark:text-z-active-text">Focal Matrix</span>
-                      <span className="text-[10px] font-mono font-bold text-gray-700 dark:text-gray-300">X:{focalPoint.x} Y:{focalPoint.y}</span>
+                      <span className="text-sm font-semibold text-z-accent dark:text-z-active-text">Focal Matrix</span>
+                      <span className="text-sm font-mono font-bold text-gray-700 dark:text-gray-300">X:{focalPoint.x} Y:{focalPoint.y}</span>
                     </div>
-                    <button onClick={handleSaveMetadata} disabled={isProcessing} className="w-full py-1.5 bg-z-accent hover:bg-z-accent text-white text-[9px] font-black uppercase tracking-widest transition-colors">
+                    <button onClick={handleSaveMetadata} disabled={isProcessing} className="w-full py-1.5 bg-z-accent hover:bg-z-accent text-white text-sm font-semibold transition-colors">
                       {isProcessing ? 'Saving...' : 'Save Coordinates'}
                     </button>
                   </div>
@@ -556,28 +556,28 @@ export default function MediaLibrary() {
 
                 {/* Metadata */}
                 <div className="space-y-3">
-                  <h3 className="text-[10px] font-black uppercase tracking-widest text-z-muted border-b border-z-border dark:border-white/10 pb-2">Properties</h3>
+                  <h3 className="text-sm font-semibold text-z-muted border-b border-z-border dark:border-white/10 pb-2">Properties</h3>
                   
                   <div className="space-y-2">
                     <div className="flex justify-between items-start gap-4">
-                      <span className="text-[10px] text-z-secondary">Name</span>
-                      <span className="text-[11px] font-medium text-right break-all">{selectedFile.name}</span>
+                      <span className="text-sm text-z-secondary">Name</span>
+                      <span className="text-sm font-medium text-right break-all">{selectedFile.name}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] text-z-secondary">Size</span>
-                      <span className="text-[11px] font-medium tabular-nums">{formatBytes(selectedFile.size)}</span>
+                      <span className="text-sm text-z-secondary">Size</span>
+                      <span className="text-sm font-medium tabular-nums">{formatBytes(selectedFile.size)}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] text-z-secondary">Type</span>
-                      <span className="text-[11px] font-medium">{selectedFile.mimetype}</span>
+                      <span className="text-sm text-z-secondary">Type</span>
+                      <span className="text-sm font-medium">{selectedFile.mimetype}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] text-z-secondary">Uploaded</span>
-                      <span className="text-[11px] font-medium">{new Date(selectedFile.createdAt).toLocaleDateString()}</span>
+                      <span className="text-sm text-z-secondary">Uploaded</span>
+                      <span className="text-sm font-medium">{new Date(selectedFile.createdAt).toLocaleDateString()}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] text-z-secondary">ID</span>
-                      <span className="text-[10px] font-mono text-z-muted truncate max-w-[120px]">{selectedFile._id}</span>
+                      <span className="text-sm text-z-secondary">ID</span>
+                      <span className="text-sm font-mono text-z-muted truncate max-w-[120px]">{selectedFile._id}</span>
                     </div>
                   </div>
                 </div>
@@ -588,13 +588,13 @@ export default function MediaLibrary() {
                 <a 
                   href={getFullUrl(selectedFile.url)} 
                   download 
-                  className="flex items-center justify-center gap-2 py-2 border border-z-border dark:border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white dark:hover:bg-z-hover transition-colors"
+                  className="flex items-center justify-center gap-2 py-2 border border-z-border dark:border-white/10 text-sm font-semibold hover:bg-white dark:hover:bg-z-hover transition-colors"
                 >
                   <Download size={12} /> Download
                 </a>
                 <button 
                   onClick={() => deleteFile(selectedFile._id)}
-                  className="flex items-center justify-center gap-2 py-2 text-rose-500 border border-rose-100 dark:border-rose-500/20 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-[10px] font-black uppercase tracking-widest transition-colors"
+                  className="flex items-center justify-center gap-2 py-2 text-rose-500 border border-rose-100 dark:border-rose-500/20 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-sm font-semibold transition-colors"
                 >
                   <Trash2 size={12} /> Delete
                 </button>

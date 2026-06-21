@@ -7,6 +7,8 @@ import { redisService } from '../../services/redis'
 import { createResponse } from '../../api/utils'
 import { AuthenticationError, InvalidPayloadError } from '../../errors'
 import { logger } from '../../services/logger'
+import { env } from '../../config/env';
+
 
 /**
  * OAuth Strategy — GitHub & Google
@@ -55,7 +57,7 @@ const OAUTH_PROVIDERS: Record<string, (baseUrl: string) => OAuthConfig> = {
 }
 
 function getCallbackUrl(provider: string): string {
-  const base = process.env.OAUTH_CALLBACK_BASE_URL || process.env.ADMIN_URL || 'http://localhost:3000'
+  const base = process.env.OAUTH_CALLBACK_BASE_URL || env.ADMIN_URL || 'http://localhost:3000'
   return `${base}/api/v1/auth/oauth/${provider}/callback`
 }
 
@@ -231,7 +233,8 @@ export function createOAuthRouter(): Router {
 
         // Send welcome email
         try {
-          await EmailService.sendWelcomeEmail(userEmail, displayName)
+          const siteId = req.headers['x-zenith-site-id'] as string | undefined
+          await EmailService.sendWelcomeEmail(userEmail, displayName, siteId)
         } catch {
           // Non-fatal
         }
@@ -244,14 +247,14 @@ export function createOAuthRouter(): Router {
 
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: env.NODE_ENV === 'production',
         sameSite: 'strict',
         maxAge: 7 * 24 * 60 * 60 * 1000,
       })
 
       res.cookie('accessToken', accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: env.NODE_ENV === 'production',
         sameSite: 'strict',
         maxAge: 15 * 60 * 1000,
       })

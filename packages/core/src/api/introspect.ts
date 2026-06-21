@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { Client } from 'pg'
-import { requireAuth } from '../middleware/auth'
+import { requireAuth, requireRole } from '../middleware/auth'
 import { CollectionConfig, FieldConfig } from '@zenith-open/zenithcms-types'
 
 const router: import('express').Router = Router()
@@ -37,7 +37,7 @@ function mapPgTypeToZenithType(pgType: string): string {
   }
 }
 
-router.post('/', requireAuth, async (req: Request, res: Response) => {
+router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Response) => {
   const { connectionString } = req.body
   if (!connectionString) {
     return res.status(400).json({ error: 'PostgreSQL connection string is required.' })

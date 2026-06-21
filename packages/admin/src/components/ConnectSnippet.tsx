@@ -136,7 +136,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  key={t.id}
  onClick={() => setTab(t.id)}
  className={cn(
- 'px-4 py-2 text-[9px] font-black uppercase tracking-widest border-b-2 -mb-px transition-all',
+ 'px-4 py-2 text-sm font-semibold   border-b-2 -mb-px transition-all',
  tab === t.id
  ? 'border-gray-500 text-gray-600 dark:text-z-muted'
  : 'border-transparent text-z-secondary hover:text-gray-300'
@@ -154,13 +154,13 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  isDark ? 'bg-black border-z-border' : 'bg-gray-900 border-gray-700'
  )}
  >
- <pre className="overflow-x-auto p-5 text-[11px] font-mono text-gray-300 leading-relaxed">
+ <pre className="overflow-x-auto p-5 text-sm font-mono text-gray-300 leading-relaxed">
  <code>{snippet}</code>
  </pre>
  <button
  onClick={copySnippet}
  className={cn(
- 'absolute top-3 right-3 p-2 border rounded-none-none text-[9px] font-black uppercase transition-all',
+ 'absolute top-3 right-3 p-2 border rounded-none-none text-sm font-semibold  transition-all',
  copied
  ? 'border-gray-500 text-gray-600 dark:text-z-secondary bg-gray-500/10'
  : 'border-z-border text-z-muted hover:border-white/30 bg-black/40'
@@ -176,7 +176,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  onClick={testConnection}
  disabled={testing || !apiKey}
  className={cn(
- 'flex items-center gap-2 px-5 py-2.5 border text-[9px] font-black uppercase rounded-none-none transition-all',
+ 'flex items-center gap-2 px-5 py-2.5 border text-sm font-semibold  rounded-none-none transition-all',
  isDark
  ? 'border-z-border text-z-muted hover:border-gray-500/40 hover:text-gray-600 dark:text-z-muted'
  : 'border-z-border text-gray-600 hover:border-z-border-strong'
@@ -187,12 +187,12 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  </button>
 
  {testResult === 'ok' && (
- <span className="flex items-center gap-2 text-[9px] font-black uppercase text-gray-600 dark:text-z-secondary">
+ <span className="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-z-secondary">
  <CheckCircle2 size={13} /> Connected successfully
  </span>
  )}
  {testResult === 'error' && (
- <div className="text-[9px] font-black uppercase text-red-400 space-y-1">
+ <div className="text-sm font-semibold text-red-400 space-y-1">
  <p>Connection failed. Check that:</p>
  <ul className="list-disc list-inside text-z-secondary normal-case not- font-medium space-y-0.5">
  <li>

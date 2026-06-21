@@ -1,3 +1,4 @@
+import { env } from '../config/env';
 /**
  * Defines retention policies for the Zenith CMS Audit Logs.
  * 
@@ -7,7 +8,7 @@
 
 export const AUDIT_RETENTION_POLICIES = {
   // Default number of days to keep audit logs
-  DEFAULT_RETENTION_DAYS: parseInt(process.env.AUDIT_RETENTION_DAYS || '90', 10),
+  DEFAULT_RETENTION_DAYS: env.AUDIT_RETENTION_DAYS || 90,
 
   // If strict mode is enabled, we prevent any retention less than 30 days
   // to ensure compliance.

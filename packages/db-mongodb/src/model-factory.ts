@@ -121,6 +121,10 @@ function mapFieldToMongoose(field: any): unknown {
     default: field.defaultValue,
   }
   
+  if (field.type === 'relation' && field.relationTo) {
+    mongooseField.ref = field.relationTo
+  }
+  
   if (field.unique !== undefined) mongooseField.unique = field.unique;
   if (field.index !== undefined) mongooseField.index = field.index;
   

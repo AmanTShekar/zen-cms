@@ -8,6 +8,8 @@ import { ValidationError, ConflictError } from '../errors'
 import fs from 'fs'
 import path from 'path'
 import os from 'os'
+import { env } from '../config/env';
+
 
 const router: Router = Router()
 router.use(requireAuth)
@@ -195,7 +197,7 @@ router.put('/layout', async (req: Request, res: Response, next) => {
         '[Dashboard] Layout validation failed:',
         JSON.stringify(parsed.error.issues, null, 2)
       )
-      const debugPath = process.env.NODE_ENV === 'production'
+      const debugPath = env.NODE_ENV === 'production'
         ? path.join(os.tmpdir(), 'zenith-failed-layout-payload.json')
         : path.join(process.cwd(), 'failed-layout-payload.json')
       await fs.promises.writeFile(

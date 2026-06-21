@@ -24,7 +24,9 @@ export const maintenanceMiddleware = async (req: Request, res: Response, next: N
   try {
     const adapter = AdapterFactory.getActiveAdapter()
     if (adapter) {
-      const settingsList = await adapter.find<Record<string, any>>('z_settings', {})
+      const siteId = req.headers?.['x-zenith-site-id'] as string | undefined
+      const query = siteId ? { siteId } : {}
+      const settingsList = await adapter.find<Record<string, any>>('z_settings', query)
       const settings = settingsList[0] || null
 
       if (settings && (settings.maintenanceMode === true || settings.maintenance_mode === true)) {

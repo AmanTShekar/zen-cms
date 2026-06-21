@@ -32,7 +32,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
  <Icon size={24} />
  </div>
  <h3 className={cn(
- "text-sm font-black uppercase tracking-widest mb-2",
+ "text-sm font-semibold   mb-2",
  theme === 'dark' ? "text-white" : "text-z-primary"
  )}>
  {title}

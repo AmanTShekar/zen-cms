@@ -21,7 +21,7 @@ export const BackupService = {
    * Exports all data from registered collections into a portable JSON backup.
    * Skips system collections (z_ prefix) unless explicitly included.
    */
-  async export(collections: string[], outputDir?: string, includeSystem = false): Promise<BackupData> {
+  async export(collections: string[], outputDir?: string, includeSystem = false, siteId?: string): Promise<BackupData> {
     const adapter = AdapterFactory.getActiveAdapter()
     const targetCollections = collections.filter((c) => includeSystem || !c.startsWith('z_'))
 
@@ -30,7 +30,9 @@ export const BackupService = {
 
     for (const col of targetCollections) {
       try {
-        const docs = await adapter.find<unknown>(col, {})
+        const filter: any = {}
+        if (siteId) filter.siteId = siteId
+        const docs = await adapter.find<unknown>(col, filter)
         records[col] = docs
         total += docs.length
         logger.info(`[Backup] Exported ${docs.length} records from "${col}"`)
@@ -51,7 +53,8 @@ export const BackupService = {
 
     if (outputDir) {
       await fs.mkdir(outputDir, { recursive: true })
-      const filename = `zenith-backup-${Date.now()}.json`
+      const prefix = siteId ? `zenith-backup-${siteId}` : `zenith-backup-global`
+      const filename = `${prefix}-${Date.now()}.json`
       const filePath = path.join(outputDir, filename)
       // Safe stringify: convert circular references to marker strings instead of crashing
       const seen = new WeakSet()
@@ -72,7 +75,7 @@ export const BackupService = {
   /**
    * Imports data from a backup file into the database.
    */
-  async import(filePath: string, adapter?: DatabaseAdapter): Promise<{ restored: number }> {
+  async import(filePath: string, adapter?: DatabaseAdapter, siteId?: string): Promise<{ restored: number }> {
     const db = adapter || AdapterFactory.getActiveAdapter()
 
     // Validate file size before reading (limit: 100MB)
@@ -99,6 +102,9 @@ export const BackupService = {
           const { _id, ...data } = doc as any
           // Preserve id (Postgres) or convert _id → id (MongoDB) so cross-doc references remain valid
           if (!data.id && _id) data.id = _id
+          
+          if (siteId) data.siteId = siteId
+
           await db.create(collection, data)
           restored++
         } catch (err: any) {
@@ -115,13 +121,15 @@ export const BackupService = {
   /**
    * Lists backup files in the given directory.
    */
-  async list(dir: string): Promise<{ name: string; size: number; createdAt: Date }[]> {
+  async list(dir: string, siteId?: string): Promise<{ name: string; size: number; createdAt: Date }[]> {
     await fs.mkdir(dir, { recursive: true })
     const files = await fs.readdir(dir)
     const backups: { name: string; size: number; createdAt: Date }[] = []
 
     for (const file of files) {
       if (!file.endsWith('.json')) continue
+      if (siteId && !file.includes(`-${siteId}-`)) continue
+      
       try {
         const stat = await fs.stat(path.join(dir, file))
         backups.push({ name: file, size: stat.size, createdAt: stat.mtime })

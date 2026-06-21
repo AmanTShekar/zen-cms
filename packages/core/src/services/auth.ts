@@ -3,18 +3,20 @@ import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { sessionStore, SessionStore } from './session-store'
+import { env } from '../config/env';
+
 
 // ── Security: Hard-fail if secrets are missing in production ──────────────────
-if (process.env.NODE_ENV === 'production') {
-  if (!process.env.JWT_SECRET) {
+if (env.NODE_ENV === 'production') {
+  if (!env.JWT_SECRET) {
     throw new Error('[Zenith] FATAL: JWT_SECRET environment variable must be set in production.')
   }
-  if (!process.env.JWT_REFRESH_SECRET) {
+  if (!env.JWT_REFRESH_SECRET) {
     throw new Error(
       '[Zenith] FATAL: JWT_REFRESH_SECRET environment variable must be set in production.'
     )
   }
-  if (!process.env.ADMIN_URL) {
+  if (!env.ADMIN_URL) {
     throw new Error(
       '[Zenith] FATAL: ADMIN_URL environment variable must be set in production. ' +
       'Email verification and password reset links will otherwise point to localhost.'
@@ -24,14 +26,14 @@ if (process.env.NODE_ENV === 'production') {
 
 // ADMIN_URL — exported so all email-link builders use the same value.
 // In dev, falls back to localhost:5173 (acceptable; production guard above enforces it).
-export const ADMIN_URL = process.env.ADMIN_URL || 'http://localhost:5173'
+export const ADMIN_URL = env.ADMIN_URL || 'http://localhost:5173'
 
 
 // In dev, these fallbacks are acceptable because the production guard above
 // throws if either secret is missing when NODE_ENV=production.
-export const JWT_SECRET = process.env.JWT_SECRET || 'dev_fallback_secret_change_in_prod'
+export const JWT_SECRET = env.JWT_SECRET || 'dev_fallback_secret_change_in_prod'
 export const JWT_REFRESH_SECRET =
-  process.env.JWT_REFRESH_SECRET || 'dev_fallback_refresh_change_in_prod'
+  env.JWT_REFRESH_SECRET || 'dev_fallback_refresh_change_in_prod'
 const SALT_ROUNDS = 12
 const MAX_FAILED_ATTEMPTS = 5
 const LOCKOUT_DURATION_MS = 15 * 60 * 1000 // 15 minutes
@@ -101,7 +103,8 @@ export const AuthService = {
         if (revoked) return null
       }
       return { id: decoded.id, email: decoded.email, role: decoded.role }
-    } catch {
+    } catch (err: any) {
+      console.error('verifyTokenAsync error:', err)
       return null
     }
   },

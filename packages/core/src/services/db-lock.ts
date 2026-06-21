@@ -1,13 +1,15 @@
 import Client from 'ioredis'
 import Redlock from 'redlock'
 import { logger } from './logger'
+import { env } from '../config/env';
+
 
 let redlock: Redlock | null = null
 
 export function initRedlock(redisUrl?: string): Redlock | null {
   if (redlock) return redlock
 
-  const url = redisUrl || process.env.REDIS_URL
+  const url = redisUrl || env.REDIS_URL
   if (!url) {
     logger.warn('[Redlock] REDIS_URL not provided. Distributed DB locks will fall back to single-process mode.')
     return null

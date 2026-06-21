@@ -53,7 +53,7 @@ export default function SystemHealthWidget({ theme, title, isPreview }: WidgetPr
   return (
     <div className="flex flex-col justify-between gap-4">
       <div className="flex items-center justify-between">
-        <p className="text-[12px] font-bold text-gray-800 dark:text-gray-200 uppercase tracking-tight flex items-center gap-2">
+        <p className="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
           <Cpu size={14} className="text-z-secondary" /> 
           {title || 'Infrastructure Vitals'}
         </p>
@@ -73,10 +73,10 @@ export default function SystemHealthWidget({ theme, title, isPreview }: WidgetPr
             <div className="w-full">
               <div className="flex items-center gap-1.5 text-z-secondary mb-2">
                 <m.icon size={12} />
-                <span className="text-[9px] font-bold uppercase tracking-widest">{m.label}</span>
+                <span className="text-sm font-bold">{m.label}</span>
               </div>
               <span className={cn(
-                "text-xl font-black tracking-tighter leading-none block mb-3",
+                "text-xl font-semibold  leading-none block mb-3",
                 m.isDb && m.value === 'Connected' ? "text-z-active-text" : "text-z-primary dark:text-gray-100"
               )}>
                 {m.value}

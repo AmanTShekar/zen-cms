@@ -25,6 +25,9 @@ export interface ThemePreset {
   logoIconBg: string
   logoIconText: string
 
+  sidebarBg?: string
+  layoutVariant?: string
+
   // ── Optional background overrides (full theme) ──────────────
   // When set, these override the mode default --z-bg-* vars.
   // Leave undefined to inherit the dark/light mode defaults.
@@ -551,7 +554,7 @@ export const BrandProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   )
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
+ 
 export const useBrand = () => {
   const ctx = useContext(BrandContext)
   if (!ctx) throw new Error('useBrand must be used within BrandProvider')

@@ -37,7 +37,7 @@ import { useShallow } from 'zustand/react/shallow'
 
 /** Field config used by the form builder — keeps a flexible shape since runtime
  * field configs can have additional properties not in the base discriminated union. */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 type FieldConfig = any
 
 interface FormBuilderProps {
@@ -316,11 +316,11 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
  return (
  <div key={field.name} data-field={fieldName} className={`space-y-2 ${isFullWidth ? 'col-span-2' : ''}`}>
  <div className="flex items-center justify-between">
- <label className="text-[10px] font-black text-z-secondary uppercase tracking-[0.2em] flex items-center gap-2">
+ <label className="text-sm font-semibold text-z-secondary flex items-center gap-2">
  {field.label || field.name.replace(/([A-Z])/g, ' $1')}
  {field.required && <span className="text-rose-500">*</span>}
  {field.localized && (
- <span className="px-1.5 py-0.5 text-[8px] font-black tracking-widest text-gray-600 dark:text-z-muted bg-gray-500/10 border border-gray-500/20 rounded-none-none uppercase">
+ <span className="px-1.5 py-0.5 text-sm font-semibold text-gray-600 dark:text-z-muted bg-gray-500/10 border border-gray-500/20 rounded-none-none">
  {isFieldDisabled ? readOnlyLocale || currentLocale : currentLocale}
  </span>
  )}
@@ -329,7 +329,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
  )}
  </label>
  {field.admin?.description && (
- <span className="text-[10px] text-z-muted">{field.admin.description}</span>
+ <span className="text-sm text-z-muted">{field.admin.description}</span>
  )}
  </div>
 

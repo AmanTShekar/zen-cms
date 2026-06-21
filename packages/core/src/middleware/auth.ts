@@ -45,7 +45,7 @@ export async function verifySiteAccess(user: AuthUser, siteId: string): Promise<
   const userFromDb = await adapter.findOne<Record<string, any>>('users', { _id: user.id }) || 
                      await adapter.findOne<Record<string, any>>('users', { id: user.id }) || user
 
-  const isOwner = site.ownerId === user.id
+  const isOwner = site.ownerId?.toString() === user.id?.toString()
   const isMember = Array.isArray(site.members) && site.members.some((m: any) => m.userId === user.id)
   const hasSpecialAccess = Array.isArray((userFromDb as any).specialAccess) && ((userFromDb as any).specialAccess.includes(`site:${siteId}`) || (userFromDb as any).specialAccess.includes(`site:${site.slug}`))
 
@@ -150,7 +150,14 @@ export function requireRole(...roles: Array<string>) {
     // Resolve custom roles from database
     try {
       const adapter = (await import('../database/adapters/AdapterFactory')).AdapterFactory.getActiveAdapter()
-      const customRole = await adapter.findOne<any>('z_roles', { roleName: req.user.role })
+      const query: any = { roleName: req.user.role }
+      if (req.siteId) {
+        query.siteId = req.siteId
+      } else {
+        // Prevent cross-tenant role leakage on global routes by requiring global roles to have no siteId
+        query.siteId = { $exists: false }
+      }
+      const customRole = await adapter.findOne<any>('z_roles', query)
       
       if (customRole) {
         // If the route requires 'admin', check if custom role has wildcard access

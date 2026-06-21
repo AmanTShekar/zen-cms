@@ -74,7 +74,9 @@ router.get('/:collection/:id/:versionId', async (req: Request, res: Response, ne
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const version = await adapter.findOne<Record<string, any>>('versions', { _id: req.params.versionId })
-    if (!version) throw new NotFoundError('Version', req.params.versionId)
+    if (!version || version.documentId !== documentId || version.collectionName !== collection) {
+      throw new NotFoundError('Version', req.params.versionId)
+    }
     res.json(createResponse(version))
   } catch (err) {
     next(err)
@@ -102,7 +104,9 @@ router.get('/:collection/:id/:versionId/diff', async (req: Request, res: Respons
 
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const version = await adapter.findOne<Record<string, any>>('versions', { _id: req.params.versionId })
-    if (!version) throw new NotFoundError('Version', req.params.versionId)
+    if (!version || version.documentId !== documentId || version.collectionName !== collection) {
+      throw new NotFoundError('Version', req.params.versionId)
+    }
 
     // delta is stored as { fieldName: { from, to } } by ContentService._calculateDelta()
     const delta = version.delta || {}
@@ -134,8 +138,20 @@ router.post('/:collection/:id/:versionId/restore', async (req: Request, res: Res
 
     const siteId = req.headers['x-zenith-site-id'] as string
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+
+    // ISOLATION FIX: validate the caller can access this document first (ensures siteId scope)
+    await engine.local.findById(collection, documentId, { user, siteId })
+
     const version = await adapter.findOne<Record<string, any>>('versions', { _id: req.params.versionId })
     if (!version) throw new NotFoundError('Version', req.params.versionId)
+
+    // ISOLATION FIX: verify the version's snapshot belongs to the same collection and document
+    if (version.collectionName && version.collectionName !== collection) {
+      throw new NotFoundError('Version', req.params.versionId)
+    }
+    if (version.documentId && version.documentId !== documentId) {
+      throw new NotFoundError('Version', req.params.versionId)
+    }
 
     const snapshot = version.snapshot
 
@@ -168,7 +184,9 @@ router.post('/:collection/:id/:versionId/rollback-fields', async (req: Request, 
     const siteId = req.headers['x-zenith-site-id'] as string
     const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const version = await adapter.findOne<Record<string, any>>('versions', { _id: req.params.versionId })
-    if (!version) throw new NotFoundError('Version', req.params.versionId)
+    if (!version || version.documentId !== documentId || version.collectionName !== collection) {
+      throw new NotFoundError('Version', req.params.versionId)
+    }
 
     const snapshot = version.snapshot
     const { fields } = req.body

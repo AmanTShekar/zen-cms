@@ -50,7 +50,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item, idx, theme, removeF
  <Layout size={12} className="text-gray-600 dark:text-z-muted" />
  </div>
  <div className="flex-1 min-w-0">
- <p className="text-xs font-black uppercase truncate">
+ <p className="text-xs font-semibold truncate">
  {humanize(item.__component?.replace('content.', '') || item.__component || 'Component')}
  </p>
  </div>
@@ -131,11 +131,11 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  <div>
  <h2
  id={modalTitleId}
- className="text-base font-black uppercase text-gray-600 dark:text-z-muted leading-none"
+ className="text-base font-semibold text-gray-600 dark:text-z-muted leading-none"
  >
  Dynamic Zone
  </h2>
- <p className="text-xs text-z-secondary font-bold uppercase tracking-widest mt-1">
+ <p className="text-xs text-z-secondary font-bold mt-1">
  Add/arrange component blocks
  </p>
  </div>
@@ -162,7 +162,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  const zone = section?.content?.[activeDynamicZone.fieldKey] || []
  return zone.length > 0 ? (
  <div className="space-y-2">
- <p className="text-xs font-black text-z-secondary uppercase px-1">
+ <p className="text-xs font-semibold text-z-secondary px-1">
  Zone Contents ({zone.length})
  </p>
  <Reorder.Group
@@ -185,7 +185,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  ) : (
  <div className="text-center py-6">
  <Box size={24} className="mx-auto text-z-secondary mb-2" />
- <p className="text-xs text-z-secondary font-bold ">
+ <p className="text-xs text-z-secondary font-bold">
  Zone is empty — add components below
  </p>
  </div>
@@ -195,7 +195,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
 
  {/* Add Components */}
  <div className="space-y-2">
- <p className="text-xs font-black text-z-secondary uppercase px-1">
+ <p className="text-xs font-semibold text-z-secondary px-1">
  Available Components
  </p>
  <div className="relative">
@@ -240,8 +240,8 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  <Icon size={14} className="text-gray-600 dark:text-z-muted" />
  </div>
  <div className="flex-1 min-w-0">
- <p className="text-xs font-black uppercase truncate">{block.title}</p>
- <p className={cn('text-[10px] font-bold truncate', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
+ <p className="text-xs font-semibold truncate">{block.title}</p>
+ <p className={cn('text-sm font-bold truncate', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
  {block.description}
  </p>
  </div>

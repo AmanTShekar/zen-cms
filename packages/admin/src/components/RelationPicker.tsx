@@ -65,7 +65,7 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
       const timer = setTimeout(() => fetchData(), 0)
       return () => clearTimeout(timer)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [isOpen, relationTo])
 
   const toggleSelect = (item: RelationItem) => {
@@ -98,13 +98,17 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
             className="flex items-center gap-3 px-4 py-2 bg-z-active-bg/30 border border-z-active-border rounded-none-none group transition-all hover:border-z-active-border cursor-pointer hover:bg-z-active-bg"
           >
             <Link2 size={12} className="text-z-active-text" />
-            <span className="text-[11px] font-bold text-gray-700">{getDisplayValue(item)}</span>
+            <span className="text-sm font-bold text-gray-700">{getDisplayValue(item)}</span>
             {!disabled && (
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation()
-                  hasMany ? onChange(selectedItems.filter((_, idx) => idx !== i)) : onChange(null)
+                  if (hasMany) {
+                    onChange(selectedItems.filter((_, idx) => idx !== i))
+                  } else {
+                    onChange(null)
+                  }
                 }}
                 className="p-1 hover:bg-z-active-bg rounded-none-none text-z-muted hover:text-z-accent transition-colors"
               >
@@ -120,7 +124,7 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
             className="flex items-center gap-2.5 px-4 py-2 rounded-none-none border-2 border-dashed border-z-border text-z-muted hover:border-z-active-border hover:text-z-accent hover:bg-z-active-bg/20 transition-all group"
           >
             <Plus size={14} strokeWidth={3} />
-            <span className="text-[9px] font-black uppercase tracking-widest italic">
+            <span className="text-sm font-semibold italic">
               Link_Record
             </span>
           </button>
@@ -152,14 +156,14 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
             >
               <div className="p-8 border-b border-gray-50 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-z-accent rounded-none-none flex items-center justify-center text-white shadow-lg shadow-[var(--z-active-glow)]">
+                  <div className="w-10 h-10 bg-z-accent rounded-none-none flex items-center justify-center text-white shadow-lg shadow-sm">
                     <Database size={20} />
                   </div>
                   <div className="flex flex-col">
-                    <h3 className="text-lg font-black text-z-primary uppercase italic tracking-tight leading-none">
+                    <h3 className="text-lg font-semibold text-z-primary italic leading-none">
                       Select_Relation
                     </h3>
-                    <p className="text-[9px] font-bold text-z-muted uppercase tracking-widest italic mt-1.5">
+                    <p className="text-sm font-bold text-z-muted italic mt-1.5">
                       Targeting_Collection: {relationTo.toUpperCase()}
                     </p>
                   </div>
@@ -191,14 +195,14 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
                   {loading ? (
                     <div className="h-full flex flex-col items-center justify-center gap-4">
                       <Loader2 className="animate-spin text-z-active-text" size={24} />
-                      <span className="text-[9px] font-black uppercase tracking-widest text-gray-300 italic animate-pulse">
+                      <span className="text-sm font-semibold text-gray-300 italic animate-pulse">
                         Syncing_Records...
                       </span>
                     </div>
                   ) : items.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center gap-4 opacity-30">
                       <Database size={32} />
-                      <span className="text-[9px] font-black uppercase tracking-widest italic">
+                      <span className="text-sm font-semibold italic">
                         No_Records_Found
                       </span>
                     </div>
@@ -216,14 +220,14 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
                             className={cn(
                               'flex items-center justify-between p-4 rounded-none-none border transition-all cursor-pointer group',
                               isSelected
-                                ? 'bg-z-accent border-z-accent text-white shadow-xl shadow-[var(--z-active-glow)]'
+                                ? 'bg-z-accent border-z-accent text-white shadow-xl shadow-sm'
                                 : 'bg-white border-gray-50 hover:border-z-active-border hover:bg-z-active-bg/10'
                             )}
                           >
                             <div className="flex flex-col">
                               <span
                                 className={cn(
-                                  'text-xs font-black uppercase italic tracking-tight',
+                                  'text-xs font-semibold  italic ',
                                   isSelected ? 'text-white' : 'text-z-primary'
                                 )}
                               >
@@ -231,7 +235,7 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
                               </span>
                               <span
                                 className={cn(
-                                  'text-[9px] font-bold uppercase tracking-widest mt-1',
+                                  'text-sm font-bold   mt-1',
                                   isSelected ? 'text-white/60' : 'text-z-muted'
                                 )}
                               >
@@ -249,7 +253,7 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
               <div className="p-8 border-t border-gray-50 bg-gray-50/50 flex justify-end">
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="px-8 py-3 bg-gray-900 text-white rounded-none-none text-[10px] font-black uppercase tracking-widest shadow-xl shadow-gray-900/20 hover:brightness-110 transition-all italic leading-none"
+                  className="px-8 py-3 bg-gray-900 text-white rounded-none-none text-sm font-semibold shadow-xl shadow-gray-900/20 hover:brightness-110 transition-all italic leading-none"
                 >
                   Close_Registry
                 </button>

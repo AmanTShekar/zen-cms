@@ -17,14 +17,10 @@ export function DashboardCard({ title, icon, action, children, className, noPadd
   return (
     <div
       className={cn(
-        'flex flex-col',
-        // Glassmorphism spec from AGENTS.md
-        'border',
-        theme === 'dark'
-          ? 'bg-z-panel backdrop-blur-[12px] border-z-border shadow-[var(--z-active-glow)]'
-          : 'bg-white/80 backdrop-blur-[12px] border-z-border/60 shadow-sm',
+        'flex flex-col border z-panel backdrop-blur-md shadow-sm',
         className
       )}
+      style={{ background: 'var(--z-bg-panel)', borderColor: 'var(--z-border)' }}
     >
       {(title || action) && (
         <div
@@ -41,7 +37,7 @@ export function DashboardCard({ title, icon, action, children, className, noPadd
             )}
             {title && (
               <h2 className={cn(
-                'text-[11px] font-black uppercase tracking-[0.1em]',
+                'text-sm font-semibold  ',
                 theme === 'dark' ? 'text-z-muted' : 'text-z-secondary'
               )}>
                 {title}

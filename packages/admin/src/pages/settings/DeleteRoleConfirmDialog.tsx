@@ -45,7 +45,7 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
  <div className="w-10 h-10 rounded-none-none bg-red-500/10 border border-red-500/20 flex items-center justify-center">
  <AlertTriangle size={18} className="text-red-500" />
  </div>
- <span className="text-[12px] font-black uppercase tracking-wide">
+ <span className="text-sm font-semibold tracking-wide">
  Delete Role
  </span>
  </div>
@@ -55,14 +55,14 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
  </div>
 
  <div className="px-8 py-6 space-y-5">
- <p className="text-[11px] font-black text-gray-300 leading-relaxed">
+ <p className="text-sm font-semibold text-gray-300 leading-relaxed">
  Are you sure you want to delete{' '}
  <span className="text-white">"{role.roleName}"</span>? This action
  cannot be undone and any users assigned to this role will lose access.
  </p>
 
  {error && (
- <p className="text-[9px] text-red-500 font-black uppercase tracking-widest">
+ <p className="text-sm text-red-500 font-semibold">
  {error}
  </p>
  )}
@@ -73,7 +73,7 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
  onClick={onClose}
  disabled={loading}
  className={cn(
- 'flex-1 py-3.5 rounded-none-none text-[10px] font-black uppercase tracking-widest border transition-all active:scale-95 disabled:opacity-40',
+ 'flex-1 py-3.5 rounded-none-none text-sm font-semibold   border transition-all active:scale-95 disabled:opacity-40',
  theme === 'dark'
  ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
  : 'border-z-border text-z-secondary hover:border-z-border-strong'
@@ -86,8 +86,8 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
  onClick={handleDelete}
  disabled={loading}
  className={cn(
- 'flex-1 py-3.5 rounded-none-none text-[10px] font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 disabled:opacity-40 flex items-center justify-center gap-2',
- 'bg-red-500 hover:bg-red-600 text-white shadow-[var(--z-active-glow)]/20'
+ 'flex-1 py-3.5 rounded-none-none text-sm font-semibold   shadow-lg transition-all active:scale-95 disabled:opacity-40 flex items-center justify-center gap-2',
+ 'bg-red-500 hover:bg-red-600 text-white shadow-sm/20'
  )}
  >
  {loading ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}

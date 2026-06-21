@@ -223,11 +223,11 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <div className="col-span-full space-y-6">
  <div className="flex items-center justify-between border-b border-z-border pb-4">
  <div className="flex flex-col">
- <h3 className="text-sm font-black uppercase tracking-wider flex items-center gap-3">
+ <h3 className="text-sm font-semibold flex items-center gap-3">
  <Webhook size={16} className="text-gray-600 dark:text-z-muted" />
  Webhook Management
  </h3>
- <span className="text-[8px] text-z-secondary font-bold uppercase tracking-widest mt-1">
+ <span className="text-sm text-z-secondary font-bold mt-1">
  Configure HTTP callbacks for content lifecycle events
  </span>
  </div>
@@ -235,7 +235,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <button
  type="button"
  onClick={() => setShowForm(true)}
- className="flex items-center gap-2 px-4 py-2 border border-gray-500/30 hover:border-gray-500 hover:bg-gray-500/10 text-[10px] font-black uppercase transition-all text-gray-600 dark:text-z-muted hover:text-white"
+ className="flex items-center gap-2 px-4 py-2 border border-gray-500/30 hover:border-gray-500 hover:bg-gray-500/10 text-sm font-semibold transition-all text-gray-600 dark:text-z-muted hover:text-white"
  >
  <Plus size={12} />
  Add Webhook
@@ -246,47 +246,47 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  {/* Form */}
  {showForm && (
  <div className={cn(
- 'p-6 border rounded-none space-y-5 shadow-[var(--z-active-glow)]',
+ 'p-6 border rounded-none space-y-5 shadow-sm',
  theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-z-border' : 'bg-z-input border-z-border'
  )}>
  <div className="flex items-center justify-between">
- <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-z-muted">
+ <span className="text-sm font-semibold text-gray-600 dark:text-z-muted">
  {editingId ? 'Edit Webhook' : 'New Webhook'}
  </span>
- <button onClick={resetForm} className="text-z-secondary hover:text-white text-[10px] font-black uppercase">Cancel</button>
+ <button onClick={resetForm} className="text-z-secondary hover:text-white text-sm font-semibold">Cancel</button>
  </div>
 
  <div className="space-y-4">
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">Endpoint URL</label>
+ <label className="text-sm font-semibold text-z-secondary">Endpoint URL</label>
  <input
  type="url"
  value={formUrl}
  onChange={(e) => setFormUrl(e.target.value)}
  placeholder="https://example.com/api/webhooks/zenith"
  className={cn(
- 'w-full border rounded-none py-3 px-4 text-[12px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-3 px-4 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
  </div>
 
  <div className="space-y-1.5">
- <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">Signing Secret (optional)</label>
+ <label className="text-sm font-semibold text-z-secondary">Signing Secret (optional)</label>
  <input
  type="password"
  value={formSecret}
  onChange={(e) => setFormSecret(e.target.value)}
  placeholder="whsec_..."
  className={cn(
- 'w-full border rounded-none py-3 px-4 text-[12px] font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none py-3 px-4 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
  )}
  />
  </div>
 
  <div className="space-y-2">
- <label className="text-[8px] font-black text-z-secondary uppercase tracking-widest">Subscribed Events</label>
+ <label className="text-sm font-semibold text-z-secondary">Subscribed Events</label>
  <div className={cn(
  'p-4 border rounded-none flex flex-wrap gap-2 max-h-40 overflow-y-auto',
  theme === 'dark' ? 'bg-black/50 border-z-border' : 'bg-z-panel border-z-border'
@@ -299,7 +299,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  type="button"
  onClick={() => toggleEvent(evt.value)}
  className={cn(
- 'px-3 py-1.5 text-[8px] font-black uppercase tracking-widest border rounded-none transition-all',
+ 'px-3 py-1.5 text-sm font-semibold   border rounded-none transition-all',
  checked
  ? 'border-gray-500/40 bg-gray-500/10 text-gray-600 dark:text-z-muted'
  : theme === 'dark' ? 'border-z-border text-z-secondary hover:text-gray-300' : 'border-z-border text-z-muted hover:text-gray-600'
@@ -317,7 +317,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <button
  onClick={handleSave}
  disabled={saving}
- className={cn("flex items-center gap-2 px-6 py-3 text-white text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-40", theme === 'dark' ? 'bg-z-accent hover:opacity-90 shadow-[var(--z-active-glow)]' : 'bg-gray-900 hover:bg-gray-800')}
+ className={cn("flex items-center gap-2 px-6 py-3 text-white text-sm font-semibold   transition-all disabled:opacity-40", theme === 'dark' ? 'bg-z-accent hover:opacity-90 shadow-sm' : 'bg-gray-900 hover:bg-gray-800')}
  >
  {saving ? <Loader2 size={12} className="animate-spin" /> : null}
  {editingId ? 'Update Webhook' : 'Create Webhook'}
@@ -341,7 +341,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <button
  type="button"
  onClick={() => setShowForm(true)}
- className="flex items-center gap-2 px-4 py-2 border border-gray-500/30 hover:border-gray-500 hover:bg-gray-500/10 text-[10px] font-black uppercase transition-all text-gray-600 dark:text-z-muted hover:text-white"
+ className="flex items-center gap-2 px-4 py-2 border border-gray-500/30 hover:border-gray-500 hover:bg-gray-500/10 text-sm font-semibold transition-all text-gray-600 dark:text-z-muted hover:text-white"
  >
  <Plus size={12} />
  Add Webhook
@@ -355,7 +355,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <div key={wh.id} className="space-y-0">
  <div
  className={cn(
- 'p-5 border rounded-none transition-all shadow-[var(--z-active-glow)]',
+ 'p-5 border rounded-none transition-all shadow-sm',
  wh.enabled
  ? theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-z-border' : 'bg-z-panel border-z-border shadow-sm'
  : theme === 'dark' ? 'bg-black/30 backdrop-blur-sm border-white/[0.03] opacity-60' : 'bg-z-input border-z-border shadow-sm opacity-60'
@@ -367,7 +367,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  ? <CheckCircle2 size={14} className="text-gray-600 dark:text-z-secondary" />
  : <XCircle size={14} className="text-gray-600" />
  }
- <span className="text-[11px] font-mono font-bold truncate max-w-md">{wh.url}</span>
+ <span className="text-sm font-mono font-bold truncate max-w-md">{wh.url}</span>
  </div>
  <div className="flex items-center gap-2">
  <button
@@ -396,7 +396,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <button
  onClick={() => handleEdit(wh)}
  className={cn(
- 'px-3 py-1.5 text-[8px] font-black uppercase border rounded-none-none transition-colors',
+ 'px-3 py-1.5 text-sm font-semibold  border rounded-none-none transition-colors',
  theme === 'dark' ? 'border-z-border text-z-secondary hover:text-white' : 'border-z-border text-z-muted hover:text-z-primary'
  )}
  >
@@ -431,7 +431,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <span
  key={evt}
  className={cn(
- 'px-2 py-0.5 text-[7px] font-black uppercase tracking-widest border rounded-none-none',
+ 'px-2 py-0.5 text-sm font-semibold   border rounded-none-none',
  evt === '*'
  ? 'border-gray-500/30 text-gray-600 dark:text-z-muted bg-gray-500/5'
  : 'border-z-border text-z-secondary'
@@ -442,7 +442,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  ))}
  {wh.secret && (
  <span className={cn(
- 'px-2 py-0.5 text-[7px] font-black uppercase tracking-widest border rounded-none-none',
+ 'px-2 py-0.5 text-sm font-semibold   border rounded-none-none',
  theme === 'dark' ? 'border-gray-500/20 text-gray-600 dark:text-z-secondary' : 'border-z-border text-gray-600'
  )}>
  Signed
@@ -460,7 +460,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <div className="flex items-center justify-between mb-4">
  <div className="flex items-center gap-2">
  <Clock size={12} className="text-gray-600 dark:text-z-muted" />
- <span className="text-[9px] font-black uppercase tracking-widest text-gray-600 dark:text-z-muted">
+ <span className="text-sm font-semibold text-gray-600 dark:text-z-muted">
  Delivery Log
  </span>
  </div>
@@ -468,7 +468,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  onClick={() => fetchDeliveries(wh.id, wh.url)}
  disabled={loadingDeliveries === wh.id}
  className={cn(
- 'flex items-center gap-1.5 px-3 py-1.5 text-[7px] font-black uppercase border rounded-none-none transition-colors',
+ 'flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold  border rounded-none-none transition-colors',
  theme === 'dark' ? 'border-z-border text-z-secondary hover:text-gray-600 dark:text-z-muted' : 'border-z-border text-z-muted hover:text-gray-600'
  )}
  >
@@ -497,7 +497,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <div className="space-y-2 max-h-80 overflow-y-auto">
  {/* Header */}
  <div className={cn(
- 'grid grid-cols-[1fr_1fr_80px_80px_100px_40px] gap-2 px-3 py-2 text-[7px] font-black uppercase tracking-widest border-b',
+ 'grid grid-cols-[1fr_1fr_80px_80px_100px_40px] gap-2 px-3 py-2 text-sm font-semibold   border-b',
  theme === 'dark' ? 'text-z-secondary border-z-border' : 'text-z-muted border-z-border'
  )}>
  <span>Event</span>
@@ -511,7 +511,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <div
  key={d.id}
  className={cn(
- 'grid grid-cols-[1fr_1fr_80px_80px_100px_40px] gap-2 px-3 py-2.5 text-[9px] font-mono border rounded-none-none transition-colors items-center',
+ 'grid grid-cols-[1fr_1fr_80px_80px_100px_40px] gap-2 px-3 py-2.5 text-sm font-mono border rounded-none-none transition-colors items-center',
  d.success
  ? theme === 'dark' ? 'bg-gray-500/[0.03] border-gray-500/10' : 'bg-gray-50 border-z-border'
  : theme === 'dark' ? 'bg-red-500/[0.03] border-red-500/10' : 'bg-red-50 border-red-100'

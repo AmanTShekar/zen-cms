@@ -83,7 +83,7 @@ const searchLimiter = rateLimit({
   max: 30,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })
 
 const aiLimiter = rateLimit({
@@ -91,7 +91,7 @@ const aiLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })
 
 // ── AI Architect Schema Validator ─────────────────────────────────────────────
@@ -126,6 +126,8 @@ const AICollectionSchema = z.object({
 
 
 import { Router as ERouter } from 'express';
+import { env } from '../../config/env';
+
 export const systemRouter4: ERouter = ERouter();
 const router = systemRouter4;
 
@@ -159,7 +161,10 @@ router.get(
   async (req: Request, res: Response, next) => {
     try {
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      let settings = await adapter.findOne<any>('z_settings', {})
+      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
+      // ISOLATION FIX: always scope settings query to siteId
+      const query = siteId ? { siteId } : {}
+      let settings = await adapter.findOne<any>('z_settings', query)
       if (!settings) {
         settings = await adapter.create<any>('z_settings', {
           siteName: 'Zenith CMS',
@@ -172,6 +177,7 @@ router.get(
           passwordMinLength: 8,
           rateLimitWindow: 15,
           rateLimitMax: 100,
+          ...(siteId ? { siteId } : {}),
         })
       }
       res.json(createResponse(maskSettings(settings)))
@@ -188,13 +194,16 @@ router.patch(
   async (req: Request, res: Response, next) => {
     try {
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
       const updateData = req.body
-      let settings = await adapter.findOne<any>('z_settings', {})
+      // ISOLATION FIX: always scope settings query to siteId
+      const query = siteId ? { siteId } : {}
+      let settings = await adapter.findOne<any>('z_settings', query)
       
       const unmaskedData = unmaskSettings(updateData, settings)
 
       if (!settings) {
-        settings = await adapter.create<any>('z_settings', unmaskedData)
+        settings = await adapter.create<any>('z_settings', { ...unmaskedData, ...(siteId ? { siteId } : {}) })
       } else {
         const id = (settings.id || settings._id).toString()
         settings = await adapter.update<any>('z_settings', id, unmaskedData)
@@ -327,7 +336,8 @@ router.get(
   async (req: Request, res: Response, next) => {
     try {
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const roles = await adapter.find<any>('z_roles', {})
+      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
+      const roles = await adapter.find<any>('z_roles', siteId ? { siteId } : {})
       res.json(createResponse(roles))
     } catch (err) {
       next(err)
@@ -346,13 +356,14 @@ router.post(
       if (!Array.isArray(permissions)) throw new InvalidPayloadError('permissions must be an array')
 
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
       
-      const existing = await adapter.findOne<any>('z_roles', { roleName })
+      const existing = await adapter.findOne<any>('z_roles', { roleName, ...(siteId ? { siteId } : {}) })
       let result: any
       if (existing) {
         result = await adapter.update('z_roles', (existing.id || existing._id).toString(), { permissions })
       } else {
-        result = await adapter.create('z_roles', { roleName, permissions })
+        result = await adapter.create('z_roles', { roleName, permissions, ...(siteId ? { siteId } : {}) })
       }
       res.json(createResponse(result))
     } catch (err) {
@@ -369,7 +380,8 @@ router.delete(
     try {
       const { roleName } = req.params
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const existing = await adapter.findOne<any>('z_roles', { roleName })
+      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
+      const existing = await adapter.findOne<any>('z_roles', { roleName, ...(siteId ? { siteId } : {}) })
       if (!existing) {
         return res.status(404).json(createErrorResponse(404, `Role "${roleName}" not found`))
       }
@@ -388,7 +400,8 @@ router.get(
   async (req: Request, res: Response, next) => {
     try {
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const users = await adapter.find<any>('users', {})
+      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
+      const users = await adapter.find<any>('users', siteId ? { siteId } : {})
       const sanitizedUsers = users.map((u: any) => {
         const { password, ...rest } = u
         return rest
@@ -407,7 +420,8 @@ router.delete(
   async (req: Request, res: Response, next) => {
     try {
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const existing = await adapter.findOne('users', { _id: req.params.id })
+      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
+      const existing = await adapter.findOne('users', { _id: req.params.id, ...(siteId ? { siteId } : {}) })
       if (!existing) throw new NotFoundError('User', req.params.id)
       await adapter.delete('users', req.params.id)
       res.json(createResponse({ success: true }))
@@ -424,11 +438,12 @@ router.patch(
   async (req: Request, res: Response, next) => {
     try {
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
       const updates = { ...req.body }
       delete updates._id
       delete updates.password
       
-      const existing = await adapter.findOne('users', { _id: req.params.id })
+      const existing = await adapter.findOne('users', { _id: req.params.id, ...(siteId ? { siteId } : {}) })
       if (!existing) throw new NotFoundError('User', req.params.id)
       
       const updated = await adapter.update('users', req.params.id, updates)
@@ -448,7 +463,8 @@ router.post(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      await EmailService.testConnection(req.body)
+      const siteId = req.headers['x-zenith-site-id'] as string | undefined
+      await EmailService.testConnection(req.body, siteId)
       res.json(createResponse({ success: true, message: 'SMTP connection verified' }))
     } catch (err: any) {
       res.status(400).json(createErrorResponse(400, err.message || 'SMTP verification failed'))
@@ -482,7 +498,8 @@ router.post(
   async (req: Request, res: Response, next) => {
     try {
       const { getBlockStorage } = await import('../../services/s3-storage')
-      const success = await getBlockStorage().testConnection(req.body)
+      const siteId = req.headers['x-zenith-site-id'] as string
+      const success = await getBlockStorage().testConnection(req.body, siteId)
       if (success) {
         res.json(createResponse({ success: true, message: 'S3 connection verified' }))
       } else {
@@ -514,9 +531,10 @@ router.post(
 
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
       const engine = req.app.get('zenith_engine')
+      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
 
       // Check if collection already exists in dynamic database config or static config
-      const existingDb = await adapter.findOne<any>('z_collections', { slug: fileSlug })
+      const existingDb = await adapter.findOne<any>('z_collections', { slug: fileSlug, ...(siteId ? { siteId } : {}) })
       const existingStatic = engine?.config?.collections?.find((c: any) => c.slug === fileSlug)
 
       if (existingDb || existingStatic) {
@@ -533,7 +551,7 @@ router.post(
       }
 
       // Save collection schema dynamically to database
-      await adapter.create('z_collections', colConfig)
+      await adapter.create('z_collections', { ...colConfig, ...(siteId ? { siteId } : {}) })
 
       // Register the collection with the database adapter in memory
       await adapter.registerCollection(colConfig)
@@ -574,6 +592,7 @@ router.patch(
 
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
       const engine = req.app.get('zenith_engine')
+      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
 
       // Update in database
       const update: Record<string, unknown> = {}
@@ -582,7 +601,10 @@ router.patch(
       if (access !== undefined) update.access = access
       if (publicRead !== undefined) update.publicRead = publicRead
 
-      await adapter.update('z_collections', slug, update)
+      const existing = await adapter.findOne<Record<string, any>>('z_collections', { slug, ...(siteId ? { siteId } : {}) })
+      if (!existing) throw new NotFoundError('Collection', slug)
+
+      await adapter.update('z_collections', (existing.id || existing._id).toString(), update)
 
       // Update in engine config
       if (engine) {
@@ -616,8 +638,9 @@ router.post(
       if (!emailResult.success) throw new InvalidPayloadError('Invalid email format')
 
       const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
 
-      const existing = await adapter.findOne<any>('users', { email: email.toLowerCase() })
+      const existing = await adapter.findOne<any>('users', { email: email.toLowerCase(), ...(siteId ? { siteId } : {}) })
       if (existing) throw new InvalidPayloadError('User already exists')
 
       // Generate a cryptographically secure random password — never exposed to the requester.
@@ -629,6 +652,7 @@ router.post(
         email: email.toLowerCase(),
         password: hashed,
         role: role || 'editor',
+        ...(siteId ? { siteId } : {})
       })
 
       const userId = (user.id || user._id).toString()
@@ -637,14 +661,14 @@ router.post(
       const resetToken = crypto.randomBytes(32).toString('hex')
       const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000)
       await adapter.create<any>('z_password_resets', { userId, token: resetToken, expiresAt })
-      const resetUrl = `${process.env.ADMIN_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`
+      const resetUrl = `${env.ADMIN_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`
 
       try {
         await EmailService.send({
           to: user.email,
           subject: 'You have been invited to Zenith CMS',
           html: `<p>You have been invited as <strong>${role || 'editor'}</strong>. Set your password by clicking <a href="${resetUrl}">this link</a>. It expires in 48 hours.</p>`,
-        })
+        }, undefined, siteId)
       } catch {
         // Email failure is non-fatal — admin can resend via password reset
       }

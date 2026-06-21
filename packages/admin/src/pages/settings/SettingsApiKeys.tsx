@@ -41,22 +41,22 @@ function ExpiryBadge({ expiresAt, dark }: { expiresAt: string | number | Date; d
   const days = getDaysUntilExpiry(expiresAt)
   if (days === null) return null
   if (days < 0) return (
-    <span className="text-[7px] font-black uppercase tracking-widest px-2 py-0.5 border border-red-500/30 bg-red-500/10 text-red-400 flex items-center gap-1">
+    <span className="text-sm font-semibold px-2 py-0.5 border border-red-500/30 bg-red-500/10 text-red-400 flex items-center gap-1">
       <AlertTriangle size={8} /> Expired
     </span>
   )
   if (days <= 7) return (
-    <span className="text-[7px] font-black uppercase tracking-widest px-2 py-0.5 border border-amber-500/30 bg-amber-500/10 text-amber-400">
+    <span className="text-sm font-semibold px-2 py-0.5 border border-amber-500/30 bg-amber-500/10 text-amber-400">
       {days}d left
     </span>
   )
   if (days <= 30) return (
-    <span className="text-[7px] font-black uppercase tracking-widest px-2 py-0.5 border border-yellow-500/30 bg-yellow-500/10 text-yellow-400">
+    <span className="text-sm font-semibold px-2 py-0.5 border border-yellow-500/30 bg-yellow-500/10 text-yellow-400">
       {days}d
     </span>
   )
   return (
-    <span className="text-[7px] font-black uppercase tracking-widest px-2 py-0.5 border border-z-active-border bg-z-active-bg text-z-active-text">
+    <span className="text-sm font-semibold px-2 py-0.5 border border-z-active-border bg-z-active-bg text-z-active-text">
       {days}d
     </span>
   )
@@ -96,7 +96,7 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
   }
 
   const card = cn(
-    'border rounded-none transition-all shadow-[var(--z-active-glow)] group',
+    'border rounded-none transition-all shadow-sm group',
     dark ? 'bg-z-panel backdrop-blur-md border-z-border hover:border-z-active-border' : 'bg-z-input border-z-border shadow-sm hover:border-z-active-border'
   )
 
@@ -105,18 +105,18 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
       <div className="space-y-4">
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-3">
-            <span className={cn('text-[10px] font-black uppercase tracking-[0.3em]', dark ? 'text-z-secondary' : 'text-z-secondary')}>
+            <span className={cn('text-sm font-semibold  ', dark ? 'text-z-secondary' : 'text-z-secondary')}>
               {apiKeys.length} Active {apiKeys.length === 1 ? 'Credential' : 'Credentials'}
             </span>
             {apiKeys.some(k => getDaysUntilExpiry(k.expiresAt) !== null && getDaysUntilExpiry(k.expiresAt)! <= 7) && (
-              <span className="flex items-center gap-1 text-[8px] text-amber-400 font-black uppercase tracking-widest">
+              <span className="flex items-center gap-1 text-sm text-amber-400 font-semibold">
                 <AlertTriangle size={10} /> Expiring Soon
               </span>
             )}
           </div>
           <button
             onClick={() => setGenerateOpen(true)}
-            className={cn('flex items-center gap-2 text-[10px] font-black uppercase border px-5 py-2.5 transition-all', dark ? 'border-z-active-border text-z-active-text hover:bg-z-active-bg hover:border-z-accent' : 'border-z-active-border text-z-accent hover:bg-z-active-bg')}
+            className={cn('flex items-center gap-2 text-sm font-semibold  border px-5 py-2.5 transition-all', dark ? 'border-z-active-border text-z-active-text hover:bg-z-active-bg hover:border-z-accent' : 'border-z-active-border text-z-accent hover:bg-z-active-bg')}
           >
             <Plus size={13} />
             Generate Token
@@ -131,7 +131,7 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
               title="No API keys"
               message="Generate an API key to authenticate external applications against the Zenith CMS API"
               action={
-                <button onClick={() => setGenerateOpen(true)} className={cn('flex items-center gap-2 px-6 py-3 text-[10px] font-black uppercase border transition-all', dark ? 'border-z-active-border text-z-active-text hover:bg-z-active-bg' : 'border-z-active-border text-z-accent hover:bg-z-active-bg')}>
+                <button onClick={() => setGenerateOpen(true)} className={cn('flex items-center gap-2 px-6 py-3 text-sm font-semibold  border transition-all', dark ? 'border-z-active-border text-z-active-text hover:bg-z-active-bg' : 'border-z-active-border text-z-accent hover:bg-z-active-bg')}>
                   <Plus size={12} /> Generate Token
                 </button>
               }
@@ -155,23 +155,23 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className={cn('text-[13px] font-black uppercase tracking-wider', dark ? 'text-white' : 'text-z-primary')}>{key.name}</span>
-                        <span className={cn('text-[7px] font-black uppercase tracking-widest px-2 py-0.5 border', roleClass)}>{key.role}</span>
+                        <span className={cn('text-[13px] font-semibold  ', dark ? 'text-white' : 'text-z-primary')}>{key.name}</span>
+                        <span className={cn('text-sm font-semibold   px-2 py-0.5 border', roleClass)}>{key.role}</span>
                         <ExpiryBadge expiresAt={key.expiresAt} dark={dark} />
                       </div>
                       <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-                        <span className="text-[9px] text-z-secondary flex items-center gap-1">
+                        <span className="text-sm text-z-secondary flex items-center gap-1">
                           <Calendar size={9} />
                           Expires {new Date(key.expiresAt).toLocaleDateString()}
                         </span>
                         {key.lastUsed && (
-                          <span className="text-[9px] text-z-secondary flex items-center gap-1">
+                          <span className="text-sm text-z-secondary flex items-center gap-1">
                             <Activity size={9} />
                             Last used {new Date(key.lastUsed).toLocaleDateString()}
                           </span>
                         )}
                         {key.usageCount !== undefined && (
-                          <span className="text-[9px] text-z-secondary flex items-center gap-1">
+                          <span className="text-sm text-z-secondary flex items-center gap-1">
                             <Globe size={9} />
                             {key.usageCount} requests
                           </span>
@@ -203,9 +203,9 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
                     <div className="px-5 pb-5 pt-3 border-t space-y-4" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}>
                       {/* Key ID */}
                       <div className="space-y-1.5">
-                        <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Key ID (prefix)</label>
+                        <label className="text-sm font-semibold text-z-secondary">Key ID (prefix)</label>
                         <div className="flex items-center gap-2">
-                          <code className={cn('flex-1 font-mono text-[10px] px-3 py-2 border truncate', dark ? 'bg-black/80 border-z-border text-z-active-text' : 'bg-z-panel border-z-border text-gray-700')}>
+                          <code className={cn('flex-1 font-mono text-sm px-3 py-2 border truncate', dark ? 'bg-black/80 border-z-border text-z-active-text' : 'bg-z-panel border-z-border text-gray-700')}>
                             {key._id}
                           </code>
                           <button onClick={() => handleCopyId(key._id)} className={cn('p-2 border transition-all', dark ? 'border-white/10 text-z-secondary hover:text-white' : 'border-z-border text-z-secondary')}>
@@ -217,10 +217,10 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
                       {/* Permissions */}
                       {key.permissions && key.permissions.length > 0 && (
                         <div className="space-y-1.5">
-                          <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Granted Permissions</label>
+                          <label className="text-sm font-semibold text-z-secondary">Granted Permissions</label>
                           <div className="flex flex-wrap gap-1.5">
                             {key.permissions.map((perm: any, i: number) => (
-                              <span key={i} className={cn('text-[7px] font-black uppercase tracking-widest px-2 py-1 border', dark ? 'bg-z-hover border-white/10 text-z-muted' : 'bg-z-input border-z-border text-z-secondary')}>
+                              <span key={i} className={cn('text-sm font-semibold   px-2 py-1 border', dark ? 'bg-z-hover border-white/10 text-z-muted' : 'bg-z-input border-z-border text-z-secondary')}>
                                 {perm.resource}: {perm.actions.join(', ')}
                               </span>
                             ))}
@@ -230,8 +230,8 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
 
                       {/* Usage example */}
                       <div className="space-y-1.5">
-                        <label className="text-[8px] font-black uppercase tracking-widest text-z-secondary">Usage Example</label>
-                        <pre className={cn('text-[9px] font-mono p-3 border overflow-x-auto', dark ? 'bg-black/80 border-z-border text-gray-300' : 'bg-z-input border-z-border text-gray-700')}>
+                        <label className="text-sm font-semibold text-z-secondary">Usage Example</label>
+                        <pre className={cn('text-sm font-mono p-3 border overflow-x-auto', dark ? 'bg-black/80 border-z-border text-gray-300' : 'bg-z-input border-z-border text-gray-700')}>
 {`curl https://api.example.com/api/v1/posts \\
   -H "Authorization: Bearer YOUR_KEY"`}
                         </pre>

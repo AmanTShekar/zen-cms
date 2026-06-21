@@ -165,11 +165,11 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
 
   const card = cn(
     'border rounded-none transition-all',
-    dark ? 'bg-z-panel backdrop-blur-md border-z-border shadow-[var(--z-active-glow)]' : 'bg-z-input border-z-border shadow-sm'
+    dark ? 'bg-z-panel backdrop-blur-md border-z-border shadow-sm' : 'bg-z-input border-z-border shadow-sm'
   )
 
   const inp = cn(
-    'border rounded-none py-3 px-4 text-[11px] font-mono transition-all outline-none focus:ring-1 focus:ring-z-active-border focus:border-z-accent',
+    'border rounded-none py-3 px-4 text-sm font-mono transition-all outline-none focus:ring-1 focus:ring-z-active-border focus:border-z-accent',
     dark ? 'bg-black/80 border-z-border text-white placeholder:text-gray-700' : 'bg-z-panel border-z-border'
   )
 
@@ -183,11 +183,11 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
               <div className={cn('w-10 h-10 flex items-center justify-center border', stat.bg, stat.border)}>
                 <stat.icon size={18} className={stat.color} />
               </div>
-              <span className="text-[8px] font-black text-z-active-text uppercase tracking-widest">Live</span>
+              <span className="text-sm font-semibold text-z-active-text">Live</span>
             </div>
             <div>
-              <p className="text-[8px] font-black text-z-secondary uppercase tracking-widest">{stat.label}</p>
-              <p className={cn('text-xl font-black tracking-tighter mt-1', dark ? 'text-white' : 'text-z-primary')}>{stat.value}</p>
+              <p className="text-sm font-semibold text-z-secondary">{stat.label}</p>
+              <p className={cn('text-xl font-semibold  mt-1', dark ? 'text-white' : 'text-z-primary')}>{stat.value}</p>
             </div>
           </div>
         ))}
@@ -195,10 +195,10 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
 
       {/* Test Connection */}
       <div className={cn(card, 'p-6 space-y-4')}>
-        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary">Test New Connection</p>
+        <p className="text-sm font-semibold text-z-secondary">Test New Connection</p>
         <form onSubmit={handleTestConnection} className="flex flex-wrap gap-3 items-end">
           <div className="flex-1 min-w-[200px] space-y-1">
-            <label className="text-[8px] font-black uppercase tracking-widest text-gray-600">Connection URI</label>
+            <label className="text-sm font-semibold text-gray-600">Connection URI</label>
             <input
               type="text"
               value={dbUri}
@@ -208,11 +208,11 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
             />
           </div>
           <div className="space-y-1">
-            <label className="text-[8px] font-black uppercase tracking-widest text-gray-600">Dialect</label>
+            <label className="text-sm font-semibold text-gray-600">Dialect</label>
             <div className="flex gap-2">
               {(['postgres', 'mongodb'] as const).map(d => (
                 <button key={d} type="button" onClick={() => setDbDialect(d)}
-                  className={cn('px-4 py-3 text-[9px] font-black uppercase border transition-all',
+                  className={cn('px-4 py-3 text-sm font-semibold  border transition-all',
                     dbDialect === d ? dark ? 'border-z-accent/50 bg-z-accent/20 text-z-active-text' : 'border-z-active-border bg-z-active-bg text-z-accent' : dark ? 'border-z-border text-z-secondary' : 'border-z-border text-z-muted')}>
                   {d}
                 </button>
@@ -220,8 +220,8 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
             </div>
           </div>
           <button type="submit" disabled={testing || !dbUri.trim()}
-            className={cn('px-6 py-3 text-[9px] font-black uppercase tracking-widest border transition-all disabled:opacity-40 flex items-center gap-2',
-              dark ? 'bg-z-accent border-transparent text-white hover:opacity-90 shadow-[var(--z-active-glow)]' : 'bg-gray-900 border-transparent text-white hover:bg-gray-800')}>
+            className={cn('px-6 py-3 text-sm font-semibold   border transition-all disabled:opacity-40 flex items-center gap-2',
+              dark ? 'bg-z-accent border-transparent text-white hover:opacity-90 shadow-sm' : 'bg-gray-900 border-transparent text-white hover:bg-gray-800')}>
             {testing ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
             Validate
           </button>
@@ -234,17 +234,17 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
           <div className="flex items-center gap-3">
             <Archive size={16} className="text-z-secondary" />
             <div>
-              <p className={cn('text-[10px] font-black uppercase tracking-wider', dark ? 'text-gray-200' : 'text-gray-800')}>Database Backups</p>
-              <p className="text-[8px] text-z-secondary uppercase tracking-widest">Create and restore database snapshots</p>
+              <p className={cn('text-sm font-semibold  ', dark ? 'text-gray-200' : 'text-gray-800')}>Database Backups</p>
+              <p className="text-sm text-z-secondary">Create and restore database snapshots</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => { setShowBackups(!showBackups) }}
-              className={cn('text-[9px] font-black uppercase tracking-widest px-3 py-2 border transition-all', dark ? 'border-white/10 text-z-muted hover:text-white' : 'border-z-border text-z-secondary')}>
+              className={cn('text-sm font-semibold   px-3 py-2 border transition-all', dark ? 'border-white/10 text-z-muted hover:text-white' : 'border-z-border text-z-secondary')}>
               {showBackups ? 'Hide' : 'View'} Backups
             </button>
             <button onClick={handleCreateBackup} disabled={creatingBackup}
-              className={cn('flex items-center gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-widest border transition-all disabled:opacity-40',
+              className={cn('flex items-center gap-2 px-4 py-2 text-sm font-semibold   border transition-all disabled:opacity-40',
                 dark ? 'bg-z-active-bg border-z-active-border text-z-active-text hover:bg-z-active-bg' : 'bg-z-active-bg border-z-active-border text-z-accent')}>
               {creatingBackup ? <Loader2 size={11} className="animate-spin" /> : <Archive size={11} />}
               Create Backup
@@ -259,7 +259,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
               </div>
             ) : backups.length === 0 ? (
               <div className="py-8 text-center">
-                <p className="text-[9px] text-gray-600 uppercase tracking-widest">No backups yet — create one above</p>
+                <p className="text-sm text-gray-600">No backups yet — create one above</p>
               </div>
             ) : (
               <div className="divide-y" style={{ borderColor: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }}>
@@ -267,10 +267,10 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
                   <div key={b.id} className="flex items-center gap-4 px-5 py-3">
                     <Archive size={14} className="text-z-secondary shrink-0" />
                     <div className="flex-1">
-                      <p className={cn('text-[10px] font-black', dark ? 'text-gray-200' : 'text-gray-800')}>{b.filename}</p>
-                      <p className="text-[8px] text-gray-600">{new Date(b.createdAt).toLocaleString()} · {(b.size / 1024 / 1024).toFixed(2)} MB</p>
+                      <p className={cn('text-sm font-semibold', dark ? 'text-gray-200' : 'text-gray-800')}>{b.filename}</p>
+                      <p className="text-sm text-gray-600">{new Date(b.createdAt).toLocaleString()} · {(b.size / 1024 / 1024).toFixed(2)} MB</p>
                     </div>
-                    <span className={cn('text-[7px] font-black uppercase tracking-widest px-2 py-0.5 border', b.status === 'ready' ? 'text-z-active-text border-z-active-border bg-z-active-bg' : b.status === 'processing' ? 'text-amber-400 border-amber-500/30 bg-amber-500/10' : 'text-red-400 border-red-500/30 bg-red-500/10')}>
+                    <span className={cn('text-sm font-semibold   px-2 py-0.5 border', b.status === 'ready' ? 'text-z-active-text border-z-active-border bg-z-active-bg' : b.status === 'processing' ? 'text-amber-400 border-amber-500/30 bg-amber-500/10' : 'text-red-400 border-red-500/30 bg-red-500/10')}>
                       {b.status}
                     </span>
                     {b.status === 'ready' && (
@@ -288,22 +288,22 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
 
       {/* Maintenance Actions */}
       <div className="space-y-2">
-        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-z-secondary px-1">Maintenance Actions</p>
+        <p className="text-sm font-semibold text-z-secondary px-1">Maintenance Actions</p>
         <div className="flex flex-wrap gap-3">
           <button onClick={handleFlushCache} disabled={sweeping}
-            className={cn('flex items-center gap-2 px-6 py-3.5 border text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-40',
+            className={cn('flex items-center gap-2 px-6 py-3.5 border text-sm font-semibold   transition-all active:scale-95 disabled:opacity-40',
               dark ? 'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20' : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100')}>
             {sweeping ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
             Flush Cache
           </button>
           <button onClick={handleMediaSweep} disabled={sweeping}
-            className={cn('flex items-center gap-2 px-6 py-3.5 border text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-40',
+            className={cn('flex items-center gap-2 px-6 py-3.5 border text-sm font-semibold   transition-all active:scale-95 disabled:opacity-40',
               dark ? 'bg-z-active-bg text-z-active-text border-z-active-border hover:bg-z-active-bg' : 'bg-gray-100 text-gray-700 border-z-border hover:bg-gray-200')}>
             {sweeping ? <Loader2 size={13} className="animate-spin" /> : <Scan size={13} />}
             Sweep Orphan Media
           </button>
           <button onClick={fetchSlowQueries} disabled={slowQueriesLoading}
-            className={cn('flex items-center gap-2 px-6 py-3.5 border text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-40',
+            className={cn('flex items-center gap-2 px-6 py-3.5 border text-sm font-semibold   transition-all active:scale-95 disabled:opacity-40',
               dark ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20' : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100')}>
             {slowQueriesLoading ? <Loader2 size={13} className="animate-spin" /> : <TrendingUp size={13} />}
             Analyze Slow Queries
@@ -315,17 +315,17 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
       {slowQueries.length > 0 && (
         <div className={cn(card, 'overflow-hidden')}>
           <div className="p-4 border-b" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}>
-            <p className="text-[9px] font-black uppercase tracking-widest text-amber-400">Slow Query Analysis</p>
+            <p className="text-sm font-semibold text-amber-400">Slow Query Analysis</p>
           </div>
           <div className="divide-y" style={{ borderColor: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }}>
             {slowQueries.slice(0, 5).map((q, i) => (
               <div key={i} className="flex items-center gap-4 px-5 py-3">
                 <AlertTriangle size={13} className="text-amber-400 shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className={cn('text-[9px] font-mono truncate', dark ? 'text-gray-300' : 'text-gray-700')}>{q.query || q.command || 'Unknown query'}</p>
-                  <p className="text-[8px] text-gray-600">{q.collection || q.table}</p>
+                  <p className={cn('text-sm font-mono truncate', dark ? 'text-gray-300' : 'text-gray-700')}>{q.query || q.command || 'Unknown query'}</p>
+                  <p className="text-sm text-gray-600">{q.collection || q.table}</p>
                 </div>
-                <span className="text-[9px] font-black text-amber-400 shrink-0">{q.millis || q.duration}ms</span>
+                <span className="text-sm font-semibold text-amber-400 shrink-0">{q.millis || q.duration}ms</span>
               </div>
             ))}
           </div>

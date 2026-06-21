@@ -29,12 +29,12 @@ const CodeField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
       />
       <div className="absolute top-2 right-3 flex items-center gap-2">
         {cf.language && (
-          <span className="text-[9px] font-bold text-z-active-text/60 font-mono uppercase">
+          <span className="text-sm font-bold text-z-active-text/60 font-mono">
             {cf.language}
           </span>
         )}
         {cf.maxLength && (
-          <span className="text-[9px] font-bold text-z-secondary font-mono">
+          <span className="text-sm font-bold text-z-secondary font-mono">
             {((value as string) || '').length}/{cf.maxLength}
           </span>
         )}

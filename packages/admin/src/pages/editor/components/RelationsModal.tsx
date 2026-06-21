@@ -68,7 +68,7 @@ export const RelationsModal: React.FC = () => {
  setActiveCollection(collectionSlug)
  fetchRelationResults(collectionSlug, debouncedSearch)
  }
- // eslint-disable-next-line react-hooks/exhaustive-deps
+  
  }, [relationsModalOpen])
 
  // Debounce search input — wait 300ms after last keystroke before hitting API
@@ -156,11 +156,11 @@ export const RelationsModal: React.FC = () => {
  <div>
  <h2
  id={modalTitleId}
- className="text-lg font-black uppercase text-gray-600 dark:text-z-muted"
+ className="text-lg font-semibold text-gray-600 dark:text-z-muted"
  >
  Content Relations
  </h2>
- <p className="text-xs text-z-secondary font-bold uppercase tracking-widest">
+ <p className="text-xs text-z-secondary font-bold">
  Connect entries from other collections
  </p>
  </div>
@@ -196,7 +196,7 @@ export const RelationsModal: React.FC = () => {
  key={col.slug}
  onClick={() => handleCollectionSelect(col)}
  className={cn(
- 'px-3 py-1.5 text-xs font-black uppercase rounded-none-none border shrink-0 transition-all',
+ 'px-3 py-1.5 text-xs font-semibold  rounded-none-none border shrink-0 transition-all',
  isActive
  ? theme === 'dark'
  ? 'bg-gray-500/10 border-gray-500/30 text-gray-600 dark:text-z-muted'
@@ -237,14 +237,14 @@ export const RelationsModal: React.FC = () => {
  {!activeCollection ? (
  <div className="flex flex-col items-center justify-center h-full gap-4">
  <GitBranch size={40} className="text-gray-600 opacity-30" />
- <p className="text-xs text-z-secondary font-black uppercase tracking-widest text-center">
+ <p className="text-xs text-z-secondary font-semibold text-center">
  Select a collection above to view entries
  </p>
  </div>
  ) : relationResults.length === 0 ? (
  <div className="flex flex-col items-center justify-center h-full gap-4">
  <Search size={32} className="text-gray-600 opacity-30" />
- <p className="text-xs text-z-secondary font-black uppercase tracking-widest text-center">
+ <p className="text-xs text-z-secondary font-semibold text-center">
  {debouncedSearch ? 'No entries match your search' : 'No entries found in this collection'}
  </p>
  </div>
@@ -276,14 +276,14 @@ export const RelationsModal: React.FC = () => {
  {selectedRelations.has(item.id || item._id) && <Check size={12} className="text-white" />}
  </div>
  <div className="flex-1 min-w-0">
- <p className="text-xs font-black uppercase truncate">
+ <p className="text-xs font-semibold truncate">
  {item.title || item.name || item.headline || item.id}
  </p>
- <p className="text-[7px] text-z-secondary font-mono truncate">
+ <p className="text-sm text-z-secondary font-mono truncate">
  ID: {item.id || item._id}
  </p>
  </div>
- <span className="text-[7px] text-z-secondary font-mono shrink-0">
+ <span className="text-sm text-z-secondary font-mono shrink-0">
  {item._status || item.status || 'active'}
  </span>
  </button>
@@ -297,14 +297,14 @@ export const RelationsModal: React.FC = () => {
  'p-4 border-t flex items-center justify-between',
  theme === 'dark' ? 'border-z-border bg-z-panel' : 'border-z-border shadow-sm bg-gray-50'
  )}>
- <span className="text-xs text-z-secondary font-bold ">
+ <span className="text-xs text-z-secondary font-bold">
  Click entries to select/deselect for relation
  </span>
  <div className="flex items-center gap-2">
  <button
  onClick={() => setRelationsModalOpen(false)}
  className={cn(
- 'px-4 py-2 text-xs font-black uppercase rounded-none-none border transition-all',
+ 'px-4 py-2 text-xs font-semibold  rounded-none-none border transition-all',
  theme === 'dark'
  ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
  : 'border-z-border text-gray-600 hover:border-z-border-strong hover:text-black'
@@ -315,7 +315,7 @@ export const RelationsModal: React.FC = () => {
  <button
  onClick={applyRelations}
  disabled={selectedRelations.size === 0}
- className="px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-black uppercase rounded-none-none hover:bg-gray-500 transition-all disabled:opacity-50"
+ className="px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-semibold rounded-none-none hover:bg-gray-500 transition-all disabled:opacity-50"
  >
  Link {selectedRelations.size} items
  </button>

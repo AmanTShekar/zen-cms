@@ -38,6 +38,8 @@ import {
 } from '../errors'
 import rateLimit from 'express-rate-limit'
 import { z } from 'zod'
+import { env } from '../config/env';
+
 
 const emailSchema = z.string().email().max(254)
 const passwordSchema = z.string().min(8).max(128)
@@ -52,13 +54,13 @@ const authLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })
 
 /** Resolve admin URL from env; fallback to localhost only in dev. */
 function getAdminUrl(): string {
-  if (process.env.ADMIN_URL) return process.env.ADMIN_URL
-  if (process.env.NODE_ENV === 'production') {
+  if (env.ADMIN_URL) return env.ADMIN_URL
+  if (env.NODE_ENV === 'production') {
     throw new Error('ADMIN_URL environment variable is required in production')
   }
   return 'http://localhost:5173'
@@ -149,14 +151,14 @@ router.post('/login', authLimiter, async (req: Request, res: Response, next) => 
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 15 * 60 * 1000, // 15 minutes
     })
@@ -171,7 +173,9 @@ router.post('/login', authLimiter, async (req: Request, res: Response, next) => 
 router.post('/register', authLimiter, async (req: Request, res: Response, next) => {
   try {
     const adapter = AdapterFactory.getActiveAdapter()
-    const settings = await adapter.findOne<Record<string, any>>('z_settings', {})
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined
+    const query = siteId ? { siteId } : {}
+    const settings = await adapter.findOne<Record<string, any>>('z_settings', query)
 
     if (!settings?.allowRegistration && process.env.ALLOW_REGISTRATION !== 'true') {
       throw new ForbiddenError('Open registration is disabled.')
@@ -202,13 +206,13 @@ router.post('/register', authLimiter, async (req: Request, res: Response, next) 
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
     // Send welcome email + verification link
-    await EmailService.sendWelcomeEmail(user.email, user.email.split('@')[0])
+    await EmailService.sendWelcomeEmail(user.email, user.email.split('@')[0], siteId)
     try {
       const verifyToken = await AuthService.generateVerificationToken(userId)
       const verifyUrl = `${getAdminUrl()}/verify-email?token=${verifyToken}`
@@ -216,7 +220,7 @@ router.post('/register', authLimiter, async (req: Request, res: Response, next) 
         to: user.email,
         subject: 'Verify your Zenith CMS email address',
         html: `<p>Hi! Please verify your email by clicking <a href="${verifyUrl}">this link</a>. It expires in 24 hours.</p>`,
-      })
+      }, undefined, siteId)
     } catch {
       // Verification email failure is non-fatal — user can request resend
     }
@@ -251,14 +255,14 @@ router.post('/refresh', authLimiter, async (req: Request, res: Response, next) =
 
     res.cookie('refreshToken', newRefresh, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
     res.cookie('accessToken', newAccess, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 15 * 60 * 1000, // 15 minutes
     })
@@ -429,14 +433,14 @@ router.post('/setup', authLimiter, async (req: Request, res: Response, next) => 
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 15 * 60 * 1000,
     })

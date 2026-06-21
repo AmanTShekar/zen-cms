@@ -1,6 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { logger } from './logger'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { env } from '../config/env';
+
 
 export interface ContentQualityResult {
   score: number // 0-100
@@ -65,7 +67,7 @@ export class AIService {
    * Resolve all AI credentials — DB settings take precedence over env vars.
    * This allows keys configured via the Admin UI to override local .env values.
    */
-  private static async resolveKeys(): Promise<{
+  private static async resolveKeys(siteId?: string): Promise<{
     openRouterKey?: string
     xaiKey?: string
     nvidiaKey?: string
@@ -81,14 +83,14 @@ export class AIService {
   }> {
     // Start from env vars
     const keys = {
-      openRouterKey: process.env.OPENROUTER_API_KEY,
+      openRouterKey: env.OPENROUTER_API_KEY,
       xaiKey:        process.env.XAI_API_KEY,
       nvidiaKey:     process.env.NVIDIA_API_KEY,
       groqKey:       process.env.GROQ_API_KEY,
       togetherKey:   process.env.TOGETHER_API_KEY,
       mistralKey:    process.env.MISTRAL_API_KEY,
       cohereKey:     process.env.COHERE_API_KEY,
-      openaiKey:     process.env.OPENAI_API_KEY,
+      openaiKey:     env.OPENAI_API_KEY,
       anthropicKey:  process.env.ANTHROPIC_API_KEY,
       googleKey:     process.env.GOOGLE_API_KEY,
       aiModel:       'anthropic/claude-3.5-sonnet',
@@ -99,7 +101,8 @@ export class AIService {
       const adapter = AdapterFactory.getActiveAdapter()
       if (!adapter) return keys
 
-      const settings = await adapter.findOne<Record<string, any>>('z_settings', {})
+      const query = siteId ? { siteId } : {}
+      const settings = await adapter.findOne<Record<string, any>>('z_settings', query)
       if (!settings) return keys
 
       // DB settings override env (skip masked placeholder values)
@@ -137,8 +140,8 @@ export class AIService {
    * Core dispatch — calls the preferred provider based on aiProvider setting,
    * then falls back through the full chain if that fails.
    */
-  private static async callAI(prompt: string, maxTokens: number = 1024, overrideKeys?: any, strictProvider?: boolean): Promise<string> {
-    const k = overrideKeys || await this.resolveKeys()
+  private static async callAI(prompt: string, maxTokens: number = 1024, overrideKeys?: any, strictProvider?: boolean, siteId?: string): Promise<string> {
+    const k = overrideKeys || await this.resolveKeys(siteId)
 
     // Build ordered provider chain — preferred provider first, then fallback chain
     type ProviderFn = () => Promise<string | null>
@@ -151,7 +154,7 @@ export class AIService {
         headers: {
           Authorization: `Bearer ${k.openRouterKey}`,
           'Content-Type': 'application/json',
-          'HTTP-Referer': process.env.ADMIN_URL || 'http://localhost:3000',
+          'HTTP-Referer': env.ADMIN_URL || 'http://localhost:3000',
           'X-Title': 'Zenith CMS',
         },
         body: JSON.stringify({ model, messages: [{ role: 'user', content: prompt }], max_tokens: maxTokens }),
@@ -346,30 +349,30 @@ export class AIService {
     return this.callAI(prompt, maxTokens, k, true)
   }
 
-  static async generateContent(prompt: string): Promise<string> {
-    return this.callAI(prompt, 1024)
+  static async generateContent(prompt: string, siteId?: string): Promise<string> {
+    return this.callAI(prompt, 1024, undefined, false, siteId)
   }
 
-  static async improveText(text: string, instruction: string): Promise<string> {
+  static async improveText(text: string, instruction: string, siteId?: string): Promise<string> {
     const prompt = `${instruction}\n\nText to improve:\n\n${text}\n\nReturn only the improved text, no commentary.`
-    const res = await this.callAI(prompt, 2048)
+    const res = await this.callAI(prompt, 2048, undefined, false, siteId)
     return res || text
   }
 
-  static async generateMetaDescription(title: string, content: string): Promise<string> {
+  static async generateMetaDescription(title: string, content: string, siteId?: string): Promise<string> {
     const truncated = content.replace(/<[^>]+>/g, '').substring(0, 500)
     const prompt = `Write a compelling SEO meta description (max 160 characters) for this content.\nTitle: ${title}\nContent excerpt: ${truncated}\nReturn only the description, nothing else.`
-    const res = await this.callAI(prompt, 200)
+    const res = await this.callAI(prompt, 200, undefined, false, siteId)
     return res.substring(0, 160)
   }
 
-  static async generateAltText(imageUrl: string, context?: string): Promise<string> {
+  static async generateAltText(imageUrl: string, context?: string, siteId?: string): Promise<string> {
     const filename = imageUrl.split('/').pop()?.split('?')[0] || 'image'
     const cleanName = filename.replace(/[-_]/g, ' ').replace(/\.[^.]+$/, '')
 
     try {
       const prompt = `Write a concise alt text (max 10 words) for an image named "${cleanName}" used in the context of: "${context || 'general content'}". Return only the alt text.`
-      const res = await this.callAI(prompt, 100)
+      const res = await this.callAI(prompt, 100, undefined, false, siteId)
       return res || cleanName
     } catch (err) {
       logger.warn({ err }, 'Alt text generation failed, using filename')
@@ -379,7 +382,7 @@ export class AIService {
 
   // ── Smart Image Tagging ────────────────────────────────────────────────────
 
-  static async generateImageTags(imageUrl: string): Promise<SmartTagResult> {
+  static async generateImageTags(imageUrl: string, siteId?: string): Promise<SmartTagResult> {
     const filename = imageUrl.split('/').pop()?.split('?')[0] || 'image'
     const cleanName = filename.replace(/[-_]/g, ' ').replace(/\.[^.]+$/, '')
 
@@ -450,7 +453,7 @@ export class AIService {
   "mood": "one word mood",
   "description": "1 sentence description"
 }`
-      const res = await this.callAI(prompt, 300)
+      const res = await this.callAI(prompt, 300, undefined, false, siteId)
       const jsonStart = res.indexOf('{')
       const jsonEnd = res.lastIndexOf('}')
       if (jsonStart !== -1 && jsonEnd !== -1) {

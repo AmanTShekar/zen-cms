@@ -24,7 +24,7 @@ const PointField: React.FC<Props> = ({ field: _field, value, onChange, disabled 
   return (
     <div className="flex gap-3">
       <div className="flex-1 space-y-1">
-        <label className="text-[10px] font-bold text-z-secondary uppercase tracking-wider">
+        <label className="text-sm font-bold text-z-secondary">
           Longitude
         </label>
         <input
@@ -38,7 +38,7 @@ const PointField: React.FC<Props> = ({ field: _field, value, onChange, disabled 
         />
       </div>
       <div className="flex-1 space-y-1">
-        <label className="text-[10px] font-bold text-z-secondary uppercase tracking-wider">
+        <label className="text-sm font-bold text-z-secondary">
           Latitude
         </label>
         <input

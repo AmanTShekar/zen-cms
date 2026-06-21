@@ -28,7 +28,7 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center text-[11px] text-z-secondary font-bold uppercase tracking-widest gap-2">
+      <div className="h-full flex items-center justify-center text-sm text-z-secondary font-bold gap-2">
         <Activity size={14} className="animate-spin" /> Fetching Logs...
       </div>
     )
@@ -37,7 +37,7 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
   return (
     <div className="flex flex-col justify-between">
       <div className="flex items-center justify-between mb-4">
-        <p className="text-[12px] font-bold text-gray-800 dark:text-gray-200 uppercase tracking-tight flex items-center gap-2">
+        <p className="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
           <History size={14} className="text-z-secondary" /> {title || 'Audit & Activity Log'}
         </p>
       </div>
@@ -46,19 +46,19 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className={cn(
-              "text-[9px] font-black uppercase tracking-widest border-b",
+              "text-sm font-semibold   border-b",
               'border-z-border text-z-secondary'
             )}>
-              <th className="pb-2 font-black">Action</th>
-              <th className="pb-2 font-black">Resource</th>
-              <th className="pb-2 font-black">User</th>
-              <th className="pb-2 font-black text-right">Time</th>
+              <th className="pb-2 font-semibold">Action</th>
+              <th className="pb-2 font-semibold">Resource</th>
+              <th className="pb-2 font-semibold">User</th>
+              <th className="pb-2 font-semibold text-right">Time</th>
             </tr>
           </thead>
           <tbody>
             {logs.length === 0 && (
               <tr>
-                <td colSpan={4} className="py-8 text-center text-[11px] text-z-secondary">
+                <td colSpan={4} className="py-8 text-center text-sm text-z-secondary">
                   No recent activity recorded.
                 </td>
               </tr>
@@ -74,7 +74,7 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
               >
                 <td className="py-2.5">
                   <span className={cn(
-                    "text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-none-none",
+                    "text-sm font-bold   px-1.5 py-0.5 rounded-none-none",
                     log.action === 'create' ? 'bg-z-active-bg text-z-accent dark:text-z-active-text' :
                     log.action === 'delete' ? 'bg-red-500/10 text-red-600 dark:text-red-400' :
                     'bg-gray-500/10 text-gray-600 dark:text-z-muted'
@@ -82,13 +82,13 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
                     {log.action}
                   </span>
                 </td>
-                <td className="py-2.5 text-[11px] font-medium text-gray-700 dark:text-gray-300">
+                <td className="py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300">
                   {(log.collection || 'system').replace(/-/g, ' ')}
                 </td>
-                <td className="py-2.5 text-[11px] text-z-secondary truncate max-w-[100px]">
+                <td className="py-2.5 text-sm text-z-secondary truncate max-w-[100px]">
                   {log.user?.email || 'System'}
                 </td>
-                <td className="py-2.5 text-[10px] text-z-muted font-medium text-right whitespace-nowrap">
+                <td className="py-2.5 text-sm text-z-muted font-medium text-right whitespace-nowrap">
                   {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                 </td>
               </tr>
@@ -100,7 +100,7 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
       <Link
         to="/audit-log"
         className={cn(
-          'w-full py-3 text-[11px] font-bold uppercase tracking-widest transition-all border text-center flex items-center justify-center gap-2 group',
+          'w-full py-3 text-sm font-bold   transition-all border text-center flex items-center justify-center gap-2 group',
           theme === 'dark'
             ? 'bg-z-active-bg border-z-accent/20 text-z-active-text hover:bg-z-active-bg'
             : 'bg-z-active-bg border-z-active-border text-z-accent hover:bg-z-active-bg'

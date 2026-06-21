@@ -53,11 +53,11 @@ export default function StatCardWidget({ config = {}, theme, title, isPreview }:
  <Database size={16} />
  </div>
  <div>
- <p className="text-[8px] font-black text-z-secondary uppercase tracking-widest mb-1">
+ <p className="text-sm font-semibold text-z-secondary mb-1">
  {title || config.label || def.label}
  </p>
  <div className="flex items-baseline gap-2">
- <span className="text-3xl font-black tracking-tighter leading-none">
+ <span className="text-3xl font-semibold leading-none">
  {loading ? '...' : value}
  </span>
  <ArrowUpRight size={12} className="text-z-muted" />

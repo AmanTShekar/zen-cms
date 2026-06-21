@@ -13,6 +13,7 @@ export interface IOnboardingAnswers {
 }
 
 export interface IOnboardingState extends Document {
+  siteId?: string
   currentStep: number
   totalSteps: number
   completedAt?: Date
@@ -37,6 +38,7 @@ const OnboardingAnswersSchema = new Schema<IOnboardingAnswers>(
 
 const OnboardingStateSchema = new Schema<IOnboardingState>(
   {
+    siteId: { type: String, index: true },
     currentStep: { type: Number, default: 0, min: 0 },
     totalSteps: { type: Number, default: 7 },
     completedAt: { type: Date },

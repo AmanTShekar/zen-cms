@@ -31,8 +31,8 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
  className={cn(
  'fixed z-[2500] w-64 max-h-[320px] overflow-y-auto border p-1 shadow-2xl transition-all duration-200',
  theme === 'dark'
- ? 'bg-black/85 backdrop-blur-[12px] border-white/8 shadow-[var(--z-active-glow)] text-white'
- : 'bg-white/95 backdrop-blur-[12px] border-z-border shadow-[var(--z-active-glow)] text-black'
+ ? 'bg-black/85 backdrop-blur-[12px] border-white/8 shadow-sm text-white'
+ : 'bg-white/95 backdrop-blur-[12px] border-z-border shadow-sm text-black'
  )}
  style={{
  top: `${position.top}px`,
@@ -40,10 +40,10 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
  }}
  >
  <div className="px-3 py-2 border-b border-z-border mb-1 flex items-center justify-between">
- <span className="text-xs font-black uppercase tracking-[0.2em] text-z-secondary ">
+ <span className="text-xs font-semibold text-z-secondary">
  Block Command
  </span>
- <span className="text-[7px] font-bold text-z-secondary/80 px-1 border border-gray-500/20 rounded-none uppercase">
+ <span className="text-sm font-bold text-z-secondary/80 px-1 border border-gray-500/20 rounded-none">
  ↑↓ Enter
  </span>
  </div>
@@ -80,7 +80,7 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
  <Icon size={14} className="transition-transform group-hover:scale-110" />
  </div>
  <div className="flex flex-col min-w-0">
- <span className="text-[11px] font-black uppercase tracking-tight ">
+ <span className="text-sm font-semibold">
  {item.label}
  </span>
  <span className="text-xs text-z-muted leading-tight truncate mt-0.5">

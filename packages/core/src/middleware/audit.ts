@@ -5,6 +5,8 @@ import { logger } from '../services/logger'
 import fs from 'fs'
 import path from 'path'
 import type { AuditLogData } from '@zenith-open/zenithcms-types'
+import { env } from '../config/env';
+
 
 // ── Sensitive field patterns to redact from audit logs ────────────────────
 const SENSITIVE_FIELDS = new Set([
@@ -78,7 +80,7 @@ async function getLastAuditHash(): Promise<string | null> {
 function computeAuditHash(entry: AuditLogData, previousHash: string | null): string {
   const secret = process.env.AUDIT_HASH_SECRET
   if (!secret) {
-    if (process.env.NODE_ENV === 'production') {
+    if (env.NODE_ENV === 'production') {
       logger.error('AUDIT_HASH_SECRET is required in production. Audit chain integrity is compromised. Failing fast.')
       throw new Error('AUDIT_HASH_SECRET must be set in production.')
     }

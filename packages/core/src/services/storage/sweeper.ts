@@ -3,6 +3,8 @@ import path from 'path'
 import { DatabaseAdapter } from '../../database/adapters/BaseAdapter'
 import { StorageService } from '../storage'
 import { logger } from '../logger'
+import { env } from '../../config/env';
+
 
 /**
  * Sweeps the storage target to identify and prune orphaned files.
@@ -28,8 +30,7 @@ export async function pruneOrphanedMedia(
     const dbMediaIds = new Set(dbMediaRecords.map((m) => m.id))
 
     // 2. Identify physical files (for local storage)
-    const provider = await StorageService.getProvider()
-    const providerType = process.env.STORAGE_PROVIDER || 'local'
+    const providerType = env.STORAGE_PROVIDER || 'local'
 
     if (providerType === 'local') {
       const uploadDir = path.resolve(process.cwd(), 'media')
@@ -130,7 +131,8 @@ export async function pruneOrphanedMedia(
           }
 
           try {
-            await provider.delete(mediaDoc.id)
+            const docProvider = await StorageService.getProvider(mediaDoc.siteId)
+            await docProvider.delete(mediaDoc.id)
           } catch (err: any) {
             errors.push(`Failed to delete media physical asset ${mediaDoc.id}: ${err.message}`)
           }

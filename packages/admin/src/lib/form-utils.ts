@@ -91,7 +91,7 @@ export function getFieldName(field: { name: string; localized?: boolean }, local
  * Returns CSS class list for field casing.
  */
 export function textCasingStyle(
- casing?: 'uppercase' | 'lowercase' | 'capitalize'
+ casing?: '' | 'lowercase' | 'capitalize'
 ): React.CSSProperties | undefined {
  if (!casing) return undefined
  return { textTransform: casing }

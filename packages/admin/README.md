@@ -13,7 +13,7 @@ packages/admin/
 │   │   │   ├── plugins/      # SlashCommand, MarkdownShortcut
 │   │   │   ├── Toolbar.tsx   # Glassmorphic formatting toolbar
 │   │   │   └── LexicalRichTextEditor.tsx
-│   │   ├── RichTextEditor.tsx # TipTap-based editor (legacy fields)
+│   │   ├── LexicalRichTextEditor.tsx # Primary Lexical editor
 │   │   ├── GlassDropdown.tsx # Reusable glassmorphic dropdown
 │   │   ├── MediaPicker.tsx   # Media library integration
 │   │   └── fields/           # Custom field renderers (Date, JSON, Slug, UID, etc.)
@@ -51,7 +51,7 @@ The admin proxies `/api`, `/media`, and `/uploads` to the core engine at `http:/
 
 | Feature | Implementation |
 |---------|---------------|
-| **Rich Text** | Lexical editor (primary) + TipTap editor (legacy) |
+| **Rich Text** | Lexical editor |
 | **Dynamic Zones** | Strapi-style block picker with visual component selection |
 | **Media Library** | Multi-select, bulk delete, crop/rotate, focal point |
 | **Version Control** | Visual preview diff, restore, max-version pruning |

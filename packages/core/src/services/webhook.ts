@@ -10,6 +10,8 @@ import Redis from 'ioredis'
 import { webhookCircuitBreaker } from './circuit-breaker'
 import { withTrace } from '../telemetry/tracing'
 import { redisService } from './redis'
+import { env } from '../config/env';
+
 
 export interface WebhookTarget {
   id?: string
@@ -37,6 +39,7 @@ const BLOCKED_IP_PATTERNS = [
   /^169\.254\.\d+\.\d+$/,
   /^::1$/,
   /^fc00:/i,
+  /^::ffff:(127|10|172\.(1[6-9]|2\d|3[01])|192\.168|169\.254)\./i,
 ]
 
 async function validateWebhookUrl(urlStr: string): Promise<void> {
@@ -47,7 +50,7 @@ async function validateWebhookUrl(urlStr: string): Promise<void> {
     throw new Error(`[Zenith Webhook] Invalid webhook URL format: ${urlStr}`)
   }
 
-  if (process.env.NODE_ENV === 'production' && url.protocol !== 'https:') {
+  if (env.NODE_ENV === 'production' && url.protocol !== 'https:') {
     throw new Error(
       `[Zenith Webhook] Only HTTPS webhook URLs are allowed in production. Got: ${urlStr}`
     )
@@ -141,9 +144,9 @@ function secureRequest(
   })
 }
 
-const MAX_RETRIES = parseInt(process.env.WEBHOOK_MAX_RETRIES || '4', 10)
-const RETRY_DELAYS_MS = process.env.WEBHOOK_RETRY_DELAYS ? process.env.WEBHOOK_RETRY_DELAYS.split(',').map(Number) : [180000, 300000, 900000, 3600000] // 3m, 5m, 15m, 60m
-const WEBHOOK_TIMEOUT_MS = parseInt(process.env.WEBHOOK_TIMEOUT_MS || '5000', 10)
+const MAX_RETRIES = env.WEBHOOK_MAX_RETRIES || 4
+const RETRY_DELAYS_MS = env.WEBHOOK_RETRY_DELAYS ? env.WEBHOOK_RETRY_DELAYS.split(',').map(Number) : [180000, 300000, 900000, 3600000] // 3m, 5m, 15m, 60m
+const WEBHOOK_TIMEOUT_MS = env.WEBHOOK_TIMEOUT_MS || 5000
 
 async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))

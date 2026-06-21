@@ -77,7 +77,7 @@ const searchLimiter = rateLimit({
   max: 30,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })
 
 const aiLimiter = rateLimit({
@@ -85,7 +85,7 @@ const aiLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test',
+  skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })
 
 // ── AI Architect Schema Validator ─────────────────────────────────────────────
@@ -120,6 +120,8 @@ const AICollectionSchema = z.object({
 
 
 import { Router as ERouter } from 'express';
+import { env } from '../../config/env';
+
 export const systemRouter2: ERouter = ERouter();
 const router = systemRouter2;
 

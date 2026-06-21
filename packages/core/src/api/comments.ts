@@ -1,11 +1,17 @@
 import { Router, Request, Response } from 'express'
 import { requireAuth } from '../middleware/auth'
 import { createResponse } from './utils'
-import { Comment } from '../database/comment-model'
 import { ForbiddenError, NotFoundError, InvalidPayloadError } from '../errors'
+import { AdapterFactory } from '../database/adapters/AdapterFactory'
+import { DatabaseAdapter } from '@zenith-open/zenithcms-types'
 
 const router: Router = Router()
 router.use(requireAuth)
+
+const COMMENTS_COLLECTION = 'comments'
+
+const getAdapter = (req: Request): DatabaseAdapter =>
+  (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
 /**
  * Comments API
@@ -23,11 +29,11 @@ router.use(requireAuth)
 // ── GET /api/v1/comments ─────────────────────────────────────────────────────
 router.get('/', async (req: Request, res: Response, next) => {
   try {
-    const user = (req as any).user
+    const adapter = getAdapter(req)
     const { collection, documentId, resolved, blockId } = req.query
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
 
-    const filter: any = {}
+    const filter: Record<string, any> = {}
     if (collection) filter.collection = collection as string
     if (documentId) filter.documentId = documentId as string
     if (blockId) filter.blockId = blockId as string
@@ -37,10 +43,9 @@ router.get('/', async (req: Request, res: Response, next) => {
       filter.resolved = resolved === 'true'
     }
 
-    const comments = await Comment.find(filter)
-      .sort({ createdAt: -1 })
-      .lean()
-      .exec()
+    const comments = await adapter.find<Record<string, any>>(COMMENTS_COLLECTION, filter, {
+      sort: { createdAt: -1 }
+    })
 
     res.json(createResponse(comments))
   } catch (err) {
@@ -51,6 +56,7 @@ router.get('/', async (req: Request, res: Response, next) => {
 // ── POST /api/v1/comments ───────────────────────────────────────────────────
 router.post('/', async (req: Request, res: Response, next) => {
   try {
+    const adapter = getAdapter(req)
     const user = (req as any).user
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
     const { collection, documentId, blockId, fieldKey, content } = req.body
@@ -59,7 +65,7 @@ router.post('/', async (req: Request, res: Response, next) => {
       throw new InvalidPayloadError('collection, documentId and content are required')
     }
 
-    const comment = new Comment({
+    const commentData = {
       collection,
       documentId,
       blockId,
@@ -68,11 +74,15 @@ router.post('/', async (req: Request, res: Response, next) => {
       author: user.name || user.email || 'Anonymous',
       authorEmail: user.email,
       authorId: user.id || user._id,
+      resolved: false,
+      replies: [],
       siteId,
-    })
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
 
-    await comment.save()
-    res.status(201).json(createResponse(comment.toObject()))
+    const comment = await adapter.create(COMMENTS_COLLECTION, commentData)
+    res.status(201).json(createResponse(comment))
   } catch (err) {
     next(err)
   }
@@ -81,17 +91,23 @@ router.post('/', async (req: Request, res: Response, next) => {
 // ── POST /api/v1/comments/:id/reply ─────────────────────────────────────────
 router.post('/:id/reply', async (req: Request, res: Response, next) => {
   try {
+    const adapter = getAdapter(req)
     const user = (req as any).user
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined
     const { content } = req.body
 
     if (!content?.trim()) {
       throw new InvalidPayloadError('Reply content is required')
     }
 
-    const comment = await Comment.findById(req.params.id)
+    // ISOLATION FIX: scope lookup by siteId to prevent cross-tenant comment access
+    const filter: Record<string, any> = { _id: req.params.id }
+    if (siteId) filter.siteId = siteId
+    const comment = await adapter.findOne<Record<string, any>>(COMMENTS_COLLECTION, filter)
     if (!comment) throw new NotFoundError('Comment', req.params.id)
 
-    comment.replies.push({
+    const replies = comment.replies || []
+    replies.push({
       author: user.name || user.email || 'Anonymous',
       authorEmail: user.email,
       authorId: user.id || user._id,
@@ -100,8 +116,12 @@ router.post('/:id/reply', async (req: Request, res: Response, next) => {
       updatedAt: new Date(),
     })
 
-    await comment.save()
-    res.json(createResponse(comment.toObject()))
+    const updatedComment = await adapter.update(COMMENTS_COLLECTION, req.params.id, {
+      replies,
+      updatedAt: new Date()
+    })
+
+    res.json(createResponse(updatedComment))
   } catch (err) {
     next(err)
   }
@@ -110,34 +130,41 @@ router.post('/:id/reply', async (req: Request, res: Response, next) => {
 // ── PATCH /api/v1/comments/:id ─────────────────────────────────────────────
 router.patch('/:id', async (req: Request, res: Response, next) => {
   try {
+    const adapter = getAdapter(req)
     const user = (req as any).user
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined
     const { content, resolved, resolvedBy } = req.body
 
-    const comment = await Comment.findById(req.params.id)
+    // ISOLATION FIX: scope lookup by siteId to prevent cross-tenant comment modification
+    const filter: Record<string, any> = { _id: req.params.id }
+    if (siteId) filter.siteId = siteId
+    const comment = await adapter.findOne<Record<string, any>>(COMMENTS_COLLECTION, filter)
     if (!comment) throw new NotFoundError('Comment', req.params.id)
+
+    const updates: Record<string, any> = { updatedAt: new Date() }
 
     // Only author can edit content
     if (content !== undefined) {
       if (comment.authorId !== user.id && comment.authorId !== user._id && user.role !== 'admin') {
         throw new ForbiddenError('Only the comment author can edit the content')
       }
-      comment.content = content
+      updates.content = content
     }
 
     // Authors and admins can resolve/reopen
     if (resolved !== undefined && comment.resolved !== resolved) {
-      comment.resolved = resolved
+      updates.resolved = resolved
       if (resolved) {
-        comment.resolvedBy = user.email
-        comment.resolvedAt = new Date()
+        updates.resolvedBy = user.email
+        updates.resolvedAt = new Date()
       } else {
-        comment.resolvedBy = undefined
-        comment.resolvedAt = undefined
+        updates.resolvedBy = null
+        updates.resolvedAt = null
       }
     }
 
-    await comment.save()
-    res.json(createResponse(comment.toObject()))
+    const updatedComment = await adapter.update(COMMENTS_COLLECTION, req.params.id, updates)
+    res.json(createResponse(updatedComment))
   } catch (err) {
     next(err)
   }
@@ -146,15 +173,21 @@ router.patch('/:id', async (req: Request, res: Response, next) => {
 // ── DELETE /api/v1/comments/:id ───────────────────────────────────────────
 router.delete('/:id', async (req: Request, res: Response, next) => {
   try {
+    const adapter = getAdapter(req)
     const user = (req as any).user
-    const comment = await Comment.findById(req.params.id)
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined
+
+    // ISOLATION FIX: scope lookup by siteId to prevent cross-tenant comment deletion
+    const filter: Record<string, any> = { _id: req.params.id }
+    if (siteId) filter.siteId = siteId
+    const comment = await adapter.findOne<Record<string, any>>(COMMENTS_COLLECTION, filter)
     if (!comment) throw new NotFoundError('Comment', req.params.id)
 
     if (comment.authorId !== user.id && comment.authorId !== user._id && user.role !== 'admin') {
       throw new ForbiddenError('Only the comment author or an admin can delete a comment')
     }
 
-    await Comment.findByIdAndDelete(req.params.id)
+    await adapter.delete(COMMENTS_COLLECTION, req.params.id)
     res.json(createResponse({ success: true }))
   } catch (err) {
     next(err)

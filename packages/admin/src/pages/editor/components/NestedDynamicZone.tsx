@@ -61,11 +61,11 @@ const DraggableZoneItem = ({
  <BlockIcon size={10} className="text-gray-600 dark:text-z-muted" />
  </div>
  <div className="flex-1 min-w-0">
- <p className="text-xs font-black uppercase text-gray-300 truncate">
+ <p className="text-xs font-semibold text-gray-300 truncate">
  {componentLabel}
  </p>
  </div>
- <span className={cn('text-[8px] font-black shrink-0', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
+ <span className={cn('text-sm font-semibold shrink-0', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
  #{idx + 1}
  </span>
  <div className="flex items-center gap-0.5 shrink-0" onClick={(e) => e.stopPropagation()}>
@@ -95,7 +95,7 @@ const DraggableZoneItem = ({
  <div className={cn('px-4 py-4 space-y-4 border-t', theme === 'dark' ? 'border-z-border' : 'border-z-border')}>
  {def.fields.map((field: any) => (
  <div key={field.name} className="space-y-1">
- <label className="text-xs font-black text-z-muted uppercase tracking-widest block">
+ <label className="text-xs font-semibold text-z-muted block">
  {field.label || humanize(field.name)}
  </label>
  <FieldRenderer
@@ -188,7 +188,7 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
  {/* Zone label */}
  <div className="flex items-center gap-2 px-1">
  <Layers size={10} className="text-gray-600 dark:text-z-muted" />
- <span className="text-xs font-black uppercase tracking-widest text-gray-600 dark:text-z-muted">
+ <span className="text-xs font-semibold text-gray-600 dark:text-z-muted">
  Dynamic Zone
  </span>
  <span className="text-xs text-z-secondary">— {value.length} component{value.length !== 1 ? 's' : ''}</span>
@@ -200,7 +200,7 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
  'py-5 text-center border border-dashed rounded-none-none',
  'border-z-border text-z-secondary'
  )}>
- <p className="text-xs font-bold ">No components — add one below</p>
+ <p className="text-xs font-bold">No components — add one below</p>
  </div>
  ) : (
  <Reorder.Group axis="y" values={value} onReorder={handleReorder} className="space-y-2">
@@ -235,7 +235,7 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
  type="button"
  onClick={handleOpenPicker}
  className={cn(
- 'w-full flex items-center justify-center gap-2 py-2.5 border border-dashed rounded-none-none transition-all text-xs font-black uppercase tracking-widest',
+ 'w-full flex items-center justify-center gap-2 py-2.5 border border-dashed rounded-none-none transition-all text-xs font-semibold  ',
  theme === 'dark'
  ? 'border-z-border text-z-secondary hover:border-gray-500/40 hover:text-gray-600 dark:text-z-muted hover:bg-gray-500/5'
  : 'border-z-border text-z-muted hover:border-gray-400 hover:text-gray-600 hover:bg-gray-50/50'
@@ -244,7 +244,7 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
  <Plus size={12} />
  Add Component
  {availableComponents.length > 0 && (
- <span className={cn('text-[9px] font-black ml-1', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
+ <span className={cn('text-sm font-semibold ml-1', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
  ({availableComponents.length} available)
  </span>
  )}

@@ -28,7 +28,7 @@ export function Card({
       className={cn(
         "relative rounded-none border transition-all duration-200 overflow-hidden",
         theme === 'dark' 
-          ? 'bg-z-panel backdrop-blur-md border-z-border shadow-[var(--z-active-glow)]' 
+          ? 'bg-z-panel backdrop-blur-md border-z-border shadow-sm' 
           : 'bg-z-panel border-z-border shadow-sm',
         interactive && (theme === 'dark' ? 'hover:border-z-accent/50 hover:bg-black/80' : 'hover:border-z-accent/50 hover:bg-gray-50'),
         paddingClass,
@@ -62,7 +62,7 @@ export function CardTitle({ className, children, ...props }: React.HTMLAttribute
   return (
     <h3
       className={cn(
-        "text-[10px] font-black uppercase tracking-widest",
+        "text-sm font-semibold  ",
         theme === 'dark' ? 'text-z-secondary' : 'text-z-primary',
         className
       )}
