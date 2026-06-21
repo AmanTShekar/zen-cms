@@ -25,7 +25,7 @@
     "@types/express-mongo-sanitize": "^2.1.2",
     "@types/node": "^20.19.41",
     "dependency-cruiser": "^16.0.0",
-    "eslint": "^9.0.0",
+    "eslint": "^10.5.0",
     "globals": "^17.6.0",
     "license-checker": "25.0.1",
     "playwright": "1.60.0",
