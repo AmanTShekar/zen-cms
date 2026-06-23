@@ -47,7 +47,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import SitePicker from './pages/SitePicker'
 import CollectionList from './pages/CollectionList'
-import { Cpu } from 'lucide-react'
+import { Cpu, Loader2 } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import api from './lib/api'
 import { ThemeProvider } from './context/ThemeContext'
@@ -79,21 +79,22 @@ const TrashPage = lazy(() => import('./pages/TrashPage'))
 const BuilderPage = lazy(() => import('./pages/BuilderPage'))
 
 const PageLoader = () => (
- <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-8">
- <div className="relative">
- <Cpu size={64} className="text-white animate-pulse" strokeWidth={0.5} />
- <div className="absolute inset-0 blur-3xl bg-white/10 animate-pulse" />
+ <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-6">
+ <div className="relative flex items-center justify-center w-24 h-24">
+ <div className="absolute inset-0 rounded-full border-2 border-white/5 border-t-white/30 animate-spin" />
+ <Loader2 size={32} className="text-white animate-spin opacity-50" strokeWidth={1} style={{ animationDuration: '3s' }} />
+ <div className="absolute inset-0 blur-3xl bg-white/5 animate-pulse" />
  </div>
- <p className="text-sm font-semibold text-white/20 animate-pulse">
- Loading Module...
+ <p className="text-sm font-semibold text-white/40 tracking-widest uppercase">
+ Loading
  </p>
  </div>
 )
 
 const InnerPageLoader = () => (
   <div className="flex-1 flex flex-col items-center justify-center h-full gap-4 opacity-50">
-    <Cpu size={32} className="text-z-secondary animate-pulse" />
-    <p className="text-xs font-semibold text-z-secondary animate-pulse">Loading...</p>
+    <Loader2 size={28} className="text-z-secondary animate-spin" strokeWidth={1.5} />
+    <p className="text-xs font-semibold text-z-secondary uppercase tracking-wider">Loading...</p>
   </div>
 )
 
@@ -128,13 +129,14 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
  if (isLoading || (isAuthenticated && onboardingDone === null)) {
  return (
- <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-8">
- <div className="relative">
- <Cpu size={64} className="text-white animate-pulse" strokeWidth={0.5} />
- <div className="absolute inset-0 blur-3xl bg-white/10 animate-pulse"></div>
+ <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-6">
+ <div className="relative flex items-center justify-center w-24 h-24">
+ <div className="absolute inset-0 rounded-full border-2 border-white/5 border-t-white/30 animate-spin" />
+ <Loader2 size={32} className="text-white animate-spin opacity-50" strokeWidth={1} style={{ animationDuration: '3s' }} />
+ <div className="absolute inset-0 blur-3xl bg-white/5 animate-pulse"></div>
  </div>
- <p className="text-sm font-semibold text-white/20 animate-pulse">
- Initializing System...
+ <p className="text-sm font-semibold text-white/40 tracking-widest uppercase">
+ Initializing System
  </p>
  </div>
  )

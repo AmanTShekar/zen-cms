@@ -7,11 +7,11 @@ import { AuthenticationError } from '../../errors'
 import { env } from '../../config/env';
 
 
-export const login = async (req: Request, res: Response, next: any) => {
+export const login = async (req: Request, res: Response, next: import('express').NextFunction) => {
   try {
     const { email, password } = req.body
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const userDoc = await adapter.findOne<Record<string, any>>('users', { email: email.toLowerCase() })
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const userDoc = await adapter.findOne<Record<string, unknown>>('users', { email: email.toLowerCase() })
 
     if (!userDoc || !(await AuthService.comparePassword(password, userDoc.password))) {
       throw new AuthenticationError()
@@ -38,10 +38,10 @@ export const logout = (req: Request, res: Response) => {
   res.json(createResponse({ success: true }))
 }
 
-export const getMe = async (req: Request, res: Response, next: any) => {
+export const getMe = async (req: Request, res: Response, next: import('express').NextFunction) => {
   try {
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const user = await adapter.findOne<Record<string, any>>('users', { _id: (req as any).user.id })
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const user = await adapter.findOne<Record<string, unknown>>('users', { _id: (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user.id })
     if (user) {
       delete user.password
     }

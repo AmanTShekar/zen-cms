@@ -52,7 +52,7 @@ export class CircuitBreakerService {
       }
       
       return result
-    } catch (err: any) {
+    } catch (err: unknown) {
       this.failures++
       this.lastFailureAt = Date.now()
 

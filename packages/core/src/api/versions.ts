@@ -22,7 +22,7 @@ router.use(requireAuth)
 // ── GET /api/v1/versions/:collection/:id ───────────────────────────────────────
 router.get('/:collection/:id', async (req: Request, res: Response, next) => {
   try {
-    const user = (req as any).user
+    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
     const engine = req.app.get('zenith_engine')
     let collection = req.params.collection
     let documentId = req.params.id
@@ -38,8 +38,8 @@ router.get('/:collection/:id', async (req: Request, res: Response, next) => {
     // Enforce read access checks (including RLS constraints + site scoping)
     await engine.local.findById(collection, documentId, { user, siteId })
 
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const versions = await adapter.find<Record<string, any>>('versions', {
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const versions = await adapter.find<Record<string, unknown>>('versions', {
       collectionName: collection,
       documentId: documentId,
     }, {
@@ -56,7 +56,7 @@ router.get('/:collection/:id', async (req: Request, res: Response, next) => {
 // ── GET /api/v1/versions/:collection/:id/:versionId ───────────────────────────
 router.get('/:collection/:id/:versionId', async (req: Request, res: Response, next) => {
   try {
-    const user = (req as any).user
+    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
     const engine = req.app.get('zenith_engine')
     let collection = req.params.collection
     let documentId = req.params.id
@@ -72,8 +72,8 @@ router.get('/:collection/:id/:versionId', async (req: Request, res: Response, ne
     // Enforce read access checks (including RLS constraints + site scoping)
     await engine.local.findById(collection, documentId, { user, siteId })
 
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const version = await adapter.findOne<Record<string, any>>('versions', { _id: req.params.versionId })
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const version = await adapter.findOne<Record<string, unknown>>('versions', { _id: req.params.versionId })
     if (!version || version.documentId !== documentId || version.collectionName !== collection) {
       throw new NotFoundError('Version', req.params.versionId)
     }
@@ -86,7 +86,7 @@ router.get('/:collection/:id/:versionId', async (req: Request, res: Response, ne
 // ── GET /api/v1/versions/:collection/:id/:versionId/diff ──────────────────────────────
 router.get('/:collection/:id/:versionId/diff', async (req: Request, res: Response, next) => {
   try {
-    const user = (req as any).user
+    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
     const engine = req.app.get('zenith_engine')
     let collection = req.params.collection
     let documentId = req.params.id
@@ -102,15 +102,15 @@ router.get('/:collection/:id/:versionId/diff', async (req: Request, res: Respons
     // Enforce read access checks (including RLS constraints + site scoping)
     await engine.local.findById(collection, documentId, { user, siteId })
 
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const version = await adapter.findOne<Record<string, any>>('versions', { _id: req.params.versionId })
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const version = await adapter.findOne<Record<string, unknown>>('versions', { _id: req.params.versionId })
     if (!version || version.documentId !== documentId || version.collectionName !== collection) {
       throw new NotFoundError('Version', req.params.versionId)
     }
 
     // delta is stored as { fieldName: { from, to } } by ContentService._calculateDelta()
     const delta = version.delta || {}
-    const diffs = Object.entries(delta).map(([field, change]: [string, any]) => ({
+    const diffs = Object.entries(delta).map(([field, change]: [string, unknown]) => ({
       field,
       from: change.from,
       to: change.to,
@@ -125,7 +125,7 @@ router.get('/:collection/:id/:versionId/diff', async (req: Request, res: Respons
 // ── POST /api/v1/versions/:collection/:id/:versionId/restore ────────────────────────
 router.post('/:collection/:id/:versionId/restore', async (req: Request, res: Response, next) => {
   try {
-    const user = (req as any).user
+    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
     const engine = req.app.get('zenith_engine')
     let collection = req.params.collection
     let documentId = req.params.id
@@ -137,12 +137,12 @@ router.post('/:collection/:id/:versionId/restore', async (req: Request, res: Res
     }
 
     const siteId = req.headers['x-zenith-site-id'] as string
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
     // ISOLATION FIX: validate the caller can access this document first (ensures siteId scope)
     await engine.local.findById(collection, documentId, { user, siteId })
 
-    const version = await adapter.findOne<Record<string, any>>('versions', { _id: req.params.versionId })
+    const version = await adapter.findOne<Record<string, unknown>>('versions', { _id: req.params.versionId })
     if (!version) throw new NotFoundError('Version', req.params.versionId)
 
     // ISOLATION FIX: verify the version's snapshot belongs to the same collection and document
@@ -156,7 +156,7 @@ router.post('/:collection/:id/:versionId/restore', async (req: Request, res: Res
     const snapshot = version.snapshot
 
     // Strip system fields from snapshot before restoring to avoid conflicts
-    const { _id, id, createdAt, updatedAt, ...restorable } = snapshot as any
+    const { _id, id, createdAt, updatedAt, ...restorable } = snapshot as Record<string, unknown>
 
     // Use local API to run update - this automatically validates RLS, runs hooks, site-scoping, and triggers webhooks
     const { doc: restored } = await engine.local.update(collection, documentId, restorable, { user, siteId })
@@ -170,7 +170,7 @@ router.post('/:collection/:id/:versionId/restore', async (req: Request, res: Res
 // ── POST /api/v1/versions/:collection/:id/:versionId/rollback-fields ────────────────
 router.post('/:collection/:id/:versionId/rollback-fields', async (req: Request, res: Response, next) => {
   try {
-    const user = (req as any).user
+    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
     const engine = req.app.get('zenith_engine')
     let collection = req.params.collection
     let documentId = req.params.id
@@ -182,8 +182,8 @@ router.post('/:collection/:id/:versionId/rollback-fields', async (req: Request, 
     }
 
     const siteId = req.headers['x-zenith-site-id'] as string
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const version = await adapter.findOne<Record<string, any>>('versions', { _id: req.params.versionId })
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const version = await adapter.findOne<Record<string, unknown>>('versions', { _id: req.params.versionId })
     if (!version || version.documentId !== documentId || version.collectionName !== collection) {
       throw new NotFoundError('Version', req.params.versionId)
     }
@@ -195,7 +195,7 @@ router.post('/:collection/:id/:versionId/rollback-fields', async (req: Request, 
       return res.status(400).json({ error: { message: 'fields parameter must be a non-empty array of field names.' } })
     }
 
-    const rollbackData: Record<string, any> = {}
+    const rollbackData: Record<string, unknown> = {}
     for (const field of fields) {
       if (snapshot && field in snapshot) {
         rollbackData[field] = snapshot[field]

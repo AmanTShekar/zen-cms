@@ -15,7 +15,7 @@ import { RLSService } from './rls'
 export const sandboxPool = new WorkerSandboxPool()
 
 export interface ContentOperationOptions extends BaseOptions {
-  user?: any
+  user?: Record<string, unknown>
   locale?: string
   skipHooks?: boolean
   skipVersioning?: boolean
@@ -44,19 +44,19 @@ export class ContentService<T = unknown> {
    * Applies recursive field hooks and cleans data for DB/API
    */
   private async processFields(
-    data: any,
+    data: Record<string, unknown>,
     options: ContentOperationOptions,
     action: 'afterRead' | 'beforeChange',
     fields: FieldConfig[] = this.config.fields,
-    existingDoc?: any
-  ): Promise<any> {
+    existingDoc?: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
     if (!data) return data
 
     // Ensure we are working with a plain object
     const cleanData = { ...data }
 
     for (const field of fields) {
-      if (((field as any).virtual || field.type === 'ui' || field.type === 'row' || field.type === 'join') && action === 'beforeChange') continue
+      if (((field as Record<string, unknown>).virtual || field.type === 'ui' || field.type === 'row' || field.type === 'join') && action === 'beforeChange') continue
 
       // ── Stored XSS Protection: Sanitize rich text inputs before saving ─────
       if (field.type === 'richtext' && action === 'beforeChange') {
@@ -76,7 +76,7 @@ export class ContentService<T = unknown> {
 
       // 1. Handle Localization
       // afterRead: flatten the locale map to the requested locale before returning
-      if ((field as any).localized && action === 'afterRead' && options.locale) {
+      if ((field as Record<string, unknown>).localized && action === 'afterRead' && options.locale) {
         const val = cleanData[field.name]
         if (val && typeof val === 'object' && !Array.isArray(val)) {
           cleanData[field.name] = i18n.getLocalizedValue(val, options.locale)
@@ -85,7 +85,7 @@ export class ContentService<T = unknown> {
 
       // beforeChange: merge the incoming value into the existing locale map so other
       // translations are preserved (e.g. POST ?locale=fr only updates the 'fr' key)
-      if ((field as any).localized && action === 'beforeChange' && options.locale) {
+      if ((field as Record<string, unknown>).localized && action === 'beforeChange' && options.locale) {
         const incomingVal = cleanData[field.name]
         if (incomingVal !== undefined && incomingVal !== null) {
           // Only wrap if the incoming value is not already a locale map
@@ -118,34 +118,34 @@ export class ContentService<T = unknown> {
       } else if (field.type === 'array' && Array.isArray(cleanData[field.name])) {
         const existingArr = Array.isArray(existingDoc?.[field.name]) ? existingDoc[field.name] : []
         cleanData[field.name] = await Promise.all(
-          cleanData[field.name].map((item: any, idx: number) =>
+          cleanData[field.name].map((item: Record<string, unknown>, idx: number) =>
             this.processFields(item, options, action, field.fields, existingArr[idx])
           )
         )
       } else if (field.type === 'blocks' && Array.isArray(cleanData[field.name])) {
         const existingBlocks = Array.isArray(existingDoc?.[field.name]) ? existingDoc[field.name] : []
         cleanData[field.name] = await Promise.all(
-          cleanData[field.name].map((block: any, idx: number) => {
-            const blockDef = (field.blocks || []).find((b: any) => b.slug === block.blockType)
+          cleanData[field.name].map((block: Record<string, unknown>, idx: number) => {
+            const blockDef = (field.blocks || []).find((b: Record<string, unknown>) => b.slug === block.blockType)
             return blockDef ? this.processFields(block, options, action, blockDef.fields, existingBlocks[idx]) : block
           })
         )
       }
 
       // 3. Apply field-level hook
-      const hookFn = (field as any).hooks?.[action]
+      const hookFn = (field as Record<string, unknown>).hooks?.[action]
       if (hookFn && cleanData[field.name] !== undefined) {
         try {
           cleanData[field.name] = await hookFn(cleanData[field.name])
-        } catch (err: any) {
+        } catch (err: unknown) {
           logger.warn({ field: field.name, err: err.message }, 'Field hook failed')
         }
       }
 
       // 4. Field-level Access Control (RBAC)
-      if ((field as any).access && options.user) {
-        if (action === 'afterRead' && typeof (field as any).access.read === 'function') {
-          if (!(field as any).access.read(options.user)) {
+      if ((field as Record<string, unknown>).access && options.user) {
+        if (action === 'afterRead' && typeof (field as Record<string, unknown>).access.read === 'function') {
+          if (!(field as Record<string, unknown>).access.read(options.user)) {
             // Strip the field out if user cannot read it
             delete cleanData[field.name]
           }
@@ -153,12 +153,12 @@ export class ContentService<T = unknown> {
         
         if (action === 'beforeChange') {
           const isCreating = !existingDoc
-          if (isCreating && typeof (field as any).access.create === 'function') {
-            if (!(field as any).access.create(options.user)) {
+          if (isCreating && typeof (field as Record<string, unknown>).access.create === 'function') {
+            if (!(field as Record<string, unknown>).access.create(options.user)) {
               delete cleanData[field.name] // Strip unauthorized create payload
             }
-          } else if (!isCreating && typeof (field as any).access.update === 'function') {
-            if (!(field as any).access.update(options.user)) {
+          } else if (!isCreating && typeof (field as Record<string, unknown>).access.update === 'function') {
+            if (!(field as Record<string, unknown>).access.update(options.user)) {
               delete cleanData[field.name] // Strip unauthorized update payload
             }
           }
@@ -171,21 +171,21 @@ export class ContentService<T = unknown> {
 
   private async executeHook(
     hookType: 'beforeValidate' | 'beforeCreate' | 'afterCreate' | 'afterRead' | 'beforeUpdate' | 'afterUpdate' | 'beforeDelete' | 'afterDelete',
-    hookFn: (...args: any[]) => any,
-    dataOrId: any,
-    user: any
-  ): Promise<any> {
-    const isIsolated = (this.config.hooks as any)?.[`${hookType}_isolated`] === true
+    hookFn: (...args: Record<string, unknown>[]) => unknown,
+    dataOrId: Record<string, unknown>,
+    user: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
+    const isIsolated = (this.config.hooks as Record<string, unknown>)?.[`${hookType}_isolated`] === true
     if (isIsolated) {
       try {
-        const timeoutMs = Number((this.config.hooks as any)?.[`${hookType}_timeout`]) || 500
+        const timeoutMs = Number((this.config.hooks as Record<string, unknown>)?.[`${hookType}_timeout`]) || 500
         return await sandboxPool.runTask({
-          hookType: hookType as any,
+          hookType: hookType as Record<string, unknown>,
           collectionSlug: this.config.slug,
           data: dataOrId,
           user
         }, timeoutMs)
-      } catch (err: any) {
+      } catch (err: unknown) {
         logger.error({ err: err.message }, 'Isolated hook execution failed or timed out.')
         throw new Error(`[Zenith] Isolated hook failed: ${err.message}`)
       }
@@ -241,7 +241,7 @@ export class ContentService<T = unknown> {
       throw new Error('[Zenith] Security: siteId must be provided for tenant-scoped operations')
     }
 
-    const query = this.config.singleton && id === 'singleton' ? {} : ({ _id: id } as any)
+    const query = this.config.singleton && id === 'singleton' ? {} : ({ _id: id } as Record<string, unknown>)
     if (options.siteId) {
       query.siteId = options.siteId
     }
@@ -297,10 +297,10 @@ export class ContentService<T = unknown> {
       }
 
       if (options.siteId) {
-        ;(docData as any).siteId = options.siteId
+        ;(docData as Record<string, unknown>).siteId = options.siteId
       }
       // Initialize _version for optimistic locking
-      ;(docData as any)._version = 1
+      ;(docData as Record<string, unknown>)._version = 1
 
       const createdDoc = await this.adapter.create<T>(this.config.slug, docData, opts)
 
@@ -341,13 +341,13 @@ export class ContentService<T = unknown> {
         throw new Error('[Zenith] Security: siteId must be provided for tenant-scoped operations')
       }
 
-      const query = this.config.singleton && id === 'singleton' ? {} : ({ _id: id } as any)
+      const query = this.config.singleton && id === 'singleton' ? {} : ({ _id: id } as Record<string, unknown>)
       if (options.siteId) {
         query.siteId = options.siteId
       }
 
       // Apply RLS (Row Level Security) for updates
-      RLSService.applyUpdateAccess(query, this.config.access, options.user, (options as any).req)
+      RLSService.applyUpdateAccess(query, this.config.access, options.user, (options as Record<string, unknown>).req)
 
       // Check active document locks (Concurrency Control)
       if (options.user) {
@@ -370,7 +370,7 @@ export class ContentService<T = unknown> {
 
       // Optimistic locking: reject stale saves
       if (options.expectedVersion !== undefined) {
-        const currentVersion = (oldDoc as any)._version
+        const currentVersion = (oldDoc as Record<string, unknown>)._version
         if (currentVersion !== undefined && currentVersion !== options.expectedVersion) {
           throw new ConflictError(
             `Document was modified by another user (expected version ${options.expectedVersion}, current ${currentVersion}). Please reload and try again.`
@@ -379,16 +379,16 @@ export class ContentService<T = unknown> {
       }
 
       // Task 05: Auto-validate workflow transitions when workflowStatus changes
-      const incomingWorkflowStatus = (data as any)?.workflowStatus
-      const currentWorkflowStatus = (oldDoc as any)?.workflowStatus || 'draft'
+      const incomingWorkflowStatus = (data as Record<string, unknown>)?.workflowStatus
+      const currentWorkflowStatus = (oldDoc as Record<string, unknown>)?.workflowStatus || 'draft'
       if (incomingWorkflowStatus && incomingWorkflowStatus !== currentWorkflowStatus) {
-        const userRole = roleFromString((options.user as any)?.role)
+        const userRole = roleFromString((options.user as Record<string, unknown>)?.role)
         const result = canTransition(currentWorkflowStatus, incomingWorkflowStatus, userRole)
         if (!result.valid) {
           throw new Error(`[Zenith] Workflow transition rejected: ${result.reason}`)
         }
         logger.info(
-          { from: currentWorkflowStatus, to: incomingWorkflowStatus, user: (options.user as any)?.email },
+          { from: currentWorkflowStatus, to: incomingWorkflowStatus, user: (options.user as Record<string, unknown>)?.email },
           'Workflow transition validated'
         )
       }
@@ -407,9 +407,9 @@ export class ContentService<T = unknown> {
         updateData = await hookRegistry.apply(`content:${this.config.slug}:beforeUpdate`, updateData)
       }
 
-      const targetId = this.config.singleton && id === 'singleton' ? (oldDoc as any)._id : id
+      const targetId = this.config.singleton && id === 'singleton' ? (oldDoc as Record<string, unknown>)._id : id
       // Increment _version on every save (optimistic locking document version tracker)
-      const newVersion = ((oldDoc as any)._version || 0) + 1
+      const newVersion = ((oldDoc as Record<string, unknown>)._version || 0) + 1
       const doc = await this.adapter.update<T>(this.config.slug, targetId, { ...updateData, _version: newVersion }, opts)
       if (!doc) throw new NotFoundError(this.config.name, id)
 
@@ -456,16 +456,16 @@ export class ContentService<T = unknown> {
     }
 
     if (this.config.singleton && id === 'singleton') {
-      const query = {} as any
+      const query = {} as Record<string, unknown>
       if (options.siteId) query.siteId = options.siteId
       const doc = await this.adapter.findOne(this.config.slug, query, options)
-      if (doc) targetId = (doc as any)._id
+      if (doc) targetId = (doc as Record<string, unknown>)._id
     } else {
-      const query = { _id: id } as any
+      const query = { _id: id } as Record<string, unknown>
       if (options.siteId) query.siteId = options.siteId
 
       // Apply RLS (Row Level Security) for deletes
-      RLSService.applyDeleteAccess(query, this.config.access, options.user, (options as any).req)
+      RLSService.applyDeleteAccess(query, this.config.access, options.user, (options as Record<string, unknown>).req)
 
       // Check active document locks (Concurrency Control)
       if (options.user) {
@@ -479,7 +479,7 @@ export class ContentService<T = unknown> {
 
       const doc = await this.adapter.findOne(this.config.slug, query, options)
       if (!doc) throw new NotFoundError(this.config.name, id)
-      targetId = (doc as any)._id
+      targetId = (doc as Record<string, unknown>)._id
     }
 
     let success = false
@@ -510,8 +510,8 @@ export class ContentService<T = unknown> {
     return success
   }
 
-  private _calculateDelta(oldDoc: any, newData: any): any {
-    const delta: Record<string, any> = {}
+  private _calculateDelta(oldDoc: Record<string, unknown>, newData: Record<string, unknown>): unknown {
+    const delta: Record<string, unknown> = {}
     for (const key of Object.keys(newData)) {
       if (JSON.stringify(oldDoc[key]) !== JSON.stringify(newData[key])) {
         delta[key] = { from: oldDoc[key], to: newData[key] }

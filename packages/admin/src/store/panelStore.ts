@@ -10,32 +10,36 @@ interface PanelState {
  leftWidth: number
  rightWidth: number
  activeRightTab: RightTab
- viewMode: ViewMode
- previewMode: PreviewMode
+  viewMode: ViewMode
+  previewMode: PreviewMode
+  focusMode: boolean
 
- setLeftOpen: (open: boolean) => void
- setRightOpen: (open: boolean) => void
- setLeftWidth: (width: number) => void
- setRightWidth: (width: number) => void
- setActiveRightTab: (tab: RightTab) => void
- setViewMode: (mode: ViewMode) => void
- setPreviewMode: (mode: PreviewMode) => void
+  setLeftOpen: (open: boolean) => void
+  setRightOpen: (open: boolean) => void
+  setLeftWidth: (width: number) => void
+  setRightWidth: (width: number) => void
+  setActiveRightTab: (tab: RightTab) => void
+  setViewMode: (mode: ViewMode) => void
+  setPreviewMode: (mode: PreviewMode) => void
+  toggleFocusMode: () => void
 }
 
 export const usePanelStore = create<PanelState>((set) => ({
- leftOpen: true,
- rightOpen: true,
- leftWidth: 300,
- rightWidth: 420,
- activeRightTab: 'preview',
- viewMode: 'visual',
- previewMode: 'desktop',
+  leftOpen: true,
+  rightOpen: true,
+  leftWidth: 300,
+  rightWidth: 420,
+  activeRightTab: 'preview',
+  viewMode: 'visual',
+  previewMode: 'desktop',
+  focusMode: false,
 
- setLeftOpen: (leftOpen) => set({ leftOpen }),
- setRightOpen: (rightOpen) => set({ rightOpen }),
- setLeftWidth: (leftWidth) => set({ leftWidth }),
- setRightWidth: (rightWidth) => set({ rightWidth }),
- setActiveRightTab: (activeRightTab) => set({ activeRightTab }),
- setViewMode: (viewMode) => set({ viewMode }),
- setPreviewMode: (previewMode) => set({ previewMode }),
+  setLeftOpen: (leftOpen) => set({ leftOpen }),
+  setRightOpen: (rightOpen) => set({ rightOpen }),
+  setLeftWidth: (leftWidth) => set({ leftWidth }),
+  setRightWidth: (rightWidth) => set({ rightWidth }),
+  setActiveRightTab: (activeRightTab) => set({ activeRightTab }),
+  setViewMode: (viewMode) => set({ viewMode }),
+  setPreviewMode: (previewMode) => set({ previewMode }),
+  toggleFocusMode: () => set((state) => ({ focusMode: !state.focusMode })),
 }))

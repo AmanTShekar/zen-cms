@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import * as otplibPkg from 'otplib'
-const authenticator = (otplibPkg as any).authenticator || (otplibPkg as any).default?.authenticator
+const authenticator = (otplibPkg as Record<string, unknown>).authenticator || (otplibPkg as Record<string, unknown>).default?.authenticator
 import QRCode from 'qrcode'
 import { AdapterFactory } from '../../database/adapters/AdapterFactory'
 import { AuthService, JWT_SECRET } from '../../services/auth'
@@ -25,9 +25,9 @@ export const mfaRouter: Router = Router()
 // ── POST /api/v1/auth/2fa/setup ────────────────────────────────────────────────
 mfaRouter.post('/setup', requireAuth, async (req: Request, res: Response, next) => {
   try {
-    const userId = (req as any).user.id
+    const userId = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user.id
     const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<Record<string, any>>('users', { id: userId })
+    const users = await adapter.find<Record<string, unknown>>('users', { id: userId })
     const user = users[0] || null
     if (!user) throw new NotFoundError('User')
 
@@ -50,9 +50,9 @@ mfaRouter.post('/verify-setup', requireAuth, async (req: Request, res: Response,
     const { token } = req.body
     if (!token) throw new InvalidPayloadError('MFA token is required')
 
-    const userId = (req as any).user.id
+    const userId = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user.id
     const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<Record<string, any>>('users', { id: userId })
+    const users = await adapter.find<Record<string, unknown>>('users', { id: userId })
     const user = users[0] || null
     if (!user || !user.twoFactorSecret) throw new InvalidPayloadError('2FA setup not initiated')
 
@@ -72,7 +72,7 @@ mfaRouter.post('/verify-login', mfaLimiter, async (req: Request, res: Response, 
     const { tempToken, token } = req.body
     if (!tempToken || !token) throw new InvalidPayloadError('tempToken and 2FA token are required')
 
-    let decoded: any
+    let decoded: Record<string, unknown>
     try {
       decoded = jwt.verify(tempToken, JWT_SECRET, { algorithms: ['HS256'] })
       if (decoded.type !== '2fa_temp') throw new Error()
@@ -81,7 +81,7 @@ mfaRouter.post('/verify-login', mfaLimiter, async (req: Request, res: Response, 
     }
 
     const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<Record<string, any>>('users', { id: decoded.id })
+    const users = await adapter.find<Record<string, unknown>>('users', { id: decoded.id })
     const user = users[0] || null
     if (!user || !user.twoFactorEnabled || !user.twoFactorSecret) {
       throw new InvalidPayloadError('2FA not enabled for this user')

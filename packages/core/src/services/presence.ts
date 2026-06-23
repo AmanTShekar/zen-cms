@@ -34,7 +34,7 @@ export class PresenceService {
     if (!this.adapter) return
 
     try {
-      const query: any = { userId, collectionName: collection, documentId }
+      const query: Record<string, unknown> = { userId, collectionName: collection, documentId }
       if (siteId) query.siteId = siteId
 
       // Simulating upsert by deleting and recreating to avoid adapter-specific upsert gaps
@@ -56,7 +56,7 @@ export class PresenceService {
   static async leave(userId: string, collection: string, documentId: string, siteId?: string): Promise<void> {
     if (!this.adapter) return
     try {
-      const query: any = { userId, collectionName: collection, documentId }
+      const query: Record<string, unknown> = { userId, collectionName: collection, documentId }
       if (siteId) query.siteId = siteId
       await this.adapter.deleteMany('z_presence', query).catch(() => {})
     } catch {
@@ -75,7 +75,7 @@ export class PresenceService {
       // Fetch all presence records for this document, filter by TTL in JS
       // (avoids MongoDB-specific $gt operator that breaks on Postgres adapter)
       const minLastActive = Date.now() - this.TTL
-      const query: any = { collectionName: collection, documentId }
+      const query: Record<string, unknown> = { collectionName: collection, documentId }
       if (siteId) query.siteId = siteId
       const records = await this.adapter.find<ActiveUser>('z_presence', query)
 
@@ -94,7 +94,7 @@ export class PresenceService {
       // Fetch all presence records and filter by TTL in JS
       // (avoids MongoDB-specific $gt operator that breaks on Postgres adapter)
       const minLastActive = Date.now() - this.TTL
-      const query: any = {}
+      const query: Record<string, unknown> = {}
       if (siteId) query.siteId = siteId
       const records = await this.adapter.find<ActiveUser>('z_presence', query)
 

@@ -83,7 +83,7 @@ export async function seedSystemRoles() {
     }
 
     logger.info('[Roles] System roles seeded')
-  } catch (err: any) {
+  } catch (err: unknown) {
     if (err.code === 11000 || err.message?.includes('duplicate key error')) {
       logger.info('[Roles] System roles already seeded (caught E11000)')
     } else {
@@ -98,7 +98,7 @@ export async function seedSystemRoles() {
 router.get('/', async (req, res, next) => {
   try {
     const adapter = AdapterFactory.getActiveAdapter()
-    const query: any = {}
+    const query: Record<string, unknown> = {}
     const siteId = req.headers['x-zenith-site-id'] as string
     if (siteId) query.siteId = siteId
     const roles = await adapter.find('z_roles', query, { sort: { isSystem: -1, roleName: 1 } })
@@ -112,7 +112,7 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const adapter = AdapterFactory.getActiveAdapter()
-    const query: any = { _id: req.params.id }
+    const query: Record<string, unknown> = { _id: req.params.id }
     const siteId = req.headers['x-zenith-site-id'] as string
     if (siteId) query.siteId = siteId
     const role = await adapter.findOne('z_roles', query)
@@ -137,7 +137,7 @@ router.post('/', async (req, res, next) => {
     }
 
     const adapter = AdapterFactory.getActiveAdapter()
-    const query: any = { roleName: validation.data.roleName }
+    const query: Record<string, unknown> = { roleName: validation.data.roleName }
     const siteId = req.headers['x-zenith-site-id'] as string
     if (siteId) query.siteId = siteId
     const existing = await adapter.findOne('z_roles', query)
@@ -163,12 +163,12 @@ router.post('/', async (req, res, next) => {
 router.patch('/:id', async (req, res, next) => {
   try {
     const adapter = AdapterFactory.getActiveAdapter()
-    const query: any = { _id: req.params.id }
+    const query: Record<string, unknown> = { _id: req.params.id }
     const siteId = req.headers['x-zenith-site-id'] as string
     if (siteId) query.siteId = siteId
     const role = await adapter.findOne('z_roles', query)
     if (!role) throw new NotFoundError('Role', req.params.id)
-    if ((role as any).isSystem) {
+    if ((role as Record<string, unknown>).isSystem) {
       throw new ForbiddenError('System roles cannot be modified. Clone the role to customize it.')
     }
 
@@ -183,8 +183,8 @@ router.patch('/:id', async (req, res, next) => {
     }
 
     const updated = await adapter.update('z_roles', req.params.id, validation.data)
-    invalidateRoleCache((role as any).roleName)
-    logger.info(`[Roles] Updated role "${(role as any).roleName}"`)
+    invalidateRoleCache((role as Record<string, unknown>).roleName)
+    logger.info(`[Roles] Updated role "${(role as Record<string, unknown>).roleName}"`)
     res.json(createResponse(updated))
   } catch (err) {
     next(err)
@@ -195,17 +195,17 @@ router.patch('/:id', async (req, res, next) => {
 router.delete('/:id', async (req, res, next) => {
   try {
     const adapter = AdapterFactory.getActiveAdapter()
-    const query: any = { _id: req.params.id }
+    const query: Record<string, unknown> = { _id: req.params.id }
     const siteId = req.headers['x-zenith-site-id'] as string
     if (siteId) query.siteId = siteId
     const role = await adapter.findOne('z_roles', query)
     if (!role) throw new NotFoundError('Role', req.params.id)
-    if ((role as any).isSystem) {
+    if ((role as Record<string, unknown>).isSystem) {
       throw new ForbiddenError('System roles cannot be deleted. They are protected by Zenith.')
     }
 
     // Check if any users are assigned this role
-    const usersCount = await adapter.count('users', { role: (role as any).roleName })
+    const usersCount = await adapter.count('users', { role: (role as Record<string, unknown>).roleName })
     if (usersCount > 0) {
       throw new ForbiddenError(
         `Cannot delete this role — ${usersCount} user(s) are currently assigned to it. Reassign them first.`
@@ -213,8 +213,8 @@ router.delete('/:id', async (req, res, next) => {
     }
 
     await adapter.delete('z_roles', req.params.id)
-    invalidateRoleCache((role as any).roleName)
-    logger.info(`[Roles] Deleted role "${(role as any).roleName}"`)
+    invalidateRoleCache((role as Record<string, unknown>).roleName)
+    logger.info(`[Roles] Deleted role "${(role as Record<string, unknown>).roleName}"`)
 
     res.json(createResponse({ success: true }))
   } catch (err) {
@@ -226,14 +226,14 @@ router.delete('/:id', async (req, res, next) => {
 router.post('/clone/:id', async (req, res, next) => {
   try {
     const adapter = AdapterFactory.getActiveAdapter()
-    const query: any = { _id: req.params.id }
+    const query: Record<string, unknown> = { _id: req.params.id }
     const siteId = req.headers['x-zenith-site-id'] as string
     if (siteId) query.siteId = siteId
     const source = await adapter.findOne('z_roles', query)
     if (!source) throw new NotFoundError('Role', req.params.id)
 
-    const newName = `${(source as any).roleName} (Copy)`
-    const checkQuery: any = { roleName: newName }
+    const newName = `${(source as Record<string, unknown>).roleName} (Copy)`
+    const checkQuery: Record<string, unknown> = { roleName: newName }
     if (siteId) checkQuery.siteId = siteId
     const alreadyExists = await adapter.findOne('z_roles', checkQuery)
     if (alreadyExists) {
@@ -243,13 +243,13 @@ router.post('/clone/:id', async (req, res, next) => {
     const cloned = await adapter.create('z_roles', {
       roleName: newName,
       roleType: 'custom',
-      description: `Cloned from "${(source as any).roleName}"`,
+      description: `Cloned from "${(source as Record<string, unknown>).roleName}"`,
       isSystem: false,
-      permissions: (source as any).permissions,
+      permissions: (source as Record<string, unknown>).permissions,
       ...(siteId ? { siteId } : {})
     })
 
-    logger.info(`[Roles] Cloned role "${(source as any).roleName}" → "${newName}"`)
+    logger.info(`[Roles] Cloned role "${(source as Record<string, unknown>).roleName}" → "${newName}"`)
     res.status(201).json(createResponse(cloned))
   } catch (err) {
     next(err)
@@ -261,7 +261,7 @@ router.post('/assign', async (req, res, next) => {
   try {
     // ISOLATION FIX: Only true global admins can assign global user roles.
     // A site-level custom role with wildcard permissions cannot escalate privileges globally.
-    if ((req as any).user.role !== 'admin') {
+    if ((req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user.role !== 'admin') {
       throw new ForbiddenError('Only true global administrators can assign global roles.')
     }
 
@@ -276,7 +276,7 @@ router.post('/assign', async (req, res, next) => {
     }
 
     const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<any>('users', { id: validation.data.userId })
+    const users = await adapter.find<Record<string, unknown>>('users', { id: validation.data.userId })
     const user = users[0]
     if (!user) throw new NotFoundError('User', validation.data.userId)
 
@@ -301,7 +301,7 @@ router.post('/assign', async (req, res, next) => {
 router.get('/users/list', async (req, res, next) => {
   try {
     // ISOLATION FIX: Only true global admins can list all global users.
-    if ((req as any).user.role !== 'admin') {
+    if ((req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user.role !== 'admin') {
       throw new ForbiddenError('Only true global administrators can list global users.')
     }
 
@@ -310,7 +310,7 @@ router.get('/users/list', async (req, res, next) => {
     const skip = (page - 1) * pageSize
 
     const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<any>('users', {}, { 
+    const users = await adapter.find<Record<string, unknown>>('users', {}, { 
       skip, 
       limit: pageSize, 
       sort: { createdAt: -1 },

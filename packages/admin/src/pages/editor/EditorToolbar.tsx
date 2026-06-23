@@ -15,6 +15,8 @@ import {
  Save,
  Loader2,
  Clock,
+ Maximize,
+ Minimize
 } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
 import { useEditorStore } from '../../store/editorStore'
@@ -77,7 +79,9 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  setLeftOpen,
  rightOpen,
  setRightOpen,
-  } = usePanelStore(useShallow(state => ({ viewMode: state.viewMode, setViewMode: state.setViewMode, leftOpen: state.leftOpen, setLeftOpen: state.setLeftOpen, rightOpen: state.rightOpen, setRightOpen: state.setRightOpen })))
+ focusMode,
+ toggleFocusMode
+  } = usePanelStore(useShallow(state => ({ viewMode: state.viewMode, setViewMode: state.setViewMode, leftOpen: state.leftOpen, setLeftOpen: state.setLeftOpen, rightOpen: state.rightOpen, setRightOpen: state.setRightOpen, focusMode: state.focusMode, toggleFocusMode: state.toggleFocusMode })))
 
  const { seoOpen,
  setSeoOpen,
@@ -228,6 +232,14 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  className={cn(iconBtn, iconBtnActive(rightOpen))}
  >
  <PanelRight size={15} />
+ </button>
+ <button
+ onClick={toggleFocusMode}
+ aria-label={focusMode ? 'Exit focus mode' : 'Enter focus mode'}
+ title="Focus Mode"
+ className={cn(iconBtn, iconBtnActive(focusMode))}
+ >
+ {focusMode ? <Minimize size={15} /> : <Maximize size={15} />}
  </button>
 
  <div className="w-px h-6 bg-z-hover mx-1" />

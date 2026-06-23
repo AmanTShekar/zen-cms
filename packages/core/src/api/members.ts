@@ -20,15 +20,15 @@ router.post('/register', async (req: Request, res: Response, next) => {
     const siteId = req.headers['x-zenith-site-id'] as string
     if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
 
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-    const existing = await adapter.findOne<Record<string, any>>('z_members', { email: email.toLowerCase(), siteId })
+    const existing = await adapter.findOne<Record<string, unknown>>('z_members', { email: email.toLowerCase(), siteId })
     if (existing) throw new InvalidPayloadError('Email already registered')
 
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
 
-    const member = await adapter.create<Record<string, any>>('z_members', {
+    const member = await adapter.create<Record<string, unknown>>('z_members', {
       email: email.toLowerCase(), 
       password: hashedPassword, 
       name,
@@ -61,11 +61,11 @@ router.post('/login', async (req: Request, res: Response, next) => {
     const { email, password } = req.body
     const siteId = req.headers['x-zenith-site-id'] as string
     if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
     
     // In SQL implementations, we fetch everything. If needed, you might need adapter method to fetch hidden fields.
     // For now, adapter.findOne will fetch the password as well in generic Drizzle wrapper.
-    const member = await adapter.findOne<Record<string, any>>('z_members', { email: email.toLowerCase(), siteId })
+    const member = await adapter.findOne<Record<string, unknown>>('z_members', { email: email.toLowerCase(), siteId })
 
     if (!member || !member.password) {
       throw new AuthenticationError('Invalid credentials')
@@ -106,10 +106,10 @@ router.get('/me', async (req: Request, res: Response, next) => {
     if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
 
     const token = authHeader.split(' ')[1]
-    const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] }) as any
+    const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] }) as Record<string, unknown>
 
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const member = await adapter.findOne<Record<string, any>>('z_members', { _id: decoded.id, siteId })
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const member = await adapter.findOne<Record<string, unknown>>('z_members', { _id: decoded.id, siteId })
     if (!member) throw new NotFoundError('Member', decoded.id)
 
     // Omit password

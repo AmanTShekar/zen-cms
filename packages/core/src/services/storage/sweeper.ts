@@ -26,7 +26,7 @@ export async function pruneOrphanedMedia(
     logger.info('[MediaSweeper] Beginning media storage sweep...')
 
     // 1. Fetch all media records from the database
-    const dbMediaRecords = await adapter.find<Record<string, any>>('media', {})
+    const dbMediaRecords = await adapter.find<Record<string, unknown>>('media', {})
     const dbMediaIds = new Set(dbMediaRecords.map((m) => m.id))
 
     // 2. Identify physical files (for local storage)
@@ -45,7 +45,7 @@ export async function pruneOrphanedMedia(
           logger.info({ file }, '[MediaSweeper] Pruning orphaned local file (not in database media collection)')
           const filePath = path.join(uploadDir, file)
           await fs.unlink(filePath).catch((err) => {
-            errors.push(`Failed to delete local file ${file}: ${err.message}`)
+            errors.push(`Failed to delete local file ${file}: ${(err as Error).message}`)
           })
           prunedCount++
         }
@@ -66,9 +66,9 @@ export async function pruneOrphanedMedia(
 
     // 3. Optional: prune media records and files that are not referenced in any collection schema
     if (options.pruneUnreferencedMedia) {
-      let collections: any[] = []
+      let collections: Record<string, unknown>[] = []
       try {
-        collections = await adapter.find<Record<string, any>>('z_collections', {})
+        collections = await adapter.find<Record<string, unknown>>('z_collections', {})
       } catch {
         // Ignore if z_collections table is empty or missing
       }
@@ -76,28 +76,28 @@ export async function pruneOrphanedMedia(
       const referencedUrls = new Set<string>()
 
       // Helper to recursively collect string URLs/IDs from object payloads
-      const extractReferences = (val: any) => {
+      const extractReferences = (val: unknown) => {
         if (!val) return
         if (typeof val === 'string') {
           if (val.includes('/media/') || val.match(/^[a-fA-F0-9-]{36}-/)) {
             referencedUrls.add(val)
           }
         } else if (Array.isArray(val)) {
-          val.forEach(extractReferences)
+          (val as unknown[]).forEach(extractReferences)
         } else if (typeof val === 'object') {
-          Object.values(val).forEach(extractReferences)
+          Object.values(val as object).forEach(extractReferences)
         }
       }
 
       // Query records from all user collections
-      for (const col of collections) {
+      for (const col of collections as any[]) {
         try {
-          const records = await adapter.find<Record<string, any>>(col.slug, {})
+          const records = await adapter.find<Record<string, unknown>>(col.slug, {})
           for (const doc of records) {
             extractReferences(doc)
           }
-        } catch (err: any) {
-          logger.warn({ slug: col.slug, err: err.message }, '[MediaSweeper] Failed to read collection records')
+        } catch (err: unknown) {
+          logger.warn({ slug: col.slug, err: (err as Error).message }, '[MediaSweeper] Failed to read collection records')
         }
       }
 
@@ -105,7 +105,7 @@ export async function pruneOrphanedMedia(
       const knownCollections = ['products', 'categories', 'authors', 'posts']
       for (const slug of knownCollections) {
         try {
-          const records = await adapter.find<Record<string, any>>(slug, {})
+          const records = await adapter.find<Record<string, unknown>>(slug, {})
           for (const doc of records) {
             extractReferences(doc)
           }
@@ -126,15 +126,15 @@ export async function pruneOrphanedMedia(
           
           try {
             await adapter.delete('media', mediaDoc.id)
-          } catch (err: any) {
-            errors.push(`Failed to delete media DB record ${mediaDoc.id}: ${err.message}`)
+          } catch (err: unknown) {
+            errors.push(`Failed to delete media DB record ${mediaDoc.id}: ${(err as Error).message}`)
           }
 
           try {
             const docProvider = await StorageService.getProvider(mediaDoc.siteId)
             await docProvider.delete(mediaDoc.id)
-          } catch (err: any) {
-            errors.push(`Failed to delete media physical asset ${mediaDoc.id}: ${err.message}`)
+          } catch (err: unknown) {
+            errors.push(`Failed to delete media physical asset ${mediaDoc.id}: ${(err as Error).message}`)
           }
           
           prunedCount++
@@ -143,9 +143,9 @@ export async function pruneOrphanedMedia(
     }
 
     logger.info({ prunedCount, errorCount: errors.length }, '[MediaSweeper] Media sweep completed successfully')
-  } catch (err: any) {
-    logger.error({ err: err.message }, '[MediaSweeper] Critical failure in media sweeper execution')
-    errors.push(err.message)
+  } catch (err: unknown) {
+    logger.error({ err: (err as Error).message }, '[MediaSweeper] Critical failure in media sweeper execution')
+    errors.push((err as Error).message)
   }
 
   return { prunedCount, errors }

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { X, Save, RotateCcw, Globe } from 'lucide-react'
+import { X, Save, RotateCcw, Globe, Wand2, Loader2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '../../../context/ThemeContext'
 import { useEditorStore } from '../../../store/editorStore'
@@ -17,9 +17,11 @@ const Facebook: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
  </svg>
 )
 import { humanize } from '../constants'
-import { cn } from '../../../lib/utils'
+import { cn, extractTextFromBlocks } from '../../../lib/utils'
 import { useFocusTrap } from '../../../hooks/useFocusTrap'
 import { useShallow } from 'zustand/react/shallow'
+import api from '../../../lib/api'
+import { toast } from 'react-hot-toast'
 
 interface SEOModalProps {
  onSave?: () => void | Promise<void>
@@ -41,6 +43,47 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  keywords: '',
  })
  const [previewTab, setPreviewTab] = useState<'google' | 'twitter' | 'facebook'>('google')
+ const [isGenerating, setIsGenerating] = useState<Record<string, boolean>>({})
+
+ const generateAIContent = async (field: keyof MetaField) => {
+ setIsGenerating(prev => ({ ...prev, [field]: true }))
+ try {
+ const contentText = extractTextFromBlocks(data?.sections)
+ if (!contentText) throw new Error('No content available to analyze')
+
+ let response: any;
+ if (field === 'description') {
+ response = await api.post('/content-tools/ai/meta-description', {
+ title: localMeta.title || data?.title || 'Untitled',
+ content: contentText
+ })
+ if (response.data?.data?.description) {
+ handleFieldChange(field, response.data.data.description)
+ toast.success('Generated description')
+ }
+ } else if (field === 'title') {
+ response = await api.post('/content-tools/ai/generate', {
+ prompt: `Write a highly optimized, compelling SEO title (max 60 chars) for this page. The page content is: ${contentText}. Follow SEO best practices: include the primary keyword near the beginning if possible, keep it engaging but accurate, and avoid clickbait.`
+ })
+ if (response.data?.data?.text) {
+ handleFieldChange(field, response.data.data.text.replace(/["']/g, '').trim())
+ toast.success('Generated title')
+ }
+ } else if (field === 'keywords') {
+ response = await api.post('/content-tools/ai/generate', {
+ prompt: `Extract exactly 5 highly relevant SEO keywords as a simple comma-separated list from this content: ${contentText}. Ensure these are context-based, specific, and reflect the true topic of the page.`
+ })
+ if (response.data?.data?.text) {
+ handleFieldChange(field, response.data.data.text.trim())
+ toast.success('Generated keywords')
+ }
+ }
+ } catch (e: any) {
+ toast.error(e?.response?.data?.error?.message || 'Failed to generate content')
+ } finally {
+ setIsGenerating(prev => ({ ...prev, [field]: false }))
+ }
+ }
 
  const siteUrl = activeSiteSlug === 'blog-demo'
  ? 'https://blog-demo.zenith.dev'
@@ -135,6 +178,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  SEO Meta
  </h3>
  <button
+ type="button"
  onClick={() => setSeoOpen(false)}
  aria-label="Close"
  className="p-1 hover:text-gray-600 dark:text-z-secondary transition-colors"
@@ -154,6 +198,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  ] as const).map((tab) => (
  <button
  key={tab.id}
+ type="button"
  onClick={() => setPreviewTab(tab.id)}
  aria-label={`${tab.label} preview`}
  className={cn(
@@ -330,12 +375,23 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  {META_FIELDS.map((field) => (
  <div key={field} className="space-y-1.5">
  <div className="flex items-center justify-between">
+ <div className="flex items-center gap-2">
  <label
  htmlFor={`seo-${field}`}
  className="text-xs font-semibold text-z-secondary px-1"
  >
  {humanize(field)}
  </label>
+ <button
+ type="button"
+ onClick={() => generateAIContent(field)}
+ disabled={isGenerating[field]}
+ title={`Auto-generate ${field} with AI`}
+ className="text-gray-400 hover:text-indigo-500 transition-colors disabled:opacity-50"
+ >
+ {isGenerating[field] ? <Loader2 size={12} className="animate-spin" /> : <Wand2 size={12} />}
+ </button>
+ </div>
  {field === 'description' && (
  <span className={cn(
  'text-xs font-semibold ',
@@ -403,6 +459,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  )}
  >
  <button
+ type="button"
  onClick={resetToDefaults}
  aria-label="Reset SEO fields"
  className={cn(
@@ -417,6 +474,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  </button>
  <div className="flex items-center gap-2">
  <button
+ type="button"
  onClick={() => setSeoOpen(false)}
  aria-label="Cancel and close"
  className={cn(
@@ -429,6 +487,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  Cancel
  </button>
  <button
+ type="button"
  onClick={commitAndClose}
  aria-label="Save SEO and close"
  className="flex items-center gap-2 px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-semibold rounded-none-none hover:bg-gray-500 transition-all"

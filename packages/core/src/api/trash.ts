@@ -18,11 +18,11 @@ router.use(requireAuth)
  * DELETE /api/v1/trash             — Empty trash for a collection or all
  */
 
-function getSoftDeleteCollections(config: any): any[] {
-  return (config.collections || []).filter((c: any) => c.softDelete)
+function getSoftDeleteCollections(config: { collections?: { softDelete?: boolean, slug?: string }[] }): { softDelete?: boolean, slug?: string }[] {
+  return (config.collections || []).filter((c: { softDelete?: boolean, slug?: string }) => c.softDelete)
 }
 
-function getDocTitle(doc: any): string {
+function getDocTitle(doc: Record<string, unknown>): string {
   return doc.title || doc.name || doc.heading || doc.label || doc.slug || String(doc._id || doc.id)
 }
 
@@ -33,8 +33,8 @@ function escapeRegex(str: string): string {
 // ── GET /api/v1/trash ──────────────────────────────────────────────────────────
 router.get('/', async (req: Request, res: Response, next) => {
   try {
-    const adapter = (req as any).zenith?.adapter
-    const config = (req as any).zenith?.config
+    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+    const config = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.config
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
 
     const page = Math.max(1, parseInt(req.query.page as string) || 1)
@@ -55,11 +55,11 @@ router.get('/', async (req: Request, res: Response, next) => {
     // Count totals and fetch items per collection in parallel
     const perColLimit = skip + limit // max items needed from any single collection
     const results = await Promise.allSettled(
-      softDeleteCollections.map(async (col: any) => {
+      softDeleteCollections.map(async (col: { softDelete?: boolean, slug: string }) => {
         // Adapter-agnostic filter: only the deletedAt check goes to the DB.
         // Free-text search is applied as a JS post-filter below to avoid
         // MongoDB-specific $regex/$or operators that break on Postgres.
-        const filter: Record<string, any> = { deletedAt: { $ne: null } }
+        const filter: Record<string, unknown> = { deletedAt: { $ne: null } }
         if (siteId) filter.siteId = siteId
 
         const [total, docs] = await Promise.all([
@@ -73,7 +73,7 @@ router.get('/', async (req: Request, res: Response, next) => {
         // Apply search as a JS-level post-filter (adapter-agnostic)
         const lowerSearch = search ? search.toLowerCase() : null
         const filteredDocs = lowerSearch
-          ? docs.filter((doc: any) =>
+          ? docs.filter((doc: Record<string, unknown>) =>
               ['title', 'name', 'heading', 'label', 'slug'].some((f) =>
                 typeof doc[f] === 'string' && doc[f].toLowerCase().includes(lowerSearch)
               )
@@ -83,7 +83,7 @@ router.get('/', async (req: Request, res: Response, next) => {
         return {
           slug: col.slug,
           total: lowerSearch ? filteredDocs.length : total,
-          items: filteredDocs.map((doc: any) => ({
+          items: filteredDocs.map((doc: Record<string, unknown>) => ({
             _id: doc._id,
             collectionSlug: col.slug,
             collectionName: col.name || col.slug,
@@ -96,7 +96,7 @@ router.get('/', async (req: Request, res: Response, next) => {
     )
 
     // Flatten, filter fulfilled, sort by deletedAt desc
-    let items: any[] = []
+    let items: Record<string, unknown>[] = []
     let grandTotal = 0
     for (const r of results) {
       if (r.status === 'fulfilled') {
@@ -121,7 +121,7 @@ router.get('/', async (req: Request, res: Response, next) => {
           totalPages: Math.ceil(total / limit),
           total,
         },
-        collections: softDeleteCollections.map((c: any) => ({
+        collections: softDeleteCollections.map((c: { softDelete?: boolean, slug?: string }) => ({
           slug: c.slug,
           name: c.name || c.slug,
         })),
@@ -135,8 +135,8 @@ router.get('/', async (req: Request, res: Response, next) => {
 // ── POST /api/v1/trash/restore ─────────────────────────────────────────────────
 router.post('/restore', async (req: Request, res: Response, next) => {
   try {
-    const adapter = (req as any).zenith?.adapter
-    const config = (req as any).zenith?.config
+    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+    const config = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.config
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
     const { collection, id } = req.body
 
@@ -146,13 +146,13 @@ router.post('/restore', async (req: Request, res: Response, next) => {
 
     // Verify the collection supports soft delete
     const softDeleteCollections = getSoftDeleteCollections(config)
-    const col = softDeleteCollections.find((c: any) => c.slug === collection)
+    const col = softDeleteCollections.find((c: { softDelete?: boolean, slug?: string }) => c.slug === collection)
     if (!col) {
       throw new NotFoundError('collection', collection)
     }
 
     // Verify site scoping
-    const query: Record<string, any> = { _id: id }
+    const query: Record<string, unknown> = { _id: id }
     if (siteId) query.siteId = siteId
 
     const doc = await adapter.findOne(collection, query)
@@ -168,8 +168,8 @@ router.post('/restore', async (req: Request, res: Response, next) => {
 // ── POST /api/v1/trash/purge ───────────────────────────────────────────────────
 router.post('/purge', async (req: Request, res: Response, next) => {
   try {
-    const adapter = (req as any).zenith?.adapter
-    const config = (req as any).zenith?.config
+    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+    const config = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.config
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
     const { collection, id } = req.body
 
@@ -179,14 +179,14 @@ router.post('/purge', async (req: Request, res: Response, next) => {
 
     // Verify the collection supports soft delete
     const softDeleteCollections = getSoftDeleteCollections(config)
-    const col = softDeleteCollections.find((c: any) => c.slug === collection)
+    const col = softDeleteCollections.find((c: { softDelete?: boolean, slug?: string }) => c.slug === collection)
     if (!col) {
       throw new NotFoundError('collection', collection)
     }
 
     // Adapter-agnostic lookup: try `id` first (Postgres), fall back to `_id` (MongoDB)
     // Also verify the document is actually soft-deleted (deletedAt non-null) in JS
-    let doc: any = await adapter.findOne(collection, { id, siteId: siteId || undefined }).catch(() => null)
+    let doc: Record<string, unknown> | null = await adapter.findOne(collection, { id, siteId: siteId || undefined }).catch(() => null)
     if (!doc) doc = await adapter.findOne(collection, { _id: id, siteId: siteId || undefined }).catch(() => null)
     if (!doc || !doc.deletedAt) throw new NotFoundError(collection, id)
 
@@ -200,8 +200,8 @@ router.post('/purge', async (req: Request, res: Response, next) => {
 // ── DELETE /api/v1/trash ───────────────────────────────────────────────────────
 router.delete('/', async (req: Request, res: Response, next) => {
   try {
-    const adapter = (req as any).zenith?.adapter
-    const config = (req as any).zenith?.config
+    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+    const config = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.config
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
     const targetCollection = req.query.collection as string | undefined
     const confirm = req.query.confirm as string | undefined
@@ -212,7 +212,7 @@ router.delete('/', async (req: Request, res: Response, next) => {
 
     const softDeleteCollections = getSoftDeleteCollections(config)
     const collections = targetCollection
-      ? softDeleteCollections.filter((c: any) => c.slug === targetCollection)
+      ? softDeleteCollections.filter((c: { softDelete?: boolean, slug?: string }) => c.slug === targetCollection)
       : softDeleteCollections
 
     if (targetCollection && collections.length === 0) {
@@ -220,15 +220,15 @@ router.delete('/', async (req: Request, res: Response, next) => {
     }
 
     const results = await Promise.allSettled(
-      collections.map(async (col: any) => {
-        const filter: Record<string, any> = { deletedAt: { $ne: null } }
+      collections.map(async (col: { softDelete?: boolean, slug: string }) => {
+        const filter: Record<string, unknown> = { deletedAt: { $ne: null } }
         if (siteId) filter.siteId = siteId
         const count = await adapter.deleteMany(col.slug, filter)
         return { slug: col.slug, deleted: count }
       })
     )
 
-    const summary: any[] = []
+    const summary: Record<string, unknown>[] = []
     for (const r of results) {
       if (r.status === 'fulfilled') summary.push(r.value)
     }

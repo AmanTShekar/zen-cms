@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import * as otplibPkg from 'otplib'
-const authenticator = (otplibPkg as any).authenticator || (otplibPkg as any).default?.authenticator
+const authenticator = (otplibPkg as Record<string, unknown>).authenticator || (otplibPkg as Record<string, unknown>).default?.authenticator
 import QRCode from 'qrcode'
 
 // Middleware to attach site identifier from header for multi‑tenant scoping
@@ -9,7 +9,7 @@ export function siteMiddleware(req: Request, res: Response, next: NextFunction) 
   const siteId = req.headers['x-zenith-site-id'];
 
   if (typeof siteId === 'string') {
-    (req as any).siteId = siteId;
+    (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).siteId = siteId;
   }
   next();
 }
@@ -134,14 +134,14 @@ router.post('/login', authLimiter, async (req: Request, res: Response, next) => 
     const refreshToken = AuthService.generateRefreshToken(payload)
 
     // Register session for token revocation
-    const decodedAccess = jwt.decode(accessToken) as any
+    const decodedAccess = jwt.decode(accessToken) as Record<string, unknown>
     if (decodedAccess?.jti) {
       await sessionStore.add(userId, decodedAccess.jti, user.email, 900, {
         userAgent: req.headers['user-agent'],
         ip: req.ip,
       })
     }
-    const decodedRefresh = jwt.decode(refreshToken) as any
+    const decodedRefresh = jwt.decode(refreshToken) as Record<string, unknown>
     if (decodedRefresh?.jti) {
       await sessionStore.add(userId, decodedRefresh.jti, user.email, 604800, {
         userAgent: req.headers['user-agent'],
@@ -175,7 +175,7 @@ router.post('/register', authLimiter, async (req: Request, res: Response, next) 
     const adapter = AdapterFactory.getActiveAdapter()
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
     const query = siteId ? { siteId } : {}
-    const settings = await adapter.findOne<Record<string, any>>('z_settings', query)
+    const settings = await adapter.findOne<Record<string, unknown>>('z_settings', query)
 
     if (!settings?.allowRegistration && process.env.ALLOW_REGISTRATION !== 'true') {
       throw new ForbiddenError('Open registration is disabled.')
@@ -186,14 +186,14 @@ router.post('/register', authLimiter, async (req: Request, res: Response, next) 
     const emailResult = emailSchema.safeParse(email)
     if (!emailResult.success) throw new InvalidPayloadError('Invalid email format')
 
-    const existingUsers = await adapter.find<Record<string, any>>('users', { email: email.toLowerCase() })
+    const existingUsers = await adapter.find<Record<string, unknown>>('users', { email: email.toLowerCase() })
     if (existingUsers.length > 0) throw new InvalidPayloadError('User already exists')
 
     const check = AuthService.validatePassword(password)
     if (!check.valid) throw new InvalidPayloadError(check.message!)
 
     const hashed = await AuthService.hashPassword(password)
-    const user = await adapter.create<Record<string, any>>('users', {
+    const user = await adapter.create<Record<string, unknown>>('users', {
       email: email.toLowerCase(),
       password: hashed,
       role: 'editor',
@@ -226,7 +226,7 @@ router.post('/register', authLimiter, async (req: Request, res: Response, next) 
     }
     
     // Set req.user so the audit middleware can capture this registration event
-    ;(req as any).user = { id: userId, email: user.email, name: user.email }
+    ;(req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user = { id: userId, email: user.email, name: user.email }
 
     res.status(201).json(createResponse({ user: payload, accessToken }))
   } catch (err) {
@@ -244,14 +244,14 @@ router.post('/refresh', authLimiter, async (req: Request, res: Response, next) =
     if (!decoded) throw new InvalidTokenError()
 
     const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<Record<string, any>>('users', { id: decoded.id })
+    const users = await adapter.find<Record<string, unknown>>('users', { id: decoded.id })
     const user = users[0] || null
     if (!user) throw new NotFoundError('User')
 
     const userId = (user.id || user._id).toString()
     const payload = { id: userId, email: user.email, role: user.role }
     const newAccess = AuthService.generateToken(payload)
-    const newRefresh = await AuthService.rotateRefreshToken(payload, (decoded as any).jti)
+    const newRefresh = await AuthService.rotateRefreshToken(payload, (decoded as Record<string, unknown>).jti)
 
     res.cookie('refreshToken', newRefresh, {
       httpOnly: true,
@@ -280,14 +280,14 @@ router.post('/logout', requireAuth, async (req: Request, res: Response) => {
   // Revoke the access and refresh tokens
   const token = req.cookies?.accessToken
   if (token) {
-    const decoded = jwt.decode(token) as any
+    const decoded = jwt.decode(token) as Record<string, unknown>
     if (decoded?.jti) {
       await sessionStore.revoke(decoded.jti, decoded.exp - Math.floor(Date.now() / 1000))
     }
   }
   const refreshToken = req.cookies?.refreshToken
   if (refreshToken) {
-    const decoded = jwt.decode(refreshToken) as any
+    const decoded = jwt.decode(refreshToken) as Record<string, unknown>
     if (decoded?.jti) {
       await sessionStore.revoke(decoded.jti, 604800)
     }
@@ -301,7 +301,7 @@ router.post('/logout', requireAuth, async (req: Request, res: Response) => {
 // ── POST /api/v1/auth/logout-all ─────────────────────────────────────────────
 router.post('/logout-all', requireAuth, async (req: Request, res: Response, next) => {
   try {
-    const userId = (req.user as any).id
+    const userId = (req.user as Record<string, unknown>).id
     const count = await sessionStore.revokeAllForUser(userId)
 
     res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'strict' })
@@ -316,7 +316,7 @@ router.post('/logout-all', requireAuth, async (req: Request, res: Response, next
 // ── GET /api/v1/auth/sessions ────────────────────────────────────────────────
 router.get('/sessions', requireAuth, async (req: Request, res: Response, next) => {
   try {
-    const userId = (req.user as any).id
+    const userId = (req.user as Record<string, unknown>).id
     const sessions = await sessionStore.listSessions(userId)
     res.json(createResponse({ sessions }))
   } catch (err) {
@@ -328,7 +328,7 @@ router.get('/sessions', requireAuth, async (req: Request, res: Response, next) =
 router.get('/me', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<Record<string, any>>('users', { id: (req as any).user.id })
+    const users = await adapter.find<Record<string, unknown>>('users', { id: (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user.id })
     const user = users[0] || null
     if (!user) throw new NotFoundError('User')
     const userId = (user.id || user._id).toString()
@@ -342,7 +342,7 @@ router.get('/me', requireAuth, async (req: Request, res: Response, next) => {
 router.delete('/me', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const adapter = AdapterFactory.getActiveAdapter()
-    const userId = (req as any).user.id
+    const userId = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user.id
     
     // Revoke all active sessions
     await sessionStore.revokeAllForUser(userId)
@@ -366,9 +366,9 @@ router.delete('/me', requireAuth, async (req: Request, res: Response, next) => {
 router.get('/me/export', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const adapter = AdapterFactory.getActiveAdapter()
-    const userId = (req as any).user.id
+    const userId = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user.id
     
-    const users = await adapter.find<Record<string, any>>('users', { id: userId })
+    const users = await adapter.find<Record<string, unknown>>('users', { id: userId })
     const user = users[0] || null
     if (!user) throw new NotFoundError('User')
 
@@ -420,7 +420,7 @@ router.post('/setup', authLimiter, async (req: Request, res: Response, next) => 
     if (!check.valid) throw new InvalidPayloadError(check.message!)
 
     const hashed = await AuthService.hashPassword(password)
-    const user = await adapter.create<Record<string, any>>('users', {
+    const user = await adapter.create<Record<string, unknown>>('users', {
       email: email.toLowerCase(),
       password: hashed,
       role: 'admin',

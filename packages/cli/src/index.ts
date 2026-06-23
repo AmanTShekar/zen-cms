@@ -88,7 +88,7 @@ program
           case 'date':
             return 'string | Date'
           case 'json':
-            return 'Record<string, any>'
+            return 'Record<string, unknown>'
           case 'media':
             return field.hasMany ? '{ url: string; alt?: string }[]' : '{ url: string; alt?: string }'
           case 'relation': {
@@ -96,7 +96,7 @@ program
             return field.required ? target : `${target} | null`
           }
           case 'group':
-            if (!field.fields) return 'Record<string, any>'
+            if (!field.fields) return 'Record<string, unknown>'
             return `{\n${field.fields
               .map((f: any) => `    ${f.name}${f.required ? '' : '?'}: ${mapFieldToType(f)};`)
               .join('\n')}\n  }`
@@ -185,8 +185,8 @@ program
 
       fs.writeFileSync(path.join(process.cwd(), options.output), output)
       console.log(chalk.green(`✓ Types generated successfully at ${options.output}`))
-    } catch (err: any) {
-      console.error(chalk.red(`Error: ${err.message}`))
+    } catch (err: unknown) {
+      console.error(chalk.red(`Error: ${(err as Error).message}`))
     }
   })
 
@@ -248,8 +248,8 @@ program
 
       fs.writeFileSync(path.resolve(process.cwd(), options.output), JSON.stringify(outputData, null, 2), 'utf-8')
       console.log(chalk.green(`✓ Schema exported successfully to ${options.output}`))
-    } catch (err: any) {
-      console.error(chalk.red(`Error exporting schema: ${err.message}`))
+    } catch (err: unknown) {
+      console.error(chalk.red(`Error exporting schema: ${(err as Error).message}`))
     }
   })
 
@@ -291,7 +291,7 @@ async function run() {
 
   const collections = [...(config.collections || [])]
   try {
-    const dbCollections = await adapter.find<any>('z_collections', {})
+    const dbCollections = await adapter.find<Record<string, unknown>>('z_collections', {})
     for (const col of dbCollections) {
       if (!collections.find(c => c.slug === col.slug)) {
         collections.push(col)
@@ -314,8 +314,8 @@ async function run() {
       const filePath = path.join(outputDir, \`\${col.slug}.json\`)
       fs.writeFileSync(filePath, JSON.stringify(docs, null, 2), 'utf-8')
       console.log(\`✓ Exported \${docs.length} documents for collection: \${col.slug}\`)
-    } catch (err: any) {
-      console.warn(\`⚠️ Skipping or failed to export collection \${col.slug}: \${err.message}\`)
+    } catch (err: unknown) {
+      console.warn(\`⚠️ Skipping or failed to export collection \${col.slug}: \${(err as Error).message}\`)
     }
   }
 
@@ -337,8 +337,8 @@ run().catch(err => {
           fs.unlinkSync(tempRunnerPath)
         }
       }
-    } catch (err: any) {
-      console.error(chalk.red(`Error exporting data: ${err.message}`))
+    } catch (err: unknown) {
+      console.error(chalk.red(`Error exporting data: ${(err as Error).message}`))
     }
   })
 
@@ -382,7 +382,7 @@ async function run() {
   const existingTablesResult = await adapter.db.execute(
     sql\`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'\`
   )
-  const existingTables = (existingTablesResult.rows || []).map((r: any) => r.table_name)
+  const existingTables = (existingTablesResult.rows || []).map((r: Record<string, unknown>) => r.table_name)
 
   const collections = config.collections || []
   let upSql = ''
@@ -436,7 +436,7 @@ async function run() {
       const colsResult = await adapter.db.execute(
         sql\`SELECT column_name FROM information_schema.columns WHERE table_name = \${col.slug}\`
       )
-      const existingCols = (colsResult.rows || []).map((r: any) => r.column_name)
+      const existingCols = (colsResult.rows || []).map((r: Record<string, unknown>) => r.column_name)
 
       for (const field of col.fields || []) {
         if (field.type === 'relation' && field.junctionTable) continue
@@ -484,7 +484,7 @@ async function run() {
           const jColsResult = await adapter.db.execute(
             sql\`SELECT column_name FROM information_schema.columns WHERE table_name = \${jTable}\`
           )
-          const existingJCols = (jColsResult.rows || []).map((r: any) => r.column_name)
+          const existingJCols = (jColsResult.rows || []).map((r: Record<string, unknown>) => r.column_name)
           const pivotFields = field.pivotFields || []
           for (const pf of pivotFields) {
             if (!existingJCols.includes(pf.name)) {
@@ -534,8 +534,8 @@ run().catch(err => {
           fs.unlinkSync(tempRunnerPath)
         }
       }
-    } catch (err: any) {
-      console.error(chalk.red(`Error generating migration: ${err.message}`))
+    } catch (err: unknown) {
+      console.error(chalk.red(`Error generating migration: ${(err as Error).message}`))
     }
   })
 
@@ -575,7 +575,7 @@ async function run() {
   \`)
 
   const rows = await adapter.db.execute(sql\`SELECT name FROM z_migrations\`)
-  const applied = (rows.rows || []).map((r: any) => r.name)
+  const applied = (rows.rows || []).map((r: Record<string, unknown>) => r.name)
 
   const migrationsDir = path.resolve(process.cwd(), 'migrations')
   if (!fs.existsSync(migrationsDir) || fs.readdirSync(migrationsDir).length === 0) {
@@ -632,8 +632,8 @@ run().catch(err => {
           fs.unlinkSync(tempRunnerPath)
         }
       }
-    } catch (err: any) {
-      console.error(chalk.red(`Error running migrations: ${err.message}`))
+    } catch (err: unknown) {
+      console.error(chalk.red(`Error running migrations: ${(err as Error).message}`))
     }
   })
 
@@ -666,7 +666,7 @@ async function run() {
   let applied: string[] = []
   try {
     const rows = await adapter.db.execute(sql\`SELECT name FROM z_migrations\`)
-    applied = (rows.rows || []).map((r: any) => r.name)
+    applied = (rows.rows || []).map((r: Record<string, unknown>) => r.name)
   } catch (err) {
     // z_migrations does not exist yet
   }
@@ -709,8 +709,8 @@ run().catch(err => {
           fs.unlinkSync(tempRunnerPath)
         }
       }
-    } catch (err: any) {
-      console.error(chalk.red(`Error displaying migration status: ${err.message}`))
+    } catch (err: unknown) {
+      console.error(chalk.red(`Error displaying migration status: ${(err as Error).message}`))
     }
   })
 
@@ -811,7 +811,7 @@ export function ${slug.replace(/-/g, '')}Plugin(options: ${className}Options = {
       ctx.logger.info('${className} plugin initialized')
 
       // Example: Hook into content creation across all collections
-      ctx.hooks.on('content:*:afterCreate', (doc: any) => {
+      ctx.hooks.on('content:*:afterCreate', (doc: Record<string, unknown>) => {
         if (options.debug) {
           ctx.logger.debug({ collection: doc?.collection }, 'Content created')
         }
@@ -967,8 +967,8 @@ async function run() {
       
       console.log(\`✓ Synced block: \${blockDef.slug}\`)
       syncedCount++
-    } catch (err: any) {
-      console.error(\`❌ Failed to sync \${file}: \${err.message}\`)
+    } catch (err: unknown) {
+      console.error(\`❌ Failed to sync \${file}: \${(err as Error).message}\`)
     }
   }
 
@@ -989,8 +989,8 @@ run().catch(err => {
           fs.unlinkSync(tempRunnerPath)
         }
       }
-    } catch (err: any) {
-      console.error(chalk.red(`Error syncing blocks: ${err.message}`))
+    } catch (err: unknown) {
+      console.error(chalk.red(`Error syncing blocks: ${(err as Error).message}`))
     }
   })
 

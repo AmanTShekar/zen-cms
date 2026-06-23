@@ -68,7 +68,7 @@ const ResetPasswordPage: React.FC = () => {
  return (
  <div
  className={cn(
- 'min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-sans antialiased selection:bg-gray-600 dark:bg-gray-600 selection:text-white transition-colors duration-500',
+ 'min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-sans antialiased dark:bg-gray-600 transition-colors duration-500',
  theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-[#111827]'
  )}
  >

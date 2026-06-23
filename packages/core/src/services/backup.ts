@@ -30,13 +30,13 @@ export const BackupService = {
 
     for (const col of targetCollections) {
       try {
-        const filter: any = {}
+        const filter: Record<string, unknown> = {}
         if (siteId) filter.siteId = siteId
         const docs = await adapter.find<unknown>(col, filter)
         records[col] = docs
         total += docs.length
         logger.info(`[Backup] Exported ${docs.length} records from "${col}"`)
-      } catch (err: any) {
+      } catch (err: unknown) {
         logger.warn({ err: err.message }, `[Backup] Skipping "${col}" — not found or inaccessible`)
       }
     }
@@ -99,7 +99,7 @@ export const BackupService = {
       if (!Array.isArray(docs) || docs.length === 0) continue
       for (const doc of docs) {
         try {
-          const { _id, ...data } = doc as any
+          const { _id, ...data } = doc as Record<string, unknown>
           // Preserve id (Postgres) or convert _id → id (MongoDB) so cross-doc references remain valid
           if (!data.id && _id) data.id = _id
           
@@ -107,7 +107,7 @@ export const BackupService = {
 
           await db.create(collection, data)
           restored++
-        } catch (err: any) {
+        } catch (err: unknown) {
           logger.warn({ err: err.message, collection }, `[Backup] Skipping record in "${collection}"`)
         }
       }

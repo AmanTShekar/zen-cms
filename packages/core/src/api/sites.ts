@@ -12,7 +12,7 @@ router.use(requireAuth)
 
 const MASKED_SITE_FIELDS = ['stripeSecretKey', 'stripeWebhookSecret']
 
-const maskSiteSecrets = (site: any) => {
+const maskSiteSecrets = (site: Record<string, unknown> | null) => {
   if (!site) return site
   const copy = { ...site }
   for (const field of MASKED_SITE_FIELDS) {
@@ -24,7 +24,7 @@ const maskSiteSecrets = (site: any) => {
   return copy
 }
 
-const unmaskSiteSecrets = (updates: any) => {
+const unmaskSiteSecrets = (updates: Record<string, unknown>) => {
   if (!updates) return updates
   const cleaned = { ...updates }
   for (const field of MASKED_SITE_FIELDS) {
@@ -39,29 +39,29 @@ const unmaskSiteSecrets = (updates: any) => {
 // Lists all sites where the user is an owner or a member
 router.get('/', async (req: Request, res: Response, next) => {
   try {
-    const user = (req as any).user
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-    const userFromDb = await adapter.findOne<Record<string, any>>('users', { _id: user.id }) || 
-                       await adapter.findOne<Record<string, any>>('users', { id: user.id }) || user
+    const userFromDb = await adapter.findOne<Record<string, unknown>>('users', { _id: user.id }) || 
+                       await adapter.findOne<Record<string, unknown>>('users', { id: user.id }) || user
     
     // Adapter-agnostic: fetch all sites owned by user OR containing user as member
     // $or with dot-notation `members.userId` is Mongo-specific; use JS filter instead
-    const allSites = await adapter.find<Record<string, any>>('z_sites', {}, { sort: { updatedAt: -1 } })
-    let sites = allSites.filter((s: any) =>
+    const allSites = await adapter.find<Record<string, unknown>>('z_sites', {}, { sort: { updatedAt: -1 } })
+    let sites = allSites.filter((s: Record<string, unknown>) =>
       user.role === 'admin' ||
       s.ownerId === user.id ||
-      (Array.isArray(s.members) && s.members.some((m: any) => m.userId === user.id)) ||
-      (Array.isArray((userFromDb as any).specialAccess) && (
-        (userFromDb as any).specialAccess.includes(`site:${s.slug}`) ||
-        (userFromDb as any).specialAccess.includes(`site:${s.id || s._id}`)
+      (Array.isArray(s.members) && s.members.some((m: Record<string, unknown>) => m.userId === user.id)) ||
+      (Array.isArray((userFromDb as Record<string, unknown>).specialAccess) && (
+        (userFromDb as Record<string, unknown>).specialAccess.includes(`site:${s.slug}`) ||
+        (userFromDb as Record<string, unknown>).specialAccess.includes(`site:${s.id || s._id}`)
       ))
     )
     if (req.query.workspaceId) {
-      sites = sites.filter((s: any) => s.workspaceId === req.query.workspaceId)
+      sites = sites.filter((s: Record<string, unknown>) => s.workspaceId === req.query.workspaceId)
     }
 
-    res.json(createResponse(sites.map((s: any) => maskSiteSecrets(s))))
+    res.json(createResponse(sites.map((s: Record<string, unknown>) => maskSiteSecrets(s))))
   } catch (err) {
     next(err)
   }
@@ -79,16 +79,16 @@ router.post('/', async (req: Request, res: Response, next) => {
       throw new InvalidPayloadError('workspaceId is a required field.')
     }
 
-    const user = (req as any).user
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
     // Check if slug is unique
-    const existing = await adapter.findOne<Record<string, any>>('z_sites', { slug: slug.toLowerCase() })
+    const existing = await adapter.findOne<Record<string, unknown>>('z_sites', { slug: slug.toLowerCase() })
     if (existing) {
       throw new InvalidPayloadError(`A site workspace with the slug '${slug}' already exists.`)
     }
 
-    const site = await adapter.create<Record<string, any>>('z_sites', {
+    const site = await adapter.create<Record<string, unknown>>('z_sites', {
       name,
       slug: slug.toLowerCase(),
       icon: icon || '🌐',
@@ -116,20 +116,20 @@ router.post('/', async (req: Request, res: Response, next) => {
 router.get('/:id', async (req: Request, res: Response, next) => {
   try {
     const { id } = req.params
-    const user = (req as any).user
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
     // Adapter-agnostic: fetch by id or _id, then JS-verify membership
-    const allById = await adapter.find<Record<string, any>>('z_sites', { id })
-    let site: any = allById[0] || null
+    const allById = await adapter.find<Record<string, unknown>>('z_sites', { id })
+    let site: Record<string, unknown> | null = allById[0] || null
     if (!site) {
-      const allByMongoId = await adapter.find<Record<string, any>>('z_sites', { _id: id })
+      const allByMongoId = await adapter.find<Record<string, unknown>>('z_sites', { _id: id })
       site = allByMongoId[0] || null
     }
 
     const isMember = site && (
       site.ownerId === user.id ||
-      (Array.isArray(site.members) && site.members.some((m: any) => m.userId === user.id))
+      (Array.isArray(site.members) && site.members.some((m: Record<string, unknown>) => m.userId === user.id))
     )
     if (!isMember) throw new NotFoundError('Site workspace', id)
 
@@ -143,19 +143,19 @@ router.get('/:id', async (req: Request, res: Response, next) => {
 router.patch('/:id', async (req: Request, res: Response, next) => {
   try {
     const { id } = req.params
-    const user = (req as any).user
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
     // Adapter-agnostic lookup
-    const allById = await adapter.find<Record<string, any>>('z_sites', { id })
-    let site: any = allById[0] || null
+    const allById = await adapter.find<Record<string, unknown>>('z_sites', { id })
+    let site: Record<string, unknown> | null = allById[0] || null
     if (!site) {
-      const allByMongoId = await adapter.find<Record<string, any>>('z_sites', { _id: id })
+      const allByMongoId = await adapter.find<Record<string, unknown>>('z_sites', { _id: id })
       site = allByMongoId[0] || null
     }
     if (!site) throw new NotFoundError('Site workspace', id)
 
-    const member = site.members.find((m: any) => m.userId === user.id)
+    const member = site.members.find((m: Record<string, unknown>) => m.userId === user.id)
     const isAdmin = member?.role === 'admin' || site.ownerId === user.id
 
     if (!isAdmin) {
@@ -167,7 +167,7 @@ router.patch('/:id', async (req: Request, res: Response, next) => {
     delete updates.ownerId
     delete updates.members
 
-    const updatedSite = await adapter.update<Record<string, any>>('z_sites', id, updates)
+    const updatedSite = await adapter.update<Record<string, unknown>>('z_sites', id, updates)
     res.json(createResponse(maskSiteSecrets(updatedSite)))
   } catch (err) {
     next(err)
@@ -178,14 +178,14 @@ router.patch('/:id', async (req: Request, res: Response, next) => {
 router.delete('/:id', async (req: Request, res: Response, next) => {
   try {
     const { id } = req.params
-    const user = (req as any).user
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
     // Adapter-agnostic lookup
-    const allById = await adapter.find<Record<string, any>>('z_sites', { id })
-    let site: any = allById[0] || null
+    const allById = await adapter.find<Record<string, unknown>>('z_sites', { id })
+    let site: Record<string, unknown> | null = allById[0] || null
     if (!site) {
-      const allByMongoId = await adapter.find<Record<string, any>>('z_sites', { _id: id })
+      const allByMongoId = await adapter.find<Record<string, unknown>>('z_sites', { _id: id })
       site = allByMongoId[0] || null
     }
     if (!site) throw new NotFoundError('Site workspace', id)
@@ -207,24 +207,24 @@ router.post('/:id/members', async (req: Request, res: Response, next) => {
   try {
     const { id } = req.params
     const { userId, role } = req.body
-    const user = (req as any).user
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
     if (!userId || !role) {
       throw new InvalidPayloadError('userId and role are required fields.')
     }
 
     // Adapter-agnostic lookup
-    const allById = await adapter.find<Record<string, any>>('z_sites', { id })
-    let site: any = allById[0] || null
+    const allById = await adapter.find<Record<string, unknown>>('z_sites', { id })
+    let site: Record<string, unknown> | null = allById[0] || null
     if (!site) {
-      const allByMongoId = await adapter.find<Record<string, any>>('z_sites', { _id: id })
+      const allByMongoId = await adapter.find<Record<string, unknown>>('z_sites', { _id: id })
       site = allByMongoId[0] || null
     }
     if (!site) throw new NotFoundError('Site workspace', id)
 
     // Only admin or owner can invite members
-    const member = site.members.find((m: any) => m.userId === user.id)
+    const member = site.members.find((m: Record<string, unknown>) => m.userId === user.id)
     const isAdmin = member?.role === 'admin' || site.ownerId === user.id
 
     if (!isAdmin) {
@@ -232,13 +232,13 @@ router.post('/:id/members', async (req: Request, res: Response, next) => {
     }
 
     // Check if user is already a member
-    const existingMember = site.members.find((m: any) => m.userId === userId)
+    const existingMember = site.members.find((m: Record<string, unknown>) => m.userId === userId)
     if (existingMember) {
       throw new InvalidPayloadError('This user is already a member of this workspace.')
     }
 
     const updatedMembers = [...site.members, { userId, role, addedAt: new Date() }]
-    const updatedSite = await adapter.update<Record<string, any>>('z_sites', id, { members: updatedMembers })
+    const updatedSite = await adapter.update<Record<string, unknown>>('z_sites', id, { members: updatedMembers })
 
     res.json(createResponse(updatedSite))
   } catch (err) {
@@ -251,20 +251,20 @@ router.post('/:id/members', async (req: Request, res: Response, next) => {
 router.delete('/:id/members/:userId', async (req: Request, res: Response, next) => {
   try {
     const { id, userId } = req.params
-    const user = (req as any).user
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
     // Adapter-agnostic lookup
-    const allById = await adapter.find<Record<string, any>>('z_sites', { id })
-    let site: any = allById[0] || null
+    const allById = await adapter.find<Record<string, unknown>>('z_sites', { id })
+    let site: Record<string, unknown> | null = allById[0] || null
     if (!site) {
-      const allByMongoId = await adapter.find<Record<string, any>>('z_sites', { _id: id })
+      const allByMongoId = await adapter.find<Record<string, unknown>>('z_sites', { _id: id })
       site = allByMongoId[0] || null
     }
     if (!site) throw new NotFoundError('Site workspace', id)
 
     // Only admin, owner, or the user themselves (leaving the site) can remove a member
-    const member = site.members.find((m: any) => m.userId === user.id)
+    const member = site.members.find((m: Record<string, unknown>) => m.userId === user.id)
     const isAdmin = member?.role === 'admin' || site.ownerId === user.id
     const isSelf = user.id === userId
 
@@ -279,8 +279,8 @@ router.delete('/:id/members/:userId', async (req: Request, res: Response, next) 
       )
     }
 
-    const filteredMembers = site.members.filter((m: any) => m.userId !== userId)
-    const updatedSite = await adapter.update<Record<string, any>>('z_sites', id, { members: filteredMembers })
+    const filteredMembers = site.members.filter((m: Record<string, unknown>) => m.userId !== userId)
+    const updatedSite = await adapter.update<Record<string, unknown>>('z_sites', id, { members: filteredMembers })
 
     res.json(createResponse(updatedSite))
   } catch (err) {

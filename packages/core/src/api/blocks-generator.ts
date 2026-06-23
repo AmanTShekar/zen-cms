@@ -86,7 +86,7 @@ ${fieldsCode}
     await fs.promises.writeFile(filePath, fileContent, 'utf-8')
 
     res.status(200).json({ success: true, message: `Block ${data.type} generated successfully`, path: filePath })
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error generating block:', err)
     res.status(400).json({ error: { message: err.message || 'Validation failed' } })
   }
@@ -124,7 +124,7 @@ router.get('/', async (req, res) => {
     }
 
     res.json({ data: blocks })
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error listing blocks:', err)
     res.status(500).json({ error: { message: 'Failed to list blocks' } })
   }

@@ -79,7 +79,7 @@ export function getTraceparentHeader(): string | undefined {
 /**
  * Extracts W3C traceparent or falls back to creating a new trace context.
  */
-export function extractTraceContext(headers: Record<string, any>): TraceContext {
+export function extractTraceContext(headers: Record<string, unknown>): TraceContext {
   const traceparent = headers['traceparent'] || headers['x-traceparent']
   if (typeof traceparent === 'string') {
     const parts = traceparent.split('-')

@@ -184,12 +184,12 @@ export default function SitePicker() {
  )
 
  return (
- <div className="min-h-screen bg-black text-white flex flex-col justify-between selection:bg-white selection:text-black">
+ <div className="flex-1 w-full min-h-0 bg-black text-white flex flex-col justify-between overflow-y-auto overflow-x-hidden">
  {/* 🚀 Sleek Minimal Top Navigation Header */}
  <header className="border-b border-z-border px-8 py-6 flex items-center justify-between backdrop-blur-md bg-black/50 sticky top-0 z-50">
  <div className="flex items-center gap-4">
  <div className="relative flex items-center justify-center w-8 h-8 rounded-none-none border border-z-border bg-z-hover">
- <Cpu size={16} className="text-white animate-pulse" />
+ <Loader2 size={16} className="text-white animate-spin opacity-80" strokeWidth={1.5} />
  <div className="absolute inset-0 blur-lg bg-white/10 rounded-none-none"></div>
  </div>
  <div>
@@ -212,7 +212,7 @@ export default function SitePicker() {
  </header>
 
  {/* 🔮 Cosmic Launchpad Core */}
- <main className="max-w-6xl w-full mx-auto px-6 py-12 flex-grow flex flex-col justify-center">
+ <main className="max-w-6xl w-full mx-auto px-6 py-12 flex-grow flex flex-col justify-start">
  <div className="max-w-2xl mb-12">
  <div className="inline-flex items-center gap-2 px-3 py-1 border border-z-border bg-z-hover text-sm font-semibold text-white/50 mb-4 rounded-none-none font-mono">
  <Globe size={10} className="animate-spin-slow" /> Hierarchical Workspace & Tenant Select
@@ -347,16 +347,16 @@ export default function SitePicker() {
  </div>
 
  {/* Right Column: Panel for Creating New Site inside active workspace */}
- <div 
- className="p-8 shadow-sm"
- style={{
- backgroundColor: 'rgba(17, 24, 39, 0.65)',
- backdropFilter: 'blur(12px)',
- WebkitBackdropFilter: 'blur(12px)',
- border: '1px solid rgba(255, 255, 255, 0.08)',
- borderRadius: '12px',
- }}
- >
+ <div    className="p-8 shadow-sm"
+    style={{
+      backgroundColor: 'rgba(0, 0, 0, 0.65)',
+      backdropFilter: 'blur(12px)',
+      WebkitBackdropFilter: 'blur(12px)',
+      border: '1px solid rgba(255, 255, 255, 0.08)',
+      borderRadius: '0px',
+      boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)'
+    }}
+  >
  <div className="flex items-center gap-2 mb-6">
  <Plus size={16} className="text-[var(--z-accent)]" />
  <h2 className="text-sm font-semibold">New Site Tenant</h2>
@@ -458,11 +458,12 @@ export default function SitePicker() {
  <div
  className="w-full max-w-md p-8 relative overflow-hidden shadow-sm"
  style={{
- backgroundColor: 'rgba(17, 24, 39, 0.85)',
+ backgroundColor: 'rgba(0, 0, 0, 0.85)',
  backdropFilter: 'blur(16px)',
  WebkitBackdropFilter: 'blur(16px)',
  border: '1px solid rgba(255, 255, 255, 0.08)',
- borderRadius: '12px',
+ borderRadius: '0px',
+ boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)'
  }}
  >
  <div className="flex items-center justify-between mb-6">

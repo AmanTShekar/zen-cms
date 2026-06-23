@@ -692,9 +692,9 @@ export default function SetupWizard() {
  const current = STEPS[step]
 
  return (
- <div className={cn('min-h-screen flex flex-col items-center justify-center p-4', bg)}>
+ <div className={cn('flex-1 w-full min-h-0 flex flex-col p-4 overflow-y-auto overflow-x-hidden', bg)}>
  {/* Skip */}
- <div className="w-full max-w-2xl flex justify-end mb-4">
+ <div className="w-full max-w-2xl flex justify-end mb-4 mx-auto mt-auto">
  <button
  onClick={skip}
  className="flex items-center gap-1 text-sm font-semibold text-z-secondary hover:text-gray-300 transition-colors"
@@ -704,7 +704,7 @@ export default function SetupWizard() {
  </div>
 
  {/* Card */}
- <div className={cn('w-full max-w-2xl border rounded-none-none overflow-hidden', card)}>
+ <div className={cn('w-full max-w-2xl border rounded-none-none overflow-hidden mx-auto my-auto', card)}>
  {/* Progress bar */}
  <div
  className={cn('h-1 transition-all duration-500 bg-gray-600 dark:bg-gray-600')}

@@ -33,7 +33,7 @@ const PointField: React.FC<Props> = ({ field: _field, value, onChange, disabled 
           onChange={(e) => onChange([Number(e.target.value), coords[1]])}
           step="any"
           disabled={disabled}
-          className="w-full bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-none-none px-3 py-2 text-sm focus:border-z-accent/50 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black disabled:opacity-60 disabled:cursor-not-allowed text-white placeholder:text-z-secondary"
+          className="w-full bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-none-none px-3 py-3 text-sm focus:border-z-accent/50 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black disabled:opacity-60 disabled:cursor-not-allowed text-white placeholder:text-z-secondary"
           placeholder="0.0"
         />
       </div>
@@ -47,7 +47,7 @@ const PointField: React.FC<Props> = ({ field: _field, value, onChange, disabled 
           onChange={(e) => onChange([coords[0], Number(e.target.value)])}
           step="any"
           disabled={disabled}
-          className="w-full bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-none-none px-3 py-2 text-sm focus:border-z-accent/50 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black disabled:opacity-60 disabled:cursor-not-allowed text-white placeholder:text-z-secondary"
+          className="w-full bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-none-none px-3 py-3 text-sm focus:border-z-accent/50 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black disabled:opacity-60 disabled:cursor-not-allowed text-white placeholder:text-z-secondary"
           placeholder="0.0"
         />
       </div>

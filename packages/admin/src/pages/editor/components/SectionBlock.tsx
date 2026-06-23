@@ -201,7 +201,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  {/* Section Header — always visible, even when collapsed */}
  <div
  className={cn(
- 'flex items-center justify-between px-6 py-3 border-b select-none',
+ 'flex items-center justify-between px-6 py-4 border-b select-none',
  isCollapsed ? 'border-b-0' : '',
  theme === 'dark' ? 'border-white/[0.03] bg-z-panel' : 'border-z-border shadow-sm bg-gray-50/50'
  )}
@@ -508,16 +508,16 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  isFullWidth && 'md:col-span-2'
  )}
  >
- <div className="space-y-0.5">
+ <div className="space-y-1.5">
  <div className="flex items-center gap-2">
- <label className="text-xs font-semibold text-z-secondary px-1 opacity-50">
+ <label className="text-sm font-semibold text-z-secondary px-1">
  {field.label || field.name}
  </label>
  <span className={cn(
- 'px-1.5 py-0.5 text-sm font-semibold  rounded-none-none',
+ 'px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold rounded-none-none border',
  theme === 'dark'
- ? 'bg-z-hover text-gray-600'
- : 'bg-gray-100 text-z-muted'
+ ? 'bg-gray-500/10 border-gray-500/20 text-gray-600'
+ : 'bg-gray-100 border-gray-200 text-z-muted'
  )}>
  {field.type}
  </span>
@@ -528,7 +528,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  )}
  </div>
  {field.description && (
- <p className={cn('text-sm font-medium px-1 opacity-40', theme === 'dark' ? 'text-z-muted' : 'text-z-secondary')}>
+ <p className={cn('text-xs font-medium px-1.5 opacity-60', theme === 'dark' ? 'text-z-muted' : 'text-z-secondary')}>
  {field.description}
  </p>
  )}
@@ -573,9 +573,9 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  const errorKey = `${section.id}:${field.name}`
 
  return (
- <div key={field.name} className="space-y-2">
+ <div key={field.name} className="space-y-1.5">
  <div className="flex items-center gap-2">
- <label className="text-sm font-semibold text-z-secondary px-1 opacity-60">
+ <label className="text-sm font-semibold text-z-secondary px-1">
  {field.label || field.name}
  </label>
  </div>

@@ -8,7 +8,7 @@ import { AdapterFactory } from './adapters/AdapterFactory';
  */
 export async function migrateLegacySiteIds() {
   const adapter = AdapterFactory.getActiveAdapter();
-  const defaultSite = await adapter.findOne<Record<string, any>>('z_sites', {});
+  const defaultSite = await adapter.findOne<Record<string, unknown>>('z_sites', {});
   if (!defaultSite) {
     console.warn('No site found – aborting legacy siteId migration');
     return;
@@ -18,11 +18,11 @@ export async function migrateLegacySiteIds() {
 
   for (const coll of collections) {
     // Find docs without a siteId field
-    const withoutSite = await (adapter as any).find(coll, { siteId: { $exists: false } });
+    const withoutSite = await (adapter as import('./adapters/BaseAdapter').DatabaseAdapter).find(coll, { siteId: { $exists: false } });
     if (!withoutSite?.length) continue;
     console.info(`Migrating ${withoutSite.length} documents in ${coll}`);
     for (const doc of withoutSite) {
-      await (adapter as any).update(coll, doc._id, { siteId });
+      await (adapter as import('./adapters/BaseAdapter').DatabaseAdapter).update(coll, doc._id || doc.id || '', { siteId });
     }
   }
   console.info('Legacy siteId migration completed');

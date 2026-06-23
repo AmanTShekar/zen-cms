@@ -11,7 +11,7 @@ import { logger } from '../../services/logger'
  * for optimized direct executions.
  */
 export class AotBridge {
-  private static compiledModule: any = null
+  private static compiledModule: Record<string, ((...args: unknown[]) => unknown)> | null = null
   private static loaded = false
 
   /**
@@ -35,9 +35,9 @@ export class AotBridge {
       // Convert absolute Windows paths to file:// URLs for ESM import() compatibility
       const fileUrl = pathToFileURL(fileToLoad).href
       this.compiledModule = await import(fileUrl)
-      ;(globalThis as any).zenithAotBridge = AotBridge
+      ;(globalThis as Record<string, unknown>).zenithAotBridge = AotBridge
       logger.info({ path: fileToLoad }, 'AotBridge: Loaded compiled AOT query adapter successfully.')
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.warn(
         { err: err.message },
         'AotBridge: Failed to load pre-compiled AOT query adapter. Falling back to dynamic execution.'
@@ -61,11 +61,11 @@ export class AotBridge {
   public static async executeQuery(
     collection: string,
     operation: 'find' | 'create',
-    db: any,
-    tableOrModel: any,
-    arg1: any, // filters or data
-    arg2: any = {} // options
-  ): Promise<any> {
+    db: unknown,
+    tableOrModel: unknown,
+    arg1: unknown, // filters or data
+    arg2: Record<string, unknown> = {} // options
+  ): Promise<Record<string, unknown>> {
     const capitalized = collection.charAt(0).toUpperCase() + collection.slice(1)
     const fnName = `${operation}${capitalized}Compiled`
     const fn = this.compiledModule[fnName]

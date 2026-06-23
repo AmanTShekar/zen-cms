@@ -10,7 +10,7 @@ const providerCache = new Map<string, { hash: string; provider: StorageProvider 
 
 async function resolveActiveProviderAsync(siteId?: string): Promise<StorageProvider> {
   const adapter = AdapterFactory.getActiveAdapter()
-  let settings: any = {}
+  let settings: Record<string, unknown> = {}
   
   if (adapter) {
     try {
@@ -48,7 +48,7 @@ async function resolveActiveProviderAsync(siteId?: string): Promise<StorageProvi
       }
       newProvider = new S3StorageProvider(config)
       logger.info(`Zenith Storage Engine: AWS S3 / Cloudflare R2 active provider loaded for ${cacheKey}`)
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ error: err.message }, 'Failed to load S3 Storage Provider. Falling back to Local Filesystem.')
       newProvider = new LocalStorageProvider()
     }

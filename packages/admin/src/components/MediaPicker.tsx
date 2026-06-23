@@ -1,6 +1,7 @@
 /* eslint-disable */
 import React, { useEffect, useState } from 'react'
-import { Image as ImageIcon, X, Plus, Search, Check, Loader2, UploadCloud } from 'lucide-react'
+import { createPortal } from 'react-dom'
+import { Image as ImageIcon, X, Plus, Search, Check, Loader2, UploadCloud, Link } from 'lucide-react'
 import api from '../lib/api'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../lib/utils'
@@ -24,8 +25,14 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  const [files, setFiles] = useState<any[]>([])
  const [loading, setLoading] = useState(false)
  const [search, setSearch] = useState('')
+ const [externalUrl, setExternalUrl] = useState('')
  // Focal point state: null = not active, { file, candidate } = pending confirmation
  const [focalPending, setFocalPending] = useState<any>(null)
+ const [mounted, setMounted] = useState(false)
+
+ useEffect(() => {
+   setMounted(true)
+ }, [])
 
  const selectedFiles = Array.isArray(value) ? value : value ? [value] : []
 
@@ -155,6 +162,22 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  }
  }
 
+ const handleAddExternalUrl = () => {
+ if (!externalUrl.trim()) return
+ const newFile = {
+ _id: Math.random().toString(36).substring(7),
+ url: externalUrl.trim(),
+ filename: externalUrl.trim().split('/').pop() || 'External URL'
+ }
+ if (hasMany) {
+ onChange([...selectedFiles, newFile])
+ } else {
+ onChange(newFile)
+ setIsOpen(false)
+ }
+ setExternalUrl('')
+ }
+
  return (
  <div className="space-y-2">
  <div className="flex flex-wrap gap-3">
@@ -184,7 +207,10 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  {!disabled && (hasMany || selectedFiles.length === 0) && (
  <button
  type="button"
- onClick={() => setIsOpen(true)}
+ onClick={(e) => {
+   e.stopPropagation()
+   setIsOpen(true)
+ }}
  className="w-20 h-20 rounded-none-none border border-dashed border-z-border flex flex-col items-center justify-center gap-1.5 text-z-muted hover:border-gray-500/50 hover:text-gray-600 dark:text-z-muted hover:bg-gray-500/5 transition-all group"
  >
  <Plus
@@ -199,19 +225,27 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  )}
  </div>
 
+ {mounted && createPortal(
  <AnimatePresence>
  {isOpen && (
  <motion.div
- initial={{ opacity: 0, height: 0, marginTop: 0 }}
- animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
- exit={{ opacity: 0, height: 0, marginTop: 0 }}
- className="overflow-hidden w-full"
+ key="media-picker-backdrop"
+ initial={{ opacity: 0 }}
+ animate={{ opacity: 1 }}
+ exit={{ opacity: 0 }}
+ className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-12"
+ onClick={() => setIsOpen(false)}
  >
- <div
+ <motion.div
+ initial={{ opacity: 0, scale: 0.95, y: 10 }}
+ animate={{ opacity: 1, scale: 1, y: 0 }}
+ exit={{ opacity: 0, scale: 0.95, y: 10 }}
+ transition={{ type: 'spring', damping: 25, stiffness: 300 }}
  className={cn(
- 'w-full border rounded-none-none overflow-hidden shadow-2xl flex flex-col',
- theme === 'dark' ? 'bg-black/80 backdrop-blur-xl border-z-border' : 'bg-z-panel border-z-border'
+ 'w-full max-w-5xl max-h-full border rounded-none-none shadow-2xl flex flex-col overflow-hidden',
+ theme === 'dark' ? 'bg-black/90 backdrop-blur-xl border-white/10' : 'bg-z-popover border-z-border'
  )}
+ onClick={(e) => e.stopPropagation()}
  >
  <div className="flex flex-col p-4 gap-4">
  <div className="flex items-center justify-between">
@@ -247,19 +281,40 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  </motion.div>
  ) : (
  <motion.div key="asset-grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col gap-4">
- {/* Top Bar: Search and Upload */}
- <div className="flex flex-col sm:flex-row gap-3">
- <div className="flex-1 relative group">
+ {/* Top Bar: Search, URL, and Upload */}
+ <div className="flex flex-col md:flex-row gap-3">
+ <div className="flex-[2] relative group">
  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-z-secondary group-focus-within:text-gray-600 dark:text-z-muted transition-colors" size={14} />
  <input
  type="text"
  placeholder="Search assets..."
  value={search}
  onChange={(e) => setSearch(e.target.value)}
- className="w-full bg-z-hover border border-z-border rounded-none-none pl-9 pr-3 py-2 text-xs font-medium text-white placeholder:text-z-secondary transition-all focus:bg-white/10 focus:border-gray-500/50 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black"
+ className="w-full bg-z-hover border border-z-border rounded-none-none pl-9 pr-3 py-2 text-sm font-medium text-white placeholder:text-z-secondary transition-all focus:bg-white/10 focus:border-gray-500/50 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black"
  />
  </div>
- <label className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600/20 hover:bg-gray-600/30 text-gray-600 dark:text-z-muted rounded-none-none transition-all text-sm font-bold cursor-pointer border border-gray-500/30">
+ <div className="flex-[2] relative flex gap-2">
+ <div className="relative flex-1 group">
+ <Link className="absolute left-3 top-1/2 -translate-y-1/2 text-z-secondary group-focus-within:text-gray-600 dark:text-z-muted transition-colors" size={14} />
+ <input
+ type="url"
+ placeholder="https://..."
+ value={externalUrl}
+ onChange={(e) => setExternalUrl(e.target.value)}
+ onKeyDown={(e) => e.key === 'Enter' && handleAddExternalUrl()}
+ className="w-full bg-z-hover border border-z-border rounded-none-none pl-9 pr-3 py-2 text-sm font-medium text-white placeholder:text-z-secondary transition-all focus:bg-white/10 focus:border-gray-500/50 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black"
+ />
+ </div>
+ <button
+ type="button"
+ onClick={handleAddExternalUrl}
+ disabled={!externalUrl.trim()}
+ className="px-3 py-2 bg-gray-500/20 text-gray-600 dark:text-z-muted hover:bg-gray-500/30 hover:text-white rounded-none-none text-sm font-bold transition-all border border-gray-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+ >
+ Add
+ </button>
+ </div>
+ <label className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-600/20 hover:bg-gray-600/30 text-gray-600 dark:text-z-muted rounded-none-none transition-all text-sm font-bold cursor-pointer border border-gray-500/30">
  <UploadCloud size={14} />
  <span>Upload</span>
  <input type="file" className="hidden" onChange={handleUpload} />
@@ -267,7 +322,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  </div>
 
  {/* Middle Area: Scrollable Grid */}
- <div className="h-[280px] overflow-y-auto grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 pr-2 custom-scrollbar border border-z-border rounded-none-none p-2 bg-black/20">
+ <div className="flex-1 min-h-[300px] max-h-[50vh] overflow-y-auto grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 pr-2 custom-scrollbar border border-z-border rounded-none-none p-3 bg-black/20">
  {loading ? (
  <div className="col-span-full h-full flex flex-col items-center justify-center gap-4">
  <Loader2 className="animate-spin text-gray-600 dark:text-z-secondary" size={24} />
@@ -357,10 +412,12 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  )}
  </AnimatePresence>
  </div>
- </div>
+ </motion.div>
  </motion.div>
  )}
- </AnimatePresence>
+ </AnimatePresence>,
+ document.body
+ )}
  </div>
  )
 }

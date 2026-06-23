@@ -28,7 +28,7 @@ function escapeRegex(str: string): string {
 // ── GET /api/v1/redirects ────────────────────────────────────────────────────
 router.get('/', async (req: Request, res: Response, next) => {
   try {
-    const adapter = (req as any).zenith?.adapter
+    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
     const page = Math.max(1, parseInt(req.query.page as string) || 1)
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20))
     const skip = (page - 1) * limit
@@ -37,7 +37,7 @@ router.get('/', async (req: Request, res: Response, next) => {
 
     // Adapter-agnostic filter: avoid MongoDB-specific $regex/$or operators.
     // Free-text search is applied as a JS post-filter after fetching from DB.
-    const filter: Record<string, any> = {}
+    const filter: Record<string, unknown> = {}
     if (siteId) filter.siteId = siteId
 
     const docs = await adapter.find('z_redirects', filter, { sort: { createdAt: -1 } })
@@ -45,7 +45,7 @@ router.get('/', async (req: Request, res: Response, next) => {
     // Apply search as a JS-level post-filter (adapter-agnostic)
     const lowerSearch = search ? search.toLowerCase() : null
     const filteredDocs = lowerSearch
-      ? docs.filter((doc: any) =>
+      ? docs.filter((doc: Record<string, unknown>) =>
           (typeof doc.from === 'string' && doc.from.toLowerCase().includes(lowerSearch)) ||
           (typeof doc.to === 'string' && doc.to.toLowerCase().includes(lowerSearch))
         )
@@ -65,7 +65,7 @@ router.get('/', async (req: Request, res: Response, next) => {
 // ── POST /api/v1/redirects ───────────────────────────────────────────────────
 router.post('/', async (req: Request, res: Response, next) => {
   try {
-    const adapter = (req as any).zenith?.adapter
+    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
     const { from, to, type } = req.body
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
 
@@ -90,7 +90,7 @@ router.post('/', async (req: Request, res: Response, next) => {
       type: type || '301',
       siteId,
       hits: 0,
-      createdBy: (req as any).user?.id,
+      createdBy: (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user?.id,
     })
 
     res.status(201).json(createResponse(doc))
@@ -102,9 +102,9 @@ router.post('/', async (req: Request, res: Response, next) => {
 // ── GET /api/v1/redirects/:id ────────────────────────────────────────────────
 router.get('/:id', async (req: Request, res: Response, next) => {
   try {
-    const adapter = (req as any).zenith?.adapter
+    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
-    const filter: Record<string, any> = { _id: req.params.id }
+    const filter: Record<string, unknown> = { _id: req.params.id }
     if (siteId) filter.siteId = siteId
 
     const doc = await adapter.findOne('z_redirects', filter)
@@ -119,13 +119,13 @@ router.get('/:id', async (req: Request, res: Response, next) => {
 // ── PATCH /api/v1/redirects/:id ──────────────────────────────────────────────
 router.patch('/:id', async (req: Request, res: Response, next) => {
   try {
-    const adapter = (req as any).zenith?.adapter
+    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
     const { from, to, type } = req.body
 
     // Adapter-agnostic lookup by id or _id
     const allById = await adapter.find('z_redirects', { id: req.params.id })
-    let existing: any = allById[0] || null
+    let existing: Record<string, unknown> = allById[0] || null
     if (!existing) {
       const allByMongoId = await adapter.find('z_redirects', { _id: req.params.id })
       existing = allByMongoId[0] || null
@@ -140,11 +140,11 @@ router.patch('/:id', async (req: Request, res: Response, next) => {
       const dups = await adapter.find('z_redirects',
         siteId ? { from: normalizedFrom, siteId } : { from: normalizedFrom }
       )
-      const hasDup = dups.some((d: any) => String(d.id || d._id) !== req.params.id)
+      const hasDup = dups.some((d: Record<string, unknown>) => String(d.id || d._id) !== req.params.id)
       if (hasDup) throw new DuplicateError('from')
     }
 
-    const updates: Record<string, any> = {}
+    const updates: Record<string, unknown> = {}
     if (from) updates.from = from.startsWith('/') ? from : `/${from}`
     if (to !== undefined) updates.to = to
     if (type !== undefined) updates.type = type
@@ -159,9 +159,9 @@ router.patch('/:id', async (req: Request, res: Response, next) => {
 // ── DELETE /api/v1/redirects/:id ─────────────────────────────────────────────
 router.delete('/:id', async (req: Request, res: Response, next) => {
   try {
-    const adapter = (req as any).zenith?.adapter
+    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
-    const filter: Record<string, any> = { _id: req.params.id }
+    const filter: Record<string, unknown> = { _id: req.params.id }
     if (siteId) filter.siteId = siteId
 
     const existing = await adapter.findOne('z_redirects', filter)
@@ -177,13 +177,13 @@ router.delete('/:id', async (req: Request, res: Response, next) => {
 // ── POST /api/v1/redirects/lookup ────────────────────────────────────────────
 router.post('/lookup', async (req: Request, res: Response, next) => {
   try {
-    const adapter = (req as any).zenith?.adapter
+    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
     const { path } = req.body
     if (!path) throw new InvalidPayloadError('"path" is required')
 
     const normalizedPath = path.startsWith('/') ? path : `/${path}`
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
-    const filter: Record<string, any> = { from: normalizedPath }
+    const filter: Record<string, unknown> = { from: normalizedPath }
     if (siteId) filter.siteId = siteId
 
     const doc = await adapter.findOne('z_redirects', filter)

@@ -30,7 +30,11 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  users.forEach((u) => { userColors[u.id] = u.color })
 
  return (
- <div className="relative flex items-center gap-0">
+ <div 
+   className="relative flex items-center gap-0"
+   onMouseEnter={() => setExpanded(true)}
+   onMouseLeave={() => setExpanded(false)}
+ >
  {/* Connection badge */}
  <div
  className={cn(
@@ -60,7 +64,8 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  initial={{ scale: 0 }}
  animate={{ scale: 1 }}
  className={cn(
- 'w-6 h-6 rounded-none-none flex items-center justify-center text-sm font-semibold border-2 border-z-border shadow-sm',
+ 'w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow-sm ring-2',
+ theme === 'dark' ? 'ring-[#050505]' : 'ring-white'
  )}
  style={{ backgroundColor: localUser.color }}
  >
@@ -90,7 +95,8 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  animate={{ scale: 1, x: 0 }}
  transition={{ delay: idx * 0.05 }}
  className={cn(
- 'relative -ml-1.5 w-6 h-6 rounded-none-none flex items-center justify-center text-sm font-semibold border-2 shadow-sm',
+ 'relative -ml-2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow-sm ring-2',
+ theme === 'dark' ? 'ring-[#050505]' : 'ring-white'
  )}
  style={{
  backgroundColor: u.color,
@@ -106,15 +112,16 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  {/* Overflow count */}
  {overflowCount > 0 && (
  <motion.button
+ type="button"
  initial={{ scale: 0 }}
  animate={{ scale: 1 }}
  onClick={() => setExpanded((v) => !v)}
  aria-label={`${overflowCount} more users editing`}
  className={cn(
- 'relative -ml-1.5 w-6 h-6 rounded-none-none flex items-center justify-center text-sm font-semibold border-2 shadow-sm transition-transform',
+ 'relative -ml-2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow-sm ring-2 transition-transform cursor-pointer',
  theme === 'dark'
- ? 'bg-gray-800 border-z-border text-z-muted hover:scale-110'
- : 'bg-gray-200 border-white text-gray-600 hover:scale-110'
+ ? 'bg-gray-800 text-gray-300 ring-[#050505] hover:scale-105'
+ : 'bg-gray-200 text-gray-600 ring-white hover:scale-105'
  )}
  style={{ zIndex: 0 }}
  >
@@ -132,10 +139,10 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  exit={{ opacity: 0, y: -4 }}
  transition={{ duration: 0.1 }}
  className={cn(
- 'absolute top-full right-0 mt-2 z-50 w-48 border rounded-none-none shadow-2xl p-3',
+ 'absolute top-full right-0 mt-2 z-[999] w-64 rounded-xl shadow-2xl p-4 border',
  theme === 'dark'
- ? 'bg-black border-z-border text-white'
- : 'bg-z-panel border-z-border text-z-primary shadow-sm/50'
+ ? 'bg-[#111] border-white/10 text-white'
+ : 'bg-white border-black/10 text-black shadow-black/5'
  )}
  onClick={() => setExpanded(false)}
  >
@@ -146,7 +153,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  {[localUser, ...users.filter((u) => u.id !== localUser.id)].map((u) => (
  <div key={u.id} className="flex items-center gap-2">
  <div
- className="w-5 h-5 rounded-none-none flex items-center justify-center text-xs font-semibold text-white shrink-0"
+ className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
  style={{ backgroundColor: u.color }}
  >
  {initials(u.name, u.email)}

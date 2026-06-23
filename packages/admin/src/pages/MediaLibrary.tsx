@@ -21,7 +21,8 @@ import {
   Grid,
   FileText,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  Link2
 } from 'lucide-react'
 import api from '../lib/api'
 import { cn } from '../lib/utils'
@@ -152,6 +153,20 @@ export default function MediaLibrary() {
     }
   }
 
+  const handleUrlLink = async () => {
+    const url = window.prompt('Enter the external media URL to link:')
+    if (!url) return
+    if (!url.startsWith('http')) return toast.error('INVALID_URL_FORMAT')
+
+    try {
+      await api.post('/upload', { url })
+      toast.success('URL_LINKED_SUCCESSFULLY')
+      fetchFiles()
+    } catch {
+      toast.error('LINKING_PROTOCOL_FAILURE')
+    }
+  }
+
   const handleSaveMetadata = async () => {
     if (!selectedFile) return
     setIsProcessing(true)
@@ -256,8 +271,18 @@ export default function MediaLibrary() {
           </div>
           
           <div className="flex items-center gap-3">
+            <button
+              onClick={handleUrlLink}
+              className={cn(
+                'px-5 py-2.5 font-semibold text-sm transition-all leading-none flex items-center gap-2 shadow-sm',
+                theme === 'dark' ? 'bg-z-hover text-white border border-z-border hover:bg-white/10' : 'bg-gray-100 text-black border border-z-border hover:bg-gray-200'
+              )}
+            >
+              <Link2 size={14} strokeWidth={3} />
+              Link URL
+            </button>
             <label className={cn(
-              'px-5 py-2.5 font-semibold text-sm   transition-all leading-none flex items-center gap-2 cursor-pointer shadow-sm',
+              'px-5 py-2.5 font-semibold text-sm transition-all leading-none flex items-center gap-2 cursor-pointer shadow-sm',
               theme === 'dark' ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-900 text-white hover:bg-black'
             )}>
               <Plus size={14} strokeWidth={3} />

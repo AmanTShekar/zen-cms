@@ -42,10 +42,13 @@ import {
   Quote,
   Minus,
   Eraser,
+  Sparkles,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../../lib/utils'
 import { useTheme } from '../../context/ThemeContext'
+import toast from 'react-hot-toast'
+import api from '../../lib/api'
 
 interface ToolbarButtonProps {
   onClick: () => void
@@ -173,6 +176,7 @@ export function Toolbar({ disabled }: { disabled?: boolean }) {
   const [blockType, setBlockType] = useState<string>('paragraph')
   const [canUndo, setCanUndo] = useState(false)
   const [canRedo, setCanRedo] = useState(false)
+  const [isImproving, setIsImproving] = useState(false)
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection()
@@ -304,6 +308,56 @@ export function Toolbar({ disabled }: { disabled?: boolean }) {
         title="Redo"
       >
         <Redo2 />
+      </ToolbarButton>
+
+      <Divider />
+
+      {/* AI Propose Edits */}
+      <ToolbarButton
+        onClick={async () => {
+          let selectedText = ''
+          activeEditor.getEditorState().read(() => {
+            const selection = $getSelection()
+            if ($isRangeSelection(selection)) {
+              selectedText = selection.getTextContent()
+            }
+          })
+
+          if (!selectedText || selectedText.trim().length < 3) {
+            toast.error('Please highlight some text to improve first.')
+            return
+          }
+
+          setIsImproving(true)
+          const toastId = toast.loading('AI is improving your text...')
+          try {
+            const response = await api.post('/content-tools/ai/improve', {
+              text: selectedText,
+              instruction: 'Improve this text to be more engaging, professional, and well-written. Fix any grammar issues.'
+            })
+            
+            const improvedText = response.data?.data?.text
+            if (improvedText) {
+              activeEditor.update(() => {
+                const selection = $getSelection()
+                if ($isRangeSelection(selection)) {
+                  selection.insertText(improvedText)
+                }
+              })
+              toast.success('Text improved!', { id: toastId })
+            } else {
+              throw new Error('No text returned')
+            }
+          } catch (err: any) {
+            toast.error(err?.response?.data?.error?.message || 'Failed to improve text', { id: toastId })
+          } finally {
+            setIsImproving(false)
+          }
+        }}
+        disabled={isImproving}
+        title="Improve Text with AI"
+      >
+        {isImproving ? <Sparkles className="animate-pulse text-z-accent dark:text-z-active-text" /> : <Sparkles className="text-z-accent dark:text-z-active-text" />}
       </ToolbarButton>
 
       <Divider />

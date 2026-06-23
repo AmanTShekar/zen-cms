@@ -26,7 +26,7 @@ import { execSync } from 'child_process'
 
 const MASK_PLACEHOLDER = '[MASKED_CREDENTIAL]'
 
-export function maskSettings(settings: any) {
+export function maskSettings(settings: Record<string, unknown>) {
   if (!settings) return settings
   const result = JSON.parse(JSON.stringify(settings)) // deep clone
   
@@ -39,7 +39,7 @@ export function maskSettings(settings: any) {
   return result
 }
 
-export function unmaskSettings(incoming: any, existing: any) {
+export function unmaskSettings(incoming: Record<string, unknown>, existing: Record<string, unknown>) {
   if (!incoming) return incoming
   const result = JSON.parse(JSON.stringify(incoming))
   
@@ -128,9 +128,9 @@ const router = systemRouter5;
 
 router.get('/onboarding', requireAuth, async (req: Request, res: Response, next) => {
   try {
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const siteId = req.headers['x-zenith-site-id'] as string
-    const state = await adapter.findOne<any>('z_onboarding', siteId ? { siteId } : {})
+    const state = await adapter.findOne<Record<string, unknown>>('z_onboarding', siteId ? { siteId } : {})
     if (!state)
       return res.json(
         createResponse({
@@ -151,7 +151,7 @@ router.get('/onboarding', requireAuth, async (req: Request, res: Response, next)
 
 router.post('/onboarding', requireAuth, async (req: Request, res: Response, next) => {
   try {
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const { currentStep, answers, skipped } = req.body
     const updateData = {
       ...(currentStep !== undefined && { currentStep }),
@@ -160,7 +160,7 @@ router.post('/onboarding', requireAuth, async (req: Request, res: Response, next
     }
     const siteId = req.headers['x-zenith-site-id'] as string
     
-    let state = await adapter.findOne<any>('z_onboarding', siteId ? { siteId } : {})
+    let state = await adapter.findOne<Record<string, unknown>>('z_onboarding', siteId ? { siteId } : {})
     if (state) {
       state = await adapter.update('z_onboarding', (state.id || state._id).toString(), updateData)
     } else {
@@ -179,19 +179,19 @@ router.post(
   async (req: Request, res: Response, next) => {
     try {
       const { keyName } = req.body
-      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
       // Generate first API key
       const rawKey = `zk_live_${crypto.randomBytes(24).toString('hex')}`
       const keyHash = crypto.createHash('sha256').update(rawKey).digest('hex')
       const siteId = req.headers['x-zenith-site-id'] as string
-      const apiKey = await adapter.create<any>('z_api_keys', {
+      const apiKey = await adapter.create<Record<string, unknown>>('z_api_keys', {
         name: keyName || 'My Website',
         key: keyHash,
         role: 'viewer',
         siteId
       })
       
-      const state = await adapter.findOne<any>('z_onboarding', siteId ? { siteId } : {})
+      const state = await adapter.findOne<Record<string, unknown>>('z_onboarding', siteId ? { siteId } : {})
       const updateData = { completedAt: new Date(), answers: { ...(state?.answers || {}), generatedApiKeyId: apiKey.id || apiKey._id } }
       if (state) {
         await adapter.update('z_onboarding', (state.id || state._id).toString(), updateData)
@@ -238,7 +238,7 @@ router.post(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
       await adapter.deleteMany('z_onboarding', {})
       res.json(createResponse({ message: 'Onboarding reset. Wizard will reappear on next login.' }))
     } catch (err) {

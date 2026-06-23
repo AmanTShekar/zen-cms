@@ -188,6 +188,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  </span>
  )}
  <button
+ type="button"
  onClick={handleClear}
  aria-label="Clear all selected relations"
  className={cn(
@@ -198,6 +199,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  <X size={11} aria-hidden="true" />
  </button>
  <button
+ type="button"
  onClick={() => setOpen(false)}
  aria-label="Close relation picker"
  className={cn(
@@ -261,6 +263,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  return (
  <button
  key={id}
+ type="button"
  onClick={() => toggleItem(id)}
  className={cn(
  'w-full flex items-center gap-2.5 px-3 py-2 rounded-none-none text-left text-xs font-semibold transition-all border',
@@ -312,6 +315,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  {/* Edit button */}
  {isSelected && (
  <button
+ type="button"
  onClick={(e) => {
  e.stopPropagation()
  setEditItemId(id)
@@ -339,6 +343,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  theme === 'dark' ? 'border-z-border' : 'border-z-border shadow-sm'
  )}>
  <button
+ type="button"
  onClick={handleClear}
  className={cn(
  'flex-1 py-1.5 text-xs font-semibold  border rounded-none-none transition-all',
@@ -350,6 +355,7 @@ export const InlineRelationPicker: React.FC<InlineRelationPickerProps> = ({
  Clear
  </button>
  <button
+ type="button"
  onClick={handleApply}
  className={cn(
  'flex-1 py-1.5 text-xs font-semibold  rounded-none-none transition-all bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-500'

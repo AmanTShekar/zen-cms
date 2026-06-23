@@ -80,7 +80,7 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
 
         fields.push({
           name: col.column_name,
-          type: mapPgTypeToZenithType(col.data_type) as any,
+          type: mapPgTypeToZenithType(col.data_type) as Record<string, unknown>,
           label: col.column_name.charAt(0).toUpperCase() + col.column_name.slice(1).replace(/_/g, ' '),
           required: col.is_nullable === 'NO',
         })
@@ -94,7 +94,7 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
     }
 
     res.json({ data: collections })
-  } catch (error: any) {
+  } catch (error: unknown) {
     res.status(500).json({ error: 'Introspection failed: ' + error.message })
   } finally {
     await client.end().catch(() => {})

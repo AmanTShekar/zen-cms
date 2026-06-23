@@ -44,7 +44,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  const documentId = id || slug
  const { theme } = useTheme()
  const { history, data  } = useEditorStore(useShallow(state => ({ history: state.history, data: state.data })))
- const { rightOpen, rightWidth, activeRightTab, setActiveRightTab, setRightOpen, previewMode, setPreviewMode  } = usePanelStore(useShallow(state => ({ rightOpen: state.rightOpen, rightWidth: state.rightWidth, activeRightTab: state.activeRightTab, setActiveRightTab: state.setActiveRightTab, setRightOpen: state.setRightOpen, previewMode: state.previewMode, setPreviewMode: state.setPreviewMode })))
+ const { rightOpen, rightWidth, activeRightTab, setActiveRightTab, setRightOpen, previewMode, setPreviewMode, focusMode  } = usePanelStore(useShallow(state => ({ rightOpen: state.rightOpen, rightWidth: state.rightWidth, activeRightTab: state.activeRightTab, setActiveRightTab: state.setActiveRightTab, setRightOpen: state.setRightOpen, previewMode: state.previewMode, setPreviewMode: state.setPreviewMode, focusMode: state.focusMode })))
  const { siteId: tenantSiteId, siteSlug, siteDomain } = useTenantStorage()
 
  const [sites, setSites] = React.useState<any[]>([])
@@ -96,10 +96,11 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  const viewport = VIEWPORT_SIZES[previewMode as ViewportSize] || VIEWPORT_SIZES.desktop
  const isDesktop = previewMode === 'desktop'
  const dark = theme === 'dark'
+ const effectiveRightOpen = rightOpen && !focusMode
 
  return (
  <AnimatePresence initial={false}>
- {rightOpen && (
+ {effectiveRightOpen && (
  <motion.aside
  initial={{ width: 0, opacity: 0 }}
  animate={{ width: rightWidth, opacity: 1 }}
@@ -165,7 +166,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  </button>
  ))}
  </div>
- <button onClick={() => setRightOpen(false)} className="p-1 hover:text-gray-600 dark:text-z-secondary transition-colors" aria-label="Close panel">
+ <button type="button" onClick={() => setRightOpen(false)} className="p-1 hover:text-gray-600 dark:text-z-secondary transition-colors" aria-label="Close panel">
  <X size={16} />
  </button>
  </div>
@@ -277,7 +278,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
  <div
  key={v._id || v.id}
  className={cn(
- 'group p-3 rounded-none-none border transition-all cursor-pointer space-y-1',
+ 'group p-4 rounded-none-none border transition-all cursor-pointer space-y-2',
  dark
  ? 'bg-z-panel border-z-border hover:bg-z-hover'
  : 'bg-z-input border-z-border hover:bg-gray-100'

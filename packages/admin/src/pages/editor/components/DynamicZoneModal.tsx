@@ -55,6 +55,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item, idx, theme, removeF
  </p>
  </div>
  <button
+ type="button"
  onClick={() => removeFromDynamicZone(idx)}
  aria-label={`Remove component ${idx + 1}`}
  className="p-1 text-z-secondary hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100 shrink-0"
@@ -141,6 +142,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  </div>
  </div>
  <button
+ type="button"
  onClick={() => setDynamicZoneModalOpen(false)}
  aria-label="Close"
  className={cn(
@@ -227,6 +229,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  return (
  <button
  key={block.type}
+ type="button"
  onClick={() => addToDynamicZone(block.type)}
  aria-label={`Add ${block.title} to dynamic zone`}
  className={cn(

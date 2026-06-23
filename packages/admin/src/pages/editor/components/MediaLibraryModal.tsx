@@ -138,6 +138,7 @@ export const MediaLibraryModal: React.FC = () => {
  Asset Registry
  </h3>
  <button
+ type="button"
  onClick={() => setMediaLibraryOpen(false)}
  aria-label="Close"
  className={cn(
@@ -411,6 +412,7 @@ export const MediaLibraryModal: React.FC = () => {
  Click any asset to copy its URL • Supports images, video, audio, PDF
  </span>
  <button
+ type="button"
  onClick={() => setMediaLibraryOpen(false)}
  aria-label="Close media library"
  className={cn(

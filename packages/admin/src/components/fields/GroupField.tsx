@@ -19,7 +19,7 @@ const GroupField: React.FC<GroupFieldProps> = ({ field, value, onChange, disable
     <div className={cn(
       'border border-white/10 bg-z-panel backdrop-blur-md p-4 space-y-4'
     )}>
-      <div className="flex items-center gap-2 pb-2 border-b border-white/5">
+      <div className="flex items-center gap-2 pb-3 border-b border-white/5">
         <span className="text-sm font-semibold text-z-active-text">
           {field.label || field.name}
         </span>
@@ -27,7 +27,7 @@ const GroupField: React.FC<GroupFieldProps> = ({ field, value, onChange, disable
           <span className="text-sm text-z-secondary italic">{gf.admin.description}</span>
         )}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5 pt-2">
         {subFields.map((f: FieldConfig) => (
           <div key={f.name} className="space-y-1.5">
             <label className="text-sm font-bold text-z-muted">

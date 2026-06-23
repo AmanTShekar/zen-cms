@@ -93,6 +93,7 @@ const DocumentEditModal: React.FC<DocumentEditModalProps> = ({
  Edit Record
  </h3>
  <button
+ type="button"
  onClick={onClose}
  aria-label="Close"
  className={cn(

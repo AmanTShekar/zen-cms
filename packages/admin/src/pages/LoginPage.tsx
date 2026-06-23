@@ -116,12 +116,12 @@ const LoginPage: React.FC = () => {
  }
 
  return (
- <div className="min-h-screen flex items-center justify-center p-4 md:p-6 relative overflow-auto font-sans antialiased selection:bg-white selection:text-black bg-black text-white">
+  <div className="flex-1 w-full min-h-0 flex flex-col p-4 md:p-6 relative overflow-y-auto overflow-x-hidden font-sans antialiased bg-black text-white">
  {/* Background elements */}
  <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none-none blur-[120px] pointer-events-none transition-all duration-500 z-0 bg-z-hover" />
  <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none-none blur-[120px] pointer-events-none transition-all duration-500 z-0 bg-z-hover" />
 
- <div className="w-full max-w-[400px] relative z-10 flex flex-col gap-6 md:gap-8 py-4">
+ <div className="w-full max-w-[400px] relative z-10 flex flex-col gap-6 md:gap-8 py-4 my-auto mx-auto">
  {/* Branding Module */}
  <motion.div
  initial={{ opacity: 0, y: 20 }}

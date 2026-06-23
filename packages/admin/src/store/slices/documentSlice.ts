@@ -21,6 +21,7 @@ export const createDocumentSlice: EditorSliceCreator<DocumentSlice> = (set, get)
   fieldErrors: {},
   history: [],
   templates: [],
+  topLevelFields: [],
 
   setData: (data) => set({ data }),
   setLoading: (loading) => set({ loading }),
@@ -32,6 +33,7 @@ export const createDocumentSlice: EditorSliceCreator<DocumentSlice> = (set, get)
   setFieldErrors: (fieldErrors) => set({ fieldErrors }),
   setHistory: (history) => set({ history }),
   setTemplates: (templates) => set({ templates }),
+  setTopLevelFields: (topLevelFields) => set({ topLevelFields }),
 
   updateData: (updater) => {
     const current = get().data

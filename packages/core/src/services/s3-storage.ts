@@ -5,7 +5,7 @@ import { env } from '../config/env';
 
 
 export class S3StorageService {
-  private static async resolveConfig(overrideSettings?: any, siteId?: string) {
+  private static async resolveConfig(overrideSettings?: Record<string, unknown>, siteId?: string) {
     const config = {
       bucket: env.S3_BUCKET || '',
       region: env.S3_REGION || 'us-east-1',
@@ -28,7 +28,7 @@ export class S3StorageService {
       const adapter = AdapterFactory.getActiveAdapter()
       if (adapter) {
         const query = siteId ? { siteId } : {}
-        const settings = await adapter.findOne<Record<string, any>>('z_settings', query)
+        const settings = await adapter.findOne<Record<string, unknown>>('z_settings', query)
         if (settings) {
           if (settings.s3Bucket) config.bucket = settings.s3Bucket
           if (settings.s3Region) config.region = settings.s3Region
@@ -43,7 +43,7 @@ export class S3StorageService {
     return config
   }
 
-  private static getClient(config: any) {
+  private static getClient(config: Record<string, unknown>) {
     return new S3Client({
       region: config.region,
       credentials: {
@@ -55,7 +55,7 @@ export class S3StorageService {
     })
   }
 
-  static async testConnection(overrideSettings: any, siteId?: string): Promise<boolean> {
+  static async testConnection(overrideSettings: Record<string, unknown>, siteId?: string): Promise<boolean> {
     const config = await this.resolveConfig(overrideSettings, siteId)
     if (!config.bucket || !config.accessKey || !config.secretKey) {
       throw new Error('Missing required S3 credentials or bucket name')
@@ -77,7 +77,7 @@ export class S3StorageService {
         ContentType: 'application/typescript'
       }))
       logger.info(`[S3Storage] Successfully wrote block to ${key}`)
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(`[S3Storage] Failed to write block to S3: ${error.message}`)
       throw error
     }
@@ -93,7 +93,7 @@ export class S3StorageService {
         Key: key
       }))
       logger.info(`[S3Storage] Successfully deleted block at ${key}`)
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(`[S3Storage] Failed to delete block from S3: ${error.message}`)
       throw error
     }
@@ -109,7 +109,7 @@ export class S3StorageService {
         Key: key
       }))
       return await response.Body?.transformToString() || null
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error.name === 'NoSuchKey') return null
       logger.error(`[S3Storage] Failed to read block from S3: ${error.message}`)
       throw error

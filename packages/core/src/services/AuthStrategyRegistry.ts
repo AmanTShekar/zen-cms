@@ -6,7 +6,7 @@ export interface AuthStrategy {
   name: string
   displayName: string
   icon?: string
-  authenticate: (payload: any) => Promise<{ success: boolean; user?: any; error?: string }>
+  authenticate: (payload: Record<string, unknown>) => Promise<{ success: boolean; user?: Record<string, unknown>; error?: string }>
 }
 
 export class AuthStrategyRegistry {
@@ -64,7 +64,7 @@ passport.use(
           const adapter = AdapterFactory.getActiveAdapter()
           const siteId = (req.headers['x-zenith-site-id'] || req.query.siteId || req.body.siteId) as string | undefined
           const query = siteId ? { siteId } : {}
-          const settings = await adapter.findOne<Record<string, any>>('z_settings', query)
+          const settings = await adapter.findOne<Record<string, unknown>>('z_settings', query)
           
           if (!settings || !settings.saml) {
             // Fallback to env vars if database settings are missing
@@ -88,7 +88,7 @@ passport.use(
         }
       }
     },
-    (req: any, profile: any, done: any) => {
+    (req: import('express').Request, profile: Record<string, unknown>, done: Record<string, unknown>) => {
       logger.info({ profile }, '[AuthRegistry] Real SAML profile received')
       if (!profile) return done(new Error('SAML profile missing'))
       
@@ -119,7 +119,7 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy-google-client-secret',
       callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/v1/auth/sso/google/callback'
     },
-    (accessToken: string, refreshToken: string, profile: any, done: any) => {
+    (accessToken: string, refreshToken: string, profile: Record<string, unknown>, done: Record<string, unknown>) => {
       logger.info({ provider: 'google', id: profile.id }, '[AuthRegistry] Google profile received')
       if (!profile) return done(new Error('Google profile missing'))
       
@@ -149,7 +149,7 @@ passport.use(
       clientSecret: process.env.GITHUB_CLIENT_SECRET || 'dummy-github-client-secret',
       callbackURL: process.env.GITHUB_CALLBACK_URL || 'http://localhost:3000/api/v1/auth/sso/github/callback'
     },
-    (accessToken: string, refreshToken: string, profile: any, done: any) => {
+    (accessToken: string, refreshToken: string, profile: Record<string, unknown>, done: Record<string, unknown>) => {
       logger.info({ provider: 'github', id: profile.id }, '[AuthRegistry] GitHub profile received')
       if (!profile) return done(new Error('GitHub profile missing'))
       

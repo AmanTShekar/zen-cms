@@ -33,7 +33,7 @@ const SelectField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
       multiple={isMulti}
       disabled={disabled}
       className={cn(
-        "w-full px-4 py-2.5 text-xs transition-all duration-350 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black",
+        "w-full px-4 py-3 text-sm transition-all duration-350 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black",
         "backdrop-blur-md",
         theme === 'dark'
           ? "bg-gray-900/65 text-white border border-white/8 focus:border-z-accent/50 focus-visible:ring-2 focus-visible:ring-z-active-border"

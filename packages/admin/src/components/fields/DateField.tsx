@@ -1,5 +1,6 @@
 import React from 'react'
 import { Calendar } from 'lucide-react'
+import { useTheme } from '../../context/ThemeContext'
 import { cn } from '../../lib/utils'
 
 interface DateFieldProps {
@@ -33,11 +34,15 @@ function parseInput(value: string, format: 'date' | 'datetime' | 'time'): string
 }
 
 const DateField: React.FC<DateFieldProps> = ({ value, onChange, disabled, format = 'date' }) => {
+  const { theme } = useTheme()
   const inputType = format === 'datetime' ? 'datetime-local' : format === 'time' ? 'time' : 'date'
 
   return (
     <div className="relative w-full">
-      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-z-secondary pointer-events-none">
+      <div className={cn(
+        "absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none",
+        theme === 'dark' ? 'text-white/60' : 'text-z-secondary'
+      )}>
         <Calendar size={14} />
       </div>
       <input
@@ -45,10 +50,13 @@ const DateField: React.FC<DateFieldProps> = ({ value, onChange, disabled, format
         value={formatForInput(value, format)}
         onChange={(e) => onChange(parseInput(e.target.value, format))}
         disabled={disabled}
+        style={{ colorScheme: theme === 'dark' ? 'dark' : 'light' }}
         className={cn(
-          'w-full bg-gray-900/65 backdrop-blur-md border border-white/8 rounded-none-none pl-9 pr-4 py-2.5 text-xs',
-          'focus:border-z-accent/50 focus-visible:ring-2 focus-visible:ring-z-active-border outline-none disabled:opacity-60 disabled:cursor-not-allowed',
-          'text-white placeholder:text-z-secondary transition-all font-mono'
+          'w-full pl-9 pr-4 py-3 text-sm transition-all outline-none rounded-none-none border',
+          theme === 'dark'
+            ? 'bg-gray-900/65 backdrop-blur-md border-white/8 text-white placeholder:text-z-secondary focus:border-z-accent/50 focus-visible:ring-2 focus-visible:ring-z-active-border'
+            : 'bg-white/80 backdrop-blur-md border-z-border text-z-primary placeholder:text-z-muted focus:border-z-accent/50 focus-visible:ring-2 focus-visible:ring-z-active-border',
+          'disabled:opacity-60 disabled:cursor-not-allowed font-mono'
         )}
       />
     </div>

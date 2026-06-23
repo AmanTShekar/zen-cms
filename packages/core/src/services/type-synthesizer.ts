@@ -9,15 +9,29 @@ import { logger } from './logger'
  * Programmatically generates strict, compiled TypeScript interfaces and query hook types
  * reactively on collection registration and schema updates, closing the major developer DX gap with Payload.
  */
+interface SynthField {
+  type?: string;
+  name?: string;
+  required?: boolean;
+  options?: Array<{ label?: string; value?: string } | string>;
+  relationTo?: string | string[];
+  blocks?: SynthField[];
+  fields?: SynthField[];
+  hasMany?: boolean;
+  localized?: boolean;
+  slug?: string;
+  [key: string]: unknown;
+}
+
 export class TypeSynthesizer {
-  private static mapFieldToType(field: any): string {
+  private static mapFieldToType(field: SynthField): string {
     if (field.localized) {
       return `Record<string, ${this.mapRawFieldType(field)}>`
     }
     return this.mapRawFieldType(field)
   }
 
-  private static mapRawFieldType(field: any): string {
+  private static mapRawFieldType(field: SynthField): string {
     switch (field.type) {
       case 'text':
       case 'textarea':
@@ -25,7 +39,7 @@ export class TypeSynthesizer {
       case 'url':
         if (field.options && field.options.length > 0) {
           return field.options
-            .map((o: any) => (typeof o === 'string' ? `'${o}'` : `'${o.value}'`))
+            .map((o: unknown) => (typeof o === 'string' ? `'${o}'` : `'${(o as { value: string }).value}'`))
             .join(' | ')
         }
         return 'string'
@@ -37,7 +51,7 @@ export class TypeSynthesizer {
       case 'date':
         return 'string | Date'
       case 'json':
-        return 'Record<string, any>'
+        return 'Record<string, unknown>'
       case 'relation': {
         if (Array.isArray(field.relationTo)) {
           // Polymorphic: relationTo: ['posts', 'tags']
@@ -48,22 +62,22 @@ export class TypeSynthesizer {
         return field.required ? target : `${target} | null`
       }
       case 'group':
-        if (!field.fields) return 'Record<string, any>'
-        return `{\n${field.fields
-          .map((f: any) => `    ${f.name}${f.required ? '' : '?'}: ${this.mapFieldToType(f)};`)
+        if (!field.fields) return 'Record<string, unknown>'
+        return `{\n${(field.fields as Record<string, unknown>[])
+          .map((f: Record<string, unknown>) => `    ${f.name}${f.required ? '' : '?'}: ${this.mapFieldToType(f)};`)
           .join('\n')}\n  }`
       case 'array':
-        if (!field.fields) return 'any[]'
-        return `{\n${field.fields
-          .map((f: any) => `    ${f.name}${f.required ? '' : '?'}: ${this.mapFieldToType(f)};`)
+        if (!field.fields) return 'Record<string, unknown>[]'
+        return `{\n${(field.fields as SynthField[])
+          .map((f: SynthField) => `    ${f.name}${f.required ? '' : '?'}: ${this.mapFieldToType(f)};`)
           .join('\n')}\n  }[]`
       case 'blocks': {
-        if (!field.blocks || field.blocks.length === 0) return 'any[]'
-        const blockUnions = field.blocks.map((b: any) => {
+        if (!field.blocks || (field.blocks as unknown[]).length === 0) return 'Record<string, unknown>[]'
+        const blockUnions = (field.blocks as SynthField[]).map((b: SynthField) => {
           const blockFields = b.fields
-            ? b.fields
+            ? (b.fields as SynthField[])
                 .map(
-                  (f: any) => `    ${f.name}${f.required ? '' : '?'}: ${this.mapFieldToType(f)};`
+                  (f: SynthField) => `    ${f.name}${f.required ? '' : '?'}: ${this.mapFieldToType(f)};`
                 )
                 .join('\n')
             : ''
@@ -76,25 +90,25 @@ export class TypeSynthesizer {
       case 'select': {
         if (!field.options || field.options.length === 0) return 'string'
         const options = field.options
-          .map((o: any) => (typeof o === 'string' ? `'${o}'` : `'${o.value}'`))
+          .map((o: unknown) => (typeof o === 'string' ? `'${o}'` : `'${(o as { value: string }).value}'`))
           .join(' | ')
         return field.hasMany ? `(${options})[]` : `(${options})`
       }
       case 'code':
         return 'string'
       case 'collapsible':
-        if (!field.fields) return 'Record<string, any>'
+        if (!field.fields) return 'Record<string, unknown>'
         return `{\n${field.fields
-          .map((f: any) => `    ${f.name}${f.required ? '' : '?'}: ${this.mapFieldToType(f)};`)
+          .map((f: Record<string, unknown>) => `    ${f.name}${f.required ? '' : '?'}: ${this.mapFieldToType(f)};`)
           .join('\n')}\n  }`
       case 'join':
-        return 'any[]'
+        return 'Record<string, unknown>[]'
       case 'point':
         return '[number, number]'
       case 'radio': {
         if (!field.options || field.options.length === 0) return 'string'
         const radioOptions = field.options
-          .map((o: any) => (typeof o === 'string' ? `'${o}'` : `'${o.value}'`))
+          .map((o: unknown) => (typeof o === 'string' ? `'${o}'` : `'${(o as { value: string }).value}'`))
           .join(' | ')
         return `(${radioOptions})`
       }
@@ -141,7 +155,7 @@ export class TypeSynthesizer {
 
         for (const field of col.fields) {
           const typeStr = this.mapFieldToType(field)
-          const isOptional = !(field as any).required
+          const isOptional = !field.required
           code += `  ${field.name}${isOptional ? '?' : ''}: ${typeStr};\n`
         }
 
@@ -157,12 +171,12 @@ export class TypeSynthesizer {
 
       // 3. Generate typed tanstack query hook definitions for high-speed delivery
       code += `/**\n * Fully Typed React SDK Data Hook Mappings\n */\n`
-      code += `export type ZenithQuery<T> = {\n  where?: Record<string, any>;\n  sort?: string | Record<string, any>;\n  limit?: number;\n  skip?: number;\n  select?: string[];\n  populate?: string[];\n  locale?: string;\n};\n\n`
+      code += `export type ZenithQuery<T> = {\n  where?: Record<string, unknown>;\n  sort?: string | Record<string, unknown>;\n  limit?: number;\n  skip?: number;\n  select?: string[];\n  populate?: string[];\n  locale?: string;\n};\n\n`
 
       await fs.mkdir(path.dirname(outputPath), { recursive: true })
       await fs.writeFile(outputPath, code, 'utf-8')
       logger.info({ outputPath }, 'TypeSynthesizer: TypeScript generated successfully.')
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err: err.message }, 'TypeSynthesizer failed to generate Types')
     }
   }

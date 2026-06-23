@@ -31,7 +31,7 @@ export const KNOWN_WIDGET_TYPES = new Set([
 ])
 
 // ── Default layouts per role ──────────────────────────────────────────────────
-const DEFAULT_LAYOUTS: Record<string, any[]> = {
+const DEFAULT_LAYOUTS: Record<string, Record<string, unknown>[]> = {
   admin: [
     {
       id: 'w1',
@@ -154,11 +154,11 @@ const SaveLayoutSchema = z.object({
 // ── GET /api/v1/dashboard/layout ─────────────────────────────────────────────
 router.get('/layout', async (req: Request, res: Response, next) => {
   try {
-    const user = (req as any).user
+    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
     const siteId = req.headers['x-zenith-site-id'] as string
 
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const layout = await adapter.findOne<Record<string, any>>('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const layout = await adapter.findOne<Record<string, unknown>>('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
 
     if (!layout) {
       // Return role-appropriate default, don't persist yet
@@ -167,7 +167,7 @@ router.get('/layout', async (req: Request, res: Response, next) => {
     }
 
     // Mark orphaned widgets (type no longer registered)
-    const sanitized = layout.widgets.map((w: any) => ({
+    const sanitized = layout.widgets.map((w: Record<string, unknown>) => ({
       ...w,
       isOrphaned: !KNOWN_WIDGET_TYPES.has(w.type),
     }))
@@ -188,7 +188,7 @@ router.get('/layout', async (req: Request, res: Response, next) => {
 // ── PUT /api/v1/dashboard/layout ─────────────────────────────────────────────
 router.put('/layout', async (req: Request, res: Response, next) => {
   try {
-    const user = (req as any).user
+    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
     const siteId = req.headers['x-zenith-site-id'] as string
 
     const parsed = SaveLayoutSchema.safeParse(req.body)
@@ -216,8 +216,8 @@ router.put('/layout', async (req: Request, res: Response, next) => {
 
     // Optimistic locking — reject if client is saving stale data
     if (clientUpdatedAt) {
-      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const existing = await adapter.findOne<Record<string, any>>('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const existing = await adapter.findOne<Record<string, unknown>>('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
       if (existing && new Date(clientUpdatedAt) < new Date(existing.updated_at)) {
         throw new ConflictError('Layout was modified in another tab. Refresh to get the latest version.')
       }
@@ -225,7 +225,7 @@ router.put('/layout', async (req: Request, res: Response, next) => {
 
     // Clamp widgets that overflow the grid, collect warnings
     const warnings: string[] = []
-    const clamped = widgets.map((w: any) => {
+    const clamped = widgets.map((w: Record<string, unknown>) => {
       if (w.position.x + w.position.w > columns) {
         warnings.push(`Widget "${w.title || w.type}" was clamped to fit the grid.`)
         return { ...w, position: { ...w.position, w: Math.max(1, columns - w.position.x) } }
@@ -236,10 +236,10 @@ router.put('/layout', async (req: Request, res: Response, next) => {
     // Strip admin-only widgets from non-admin users
     const ADMIN_ONLY_WIDGETS = new Set(['custom-html', 'system-health'])
     const filteredWidgets =
-      user.role === 'admin' ? clamped : clamped.filter((w: any) => !ADMIN_ONLY_WIDGETS.has(w.type))
+      user.role === 'admin' ? clamped : clamped.filter((w: Record<string, unknown>) => !ADMIN_ONLY_WIDGETS.has(w.type))
 
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    let layout = await adapter.findOne<Record<string, any>>('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    let layout = await adapter.findOne<Record<string, unknown>>('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
     
     if (layout) {
       layout = await adapter.update('z_dashboard_layouts', (layout.id || layout._id).toString(), {
@@ -274,9 +274,9 @@ router.put('/layout', async (req: Request, res: Response, next) => {
 // ── POST /api/v1/dashboard/layout/reset ──────────────────────────────────────
 router.post('/layout/reset', async (req: Request, res: Response, next) => {
   try {
-    const user = (req as any).user
+    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
     const siteId = req.headers['x-zenith-site-id'] as string
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
     await adapter.deleteMany('z_dashboard_layouts', { userId: user.id, siteId: siteId || null })
     const defaults = DEFAULT_LAYOUTS[user.role] || DEFAULT_LAYOUTS.viewer
     res.json(createResponse({ widgets: defaults, columns: 12, isDefault: true }))
@@ -287,7 +287,7 @@ router.post('/layout/reset', async (req: Request, res: Response, next) => {
 
 // ── GET /api/v1/dashboard/widgets ────────────────────────────────────────────
 router.get('/widgets', (req: Request, res: Response) => {
-  const user = (req as any).user
+  const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
   const ADMIN_ONLY_WIDGETS = new Set(['custom-html', 'system-health'])
 
   const widgets = [

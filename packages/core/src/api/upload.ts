@@ -34,8 +34,28 @@ const upload = multer({
  * ───────────────────
  * Handles secure file uploads dynamically streaming to Cloudinary or S3/Local storage.
  */
-router.post('/', requireAuth, upload.single('file'), async (req: any, res, next) => {
-  if (!req.file) throw new InvalidPayloadError('No file uploaded')
+router.post('/', requireAuth, upload.single('file'), async (req: import('express').Request, res, next) => {
+  const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+  
+  if (req.body.url) {
+    try {
+      const doc = await adapter.create('media', {
+        url: req.body.url,
+        id: `url-${Date.now()}`,
+        mimetype: 'image/jpeg', // default for hotlinked
+        size: 0,
+        alt: req.body.alt || '',
+        tags: [],
+        focalPoint: null,
+        siteId: req.headers['x-zenith-site-id'] as string,
+      })
+      return res.json(createResponse(doc))
+    } catch (err) {
+      return next(err)
+    }
+  }
+
+  if (!req.file) throw new InvalidPayloadError('No file or URL uploaded')
 
   const filePath = req.file.path
 
@@ -148,7 +168,7 @@ router.post('/', requireAuth, upload.single('file'), async (req: any, res, next)
     }
 
     // 4. Persist media meta details to database adapter
-    const adapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const doc = await adapter.create('media', {
       url,
       id: fileId,

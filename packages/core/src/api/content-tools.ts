@@ -119,34 +119,34 @@ router.post('/auto-link', async (req: Request, res: Response, next) => {
       throw new InvalidPayloadError('"content" string is required')
     }
 
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-    const config = (req as any).zenith.config
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const config = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith.config
     const siteId = req.headers['x-zenith-site-id'] as string
     const suggestions: Array<{ text: string; url: string; collection: string }> = []
 
     for (const col of config.collections) {
       // Check if collection has a title or name field we can match against
       const hasTitle = col.fields.some(
-        (f: any) => f.name === 'title' && ['text', 'string'].includes(f.type)
+        (f: Record<string, unknown>) => f.name === 'title' && ['text', 'string'].includes(f.type)
       )
       const hasName = col.fields.some(
-        (f: any) => f.name === 'name' && ['text', 'string'].includes(f.type)
+        (f: Record<string, unknown>) => f.name === 'name' && ['text', 'string'].includes(f.type)
       )
 
       if (!hasTitle && !hasName) continue
 
-      let docs: any[] = []
+      let docs: Record<string, unknown>[] = []
       try {
         // Production Hardening: Limit to 100 docs per collection to prevent OOM crashes
-        const filter: Record<string, any> = {}
+        const filter: Record<string, unknown> = {}
         if (siteId) filter.siteId = siteId
-        docs = await adapter.find<Record<string, any>>(col.slug, filter, { limit: 100 })
+        docs = await adapter.find<Record<string, unknown>>(col.slug, filter, { limit: 100 })
       } catch (e) {
         continue
       }
 
       for (const doc of docs) {
-        const keyword = (doc as any).title || (doc as any).name
+        const keyword = (doc as Record<string, unknown>).title || (doc as Record<string, unknown>).name
         if (!keyword || keyword.length < 4) continue // Ignore very short generic words
 
         // Case-insensitive exact word boundary match
@@ -154,7 +154,7 @@ router.post('/auto-link', async (req: Request, res: Response, next) => {
         if (regex.test(content)) {
           suggestions.push({
             text: keyword,
-            url: `/${col.slug}/${(doc as any).slug || (doc as any).id || (doc as any)._id}`,
+            url: `/${col.slug}/${(doc as Record<string, unknown>).slug || (doc as Record<string, unknown>).id || (doc as Record<string, unknown>)._id}`,
             collection: col.name,
           })
         }

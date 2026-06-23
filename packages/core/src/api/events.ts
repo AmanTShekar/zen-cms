@@ -37,17 +37,17 @@ router.get('/', (req: Request, res: Response) => {
   const siteId = req.headers['x-zenith-site-id'] as string | undefined
 
   // Handlers for different content events
-  const onCreated = (payload: any) => {
+  const onCreated = (payload: Record<string, unknown>) => {
     if (siteId && payload.document?.siteId && payload.document.siteId !== siteId) return
     res.write(`event: content.created\ndata: ${JSON.stringify(payload)}\n\n`)
   }
   
-  const onUpdated = (payload: any) => {
+  const onUpdated = (payload: Record<string, unknown>) => {
     if (siteId && payload.document?.siteId && payload.document.siteId !== siteId) return
     res.write(`event: content.updated\ndata: ${JSON.stringify(payload)}\n\n`)
   }
   
-  const onDeleted = (payload: any) => {
+  const onDeleted = (payload: Record<string, unknown>) => {
     if (siteId && payload.siteId && payload.siteId !== siteId) return
     res.write(`event: content.deleted\ndata: ${JSON.stringify(payload)}\n\n`)
   }

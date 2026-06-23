@@ -26,7 +26,7 @@ export class SchemaSync {
         // For SQL adapters, this would generate/run ALTER TABLE queries
         await this.adapter.registerCollection(col)
         stats.updated++
-      } catch (err: any) {
+      } catch (err: unknown) {
         logger.error({ col: col.slug, err: err.message }, 'SchemaSync: Failed to sync collection')
         stats.errors++
       }
@@ -40,7 +40,7 @@ export class SchemaSync {
     logger.info('SchemaSync: Calculating schema differences...')
     const added: string[] = []
     const removed: string[] = []
-    const changed: any[] = []
+    const changed: string[] = []
 
     try {
       const existingCollections = await this.adapter.getExistingCollections()
@@ -67,7 +67,7 @@ export class SchemaSync {
           removed.push(dbName)
         }
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err: err.message }, 'SchemaSync.diff: Failed to execute schema inspect')
     }
 

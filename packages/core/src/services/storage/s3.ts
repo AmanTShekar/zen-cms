@@ -13,7 +13,7 @@ export class S3StorageProvider extends StorageProvider {
   private publicUrl?: string
   private endpoint?: string
 
-  constructor(config?: any) {
+  constructor(config?: Record<string, unknown>) {
     super()
     const region = config?.region || 'us-east-1'
     const endpoint = config?.endpoint
@@ -28,21 +28,21 @@ export class S3StorageProvider extends StorageProvider {
     }
 
     this.bucket = bucket
-    this.publicUrl = config?.publicUrl
+    this.publicUrl = config?.publicUrl as string | undefined
     this.endpoint = endpoint
 
     this.client = new S3Client({
-      region,
-      endpoint: endpoint || undefined,
+      region: region as string,
+      endpoint: (endpoint as string) || undefined,
       credentials: {
-        accessKeyId,
-        secretAccessKey,
+        accessKeyId: accessKeyId as string,
+        secretAccessKey: secretAccessKey as string,
       },
       // Force path style is useful for R2 / MinIO
       forcePathStyle: !!endpoint,
     })
 
-    logger.info({ bucket, region, hasCustomEndpoint: !!endpoint }, 'S3 Storage Provider initialized successfully')
+    logger.info({ bucket, region: region as string, hasCustomEndpoint: !!endpoint }, 'S3 Storage Provider initialized successfully')
   }
 
   async upload(
@@ -53,7 +53,7 @@ export class S3StorageProvider extends StorageProvider {
     const filename = `${Date.now()}-${safeBaseName}`
     const key = `uploads/${filename}`
 
-    let body: any
+    let body: unknown
     let size = 0
 
     if (typeof fileInput === 'string') {
@@ -87,7 +87,7 @@ export class S3StorageProvider extends StorageProvider {
       })
 
       // Track progress internally (can be piped to telemetry later)
-      parallelUploads3.on('httpUploadProgress', (progress: any) => {
+      parallelUploads3.on('httpUploadProgress', (progress: { loaded?: number; total?: number }) => {
         if (size > 10 * 1024 * 1024) {
           logger.debug({ key, loaded: progress.loaded, total: progress.total }, '[S3Storage] Multipart upload progress')
         }
@@ -104,8 +104,8 @@ export class S3StorageProvider extends StorageProvider {
         mimetype: options.mimetype,
         size,
       }
-    } catch (err: any) {
-      logger.error({ key, error: err.message }, '[S3Storage] Failed to execute parallel upload')
+    } catch (err: unknown) {
+      logger.error({ key, error: (err as Error).message }, '[S3Storage] Failed to execute parallel upload')
       throw err
     }
   }
@@ -121,8 +121,8 @@ export class S3StorageProvider extends StorageProvider {
           Key: safeId,
         })
       )
-    } catch (err: any) {
-      logger.error({ id, error: err.message }, 'Failed to delete file from S3 bucket')
+    } catch (err: unknown) {
+      logger.error({ id, error: (err as Error).message }, 'Failed to delete file from S3 bucket')
     }
   }
 

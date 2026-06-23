@@ -320,13 +320,14 @@ export class MongooseAdapter implements DatabaseAdapter {
     if (collection === 'z_plugins') resolvedCollection = 'Plugin'
     if (collection === 'audit_logs' || collection === 'z_audit_logs') resolvedCollection = 'AuditLog'
     if (collection === 'versions' || collection === 'z_versions') resolvedCollection = 'Version'
+    if (collection === 'comments') resolvedCollection = 'Comment'
 
     const model = this.models[resolvedCollection] || mongoose.models[resolvedCollection]
     if (!model) throw new Error(`Collection "${collection}" not registered`)
     return model
   }
 
-  private _getCacheKey(collection: string, query: unknown, options: unknown): string {
+  private _getCacheKey(method: string, collection: string, query: unknown, options: unknown): string {
     const sortObject = (obj: any): any => {
       if (obj === null || typeof obj !== 'object') return obj
       if (Array.isArray(obj)) return obj.map(sortObject)
@@ -337,7 +338,7 @@ export class MongooseAdapter implements DatabaseAdapter {
     }
     const siteId = (options as any)?.siteId || (options as any)?.tenantId || (globalThis as any).zenithAls?.getStore()?.siteId
     const enrichedQuery = siteId ? { ...(query as Record<string, unknown>), siteId } : query
-    return `${collection}:${JSON.stringify(sortObject(enrichedQuery))}:${JSON.stringify(sortObject(options))}`
+    return `${method}:${collection}:${JSON.stringify(sortObject(enrichedQuery))}:${JSON.stringify(sortObject(options))}`
   }
 
   async find<T = unknown>(
@@ -346,7 +347,7 @@ export class MongooseAdapter implements DatabaseAdapter {
     options: FindOptions = {}
   ): Promise<T[]> {
     return this._withCircuitBreaker(async () => {
-      const cacheKey = this._getCacheKey(collection, query, options)
+      const cacheKey = this._getCacheKey('find', collection, query, options)
       const cached = await this.cache.get<T[]>(cacheKey)
       if (cached) return cached
 
@@ -390,7 +391,7 @@ export class MongooseAdapter implements DatabaseAdapter {
     options: FindOptions = {}
   ): Promise<T | null> {
     return this._withCircuitBreaker(async () => {
-      const cacheKey = this._getCacheKey(collection, query, options)
+      const cacheKey = this._getCacheKey('findOne', collection, query, options)
       const cached = await this.cache.get<T>(cacheKey)
       if (cached) return cached
 

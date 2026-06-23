@@ -95,11 +95,11 @@ function secureRequest(
     const isHttps = url.protocol === 'https:'
     const lib = isHttps ? https : http
 
-    const requestOptions: any = {
+    const requestOptions: Record<string, unknown> = {
       method: options.method,
       headers: options.headers,
       timeout: options.timeout,
-      lookup: (hostname: string, lookupOptions: any, callback: any) => {
+      lookup: (hostname: string, lookupOptions: Record<string, unknown>, callback: ((...args: unknown[]) => void)) => {
         dns.lookup(hostname, lookupOptions, (err, address, family) => {
           if (err) return callback(err)
           try {
@@ -112,7 +112,7 @@ function secureRequest(
               }
             }
             callback(null, address, family)
-          } catch (validationErr: any) {
+          } catch (validationErr: unknown) {
             callback(validationErr)
           }
         })
@@ -167,23 +167,23 @@ export const WebhookService = {
         this.startRedisWorker()
         this.startDelayedScheduler()
         logger.info('WebhookService: Redis-backed queue manager linked to unified client successfully.')
-      } catch (err: any) {
-        logger.error({ err: err.message }, 'WebhookService: Unified Redis attachment failed. Falling back to in-memory dispatch.')
+      } catch (err: unknown) {
+        logger.error({ err: (err as Error).message }, 'WebhookService: Unified Redis attachment failed. Falling back to in-memory dispatch.')
         this.redisClient = null
       }
     } else {
       logger.info('WebhookService: No active Redis client found. Running in-memory webhook processor.')
     }
 
-    eventHub.on('content.created', (args: any) => {
+    eventHub.on('content.created', (args: Record<string, unknown>) => {
       this.dispatchEvent(this.config || [], `${args.collection}.created`, args.document, args.collection, args.document?.siteId)
     })
 
-    eventHub.on('content.updated', (args: any) => {
+    eventHub.on('content.updated', (args: Record<string, unknown>) => {
       this.dispatchEvent(this.config || [], `${args.collection}.updated`, args.document, args.collection, args.document?.siteId)
     })
 
-    eventHub.on('content.deleted', (args: any) => {
+    eventHub.on('content.deleted', (args: Record<string, unknown>) => {
       this.dispatchEvent(this.config || [], `${args.collection}.deleted`, { id: args.documentId }, args.collection, args.siteId || args.document?.siteId)
     })
   },
@@ -245,10 +245,10 @@ async sendWebhook(
 
     try {
       await validateWebhookUrl(target.url)
-    } catch (err: any) {
-        logger.error({ url: target.url, error: err.message }, 'Webhook request failed')
+    } catch (err: unknown) {
+        logger.error({ url: target.url, error: (err as Error).message }, 'Webhook request failed')
         span.recordException(err)
-        return { success: false, error: err.message }
+        return { success: false, error: (err as Error).message }
     }
 
     try {
@@ -293,9 +293,9 @@ async sendWebhook(
             { url: target.url, status: response.status, attempt: attempt + 1 },
             'Webhook delivery failed, retrying'
           )
-        } catch (error: any) {
+        } catch (error: unknown) {
           logger.error(
-            { url: target.url, error: error.message, attempt: attempt + 1 },
+            { url: target.url, error: (error as Error).message, attempt: attempt + 1 },
             'Webhook network error'
           )
         }
@@ -316,9 +316,9 @@ async sendWebhook(
       }).catch(() => {})
 
       return { success: false, error: 'All retry attempts failed' }
-    } catch (err: any) {
-      logger.error({ err: err.message }, 'Webhook delivery unexpected error')
-      return { success: false, error: err.message }
+    } catch (err: unknown) {
+      logger.error({ err: (err as Error).message }, 'Webhook delivery unexpected error')
+      return { success: false, error: (err as Error).message }
     }
   })
 },
@@ -350,9 +350,9 @@ async sendWebhook(
           }
           await this.redisClient.lpush('zenith:webhooks:queue', JSON.stringify(job))
           logger.info({ url: target.url, event, idempotencyKey: key }, 'Webhook queued with idempotency key')
-        } catch (err: any) {
+        } catch (err: unknown) {
           logger.error(
-            { url: target.url, error: err.message },
+            { url: target.url, error: (err as Error).message },
             'Failed to queue webhook in Redis, falling back to in-memory dispatch'
           )
           this.sendWebhook(target, event, data, collection, key).catch((inMemoryErr) =>
@@ -378,8 +378,8 @@ async sendWebhook(
             await this.processQueueJob(job)
           }
         }
-      } catch (err: any) {
-        logger.error({ err: err.message }, 'Webhook worker loop error')
+      } catch (err: unknown) {
+        logger.error({ err: (err as Error).message }, 'Webhook worker loop error')
       }
       setTimeout(poll, 200)
     }
@@ -403,8 +403,8 @@ async sendWebhook(
             logger.debug({ count: readyJobs.length }, 'Moved delayed webhook jobs back to main queue')
           }
         }
-      } catch (err: any) {
-        logger.error({ err: err.message }, 'Webhook delayed scheduler error')
+      } catch (err: unknown) {
+        logger.error({ err: (err as Error).message }, 'Webhook delayed scheduler error')
       }
       setTimeout(checkDelayed, 1000)
     }
@@ -423,8 +423,8 @@ async sendWebhook(
 
     try {
       await validateWebhookUrl(target.url)
-    } catch (ssrfErr: any) {
-      logger.error({ url: target.url, error: ssrfErr.message }, 'Webhook SSRF blocked in queue worker')
+    } catch (ssrfErr: unknown) {
+      logger.error({ url: target.url, error: (ssrfErr as Error).message }, 'Webhook SSRF blocked in queue worker')
       try {
         await AdapterFactory.getActiveAdapter().createWebhookDelivery({
           webhookId: target.id,
@@ -486,9 +486,9 @@ async sendWebhook(
       )
       
       await this.handleJobRetry(job)
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(
-        { url: target.url, error: error.message, attempt: attempt + 1 },
+        { url: target.url, error: (error as Error).message, attempt: attempt + 1 },
         'Webhook network error via Redis queue'
       )
       
@@ -516,8 +516,8 @@ async sendWebhook(
           logger.info({ url: job.target.url, attempt: nextAttempt, delayMs: delay }, 'Scheduled webhook retry in Redis')
           return
         }
-      } catch (err: any) {
-        logger.error({ err: err.message }, 'Failed to schedule job retry in Redis delayed queue')
+      } catch (err: unknown) {
+        logger.error({ err: (err as Error).message }, 'Failed to schedule job retry in Redis delayed queue')
       }
     }
 

@@ -6,7 +6,7 @@ import { AUDIT_RETENTION_POLICIES, getAuditCutoffDate } from './audit-rotation'
 import { env } from '../config/env';
 
 
-let lockClient: any = null
+let lockClient: Record<string, unknown> | null = null
 
 /**
  * Attempts to acquire a distributed lock via Redis.
@@ -28,7 +28,7 @@ async function acquireLock(lockKey: string, ttlMs: number): Promise<boolean> {
         enableReadyCheck: true,
         retryStrategy: (times: number) => Math.min(times * 100, 3000),
       })
-      lockClient.on('error', (err: any) => {
+      lockClient.on('error', (err: unknown) => {
         logger.error({ err }, 'Scheduler Lock: Redis connection error — will reconnect on next tick')
         // CRITICAL FIX: disconnect and null the client so it is recreated fresh on next acquireLock call
         if (lockClient) {
@@ -47,7 +47,7 @@ async function acquireLock(lockKey: string, ttlMs: number): Promise<boolean> {
       lockClient = undefined
     }
     return acquired
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.warn({ err: err.message }, 'Scheduler Lock: Failed to contact Redis. Defaulting to local execution.')
     return true
   }
@@ -94,13 +94,13 @@ export class SchedulerService {
             { _status: 'draft' }
           )
 
-          const toPublish = dueDocs.filter((doc: any) => {
+          const toPublish = dueDocs.filter((doc: Record<string, unknown>) => {
             const scheduledAt = doc.scheduledAt ? new Date(doc.scheduledAt) : null
             return scheduledAt !== null && scheduledAt <= now
           })
 
           await Promise.all(
-            toPublish.map((doc: any) =>
+            toPublish.map((doc: Record<string, unknown>) =>
               this.adapter.update(config.slug, String(doc.id || doc._id), {
                 _status: 'published',
                 scheduledAt: null,
@@ -126,18 +126,18 @@ export class SchedulerService {
         // Adapter-agnostic: fetch all pending releases and filter by date in JS
         // (avoids $lte which is MongoDB-specific)
         const allPending = await this.adapter.find('z_releases', { status: 'pending' })
-        const pendingReleases = allPending.filter((r: any) => {
+        const pendingReleases = allPending.filter((r: Record<string, unknown>) => {
           const scheduledAt = r.scheduledAt ? new Date(r.scheduledAt) : null
           return scheduledAt !== null && scheduledAt <= now
         })
 
         for (const release of pendingReleases) {
-          logger.info(`[Scheduler] Processing scheduled release: ${(release as any).name}`)
+          logger.info(`[Scheduler] Processing scheduled release: ${(release as Record<string, unknown>).name}`)
 
           // Execute publish
           // We provide a system user mock and the release's siteId
           const mockUser = { role: 'admin', email: 'system@zenithcms.local' }
-          const siteId = (release as any).siteId || 'default'
+          const siteId = (release as Record<string, unknown>).siteId || 'default'
 
           const result = await publishReleaseContent(
             release,
@@ -148,13 +148,13 @@ export class SchedulerService {
           )
 
           // Use adapter-agnostic id/id_id resolution
-          const releaseId = String((release as any).id || (release as any)._id)
+          const releaseId = String((release as Record<string, unknown>).id || (release as Record<string, unknown>)._id)
           if (result.success) {
             await this.adapter.update('z_releases', releaseId, { status: 'published' })
-            logger.info(`[Scheduler] Successfully published release: ${(release as any).name}`)
+            logger.info(`[Scheduler] Successfully published release: ${(release as Record<string, unknown>).name}`)
           } else {
             await this.adapter.update('z_releases', releaseId, { status: 'failed', failureReason: result.error })
-            logger.error({ error: result.error }, `[Scheduler] Failed to publish release: ${(release as any).name}`)
+            logger.error({ error: result.error }, `[Scheduler] Failed to publish release: ${(release as Record<string, unknown>).name}`)
           }
         }
       } catch (err) {
@@ -167,13 +167,13 @@ export class SchedulerService {
         
         // Step 4a. Delete generic logs using default retention
         await this.adapter.deleteMany('audit_logs', {
-          collectionName: { $nin: collections.filter(c => (c as any).auditRetentionDays).map(c => c.slug) },
+          collectionName: { $nin: collections.filter(c => (c as Record<string, unknown>).auditRetentionDays).map(c => c.slug) },
           timestamp: { $lte: defaultCutoff }
         })
 
         // Step 4b. Process collection-specific retention rules
         for (const config of collections) {
-          const customRetention = (config as any).auditRetentionDays
+          const customRetention = (config as Record<string, unknown>).auditRetentionDays
           if (typeof customRetention === 'number') {
             const days = Math.max(customRetention, AUDIT_RETENTION_POLICIES.MINIMUM_RETENTION_DAYS)
             const cutoff = getAuditCutoffDate(days)

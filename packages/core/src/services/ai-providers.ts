@@ -37,7 +37,7 @@ export class AIProviderService {
         default:
           throw new Error(`Unsupported AI provider: ${provider}`);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Anthropic throws 400 Bad Request if key is valid but body is wrong. If 401, it's invalid.
       if (provider === 'anthropic' && err?.response?.status === 400) {
         return true;
@@ -54,13 +54,13 @@ export class AIProviderService {
           const res = await axios.get('https://openrouter.ai/api/v1/models', {
             headers: { Authorization: `Bearer ${apiKey}` }
           });
-          return res.data.data.map((m: any) => ({ id: m.id, name: m.name || m.id }));
+          return res.data.data.map((m: Record<string, unknown>) => ({ id: m.id, name: m.name || m.id }));
         }
         case 'openai': {
           const res = await axios.get('https://api.openai.com/v1/models', {
             headers: { Authorization: `Bearer ${apiKey}` }
           });
-          return res.data.data.map((m: any) => ({ id: m.id, name: m.id }));
+          return res.data.data.map((m: Record<string, unknown>) => ({ id: m.id, name: m.id }));
         }
         case 'anthropic': {
           return [
@@ -74,16 +74,16 @@ export class AIProviderService {
           const res = await axios.get('https://integrate.api.nvidia.com/v1/models', {
             headers: { Authorization: `Bearer ${apiKey}` }
           });
-          return res.data.data.map((m: any) => ({ id: m.id, name: m.id }));
+          return res.data.data.map((m: Record<string, unknown>) => ({ id: m.id, name: m.id }));
         }
         case 'google': {
           const res = await axios.get(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-          return res.data.models.map((m: any) => ({ id: m.name, name: m.displayName || m.name }));
+          return res.data.models.map((m: Record<string, unknown>) => ({ id: m.name, name: m.displayName || m.name }));
         }
         default:
           throw new Error(`Unsupported AI provider: ${provider}`);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error(`Fetch models failed for provider ${provider}: ${err?.response?.data?.error?.message || err.message}`);
       throw new Error('Failed to fetch models from provider');
     }

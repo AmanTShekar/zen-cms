@@ -14,8 +14,8 @@ export interface IFlow extends Document {
     config: unknown
     next?: string
   }>
-  nodes?: any[]
-  edges?: any[]
+  nodes?: Record<string, unknown>[]
+  edges?: Record<string, unknown>[]
   siteId?: string
   createdAt: Date
   updatedAt: Date

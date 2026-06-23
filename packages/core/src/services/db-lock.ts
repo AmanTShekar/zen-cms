@@ -33,7 +33,7 @@ export function initRedlock(redisUrl?: string): Redlock | null {
     })
 
     return redlock
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error({ err: err.message }, '[Redlock] Failed to initialize distributed lock client.')
     return null
   }
@@ -53,13 +53,13 @@ export async function withMigrationLock<T>(resourceName: string, ttlMs: number, 
 
   logger.info(`[Redlock] Attempting to acquire lock on ${resourceName}...`)
   
-  let lock: any = null
+  let lock: Record<string, unknown> | null = null
   try {
     lock = await lockManager.acquire([`zenith:lock:${resourceName}`], ttlMs)
     logger.info(`[Redlock] Acquired lock on ${resourceName}. Executing...`)
     const result = await callback()
     return result
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error({ err: err.message }, `[Redlock] Failed to acquire lock for ${resourceName} or callback threw error.`)
     throw err
   } finally {
@@ -67,7 +67,7 @@ export async function withMigrationLock<T>(resourceName: string, ttlMs: number, 
       try {
         await lock.release()
         logger.info(`[Redlock] Released lock on ${resourceName}`)
-      } catch (err: any) {
+      } catch (err: unknown) {
         logger.warn({ err: err.message }, `[Redlock] Failed to release lock on ${resourceName} cleanly.`)
       }
     }

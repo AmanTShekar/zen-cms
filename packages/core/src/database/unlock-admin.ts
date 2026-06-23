@@ -10,7 +10,7 @@ async function unlockAdmin() {
   const adapter = AdapterFactory.create()
   await adapter.connect()
 
-  const admins = await adapter.find<any>('users', { role: 'admin' })
+  const admins = await adapter.find<{ id?: string, _id?: string, lockUntil?: string | null }>('users', { role: 'admin' })
   let count = 0
   for (const admin of admins) {
     if (admin.lockUntil) {
@@ -24,7 +24,7 @@ async function unlockAdmin() {
 
   console.log(`Unlocked ${count} admin account(s)`)
 
-  const updatedAdmins = await adapter.find<any>('users', { role: 'admin' }, { limit: 1 })
+  const updatedAdmins = await adapter.find<{ email: string, failedLoginAttempts: number, lockUntil: string | null }>('users', { role: 'admin' }, { limit: 1 })
   const admin = updatedAdmins[0]
   
   if (admin) {

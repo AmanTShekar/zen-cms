@@ -3,8 +3,8 @@ import mongoose, { Schema, Document } from 'mongoose'
 export interface IFlowRun extends Document {
   flowId: string
   status: 'running' | 'completed' | 'failed' | 'sleeping'
-  context: any
-  completedNodes: any
+  context: Record<string, unknown>
+  completedNodes: string[]
   error?: string
   resumeAt?: string
   createdAt: Date

@@ -12,7 +12,7 @@ import { sql } from 'drizzle-orm'
  * Ensures migrations run exactly once per environment by tracking state in `z_migrations`.
  */
 export class Migrator {
-  private static async ensureMigrationTable(adapter: any) {
+  private static async ensureMigrationTable(adapter: import('@zenith-open/types').DatabaseAdapter) {
     if (adapter.name === 'postgres-drizzle' || adapter.name === 'PostgresDrizzle') {
       try {
         await adapter.db.execute(`
@@ -29,21 +29,21 @@ export class Migrator {
     }
   }
 
-  private static async getExecutedMigrations(adapter: any): Promise<string[]> {
+  private static async getExecutedMigrations(adapter: import('@zenith-open/types').DatabaseAdapter): Promise<string[]> {
     try {
       if (adapter.name === 'postgres-drizzle' || adapter.name === 'PostgresDrizzle') {
         const res = await adapter.db.execute(`SELECT name FROM z_migrations`)
-        return res.rows.map((r: any) => r.name)
+        return res.rows.map((r: Record<string, unknown>) => r.name)
       } else {
         const migrations = await adapter.find('z_migrations', {})
-        return migrations.map((m: any) => m.name)
+        return migrations.map((m: Record<string, unknown>) => m.name)
       }
     } catch (err) {
       return []
     }
   }
 
-  private static async markMigrationExecuted(adapter: any, name: string) {
+  private static async markMigrationExecuted(adapter: import('@zenith-open/types').DatabaseAdapter, name: string) {
     if (adapter.name === 'postgres-drizzle' || adapter.name === 'PostgresDrizzle') {
       await adapter.db.execute(sql`INSERT INTO z_migrations (name, batch) VALUES (${name}, 1)`)
     } else {
@@ -51,7 +51,7 @@ export class Migrator {
     }
   }
 
-  private static async removeMigrationRecord(adapter: any, name: string) {
+  private static async removeMigrationRecord(adapter: import('@zenith-open/types').DatabaseAdapter, name: string) {
     if (adapter.name === 'postgres-drizzle' || adapter.name === 'PostgresDrizzle') {
       await adapter.db.execute(sql`DELETE FROM z_migrations WHERE name = ${name}`)
     } else {
@@ -109,7 +109,7 @@ export class Migrator {
           } else {
             logger.warn(`Migrator: Skipping ${file} (no 'up' function exported)`)
           }
-        } catch (err: any) {
+        } catch (err: unknown) {
           logger.error({ err }, `Migrator: Migration ${file} failed.`)
           if (continueOnError) {
             logger.warn(`Migrator: Continuing to next migration (continueOnError=true).`)
@@ -165,7 +165,7 @@ export class Migrator {
         } else {
           throw new Error(`Migration ${lastExecuted} does not export a 'down' function. Cannot rollback.`)
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         logger.error({ err }, `Migrator: Rollback of ${lastExecuted} failed.`)
         throw new Error(`Rollback Failed: ${lastExecuted} - ${err.message}`)
       }

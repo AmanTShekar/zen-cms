@@ -11,6 +11,7 @@ import toast from 'react-hot-toast'
 import api from '../lib/api'
 import { PageHeader } from '../components/ui/PageHeader'
 import { cn } from '../lib/utils'
+import { useUnsavedGuard } from '../hooks/useUnsavedGuard'
 
 // ── Full field type catalogue ────────────────────────────────────────────────
 const FIELD_TYPES = [
@@ -445,6 +446,31 @@ export default function SchemaBuilderPage() {
  const [isAIGenerating, setIsAIGenerating] = useState(false)
  const [showAI, setShowAI] = useState(false)
  const [availableCollections, setAvailableCollections] = useState<string[]>([])
+
+ // Track unsaved changes
+ const [isDirty, setIsDirty] = useState(false)
+ useEffect(() => {
+   const currentStr = JSON.stringify({ slug, collectionName, fields, settings })
+   if (activeSchemaObj) {
+     const activeStr = JSON.stringify({
+       slug: activeSchemaObj.slug,
+       collectionName: activeSchemaObj.plural || activeSchemaObj.slug,
+       fields: activeSchemaObj.fields || [],
+       settings: { ...DEFAULT_SETTINGS, ...(activeSchemaObj.settings || {}) }
+     })
+     setIsDirty(currentStr !== activeStr)
+   } else {
+     const defaultStr = JSON.stringify({
+       slug: 'new-collection',
+       collectionName: 'New Collection',
+       fields: [],
+       settings: DEFAULT_SETTINGS
+     })
+     setIsDirty(currentStr !== defaultStr)
+   }
+ }, [slug, collectionName, fields, settings, activeSchemaObj])
+
+ useUnsavedGuard({ hasUnsavedChanges: isDirty })
 
  // Load saved schemas and collections list
  const loadSchemas = useCallback(async () => {

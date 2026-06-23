@@ -59,7 +59,7 @@ export class LicensingService {
         '[Licensing] Enterprise License authenticated successfully!'
       )
       return true
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err: err.message }, '[Licensing] Exception during cryptographic parsing')
       return false
     }

@@ -2,7 +2,7 @@ import { EventEmitter } from 'events'
 import { logger } from './logger'
 import { redisService } from './redis'
 
-export type ZenithEventListener = (...args: any[]) => Promise<void> | void
+export type ZenithEventListener = (...args: Record<string, unknown>[]) => Promise<void> | void
 
 export interface EventHubBackend {
   emit(event: string, ...args: unknown[]): Promise<void>
@@ -55,8 +55,8 @@ class InMemoryEventBackend implements EventHubBackend {
  * to keep local caches and states perfectly synchronized in production clusters.
  */
 class RedisEventBackend implements EventHubBackend {
-  private pubClient: any = null
-  private subClient: any = null
+  private pubClient: Record<string, unknown> | null = null
+  private subClient: Record<string, unknown> | null = null
   private localEmitter = new EventEmitter()
   private channelName = 'zenith_events'
 
@@ -95,7 +95,7 @@ class RedisEventBackend implements EventHubBackend {
 
       await this.subClient.subscribe(this.channelName)
       logger.info('RedisEventBackend: Distributed Redis Pub/Sub channel subscribed successfully')
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error(
         { err: err.message },
         'RedisEventBackend: Failed to initialize Redis Pub/Sub. Falling back to simple In-Memory bus.'

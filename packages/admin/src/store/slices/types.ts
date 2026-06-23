@@ -74,6 +74,7 @@ export interface DocumentSlice {
   fieldErrors: Record<string, string>
   history: Version[]
   templates: PageData[]
+  topLevelFields: FieldDefinition[]
 
   setData: (data: PageData | null) => void
   setLoading: (loading: boolean) => void
@@ -85,6 +86,7 @@ export interface DocumentSlice {
   setFieldErrors: (errors: Record<string, string>) => void
   setHistory: (history: Version[]) => void
   setTemplates: (templates: PageData[]) => void
+  setTopLevelFields: (fields: FieldDefinition[]) => void
 
   updateData: (updater: (prev: PageData) => PageData | void) => void
   setField: (sectionId: string, fieldKey: string, value: any) => void

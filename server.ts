@@ -13,7 +13,7 @@ import config from './cms.config'
 async function main() {
   const cms = await createZenith({
     config,
-    plugins: [seoPlugin, slugPlugin({ from: 'title' })],
+    plugins: [seoPlugin(), slugPlugin({ from: 'title' })],
     port: Number(process.env.PORT) || 3000,
     cors: {
       origins: process.env.CORS_ORIGINS

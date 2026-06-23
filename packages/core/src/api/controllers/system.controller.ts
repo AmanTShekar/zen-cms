@@ -4,7 +4,7 @@ import { logger } from '../../services/logger'
 import { AdapterFactory } from '../../database/adapters/AdapterFactory'
 
 export const getHealth = async (req: Request, res: Response) => {
-  const adapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+  const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
   const dbHealth = adapter.getHealth()
   const health = {
     status: 'ok',

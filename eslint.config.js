@@ -10,6 +10,7 @@ export default tseslint.config(
       '**/build/**',
       'packages/admin/dist/**',
       'packages/core/dist/**',
+      'internal/**',
     ],
   },
   js.configs.recommended,

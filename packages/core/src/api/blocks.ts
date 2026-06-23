@@ -73,12 +73,12 @@ router.get('/', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const adapter = req.app.get('zenith_engine')?.adapter
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
-    let dbBlocks: any[] = []
+    let dbBlocks: Record<string, unknown>[] = []
     
     if (adapter) {
       try {
         const allDbBlocks = await adapter.find('z_schemas', { type: 'block' })
-        dbBlocks = allDbBlocks.filter((b: any) => !b.siteId || b.siteId === siteId)
+        dbBlocks = allDbBlocks.filter((b: Record<string, unknown>) => !b.siteId || b.siteId === siteId)
       } catch (err) {
         // If z_schemas doesn't exist yet or is empty, gracefully fallback
         console.warn('Could not fetch from z_schemas', err)
@@ -102,12 +102,12 @@ router.get('/:slug', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const adapter = req.app.get('zenith_engine')?.adapter
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
-    let dbBlocks: any[] = []
+    let dbBlocks: Record<string, unknown>[] = []
 
     if (adapter) {
       try {
         const allDbBlocks = await adapter.find('z_schemas', { type: 'block' })
-        dbBlocks = allDbBlocks.filter((b: any) => !b.siteId || b.siteId === siteId)
+        dbBlocks = allDbBlocks.filter((b: Record<string, unknown>) => !b.siteId || b.siteId === siteId)
       } catch (err) {
         console.warn('Could not fetch from z_schemas', err)
       }
@@ -155,7 +155,7 @@ router.post('/generate', blocksLimiter, requireAuth, requireRole('admin'), async
     const fileName = `${data.slug}.ts`
     const storage = getBlockStorage()
 
-    const generateFieldCode = (f: any, depth = 1): string => {
+    const generateFieldCode = (f: Record<string, unknown>, depth = 1): string => {
       const indent = '  '.repeat(depth)
       const innerIndent = '  '.repeat(depth + 1)
       
@@ -205,7 +205,7 @@ router.post('/generate', blocksLimiter, requireAuth, requireRole('admin'), async
 
       // Recursion for structural fields (Row, Collapsible, Tabs, Array, Group)
       if (f.fields && Array.isArray(f.fields) && f.fields.length > 0) {
-        const nested = f.fields.map((child: any) => generateFieldCode(child, depth + 1)).join(',\n')
+        const nested = f.fields.map((child: Record<string, unknown>) => generateFieldCode(child, depth + 1)).join(',\n')
         props += `\n${innerIndent}fields: [\n${nested}\n${innerIndent}],`
       }
 
@@ -246,7 +246,7 @@ ${fieldsCode}
         await fs.promises.writeFile(filePath, fileContent, 'utf-8')
       }
     } catch (fsErr) {
-      throw new Error(`Failed to write file: ${(fsErr as any).message}`)
+      throw new Error(`Failed to write file: ${(fsErr as Record<string, unknown>).message}`)
     }
 
     // 3. Database Upsert with Rollback
@@ -275,7 +275,7 @@ ${fieldsCode}
         try {
           await storage.delete(`blocks/${siteId || 'global'}/${fileName}`, siteId)
         } catch (deleteErr) {
-          console.error(`[Rollback] S3 delete failed: ${(deleteErr as any).message}`)
+          console.error(`[Rollback] S3 delete failed: ${(deleteErr as Record<string, unknown>).message}`)
         }
       } else {
         const blocksDir = path.resolve(__dirname, '../../../../config/blocks')
@@ -288,7 +288,7 @@ ${fieldsCode}
           }
         }
       }
-      throw new Error(`Database sync failed: ${(dbErr as any).message}`)
+      throw new Error(`Database sync failed: ${(dbErr as Record<string, unknown>).message}`)
     }
 
     res.status(200).json({ success: true, message: `Block ${data.slug} generated and upserted successfully` })

@@ -24,7 +24,7 @@ function getOtelProvider() {
       resource: new Resource({
         [SemanticResourceAttributes.SERVICE_NAME]: 'zenith-cms-core',
         [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
-      }) as any,
+      }) as Record<string, unknown>,
     })
 
     const exporter = env.OTEL_EXPORTER_OTLP_ENDPOINT
@@ -32,7 +32,7 @@ function getOtelProvider() {
       : undefined
 
     if (exporter) {
-      ;(provider as any).addSpanProcessor(new SimpleSpanProcessor(exporter))
+      ;(provider as unknown as { addSpanProcessor: (proc: unknown) => void }).addSpanProcessor(new SimpleSpanProcessor(exporter))
     }
 
     provider.register()

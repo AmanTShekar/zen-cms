@@ -19,7 +19,7 @@ import { verifySiteAccess } from '../middleware/auth'
 // Zero-dependency, high-performance DataLoader implementation for relational batching
 class SimpleDataLoader<K, V> {
   private batchFn: (keys: K[]) => Promise<V[]>
-  private queue: { key: K; resolve: (value: V) => void; reject: (err: any) => void }[] = []
+  private queue: { key: K; resolve: (value: V) => void; reject: (err: unknown) => void }[] = []
   private cache = new Map<K, Promise<V>>()
   private scheduled = false
 
@@ -80,7 +80,7 @@ function fieldTypeToGraphQL(field: CMSField, parentName: string, config?: CMSCon
     case 'media':
       return 'MediaObject'
     case 'relation': {
-      const relConfig = field as any
+      const relConfig = field as Record<string, unknown>
       const targetCol = config?.collections.find((c) => c.slug === relConfig.relationTo)
       if (targetCol) {
         const relatedName = targetCol.name.replace(/[^a-zA-Z0-9]/g, '')
@@ -123,7 +123,7 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
       }
     `
 
-    const resolvers: Record<string, (...args: any[]) => any> = {}
+    const resolvers: Record<string, (...args: Record<string, unknown>[]) => unknown> = {}
     const processedTypes = new Set<string>()
 
     const buildRecursiveTypes = (fields: CMSField[], parentName: string) => {
@@ -132,27 +132,27 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
 
         if (field.type === 'group' && !processedTypes.has(typeName)) {
           processedTypes.add(typeName)
-          const subFields = (field as any).fields
-            ?.map((f: any) => `  ${f.name}: ${fieldTypeToGraphQL(f, typeName, config)}`)
+          const subFields = (field as Record<string, unknown>).fields
+            ?.map((f: Record<string, unknown>) => `  ${f.name}: ${fieldTypeToGraphQL(f, typeName, config)}`)
             .join('\n')
           schemaSdl += `\ntype ${typeName} {\n${subFields}\n}\n`
-          buildRecursiveTypes((field as any).fields || [], typeName)
+          buildRecursiveTypes((field as Record<string, unknown>).fields || [], typeName)
         }
 
         if (field.type === 'array' && !processedTypes.has(typeName)) {
           processedTypes.add(typeName)
-          const subFields = (field as any).fields
-            ?.map((f: any) => `  ${f.name}: ${fieldTypeToGraphQL(f, typeName, config)}`)
+          const subFields = (field as Record<string, unknown>).fields
+            ?.map((f: Record<string, unknown>) => `  ${f.name}: ${fieldTypeToGraphQL(f, typeName, config)}`)
             .join('\n')
           schemaSdl += `\ntype ${typeName} {\n${subFields}\n}\n`
-          buildRecursiveTypes((field as any).fields || [], typeName)
+          buildRecursiveTypes((field as Record<string, unknown>).fields || [], typeName)
         }
 
         if (field.type === 'blocks' && !processedTypes.has(`${typeName}_Block`)) {
           processedTypes.add(`${typeName}_Block`)
           const unionTypes: string[] = []
 
-          ;(field as any).blocks?.forEach((blockOrSlug: any) => {
+          ;(field as Record<string, unknown>).blocks?.forEach((blockOrSlug: Record<string, unknown>) => {
             const isString = typeof blockOrSlug === 'string'
             const slug = isString ? blockOrSlug : blockOrSlug.slug
             const blockDef = isString ? config.collections.find((c) => c.slug === slug) : blockOrSlug
@@ -161,7 +161,7 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
             const blockTypeName = `${typeName}_${slug.charAt(0).toUpperCase() + slug.slice(1)}`
             unionTypes.push(blockTypeName)
             const blockFields = blockDef.fields
-              ?.map((f: any) => `  ${f.name}: ${fieldTypeToGraphQL(f, blockTypeName, config)}`)
+              ?.map((f: Record<string, unknown>) => `  ${f.name}: ${fieldTypeToGraphQL(f, blockTypeName, config)}`)
               .join('\n')
             schemaSdl += `\ntype ${blockTypeName} {\n  blockType: String\n${blockFields}\n}\n`
             buildRecursiveTypes(blockDef.fields || [], blockTypeName)
@@ -176,9 +176,9 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
       })
     }
 
-    const parseResolverParams = (first: any, second: any, third: any) => {
-      let args: any = {}
-      let context: any = {}
+    const parseResolverParams = (first: Record<string, unknown>, second: Record<string, unknown>, third: Record<string, unknown>) => {
+      let args: Record<string, unknown> = {}
+      let context: Record<string, unknown> = {}
 
       if (
         first &&
@@ -195,25 +195,25 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
     }
 
     // ── Recursive Document Decorator ─────────────────────────────────────────
-    const decorators: Record<string, (doc: any, context: any) => any> = {}
+    const decorators: Record<string, (doc: Record<string, unknown>, context: Record<string, unknown>) => unknown> = {}
 
-    const createDocumentDecorator = (fields: CMSField[], collectionsConfig: any[], parentTypeName: string) => {
+    const createDocumentDecorator = (fields: CMSField[], collectionsConfig: Record<string, unknown>[], parentTypeName: string) => {
       const relationFields = fields.filter((f) => f.type === 'relation')
       const blockFields = fields.filter((f) => f.type === 'blocks')
       const groupFields = fields.filter((f) => f.type === 'group')
       const arrayFields = fields.filter((f) => f.type === 'array')
 
-      return (doc: any, context: any): any => {
+      return (doc: Record<string, unknown>, context: Record<string, unknown>): unknown => {
         if (!doc) return null
         const decorated = { ...doc }
         decorated.id = doc._id?.toString() || doc.id
 
         // Attach relation resolvers
         relationFields.forEach((field) => {
-          const relConfig = field as any
+          const relConfig = field as Record<string, unknown>
           const rawValue = doc[field.name]
 
-          decorated[field.name] = async (args: any, ctx: any) => {
+          decorated[field.name] = async (args: Record<string, unknown>, ctx: Record<string, unknown>) => {
             const graphqlCtx = ctx || context
             if (!graphqlCtx.getLoader) return null
 
@@ -225,7 +225,7 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
             const loader = graphqlCtx.getLoader(targetSlug)
 
             const relatedCol = collectionsConfig.find((c) => c.slug === targetSlug)
-            const childDecorator = relatedCol ? decorators[targetSlug] : (d: any) => d
+            const childDecorator = relatedCol ? decorators[targetSlug] : (d: Record<string, unknown>) => d
 
             if (Array.isArray(rawValue)) {
               const promises = rawValue.map((id) => loader.load(id.toString()))
@@ -243,16 +243,16 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
           const typeName = `${parentTypeName}_${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`
           const rawValue = doc[field.name]
           if (Array.isArray(rawValue)) {
-            decorated[field.name] = rawValue.map((item: any) => {
+            decorated[field.name] = rawValue.map((item: Record<string, unknown>) => {
               if (!item || typeof item !== 'object') return item
               const blockSlug = item.blockType
-              let blockConfig = (field as any).blocks?.find((b: any) => typeof b === 'string' ? b === blockSlug : b.slug === blockSlug)
+              let blockConfig = (field as Record<string, unknown>).blocks?.find((b: Record<string, unknown>) => typeof b === 'string' ? b === blockSlug : b.slug === blockSlug)
               if (typeof blockConfig === 'string') {
                 blockConfig = collectionsConfig.find(c => c.slug === blockConfig)
               }
               const blockTypeName = `${typeName}_${blockSlug.charAt(0).toUpperCase() + blockSlug.slice(1)}`
 
-              const blockDecorator = blockConfig ? createDocumentDecorator(blockConfig.fields || [], collectionsConfig, blockTypeName) : (d: any) => d
+              const blockDecorator = blockConfig ? createDocumentDecorator(blockConfig.fields || [], collectionsConfig, blockTypeName) : (d: Record<string, unknown>) => d
 
               const decoratedItem = blockDecorator(item, context)
               decoratedItem.__typename = blockTypeName
@@ -266,7 +266,7 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
           const typeName = `${parentTypeName}_${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`
           const rawValue = doc[field.name]
           if (rawValue && typeof rawValue === 'object') {
-            const groupDecorator = createDocumentDecorator((field as any).fields || [], collectionsConfig, typeName)
+            const groupDecorator = createDocumentDecorator((field as Record<string, unknown>).fields || [], collectionsConfig, typeName)
             decorated[field.name] = groupDecorator(rawValue, context)
           }
         })
@@ -276,7 +276,7 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
           const typeName = `${parentTypeName}_${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`
           const rawValue = doc[field.name]
           if (Array.isArray(rawValue)) {
-            const arrDecorator = createDocumentDecorator((field as any).fields || [], collectionsConfig, typeName)
+            const arrDecorator = createDocumentDecorator((field as Record<string, unknown>).fields || [], collectionsConfig, typeName)
             decorated[field.name] = rawValue.map((item) => arrDecorator(item, context))
           }
         })
@@ -324,7 +324,7 @@ ${typeFields}
       `
 
       // ── Resolvers ──────────────────────────────────────────────────────────
-      resolvers[`get${typeName}`] = async (first: any, second: any, third: any) => {
+      resolvers[`get${typeName}`] = async (first: Record<string, unknown>, second: Record<string, unknown>, third: Record<string, unknown>) => {
         const { args, context } = parseResolverParams(first, second, third)
         if (!context.user) throw new Error('Unauthorized')
         const { id, populate, depth } = args
@@ -346,7 +346,7 @@ ${typeFields}
         return decorators[slug](doc, context)
       }
 
-      resolvers[`list${typeName}`] = async (first: any, second: any, third: any) => {
+      resolvers[`list${typeName}`] = async (first: Record<string, unknown>, second: Record<string, unknown>, third: Record<string, unknown>) => {
         const { args, context } = parseResolverParams(first, second, third)
         if (!context.user) throw new Error('Unauthorized')
         const { page = 1, pageSize = 25, status, populate, depth } = args || {}
@@ -363,7 +363,7 @@ ${typeFields}
             siteId: context.siteId,
             skip,
             limit: Math.min(pageSize, 100)
-          } as any),
+          } as Record<string, unknown>),
           adapter.count(slug, context.siteId ? { ...filter, siteId: context.siteId } : filter),
         ])
 
@@ -377,13 +377,13 @@ ${typeFields}
         }
 
         return {
-          data: docs.map((d: any) => decorators[slug](d, context)),
+          data: docs.map((d: Record<string, unknown>) => decorators[slug](d, context)),
           pageInfo: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
         }
       }
 
       // ── Mutations ──────────────────────────────────────────────────────────
-      resolvers[`create${typeName}`] = async (first: any, second: any, third: any) => {
+      resolvers[`create${typeName}`] = async (first: Record<string, unknown>, second: Record<string, unknown>, third: Record<string, unknown>) => {
         const { args, context } = parseResolverParams(first, second, third)
         if (!context.user) throw new Error('Unauthorized')
         if (context.user.role === 'viewer') throw new Error('Forbidden: Read-only access')
@@ -398,7 +398,7 @@ ${typeFields}
         return decorators[slug](doc, context)
       }
 
-      resolvers[`update${typeName}`] = async (first: any, second: any, third: any) => {
+      resolvers[`update${typeName}`] = async (first: Record<string, unknown>, second: Record<string, unknown>, third: Record<string, unknown>) => {
         const { args, context } = parseResolverParams(first, second, third)
         if (!context.user) throw new Error('Unauthorized')
         if (context.user.role === 'viewer') throw new Error('Forbidden: Read-only access')
@@ -413,7 +413,7 @@ ${typeFields}
         return decorators[slug](doc, context)
       }
 
-      resolvers[`delete${typeName}`] = async (first: any, second: any, third: any) => {
+      resolvers[`delete${typeName}`] = async (first: Record<string, unknown>, second: Record<string, unknown>, third: Record<string, unknown>) => {
         const { args, context } = parseResolverParams(first, second, third)
         if (!context.user) throw new Error('Unauthorized')
         if (context.user.role !== 'admin') throw new Error('Forbidden: Only administrators can delete documents')
@@ -437,7 +437,7 @@ ${typeFields}
 
       schemaSdl += `\ntype ${typeName} {\n  id: ID!\n${typeFields}\n  updatedAt: String\n}\n`
 
-      resolvers[`get${typeName}`] = async (first: any, second: any, third: any) => {
+      resolvers[`get${typeName}`] = async (first: Record<string, unknown>, second: Record<string, unknown>, third: Record<string, unknown>) => {
         const { context } = parseResolverParams(first, second, third)
         if (!context.user) throw new Error('Unauthorized')
         const adapter = context.adapter
@@ -478,7 +478,7 @@ ${typeFields}
 
     app.use(
       '/graphql',
-      (req: any, res: any, next: any) => {
+      (req: import('express').Request, res: import('express').Response, next: import('express').NextFunction) => {
         const query = req.body?.query || req.query?.query || ''
         if (query) {
           let currentDepth = 0
@@ -509,7 +509,7 @@ ${typeFields}
             createError: (max: number, actual: number) => new GraphQLError(`Query is too complex: ${actual}. Maximum allowed complexity: ${max}`),
           }),
         ],
-        context: async (req: any) => {
+        context: async (req: import('express').Request) => {
           // ── Authentication ────────────────────────────────────────────────
           // Check Bearer token OR httpOnly cookie
           const authHeader = req.raw.headers['authorization'] || ''
@@ -517,19 +517,19 @@ ${typeFields}
           const user = token ? AuthService.verifyToken(token) : null
 
           // Adapter is injected by the engine on setup — falls back gracefully
-          const adapter = (req.raw as any).__zenithAdapter || AdapterFactory.getActiveAdapter()
+          const adapter = (req.raw as Record<string, unknown>).__zenithAdapter || AdapterFactory.getActiveAdapter()
           const siteId = req.raw.headers['x-zenith-site-id'] || req.raw.headers['X-Zenith-Site-Id']
 
           // ── Secure Tenant Resolution (IDOR Protection) ──
           if (siteId && user) {
-            const hasAccess = await verifySiteAccess(user as any, siteId)
+            const hasAccess = await verifySiteAccess(user as Record<string, unknown>, siteId)
             if (!hasAccess) {
               throw new Error('Forbidden: Access denied to this site')
             }
           }
 
           // Isolated DataLoaders mapping per request scope
-          const loaders = new Map<string, SimpleDataLoader<string, any>>()
+          const loaders = new Map<string, SimpleDataLoader<string, Record<string, unknown>>>()
           const getLoader = (slug: string) => {
             if (!loaders.has(slug)) {
               loaders.set(
@@ -546,7 +546,7 @@ ${typeFields}
                     })
                   )
                   const docs = fetched.filter(Boolean)
-                  const docMap = new Map(docs.map((d: any) => [d._id?.toString() || d.id, d]))
+                  const docMap = new Map(docs.map((d: Record<string, unknown>) => [d._id?.toString() || d.id, d]))
                   return keys.map((k) => docMap.get(k) || null)
                 })
               )

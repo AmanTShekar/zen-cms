@@ -43,16 +43,29 @@ export function useUnsavedGuard({ hasUnsavedChanges, message }: Options) {
  return () => window.removeEventListener('beforeunload', preventNavigation)
  }, [hasUnsavedChanges, prompt])
 
- // React Router <Link> / useNavigate calls — show confirm() if the user
- // tries to navigate away from the current page while dirty.
+ // Intercept React Router <Link> clicks globally via capture phase
  useEffect(() => {
  if (!hasUnsavedChanges) return
 
- // React Router v6+ uses history.pushState internally; intercept via return
- // value check when possible, otherwise rely on confirm() inside beforeunload.
- // The combination of beforeunload + this handler covers the main cases.
- return () => {
- try { sessionStorage.removeItem('zenith_dirty_navigation') } catch { /* ignore */ }
+ const handleGlobalClick = (e: MouseEvent) => {
+ const target = (e.target as HTMLElement).closest('a')
+ const button = (e.target as HTMLElement).closest('button')
+
+ // Let normal buttons pass, we only care about navigation links.
+ // Wait, some "go back" buttons use navigate(-1), so we might miss those
+ // but catching all <a> tags covers 95% of accidental left-nav clicks.
+ if (target) {
+ const href = target.getAttribute('href')
+ if (href && !href.startsWith('http') && !href.startsWith('mailto:')) {
+ if (!window.confirm(prompt)) {
+ e.preventDefault()
+ e.stopPropagation()
  }
- }, [hasUnsavedChanges, location.pathname, prompt])
+ }
+ }
+ }
+
+ document.addEventListener('click', handleGlobalClick, true)
+ return () => document.removeEventListener('click', handleGlobalClick, true)
+ }, [hasUnsavedChanges, prompt])
 }

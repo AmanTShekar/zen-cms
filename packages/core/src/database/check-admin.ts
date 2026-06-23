@@ -16,9 +16,9 @@ async function checkAdmin() {
       { name: 'failedLoginAttempts', type: 'number' },
       { name: 'lockUntil', type: 'date' }
     ]
-  } as any)
+  } as import('@zenith-open/types').CollectionSchema)
 
-  const admins = await adapter.find<any>('users', { role: 'admin' }, { limit: 1 })
+  const admins = await adapter.find<{ email: string, role: string, failedLoginAttempts: number, lockUntil: string }>('users', { role: 'admin' }, { limit: 1 })
   const admin = admins[0]
   
   if (!admin) {

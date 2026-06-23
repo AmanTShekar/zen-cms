@@ -26,7 +26,7 @@ import { execSync } from 'child_process'
 
 const MASK_PLACEHOLDER = '[MASKED_CREDENTIAL]'
 
-export function maskSettings(settings: any) {
+export function maskSettings(settings: Record<string, unknown>) {
   if (!settings) return settings
   const result = JSON.parse(JSON.stringify(settings)) // deep clone
   
@@ -40,7 +40,7 @@ export function maskSettings(settings: any) {
   return result
 }
 
-export function unmaskSettings(incoming: any, existing: any) {
+export function unmaskSettings(incoming: Record<string, unknown>, existing: Record<string, unknown>) {
   if (!incoming) return incoming
   const result = JSON.parse(JSON.stringify(incoming))
   
@@ -143,7 +143,7 @@ router.post(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const adapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
       const pruneUnreferenced = !!req.body.pruneUnreferencedMedia
       const { pruneOrphanedMedia } = await import('../../services/storage/sweeper')
       const result = await pruneOrphanedMedia(adapter, { pruneUnreferencedMedia: pruneUnreferenced })
@@ -160,13 +160,13 @@ router.get(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const siteId = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).siteId || req.headers['x-zenith-site-id']
       // ISOLATION FIX: always scope settings query to siteId
       const query = siteId ? { siteId } : {}
-      let settings = await adapter.findOne<any>('z_settings', query)
+      let settings = await adapter.findOne<Record<string, unknown>>('z_settings', query)
       if (!settings) {
-        settings = await adapter.create<any>('z_settings', {
+        settings = await adapter.create<Record<string, unknown>>('z_settings', {
           siteName: 'Zenith CMS',
           publicUrl: process.env.PUBLIC_URL || 'http://localhost:3000',
           maintenanceMode: false,
@@ -193,20 +193,20 @@ router.patch(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const siteId = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).siteId || req.headers['x-zenith-site-id']
       const updateData = req.body
       // ISOLATION FIX: always scope settings query to siteId
       const query = siteId ? { siteId } : {}
-      let settings = await adapter.findOne<any>('z_settings', query)
+      let settings = await adapter.findOne<Record<string, unknown>>('z_settings', query)
       
       const unmaskedData = unmaskSettings(updateData, settings)
 
       if (!settings) {
-        settings = await adapter.create<any>('z_settings', { ...unmaskedData, ...(siteId ? { siteId } : {}) })
+        settings = await adapter.create<Record<string, unknown>>('z_settings', { ...unmaskedData, ...(siteId ? { siteId } : {}) })
       } else {
-        const id = (settings.id || settings._id).toString()
-        settings = await adapter.update<any>('z_settings', id, unmaskedData)
+        console.log('PATCH SETTINGS:', settings); const id = (settings.id || settings._id).toString()
+        settings = await adapter.update<Record<string, unknown>>('z_settings', id, unmaskedData)
       }
       res.json(createResponse(maskSettings(settings)))
     } catch (err) {
@@ -287,7 +287,7 @@ router.post(
           }
         }
         fsSync.writeFileSync(envPath, lines.join('\n'), 'utf8')
-      } catch (e: any) {
+      } catch (e: unknown) {
         // Log warning but don't crash
       }
 
@@ -304,13 +304,13 @@ router.get(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const adapter = (req as any).zenith?.adapter
-      const config = (req as any).zenith?.config
+      const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+      const config = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.config
       let size = 0
       const collectionCount = config?.collections?.length || 0
 
       if (adapter && adapter.name === 'mongoose') {
-        const db = (adapter as any).connection?.db
+        const db = (adapter as Record<string, unknown>).connection?.db
         if (db) {
           const stats = await db.stats()
           size = stats.dataSize || stats.storageSize || 0
@@ -335,9 +335,9 @@ router.get(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
-      const roles = await adapter.find<any>('z_roles', siteId ? { siteId } : {})
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const siteId = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).siteId || req.headers['x-zenith-site-id']
+      const roles = await adapter.find<Record<string, unknown>>('z_roles', siteId ? { siteId } : {})
       res.json(createResponse(roles))
     } catch (err) {
       next(err)
@@ -355,11 +355,11 @@ router.post(
       if (!roleName) throw new InvalidPayloadError('roleName is required')
       if (!Array.isArray(permissions)) throw new InvalidPayloadError('permissions must be an array')
 
-      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const siteId = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).siteId || req.headers['x-zenith-site-id']
       
-      const existing = await adapter.findOne<any>('z_roles', { roleName, ...(siteId ? { siteId } : {}) })
-      let result: any
+      const existing = await adapter.findOne<Record<string, unknown>>('z_roles', { roleName, ...(siteId ? { siteId } : {}) })
+      let result: Record<string, unknown>
       if (existing) {
         result = await adapter.update('z_roles', (existing.id || existing._id).toString(), { permissions })
       } else {
@@ -379,9 +379,9 @@ router.delete(
   async (req: Request, res: Response, next) => {
     try {
       const { roleName } = req.params
-      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
-      const existing = await adapter.findOne<any>('z_roles', { roleName, ...(siteId ? { siteId } : {}) })
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const siteId = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).siteId || req.headers['x-zenith-site-id']
+      const existing = await adapter.findOne<Record<string, unknown>>('z_roles', { roleName, ...(siteId ? { siteId } : {}) })
       if (!existing) {
         return res.status(404).json(createErrorResponse(404, `Role "${roleName}" not found`))
       }
@@ -399,10 +399,10 @@ router.get(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
-      const users = await adapter.find<any>('users', siteId ? { siteId } : {})
-      const sanitizedUsers = users.map((u: any) => {
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const siteId = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).siteId || req.headers['x-zenith-site-id']
+      const users = await adapter.find<Record<string, unknown>>('users', siteId ? { siteId } : {})
+      const sanitizedUsers = users.map((u: Record<string, unknown>) => {
         const { password, ...rest } = u
         return rest
       })
@@ -419,8 +419,8 @@ router.delete(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const siteId = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).siteId || req.headers['x-zenith-site-id']
       const existing = await adapter.findOne('users', { _id: req.params.id, ...(siteId ? { siteId } : {}) })
       if (!existing) throw new NotFoundError('User', req.params.id)
       await adapter.delete('users', req.params.id)
@@ -437,8 +437,8 @@ router.patch(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const siteId = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).siteId || req.headers['x-zenith-site-id']
       const updates = { ...req.body }
       delete updates._id
       delete updates.password
@@ -449,7 +449,7 @@ router.patch(
       const updated = await adapter.update('users', req.params.id, updates)
       
       // Remove password from response
-      const { password, ...rest } = updated as any
+      const { password, ...rest } = updated as Record<string, unknown>
       res.json(createResponse(rest))
     } catch (err) {
       next(err)
@@ -466,7 +466,7 @@ router.post(
       const siteId = req.headers['x-zenith-site-id'] as string | undefined
       await EmailService.testConnection(req.body, siteId)
       res.json(createResponse({ success: true, message: 'SMTP connection verified' }))
-    } catch (err: any) {
+    } catch (err: unknown) {
       res.status(400).json(createErrorResponse(400, err.message || 'SMTP verification failed'))
     }
   }
@@ -485,7 +485,7 @@ router.post(
       } else {
         throw new Error('Verification failed')
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       res.status(400).json(createErrorResponse(400, err.message || 'Cloudinary verification failed'))
     }
   }
@@ -505,7 +505,7 @@ router.post(
       } else {
         throw new Error('Verification failed')
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       res.status(400).json(createErrorResponse(400, err.message || 'S3 verification failed'))
     }
   }
@@ -529,19 +529,19 @@ router.post(
       const { name, slug, fields, drafts } = validation.data
       const fileSlug = slug.toLowerCase()
 
-      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
       const engine = req.app.get('zenith_engine')
-      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
+      const siteId = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).siteId || req.headers['x-zenith-site-id']
 
       // Check if collection already exists in dynamic database config or static config
-      const existingDb = await adapter.findOne<any>('z_collections', { slug: fileSlug, ...(siteId ? { siteId } : {}) })
-      const existingStatic = engine?.config?.collections?.find((c: any) => c.slug === fileSlug)
+      const existingDb = await adapter.findOne<Record<string, unknown>>('z_collections', { slug: fileSlug, ...(siteId ? { siteId } : {}) })
+      const existingStatic = engine?.config?.collections?.find((c: Record<string, unknown>) => c.slug === fileSlug)
 
       if (existingDb || existingStatic) {
         throw new InvalidPayloadError(`Collection with slug "${fileSlug}" already exists`)
       }
 
-      const colConfig: any = {
+      const colConfig: Record<string, unknown> = {
         name,
         slug: fileSlug,
         labels: { singular: name, plural: `${name}s` },
@@ -590,9 +590,9 @@ router.patch(
       const { slug } = req.params
       const { hooks, endpoints, access, publicRead } = req.body
 
-      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
       const engine = req.app.get('zenith_engine')
-      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
+      const siteId = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).siteId || req.headers['x-zenith-site-id']
 
       // Update in database
       const update: Record<string, unknown> = {}
@@ -601,14 +601,14 @@ router.patch(
       if (access !== undefined) update.access = access
       if (publicRead !== undefined) update.publicRead = publicRead
 
-      const existing = await adapter.findOne<Record<string, any>>('z_collections', { slug, ...(siteId ? { siteId } : {}) })
+      const existing = await adapter.findOne<Record<string, unknown>>('z_collections', { slug, ...(siteId ? { siteId } : {}) })
       if (!existing) throw new NotFoundError('Collection', slug)
 
       await adapter.update('z_collections', (existing.id || existing._id).toString(), update)
 
       // Update in engine config
       if (engine) {
-        const colIdx = engine.config.collections.findIndex((c: any) => c.slug === slug)
+        const colIdx = engine.config.collections.findIndex((c: Record<string, unknown>) => c.slug === slug)
         if (colIdx !== -1) {
           if (hooks !== undefined) engine.config.collections[colIdx].hooks = hooks
           if (endpoints !== undefined) engine.config.collections[colIdx].endpoints = endpoints
@@ -637,10 +637,10 @@ router.post(
       const emailResult = memberEmailSchema.safeParse(email)
       if (!emailResult.success) throw new InvalidPayloadError('Invalid email format')
 
-      const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
-      const siteId = (req as any).siteId || req.headers['x-zenith-site-id']
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const siteId = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).siteId || req.headers['x-zenith-site-id']
 
-      const existing = await adapter.findOne<any>('users', { email: email.toLowerCase(), ...(siteId ? { siteId } : {}) })
+      const existing = await adapter.findOne<Record<string, unknown>>('users', { email: email.toLowerCase(), ...(siteId ? { siteId } : {}) })
       if (existing) throw new InvalidPayloadError('User already exists')
 
       // Generate a cryptographically secure random password — never exposed to the requester.
@@ -648,7 +648,7 @@ router.post(
       const temporaryPassword = crypto.randomBytes(16).toString('base64url')
       const hashed = await AuthService.hashPassword(temporaryPassword)
 
-      const user = await adapter.create<any>('users', {
+      const user = await adapter.create<Record<string, unknown>>('users', {
         email: email.toLowerCase(),
         password: hashed,
         role: role || 'editor',
@@ -660,7 +660,7 @@ router.post(
       // Create a password-reset token valid for 48 hours so the user can set their own password
       const resetToken = crypto.randomBytes(32).toString('hex')
       const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000)
-      await adapter.create<any>('z_password_resets', { userId, token: resetToken, expiresAt })
+      await adapter.create<Record<string, unknown>>('z_password_resets', { userId, token: resetToken, expiresAt })
       const resetUrl = `${env.ADMIN_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`
 
       try {

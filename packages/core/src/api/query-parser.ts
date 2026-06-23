@@ -114,7 +114,7 @@ function normalizeFilters(
  * Body takes priority if both are provided.
  */
 export function parseQueryParams(
-  query: any,
+  query: Record<string, unknown>,
   config: CollectionConfig,
   body?: Partial<UQLQuery>
 ): UQLQuery {
@@ -131,10 +131,10 @@ export function parseQueryParams(
         depth: body.depth,
         locale: body.locale,
         // UQL v2 / Strapi-style aliases
-        ...(body as any).where ? { filter: (body as any).where } : {},
-        ...(body as any).orderBy ? { sort: flattenOrderBy((body as any).orderBy) } : {},
-        ...(body as any).take ? { pageSize: String((body as any).take) } : {},
-        ...(body as any).skip ? { page: String(Math.floor(((body as any).skip as number) / ((body as any).take ?? 25)) + 1) } : {},
+        ...(body as Record<string, unknown>).where ? { filter: (body as Record<string, unknown>).where } : {},
+        ...(body as Record<string, unknown>).orderBy ? { sort: flattenOrderBy((body as Record<string, unknown>).orderBy) } : {},
+        ...(body as Record<string, unknown>).take ? { pageSize: String((body as Record<string, unknown>).take) } : {},
+        ...(body as Record<string, unknown>).skip ? { page: String(Math.floor(((body as Record<string, unknown>).skip as number) / ((body as Record<string, unknown>).take ?? 25)) + 1) } : {},
       }
     : {}
 
@@ -185,28 +185,28 @@ export function parseQueryParams(
   } else {
     // Default: auto-populate all direct relation fields
     parsed.populate = config.fields
-      .filter((f: any) => f.type === 'relation')
-      .map((f: any) => f.name)
+      .filter((f: Record<string, unknown>) => f.type === 'relation')
+      .map((f: Record<string, unknown>) => f.name)
   }
 
   // normalize filter operators
-  const filterObj = (body as any)?.filter ?? (body as any)?.filters ?? query.filter ?? query.filters ?? {}
+  const filterObj = (body as Record<string, unknown>)?.filter ?? (body as Record<string, unknown>)?.filters ?? query.filter ?? query.filters ?? {}
   parsed.filter = normalizeFilters(filterObj)
 
   // Search shorthand — adapter-safe: uses `ilike` operator that both Mongo and Postgres adapters handle
-  if (query.q || (body as any)?.q) {
+  if (query.q || (body as Record<string, unknown>)?.q) {
     const titleField = config.admin?.useAsTitle || 'title'
-    parsed.filter[titleField] = { $like: (query.q || (body as any)?.q) ?? '' }
+    parsed.filter[titleField] = { $like: (query.q || (body as Record<string, unknown>)?.q) ?? '' }
   }
 
   return parsed
 }
 
 /** Convert Strapi-style orderBy array: [{ field: 'title', direction: 'asc' }] → 'title,-date' */
-function flattenOrderBy(orderBy: any): string {
+function flattenOrderBy(orderBy: Record<string, unknown>): string {
   if (!Array.isArray(orderBy)) return String(orderBy || '')
   return orderBy
-    .map((o: any) => {
+    .map((o: Record<string, unknown>) => {
       const dir = o.direction === 'desc' ? '-' : ''
       return `${dir}${o.field}`
     })

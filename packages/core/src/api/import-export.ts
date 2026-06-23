@@ -25,9 +25,9 @@ router.get('/:collection', requireRole('admin'), async (req: Request, res: Respo
     const format = (req.query.format as string) || 'json'
     const siteId = req.headers['x-zenith-site-id'] as string
 
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const engine = req.app.get('zenith_engine')
-    const colConfig = engine?.config?.collections?.find((c: any) => c.slug === collection)
+    const colConfig = engine?.config?.collections?.find((c: Record<string, unknown>) => c.slug === collection)
 
     if (!colConfig) throw new InvalidPayloadError(`Collection "${collection}" not found`)
 
@@ -37,8 +37,8 @@ router.get('/:collection', requireRole('admin'), async (req: Request, res: Respo
     const docs = await adapter.find(collection, filter, { limit: 10000, sort: { createdAt: -1 } })
 
     // Strip internal fields for export
-    const exportDocs = docs.map((doc: any) => {
-      const { _id, id, __v, password, verificationToken, verificationTokenExpiry, oauthProviders, ...rest } = doc as any
+    const exportDocs = docs.map((doc: Record<string, unknown>) => {
+      const { _id, id, __v, password, verificationToken, verificationTokenExpiry, oauthProviders, ...rest } = doc as Record<string, unknown>
       return rest
     })
 
@@ -68,13 +68,13 @@ router.post('/:collection', requireRole('admin'), async (req: Request, res: Resp
 
     if (!data) throw new InvalidPayloadError('Request body must contain a "data" field')
 
-    const adapter: DatabaseAdapter = (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const engine = req.app.get('zenith_engine')
-    const colConfig = engine?.config?.collections?.find((c: any) => c.slug === collection)
+    const colConfig = engine?.config?.collections?.find((c: Record<string, unknown>) => c.slug === collection)
 
     if (!colConfig) throw new InvalidPayloadError(`Collection "${collection}" not found`)
 
-    let records: any[]
+    let records: Record<string, unknown>[]
 
     if (format === 'csv') {
       if (typeof data !== 'string') throw new InvalidPayloadError('CSV import requires a string "data" field')
@@ -102,12 +102,12 @@ router.post('/:collection', requireRole('admin'), async (req: Request, res: Resp
         if (siteId) cleanRecord.siteId = siteId
 
         await contentService.create(cleanRecord, {
-          user: (req as any).user,
+          user: (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user,
           siteId,
           skipVersioning: true,
         })
         imported++
-      } catch (err: any) {
+      } catch (err: unknown) {
         errors.push({ row: i + 1, error: err.message || 'Unknown error' })
       }
     }

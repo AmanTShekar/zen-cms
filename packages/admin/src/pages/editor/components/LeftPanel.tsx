@@ -55,7 +55,8 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  const { leftOpen,
  leftWidth,
  setLeftOpen,
-  } = usePanelStore(useShallow(state => ({ leftOpen: state.leftOpen, leftWidth: state.leftWidth, setLeftOpen: state.setLeftOpen })))
+ focusMode,
+  } = usePanelStore(useShallow(state => ({ leftOpen: state.leftOpen, leftWidth: state.leftWidth, setLeftOpen: state.setLeftOpen, focusMode: state.focusMode })))
 
  const activeSection = editorActiveSection ?? 'root'
 
@@ -91,10 +92,11 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  }
 
  const dark = theme === 'dark'
+ const effectiveLeftOpen = leftOpen && !focusMode
 
  return (
  <AnimatePresence>
- {leftOpen && (
+ {effectiveLeftOpen && (
  <>
  {/* Mobile backdrop */}
  <motion.div

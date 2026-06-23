@@ -24,7 +24,7 @@ export interface EmailOptions {
  * Development: Logs email to console if no config is found.
  */
 export class EmailService {
-  private static async resolveConfig(overrideSettings?: any, siteId?: string) {
+  private static async resolveConfig(overrideSettings?: Record<string, unknown>, siteId?: string) {
     const config = {
       resendKey: env.RESEND_API_KEY,
       smtpHost: env.SMTP_HOST,
@@ -47,7 +47,7 @@ export class EmailService {
       const adapter = AdapterFactory.getActiveAdapter()
       if (adapter) {
         const query = siteId ? { siteId } : {}
-        const settings = await adapter.findOne<Record<string, any>>('z_settings', query)
+        const settings = await adapter.findOne<Record<string, unknown>>('z_settings', query)
         if (settings) {
           if (settings.smtpHost) config.smtpHost = settings.smtpHost
           if (settings.smtpPort) config.smtpPort = settings.smtpPort
@@ -62,7 +62,7 @@ export class EmailService {
     return config
   }
 
-  static async testConnection(overrideSettings: any, siteId?: string): Promise<boolean> {
+  static async testConnection(overrideSettings: Record<string, unknown>, siteId?: string): Promise<boolean> {
     const config = await this.resolveConfig(overrideSettings, siteId)
     if (!config.smtpHost) throw new Error('SMTP Host is required')
     
@@ -80,7 +80,7 @@ export class EmailService {
     return true
   }
 
-  static async send(options: EmailOptions, overrideSettings?: any, siteId?: string): Promise<void> {
+  static async send(options: EmailOptions, overrideSettings?: Record<string, unknown>, siteId?: string): Promise<void> {
     const recipients = Array.isArray(options.to) ? options.to : [options.to]
     for (const addr of recipients) {
       const result = recipientSchema.safeParse(addr)

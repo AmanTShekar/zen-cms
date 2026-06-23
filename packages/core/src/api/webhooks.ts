@@ -9,9 +9,9 @@ import { DatabaseAdapter } from '@zenith-open/zenithcms-types'
 const WEBHOOK_COLLECTION = 'z_webhook_configs'
 
 const getAdapter = (req: Request): DatabaseAdapter =>
-  (req as any).zenith?.adapter || AdapterFactory.getActiveAdapter()
+  (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-const toWebhookDTO = (d: any) => ({
+const toWebhookDTO = (d: Record<string, unknown>) => ({
   id: String(d._id ?? d.id),
   url: d.url,
   secret: d.secret,
@@ -23,7 +23,7 @@ const toWebhookDTO = (d: any) => ({
 const syncEngineConfig = async (req: Request, adapter: DatabaseAdapter) => {
   const engine = req.app.get('zenith_engine')
   if (!engine) return
-  const allDocs = await adapter.find<Record<string, any>>(WEBHOOK_COLLECTION, {})
+  const allDocs = await adapter.find<Record<string, unknown>>(WEBHOOK_COLLECTION, {})
   engine.config.webhooks = allDocs.map(toWebhookDTO)
 }
 
@@ -36,7 +36,7 @@ router.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Res
     const siteId = req.headers['x-zenith-site-id'] as string
     if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
     const filter = { siteId }
-    const docs = await adapter.find<Record<string, any>>(WEBHOOK_COLLECTION, filter)
+    const docs = await adapter.find<Record<string, unknown>>(WEBHOOK_COLLECTION, filter)
     res.json(createResponse(docs.map(toWebhookDTO)))
   } catch (err) {
     next(err)
@@ -52,7 +52,7 @@ router.get('/deliveries', requireAuth, requireRole('admin'), async (req: Request
     const page = Math.max(parseInt(req.query.page as string) || 1, 1)
     const adapter = getAdapter(req)
 
-    const filter: any = { siteId }
+    const filter: Record<string, unknown> = { siteId }
     if (req.query.status === 'success') filter.success = true
     if (req.query.status === 'failed') filter.success = false
     if (req.query.search) {
@@ -93,7 +93,7 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
     const adapter = getAdapter(req)
     // Auto-generate a secure secret if none provided
     const resolvedSecret = secret?.trim()?.length >= 32 ? secret.trim() : `wh_${crypto.randomBytes(24).toString('hex')}`
-    const doc = await adapter.create<Record<string, any>>(WEBHOOK_COLLECTION, { url, secret: resolvedSecret, events, enabled: true, siteId })
+    const doc = await adapter.create<Record<string, unknown>>(WEBHOOK_COLLECTION, { url, secret: resolvedSecret, events, enabled: true, siteId })
     await syncEngineConfig(req, adapter)
 
     res.status(201).json(createResponse(toWebhookDTO(doc)))
@@ -112,7 +112,7 @@ router.put('/:id', requireAuth, requireRole('admin'), async (req: Request, res: 
     if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
 
     // CRITICAL FIX: scope webhook lookup to siteId to prevent cross-tenant update
-    const existing = await adapter.findOne<Record<string, any>>(WEBHOOK_COLLECTION, { _id: id, siteId })
+    const existing = await adapter.findOne<Record<string, unknown>>(WEBHOOK_COLLECTION, { _id: id, siteId })
     if (!existing) throw new InvalidPayloadError(`Webhook "${id}" not found`)
 
     const update: Record<string, unknown> = { updatedAt: new Date() }
@@ -127,7 +127,7 @@ router.put('/:id', requireAuth, requireRole('admin'), async (req: Request, res: 
     if (events !== undefined) update.events = events
     if (enabled !== undefined) update.enabled = enabled
 
-    const doc = await adapter.update<Record<string, any>>(WEBHOOK_COLLECTION, id, update)
+    const doc = await adapter.update<Record<string, unknown>>(WEBHOOK_COLLECTION, id, update)
     if (!doc) throw new InvalidPayloadError(`Webhook "${id}" not found`)
 
     await syncEngineConfig(req, adapter)
@@ -145,7 +145,7 @@ router.delete('/:id', requireAuth, requireRole('admin'), async (req: Request, re
     if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
     const adapter = getAdapter(req)
     // CRITICAL FIX: scope webhook lookup to siteId to prevent cross-tenant deletion
-    const existing = await adapter.findOne<Record<string, any>>(WEBHOOK_COLLECTION, { _id: id, siteId })
+    const existing = await adapter.findOne<Record<string, unknown>>(WEBHOOK_COLLECTION, { _id: id, siteId })
     if (!existing) throw new InvalidPayloadError(`Webhook "${id}" not found`)
 
     const deleted = await adapter.delete(WEBHOOK_COLLECTION, id)
@@ -167,7 +167,7 @@ router.post('/:id/test', requireAuth, requireRole('admin'), async (req: Request,
     const adapter = getAdapter(req)
 
     // CRITICAL FIX: scope webhook lookup to siteId to prevent cross-tenant webhook test
-    const doc = await adapter.findOne<Record<string, any>>(WEBHOOK_COLLECTION, { _id: id, siteId })
+    const doc = await adapter.findOne<Record<string, unknown>>(WEBHOOK_COLLECTION, { _id: id, siteId })
     if (!doc) throw new InvalidPayloadError(`Webhook "${id}" not found`)
 
     const webhook = { id: String(doc._id ?? doc.id), url: doc.url, secret: doc.secret, events: doc.events, enabled: doc.enabled }
@@ -190,7 +190,7 @@ router.post('/:id/test', requireAuth, requireRole('admin'), async (req: Request,
 	    const adapter = getAdapter(req)
 
     // CRITICAL FIX: scope webhook lookup to siteId to prevent cross-tenant delivery log access
-	    const doc = await adapter.findOne<Record<string, any>>(WEBHOOK_COLLECTION, { _id: id, siteId })
+	    const doc = await adapter.findOne<Record<string, unknown>>(WEBHOOK_COLLECTION, { _id: id, siteId })
 	    if (!doc) throw new InvalidPayloadError(`Webhook "${id}" not found`)
 
 	    const deliveries = await adapter.getWebhookDeliveries(String(doc._id ?? doc.id), limit)
@@ -209,11 +209,11 @@ router.post('/:id/deliveries/:deliveryId/replay', requireAuth, requireRole('admi
     const adapter = getAdapter(req)
 
     // CRITICAL FIX: scope webhook lookup to siteId to prevent cross-tenant replay
-    const doc = await adapter.findOne<Record<string, any>>(WEBHOOK_COLLECTION, { _id: id, siteId })
+    const doc = await adapter.findOne<Record<string, unknown>>(WEBHOOK_COLLECTION, { _id: id, siteId })
     if (!doc) throw new InvalidPayloadError(`Webhook "${id}" not found`)
 
     // Webhook delivery table is z_webhook_deliveries
-    const delivery = await adapter.findOne<Record<string, any>>('z_webhook_deliveries', { _id: deliveryId, webhookId: id })
+    const delivery = await adapter.findOne<Record<string, unknown>>('z_webhook_deliveries', { _id: deliveryId, webhookId: id })
     if (!delivery) throw new InvalidPayloadError(`Delivery "${deliveryId}" not found`)
 
     const webhook = { id: String(doc._id ?? doc.id), url: doc.url, secret: doc.secret, events: doc.events, enabled: doc.enabled }

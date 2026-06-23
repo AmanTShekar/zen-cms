@@ -39,10 +39,10 @@ const UpdateReleaseSchema = CreateReleaseSchema.partial()
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 export async function publishReleaseContent(
-  release: any,
-  adapter: any,
-  config: any,
-  user: any,
+  release: unknown,
+  adapter: import('@zenith-open/types').DatabaseAdapter,
+  config: Record<string, unknown>,
+  user: Record<string, unknown>,
   siteId: string
 ): Promise<{ success: boolean; error?: string }> {
   const errors: string[] = []
@@ -50,7 +50,7 @@ export async function publishReleaseContent(
 
   for (const doc of release.documents || []) {
     try {
-      const col = (config.collections || []).find((c: any) => c.slug === doc.collectionSlug)
+      const col = (config.collections || []).find((c: Record<string, unknown>) => c.slug === doc.collectionSlug)
       if (!col) {
         errors.push(`Collection "${doc.collectionSlug}" not found`)
         continue
@@ -59,10 +59,10 @@ export async function publishReleaseContent(
       // Workflow: validate the transition before publishing
       const contentService = new ContentService(col, adapter)
       const current = await contentService.findById(doc.documentId, { siteId })
-      const currentStatus = ((current as any)?._status as string) || 'draft'
+      const currentStatus = ((current as Record<string, unknown>)?._status as string) || 'draft'
 
       const transition = canTransition(
-        currentStatus as any,
+        currentStatus as Record<string, unknown>,
         'published',
         userRole
       )
@@ -73,7 +73,7 @@ export async function publishReleaseContent(
 
       await contentService.update(doc.documentId, { _status: 'published' }, { user, siteId })
       logger.info(`[Release:${release.name}] Published document "${doc.title}" (${doc.documentId})`)
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err }, `[Release:${release.name}] Failed to publish ${doc.collectionSlug}/${doc.documentId}`)
       errors.push(`${doc.title}: ${err.message}`)
     }
@@ -141,7 +141,7 @@ router.post('/', async (req, res, next) => {
       ...validation.data,
       documents: [],
       status: 'pending',
-      createdBy: (req as any).user?.email,
+      createdBy: (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user?.email,
     })
 
     logger.info(`[Releases] Created release "${validation.data.name}"`)
@@ -186,7 +186,7 @@ router.patch('/:id', async (req, res, next) => {
     // ISOLATION FIX: scope by siteId
     const filter: Record<string, unknown> = { _id: req.params.id }
     if (siteId) filter.siteId = siteId
-    const existing = await adapter.findOne<Record<string, any>>('z_releases', filter)
+    const existing = await adapter.findOne<Record<string, unknown>>('z_releases', filter)
     if (!existing) throw new NotFoundError('Release', req.params.id)
 
     const updated = await adapter.update('z_releases', req.params.id, {
@@ -210,12 +210,12 @@ router.delete('/:id', async (req, res, next) => {
     const release = await adapter.findOne('z_releases', filter)
     if (!release) throw new NotFoundError('Release', req.params.id)
 
-    if ((release as any).status === 'published') {
+    if ((release as Record<string, unknown>).status === 'published') {
       throw new ForbiddenError('Cannot delete a published release. Unpublish it first.')
     }
 
     await adapter.delete('z_releases', req.params.id)
-    logger.info(`[Releases] Deleted release "${(release as any).name}"`)
+    logger.info(`[Releases] Deleted release "${(release as Record<string, unknown>).name}"`)
 
     res.json(createResponse({ success: true }))
   } catch (err) {
@@ -243,14 +243,14 @@ router.post('/:id/documents', async (req, res, next) => {
     if (siteId) filter.siteId = siteId
     const release = await adapter.findOne('z_releases', filter)
     if (!release) throw new NotFoundError('Release', req.params.id)
-    if ((release as any).status !== 'pending') {
+    if ((release as Record<string, unknown>).status !== 'pending') {
       throw new ForbiddenError('Can only add documents to a pending release.')
     }
 
     // Prevent duplicate entries
-    const existingDocs = (release as any).documents || []
+    const existingDocs = (release as Record<string, unknown>).documents || []
     const alreadyAdded = existingDocs.some(
-      (d: any) => d.collectionSlug === validation.data.collectionSlug && d.documentId === validation.data.documentId
+      (d: Record<string, unknown>) => d.collectionSlug === validation.data.collectionSlug && d.documentId === validation.data.documentId
     )
     if (alreadyAdded) {
       throw new ValidationError([{ field: 'document', message: 'This document is already in the release.' }])
@@ -259,7 +259,7 @@ router.post('/:id/documents', async (req, res, next) => {
     const newDoc = {
       ...validation.data,
       addedAt: new Date(),
-      addedBy: (req as any).user?.email,
+      addedBy: (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user?.email,
     }
 
     const updated = await adapter.update('z_releases', req.params.id, {
@@ -282,13 +282,13 @@ router.delete('/:id/documents/:documentId', async (req, res, next) => {
     if (siteId) filter.siteId = siteId
     const release = await adapter.findOne('z_releases', filter)
     if (!release) throw new NotFoundError('Release', req.params.id)
-    if ((release as any).status !== 'pending') {
+    if ((release as Record<string, unknown>).status !== 'pending') {
       throw new ForbiddenError('Can only remove documents from a pending release.')
     }
 
-    const existingDocs = (release as any).documents || []
+    const existingDocs = (release as Record<string, unknown>).documents || []
     const docIndex = existingDocs.findIndex(
-      (d: any) => d.documentId === req.params.documentId
+      (d: Record<string, unknown>) => d.documentId === req.params.documentId
     )
     if (docIndex === -1) throw new NotFoundError('Release document', req.params.documentId)
 
@@ -313,24 +313,24 @@ router.post('/:id/publish', async (req, res, next) => {
     if (siteId) filter.siteId = siteId
     const release = await adapter.findOne('z_releases', filter)
     if (!release) throw new NotFoundError('Release', req.params.id)
-    if ((release as any).status === 'published') {
+    if ((release as Record<string, unknown>).status === 'published') {
       throw new ForbiddenError('Release is already published.')
     }
 
     // Verify scheduled time if scheduled
-    if ((release as any).scheduledAt && new Date((release as any).scheduledAt) > new Date()) {
+    if ((release as Record<string, unknown>).scheduledAt && new Date((release as Record<string, unknown>).scheduledAt) > new Date()) {
       throw new ValidationError([
         { field: 'scheduledAt', message: 'Scheduled release time has not been reached yet.' },
       ])
     }
 
-    const config = (req as any).zenith?.config || {}
+    const config = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.config || {}
 
     const result = await publishReleaseContent(
       release,
       adapter,
       config,
-      (req as any).user,
+      (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user,
       req.headers['x-zenith-site-id'] as string
     )
 
@@ -338,9 +338,9 @@ router.post('/:id/publish', async (req, res, next) => {
       const updated = await adapter.update('z_releases', req.params.id, {
         status: 'published',
         publishedAt: new Date(),
-        publishedBy: (req as any).user?.email,
+        publishedBy: (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user?.email,
       })
-      logger.info(`[Releases] Published release "${(release as any).name}" with ${((release as any).documents || []).length} documents`)
+      logger.info(`[Releases] Published release "${(release as Record<string, unknown>).name}" with ${((release as Record<string, unknown>).documents || []).length} documents`)
       res.json(createResponse(updated))
     } else {
       const updated = await adapter.update('z_releases', req.params.id, {
@@ -364,22 +364,22 @@ router.post('/:id/unpublish', async (req, res, next) => {
     if (siteId) filter.siteId = siteId
     const release = await adapter.findOne('z_releases', filter)
     if (!release) throw new NotFoundError('Release', req.params.id)
-    if ((release as any).status !== 'published') {
+    if ((release as Record<string, unknown>).status !== 'published') {
       throw new ForbiddenError('Only published releases can be unpublished.')
     }
 
-    const config = (req as any).zenith?.config || {}
+    const config = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.config || {}
 
-    for (const doc of (release as any).documents || []) {
+    for (const doc of (release as Record<string, unknown>).documents || []) {
       try {
         const col = (config.collections || []).find(
-          (c: any) => c.slug === doc.collectionSlug
+          (c: Record<string, unknown>) => c.slug === doc.collectionSlug
         )
         if (!col) continue
 
         const contentService = new ContentService(col, adapter)
         await contentService.update(doc.documentId, { _status: 'draft' }, {
-          user: (req as any).user,
+          user: (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user,
           siteId: req.headers['x-zenith-site-id'] as string,
         })
       } catch (err) {
@@ -405,9 +405,9 @@ router.get('/collections/:slug/pending', async (req, res, next) => {
   try {
     const siteId = req.headers['x-zenith-site-id'] as string
     const adapter = AdapterFactory.getActiveAdapter()
-    const config = (req as any).zenith?.config || {}
+    const config = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.config || {}
     const col = (config.collections || []).find(
-      (c: any) => c.slug === req.params.slug
+      (c: Record<string, unknown>) => c.slug === req.params.slug
     )
     if (!col) throw new NotFoundError('Collection', req.params.slug)
 
@@ -417,16 +417,16 @@ router.get('/collections/:slug/pending', async (req, res, next) => {
     const docs = await contentService.find(
       {},
       {
-        user: (req as any).user,
+        user: (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user,
         siteId,
         limit: 50,
         select: ['_id', 'title', 'slug', 'status', 'updatedAt'],
-      } as any
+      } as Record<string, unknown>
     )
 
     // Filter to only pending items (draft, in_review, etc.)
     const pending = docs.filter(
-      (d: any) => d._status !== 'published' && d._status !== undefined
+      (d: Record<string, unknown>) => d._status !== 'published' && d._status !== undefined
     )
 
     res.json(createResponse(pending))

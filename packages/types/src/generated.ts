@@ -85,7 +85,7 @@ export interface ZRoles extends ZenithDocument {
   roleType: string;
   description?: string;
   isSystem: boolean;
-  permissions: Record<string, any>;
+  permissions: Record<string, unknown>;
 }
 
 export interface ZApiKeys extends ZenithDocument {
@@ -95,7 +95,7 @@ export interface ZApiKeys extends ZenithDocument {
   expiresAt?: string | Date;
   revoked?: boolean;
   lastUsed?: string | Date;
-  allowedCollections?: Record<string, any>;
+  allowedCollections?: Record<string, unknown>;
 }
 
 export interface Users extends ZenithDocument {
@@ -111,7 +111,7 @@ export interface Users extends ZenithDocument {
   verificationTokenExpiry?: string | Date;
   twoFactorSecret?: string;
   twoFactorEnabled?: boolean;
-  oauthProviders?: Record<string, any>;
+  oauthProviders?: Record<string, unknown>;
 }
 
 export interface Media extends ZenithDocument {
@@ -164,8 +164,8 @@ export interface ZenithCollections {
  * Fully Typed React SDK Data Hook Mappings
  */
 export type ZenithQuery<T> = {
-  where?: Record<string, any>;
-  sort?: string | Record<string, any>;
+  where?: Record<string, unknown>;
+  sort?: string | Record<string, unknown>;
   limit?: number;
   skip?: number;
   select?: string[];

@@ -20,7 +20,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  const { theme } = useTheme()
  const dark = theme === 'dark'
  
- const { data  } = useEditorStore(useShallow(state => ({ data: state.data })))
+ const { data, topLevelFields } = useEditorStore(useShallow(state => ({ data: state.data, topLevelFields: state.topLevelFields })))
  const { availableLocales, translations, updateTranslation } = useI18nStore()
  
  const [referenceLocale, setReferenceLocale] = useState('en')
@@ -31,6 +31,20 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  const translatableFields = useMemo(() => {
  const fields: Array<{ sectionId: string; sectionName: string; fieldName: string; fieldType: string; originalValue: any }> = []
  
+ // 1. Top-level translatable fields from schema
+ topLevelFields.forEach((field) => {
+ if (['text', 'richtext', 'textarea', 'lexical'].includes(field.type)) {
+ fields.push({
+ sectionId: 'root',
+ sectionName: 'Document Data',
+ fieldName: field.name,
+ fieldType: field.type,
+ originalValue: data?.[field.name]
+ })
+ }
+ })
+
+ // 2. Section-level translatable fields
  if (!data?.sections) return fields
 
  data.sections.forEach((section: Section) => {
@@ -38,8 +52,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  if (!blockDef) return
 
  blockDef.fields.forEach((field) => {
- // Only text-based fields should be translatable
- if (['text', 'richtext'].includes(field.type)) {
+ if (['text', 'richtext', 'textarea', 'lexical'].includes(field.type)) {
  fields.push({
  sectionId: section.id,
  sectionName: section.blockName || section.title || humanize(section.blockType),
@@ -52,14 +65,15 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  })
 
  return fields
- }, [data, BLOCK_LIBRARY])
+ }, [data, BLOCK_LIBRARY, topLevelFields])
 
  // Progress calculation
  const progress = useMemo(() => {
  if (translatableFields.length === 0) return 0
  let translatedCount = 0
  translatableFields.forEach((field) => {
- const translation = translations[field.sectionId]?.[field.fieldName]?.[targetLocale]
+ const fieldKey = field.sectionId === 'root' ? field.fieldName : `${field.sectionId}.${field.fieldName}`
+ const translation = translations[fieldKey]?.[targetLocale]
  if (translation && translation.trim() !== '') {
  translatedCount++
  }
@@ -158,8 +172,9 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  </div>
  ) : (
  translatableFields.map((field, _idx) => {
- const refValue = translations[field.sectionId]?.[field.fieldName]?.[referenceLocale] || (referenceLocale === 'en' ? field.originalValue : '') || ''
- const targetValue = translations[field.sectionId]?.[field.fieldName]?.[targetLocale] || ''
+ const fieldKey = field.sectionId === 'root' ? field.fieldName : `${field.sectionId}.${field.fieldName}`
+ const refValue = translations[fieldKey]?.[referenceLocale] || (referenceLocale === 'en' ? field.originalValue : '') || ''
+ const targetValue = translations[fieldKey]?.[targetLocale] || ''
 
  return (
  <div key={`${field.sectionId}-${field.fieldName}`} className="space-y-4 relative">
@@ -194,7 +209,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  blockId={field.sectionId}
  field={{ name: field.fieldName, type: field.fieldType as any, label: '' }}
  value={targetValue}
- onChange={(newVal) => updateTranslation(`${field.sectionId}.${field.fieldName}`, targetLocale, newVal)}
+ onChange={(newVal) => updateTranslation(fieldKey, targetLocale, newVal)}
  theme={theme}
  /></div>
  </div>

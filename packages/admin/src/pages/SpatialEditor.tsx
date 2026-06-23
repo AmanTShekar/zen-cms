@@ -10,6 +10,7 @@ import {
  Cpu,
  ChevronsUpDown,
  Terminal,
+ Loader2,
 } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 import api from '../lib/api'
@@ -85,9 +86,11 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  schemaFields: editorSchemaFields,
  fieldSettings: editorFieldSettings,
  fieldErrors: editorFieldErrors,
+ topLevelFields,
  setHistory,
  setSelectedField,
  setSchemaFields,
+ setTopLevelFields,
  setFieldSettings,
  setFieldErrors: setStoreFieldErrors,
  setAvailableCollections,
@@ -106,9 +109,11 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  schemaFields: s.schemaFields,
  fieldSettings: s.fieldSettings,
  fieldErrors: s.fieldErrors,
+ topLevelFields: s.topLevelFields,
  setHistory: s.setHistory,
  setSelectedField: s.setSelectedField,
  setSchemaFields: s.setSchemaFields,
+ setTopLevelFields: s.setTopLevelFields,
  setFieldSettings: s.setFieldSettings,
  setFieldErrors: s.setFieldErrors,
  setAvailableCollections: s.setAvailableCollections,
@@ -136,7 +141,6 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  const [injectionIndex, setInjectionIndex] = useState<number | null>(null)
  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; sectionId: string } | null>(null)
  const [diffVersion, setDiffVersion] = useState<{ id: string; num: number } | null>(null)
- const [topLevelFields, setTopLevelFields] = useState<any[]>([])
  const hasBlocksField = React.useMemo(() => {
  return topLevelFields.some((f: any) => f.type === 'blocks' || f.name === 'layout' || f.name === 'sections')
  }, [topLevelFields])
@@ -788,9 +792,15 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  // Loading state
  if (loading)
  return (
- <div className={cn('h-screen w-full flex flex-col items-center justify-center gap-8', theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]')}>
- <Cpu size={48} className="text-z-accent dark:text-z-active-text animate-spin" />
- <p className="text-sm font-semibold text-z-secondary animate-pulse">Initializing Canvas...</p>
+ <div className={cn('h-screen w-full flex flex-col items-center justify-center gap-6', theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]')}>
+ <div className="relative flex items-center justify-center w-24 h-24">
+ <div className={cn("absolute inset-0 rounded-full border-2", theme === 'dark' ? 'border-white/5 border-t-white/30' : 'border-black/5 border-t-black/30', "animate-spin")} />
+ <Loader2 size={32} className={cn("animate-spin opacity-50", theme === 'dark' ? 'text-white' : 'text-black')} strokeWidth={1} style={{ animationDuration: '3s' }} />
+ <div className={cn("absolute inset-0 blur-3xl animate-pulse", theme === 'dark' ? 'bg-white/5' : 'bg-black/5')} />
+ </div>
+ <p className={cn("text-sm font-semibold tracking-widest uppercase", theme === 'dark' ? 'text-white/40' : 'text-black/40')}>
+ Loading
+ </p>
  </div>
  )
 

@@ -39,16 +39,16 @@ export class PromotionService {
     collectionSlug: string,
     targetUrl: string,
     siteId?: string
-  ): Promise<{ added: any[]; modified: any[]; totalLocal: number }> {
+  ): Promise<{ added: Record<string, unknown>[]; modified: Record<string, unknown>[]; totalLocal: number }> {
     logger.info({ collectionSlug, targetUrl }, '[Promotion] Calculating content diff vs target')
     
     // Fetch local records with tenant isolation
-    const filter: any = {}
+    const filter: Record<string, unknown> = {}
     if (siteId) filter.siteId = siteId
     const localRecords = await adapter.find(collectionSlug, filter)
     
     // Simulate remote environment check (or return local records marked as "Added/Modified" if remote returns mock/empty)
-    const added = localRecords.map((r: any) => ({
+    const added = localRecords.map((r: Record<string, unknown>) => ({
       id: r._id || r.id,
       title: r.title || r.name || 'Untitled Document',
       updatedAt: r.updatedAt || new Date().toISOString()
@@ -77,7 +77,7 @@ export class PromotionService {
     )
 
     // Retrieve full document with populated fields from the source environment, isolated by site
-    const filter: any = { _id: documentId }
+    const filter: Record<string, unknown> = { _id: documentId }
     if (siteId) filter.siteId = siteId
     const document = await adapter.findOne(collectionSlug, filter)
     if (!document) {
@@ -87,13 +87,13 @@ export class PromotionService {
     // Dynamic ID Translation Map mapping Staging IDs -> Production IDs
     const idTranslationMap = new Map<string, string>()
 
-    const cloneAndTranslate = (obj: any): any => {
+    const cloneAndTranslate = (obj: Record<string, unknown>): unknown => {
       if (!obj) return obj
       if (Array.isArray(obj)) {
         return obj.map((item) => cloneAndTranslate(item))
       }
       if (typeof obj === 'object') {
-        const copy: any = {}
+        const copy: Record<string, unknown> = {}
         for (const [key, val] of Object.entries(obj)) {
           // If a key resembles an ID, check translation registry
           if ((key === 'id' || key === '_id' || key === 'relationId') && typeof val === 'string') {
