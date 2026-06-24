@@ -20,9 +20,6 @@ COPY packages/db-mongodb/package.json ./packages/db-mongodb/
 COPY packages/db-postgres/package.json ./packages/db-postgres/
 COPY packages/sdk/package.json ./packages/sdk/
 COPY packages/types/package.json ./packages/types/
-COPY templates/blog-demo/package.json ./templates/blog-demo/
-COPY templates/demo/package.json ./templates/demo/
-COPY templates/storefront-glass/package.json ./templates/storefront-glass/
 
 # Install dependencies (ignoring scripts to avoid build errors during install)
 RUN pnpm install --frozen-lockfile --ignore-scripts
@@ -68,9 +65,6 @@ COPY --from=builder /app/packages/db-postgres/dist ./packages/db-postgres/dist
 COPY --from=builder /app/packages/sdk/package.json ./packages/sdk/
 COPY --from=builder /app/packages/types/package.json ./packages/types/
 COPY --from=builder /app/packages/types/dist ./packages/types/dist
-COPY --from=builder /app/templates/blog-demo/package.json ./templates/blog-demo/
-COPY --from=builder /app/templates/demo/package.json ./templates/demo/
-COPY --from=builder /app/templates/storefront-glass/package.json ./templates/storefront-glass/
 
 # Install only production dependencies
 RUN pnpm install --prod --frozen-lockfile --ignore-scripts

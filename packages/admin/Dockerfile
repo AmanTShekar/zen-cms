@@ -20,9 +20,6 @@ COPY packages/db-mongodb/package.json ./packages/db-mongodb/
 COPY packages/db-postgres/package.json ./packages/db-postgres/
 COPY packages/sdk/package.json ./packages/sdk/
 COPY packages/types/package.json ./packages/types/
-COPY templates/blog-demo/package.json ./templates/blog-demo/
-COPY templates/demo/package.json ./templates/demo/
-COPY templates/storefront-glass/package.json ./templates/storefront-glass/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile --ignore-scripts
