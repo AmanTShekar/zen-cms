@@ -14,7 +14,7 @@ import { sql } from 'drizzle-orm'
  * Ensures migrations run exactly once per environment by tracking state in `z_migrations`.
  */
 export class Migrator {
-  private static async ensureMigrationTable(adapter: import('@zenith-open/types').DatabaseAdapter) {
+  private static async ensureMigrationTable(adapter: import('@zenith-open/zenithcms-types').DatabaseAdapter) {
     if (adapter.name === 'postgres-drizzle' || adapter.name === 'PostgresDrizzle') {
       try {
         await adapter.db.execute(`
@@ -31,7 +31,7 @@ export class Migrator {
     }
   }
 
-  private static async getExecutedMigrations(adapter: import('@zenith-open/types').DatabaseAdapter): Promise<string[]> {
+  private static async getExecutedMigrations(adapter: import('@zenith-open/zenithcms-types').DatabaseAdapter): Promise<string[]> {
     try {
       if (adapter.name === 'postgres-drizzle' || adapter.name === 'PostgresDrizzle') {
         const res = await adapter.db.execute(`SELECT name FROM z_migrations`)
@@ -45,7 +45,7 @@ export class Migrator {
     }
   }
 
-  private static async markMigrationExecuted(adapter: import('@zenith-open/types').DatabaseAdapter, name: string) {
+  private static async markMigrationExecuted(adapter: import('@zenith-open/zenithcms-types').DatabaseAdapter, name: string) {
     if (adapter.name === 'postgres-drizzle' || adapter.name === 'PostgresDrizzle') {
       await adapter.db.execute(sql`INSERT INTO z_migrations (name, batch) VALUES (${name}, 1)`)
     } else {
@@ -53,7 +53,7 @@ export class Migrator {
     }
   }
 
-  private static async removeMigrationRecord(adapter: import('@zenith-open/types').DatabaseAdapter, name: string) {
+  private static async removeMigrationRecord(adapter: import('@zenith-open/zenithcms-types').DatabaseAdapter, name: string) {
     if (adapter.name === 'postgres-drizzle' || adapter.name === 'PostgresDrizzle') {
       await adapter.db.execute(sql`DELETE FROM z_migrations WHERE name = ${name}`)
     } else {

@@ -42,7 +42,7 @@ const UpdateReleaseSchema = CreateReleaseSchema.partial()
 
 export async function publishReleaseContent(
   release: any,
-  adapter: import('@zenith-open/types').DatabaseAdapter,
+  adapter: import('@zenith-open/zenithcms-types').DatabaseAdapter,
   config: Record<string, any>,
   user: Record<string, any>,
   siteId: string

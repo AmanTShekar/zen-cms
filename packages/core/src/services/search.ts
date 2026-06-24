@@ -23,7 +23,7 @@ export class SearchService {
   static async globalSearch(
     query: string,
     collections: CollectionConfig[],
-    adapter: import('@zenith-open/types').DatabaseAdapter, // DatabaseAdapter — typed as Record<string, any> to avoid circular import
+    adapter: import('@zenith-open/zenithcms-types').DatabaseAdapter, // DatabaseAdapter — typed as Record<string, any> to avoid circular import
     limit = 20,
     siteId?: string
   ): Promise<SearchResult[]> {
