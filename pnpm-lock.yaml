@@ -652,6 +652,12 @@ importers:
 
   packages/types:
     devDependencies:
+      '@types/react':
+        specifier: ^18.0.0
+        version: 18.3.31
+      react:
+        specifier: ^19.2.0
+        version: 19.2.6
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
@@ -3578,6 +3584,9 @@ packages:
   '@types/pg@8.20.0':
     resolution: {integrity: sha512-bEPFOaMAHTEP1EzpvHTbmwR8UsFyHSKsRisLIHVMXnpNefSbGA1bD6CVy+qKjGSqmZqNqBDV2azOBo8TgkcVow==}
 
+  '@types/prop-types@15.7.15':
+    resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
+
   '@types/qrcode@1.5.6':
     resolution: {integrity: sha512-te7NQcV2BOvdj2b1hCAHzAoMNuj65kNBMz0KBaxM6c3VGBOhU0dURQKOtH8CFNI/dsKkwlv32p26qYQTWoB5bw==}
 
@@ -3595,6 +3604,9 @@ packages:
   '@types/react-grid-layout@2.1.0':
     resolution: {integrity: sha512-pHEjVg9ert6BDFHFQ1IEdLUkd2gasJvyti5lV2kE46N/R07ZiaSZpAXeXJAA1MXy/Qby23fZmiuEgZkITxPXug==}
     deprecated: This is a stub types definition. react-grid-layout provides its own type definitions, so you do not need this installed.
+
+  '@types/react@18.3.31':
+    resolution: {integrity: sha512-vfEqpXTvwT91yhmwdfouStN2hSKwTvyRs8qpLfADyrq/kxDw0hZM7Wk9Ug1FELj8hIby+S/+kQCSRFF32nv2Qw==}
 
   '@types/react@19.2.14':
     resolution: {integrity: sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w==}
@@ -11347,6 +11359,8 @@ snapshots:
       pg-protocol: 1.13.0
       pg-types: 2.2.0
 
+  '@types/prop-types@15.7.15': {}
+
   '@types/qrcode@1.5.6':
     dependencies:
       '@types/node': 20.19.43
@@ -11365,6 +11379,11 @@ snapshots:
     transitivePeerDependencies:
       - react
       - react-dom
+
+  '@types/react@18.3.31':
+    dependencies:
+      '@types/prop-types': 15.7.15
+      csstype: 3.2.3
 
   '@types/react@19.2.14':
     dependencies:
@@ -11452,6 +11471,22 @@ snapshots:
     dependencies:
       '@types/node': 20.19.43
 
+  '@typescript-eslint/eslint-plugin@8.59.3(@typescript-eslint/parser@8.59.3(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)':
+    dependencies:
+      '@eslint-community/regexpp': 4.12.2
+      '@typescript-eslint/parser': 8.59.3(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
+      '@typescript-eslint/scope-manager': 8.59.3
+      '@typescript-eslint/type-utils': 8.59.3(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
+      '@typescript-eslint/utils': 8.59.3(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
+      '@typescript-eslint/visitor-keys': 8.59.3
+      eslint: 9.39.4(jiti@1.21.7)
+      ignore: 7.0.5
+      natural-compare: 1.4.0
+      ts-api-utils: 2.5.0(typescript@5.9.3)
+      typescript: 5.9.3
+    transitivePeerDependencies:
+      - supports-color
+
   '@typescript-eslint/eslint-plugin@8.59.3(@typescript-eslint/parser@8.59.3(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3)':
     dependencies:
       '@eslint-community/regexpp': 4.12.2
@@ -11461,22 +11496,6 @@ snapshots:
       '@typescript-eslint/utils': 8.59.3(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3)
       '@typescript-eslint/visitor-keys': 8.59.3
       eslint: 9.39.4(jiti@2.7.0)
-      ignore: 7.0.5
-      natural-compare: 1.4.0
-      ts-api-utils: 2.5.0(typescript@5.9.3)
-      typescript: 5.9.3
-    transitivePeerDependencies:
-      - supports-color
-
-  '@typescript-eslint/eslint-plugin@8.59.3(@typescript-eslint/parser@8.59.3(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)':
-    dependencies:
-      '@eslint-community/regexpp': 4.12.2
-      '@typescript-eslint/parser': 8.59.3(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3)
-      '@typescript-eslint/scope-manager': 8.59.3
-      '@typescript-eslint/type-utils': 8.59.3(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
-      '@typescript-eslint/utils': 8.59.3(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
-      '@typescript-eslint/visitor-keys': 8.59.3
-      eslint: 9.39.4(jiti@1.21.7)
       ignore: 7.0.5
       natural-compare: 1.4.0
       ts-api-utils: 2.5.0(typescript@5.9.3)
@@ -15895,7 +15914,7 @@ snapshots:
 
   typescript-eslint@8.59.3(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3):
     dependencies:
-      '@typescript-eslint/eslint-plugin': 8.59.3(@typescript-eslint/parser@8.59.3(eslint@9.39.4(jiti@2.7.0))(typescript@6.0.3))(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
+      '@typescript-eslint/eslint-plugin': 8.59.3(@typescript-eslint/parser@8.59.3(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
       '@typescript-eslint/parser': 8.59.3(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
       '@typescript-eslint/typescript-estree': 8.59.3(typescript@5.9.3)
       '@typescript-eslint/utils': 8.59.3(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
