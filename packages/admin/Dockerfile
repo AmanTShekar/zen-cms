@@ -10,10 +10,19 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY tsconfig.json ./
 
-# Copy packages
+# Copy all workspace package.json files
 COPY packages/admin/package.json ./packages/admin/
-COPY packages/types/package.json ./packages/types/
+COPY packages/cli/package.json ./packages/cli/
+COPY packages/core/package.json ./packages/core/
+COPY packages/create-zenith-app/package.json ./packages/create-zenith-app/
+COPY packages/create-zenithcms-app/package.json ./packages/create-zenithcms-app/
+COPY packages/db-mongodb/package.json ./packages/db-mongodb/
+COPY packages/db-postgres/package.json ./packages/db-postgres/
 COPY packages/sdk/package.json ./packages/sdk/
+COPY packages/types/package.json ./packages/types/
+COPY templates/blog-demo/package.json ./templates/blog-demo/
+COPY templates/demo/package.json ./templates/demo/
+COPY templates/storefront-glass/package.json ./templates/storefront-glass/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile --ignore-scripts

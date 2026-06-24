@@ -10,11 +10,19 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY tsconfig.json ./
 
-# Copy core package
+# Copy all workspace package.json files
+COPY packages/admin/package.json ./packages/admin/
+COPY packages/cli/package.json ./packages/cli/
 COPY packages/core/package.json ./packages/core/
-COPY packages/types/package.json ./packages/types/
+COPY packages/create-zenith-app/package.json ./packages/create-zenith-app/
+COPY packages/create-zenithcms-app/package.json ./packages/create-zenithcms-app/
 COPY packages/db-mongodb/package.json ./packages/db-mongodb/
 COPY packages/db-postgres/package.json ./packages/db-postgres/
+COPY packages/sdk/package.json ./packages/sdk/
+COPY packages/types/package.json ./packages/types/
+COPY templates/blog-demo/package.json ./templates/blog-demo/
+COPY templates/demo/package.json ./templates/demo/
+COPY templates/storefront-glass/package.json ./templates/storefront-glass/
 
 # Install dependencies (ignoring scripts to avoid build errors during install)
 RUN pnpm install --frozen-lockfile --ignore-scripts
@@ -47,14 +55,22 @@ RUN addgroup -g 1001 nodejs && \
 
 # Copy necessary files from builder
 COPY --from=builder /app/package.json /app/pnpm-workspace.yaml /app/pnpm-lock.yaml ./
+COPY --from=builder /app/packages/admin/package.json ./packages/admin/
+COPY --from=builder /app/packages/cli/package.json ./packages/cli/
 COPY --from=builder /app/packages/core/package.json ./packages/core/
 COPY --from=builder /app/packages/core/dist ./packages/core/dist
-COPY --from=builder /app/packages/types/package.json ./packages/types/
-COPY --from=builder /app/packages/types/dist ./packages/types/dist
+COPY --from=builder /app/packages/create-zenith-app/package.json ./packages/create-zenith-app/
+COPY --from=builder /app/packages/create-zenithcms-app/package.json ./packages/create-zenithcms-app/
 COPY --from=builder /app/packages/db-mongodb/package.json ./packages/db-mongodb/
 COPY --from=builder /app/packages/db-mongodb/dist ./packages/db-mongodb/dist
 COPY --from=builder /app/packages/db-postgres/package.json ./packages/db-postgres/
 COPY --from=builder /app/packages/db-postgres/dist ./packages/db-postgres/dist
+COPY --from=builder /app/packages/sdk/package.json ./packages/sdk/
+COPY --from=builder /app/packages/types/package.json ./packages/types/
+COPY --from=builder /app/packages/types/dist ./packages/types/dist
+COPY --from=builder /app/templates/blog-demo/package.json ./templates/blog-demo/
+COPY --from=builder /app/templates/demo/package.json ./templates/demo/
+COPY --from=builder /app/templates/storefront-glass/package.json ./templates/storefront-glass/
 
 # Install only production dependencies
 RUN pnpm install --prod --frozen-lockfile --ignore-scripts
