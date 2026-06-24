@@ -2,8 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "node",
-    "ignoreDeprecations": "5103;5505",
+    "moduleResolution": "bundler",
     "lib": ["ESNext", "DOM"],
     "strict": true,
     "esModuleInterop": true,
@@ -12,9 +11,8 @@
     "declaration": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": ".",
     "paths": {
-      "@zenith-open/*": ["packages/*/src"]
+      "@zenith-open/*": ["./packages/*/src"]
     },
     "types": []
   },

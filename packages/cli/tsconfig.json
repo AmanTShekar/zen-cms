@@ -4,7 +4,6 @@
     "outDir": "./dist",
     "rootDir": "src",
     "types": ["node"],
-    "ignoreDeprecations": "5103;5505",
     "strict": true
   },
   "include": ["src/**/*"],
