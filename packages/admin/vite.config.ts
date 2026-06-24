@@ -57,15 +57,24 @@ export default defineConfig({
     sourcemap: 'hidden',
     rollupOptions: {
       output: {
-        manualChunks: {
+        manualChunks: (id) => {
           // Split vendor chunks
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-query': ['@tanstack/react-query'],
-          'vendor-editor': ['lexical'],
-          'vendor-animation': ['framer-motion', 'lucide-react'],
-          'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
-          // All other node_modules go into a catch-all vendor chunk
-        } as any,
+          if (id.includes('node_modules/react')) {
+            return 'vendor-react';
+          }
+          if (id.includes('node_modules/@tanstack/react-query')) {
+            return 'vendor-query';
+          }
+          if (id.includes('node_modules/lexical')) {
+            return 'vendor-editor';
+          }
+          if (id.includes('node_modules/framer-motion') || id.includes('node_modules/lucide-react')) {
+            return 'vendor-animation';
+          }
+          if (id.includes('node_modules/react-hook-form') || id.includes('node_modules/@hookform/resolvers') || id.includes('node_modules/zod')) {
+            return 'vendor-forms';
+          }
+        },
       },
     },
   },
