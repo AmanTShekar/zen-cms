@@ -1,4 +1,5 @@
 import Client from 'ioredis'
+// @ts-expect-error
 import Redlock from 'redlock'
 import { logger } from './logger'
 import { env } from '../config/env';
@@ -28,12 +29,12 @@ export function initRedlock(redisUrl?: string): Redlock | null {
       }
     )
     
-    redlock.on('error', (error) => {
+    redlock.on('error', (error: any) => {
       // Ignored: Redlock will handle retries internally.
     })
 
     return redlock
-  } catch (err: unknown) {
+  } catch (err: any) {
     logger.error({ err: err.message }, '[Redlock] Failed to initialize distributed lock client.')
     return null
   }
@@ -53,13 +54,13 @@ export async function withMigrationLock<T>(resourceName: string, ttlMs: number, 
 
   logger.info(`[Redlock] Attempting to acquire lock on ${resourceName}...`)
   
-  let lock: Record<string, unknown> | null = null
+  let lock: Record<string, any> | null = null
   try {
     lock = await lockManager.acquire([`zenith:lock:${resourceName}`], ttlMs)
     logger.info(`[Redlock] Acquired lock on ${resourceName}. Executing...`)
     const result = await callback()
     return result
-  } catch (err: unknown) {
+  } catch (err: any) {
     logger.error({ err: err.message }, `[Redlock] Failed to acquire lock for ${resourceName} or callback threw error.`)
     throw err
   } finally {
@@ -67,7 +68,7 @@ export async function withMigrationLock<T>(resourceName: string, ttlMs: number, 
       try {
         await lock.release()
         logger.info(`[Redlock] Released lock on ${resourceName}`)
-      } catch (err: unknown) {
+      } catch (err: any) {
         logger.warn({ err: err.message }, `[Redlock] Failed to release lock on ${resourceName} cleanly.`)
       }
     }

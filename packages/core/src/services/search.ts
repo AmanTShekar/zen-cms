@@ -23,7 +23,7 @@ export class SearchService {
   static async globalSearch(
     query: string,
     collections: CollectionConfig[],
-    adapter: import('@zenith-open/types').DatabaseAdapter, // DatabaseAdapter — typed as Record<string, unknown> to avoid circular import
+    adapter: import('@zenith-open/types').DatabaseAdapter, // DatabaseAdapter — typed as Record<string, any> to avoid circular import
     limit = 20,
     siteId?: string
   ): Promise<SearchResult[]> {
@@ -45,7 +45,7 @@ export class SearchService {
 
             // Secure strict tenant boundary isolation checks
             const filteredDocs = siteId
-              ? docs.filter((d: Record<string, unknown>) => !d.siteId || d.siteId === siteId)
+              ? docs.filter((d: Record<string, any>) => !d.siteId || d.siteId === siteId)
               : docs
 
             for (const doc of filteredDocs) {

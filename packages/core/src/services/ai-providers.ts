@@ -51,7 +51,7 @@ export class AIProviderService {
         default:
           throw new Error(`Unsupported AI provider: ${provider}`);
       }
-    } catch (err: unknown) {
+    } catch (err: any) {
       logger.error(`Validation failed for provider ${provider}: ${(err as Error).message}`);
       return false;
     }
@@ -103,7 +103,7 @@ export class AIProviderService {
         default:
           throw new Error(`Unsupported AI provider: ${provider}`);
       }
-    } catch (err: unknown) {
+    } catch (err: any) {
       logger.error(`Fetch models failed for provider ${provider}: ${(err as Error).message}`);
       throw new Error('Failed to fetch models from provider');
     }

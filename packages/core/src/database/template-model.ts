@@ -5,7 +5,7 @@ export interface ITemplate extends Document {
   slug: string
   description?: string
   blockType: string
-  content: Record<string, unknown>
+  content: Record<string, any>
   thumbnail?: string
   usageCount: number
   isSystem: boolean

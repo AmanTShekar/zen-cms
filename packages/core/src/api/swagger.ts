@@ -4,7 +4,7 @@ import { Express } from 'express'
 import { CMSConfig } from '@zenith-open/zenithcms-types'
 
 // Helper to map Zenith field types to OpenAPI schemas
-function mapFieldToSwagger(field: Record<string, unknown>): unknown {
+function mapFieldToSwagger(field: Record<string, any>): any {
   switch (field.type) {
     case 'text':
     case 'email':
@@ -18,7 +18,7 @@ function mapFieldToSwagger(field: Record<string, unknown>): unknown {
     case 'date':
       return { type: 'string', format: 'date-time' }
     case 'select': {
-      const enumValues = field.options?.map((o: Record<string, unknown>) => typeof o === 'string' ? o : o.value)
+      const enumValues = field.options?.map((o: Record<string, any>) => typeof o === 'string' ? o : o.value)
       const baseSchema = enumValues ? { type: 'string', enum: enumValues } : { type: 'string' }
       return field.hasMany ? { type: 'array', items: baseSchema } : baseSchema
     }
@@ -30,7 +30,7 @@ function mapFieldToSwagger(field: Record<string, unknown>): unknown {
         type: 'array',
         items: {
           type: 'object',
-          properties: field.fields?.reduce((acc: Record<string, unknown>, f: Record<string, unknown>) => {
+          properties: field.fields?.reduce((acc: Record<string, any>, f: Record<string, any>) => {
             acc[f.name] = mapFieldToSwagger(f)
             return acc
           }, {})
@@ -39,7 +39,7 @@ function mapFieldToSwagger(field: Record<string, unknown>): unknown {
     case 'group':
       return {
         type: 'object',
-        properties: field.fields?.reduce((acc: Record<string, unknown>, f: Record<string, unknown>) => {
+        properties: field.fields?.reduce((acc: Record<string, any>, f: Record<string, any>) => {
           acc[f.name] = mapFieldToSwagger(f)
           return acc
         }, {})
@@ -87,8 +87,8 @@ export function setupSwagger(app: Express, config: CMSConfig) {
     const name = col.name
 
     // Build the specific schema for this collection
-    const properties: Record<string, unknown> = {}
-    col.fields.forEach((field: Record<string, unknown>) => {
+    const properties: Record<string, any> = {}
+    col.fields.forEach((field: Record<string, any>) => {
       properties[field.name] = mapFieldToSwagger(field)
     })
     const collectionSchema = { type: 'object', properties }
@@ -116,9 +116,9 @@ export function setupSwagger(app: Express, config: CMSConfig) {
       500: { description: 'Internal Server Error', content: { 'application/json': { schema: errorSchema } } },
     }
 
-    if (!(specs as Record<string, unknown>).paths) (specs as Record<string, unknown>).paths = {}
+    if (!(specs as Record<string, any>).paths) (specs as Record<string, any>).paths = {}
     
-    ;(specs as Record<string, unknown>).paths[`/${slug}`] = {
+    ;(specs as Record<string, any>).paths[`/${slug}`] = {
       get: {
         tags: [name],
         summary: `List all ${slug}`,
@@ -145,7 +145,7 @@ export function setupSwagger(app: Express, config: CMSConfig) {
       },
     }
     
-    ;(specs as Record<string, unknown>).paths[`/${slug}/{id}`] = {
+    ;(specs as Record<string, any>).paths[`/${slug}/{id}`] = {
       get: {
         tags: [name],
         summary: `Get a single ${name}`,

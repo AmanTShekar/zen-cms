@@ -421,7 +421,7 @@ export class ZenithEngine {
         uptime: process.uptime(),
         database: this.adapter?.getHealth() || 'disconnected',
         memoryUsage: process.memoryUsage(),
-        version: process.env.npm_package_version || 'unknown',
+        version: process.env.npm_package_version || 'any',
         timestamp: new Date().toISOString()
       })
     })

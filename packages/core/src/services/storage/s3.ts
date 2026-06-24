@@ -13,7 +13,7 @@ export class S3StorageProvider extends StorageProvider {
   private publicUrl?: string
   private endpoint?: string
 
-  constructor(config?: Record<string, unknown>) {
+  constructor(config?: Record<string, any>) {
     super()
     const region = config?.region || 'us-east-1'
     const endpoint = config?.endpoint
@@ -53,7 +53,7 @@ export class S3StorageProvider extends StorageProvider {
     const filename = `${Date.now()}-${safeBaseName}`
     const key = `uploads/${filename}`
 
-    let body: unknown
+    let body: any
     let size = 0
 
     if (typeof fileInput === 'string') {
@@ -104,7 +104,7 @@ export class S3StorageProvider extends StorageProvider {
         mimetype: options.mimetype,
         size,
       }
-    } catch (err: unknown) {
+    } catch (err: any) {
       logger.error({ key, error: (err as Error).message }, '[S3Storage] Failed to execute parallel upload')
       throw err
     }
@@ -121,7 +121,7 @@ export class S3StorageProvider extends StorageProvider {
           Key: safeId,
         })
       )
-    } catch (err: unknown) {
+    } catch (err: any) {
       logger.error({ id, error: (err as Error).message }, 'Failed to delete file from S3 bucket')
     }
   }

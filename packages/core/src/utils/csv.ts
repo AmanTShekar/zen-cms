@@ -99,7 +99,7 @@ export function parseCsv(text: string): Record<string, string>[] {
  * Serialize an array of objects to a CSV string.
  * Escapes values that contain commas, quotes, or newlines.
  */
-export function stringifyCsv(rows: Record<string, unknown>[]): string {
+export function stringifyCsv(rows: Record<string, any>[]): string {
   if (rows.length === 0) return ''
   const headers = Object.keys(rows[0])
   const lines: string[] = [headers.map(escapeCsvField).join(',')]
@@ -112,7 +112,7 @@ export function stringifyCsv(rows: Record<string, unknown>[]): string {
   return lines.join('\r\n')
 }
 
-function escapeCsvField(value: unknown): string {
+function escapeCsvField(value: any): string {
   const str = value === undefined || value === null ? '' : String(value)
   // If the field contains comma, quote, or newline, wrap in quotes and double internal quotes
   if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {

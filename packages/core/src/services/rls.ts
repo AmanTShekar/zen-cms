@@ -1,7 +1,7 @@
 import { ForbiddenError } from '../errors'
 
 export class RLSService {
-  static applyReadAccess(query: Record<string, unknown>, configAccess: Record<string, unknown>, user: Record<string, unknown>): boolean {
+  static applyReadAccess(query: Record<string, any>, configAccess: Record<string, any>, user: Record<string, any>): boolean {
     if (user && typeof configAccess?.read === 'function') {
       const access = configAccess.read(user)
       if (access === false) return false
@@ -12,7 +12,7 @@ export class RLSService {
     return true
   }
 
-  static applyUpdateAccess(query: Record<string, unknown>, configAccess: Record<string, unknown>, user: Record<string, unknown>, req?: import('express').Request): void {
+  static applyUpdateAccess(query: Record<string, any>, configAccess: Record<string, any>, user: Record<string, any>, req?: import('express').Request): void {
     if (user && typeof configAccess?.update === 'function') {
       const access = configAccess.update(user, { req })
       if (access === false) throw new ForbiddenError()
@@ -22,7 +22,7 @@ export class RLSService {
     }
   }
 
-  static applyDeleteAccess(query: Record<string, unknown>, configAccess: Record<string, unknown>, user: Record<string, unknown>, req?: import('express').Request): void {
+  static applyDeleteAccess(query: Record<string, any>, configAccess: Record<string, any>, user: Record<string, any>, req?: import('express').Request): void {
     if (user && typeof configAccess?.delete === 'function') {
       const access = configAccess.delete(user, { req })
       if (access === false) throw new ForbiddenError()

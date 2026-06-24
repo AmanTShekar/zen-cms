@@ -11,7 +11,7 @@ export interface IDashboardWidget {
   id: string
   type: string
   title?: string
-  config: Record<string, unknown>
+  config: Record<string, any>
   position: IDashboardWidgetPosition
   isOrphaned?: boolean
 }

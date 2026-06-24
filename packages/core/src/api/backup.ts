@@ -31,7 +31,7 @@ router.get('/', requireRole('admin'), async (req: Request, res: Response, next) 
 router.post('/export', requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
     const engine = req.app.get('zenith_engine')
-    const collections = engine?.config?.collections?.map((c: Record<string, unknown>) => c.slug) || []
+    const collections = engine?.config?.collections?.map((c: Record<string, any>) => c.slug) || []
     const includeSystem = req.query.includeSystem === 'true'
     const siteId = req.headers['x-zenith-site-id'] as string
 
@@ -58,7 +58,7 @@ router.post('/import', requireRole('admin'), async (req: Request, res: Response,
     const filePath = path.join(BACKUP_DIR, safeName)
     const siteId = req.headers['x-zenith-site-id'] as string
 
-    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const result = await BackupService.import(filePath, adapter, siteId)
 
     res.json(createResponse(result))
@@ -104,7 +104,7 @@ router.delete('/:filename', requireRole('admin'), async (req: Request, res: Resp
     logger.info(`[Backup] Deleted backup: ${safeName}`)
 
     res.json(createResponse({ deleted: safeName }))
-  } catch (err: unknown) {
+  } catch (err: any) {
     if (err.code === 'ENOENT') {
       return res.status(404).json(createErrorResponse(404, 'Backup file not found'))
     }

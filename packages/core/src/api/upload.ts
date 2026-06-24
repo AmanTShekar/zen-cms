@@ -35,7 +35,7 @@ const upload = multer({
  * Handles secure file uploads dynamically streaming to Cloudinary or S3/Local storage.
  */
 router.post('/', requireAuth, upload.single('file'), async (req: import('express').Request, res, next) => {
-  const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+  const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
   
   if (req.body.url) {
     try {
@@ -141,11 +141,11 @@ router.post('/', requireAuth, upload.single('file'), async (req: import('express
 
     // 3. Extract focal point from body (sent by MediaPicker FocalPointCropper)
     // When using multer, nested objects arrive as JSON strings — parse them
-    let parsedBody: Record<string, unknown> = {}
+    let parsedBody: Record<string, any> = {}
     if (req.body.focalPoint && typeof req.body.focalPoint === 'string') {
       try { parsedBody = JSON.parse(req.body.focalPoint) } catch { /* ignore */ }
     } else if (req.body.focalPoint && typeof req.body.focalPoint === 'object') {
-      parsedBody = req.body.focalPoint as Record<string, unknown>
+      parsedBody = req.body.focalPoint as Record<string, any>
     }
     let focalPoint: { x: number; y: number } | null = null
     if (parsedBody.x !== undefined && parsedBody.y !== undefined) {
@@ -168,7 +168,7 @@ router.post('/', requireAuth, upload.single('file'), async (req: import('express
     }
 
     // 4. Persist media meta details to database adapter
-    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+    const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const doc = await adapter.create('media', {
       url,
       id: fileId,
@@ -181,7 +181,7 @@ router.post('/', requireAuth, upload.single('file'), async (req: import('express
     })
 
     res.json(createResponse(doc))
-  } catch (error: unknown) {
+  } catch (error: any) {
     next(error)
   } finally {
     // Ensure temporary file is always cleaned up asynchronously

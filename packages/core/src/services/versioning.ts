@@ -2,19 +2,19 @@ import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { logger } from './logger'
 
 export class VersioningService {
-  constructor(private adapter: DatabaseAdapter, private config: Record<string, unknown>) {}
+  constructor(private adapter: DatabaseAdapter, private config: Record<string, any>) {}
 
-  async createVersion(doc: Record<string, unknown>, options: Record<string, unknown>, delta?: Record<string, unknown>) {
+  async createVersion(doc: Record<string, any>, options: Record<string, any>, delta?: Record<string, any>) {
     try {
-      const isGlobal = this.config.singleton || !(doc as unknown as { _id?: { toString(): string } })._id
-      const documentId = isGlobal ? this.config.slug : (doc as unknown as { _id?: { toString(): string } })._id?.toString() || 'singleton'
+      const isGlobal = this.config.singleton || !(doc as any as { _id?: { toString(): string } })._id
+      const documentId = isGlobal ? this.config.slug : (doc as any as { _id?: { toString(): string } })._id?.toString() || 'singleton'
       await this.adapter.createVersion({
         collectionName: isGlobal ? 'globals' : this.config.name || this.config.slug,
         collectionSlug: isGlobal ? 'globals' : this.config.slug,
         documentId,
         snapshot: doc,
         delta,
-        createdBy: (options as unknown as { user?: { id?: string } }).user?.id || 'system',
+        createdBy: (options as any as { user?: { id?: string } }).user?.id || 'system',
         timestamp: new Date(),
       }, { session: options?.session })
 
@@ -36,11 +36,11 @@ export class VersioningService {
       if (allVersions.length <= maxVersions) return
 
       const toDelete = allVersions
-        .sort((a: unknown, b: unknown) => new Date((b as { timestamp: string | Date }).timestamp).getTime() - new Date((a as { timestamp: string | Date }).timestamp).getTime())
+        .sort((a: any, b: any) => new Date((b as { timestamp: string | Date }).timestamp).getTime() - new Date((a as { timestamp: string | Date }).timestamp).getTime())
         .slice(maxVersions)
 
       await Promise.all(
-        toDelete.map(async (version: unknown) => {
+        toDelete.map(async (version: any) => {
           const vid = (version as { _id?: { toString(): string } })._id?.toString() || (version as { id?: string }).id
           if (vid) await this.adapter.delete('versions', vid)
         })

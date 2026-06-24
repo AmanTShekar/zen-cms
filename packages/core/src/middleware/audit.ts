@@ -16,11 +16,11 @@ const SENSITIVE_FIELDS = new Set([
   'authorization', 'x-api-key', 'x-csrf-token',
 ])
 
-function redactSensitive(data: unknown): unknown {
+function redactSensitive(data: any): any {
   if (!data || typeof data !== 'object') return data
   if (Array.isArray(data)) return data.map(redactSensitive)
-  const cleaned: Record<string, unknown> = {}
-  for (const [key, val] of Object.entries(data as Record<string, unknown>)) {
+  const cleaned: Record<string, any> = {}
+  for (const [key, val] of Object.entries(data as Record<string, any>)) {
     if (SENSITIVE_FIELDS.has(key)) {
       cleaned[key] = '[REDACTED]'
     } else if (typeof val === 'object' && val !== null) {

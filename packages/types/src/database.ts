@@ -25,18 +25,18 @@ export interface DatabaseAdapter {
   getNativeClient<T = any>(): T
 
   // ── CRUD Operations ───────────────────────────────────────────────────────
-  find<T = unknown>(
+  find<T = any>(
     collection: string,
-    query: Record<string, unknown>,
+    query: Record<string, any>,
     options?: FindOptions
   ): Promise<T[]>
-  findOne<T = unknown>(
+  findOne<T = any>(
     collection: string,
-    query: Record<string, unknown>,
+    query: Record<string, any>,
     options?: BaseOptions
   ): Promise<T | null>
-  create<T = unknown>(collection: string, data: Partial<T>, options?: BaseOptions): Promise<T>
-  update<T = unknown>(
+  create<T = any>(collection: string, data: Partial<T>, options?: BaseOptions): Promise<T>
+  update<T = any>(
     collection: string,
     id: string,
     data: Partial<T>,
@@ -44,30 +44,30 @@ export interface DatabaseAdapter {
   ): Promise<T | null>
   updateMany(
     collection: string,
-    query: Record<string, unknown>,
-    data: unknown,
+    query: Record<string, any>,
+    data: any,
     options?: BaseOptions
   ): Promise<number>
   delete(collection: string, id: string, options?: BaseOptions): Promise<boolean>
   deleteMany(
     collection: string,
-    query: Record<string, unknown>,
+    query: Record<string, any>,
     options?: BaseOptions
   ): Promise<number>
 
   // ── Advanced Operations ───────────────────────────────────────────────────
-  count(collection: string, query: Record<string, unknown>): Promise<number>
-  aggregate<T = unknown>(collection: string, pipeline: unknown[], options?: BaseOptions): Promise<T[]>
+  count(collection: string, query: Record<string, any>): Promise<number>
+  aggregate<T = any>(collection: string, pipeline: any[], options?: BaseOptions): Promise<T[]>
 
   /**
    * Atomically finds a single document and updates it, returning either
    * the original (returnDocument: 'before') or updated (returnDocument: 'after') document.
    * Returns null if no document matches the query.
    */
-  findOneAndUpdate<T = unknown>(
+  findOneAndUpdate<T = any>(
     collection: string,
-    query: Record<string, unknown>,
-    update: Record<string, unknown>,
+    query: Record<string, any>,
+    update: Record<string, any>,
     options?: BaseOptions & { returnDocument?: 'before' | 'after' }
   ): Promise<T | null>
 
@@ -76,7 +76,7 @@ export interface DatabaseAdapter {
    * If the adapter does not support transactions (e.g. standalone Mongo),
    * this will execute the function without a transaction context.
    */
-  transaction<T>(fn: (session: unknown) => Promise<T>): Promise<T>
+  transaction<T>(fn: (session: any) => Promise<T>): Promise<T>
 
   // ── Zenith Engine Features ────────────────────────────────────────────────
   createAuditLog(data: AuditLogData, options?: BaseOptions): Promise<void>
@@ -90,7 +90,7 @@ export interface DatabaseAdapter {
    * Each adapter translates this into its native search primitive
    * (MongoDB $regex/$text, Postgres ILIKE/pg_trgm).
    */
-  search<T = unknown>(
+  search<T = any>(
     collection: string,
     query: string,
     fields: string[],

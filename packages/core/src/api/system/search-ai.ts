@@ -26,7 +26,7 @@ import { execSync } from 'child_process'
 
 const MASK_PLACEHOLDER = '[MASKED_CREDENTIAL]'
 
-export function maskSettings(settings: Record<string, unknown>) {
+export function maskSettings(settings: Record<string, any>) {
   if (!settings) return settings
   const result = JSON.parse(JSON.stringify(settings)) // deep clone
   
@@ -48,7 +48,7 @@ export function maskSettings(settings: Record<string, unknown>) {
   return result
 }
 
-export function unmaskSettings(incoming: Record<string, unknown>, existing: Record<string, unknown>) {
+export function unmaskSettings(incoming: Record<string, any>, existing: Record<string, any>) {
   if (!incoming) return incoming
   const result = JSON.parse(JSON.stringify(incoming))
   
@@ -117,7 +117,7 @@ const AIFieldSchema = z.object({
   required: z.boolean().optional(),
   unique: z.boolean().optional(),
   options: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
-  defaultValue: z.unknown().optional(),
+  defaultValue: z.any().optional(),
 })
 
 const AICollectionSchema = z.object({
@@ -143,8 +143,8 @@ router.get('/search', searchLimiter, requireAuth, async (req: Request, res: Resp
   try {
     const q = req.query.q as string
     if (!q) throw new InvalidPayloadError('Query required')
-    const config = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.config
-    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+    const config = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.config
+    const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter
     const siteId = req.headers['x-zenith-site-id'] as string
     const results = await SearchService.globalSearch(q.trim(), config.collections, adapter, 20, siteId)
     res.json(createResponse(results))
@@ -170,7 +170,7 @@ router.post('/ai/models/fetch', aiLimiter, requireAuth, requireRole('admin'), as
 
     let finalApiKey = apiKey
     if (!finalApiKey || finalApiKey === '[MASKED_CREDENTIAL]') {
-      const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+      const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter
       const siteId = req.headers['x-zenith-site-id'] as string
       // ISOLATION FIX: scope settings lookup to siteId
       const settingsQuery = siteId ? { siteId } : {}
@@ -213,7 +213,7 @@ router.post('/ai/test', aiLimiter, requireAuth, requireRole('admin'), async (req
 
     let finalApiKey = apiKey
     if (!finalApiKey || finalApiKey === '[MASKED_CREDENTIAL]') {
-      const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+      const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter
       const siteId = req.headers['x-zenith-site-id'] as string
       // ISOLATION FIX: scope settings lookup to siteId
       const settingsQuery = siteId ? { siteId } : {}
@@ -269,9 +269,9 @@ router.get('/search/semantic', searchLimiter, requireAuth, async (req: Request, 
     if (!VectorSearchService.isAvailable()) {
       return res.status(503).json(createErrorResponse(503, 'Semantic search requires OPENAI_API_KEY or OPENROUTER_API_KEY'))
     }
-    const config = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.config
+    const config = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.config
     const siteId = req.headers['x-zenith-site-id'] as string
-    const collections = (config?.collections || []).map((c: Record<string, unknown>) => c.slug)
+    const collections = (config?.collections || []).map((c: Record<string, any>) => c.slug)
     const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 10))
     const results = await VectorSearchService.search(q.trim(), collections, limit, siteId)
     res.json(createResponse({ results, count: results.length }))
@@ -339,7 +339,7 @@ User Request: ${prompt}`
 
       const aiResponse = await AIService.generateContent(systemPrompt)
 
-      let rawParsed: unknown
+      let rawParsed: any
       try {
         const jsonStart = aiResponse.indexOf('{')
         const jsonEnd = aiResponse.lastIndexOf('}')
@@ -348,7 +348,7 @@ User Request: ${prompt}`
         }
         const jsonString = aiResponse.substring(jsonStart, jsonEnd + 1)
         rawParsed = JSON.parse(jsonString)
-      } catch (e: unknown) {
+      } catch (e: any) {
         throw new InvalidPayloadError(`AI generated invalid JSON: ${e.message}. Please try a more specific prompt.`)
       }
 

@@ -102,7 +102,7 @@ export class AIService {
       if (!adapter) return keys
 
       const query = siteId ? { siteId } : {}
-      const settings = await adapter.findOne<Record<string, unknown>>('z_settings', query)
+      const settings = await adapter.findOne<Record<string, any>>('z_settings', query)
       if (!settings) return keys
 
       // DB settings override env (skip masked placeholder values)
@@ -129,7 +129,7 @@ export class AIService {
         else if (model.includes('gpt') || model.includes('o1') || model.includes('o3')) keys.openaiKey = settings.aiApiKey
         else keys.openRouterKey = settings.aiApiKey
       }
-    } catch (err: unknown) {
+    } catch (err: any) {
       logger.warn({ err: err.message }, 'Failed to fetch AI keys from settings, using env fallback')
     }
 
@@ -140,7 +140,7 @@ export class AIService {
    * Core dispatch — calls the preferred provider based on aiProvider setting,
    * then falls back through the full chain if that fails.
    */
-  private static async callAI(prompt: string, maxTokens: number = 1024, overrideKeys?: Record<string, unknown>, strictProvider?: boolean, siteId?: string): Promise<string> {
+  private static async callAI(prompt: string, maxTokens: number = 1024, overrideKeys?: Record<string, any>, strictProvider?: boolean, siteId?: string): Promise<string> {
     const k = overrideKeys || await this.resolveKeys(siteId)
 
     // Build ordered provider chain — preferred provider first, then fallback chain
@@ -264,7 +264,7 @@ export class AIService {
         max_tokens: maxTokens,
         messages: [{ role: 'user', content: prompt }],
       })
-      return (msg.content[0] as Record<string, unknown>).text || null
+      return (msg.content[0] as Record<string, any>).text || null
     }
 
     const tryGoogle = async (): Promise<string | null> => {
@@ -316,7 +316,7 @@ export class AIService {
       try {
         const result = await fn()
         if (result && result.trim()) return result
-      } catch (err: unknown) {
+      } catch (err: any) {
         logger.warn({ err: err.message }, `AI provider call failed, trying next`)
       }
     }
@@ -425,7 +425,7 @@ export class AIService {
           }],
         })
 
-        const text = (msg.content[0] as Record<string, unknown>)?.text || ''
+        const text = (msg.content[0] as Record<string, any>)?.text || ''
         const jsonStart = text.indexOf('{')
         const jsonEnd = text.lastIndexOf('}')
         if (jsonStart !== -1 && jsonEnd !== -1) {
@@ -605,7 +605,7 @@ export class AIService {
       if (!res.ok) throw new Error(`API error ${res.status}`)
       const data = await res.json()
       const list = Array.isArray(data) ? data : (data.data || data.models || [])
-      return list.map((m: Record<string, unknown>) => ({
+      return list.map((m: Record<string, any>) => ({
         value: m.id || m.name,
         label: m.display_name || m.name || m.id,
       }))
@@ -634,7 +634,7 @@ export class AIService {
           }, timeoutMs)
           if (!res.ok) throw new Error(`Cohere API error ${res.status}`)
           const data = await res.json()
-          return (data.models || []).map((m: Record<string, unknown>) => ({ value: m.name, label: m.name }))
+          return (data.models || []).map((m: Record<string, any>) => ({ value: m.name, label: m.name }))
         }
         case 'google': {
           const res = await this.fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, {
@@ -643,7 +643,7 @@ export class AIService {
           }, timeoutMs)
           if (!res.ok) throw new Error(`Google API error ${res.status}`)
           const data = await res.json()
-          return (data.models || []).map((m: Record<string, unknown>) => ({
+          return (data.models || []).map((m: Record<string, any>) => ({
             value: m.name.replace(/^models\//, ''),
             label: m.displayName || m.name.replace(/^models\//, ''),
           }))
@@ -660,7 +660,7 @@ export class AIService {
           }, timeoutMs)
           if (!res.ok) throw new Error(`Anthropic API error ${res.status}`)
           const data = await res.json()
-          return (data.data || []).map((m: Record<string, unknown>) => ({
+          return (data.data || []).map((m: Record<string, any>) => ({
             value: m.id,
             label: m.display_name || m.name || m.id,
           }))
@@ -668,7 +668,7 @@ export class AIService {
         default:
           throw new Error(`Unsupported provider for model fetching: ${provider}`)
       }
-    } catch (err: unknown) {
+    } catch (err: any) {
       logger.error({ err: err.message, provider }, 'Failed to fetch models dynamically')
       throw new Error(`Failed to fetch models for ${provider}: ${err.message}`)
     }

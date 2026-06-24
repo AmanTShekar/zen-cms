@@ -94,7 +94,7 @@ const { apiMax, apiWindowMs, authMax, authWindowMs } = readRateLimitConfig()
 
 function getRateLimitKey(req: any): string {
   const userId = req.user?.id
-  const ip = req.ip || req.socket.remoteAddress || 'unknown'
+  const ip = req.ip || req.socket.remoteAddress || 'any'
   const apiKey = req.headers['x-api-key']
   if (userId) return `user:${userId}:${ip}`
   if (apiKey) return `apikey:${apiKey.slice(0, 8)}`

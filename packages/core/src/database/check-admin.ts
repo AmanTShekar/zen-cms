@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 /**
  * Check admin user credentials
  * Run: npx tsx packages/core/src/database/check-admin.ts

@@ -13,7 +13,7 @@ export interface BackupManifest {
 
 export interface BackupData {
   manifest: BackupManifest
-  records: Record<string, unknown[]>
+  records: Record<string, any[]>
 }
 
 export const BackupService = {
@@ -25,18 +25,18 @@ export const BackupService = {
     const adapter = AdapterFactory.getActiveAdapter()
     const targetCollections = collections.filter((c) => includeSystem || !c.startsWith('z_'))
 
-    const records: Record<string, unknown[]> = {}
+    const records: Record<string, any[]> = {}
     let total = 0
 
     for (const col of targetCollections) {
       try {
-        const filter: Record<string, unknown> = {}
+        const filter: Record<string, any> = {}
         if (siteId) filter.siteId = siteId
-        const docs = await adapter.find<unknown>(col, filter)
+        const docs = await adapter.find<any>(col, filter)
         records[col] = docs
         total += docs.length
         logger.info(`[Backup] Exported ${docs.length} records from "${col}"`)
-      } catch (err: unknown) {
+      } catch (err: any) {
         logger.warn({ err: err.message }, `[Backup] Skipping "${col}" — not found or inaccessible`)
       }
     }
@@ -99,7 +99,7 @@ export const BackupService = {
       if (!Array.isArray(docs) || docs.length === 0) continue
       for (const doc of docs) {
         try {
-          const { _id, ...data } = doc as Record<string, unknown>
+          const { _id, ...data } = doc as Record<string, any>
           // Preserve id (Postgres) or convert _id → id (MongoDB) so cross-doc references remain valid
           if (!data.id && _id) data.id = _id
           
@@ -107,7 +107,7 @@ export const BackupService = {
 
           await db.create(collection, data)
           restored++
-        } catch (err: unknown) {
+        } catch (err: any) {
           logger.warn({ err: err.message, collection }, `[Backup] Skipping record in "${collection}"`)
         }
       }

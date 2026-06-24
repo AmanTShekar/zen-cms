@@ -147,7 +147,7 @@ export class VectorSearchService {
       })
 
       logger.debug({ collection, documentId, field }, 'Vector indexed')
-    } catch (err: unknown) {
+    } catch (err: any) {
       logger.warn({ err: (err as Error).message, collection, documentId, field }, 'Vector indexing failed')
     }
   }
@@ -159,7 +159,7 @@ export class VectorSearchService {
     try {
       const adapter = AdapterFactory.getActiveAdapter()
       await adapter.deleteMany('z_vectors', { collection, documentId })
-    } catch (err: unknown) {
+    } catch (err: any) {
       logger.warn({ err: (err as Error).message, collection, documentId }, 'Vector removal failed')
     }
   }
@@ -179,14 +179,14 @@ export class VectorSearchService {
     const adapter = AdapterFactory.getActiveAdapter()
 
     // Build filter for target collections
-    const filter: Record<string, unknown> = {
+    const filter: Record<string, any> = {
       collection: { $in: collections },
     }
     if (siteId) filter.siteId = siteId
 
     // Fetch all candidate vectors (for small/medium datasets)
     // For production scale, use pgvector or a dedicated vector DB
-    const vectors = await adapter.find<Record<string, unknown>>('z_vectors', filter, { limit: 5000 })
+    const vectors = await adapter.find<Record<string, any>>('z_vectors', filter, { limit: 5000 })
 
     const results: SemanticSearchResult[] = []
 

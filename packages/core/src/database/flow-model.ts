@@ -6,16 +6,16 @@ export interface IFlow extends Document {
   active: boolean
   trigger: {
     type: 'webhook' | 'collection_change' | 'schedule'
-    config: unknown
+    config: any
   }
   steps: Array<{
     id: string
     type: string
-    config: unknown
+    config: any
     next?: string
   }>
-  nodes?: Record<string, unknown>[]
-  edges?: Record<string, unknown>[]
+  nodes?: Record<string, any>[]
+  edges?: Record<string, any>[]
   siteId?: string
   createdAt: Date
   updatedAt: Date

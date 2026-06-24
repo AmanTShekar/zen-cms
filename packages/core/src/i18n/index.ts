@@ -83,7 +83,7 @@ export const i18n = {
    * @param value  The stored locale map, e.g. { en: "Hello", fr: "Bonjour" }
    * @param locale The requested locale, e.g. "fr-CA"
    */
-  getLocalizedValue(value: any, locale: string): unknown {
+  getLocalizedValue(value: any, locale: string): any {
     if (typeof value !== 'object' || value === null) return value
     const chain = this.fallbackChain(locale)
     for (const l of chain) {

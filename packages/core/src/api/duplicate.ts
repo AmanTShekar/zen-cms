@@ -18,16 +18,16 @@ router.use(requireAuth)
 router.post('/:collection/:id/duplicate', async (req: Request, res: Response, next) => {
   try {
     const { collection, id } = req.params
-    const config = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.config
-    const user = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).user
+    const config = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.config
+    const user = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user
     const siteId = req.headers['x-zenith-site-id'] as string
-    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+    const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter
 
     if (!adapter) {
       throw new Error('Database adapter not initialized on request context')
     }
 
-    const colConfig = config?.collections?.find((c: Record<string, unknown>) => c.slug === collection)
+    const colConfig = config?.collections?.find((c: Record<string, any>) => c.slug === collection)
     if (!colConfig) throw new NotFoundError('Collection', collection)
 
     const contentService = new ContentService(colConfig, adapter)
@@ -35,10 +35,10 @@ router.post('/:collection/:id/duplicate', async (req: Request, res: Response, ne
     if (!original) throw new NotFoundError(collection, id)
 
     // Strip _id, unique fields, and system timestamps to create a clean copy
-    const { _id, id: _pid, __v, createdAt: _createdAt, updatedAt: _updatedAt, ...data } = original as Record<string, unknown>
+    const { _id, id: _pid, __v, createdAt: _createdAt, updatedAt: _updatedAt, ...data } = original as Record<string, any>
 
     // Clear or modify fields marked as unique to avoid constraint violations based on type
-    colConfig.fields.forEach((field: Record<string, unknown>) => {
+    colConfig.fields.forEach((field: Record<string, any>) => {
       if (field.unique && data[field.name] !== undefined) {
         if (field.type === 'text' || field.type === 'textarea') {
           data[field.name] = `${data[field.name]} (Copy)`

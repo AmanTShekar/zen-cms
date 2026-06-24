@@ -3,13 +3,13 @@ import type { FieldConfig } from '@zenith-open/zenithcms-types'
 import { logger } from '../../services/logger'
 
 export async function resolveRelations(
-  docs: Record<string, unknown>[],
+  docs: Record<string, any>[],
   fields: FieldConfig[],
   populate: string[],
   depth: number,
   adapter: DatabaseAdapter,
   currentDepth = 0,
-  configRegistry?: Record<string, unknown>,
+  configRegistry?: Record<string, any>,
   siteId?: string
 ) {
   if (currentDepth >= depth || !docs || docs.length === 0) return
@@ -40,7 +40,7 @@ export async function resolveRelations(
       shouldResolveRelation &&
       ((field.type as string) === 'relation' || (field.type as string) === 'relationship' || field.type === 'media')
     ) {
-      const relationTo = field.type === 'media' ? 'media' : (field as Record<string, unknown>).relationTo
+      const relationTo = field.type === 'media' ? 'media' : (field as Record<string, any>).relationTo
       if (!relationTo) continue
 
       const idsToFetch = new Set<string>()
@@ -48,7 +48,7 @@ export async function resolveRelations(
         if (!doc) continue
         const val = doc[fieldName]
         if (Array.isArray(val)) {
-          val.forEach((id: Record<string, unknown>) => {
+          val.forEach((id: Record<string, any>) => {
             if (id && typeof id === 'string') idsToFetch.add(id)
             else if (id && typeof id === 'object' && id._id) idsToFetch.add(id._id.toString())
             else if (id && typeof id === 'object' && id.id) idsToFetch.add(id.id.toString())
@@ -62,7 +62,7 @@ export async function resolveRelations(
 
       if (idsToFetch.size > 0) {
         const idsArray = Array.from(idsToFetch)
-        let relatedDocs: Record<string, unknown>[] = []
+        let relatedDocs: Record<string, any>[] = []
         try {
           // Use adapter-agnostic per-ID fetching instead of MongoDB-specific $in operator.
           // This works correctly with both Mongoose and Postgres adapters.
@@ -75,12 +75,12 @@ export async function resolveRelations(
               )
             })
           )
-          relatedDocs = fetched.filter(Boolean) as Record<string, unknown>[]
+          relatedDocs = fetched.filter(Boolean) as Record<string, any>[]
         } catch (err) {
           logger.error({ err, collection: relationTo }, `Failed to fetch relations from ${relationTo}`)
         }
 
-        const relatedMap = new Map<string, unknown>()
+        const relatedMap = new Map<string, any>()
         for (const rDoc of relatedDocs) {
           const idStr = rDoc._id?.toString() || rDoc.id?.toString()
           if (idStr) relatedMap.set(idStr, rDoc)
@@ -88,7 +88,7 @@ export async function resolveRelations(
 
         const nestedPopulate = hasWildcard ? ['*'] : (popByFirstSegment[fieldName] || [])
         const targetCol =
-          configRegistry?.collections?.find((c: Record<string, unknown>) => c.slug === relationTo) ||
+          configRegistry?.collections?.find((c: Record<string, any>) => c.slug === relationTo) ||
           (relationTo === 'media'
             ? {
                 slug: 'media',
@@ -121,7 +121,7 @@ export async function resolveRelations(
           const val = doc[fieldName]
           if (Array.isArray(val)) {
             doc[fieldName] = val
-              .map((id: Record<string, unknown>) => {
+              .map((id: Record<string, any>) => {
                 const idStr = typeof id === 'string' ? id : (id?._id?.toString() || id?.id?.toString())
                 return relatedMap.get(idStr) || id
               })
@@ -135,7 +135,7 @@ export async function resolveRelations(
     }
 
     if ((field.type === 'group' || field.type === 'collapsible') && docs) {
-      const nestedDocs: Record<string, unknown>[] = []
+      const nestedDocs: Record<string, any>[] = []
       for (const doc of docs) {
         if (doc && doc[fieldName] && typeof doc[fieldName] === 'object') {
           nestedDocs.push(doc[fieldName])
@@ -147,7 +147,7 @@ export async function resolveRelations(
           populate.filter((p) => p.startsWith(fieldName + '.')).map((p) => p.slice(fieldName.length + 1))
       await resolveRelations(
         nestedDocs,
-        (field as Record<string, unknown>).fields || [],
+        (field as Record<string, any>).fields || [],
         nestedPopulate,
         depth,
         adapter,
@@ -156,7 +156,7 @@ export async function resolveRelations(
         siteId
       )
     } else if (field.type === 'array' && docs) {
-      const nestedDocs: Record<string, unknown>[] = []
+      const nestedDocs: Record<string, any>[] = []
       for (const doc of docs) {
         if (doc && Array.isArray(doc[fieldName])) {
           nestedDocs.push(...doc[fieldName])
@@ -168,7 +168,7 @@ export async function resolveRelations(
           populate.filter((p) => p.startsWith(fieldName + '.')).map((p) => p.slice(fieldName.length + 1))
       await resolveRelations(
         nestedDocs,
-        (field as Record<string, unknown>).fields || [],
+        (field as Record<string, any>).fields || [],
         nestedPopulate,
         depth,
         adapter,
@@ -181,9 +181,9 @@ export async function resolveRelations(
         ? ['*']
         : popByFirstSegment[fieldName] ||
           populate.filter((p) => p.startsWith(fieldName + '.')).map((p) => p.slice(fieldName.length + 1))
-      const blocksList = (field as Record<string, unknown>).blocks || []
+      const blocksList = (field as Record<string, any>).blocks || []
       for (const blockDef of blocksList) {
-        const nestedDocsForBlock: Record<string, unknown>[] = []
+        const nestedDocsForBlock: Record<string, any>[] = []
         for (const doc of docs) {
           if (doc && Array.isArray(doc[fieldName])) {
             for (const item of doc[fieldName]) {

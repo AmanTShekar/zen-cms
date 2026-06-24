@@ -15,7 +15,7 @@ export class LocalStorageProvider extends StorageProvider {
     
     try {
       mkdirSync(this.uploadDir, { recursive: true })
-    } catch (err: unknown) {
+    } catch (err: any) {
       logger.error({ err }, `[Zenith] FATAL: Failed to create upload directory`)
       throw err
     }
@@ -40,7 +40,7 @@ export class LocalStorageProvider extends StorageProvider {
         
         mimetype = 'image/webp'
         safeBaseName = safeBaseName.replace(/\.[^/.]+$/, "") + '.webp'
-      } catch (err: unknown) {
+      } catch (err: any) {
         logger.warn({ err: err.message }, `[Zenith] Sharp image optimization failed, falling back to original`)
         // Fallback to original if sharp fails
       }

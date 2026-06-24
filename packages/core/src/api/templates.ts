@@ -10,7 +10,7 @@ const router: import('express').Router = Router()
 const TEMPLATES_COLLECTION = 'templates'
 
 const getAdapter = (req: Request): DatabaseAdapter =>
-  (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+  (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
 const CreateTemplateSchema = z.object({
   name: z.string().min(1),
@@ -37,20 +37,20 @@ router.get('/', async (req: Request, res: Response, next) => {
     const siteId = req.headers['x-zenith-site-id'] as string
     if (!siteId) throw new InvalidPayloadError('Missing X-Zenith-Site-Id')
 
-    const filter: Record<string, unknown> = { siteId }
+    const filter: Record<string, any> = { siteId }
     if (blockType) filter.blockType = blockType
 
     const pageNum = parseInt(page as string)
     const limitNum = Math.min(parseInt(limit as string), 100)
 
-    const templates = await adapter.find<Record<string, unknown>>(TEMPLATES_COLLECTION, filter, {
+    const templates = await adapter.find<Record<string, any>>(TEMPLATES_COLLECTION, filter, {
       sort: { usageCount: -1, createdAt: -1 },
       skip: (pageNum - 1) * limitNum,
       limit: limitNum
     })
     
     // In Drizzle this might be expensive to count, but following original contract:
-    const allMatching = await adapter.find<Record<string, unknown>>(TEMPLATES_COLLECTION, filter)
+    const allMatching = await adapter.find<Record<string, any>>(TEMPLATES_COLLECTION, filter)
     const total = allMatching.length
 
     res.json({
@@ -69,7 +69,7 @@ router.get('/:id', async (req: Request, res: Response, next) => {
     const siteId = req.headers['x-zenith-site-id'] as string
     if (!siteId) throw new InvalidPayloadError('Missing X-Zenith-Site-Id')
 
-    const template = await adapter.findOne<Record<string, unknown>>(TEMPLATES_COLLECTION, { _id: req.params.id, siteId })
+    const template = await adapter.findOne<Record<string, any>>(TEMPLATES_COLLECTION, { _id: req.params.id, siteId })
     if (!template) throw new NotFoundError('Template', req.params.id)
 
     res.json({ data: template })
@@ -90,20 +90,20 @@ router.post('/', requireAuth, async (req: Request, res: Response, next) => {
       throw new InvalidPayloadError('Validation failed', parsed.error.flatten())
     }
 
-    const existing = await adapter.findOne<Record<string, unknown>>(TEMPLATES_COLLECTION, { slug: parsed.data.slug, siteId })
+    const existing = await adapter.findOne<Record<string, any>>(TEMPLATES_COLLECTION, { slug: parsed.data.slug, siteId })
     if (existing) throw new DuplicateError('slug')
 
     const templateData = {
       ...parsed.data,
       siteId,
-      createdBy: (req.user as Record<string, unknown>)?.id || (req.user as Record<string, unknown>)?._id || 'unknown',
+      createdBy: (req.user as Record<string, any>)?.id || (req.user as Record<string, any>)?._id || 'any',
       usageCount: 0,
       isSystem: parsed.data.isSystem || false,
       createdAt: new Date(),
       updatedAt: new Date()
     }
 
-    const template = await adapter.create<Record<string, unknown>>(TEMPLATES_COLLECTION, templateData)
+    const template = await adapter.create<Record<string, any>>(TEMPLATES_COLLECTION, templateData)
 
     logger.info(`[Templates] Created template "${parsed.data.name}" (${template._id || template.id})`)
     res.status(201).json({ data: template })
@@ -124,7 +124,7 @@ router.put('/:id', requireAuth, async (req: Request, res: Response, next) => {
       throw new InvalidPayloadError('Validation failed', parsed.error.flatten())
     }
 
-    const existing = await adapter.findOne<Record<string, unknown>>(TEMPLATES_COLLECTION, { _id: req.params.id, siteId })
+    const existing = await adapter.findOne<Record<string, any>>(TEMPLATES_COLLECTION, { _id: req.params.id, siteId })
     if (!existing) throw new NotFoundError('Template', req.params.id)
 
     const updatedTemplate = await adapter.update(TEMPLATES_COLLECTION, req.params.id, {
@@ -145,7 +145,7 @@ router.delete('/:id', requireAuth, async (req: Request, res: Response, next) => 
     const siteId = req.headers['x-zenith-site-id'] as string
     if (!siteId) throw new InvalidPayloadError('Missing X-Zenith-Site-Id')
 
-    const existing = await adapter.findOne<Record<string, unknown>>(TEMPLATES_COLLECTION, { _id: req.params.id, siteId })
+    const existing = await adapter.findOne<Record<string, any>>(TEMPLATES_COLLECTION, { _id: req.params.id, siteId })
     if (!existing) throw new NotFoundError('Template', req.params.id)
 
     await adapter.delete(TEMPLATES_COLLECTION, req.params.id)
@@ -164,7 +164,7 @@ router.post('/:id/clone', requireAuth, async (req: Request, res: Response, next)
     const siteId = req.headers['x-zenith-site-id'] as string
     if (!siteId) throw new InvalidPayloadError('Missing X-Zenith-Site-Id')
 
-    const original = await adapter.findOne<Record<string, unknown>>(TEMPLATES_COLLECTION, { _id: req.params.id, siteId })
+    const original = await adapter.findOne<Record<string, any>>(TEMPLATES_COLLECTION, { _id: req.params.id, siteId })
     if (!original) throw new NotFoundError('Template', req.params.id)
 
     const slugSuffix = Date.now()
@@ -178,7 +178,7 @@ router.post('/:id/clone', requireAuth, async (req: Request, res: Response, next)
       isSystem: false,
       usageCount: 0,
       siteId,
-      createdBy: (req.user as Record<string, unknown>)?.id || (req.user as Record<string, unknown>)?._id,
+      createdBy: (req.user as Record<string, any>)?.id || (req.user as Record<string, any>)?._id,
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -198,7 +198,7 @@ router.post('/:id/use', async (req: Request, res: Response, next) => {
     const siteId = req.headers['x-zenith-site-id'] as string
     if (!siteId) throw new InvalidPayloadError('Missing X-Zenith-Site-Id')
 
-    const existing = await adapter.findOne<Record<string, unknown>>(TEMPLATES_COLLECTION, { _id: req.params.id, siteId })
+    const existing = await adapter.findOne<Record<string, any>>(TEMPLATES_COLLECTION, { _id: req.params.id, siteId })
     if (!existing) throw new NotFoundError('Template', req.params.id)
 
     const newUsageCount = (existing.usageCount || 0) + 1

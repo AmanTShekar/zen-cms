@@ -7,7 +7,7 @@ export interface IAuditLog extends Document {
   action: 'create' | 'update' | 'delete' | 'publish' | 'unpublish' | 'login'
   collectionName?: string
   documentId?: string
-  changes?: unknown
+  changes?: any
   ip?: string
   userAgent?: string
   timestamp: Date

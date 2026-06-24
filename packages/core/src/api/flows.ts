@@ -13,7 +13,7 @@ const router: Router = Router()
 // ── GET /api/v1/flows ────────────────────────────────────────────────────────
 router.get('/', requireAuth, async (req: Request, res: Response, next) => {
   try {
-    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+    const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter
     const siteId = req.headers['x-zenith-site-id'] as string
     const query = siteId ? { siteId } : {}
     const flows = await adapter.find('flows', query, { sort: { createdAt: -1 } })
@@ -26,9 +26,9 @@ router.get('/', requireAuth, async (req: Request, res: Response, next) => {
 // ── GET /api/v1/flows/:id ────────────────────────────────────────────────────
 router.get('/:id', requireAuth, async (req: Request, res: Response, next) => {
   try {
-    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+    const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter
     const siteId = req.headers['x-zenith-site-id'] as string
-    const query: Record<string, unknown> = { _id: req.params.id }
+    const query: Record<string, any> = { _id: req.params.id }
     if (siteId) query.siteId = siteId
 
     const flow = await adapter.findOne('flows', query)
@@ -42,7 +42,7 @@ router.get('/:id', requireAuth, async (req: Request, res: Response, next) => {
 // ── POST /api/v1/flows ───────────────────────────────────────────────────────
 router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
   try {
-    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+    const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter
     
     const validation = FlowSchema.safeParse(req.body)
     if (!validation.success) {
@@ -71,11 +71,11 @@ router.get(
   requireAuth,
   async (req: Request, res: Response, next) => {
     try {
-      const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+      const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter
       const siteId = req.headers['x-zenith-site-id'] as string
       
       // ISOLATION FIX: verify the parent flow belongs to this tenant before fetching its logs
-      const flowQuery: Record<string, unknown> = { _id: req.params.id }
+      const flowQuery: Record<string, any> = { _id: req.params.id }
       if (siteId) flowQuery.siteId = siteId
       const flow = await adapter.findOne('flows', flowQuery)
       if (!flow) throw new NotFoundError('Flow', req.params.id)
@@ -84,7 +84,7 @@ router.get(
       const runs = await adapter.find('z_flow_runs', { flowId: req.params.id }, { sort: { createdAt: -1 }, limit: 20 })
       
       // Fetch logs for these runs — avoid MongoDB-specific $in for adapter compat
-      const runIds = runs.map((r: Record<string, unknown>) => String(r._id || r.id))
+      const runIds = runs.map((r: Record<string, any>) => String(r._id || r.id))
       const logs = runIds.length > 0
         ? (await Promise.all(
             runIds.map((rid: string) =>
@@ -107,9 +107,9 @@ router.post(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+      const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter
       const siteId = req.headers['x-zenith-site-id'] as string
-      const query: Record<string, unknown> = { _id: req.params.id }
+      const query: Record<string, any> = { _id: req.params.id }
       if (siteId) query.siteId = siteId
 
       const flow = await adapter.findOne('flows', query)
@@ -123,11 +123,11 @@ router.post(
       // Kick off a real test run
       const runId = await FlowEngine.createRun(flow, testPayload)
       // Process it completely in the background
-      FlowEngine.processRun(runId).catch((err: unknown) => console.error(err))
+      FlowEngine.processRun(runId).catch((err: any) => console.error(err))
       
       // Just return success and let the frontend poll logs
       res.json(createResponse({ runId, message: 'Test execution started. Check logs for details.' }))
-    } catch (err: unknown) {
+    } catch (err: any) {
       // Send error back to frontend to debug
       res.status(500).json({ error: err.message, stack: err.stack, success: false })
     }
@@ -141,7 +141,7 @@ router.patch(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+      const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter
       
       const validation = FlowSchema.partial().safeParse(req.body)
       if (!validation.success) {
@@ -154,7 +154,7 @@ router.patch(
       }
 
       const siteId = req.headers['x-zenith-site-id'] as string
-      const query: Record<string, unknown> = { _id: req.params.id }
+      const query: Record<string, any> = { _id: req.params.id }
       if (siteId) query.siteId = siteId
 
       // Check if it exists for this site first
@@ -176,9 +176,9 @@ router.delete(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+      const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter
       const siteId = req.headers['x-zenith-site-id'] as string
-      const query: Record<string, unknown> = { _id: req.params.id }
+      const query: Record<string, any> = { _id: req.params.id }
       if (siteId) query.siteId = siteId
 
       // Verify ownership before deleting
@@ -196,9 +196,9 @@ router.delete(
 // ── POST /api/v1/hooks/:id ───────────────────────────────────────────────────
 router.post('/hooks/:id', async (req: Request, res: Response, next) => {
   try {
-    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter
+    const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter
     const siteId = req.headers['x-zenith-site-id'] as string
-    const query: Record<string, unknown> = { _id: req.params.id }
+    const query: Record<string, any> = { _id: req.params.id }
     if (siteId) query.siteId = siteId
 
     const flow = await adapter.findOne('flows', query)
@@ -209,7 +209,7 @@ router.post('/hooks/:id', async (req: Request, res: Response, next) => {
     
     // Kick off real durable execution using the inbound payload
     const runId = await FlowEngine.createRun(flow, req.body || {})
-    FlowEngine.processRun(runId).catch((err: unknown) => console.error(err))
+    FlowEngine.processRun(runId).catch((err: any) => console.error(err))
 
     res.status(202).json(createResponse({ accepted: true, runId }))
   } catch (err) {

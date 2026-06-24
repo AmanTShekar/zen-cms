@@ -12,6 +12,7 @@
     "sourceMap": true,
     "outDir": "./dist",
     "paths": {
+      "@zenith-open/zenithcms-types": ["./packages/types/src/index.ts"],
       "@zenith-open/*": ["./packages/*/src"]
     },
     "types": []

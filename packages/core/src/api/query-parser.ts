@@ -17,7 +17,7 @@ import { InvalidPayloadError } from '../errors'
  *   ?populate=author,author.posts,tags
  */
 export interface UQLQuery {
-  filter: Record<string, unknown>
+  filter: Record<string, any>
   sort: string
   pagination: {
     page: number
@@ -35,9 +35,9 @@ export interface UQLQuery {
 }
 
 /** Convert MongoDB filter operators ($ne, $in, $regex…) to Postgres equivalents */
-function mongoToPostgresFilter(value: unknown): unknown {
+function mongoToPostgresFilter(value: any): any {
   if (typeof value !== 'object' || value === null) return value
-  const ops = value as Record<string, unknown>
+  const ops = value as Record<string, any>
   // Already a bare value, not an operator
   if (!('$ne' in ops || '$in' in ops || '$gt' in ops || '$lt' in ops ||
         '$gte' in ops || '$lte' in ops || '$like' in ops || '$regex' in ops)) {
@@ -55,10 +55,10 @@ function mongoToPostgresFilter(value: unknown): unknown {
 }
 
 function normalizeFilters(
-  filter: Record<string, unknown>,
-  out: Record<string, unknown> = {},
+  filter: Record<string, any>,
+  out: Record<string, any> = {},
   prefix = ''
-): Record<string, unknown> {
+): Record<string, any> {
   for (const [key, val] of Object.entries(filter)) {
     if (key === '$or' || key === '$and') {
        if (Array.isArray(val)) {
@@ -74,8 +74,8 @@ function normalizeFilters(
     const outKey = prefix ? `${prefix}.${key}` : key
     
     if (val && typeof val === 'object' && !Array.isArray(val)) {
-      const rawOps = val as Record<string, unknown>
-      const ops: Record<string, unknown> = {}
+      const rawOps = val as Record<string, any>
+      const ops: Record<string, any> = {}
       // Normalize un-prefixed operators to $prefixed
       for (const [opKey, opVal] of Object.entries(rawOps)) {
         if (['eq', 'ne', 'in', 'gt', 'lt', 'gte', 'lte', 'like', 'regex'].includes(opKey)) {
@@ -100,7 +100,7 @@ function normalizeFilters(
         if ('$eq' in ops) out[outKey] = ops.$eq
         else out[outKey] = mongoToPostgresFilter(ops)
       } else {
-        normalizeFilters(ops as Record<string, unknown>, out, outKey)
+        normalizeFilters(ops as Record<string, any>, out, outKey)
       }
     } else {
       out[outKey] = val
@@ -114,12 +114,12 @@ function normalizeFilters(
  * Body takes priority if both are provided.
  */
 export function parseQueryParams(
-  query: Record<string, unknown>,
+  query: Record<string, any>,
   config: CollectionConfig,
   body?: Partial<UQLQuery>
 ): UQLQuery {
   // Prefer body for structured requests, fall back to URL params
-  const src: Record<string, unknown> = body
+  const src: Record<string, any> = body
     ? {
         // UQL v1 fields
         ...(body.filter ? { filter: body.filter } : {}),
@@ -131,10 +131,10 @@ export function parseQueryParams(
         depth: body.depth,
         locale: body.locale,
         // UQL v2 / Strapi-style aliases
-        ...(body as Record<string, unknown>).where ? { filter: (body as Record<string, unknown>).where } : {},
-        ...(body as Record<string, unknown>).orderBy ? { sort: flattenOrderBy((body as Record<string, unknown>).orderBy) } : {},
-        ...(body as Record<string, unknown>).take ? { pageSize: String((body as Record<string, unknown>).take) } : {},
-        ...(body as Record<string, unknown>).skip ? { page: String(Math.floor(((body as Record<string, unknown>).skip as number) / ((body as Record<string, unknown>).take ?? 25)) + 1) } : {},
+        ...(body as Record<string, any>).where ? { filter: (body as Record<string, any>).where } : {},
+        ...(body as Record<string, any>).orderBy ? { sort: flattenOrderBy((body as Record<string, any>).orderBy) } : {},
+        ...(body as Record<string, any>).take ? { pageSize: String((body as Record<string, any>).take) } : {},
+        ...(body as Record<string, any>).skip ? { page: String(Math.floor(((body as Record<string, any>).skip as number) / ((body as Record<string, any>).take ?? 25)) + 1) } : {},
       }
     : {}
 
@@ -185,28 +185,28 @@ export function parseQueryParams(
   } else {
     // Default: auto-populate all direct relation fields
     parsed.populate = config.fields
-      .filter((f: Record<string, unknown>) => f.type === 'relation')
-      .map((f: Record<string, unknown>) => f.name)
+      .filter((f: Record<string, any>) => f.type === 'relation')
+      .map((f: Record<string, any>) => f.name)
   }
 
   // normalize filter operators
-  const filterObj = (body as Record<string, unknown>)?.filter ?? (body as Record<string, unknown>)?.filters ?? query.filter ?? query.filters ?? {}
+  const filterObj = (body as Record<string, any>)?.filter ?? (body as Record<string, any>)?.filters ?? query.filter ?? query.filters ?? {}
   parsed.filter = normalizeFilters(filterObj)
 
   // Search shorthand — adapter-safe: uses `ilike` operator that both Mongo and Postgres adapters handle
-  if (query.q || (body as Record<string, unknown>)?.q) {
+  if (query.q || (body as Record<string, any>)?.q) {
     const titleField = config.admin?.useAsTitle || 'title'
-    parsed.filter[titleField] = { $like: (query.q || (body as Record<string, unknown>)?.q) ?? '' }
+    parsed.filter[titleField] = { $like: (query.q || (body as Record<string, any>)?.q) ?? '' }
   }
 
   return parsed
 }
 
 /** Convert Strapi-style orderBy array: [{ field: 'title', direction: 'asc' }] → 'title,-date' */
-function flattenOrderBy(orderBy: Record<string, unknown>): string {
+function flattenOrderBy(orderBy: Record<string, any>): string {
   if (!Array.isArray(orderBy)) return String(orderBy || '')
   return orderBy
-    .map((o: Record<string, unknown>) => {
+    .map((o: Record<string, any>) => {
       const dir = o.direction === 'desc' ? '-' : ''
       return `${dir}${o.field}`
     })

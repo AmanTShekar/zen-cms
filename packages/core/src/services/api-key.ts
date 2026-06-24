@@ -28,7 +28,7 @@ export class ApiKeyService {
       : undefined
 
     const adapter = AdapterFactory.getActiveAdapter()
-    const doc = (await adapter.create('z_api_keys', { name, key: keyHash, role, expiresAt, siteId })) as Record<string, unknown>
+    const doc = (await adapter.create('z_api_keys', { name, key: keyHash, role, expiresAt, siteId })) as Record<string, any>
     logger.info({ name, role, expiresAt, siteId }, 'New API Key generated')
 
     // Return the raw key ONCE — never stored in DB
@@ -38,7 +38,7 @@ export class ApiKeyService {
   static async validateKey(rawKey: string) {
     const keyHash = this.hash(rawKey)
     const adapter = AdapterFactory.getActiveAdapter()
-    const apiKeys = await adapter.find<Record<string, unknown>>('z_api_keys', { key: keyHash, revoked: false })
+    const apiKeys = await adapter.find<Record<string, any>>('z_api_keys', { key: keyHash, revoked: false })
     const apiKey = apiKeys[0] || null
     if (!apiKey) return null
 

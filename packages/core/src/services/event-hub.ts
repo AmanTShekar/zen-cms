@@ -2,10 +2,10 @@ import { EventEmitter } from 'events'
 import { logger } from './logger'
 import { redisService } from './redis'
 
-export type ZenithEventListener = (...args: Record<string, unknown>[]) => Promise<void> | void
+export type ZenithEventListener = (...args: Record<string, any>[]) => Promise<void> | void
 
 export interface EventHubBackend {
-  emit(event: string, ...args: unknown[]): Promise<void>
+  emit(event: string, ...args: any[]): Promise<void>
   on(event: string, listener: ZenithEventListener): void
   off(event: string, listener: ZenithEventListener): void
   destroy(): Promise<void> | void
@@ -23,7 +23,7 @@ class InMemoryEventBackend implements EventHubBackend {
     this.emitter.setMaxListeners(50)
   }
 
-  async emit(event: string, ...args: unknown[]): Promise<void> {
+  async emit(event: string, ...args: any[]): Promise<void> {
     const listeners = this.emitter.rawListeners(event) as ZenithEventListener[]
     const promises = listeners.map(async (listener) => {
       try {
@@ -55,8 +55,8 @@ class InMemoryEventBackend implements EventHubBackend {
  * to keep local caches and states perfectly synchronized in production clusters.
  */
 class RedisEventBackend implements EventHubBackend {
-  private pubClient: Record<string, unknown> | null = null
-  private subClient: Record<string, unknown> | null = null
+  private pubClient: Record<string, any> | null = null
+  private subClient: Record<string, any> | null = null
   private localEmitter = new EventEmitter()
   private channelName = 'zenith_events'
 
@@ -95,7 +95,7 @@ class RedisEventBackend implements EventHubBackend {
 
       await this.subClient.subscribe(this.channelName)
       logger.info('RedisEventBackend: Distributed Redis Pub/Sub channel subscribed successfully')
-    } catch (err: unknown) {
+    } catch (err: any) {
       logger.error(
         { err: err.message },
         'RedisEventBackend: Failed to initialize Redis Pub/Sub. Falling back to simple In-Memory bus.'
@@ -103,7 +103,7 @@ class RedisEventBackend implements EventHubBackend {
     }
   }
 
-  async emit(event: string, ...args: unknown[]): Promise<void> {
+  async emit(event: string, ...args: any[]): Promise<void> {
     // If pubClient is active, broadcast to Redis
     if (this.pubClient && this.pubClient.status === 'ready') {
       try {
@@ -119,7 +119,7 @@ class RedisEventBackend implements EventHubBackend {
     }
   }
 
-  private async emitLocal(event: string, ...args: unknown[]): Promise<void> {
+  private async emitLocal(event: string, ...args: any[]): Promise<void> {
     const listeners = this.localEmitter.rawListeners(event) as ZenithEventListener[]
     const promises = listeners.map(async (listener) => {
       try {
@@ -163,7 +163,7 @@ class ZenithEventHub {
     }
   }
 
-  async emit(event: string, ...args: unknown[]): Promise<void> {
+  async emit(event: string, ...args: any[]): Promise<void> {
     await this.backend.emit(event, ...args)
   }
 

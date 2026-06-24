@@ -21,16 +21,16 @@ function getAdminUrl(): string {
  */
 async function handleSsoSuccess(req: Request, res: Response, next: NextFunction) {
   try {
-    const profile = req.user as Record<string, unknown>
+    const profile = req.user as Record<string, any>
     if (!profile) throw new AuthenticationError('SSO authentication failed: no profile received')
 
     // 1. Upsert user in database
     const adapter = AdapterFactory.getActiveAdapter()
-    const existing = await adapter.find<Record<string, unknown>>('users', { email: profile.email })
+    const existing = await adapter.find<Record<string, any>>('users', { email: profile.email })
     let user = existing[0]
 
     if (!user) {
-      user = await adapter.create<Record<string, unknown>>('users', {
+      user = await adapter.create<Record<string, any>>('users', {
         email: profile.email.toLowerCase(),
         password: 'sso-managed-account',
         role: profile.role || 'editor',

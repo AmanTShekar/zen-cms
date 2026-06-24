@@ -29,7 +29,7 @@ export class PreviewService {
    */
   static verifyPreviewToken(token: string): { collection: string; id: string } | null {
     try {
-      const decoded = jwt.verify(token, PREVIEW_SECRET, { algorithms: ['HS256'] }) as Record<string, unknown>
+      const decoded = jwt.verify(token, PREVIEW_SECRET, { algorithms: ['HS256'] }) as Record<string, any>
       if (decoded.mode !== 'preview') return null
       return { collection: decoded.collection, id: decoded.id }
     } catch (_err) {
@@ -40,7 +40,7 @@ export class PreviewService {
   /**
    * Formats the preview URL based on collection config.
    */
-  static getPreviewUrl(config: CollectionConfig, doc: Record<string, unknown>): string | null {
+  static getPreviewUrl(config: CollectionConfig, doc: Record<string, any>): string | null {
     if (!config.admin?.previewUrl) return null
 
     const baseUrl =

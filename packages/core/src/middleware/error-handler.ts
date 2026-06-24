@@ -8,7 +8,7 @@ import { logger } from '../services/logger'
  * Catches all errors, maps ZenithErrors to their HTTP shapes,
  * and masks internal errors from public consumers.
  */
-export function globalErrorHandler(err: unknown, req: Request, res: Response, _next: NextFunction) {
+export function globalErrorHandler(err: any, req: Request, res: Response, _next: NextFunction) {
   // Known domain errors — safe to return structured response
   if (isZenithError(err)) {
     if (err.status >= 500) {

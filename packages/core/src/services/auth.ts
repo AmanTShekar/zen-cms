@@ -103,7 +103,7 @@ export const AuthService = {
         if (revoked) return null
       }
       return { id: decoded.id, email: decoded.email, role: decoded.role }
-    } catch (err: unknown) {
+    } catch (err: any) {
       console.error('verifyTokenAsync error:', err)
       return null
     }
@@ -160,14 +160,14 @@ export const AuthService = {
    * Resolves a user by email or username.
    * Returns null if not found.
    */
-  async resolveUser(login: string): Promise<Record<string, unknown> | null> {
+  async resolveUser(login: string): Promise<Record<string, any> | null> {
     const adapter = AdapterFactory.getActiveAdapter()
     const lower = login.toLowerCase()
     // Try email first, then username
-    const byEmail = await adapter.find<Record<string, unknown>>('users', { email: lower })
+    const byEmail = await adapter.find<Record<string, any>>('users', { email: lower })
     console.log('[DEBUG] resolveUser byEmail for', lower, ':', byEmail.map(u => u.email))
     if (byEmail[0]) return byEmail[0]
-    const byUsername = await adapter.find<Record<string, unknown>>('users', { username: lower })
+    const byUsername = await adapter.find<Record<string, any>>('users', { username: lower })
     return byUsername[0] || null
   },
 
@@ -190,7 +190,7 @@ export const AuthService = {
 
     const newCount = (user.failedLoginAttempts || 0) + 1
     const locked = newCount >= MAX_FAILED_ATTEMPTS
-    const update: Record<string, unknown> = { failedLoginAttempts: newCount }
+    const update: Record<string, any> = { failedLoginAttempts: newCount }
     if (locked) {
       update.lockUntil = new Date(Date.now() + LOCKOUT_DURATION_MS)
     }
@@ -236,8 +236,8 @@ export const AuthService = {
   async verifyEmailToken(token: string): Promise<string | null> {
     const adapter = AdapterFactory.getActiveAdapter()
     // Fetch by token only — filter expiry in JS to avoid MongoDB-specific $gt
-    const users = await adapter.find<Record<string, unknown>>('users', { verificationToken: token })
-    const user = users.find((u: Record<string, unknown>) => u.verificationTokenExpiry && new Date(u.verificationTokenExpiry) > new Date())
+    const users = await adapter.find<Record<string, any>>('users', { verificationToken: token })
+    const user = users.find((u: Record<string, any>) => u.verificationTokenExpiry && new Date(u.verificationTokenExpiry) > new Date())
     if (!user) return null
     const id = (user.id || user._id).toString()
     await adapter.update('users', id, {

@@ -8,7 +8,7 @@ import { AdapterFactory } from './adapters/AdapterFactory';
  */
 export async function migrateLegacySiteIds() {
   const adapter = AdapterFactory.getActiveAdapter();
-  const defaultSite = await adapter.findOne<Record<string, unknown>>('z_sites', {});
+  const defaultSite = await adapter.findOne<Record<string, any>>('z_sites', {});
   if (!defaultSite) {
     console.warn('No site found – aborting legacy siteId migration');
     return;

@@ -1,4 +1,4 @@
-export interface CMSResponse<T = unknown> {
+export interface CMSResponse<T = any> {
   data: T | null
   meta?: {
     pagination?: {
@@ -7,13 +7,13 @@ export interface CMSResponse<T = unknown> {
       totalPages: number
       total: number
     }
-    [key: string]: unknown
+    [key: string]: any
   }
   error: {
     status: number
     name: string
     message: string
-    details?: unknown
+    details?: any
   } | null
 }
 
@@ -28,7 +28,7 @@ export function createResponse<T>(data: T, meta?: CMSResponse['meta']): CMSRespo
 export function createErrorResponse(
   status: number,
   message: string,
-  details?: unknown,
+  details?: any,
   name: string = 'ApplicationError'
 ): CMSResponse<null> {
   return {

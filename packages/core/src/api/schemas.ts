@@ -9,9 +9,9 @@ import { logger } from '../services/logger'
 const SCHEMAS_COLLECTION = 'z_schemas'
 
 const getAdapter = (req: Request): DatabaseAdapter =>
-  (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+  (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
 
-const toSchemaDTO = (d: Record<string, unknown>) => ({
+const toSchemaDTO = (d: Record<string, any>) => ({
   id: String(d._id ?? d.id),
   slug: d.slug,
   name: d.title || d.name || d.slug,
@@ -30,9 +30,9 @@ router.get('/', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const siteId = req.headers['x-zenith-site-id'] as string
     const adapter = getAdapter(req)
-    const docs = await adapter.find<Record<string, unknown>>(SCHEMAS_COLLECTION, {}, { siteId })
+    const docs = await adapter.find<Record<string, any>>(SCHEMAS_COLLECTION, {}, { siteId })
     // Ensure blocks do not leak into the collections list
-    const filteredDocs = docs.filter((d: Record<string, unknown>) => d.type !== 'block')
+    const filteredDocs = docs.filter((d: Record<string, any>) => d.type !== 'block')
     console.log(`[/schemas] Called with siteId: ${siteId}. Returning ${filteredDocs.length} schemas.`)
     res.json(createResponse(filteredDocs.map(toSchemaDTO)))
   } catch (err) {
@@ -45,7 +45,7 @@ router.get('/:id', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const siteId = req.headers['x-zenith-site-id'] as string
     const adapter = getAdapter(req)
-    const docs = await adapter.find<Record<string, unknown>>(SCHEMAS_COLLECTION, { id: req.params.id }, { siteId })
+    const docs = await adapter.find<Record<string, any>>(SCHEMAS_COLLECTION, { id: req.params.id }, { siteId })
     const doc = docs[0]
     if (!doc) throw new NotFoundError(`Schema "${req.params.id}" not found`)
     res.json(createResponse(toSchemaDTO(doc)))
@@ -66,12 +66,12 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
     const adapter = getAdapter(req)
     
     // Check if slug already exists
-    const existing = await adapter.find<Record<string, unknown>>(SCHEMAS_COLLECTION, { slug }, { siteId })
+    const existing = await adapter.find<Record<string, any>>(SCHEMAS_COLLECTION, { slug }, { siteId })
     if (existing && existing.length > 0) {
       throw new InvalidPayloadError(`Schema with slug "${slug}" already exists`)
     }
 
-    const doc = await adapter.create<Record<string, unknown>>(SCHEMAS_COLLECTION, {
+    const doc = await adapter.create<Record<string, any>>(SCHEMAS_COLLECTION, {
       slug,
       singular,
       plural,
@@ -97,13 +97,13 @@ router.put('/:id', requireAuth, requireRole('admin'), async (req: Request, res: 
     const siteId = req.headers['x-zenith-site-id'] as string
     const adapter = getAdapter(req)
 
-    const update: Record<string, unknown> = { updatedAt: new Date() }
+    const update: Record<string, any> = { updatedAt: new Date() }
     if (singular !== undefined) update.singular = singular
     if (plural !== undefined) update.plural = plural
     if (fields !== undefined) update.fields = fields
     if (settings !== undefined) update.settings = settings
 
-    const doc = await adapter.update<Record<string, unknown>>(SCHEMAS_COLLECTION, id, update, { siteId })
+    const doc = await adapter.update<Record<string, any>>(SCHEMAS_COLLECTION, id, update, { siteId })
     if (!doc) throw new NotFoundError(`Schema "${id}" not found`)
 
     logger.info(`Schema "${doc.slug}" updated.`)

@@ -5,7 +5,7 @@ export interface IFlowLog extends Document {
   level: string
   nodeId?: string
   msg: string
-  details?: Record<string, unknown>
+  details?: Record<string, any>
   timestamp: Date
 }
 

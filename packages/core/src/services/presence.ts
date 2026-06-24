@@ -34,7 +34,7 @@ export class PresenceService {
     if (!this.adapter) return
 
     try {
-      const query: Record<string, unknown> = { userId, collectionName: collection, documentId }
+      const query: Record<string, any> = { userId, collectionName: collection, documentId }
       if (siteId) query.siteId = siteId
 
       // Simulating upsert by deleting and recreating to avoid adapter-specific upsert gaps
@@ -56,7 +56,7 @@ export class PresenceService {
   static async leave(userId: string, collection: string, documentId: string, siteId?: string): Promise<void> {
     if (!this.adapter) return
     try {
-      const query: Record<string, unknown> = { userId, collectionName: collection, documentId }
+      const query: Record<string, any> = { userId, collectionName: collection, documentId }
       if (siteId) query.siteId = siteId
       await this.adapter.deleteMany('z_presence', query).catch(() => {})
     } catch {
@@ -75,12 +75,12 @@ export class PresenceService {
       // Fetch all presence records for this document, filter by TTL in JS
       // (avoids MongoDB-specific $gt operator that breaks on Postgres adapter)
       const minLastActive = Date.now() - this.TTL
-      const query: Record<string, unknown> = { collectionName: collection, documentId }
+      const query: Record<string, any> = { collectionName: collection, documentId }
       if (siteId) query.siteId = siteId
       const records = await this.adapter.find<ActiveUser>('z_presence', query)
 
       return records
-        .filter((r) => (r.lastActive as unknown as number) > minLastActive)
+        .filter((r) => (r.lastActive as any as number) > minLastActive)
         .map((r) => ({ id: r.userId, email: r.email }))
     } catch {
       return []
@@ -94,7 +94,7 @@ export class PresenceService {
       // Fetch all presence records and filter by TTL in JS
       // (avoids MongoDB-specific $gt operator that breaks on Postgres adapter)
       const minLastActive = Date.now() - this.TTL
-      const query: Record<string, unknown> = {}
+      const query: Record<string, any> = {}
       if (siteId) query.siteId = siteId
       const records = await this.adapter.find<ActiveUser>('z_presence', query)
 
@@ -103,7 +103,7 @@ export class PresenceService {
       const seenIds = new Set<string>()
 
       for (const r of records) {
-        if ((r.lastActive as unknown as number) > minLastActive && !seenIds.has(r.userId)) {
+        if ((r.lastActive as any as number) > minLastActive && !seenIds.has(r.userId)) {
           seenIds.add(r.userId)
           users.push({ id: r.userId, email: r.email })
         }

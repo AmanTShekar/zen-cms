@@ -12,7 +12,7 @@ vi.mock('../database/adapters/AdapterFactory', () => {
 })
 
 describe('AuthService and RBAC Engine (Enterprise Readiness)', () => {
-  let mockAdapter: Record<string, unknown>
+  let mockAdapter: Record<string, any>
 
   beforeEach(() => {
     vi.resetAllMocks()
@@ -22,7 +22,7 @@ describe('AuthService and RBAC Engine (Enterprise Readiness)', () => {
       update: vi.fn(),
       create: vi.fn(),
     }
-    ;(AdapterFactory.getActiveAdapter as Record<string, unknown>).mockReturnValue(mockAdapter)
+    ;(AdapterFactory.getActiveAdapter as Record<string, any>).mockReturnValue(mockAdapter)
   })
 
   describe('AuthService', () => {

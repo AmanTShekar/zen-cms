@@ -7,7 +7,7 @@ import { env } from '../config/env';
 
 const isConfiguredGlobal = false;
 
-const resolveConfig = async (overrideSettings?: Record<string, unknown>, siteId?: string) => {
+const resolveConfig = async (overrideSettings?: Record<string, any>, siteId?: string) => {
   const config = {
     cloudName: env.CLOUDINARY_CLOUD_NAME,
     apiKey: env.CLOUDINARY_API_KEY,
@@ -25,7 +25,7 @@ const resolveConfig = async (overrideSettings?: Record<string, unknown>, siteId?
     const adapter = AdapterFactory.getActiveAdapter()
     if (adapter) {
       const query = siteId ? { siteId } : {}
-      const settings = await adapter.findOne<Record<string, unknown>>('z_settings', query)
+      const settings = await adapter.findOne<Record<string, any>>('z_settings', query)
       if (settings) {
         if (settings.cloudinaryCloudName) config.cloudName = settings.cloudinaryCloudName
         if (settings.cloudinaryApiKey) config.apiKey = settings.cloudinaryApiKey
@@ -45,7 +45,7 @@ export const upload = multer({
 })
 
 export const MediaService = {
-  async testConnection(overrideSettings: Record<string, unknown>, siteId?: string): Promise<boolean> {
+  async testConnection(overrideSettings: Record<string, any>, siteId?: string): Promise<boolean> {
     const config = await resolveConfig(overrideSettings, siteId)
     if (!config.cloudName || !config.apiKey || !config.apiSecret) {
       throw new Error('Cloudinary credentials missing')

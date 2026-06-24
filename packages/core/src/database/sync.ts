@@ -26,7 +26,7 @@ export class SchemaSync {
         // For SQL adapters, this would generate/run ALTER TABLE queries
         await this.adapter.registerCollection(col)
         stats.updated++
-      } catch (err: unknown) {
+      } catch (err: any) {
         logger.error({ col: col.slug, err: err.message }, 'SchemaSync: Failed to sync collection')
         stats.errors++
       }
@@ -67,7 +67,7 @@ export class SchemaSync {
           removed.push(dbName)
         }
       }
-    } catch (err: unknown) {
+    } catch (err: any) {
       logger.error({ err: err.message }, 'SchemaSync.diff: Failed to execute schema inspect')
     }
 

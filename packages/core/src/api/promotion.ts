@@ -44,7 +44,7 @@ router.get('/diff/:slug', requireRole('admin'), async (req: Request, res: Respon
   try {
     const { slug } = req.params
     const targetUrl = (req.query.targetUrl as string) || 'https://production.zenithcms.internal'
-    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || (req.app.get('zenith_engine') as Record<string, unknown>).adapter
+    const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter || (req.app.get('zenith_engine') as Record<string, any>).adapter
     const siteId = req.headers['x-zenith-site-id'] as string
     const diff = await PromotionService.calculateDiff(adapter, slug, targetUrl, siteId)
     res.json(createResponse(diff))
@@ -60,7 +60,7 @@ router.post('/push', requireRole('admin'), async (req: Request, res: Response, n
       throw new InvalidPayloadError('Missing required body: collectionSlug, documentId, targetUrl')
     }
 
-    const adapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || (req.app.get('zenith_engine') as Record<string, unknown>).adapter
+    const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter || (req.app.get('zenith_engine') as Record<string, any>).adapter
     const siteId = req.headers['x-zenith-site-id'] as string
     const environments = PromotionService.getEnvironments(siteId)
     const targetNode = environments.find((e) => e.apiUrl === targetUrl)

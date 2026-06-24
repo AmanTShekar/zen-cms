@@ -54,7 +54,7 @@ describe('adminComponentRegistry', () => {
     expect(navComponents[0].component).toBe('AnalyticsWidget')
   })
 
-  it('getForSlot returns empty array for unknown slot', () => {
+  it('getForSlot returns empty array for any slot', () => {
     const items = adminComponentRegistry.getForSlot('dashboard:after')
     expect(Array.isArray(items)).toBe(true)
   })

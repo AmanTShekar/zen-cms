@@ -18,12 +18,12 @@ export const DeploymentService = {
     logger.info({ provider: this.config.provider }, 'DeploymentService: Initialized')
 
     // Subscribe to content changes
-    eventHub.on('content.created', (args: Record<string, unknown>) => this.handleEvent(`${args.collection}.created`))
-    eventHub.on('content.updated', (args: Record<string, unknown>) => this.handleEvent(`${args.collection}.updated`))
-    eventHub.on('content.published', (args: Record<string, unknown>) =>
+    eventHub.on('content.created', (args: Record<string, any>) => this.handleEvent(`${args.collection}.created`))
+    eventHub.on('content.updated', (args: Record<string, any>) => this.handleEvent(`${args.collection}.updated`))
+    eventHub.on('content.published', (args: Record<string, any>) =>
       this.handleEvent(`${args.collection}.published`)
     )
-    eventHub.on('content.deleted', (args: Record<string, unknown>) => this.handleEvent(`${args.collection}.deleted`))
+    eventHub.on('content.deleted', (args: Record<string, any>) => this.handleEvent(`${args.collection}.deleted`))
   },
 
   async handleEvent(event: string) {
@@ -58,7 +58,7 @@ export const DeploymentService = {
       } else {
         logger.warn({ status: response.status }, 'DeploymentService: Build hook failed')
       }
-    } catch (err: unknown) {
+    } catch (err: any) {
       logger.error({ err: err.message }, 'DeploymentService: Error triggering build hook')
     }
   },

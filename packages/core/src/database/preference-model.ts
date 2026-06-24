@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose'
 export interface IUserPreference extends Document {
   userId: mongoose.Types.ObjectId
   key: string
-  value: unknown
+  value: any
   siteId?: string
   updatedAt: Date
 }

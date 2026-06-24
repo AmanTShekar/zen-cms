@@ -10,14 +10,14 @@ export class ZenithError extends Error {
   status: number
   code: string
   isPublic: boolean
-  data?: unknown
+  data?: any
 
   constructor(
     message: string,
     status = 500,
     code = 'INTERNAL_ERROR',
     isPublic = false,
-    data?: unknown
+    data?: any
   ) {
     super(message)
     this.name = this.constructor.name
@@ -40,14 +40,14 @@ export class ZenithError extends Error {
 
 // ── 400 Bad Request ──────────────────────────────────────────────────────────
 export class InvalidPayloadError extends ZenithError {
-  constructor(message = 'Invalid request payload', data?: unknown) {
+  constructor(message = 'Invalid request payload', data?: any) {
     super(message, 400, 'INVALID_PAYLOAD', true, data)
   }
 }
 
 // ── 401 Unauthorized ─────────────────────────────────────────────────────────
 export class AuthenticationError extends ZenithError {
-  constructor(message = 'Invalid credentials', data?: unknown) {
+  constructor(message = 'Invalid credentials', data?: any) {
     super(message, 401, 'INVALID_CREDENTIALS', true, data)
   }
 }
@@ -66,7 +66,7 @@ export class InvalidTokenError extends ZenithError {
 
 // ── 403 Forbidden ────────────────────────────────────────────────────────────
 export class ForbiddenError extends ZenithError {
-  constructor(message = 'You do not have permission to perform this action', data?: unknown) {
+  constructor(message = 'You do not have permission to perform this action', data?: any) {
     super(message, 403, 'FORBIDDEN', true, data)
   }
 }
@@ -127,6 +127,6 @@ export class ServiceUnavailableError extends ZenithError {
 }
 
 // ── Type Guard ───────────────────────────────────────────────────────────────
-export function isZenithError(error: unknown): error is ZenithError {
+export function isZenithError(error: any): error is ZenithError {
   return error instanceof ZenithError
 }

@@ -26,7 +26,7 @@ import { execSync } from 'child_process'
 
 const MASK_PLACEHOLDER = '[MASKED_CREDENTIAL]'
 
-export function maskSettings(settings: Record<string, unknown>) {
+export function maskSettings(settings: Record<string, any>) {
   if (!settings) return settings
   const result = JSON.parse(JSON.stringify(settings)) // deep clone
   
@@ -39,7 +39,7 @@ export function maskSettings(settings: Record<string, unknown>) {
   return result
 }
 
-export function unmaskSettings(incoming: Record<string, unknown>, existing: Record<string, unknown>) {
+export function unmaskSettings(incoming: Record<string, any>, existing: Record<string, any>) {
   if (!incoming) return incoming
   const result = JSON.parse(JSON.stringify(incoming))
   
@@ -104,7 +104,7 @@ const AIFieldSchema = z.object({
   required: z.boolean().optional(),
   unique: z.boolean().optional(),
   options: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
-  defaultValue: z.unknown().optional(),
+  defaultValue: z.any().optional(),
 })
 
 const AICollectionSchema = z.object({
@@ -132,10 +132,10 @@ router.get(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
       const siteId = req.headers['x-zenith-site-id'] as string
       if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
-      const keys = await adapter.find<Record<string, unknown>>('z_api_keys', { revoked: false, siteId }, { select: ['-key'] })
+      const keys = await adapter.find<Record<string, any>>('z_api_keys', { revoked: false, siteId }, { select: ['-key'] })
       res.json(createResponse(keys))
     } catch (err) {
       next(err)
@@ -175,10 +175,10 @@ router.post(
   requireRole('admin'),
   async (req: Request, res: Response, next) => {
     try {
-      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const adapter: DatabaseAdapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
       const siteId = req.headers['x-zenith-site-id'] as string
       if (!siteId) throw new InvalidPayloadError('x-zenith-site-id header is required')
-      const keyDoc = await adapter.findOne<Record<string, unknown>>('z_api_keys', { _id: req.params.id, siteId })
+      const keyDoc = await adapter.findOne<Record<string, any>>('z_api_keys', { _id: req.params.id, siteId })
       if (!keyDoc) throw new NotFoundError('API Key')
       await adapter.update('z_api_keys', req.params.id, { revoked: true, revokedAt: new Date(), siteId })
       res.json(createResponse({ success: true }))

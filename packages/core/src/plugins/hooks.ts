@@ -17,7 +17,7 @@ import { logger } from '../services/logger'
  *   'admin:component'       — register admin UI components
  */
 
-export type HookHandler<T = unknown> = (payload: T) => T | Promise<T> | void | Promise<void>
+export type HookHandler<T = any> = (payload: T) => T | Promise<T> | void | Promise<void>
 
 interface HookRegistration {
   pluginName: string
@@ -32,7 +32,7 @@ class HookRegistry {
    * Register a handler for a hook point.
    * Returns an unsubscribe function.
    */
-  on<T = unknown>(hook: string, pluginName: string, handler: HookHandler<T>, priority = 10): () => void {
+  on<T = any>(hook: string, pluginName: string, handler: HookHandler<T>, priority = 10): () => void {
     const existing = this.hooks.get(hook) || []
     const registration: HookRegistration = { pluginName, handler: handler as HookHandler, priority }
     // Insert sorted by priority
@@ -59,7 +59,7 @@ class HookRegistry {
    * Supports wildcard matching: a handler registered on 'content:*:afterCreate'
    * will match 'content:posts:afterCreate', 'content:products:afterCreate', etc.
    */
-  async apply<T = unknown>(hook: string, payload: T): Promise<T> {
+  async apply<T = any>(hook: string, payload: T): Promise<T> {
     let result = payload
     // Collect exact-match and wildcard handlers, sorted by priority
     const exact = this.hooks.get(hook) || []
@@ -81,7 +81,7 @@ class HookRegistry {
    * Supports wildcard matching: a handler registered on 'content:*:afterCreate'
    * will match 'content:posts:afterCreate', 'content:products:afterCreate', etc.
    */
-  async emit(hook: string, payload: unknown): Promise<void> {
+  async emit(hook: string, payload: any): Promise<void> {
     const exact = this.hooks.get(hook) || []
     const wildcard = this.getWildcardHandlers(hook)
     const all = [...exact, ...wildcard].sort((a, b) => a.priority - b.priority)

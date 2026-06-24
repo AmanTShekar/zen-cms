@@ -22,9 +22,9 @@ export class SessionStore {
   private revokedTokens: Map<string, number> = new Map()
   private userSessions: Map<string, Set<string>> = new Map()
   private cleanupTimer: ReturnType<typeof setInterval> | null = null
-  private redisClient: Record<string, unknown> | null = null
+  private redisClient: Record<string, any> | null = null
 
-  constructor(redisClient?: Record<string, unknown>) {
+  constructor(redisClient?: Record<string, any>) {
     this.redisClient = redisClient ?? null
   }
 

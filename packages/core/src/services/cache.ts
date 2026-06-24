@@ -26,7 +26,7 @@ export class CacheService {
     return this.cache.get<T>(key)
   }
 
-  static set(key: string, value: unknown, ttl?: number, tags: string[] = []): void {
+  static set(key: string, value: any, ttl?: number, tags: string[] = []): void {
     this.cache.set(key, value, ttl || 600)
 
     // Track tags

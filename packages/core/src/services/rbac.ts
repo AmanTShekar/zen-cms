@@ -9,7 +9,7 @@ export class RBACEngine {
 
     const adapter = AdapterFactory.getActiveAdapter()
     const query = siteId ? { roleName: role, siteId } : { roleName: role }
-    const roles = await adapter.find<Record<string, unknown>>('z_roles', query)
+    const roles = await adapter.find<Record<string, any>>('z_roles', query)
     
     if (roles && roles.length > 0) {
       const dbRole = roles[0]
@@ -18,13 +18,13 @@ export class RBACEngine {
       const permsArray = Array.isArray(dbRole.permissions) ? dbRole.permissions : []
       
       // Check wildcard resource first
-      const wildcardPerm = permsArray.find((p: Record<string, unknown>) => p.resource === '*')
+      const wildcardPerm = permsArray.find((p: Record<string, any>) => p.resource === '*')
       if (wildcardPerm && Array.isArray(wildcardPerm.actions) && wildcardPerm.actions.includes(action)) {
         return true
       }
       
       // Check specific resource
-      const resourcePerm = permsArray.find((p: Record<string, unknown>) => p.resource === resource)
+      const resourcePerm = permsArray.find((p: Record<string, any>) => p.resource === resource)
       if (resourcePerm && Array.isArray(resourcePerm.actions) && resourcePerm.actions.includes(action)) {
         return true
       }
@@ -50,13 +50,13 @@ export class RBACEngine {
     try {
       const adapter = AdapterFactory.getActiveAdapter()
       const query = siteId ? { roleName: role, siteId } : { roleName: role }
-      const roles = await adapter.find<Record<string, unknown>>('z_roles', query)
+      const roles = await adapter.find<Record<string, any>>('z_roles', query)
       if (!roles || roles.length === 0) return {}
       
       const dbRole = roles[0]
       const permsArray = Array.isArray(dbRole.permissions) ? dbRole.permissions : []
       
-      const resourcePerm = permsArray.find((p: Record<string, unknown>) => p.resource === resource)
+      const resourcePerm = permsArray.find((p: Record<string, any>) => p.resource === resource)
       if (resourcePerm && resourcePerm.fieldPermissions) {
         return resourcePerm.fieldPermissions
       }
@@ -68,4 +68,4 @@ export class RBACEngine {
   }
 }
 
-export const invalidateRoleCache = async (...args: Record<string, unknown>[]) => {}
+export const invalidateRoleCache = async (...args: Record<string, any>[]) => {}

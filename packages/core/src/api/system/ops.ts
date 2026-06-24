@@ -23,7 +23,7 @@ const backupLimiter = rateLimit({
 export const systemRouter6: Router = Router();
 
 function getAdapter(req: Request): DatabaseAdapter {
-  return (req as import('express').Request & { user?: Record<string, unknown>, zenith?: Record<string, unknown> }).zenith?.adapter || AdapterFactory.getActiveAdapter();
+  return (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter || AdapterFactory.getActiveAdapter();
 }
 
 // ── System Ops ──────────────────────────────────────────────────────────────
@@ -90,7 +90,7 @@ systemRouter6.get('/ops/logs', requireAuth, requireRole('admin'), async (req: Re
       `[${new Date().toISOString()}] [INFO] Uptime: ${Math.floor(process.uptime())}s`,
       `[${new Date().toISOString()}] [INFO] Memory: ${Math.round(process.memoryUsage().heapUsed / 1024 / 1024)}MB heap used`,
     ]));
-  } catch (err: unknown) {
+  } catch (err: any) {
     res.status(500).json(createErrorResponse(500, err.message));
   }
 });
@@ -129,7 +129,7 @@ systemRouter6.get('/export', exportLimiter, requireAuth, requireRole('admin'), a
     );
     backups.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     res.json(createResponse(backups));
-  } catch (err: unknown) {
+  } catch (err: any) {
     res.json(createResponse([]));
   }
 });
@@ -155,7 +155,7 @@ systemRouter6.get('/backup/list', requireAuth, requireRole('admin'), async (req:
     );
     backups.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     res.json(createResponse(backups));
-  } catch (err: unknown) {
+  } catch (err: any) {
     res.json(createResponse([]));
   }
 });
@@ -173,11 +173,11 @@ systemRouter6.post('/backup/create', backupLimiter, requireAuth, requireRole('ad
     const filepath = path.join(BACKUP_DIR, filename);
 
     const siteId = req.headers['x-zenith-site-id'] as string | undefined;
-    const data: Record<string, Record<string, unknown>[]> = {};
+    const data: Record<string, Record<string, any>[]> = {};
     for (const col of collections) {
       try {
         const query = siteId ? { siteId } : {};
-        data[col] = await adapter.find<Record<string, unknown>>(col, query);
+        data[col] = await adapter.find<Record<string, any>>(col, query);
       } catch {
         data[col] = [];
       }
@@ -191,7 +191,7 @@ systemRouter6.post('/backup/create', backupLimiter, requireAuth, requireRole('ad
       size: (await fs.stat(filepath)).size,
       message: `Backup "${filename}" created successfully.`,
     }));
-  } catch (err: unknown) {
+  } catch (err: any) {
     res.status(500).json(createErrorResponse(500, err.message || 'Backup failed'));
   }
 });
@@ -243,7 +243,7 @@ systemRouter6.post('/smtp/send-test', requireAuth, requireRole('admin'), async (
     }, { smtpHost, smtpPort, smtpUser, smtpPass, fromEmail }, req.headers['x-zenith-site-id'] as string | undefined);
 
     res.json(createResponse({ message: `Test email sent to ${to}` }));
-  } catch (err: unknown) {
+  } catch (err: any) {
     res.status(400).json(createErrorResponse(400, err.message || 'Failed to send test email'));
   }
 });

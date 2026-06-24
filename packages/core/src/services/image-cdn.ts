@@ -29,7 +29,7 @@ export const ImageCdnService = {
       if (provider === 'imgproxy') {
         return this.generateImgproxyUrl(originalUrl, options)
       }
-    } catch (err: unknown) {
+    } catch (err: any) {
       logger.error({ err: err.message, provider }, 'Failed to generate CDN URL')
     }
 

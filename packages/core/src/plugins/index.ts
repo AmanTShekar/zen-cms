@@ -22,7 +22,7 @@ export { CMSConfig, ZenithPlugin, PluginContext }
 export { hookRegistry, adminComponentRegistry, type AdminComponentRegistration } from './hooks'
 
 /** A plugin factory accepts options and returns a ZenithPlugin */
-export type PluginFactory<TOptions = Record<string, unknown>> = (options?: TOptions) => ZenithPlugin
+export type PluginFactory<TOptions = Record<string, any>> = (options?: TOptions) => ZenithPlugin
 
 /**
  * Plugin Runner — applies enabled plugins sequentially to the config.
@@ -69,10 +69,10 @@ export function createPluginContext(app: any, config: CMSConfig): PluginContext 
     adapter: app.get('zenith_engine')?.adapter,
     config,
     hooks: {
-      on: <T = unknown>(hook: string, handler: (payload: T) => T | Promise<T> | void, priority?: number) => {
+      on: <T = any>(hook: string, handler: (payload: T) => T | Promise<T> | void, priority?: number) => {
         return hookRegistry.on(hook, 'plugin', handler, priority)
       },
-      emit: (hook: string, payload: unknown) => hookRegistry.emit(hook, payload),
+      emit: (hook: string, payload: any) => hookRegistry.emit(hook, payload),
     },
     admin: {
       registerComponent: (slot: string, componentInfo: { id: string; label: string; icon?: string }) => {
@@ -86,10 +86,10 @@ export function createPluginContext(app: any, config: CMSConfig): PluginContext 
       },
     },
     logger: {
-      info: (msg: string, meta?: Record<string, unknown>) => logger.info(meta, `[Plugin] ${msg}`),
-      warn: (msg: string, meta?: Record<string, unknown>) => logger.warn(meta, `[Plugin] ${msg}`),
-      error: (msg: string, meta?: Record<string, unknown>) => logger.error(meta, `[Plugin] ${msg}`),
-      debug: (msg: string, meta?: Record<string, unknown>) => logger.debug(meta, `[Plugin] ${msg}`),
+      info: (msg: string, meta?: Record<string, any>) => logger.info(meta, `[Plugin] ${msg}`),
+      warn: (msg: string, meta?: Record<string, any>) => logger.warn(meta, `[Plugin] ${msg}`),
+      error: (msg: string, meta?: Record<string, any>) => logger.error(meta, `[Plugin] ${msg}`),
+      debug: (msg: string, meta?: Record<string, any>) => logger.debug(meta, `[Plugin] ${msg}`),
     },
   }
 }
