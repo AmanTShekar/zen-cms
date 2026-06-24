@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { CollectionConfig } from '@zenith-open/zenithcms-types'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'

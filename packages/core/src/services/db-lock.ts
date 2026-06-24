@@ -1,5 +1,5 @@
 import Client from 'ioredis'
-// @ts-expect-error
+// @ts-expect-error redlock typings are missing
 import Redlock from 'redlock'
 import { logger } from './logger'
 import { env } from '../config/env';

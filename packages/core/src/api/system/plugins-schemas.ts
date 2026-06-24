@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { Router, Request, Response } from 'express'
 import crypto from 'crypto'
