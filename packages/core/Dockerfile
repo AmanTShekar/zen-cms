@@ -13,6 +13,8 @@ COPY tsconfig.json ./
 # Copy core package
 COPY packages/core/package.json ./packages/core/
 COPY packages/types/package.json ./packages/types/
+COPY packages/db-mongodb/package.json ./packages/db-mongodb/
+COPY packages/db-postgres/package.json ./packages/db-postgres/
 
 # Install dependencies (ignoring scripts to avoid build errors during install)
 RUN pnpm install --frozen-lockfile --ignore-scripts
@@ -20,9 +22,13 @@ RUN pnpm install --frozen-lockfile --ignore-scripts
 # Copy source code
 COPY packages/core/ ./packages/core/
 COPY packages/types/ ./packages/types/
+COPY packages/db-mongodb/ ./packages/db-mongodb/
+COPY packages/db-postgres/ ./packages/db-postgres/
 
-# Build types then core
+# Build dependencies then core
 RUN pnpm --filter @zenith-open/zenithcms-types run build
+RUN pnpm --filter @zenith-open/zenithcms-db-mongodb run build
+RUN pnpm --filter @zenith-open/zenithcms-db-postgres run build
 RUN pnpm --filter @zenith-open/zenithcms-core run build
 
 # Stage 2: Production Runner
@@ -45,6 +51,10 @@ COPY --from=builder /app/packages/core/package.json ./packages/core/
 COPY --from=builder /app/packages/core/dist ./packages/core/dist
 COPY --from=builder /app/packages/types/package.json ./packages/types/
 COPY --from=builder /app/packages/types/dist ./packages/types/dist
+COPY --from=builder /app/packages/db-mongodb/package.json ./packages/db-mongodb/
+COPY --from=builder /app/packages/db-mongodb/dist ./packages/db-mongodb/dist
+COPY --from=builder /app/packages/db-postgres/package.json ./packages/db-postgres/
+COPY --from=builder /app/packages/db-postgres/dist ./packages/db-postgres/dist
 
 # Install only production dependencies
 RUN pnpm install --prod --frozen-lockfile --ignore-scripts

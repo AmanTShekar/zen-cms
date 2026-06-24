@@ -13,6 +13,7 @@ COPY tsconfig.json ./
 # Copy packages
 COPY packages/admin/package.json ./packages/admin/
 COPY packages/types/package.json ./packages/types/
+COPY packages/sdk/package.json ./packages/sdk/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile --ignore-scripts
@@ -20,9 +21,11 @@ RUN pnpm install --frozen-lockfile --ignore-scripts
 # Copy source code
 COPY packages/admin/ ./packages/admin/
 COPY packages/types/ ./packages/types/
+COPY packages/sdk/ ./packages/sdk/
 
-# Build types then admin
+# Build dependencies then admin
 RUN pnpm --filter @zenith-open/zenithcms-types run build
+RUN pnpm --filter @zenith-open/zenithcms-sdk run build
 RUN pnpm --filter @zenith-open/zenithcms-admin run build
 
 # Stage 2: Serve with Nginx
