@@ -65,7 +65,7 @@ export default defineConfig({
           'vendor-animation': ['framer-motion', 'lucide-react'],
           'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
           // All other node_modules go into a catch-all vendor chunk
-        },
+        } as any,
       },
     },
   },
