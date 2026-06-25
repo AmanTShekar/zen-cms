@@ -292,8 +292,9 @@ export function createCollectionRouter(
         }
       }
 
-      const limit = isCursorMode ? (pagination.limit || pagination.pageSize) : pagination.pageSize
-      const skip = isCursorMode ? 0 : (pagination.page - 1) * pagination.pageSize
+      const limit = Math.min(isCursorMode ? (pagination.limit || pagination.pageSize) : pagination.pageSize, 1000)
+      const clampedPageSize = Math.min(pagination.pageSize, 1000)
+      const skip = isCursorMode ? 0 : (pagination.page - 1) * clampedPageSize
 
       const [docs, total] = await Promise.all([
         contentService.find(findFilter, {

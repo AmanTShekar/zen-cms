@@ -133,7 +133,7 @@ const config: CMSConfig = {
       fields: [
         { name: 'title', type: 'text', required: true },
         { name: 'slug', type: 'text', required: true, unique: true },
-        { name: 'sections', type: 'blocks' }
+        { name: 'sections', type: 'blocks', blocks: [] }
       ]
     }
   ]

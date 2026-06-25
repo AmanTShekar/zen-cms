@@ -317,6 +317,15 @@ export interface ZenithPlugin {
    * Called at engine bootstrap for each enabled plugin.
    */
   apply: (config: CMSConfig, pluginConfig?: Record<string, unknown>) => CMSConfig | void
+  /**
+   * Express sub-router for this plugin. 
+   * It will be mounted automatically at `/api/v1/plugins/{plugin.id}`
+   */
+  router?: (app: any) => void
+  /** Custom collection-level hooks provided by this plugin */
+  hooks?: { [collectionSlug: string]: CollectionConfig['hooks'] }
+  /** Paths to custom React admin UI components (e.g. custom field UIs) */
+  adminComponents?: { [fieldType: string]: string }
   /** Called after all plugins are applied, before routes are mounted */
   onInit?: (ctx: PluginContext) => void | Promise<void>
   /** Called after the engine is fully started and listening */

@@ -236,6 +236,53 @@ router.post('/register', authLimiter, async (req: Request, res: Response, next) 
   }
 })
 
+// ── POST /api/v1/auth/verify-email ──────────────────────────────────────────
+router.post('/verify-email', authLimiter, async (req: Request, res: Response, next) => {
+  try {
+    const { token } = req.body
+    if (!token) throw new InvalidPayloadError('Verification token is required')
+
+    const userId = await AuthService.verifyEmailToken(token)
+    if (!userId) {
+      throw new AuthenticationError('Invalid or expired verification token')
+    }
+
+    res.json(createResponse({ success: true, message: 'Email successfully verified' }))
+  } catch (err) {
+    next(err)
+  }
+})
+
+// ── POST /api/v1/auth/resend-verification ───────────────────────────────────
+router.post('/resend-verification', authLimiter, async (req: Request, res: Response, next) => {
+  try {
+    const { email } = req.body
+    if (!email) throw new InvalidPayloadError('Email is required')
+
+    const siteId = req.headers['x-zenith-site-id'] as string | undefined
+    const user = await AuthService.resolveUser(email)
+    
+    // Always return success even if user doesn't exist to prevent email enumeration
+    if (!user || user.emailVerified) {
+      return res.json(createResponse({ success: true, message: 'If that email is registered and unverified, a new link has been sent.' }))
+    }
+
+    const userId = (user.id || user._id).toString()
+    const verifyToken = await AuthService.generateVerificationToken(userId)
+    const verifyUrl = `${getAdminUrl()}/verify-email?token=${verifyToken}`
+    
+    await EmailService.send({
+      to: user.email,
+      subject: 'Verify your Zenith CMS email address',
+      html: `<p>Hi! Please verify your email by clicking <a href="${verifyUrl}">this link</a>. It expires in 24 hours.</p>`,
+    }, undefined, siteId)
+
+    res.json(createResponse({ success: true, message: 'If that email is registered and unverified, a new link has been sent.' }))
+  } catch (err) {
+    next(err)
+  }
+})
+
 // ── POST /api/v1/auth/refresh ────────────────────────────────────────────────
 router.post('/refresh', authLimiter, async (req: Request, res: Response, next) => {
   try {

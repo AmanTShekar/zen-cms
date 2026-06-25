@@ -9,8 +9,8 @@ import * as Sentry from '@sentry/node'
 import { ZenithEngine } from './index'
 import { logger } from './services/logger'
 
-if (env.NODE_ENV === 'production' && !env.REDIS_URL) {
-  logger.fatal('REDIS_URL is strictly required in production for horizontal scaling. Failing boot.')
+if (env.NODE_ENV === 'production' && !env.REDIS_URL && process.env.ALLOW_IN_MEMORY_PRODUCTION !== 'true') {
+  logger.fatal('REDIS_URL is strictly required in production for horizontal scaling. Failing boot. Set ALLOW_IN_MEMORY_PRODUCTION=true to bypass for single-node deployments.')
   process.exit(1)
 }
 

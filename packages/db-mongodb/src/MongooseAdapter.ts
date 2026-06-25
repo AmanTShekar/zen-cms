@@ -137,6 +137,7 @@ export class MongooseAdapter implements DatabaseAdapter {
         serverSelectionTimeoutMS: 5000,
         socketTimeoutMS: 45000,
         maxPoolSize: poolMax,
+        autoIndex: process.env.ZENITH_AUTO_MIGRATE !== 'false',
       })
       logger.info('MongooseAdapter: Connected to MongoDB')
       this._initSystemModels()

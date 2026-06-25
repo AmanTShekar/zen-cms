@@ -43,6 +43,32 @@ export function applyPlugins(config: CMSConfig, plugins: ZenithPlugin[]): Zenith
       const pluginConfig = plugin.config || {}
       const modified = plugin.apply(result.config, pluginConfig)
       if (modified) result.config = modified
+      
+      if (plugin.hooks) {
+        for (const [collectionSlug, pluginHooks] of Object.entries(plugin.hooks)) {
+          const col = result.config.collections.find(c => c.slug === collectionSlug)
+          if (col && pluginHooks) {
+            col.hooks = col.hooks || {}
+            for (const [hookType, hookFn] of Object.entries(pluginHooks)) {
+              const existingHook = (col.hooks as Record<string, any>)[hookType]
+              if (existingHook) {
+                ;(col.hooks as Record<string, any>)[hookType] = async (...args: any[]) => {
+                  let res = await existingHook(...args)
+                  // For data-mutating hooks (e.g. beforeChange), pass result forward
+                  if (res !== undefined && args.length > 0 && typeof res === 'object') {
+                    args[0] = res
+                  }
+                  const finalRes = await (hookFn as any)(...args)
+                  return finalRes !== undefined ? finalRes : res
+                }
+              } else {
+                ;(col.hooks as Record<string, any>)[hookType] = hookFn
+              }
+            }
+          }
+        }
+      }
+
       logger.info({ plugin: plugin.id || plugin.name, version: plugin.version }, 'Plugin applied')
     } catch (err: any) {
       const errorMsg = `Plugin "${plugin.id || plugin.name}" failed to apply: ${err.message}`

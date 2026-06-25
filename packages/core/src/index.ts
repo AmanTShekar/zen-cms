@@ -551,6 +551,18 @@ export class ZenithEngine {
       }
     })
 
+    // ── Plugin Custom Routes ──────────────────────────────────────────────────
+    if (this.plugins) {
+      this.plugins.forEach((plugin) => {
+        if (plugin.enabled !== false && typeof plugin.router === 'function') {
+          const pluginRouter = express.Router()
+          plugin.router(pluginRouter)
+          router.use(`/api/v1/plugins/${plugin.id || plugin.name}`, pluginRouter)
+          logger.info(`  → /api/v1/plugins/${plugin.id || plugin.name} (plugin)`)
+        }
+      })
+    }
+
     // ── Global Error Handler ──────────────────────────────────────────────────
     router.use(globalErrorHandler)
   }

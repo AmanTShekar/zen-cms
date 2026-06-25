@@ -954,11 +954,15 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     this.tables[config.slug] = pgTable(config.slug, columns)
 
     if (process.env.DISABLE_AUTO_MIGRATIONS !== 'true') {
-      await this._runAutoMigrations(config, db)
+      if (process.env.ZENITH_AUTO_MIGRATE !== 'false') {
+        await this._runAutoMigrations(config, db)
+      }
 
       for (const tenant of Object.values(this.tenantPools)) {
         try {
+        if (process.env.ZENITH_AUTO_MIGRATE !== 'false') {
           await this._runAutoMigrations(config, tenant.db)
+        }
         } catch (err: any) {
           logger.error(
             { err: err.message },
