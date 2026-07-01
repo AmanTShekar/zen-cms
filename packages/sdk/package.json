@@ -24,6 +24,6 @@
   "license": "MIT",
   "devDependencies": {
     "@zenith-open/zenithcms-types": "workspace:*",
-    "vitest": "^1.6.0"
+    "vitest": "^4.1.9"
   }
 }
