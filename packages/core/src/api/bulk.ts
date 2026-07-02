@@ -46,12 +46,14 @@ router.post('/:collection/bulk/delete', requireAuth, async (req: Request, res: R
 
     const contentService = new ContentService(colConfig, adapter)
     
-    // Execute all deletions via ContentService in batches of 20 to prevent connection pool exhaustion
-    const BATCH_SIZE = 20
-    for (let i = 0; i < ids.length; i += BATCH_SIZE) {
-      const batch = ids.slice(i, i + BATCH_SIZE)
-      await Promise.all(batch.map((id) => contentService.delete(id, { user, siteId })))
-    }
+    // Execute all deletions via ContentService in a transaction
+    await adapter.transaction(async (session: any) => {
+      const BATCH_SIZE = 20
+      for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+        const batch = ids.slice(i, i + BATCH_SIZE)
+        await Promise.all(batch.map((id) => contentService.delete(id, { user, siteId, session })))
+      }
+    })
 
     CacheService.invalidateTag(collection)
 
@@ -88,12 +90,14 @@ router.post('/:collection/bulk/update', requireAuth, async (req: Request, res: R
 
     const contentService = new ContentService(colConfig, adapter)
 
-    // Execute all updates via ContentService in batches of 20 to prevent connection pool exhaustion
-    const BATCH_SIZE = 20
-    for (let i = 0; i < ids.length; i += BATCH_SIZE) {
-      const batch = ids.slice(i, i + BATCH_SIZE)
-      await Promise.all(batch.map((id) => contentService.update(id, data, { user, siteId })))
-    }
+    // Execute all updates via ContentService in a transaction
+    await adapter.transaction(async (session: any) => {
+      const BATCH_SIZE = 20
+      for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+        const batch = ids.slice(i, i + BATCH_SIZE)
+        await Promise.all(batch.map((id) => contentService.update(id, data, { user, siteId, session })))
+      }
+    })
 
     CacheService.invalidateTag(collection)
 
@@ -126,16 +130,18 @@ router.post('/:collection/bulk/publish', requireAuth, async (req: Request, res: 
 
     const contentService = new ContentService(colConfig, adapter)
 
-    // Execute publish updates via ContentService in batches of 20 to prevent connection pool exhaustion
-    const BATCH_SIZE = 20
-    for (let i = 0; i < ids.length; i += BATCH_SIZE) {
-      const batch = ids.slice(i, i + BATCH_SIZE)
-      await Promise.all(
-        batch.map((id) =>
-          contentService.update(id, { _status: 'published', publishedAt: new Date() } as Record<string, any>, { user, siteId })
+    // Execute publish updates via ContentService in a transaction
+    await adapter.transaction(async (session: any) => {
+      const BATCH_SIZE = 20
+      for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+        const batch = ids.slice(i, i + BATCH_SIZE)
+        await Promise.all(
+          batch.map((id) =>
+            contentService.update(id, { _status: 'published', publishedAt: new Date() } as Record<string, any>, { user, siteId, session })
+          )
         )
-      )
-    }
+      }
+    })
 
     CacheService.invalidateTag(collection)
 
@@ -168,15 +174,18 @@ router.post('/:collection/bulk/unpublish', requireAuth, async (req: Request, res
 
     const contentService = new ContentService(colConfig, adapter)
 
-    const BATCH_SIZE = 20
-    for (let i = 0; i < ids.length; i += BATCH_SIZE) {
-      const batch = ids.slice(i, i + BATCH_SIZE)
-      await Promise.all(
-        batch.map((id) =>
-          contentService.update(id, { _status: 'draft' } as Record<string, any>, { user, siteId })
+    // Execute unpublish updates via ContentService in a transaction
+    await adapter.transaction(async (session: any) => {
+      const BATCH_SIZE = 20
+      for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+        const batch = ids.slice(i, i + BATCH_SIZE)
+        await Promise.all(
+          batch.map((id) =>
+            contentService.update(id, { _status: 'draft' } as Record<string, any>, { user, siteId, session })
+          )
         )
-      )
-    }
+      }
+    })
 
     CacheService.invalidateTag(collection)
 

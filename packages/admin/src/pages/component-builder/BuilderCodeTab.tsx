@@ -21,7 +21,7 @@ export const BuilderCodeTab = ({
         </p>
 
         {/* Format examples */}
-        <div className={cn('p-4 rounded-none text-sm font-mono mb-4 text-gray-600 dark:text-z-muted border shadow-inner', dark ? 'bg-z-popover border-z-border' : 'bg-gray-900 border-gray-700')}>
+        <div className={cn('p-4 rounded-none text-sm font-mono mb-4 text-z-secondary border shadow-inner', dark ? 'bg-z-popover border-z-border' : 'bg-z-accent border-z-border')}>
           <p className="text-z-secondary mb-2">// JSON format (recommended)</p>
           {`{
   "slug": "hero-section",
@@ -43,28 +43,28 @@ export const BuilderCodeTab = ({
           value={codeImport}
           onChange={e => setCodeImport(e.target.value)}
           placeholder='Paste JSON or TypeScript interface here...'
-          className={cn('w-full border p-4 text-sm font-mono outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none placeholder:text-gray-600 resize-none shadow-inner', dark ? 'bg-black/40 backdrop-blur-sm border-z-border focus:border-z-accent/50 text-white' : 'bg-z-input border-z-border focus:border-z-accent text-z-primary')}
+          className={cn('w-full border p-4 text-sm font-mono outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none placeholder:text-z-secondary resize-none shadow-inner', dark ? 'bg-z-panel backdrop-blur-sm border-z-border focus:border-z-accent/50 text-z-primary' : 'bg-z-input border-z-border focus:border-z-accent text-z-primary')}
         />
 
         <div className="flex gap-3 mt-4">
           <button
             onClick={handleCodeImport}
             disabled={!codeImport.trim()}
-            className="flex items-center gap-2 px-5 py-2.5 bg-z-accent hover:opacity-90 text-white text-sm font-semibold rounded-none transition-all disabled:opacity-40 shadow-sm"
+            className="flex items-center gap-2 px-5 py-2.5 bg-z-accent hover:brightness-110 text-z-logo-text text-sm font-semibold rounded-none transition-all disabled:opacity-40 shadow-sm"
           >
             <ChevronRight size={14} /> Import to Visual Editor
           </button>
           <button
             onClick={handleRegisterCode}
             disabled={!codeImport.trim()}
-            className="flex items-center gap-2 px-5 py-2.5 bg-z-accent hover:opacity-90 text-white text-sm font-semibold rounded-none transition-all disabled:opacity-40 shadow-sm"
+            className="flex items-center gap-2 px-5 py-2.5 bg-z-accent hover:brightness-110 text-z-logo-text text-sm font-semibold rounded-none transition-all disabled:opacity-40 shadow-sm"
             title="Save directly to database without going through visual editor"
           >
             <Save size={14} /> Register Directly
           </button>
           <button
             onClick={() => setCodeImport('')}
-            className={cn('flex items-center gap-2 px-4 py-2.5 border text-sm font-semibold   rounded-none transition-all', dark ? 'border-z-border hover:bg-z-hover' : 'border-z-border hover:bg-gray-50')}
+            className={cn('flex items-center gap-2 px-4 py-2.5 border text-sm font-semibold   rounded-none transition-all', dark ? 'border-z-border hover:bg-z-hover' : 'border-z-border hover:bg-[var(--z-bg-input)]')}
           >
             <X size={14} /> Clear
           </button>

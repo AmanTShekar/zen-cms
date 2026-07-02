@@ -46,7 +46,7 @@ export function useSpatialSync({
   // --- Preview sync effects ---
   useEffect(() => { 
     if (iframeRef.current?.contentWindow) {
-      iframeRef.current.contentWindow.postMessage({ type: 'SET_THEME', theme }, '*') 
+      // Intentionally removed SET_THEME sync so the preview maintains its own theme.
     }
   }, [theme, iframeRef])
 

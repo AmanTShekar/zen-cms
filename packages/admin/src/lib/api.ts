@@ -31,7 +31,11 @@ const getCookie = (name: string): string | null => {
 // Security: Never hardcode localhost as a fallback in production.
 // If VITE_API_URL is not set, fall back to '/api/v1' (same-host relative path).
 // If the admin and API are on different hosts, VITE_API_URL must be explicitly configured.
-const BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
+let BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
+if (import.meta.env.PROD && BASE_URL.startsWith('http://') && !BASE_URL.includes('localhost') && !BASE_URL.includes('127.0.0.1')) {
+  console.warn('Insecure HTTP API URL used in production. Upgrading to HTTPS.')
+  BASE_URL = BASE_URL.replace('http://', 'https://')
+}
 
 interface ApiResponse<T = any> {
  data: T

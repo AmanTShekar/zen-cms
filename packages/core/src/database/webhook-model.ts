@@ -10,8 +10,8 @@ const webhookDeliverySchema = new Schema(
     success: { type: Boolean, required: true },
     responseStatus: { type: Number },
     timestamp: { type: Date, default: Date.now },
-  },
-  { collection: 'z_webhook_deliveries' }
+    siteId: { type: String, required: true, index: true },
+  }, { strict: true,  collection: 'z_webhook_deliveries' }
 )
 
 export const WebhookDeliveryModel =

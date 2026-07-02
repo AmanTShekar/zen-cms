@@ -234,7 +234,7 @@ systemRouter6.post('/smtp/send-test', requireAuth, requireRole('admin'), async (
       subject: '[Zenith CMS] Test Email',
       html: `
         <div style="font-family: monospace; max-width: 600px; padding: 32px; background: #000; color: #fff; border: 1px solid rgba(255,255,255,0.1);">
-          <h1 style="color: #8B5CF6; font-size: 18px; text-transform: uppercase; letter-spacing: 0.2em;">✓ Test Email Delivered</h1>
+          <h1 style="color: #8B5CF6; font-size: 18px; text-transform: uppercase; letter-spacing: 0.2em;"> Test Email Delivered</h1>
           <p style="color: #9ca3af; font-size: 12px;">Your Zenith CMS email relay is configured correctly.</p>
           <hr style="border-color: rgba(255,255,255,0.1); margin: 24px 0;" />
           <p style="color: #6b7280; font-size: 11px;">Sent at: ${new Date().toISOString()}</p>

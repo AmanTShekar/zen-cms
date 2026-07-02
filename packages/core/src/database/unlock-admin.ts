@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+
 /**
  * Unlock Admin Account Script
  * ────────────────────────────
@@ -16,6 +16,7 @@ async function unlockAdmin() {
   let count = 0
   for (const admin of admins) {
     if (admin.lockUntil) {
+      // @ts-ignore: TS2345 - unresolved type from removing @ts-nocheck
       await adapter.update('users', admin.id || admin._id, {
         failedLoginAttempts: 0,
         lockUntil: null

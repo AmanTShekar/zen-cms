@@ -31,8 +31,8 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
  className={cn(
  'fixed z-[2500] w-64 max-h-[320px] overflow-y-auto border p-1 shadow-2xl transition-all duration-200',
  theme === 'dark'
- ? 'bg-black/85 backdrop-blur-[12px] border-white/8 shadow-sm text-white'
- : 'bg-white/95 backdrop-blur-[12px] border-z-border shadow-sm text-black'
+ ? 'bg-app/85 backdrop-blur-[12px] border-z-border shadow-sm text-z-primary'
+ : 'bg-z-panel/95 backdrop-blur-[12px] border-z-border shadow-sm text-z-primary'
  )}
  style={{
  top: `${position.top}px`,
@@ -43,7 +43,7 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
  <span className="text-xs font-semibold text-z-secondary">
  Block Command
  </span>
- <span className="text-sm font-bold text-z-secondary/80 px-1 border border-gray-500/20 rounded-none">
+ <span className="text-sm font-bold text-z-secondary/80 px-1 border border-z-border/20 rounded-none">
  ↑↓ Enter
  </span>
  </div>
@@ -60,8 +60,8 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
  'w-full text-left px-3 py-2.5 flex items-start gap-3 transition-all duration-150 relative group',
  isSelected
  ? theme === 'dark'
- ? 'bg-gray-500/20 text-gray-600 dark:text-z-muted border-l-2 border-gray-500'
- : 'bg-gray-50 text-gray-600 border-l-2 border-gray-500'
+ ? 'bg-z-hover border-z-border-strong text-z-secondary border-l-2 border-z-border'
+ : 'bg-[var(--z-bg-input)] text-z-secondary border-l-2 border-z-border'
  : 'border-l-2 border-transparent hover:bg-z-hover'
  )}
  >
@@ -70,11 +70,11 @@ export const SlashMenu: React.FC<SlashMenuProps> = ({
  'w-7 h-7 rounded-none flex items-center justify-center border shrink-0',
  isSelected
  ? theme === 'dark'
- ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted'
- : 'bg-gray-100 border-z-border text-gray-600'
+ ? 'bg-z-panel/5 border-z-border text-z-secondary'
+ : 'bg-[var(--z-bg-hover)] border-z-border text-z-secondary'
  : theme === 'dark'
  ? 'bg-z-hover border-z-border text-z-muted'
- : 'bg-gray-100 border-z-border text-z-secondary'
+ : 'bg-[var(--z-bg-hover)] border-z-border text-z-secondary'
  )}
  >
  <Icon size={14} className="transition-transform group-hover:scale-110" />

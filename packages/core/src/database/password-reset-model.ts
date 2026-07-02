@@ -12,12 +12,11 @@ const PasswordResetSchema = new Schema<IPasswordResetToken>({
   token: { type: String, required: true, unique: true }, // Stores SHA-256 hash of the raw token
   expiresAt: { type: Date, required: true },
   used: { type: Boolean, default: false },
-})
-
+}, { strict: true })
 // Auto-expire documents via MongoDB TTL index
 PasswordResetSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 })
 
-export const PasswordResetModel = mongoose.model<IPasswordResetToken>(
+export const PasswordResetModel = mongoose.models.z_password_resets || mongoose.model<IPasswordResetToken>(
   'z_password_resets',
   PasswordResetSchema
 )

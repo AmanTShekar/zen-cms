@@ -1,0 +1,20 @@
+{
+  "name": "@zenith-open/zenithcms-plugin-storage-azure",
+  "version": "1.0.0",
+  "description": "Azure Blob Storage Adapter",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@azure/storage-blob": "^12.17.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "peerDependencies": {
+    "@zenith-open/zenithcms-core": "workspace:*",
+    "@zenith-open/zenithcms-types": "workspace:*"
+  }
+}

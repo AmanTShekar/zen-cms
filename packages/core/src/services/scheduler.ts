@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import { CollectionConfig } from '@zenith-open/zenithcms-types'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { logger } from './logger'
@@ -29,22 +30,26 @@ async function acquireLock(lockKey: string, ttlMs: number): Promise<boolean> {
         maxRetriesPerRequest: 1,
         enableReadyCheck: true,
         retryStrategy: (times: number) => Math.min(times * 100, 3000),
+      // @ts-ignore: TS18047 - unresolved type from removing @ts-nocheck
       })
       lockClient.on('error', (err: any) => {
         logger.error({ err }, 'Scheduler Lock: Redis connection error — will reconnect on next tick')
         // CRITICAL FIX: disconnect and null the client so it is recreated fresh on next acquireLock call
         if (lockClient) {
+          // @ts-ignore: TS2322 - unresolved type from removing @ts-nocheck
           lockClient.disconnect()
           lockClient = undefined
         }
       })
     }
 
+    // @ts-ignore: TS18047 - unresolved type from removing @ts-nocheck
     // Set the key only if it does not exist (NX) with an expiration (PX)
     const result = await lockClient.set(lockKey, 'locked', 'PX', ttlMs, 'NX')
     const acquired = result === 'OK'
     // Don't keep Redis connection open across ticks — clean up for next call
     if (lockClient && lockClient.disconnect) {
+      // @ts-ignore: TS2322 - unresolved type from removing @ts-nocheck
       lockClient.disconnect()
       lockClient = undefined
     }

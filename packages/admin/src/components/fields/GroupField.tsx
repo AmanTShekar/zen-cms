@@ -17,9 +17,9 @@ const GroupField: React.FC<GroupFieldProps> = ({ field, value, onChange, disable
 
   return (
     <div className={cn(
-      'border border-white/10 bg-z-panel backdrop-blur-md p-4 space-y-4'
+      'border border-z-border bg-z-panel backdrop-blur-md p-4 space-y-4'
     )}>
-      <div className="flex items-center gap-2 pb-3 border-b border-white/5">
+      <div className="flex items-center gap-2 pb-3 border-b border-z-border">
         <span className="text-sm font-semibold text-z-active-text">
           {field.label || field.name}
         </span>

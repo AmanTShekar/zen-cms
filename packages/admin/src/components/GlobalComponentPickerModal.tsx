@@ -103,7 +103,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18 }}
             onClick={closeComponentPicker}
-            className="absolute inset-0 bg-black/75 backdrop-blur-md"
+            className="absolute inset-0 bg-app/75 backdrop-blur-md"
           />
 
           {/* Modal */}
@@ -119,7 +119,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
             className={cn(
               'relative w-full max-w-3xl flex flex-col overflow-hidden rounded-none-none shadow-sm max-h-[90vh] border',
               isDark
-                ? 'bg-[#08080a] border-white/10'
+                ? 'bg-[#08080a] border-z-border'
                 : 'bg-z-panel border-z-border'
             )}
             style={{
@@ -131,13 +131,13 @@ export const GlobalComponentPickerModal: React.FC = () => {
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-z-accent/70 to-transparent" />
 
             {/* Header */}
-            <div className={cn('px-6 pt-6 pb-4 border-b flex-shrink-0', isDark ? 'border-white/5' : 'border-z-border')}>
+            <div className={cn('px-6 pt-6 pb-4 border-b flex-shrink-0', isDark ? 'border-z-border' : 'border-z-border')}>
               <div className="flex items-start justify-between mb-5">
                 <div>
                   <p className="text-sm font-semibold text-z-active-text mb-1.5">
                     Zenith Page Builder
                   </p>
-                  <h3 className={cn('text-2xl font-semibold', isDark ? 'text-white' : 'text-black')}>
+                  <h3 className={cn('text-2xl font-semibold', isDark ? 'text-z-primary' : 'text-z-primary')}>
                     Add a Component
                   </h3>
                   <p className={cn('text-sm mt-1', isDark ? 'text-z-muted' : 'text-z-secondary')}>
@@ -151,8 +151,8 @@ export const GlobalComponentPickerModal: React.FC = () => {
                   className={cn(
                     'w-9 h-9 flex items-center justify-center border rounded-none-none transition-all flex-shrink-0 mt-0.5',
                     isDark
-                      ? 'bg-z-hover border-white/10 text-white hover:bg-white hover:text-black'
-                      : 'bg-gray-100 border-z-border text-black hover:bg-black hover:text-white'
+                      ? 'bg-z-hover border-z-border text-z-primary hover:bg-z-panel hover:text-z-primary'
+                      : 'bg-[var(--z-bg-hover)] border-z-border text-z-primary hover:bg-app hover:text-z-primary'
                   )}
                 >
                   <X size={15} />
@@ -174,8 +174,8 @@ export const GlobalComponentPickerModal: React.FC = () => {
                   className={cn(
                     'w-full pl-10 pr-10 py-2.5 text-sm rounded-none-none border transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
                     isDark
-                      ? 'bg-z-hover border-white/10 text-white placeholder-gray-600 focus:border-z-accent/40 focus:bg-white/[0.06]'
-                      : 'bg-z-input border-z-border text-black placeholder-gray-400 focus:border-z-active-border'
+                      ? 'bg-z-hover border-z-border text-z-primary placeholder:text-z-muted focus:border-z-accent/40 focus:bg-z-panel/[0.06]'
+                      : 'bg-z-input border-z-border text-z-primary placeholder:text-z-muted focus:border-z-active-border'
                   )}
                 />
                 {search && (
@@ -183,7 +183,7 @@ export const GlobalComponentPickerModal: React.FC = () => {
                     onClick={() => setSearch('')}
                     className={cn(
                       'absolute right-3 top-1/2 -translate-y-1/2 transition-colors',
-                      isDark ? 'text-gray-600 hover:text-white' : 'text-z-muted hover:text-black'
+                      isDark ? 'text-z-secondary hover:text-z-primary' : 'text-z-muted hover:text-z-primary'
                     )}
                   >
                     <X size={12} />
@@ -201,10 +201,10 @@ export const GlobalComponentPickerModal: React.FC = () => {
                     className={cn(
                       'px-3 py-1.5 text-sm font-semibold   whitespace-nowrap flex-shrink-0 transition-all rounded-none-none border',
                       activeCategory === cat
-                        ? 'bg-z-accent border-z-accent text-white shadow-sm'
+                        ? 'bg-z-accent border-z-accent text-z-primary shadow-sm'
                         : isDark
-                          ? 'bg-z-hover border-white/8 text-z-muted hover:text-white hover:border-z-active-border'
-                          : 'bg-z-input border-z-border text-z-secondary hover:text-black hover:border-z-active-border/50'
+                          ? 'bg-z-hover border-z-border text-z-muted hover:text-z-primary hover:border-z-active-border'
+                          : 'bg-z-input border-z-border text-z-secondary hover:text-z-primary hover:border-z-active-border/50'
                     )}
                   >
                     {cat}
@@ -217,11 +217,11 @@ export const GlobalComponentPickerModal: React.FC = () => {
             <div className="overflow-y-auto flex-1 p-6 space-y-8 custom-editor-scrollbar">
               {Object.keys(grouped).length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-                  <Search size={28} className={isDark ? 'text-gray-700' : 'text-gray-300'} />
+                  <Search size={28} className={isDark ? 'text-z-primary' : 'text-z-secondary'} />
                   <p className={cn('text-sm font-bold', isDark ? 'text-z-muted' : 'text-z-secondary')}>
                     No results for "{search}"
                   </p>
-                  <p className={cn('text-xs', isDark ? 'text-gray-600' : 'text-z-muted')}>
+                  <p className={cn('text-xs', isDark ? 'text-z-secondary' : 'text-z-muted')}>
                     Try a different keyword or browse all categories
                   </p>
                 </div>
@@ -230,11 +230,11 @@ export const GlobalComponentPickerModal: React.FC = () => {
                   <div key={category}>
                     {activeCategory === 'All' && (
                       <div className="flex items-center gap-3 mb-4">
-                        <span className={cn('h-px flex-1', isDark ? 'bg-z-hover' : 'bg-gray-100')} />
+                        <span className={cn('h-px flex-1', isDark ? 'bg-z-hover' : 'bg-[var(--z-bg-hover)]')} />
                         <span className={cn('text-sm font-semibold  ', isDark ? 'text-z-secondary' : 'text-z-muted')}>
                           {category}
                         </span>
-                        <span className={cn('h-px flex-1', isDark ? 'bg-z-hover' : 'bg-gray-100')} />
+                        <span className={cn('h-px flex-1', isDark ? 'bg-z-hover' : 'bg-[var(--z-bg-hover)]')} />
                       </div>
                     )}
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -251,30 +251,30 @@ export const GlobalComponentPickerModal: React.FC = () => {
                             className={cn(
                               'flex flex-col text-left group border overflow-hidden rounded-none-none transition-all',
                               isDark
-                                ? 'bg-z-panel border-white/8 hover:border-z-accent/50 hover:shadow-sm'
+                                ? 'bg-z-panel border-z-border hover:border-z-accent/50 hover:shadow-sm'
                                 : 'bg-z-panel border-z-border hover:border-z-active-border hover:shadow-sm'
                             )}
                           >
                             {/* Preview area */}
                             <div className={cn('w-full h-20 flex items-center justify-center relative bg-gradient-to-br', grad)}>
-                              <div className="text-white/30 group-hover:text-white/70 transition-colors duration-300" style={{ transform: 'scale(2.5)' }}>
+                              <div className="text-z-primary/30 group-hover:text-z-primary/70 transition-colors duration-300" style={{ transform: 'scale(2.5)' }}>
                                 <Icon size={16} />
                               </div>
                               {block.category && (
-                                <span className="absolute top-2 left-2 px-1.5 py-0.5 text-sm font-semibold bg-black/50 backdrop-blur text-white/80 rounded-none-none">
+                                <span className="absolute top-2 left-2 px-1.5 py-0.5 text-sm font-semibold bg-app/50 backdrop-blur text-z-primary/80 rounded-none-none">
                                   {block.category}
                                 </span>
                               )}
                               <div className="absolute bottom-0 right-0 p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <div className="w-5 h-5 bg-z-accent flex items-center justify-center rounded-none-none">
-                                  <Plus size={10} className="text-white" />
+                                  <Plus size={10} className="text-z-primary" />
                                 </div>
                               </div>
                             </div>
 
                             {/* Info */}
                             <div className={cn('p-3 flex-1 transition-colors', isDark ? 'group-hover:opacity-90/5' : 'group-hover:bg-z-active-bg/50')}>
-                              <p className={cn('text-sm font-semibold  italic  mb-0.5', isDark ? 'text-white' : 'text-black')}>
+                              <p className={cn('text-sm font-semibold  italic  mb-0.5', isDark ? 'text-z-primary' : 'text-z-primary')}>
                                 {block.title}
                               </p>
                               <p className={cn('text-sm leading-relaxed line-clamp-2', isDark ? 'text-z-secondary' : 'text-z-muted')}>
@@ -291,13 +291,13 @@ export const GlobalComponentPickerModal: React.FC = () => {
             </div>
 
             {/* Footer */}
-            <div className={cn('px-6 py-3 border-t flex items-center justify-between flex-shrink-0', isDark ? 'border-white/5 bg-z-panel' : 'border-z-border bg-gray-50/50')}>
+            <div className={cn('px-6 py-3 border-t flex items-center justify-between flex-shrink-0', isDark ? 'border-z-border bg-z-panel' : 'border-z-border bg-[var(--z-bg-input)]/50')}>
               <p className={cn('text-sm', isDark ? 'text-z-secondary' : 'text-z-muted')}>
                 {filtered.length} component{filtered.length !== 1 ? 's' : ''} available
               </p>
               <p className={cn('text-sm', isDark ? 'text-z-secondary' : 'text-z-muted')}>
                 Press{' '}
-                <kbd className={cn('px-1.5 py-0.5 font-mono rounded-none-none text-sm border', isDark ? 'bg-z-hover border-white/10' : 'bg-z-panel border-z-border')}>
+                <kbd className={cn('px-1.5 py-0.5 font-mono rounded-none-none text-sm border', isDark ? 'bg-z-hover border-z-border' : 'bg-z-panel border-z-border')}>
                   Esc
                 </kbd>{' '}
                 to close

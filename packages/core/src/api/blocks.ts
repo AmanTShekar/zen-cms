@@ -9,7 +9,6 @@ import fs from 'fs'
 import path from 'path'
 import { z } from 'zod'
 import rateLimit from 'express-rate-limit'
-import { getBlockStorage } from '../services/s3-storage'
 import { env } from '../config/env'
 
 const router: Router = Router()
@@ -79,8 +78,8 @@ router.get('/', requireAuth, async (req: Request, res: Response, next) => {
     
     if (adapter) {
       try {
-        const allDbBlocks = await adapter.find('z_schemas', { type: 'block' })
-        dbBlocks = allDbBlocks.filter((b: Record<string, any>) => !b.siteId || b.siteId === siteId)
+        const allDbBlocks = await adapter.find('z_schemas', { type: 'block', ...(siteId ? { siteId } : {}) })
+        dbBlocks = allDbBlocks
       } catch (err) {
         // If z_schemas doesn't exist yet or is empty, gracefully fallback
         console.warn('Could not fetch from z_schemas', err)
@@ -108,8 +107,8 @@ router.get('/:slug', requireAuth, async (req: Request, res: Response, next) => {
 
     if (adapter) {
       try {
-        const allDbBlocks = await adapter.find('z_schemas', { type: 'block' })
-        dbBlocks = allDbBlocks.filter((b: Record<string, any>) => !b.siteId || b.siteId === siteId)
+        const allDbBlocks = await adapter.find('z_schemas', { type: 'block', ...(siteId ? { siteId } : {}) })
+        dbBlocks = allDbBlocks
       } catch (err) {
         console.warn('Could not fetch from z_schemas', err)
       }
@@ -267,7 +266,7 @@ ${fieldsCode}
     try {
       const existing = await adapter.findOne('z_schemas', { slug: data.slug, siteId: siteId || null })
       if (existing) {
-        await adapter.update('z_schemas', (existing._id || existing.id).toString(), dbPayload)
+        await adapter.update('z_schemas', (existing._id || existing.id).toString(), dbPayload, { siteId: siteId || null })
       } else {
         await adapter.create('z_schemas', dbPayload)
       }

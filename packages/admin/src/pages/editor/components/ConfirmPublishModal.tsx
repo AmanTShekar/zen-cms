@@ -21,7 +21,7 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
  return createPortal(
  <AnimatePresence>
  {open && (
- <div className="fixed inset-0 z-[800] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+ <div className="fixed inset-0 z-[800] flex items-center justify-center bg-[var(--z-bg-modal)] backdrop-blur-sm">
  <motion.div
  initial={{ opacity: 0, scale: 0.95, y: 10 }}
  animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -30,7 +30,7 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
  className={cn(
  'w-full max-w-sm border rounded-none-none shadow-2xl p-6',
  theme === 'dark'
- ? 'bg-black border-z-border text-white'
+ ? 'bg-app border-z-border text-z-primary'
  : 'bg-z-panel border-z-border text-z-primary'
  )}
  >
@@ -45,14 +45,14 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
  </div>
  <div className="flex-1">
  <h3 className="text-sm font-semibold">Publish Document</h3>
- <p className={cn('text-xs font-bold mt-2 leading-relaxed', theme === 'dark' ? 'text-z-muted' : 'text-gray-600')}>
+ <p className={cn('text-xs font-bold mt-2 leading-relaxed', theme === 'dark' ? 'text-z-muted' : 'text-z-secondary')}>
  This will make the content live and visible to all visitors. Are you sure you want to publish?
  </p>
  </div>
  <button
  onClick={onCancel}
  aria-label="Close"
- className={cn('shrink-0 p-1 transition-colors', theme === 'dark' ? 'text-z-secondary hover:text-white' : 'text-z-muted hover:text-black')}
+ className={cn('shrink-0 p-1 transition-colors', theme === 'dark' ? 'text-z-secondary hover:text-z-primary' : 'text-z-muted hover:text-z-primary')}
  >
  <X size={16} />
  </button>
@@ -63,15 +63,15 @@ export const ConfirmPublishModal: React.FC<ConfirmPublishModalProps> = ({
  className={cn(
  'flex-1 py-2.5 text-xs font-semibold   border rounded-none-none transition-all',
  theme === 'dark'
- ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
- : 'border-z-border text-gray-600 hover:border-z-border-strong hover:text-black'
+ ? 'border-z-border text-z-muted hover:border-z-border hover:text-z-primary'
+ : 'border-z-border text-z-secondary hover:border-z-border-strong hover:text-z-primary'
  )}
  >
  Cancel
  </button>
  <button
  onClick={onConfirm}
- className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-600 dark:bg-gray-600 text-white text-xs font-semibold rounded-none-none hover:bg-gray-500 transition-all"
+ className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-z-accent  text-z-primary text-xs font-semibold rounded-none-none hover:bg-z-border transition-all"
  >
  <Rocket size={12} />
  Publish Now

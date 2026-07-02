@@ -18,7 +18,7 @@ export interface ITemplate extends Document {
 const TemplateSchema = new Schema<ITemplate>(
   {
     name: { type: String, required: true },
-    slug: { type: String, required: true, unique: true },
+    slug: { type: String, required: true },
     description: { type: String },
     blockType: { type: String, required: true },
     content: { type: Schema.Types.Mixed, required: true },
@@ -28,7 +28,7 @@ const TemplateSchema = new Schema<ITemplate>(
     siteId: { type: String, required: true },
     createdBy: { type: String, required: true },
   },
-  { timestamps: true }
+  { strict: true, timestamps: true }
 )
 
 TemplateSchema.index({ siteId: 1, blockType: 1 })

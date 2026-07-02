@@ -36,8 +36,8 @@ const SelectField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
         "w-full px-4 py-3 text-sm transition-all duration-350 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black",
         "backdrop-blur-md",
         theme === 'dark'
-          ? "bg-gray-900/65 text-white border border-white/8 focus:border-z-accent/50 focus-visible:ring-2 focus-visible:ring-z-active-border"
-          : "bg-white/80 text-z-primary border border-z-border focus:border-z-accent/50 focus-visible:ring-2 focus-visible:ring-z-active-border",
+          ? 'bg-z-base/65 backdrop-blur-md border-z-border text-z-primary focus:border-z-accent/50 focus-visible:ring-2 focus-visible:ring-z-active-border'
+          : 'bg-z-panel/80 backdrop-blur-md border-z-border text-z-primary focus:border-z-accent/50 focus-visible:ring-2 focus-visible:ring-z-active-border',
         isMulti ? "rounded-none-none min-h-[120px]" : "rounded-none-none",
         "disabled:opacity-60 disabled:cursor-not-allowed"
       )}

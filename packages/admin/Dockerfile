@@ -1,33 +1,24 @@
 # Stage 1: Build
 FROM node:20-alpine AS builder
+ARG PNPM_VERSION=9.15.9
 
 WORKDIR /app
 
 # Enable pnpm
-RUN corepack enable && corepack prepare pnpm@9 --activate
+RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
 
 # Copy root workspace config
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml .npmrc ./
 COPY tsconfig.json ./
 
-# Copy all workspace package.json files
-COPY packages/admin/package.json ./packages/admin/
-COPY packages/cli/package.json ./packages/cli/
-COPY packages/core/package.json ./packages/core/
-COPY packages/create-zenith-app/package.json ./packages/create-zenith-app/
-COPY packages/create-zenithcms-app/package.json ./packages/create-zenithcms-app/
-COPY packages/db-mongodb/package.json ./packages/db-mongodb/
-COPY packages/db-postgres/package.json ./packages/db-postgres/
-COPY packages/sdk/package.json ./packages/sdk/
-COPY packages/types/package.json ./packages/types/
+# Fetch dependencies using only the lockfile for better layer caching
+RUN pnpm fetch --frozen-lockfile
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile --ignore-scripts
+# Copy the entire workspace
+COPY . .
 
-# Copy source code
-COPY packages/admin/ ./packages/admin/
-COPY packages/types/ ./packages/types/
-COPY packages/sdk/ ./packages/sdk/
+# Install dependencies offline
+RUN pnpm install --frozen-lockfile --offline --ignore-scripts
 
 # Build dependencies then admin
 RUN pnpm --filter @zenith-open/zenithcms-types run build
@@ -46,6 +37,12 @@ RUN echo 'server { \
     server_name localhost; \
     root /usr/share/nginx/html; \
     index index.html; \
+    \
+    add_header X-Frame-Options "SAMEORIGIN" always; \
+    add_header X-Content-Type-Options "nosniff" always; \
+    add_header X-XSS-Protection "1; mode=block" always; \
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always; \
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always; \
     \
     gzip on; \
     gzip_vary on; \

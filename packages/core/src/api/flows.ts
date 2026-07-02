@@ -161,7 +161,7 @@ router.patch(
       const existingFlow = await adapter.findOne('flows', query)
       if (!existingFlow) throw new NotFoundError('Flow', req.params.id)
 
-      const flow = await adapter.update('flows', req.params.id, validation.data)
+      const flow = await adapter.update('flows', req.params.id, validation.data, siteId ? { siteId } : {})
       res.json(createResponse(flow))
     } catch (err) {
       next(err)
@@ -185,7 +185,7 @@ router.delete(
       const existingFlow = await adapter.findOne('flows', query)
       if (!existingFlow) throw new NotFoundError('Flow', req.params.id)
 
-      const deleted = await adapter.delete('flows', req.params.id)
+      const deleted = await adapter.delete('flows', req.params.id, siteId ? { siteId } : {})
       res.json(createResponse({ success: true }))
     } catch (err) {
       next(err)

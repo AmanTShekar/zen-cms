@@ -18,25 +18,24 @@ import {
  Image,
  FileText,
  ScrollText,
+ Terminal,
 } from 'lucide-react'
 import { cn } from '../lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { useTheme } from '../context/ThemeContext'
 import api from '../lib/api'
+import { usePermissions } from '../hooks/usePermissions'
 
 import { PageHeader } from '../components/ui/PageHeader'
 import { ActionPanel } from '../components/ui/ActionPanel'
 import { Card, CardContent } from '../components/ui/Card'
 
 import SettingsGeneral from './settings/SettingsGeneral'
-import SettingsMedia from './settings/SettingsMedia'
-import SettingsBilling from './settings/SettingsBilling'
 import SettingsSecurity from './settings/SettingsSecurity'
 import SettingsNotifications from './settings/SettingsNotifications'
 import SettingsUsers from './settings/SettingsUsers'
 import SettingsApiKeys from './settings/SettingsApiKeys'
-import SettingsAi from './settings/SettingsAi'
 import SettingsDatabase from './settings/SettingsDatabase'
 import SettingsRoles from './settings/SettingsRoles'
 import SettingsAppearance from './settings/SettingsAppearance'
@@ -46,6 +45,7 @@ import SettingsApiKeyModal from './settings/SettingsApiKeyModal'
 import SettingsWebhookLogs from './settings/SettingsWebhookLogs'
 import SettingsLegal from './settings/SettingsLegal'
 import SettingsSystem from './settings/SettingsSystem'
+import ApiExplorerPage from './ApiExplorerPage'
 
 interface Settings {
   siteName: string
@@ -59,42 +59,20 @@ interface Settings {
   supportedLocales: string[]
   timezone: string
   dateFormat: string
-  supportEmail: string
-  mediaProvider: string
-  maxUploadSize: number
-  jwtExpiresIn: string
-  passwordMinLength: number
-  allowRegistration: boolean
-  rateLimitWindow: number
-  rateLimitMax: number
-  corsOrigins: string[]
-  customCSS: string
-  smtpHost: string
-  smtpPort: number
-  smtpUser: string
-  smtpPass: string
-  fromEmail: string
-  smtpSecure: boolean
-  smtpFromName: string
-  emailSubjectPrefix: string
-  // AI Engine
-  aiProvider: string
-  aiModel: string
-  aiApiKey: string
-  openRouterApiKey: string
-  openaiApiKey: string
-  anthropicApiKey: string
-  googleApiKey: string
-  groqApiKey: string
-  nvidiaApiKey: string
-  togetherApiKey: string
-  mistralApiKey: string
-  cohereApiKey: string
-  xaiApiKey: string
   enableTelemetry: boolean
+  jwtExpiresIn?: string
+  passwordMinLength?: number
+  allowRegistration?: boolean
+  rateLimitWindow?: number
+  rateLimitMax?: number
+  smtpHost?: string
+  smtpPort?: number
+  smtpUser?: string
+  smtpPass?: string
+  fromEmail?: string
+  customCSS?: string
   [key: string]: any
 }
-
 interface DBStats {
  size?: number
  collections?: number | string
@@ -133,6 +111,7 @@ interface Role {
 
 const SettingsPage = () => {
  const { theme } = useTheme()
+ const { isAdmin, isEditor } = usePermissions()
  const location = useLocation()
  const queryParams = new URLSearchParams(location.search)
  const [activeTab, setActiveTab] = useState(queryParams.get('tab') || 'general')
@@ -158,27 +137,6 @@ const SettingsPage = () => {
   rateLimitMax: 100,
   corsOrigins: [],
   customCSS: '',
-  smtpHost: '',
-  smtpPort: 587,
-  smtpUser: '',
-  smtpPass: '',
-  fromEmail: '',
-  smtpSecure: false,
-  smtpFromName: '',
-  emailSubjectPrefix: '',
-  aiProvider: 'openrouter',
-  aiModel: 'anthropic/claude-3.5-sonnet',
-  aiApiKey: '',
-  openRouterApiKey: '',
-  openaiApiKey: '',
-  anthropicApiKey: '',
-  googleApiKey: '',
-  groqApiKey: '',
-  nvidiaApiKey: '',
-  togetherApiKey: '',
-  mistralApiKey: '',
-  cohereApiKey: '',
-  xaiApiKey: '',
   enableTelemetry: true,
  })
  const [loading, setLoading] = useState(true)
@@ -240,21 +198,28 @@ const SettingsPage = () => {
  if (tab) { setTimeout(() => setActiveTab(tab), 0) }
  }, [location.search])
 
- const handleSave = async () => {
- setSaving(true)
- try {
- await api.patch('/system/settings', settings)
- if (activeSite && activeSiteId) {
- await api.patch(`/sites/${activeSiteId}`, {
- billingEnabled: activeSite.billingEnabled,
- stripePublicKey: activeSite.stripePublicKey,
- stripeSecretKey: activeSite.stripeSecretKey,
- stripeWebhookSecret: activeSite.stripeWebhookSecret,
- currency: activeSite.currency,
- pricingPlans: activeSite.pricingPlans,
- })
- }
- toast.success('Settings committed successfully')
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      await api.patch('/system/settings', settings)
+      if (activeSite && activeSiteId) {
+        await api.patch(`/sites/${activeSiteId}`, {
+          billingEnabled: activeSite.billingEnabled,
+          paymentProvider: activeSite.paymentProvider,
+          stripePublicKey: activeSite.stripePublicKey,
+          stripeSecretKey: activeSite.stripeSecretKey,
+          stripeWebhookSecret: activeSite.stripeWebhookSecret,
+          paypalClientId: activeSite.paypalClientId,
+          paypalClientSecret: activeSite.paypalClientSecret,
+          paypalWebhookId: activeSite.paypalWebhookId,
+          razorpayKeyId: activeSite.razorpayKeyId,
+          razorpayKeySecret: activeSite.razorpayKeySecret,
+          razorpayWebhookSecret: activeSite.razorpayWebhookSecret,
+          currency: activeSite.currency,
+          pricingPlans: activeSite.pricingPlans,
+        })
+      }
+      toast.success('Settings committed successfully')
  } catch (err: any) {
  toast.error('Failed to commit settings')
  } finally {
@@ -262,37 +227,35 @@ const SettingsPage = () => {
  }
  }
 
- const tabGroups = [
-  {
- label: 'Environment Settings',
- tabs: [
- { id: 'general', label: 'General Info', icon: Globe, sub: 'Site Profile' },
- { id: 'appearance', label: 'Appearance', icon: Palette, sub: 'White-Label' },
- { id: 'media', label: 'Storage', icon: Image, sub: 'Storage Config' },
- { id: 'billing', label: 'Billing', icon: CreditCard, sub: 'Site Monetization' },
- ]
- },
- {
- label: 'Access Management',
- tabs: [
- { id: 'users', label: 'Users', icon: Users, sub: 'Admin Registry' },
- { id: 'roles', label: 'Roles & Permissions', icon: Shield, sub: 'Granular Access' },
- { id: 'keys', label: 'API Keys', icon: Key, sub: 'Access Tokens' },
- ]
- },
- {
-  label: 'Core Services',
+  const tabGroups = [
+   {
+  label: 'Environment Settings',
   tabs: [
-  { id: 'security', label: 'Security Policies', icon: Shield, sub: 'Access Control' },
-  { id: 'database', label: 'Database', icon: Database, sub: 'Storage Stats' },
-  { id: 'notifications', label: 'Email Relay', icon: Mail, sub: 'Email Delivery' },
-  { id: 'webhooks', label: 'Webhooks', icon: Webhook, sub: 'HTTP Callbacks' },
-  { id: 'webhook-logs', label: 'Event Logs', icon: Webhook, sub: 'Webhook History' },
-  { id: 'ai', label: 'AI Engine', icon: Sparkles, sub: 'Model Settings' },
-  { id: 'plugins', label: 'Plugins', icon: Puzzle, sub: 'Extensions' },
-  { id: 'system', label: 'System Ops', icon: SettingsIcon, sub: 'Restart & Maintenance' },
+  { id: 'general', label: 'General Info', icon: Globe, sub: 'Site Profile', adminOnly: true },
+  { id: 'appearance', label: 'Appearance', icon: Palette, sub: 'White-Label', adminOnly: true },
   ]
   },
+  {
+  label: 'Access Management',
+  tabs: [
+  { id: 'users', label: 'Users', icon: Users, sub: 'Admin Registry', adminOnly: true },
+  { id: 'roles', label: 'Roles & Permissions', icon: Shield, sub: 'Granular Access', adminOnly: true },
+  { id: 'keys', label: 'API Keys', icon: Key, sub: 'Access Tokens', adminOnly: true },
+  ]
+  },
+  {
+   label: 'Core Services',
+   tabs: [
+   { id: 'security', label: 'Security Policies', icon: Shield, sub: 'Access Control', adminOnly: true },
+   { id: 'api-explorer', label: 'API Explorer', icon: Terminal, sub: 'GraphQL & REST' },
+   { id: 'database', label: 'Database', icon: Database, sub: 'Storage Stats', adminOnly: true },
+   { id: 'notifications', label: 'Email Relay', icon: Mail, sub: 'Email Delivery', adminOnly: true },
+   { id: 'webhooks', label: 'Webhooks', icon: Webhook, sub: 'HTTP Callbacks', adminOnly: true },
+   { id: 'webhook-logs', label: 'Event Logs', icon: Webhook, sub: 'Webhook History', adminOnly: true },
+   { id: 'plugins', label: 'Plugins', icon: Puzzle, sub: 'Extensions', adminOnly: true },
+   { id: 'system', label: 'System Ops', icon: SettingsIcon, sub: 'Restart & Maintenance', adminOnly: true },
+   ]
+   },
   {
   label: 'Legal & Compliance',
   tabs: [
@@ -307,26 +270,22 @@ const SettingsPage = () => {
  switch (activeTab) {
  case 'general':
  return <SettingsGeneral settings={settings} setSettings={setSettings} theme={theme} />
- case 'media':
- return <SettingsMedia settings={settings} setSettings={setSettings} theme={theme} />
- case 'billing':
- return <SettingsBilling activeSite={activeSite} setActiveSite={setActiveSite} healthData={healthData} theme={theme} />
  case 'security':
- return <SettingsSecurity settings={settings} setSettings={setSettings} theme={theme} />
+ return <SettingsSecurity settings={settings as any} setSettings={setSettings as any} theme={theme} />
  case 'notifications':
- return <SettingsNotifications settings={settings} setSettings={setSettings} theme={theme} testingSmtp={testingSmtp} setTestingSmtp={setTestingSmtp} />
+ return <SettingsNotifications settings={settings as any} setSettings={setSettings as any} theme={theme} testingSmtp={testingSmtp} setTestingSmtp={setTestingSmtp} />
  case 'users':
  return <SettingsUsers users={users} theme={theme} fetchData={fetchData} />
  case 'keys':
  return <SettingsApiKeys apiKeys={apiKeys} theme={theme} fetchData={fetchData} setNewKey={setNewKey} />
- case 'ai':
- return <SettingsAi settings={settings} setSettings={setSettings} theme={theme} />
  case 'database':
  return <SettingsDatabase dbStats={dbStats} theme={theme} />
  case 'roles':
  return <SettingsRoles roles={roles} setRoles={setRoles} editingRole={editingRole} setEditingRole={setEditingRole} roleFilter={roleFilter} setRoleFilter={setRoleFilter} healthData={healthData} users={users} theme={theme} />
  case 'appearance':
- return <SettingsAppearance settings={settings} setSettings={setSettings} theme={theme} />
+ return <SettingsAppearance settings={settings as any} setSettings={setSettings as any} theme={theme} />
+ case 'api-explorer':
+ return <ApiExplorerPage />
  case 'webhooks':
  return <SettingsWebhooks theme={theme} />
   case 'plugins':
@@ -345,7 +304,7 @@ const SettingsPage = () => {
  if (loading) {
  return (
  <div className="min-h-[80vh] flex items-center justify-center">
- <Loader2 size={32} className="text-gray-600 dark:text-z-secondary animate-spin" />
+ <Loader2 size={32} className="text-z-secondary  animate-spin" />
  </div>
  )
  }
@@ -363,7 +322,7 @@ const SettingsPage = () => {
        disabled={saving}
        className={cn(
          'flex items-center justify-center gap-2 px-6 py-2.5 rounded-none text-sm font-bold transition-all disabled:opacity-50',
-         theme === 'dark' ? 'bg-z-accent hover:opacity-90 text-white shadow-sm' : 'bg-z-accent text-white hover:opacity-90'
+         theme === 'dark' ? 'bg-z-accent hover:brightness-110 text-z-logo-text shadow-sm' : 'bg-z-accent text-z-logo-text hover:opacity-90'
        )}
      >
        {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
@@ -384,20 +343,20 @@ const SettingsPage = () => {
              {group.label}
            </h3>
            <div className="space-y-1">
-             {group.tabs.map((tab) => (
+             {group.tabs.filter(tab => !tab.adminOnly || isAdmin).map((tab) => (
                <button
                  key={tab.id}
                  onClick={() => setActiveTab(tab.id)}
                  className={cn(
                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-none transition-all group border',
                    activeTab === tab.id
-                     ? theme === 'dark' ? 'bg-z-active-bg border-z-active-border text-z-active-text shadow-sm transform scale-[1.02]' : 'bg-z-active-bg border-z-active-border shadow-sm text-z-accent'
-                     : theme === 'dark' ? 'text-z-muted border-transparent hover:bg-z-panel hover:text-gray-200' : 'text-z-secondary border-transparent hover:bg-gray-50'
+                     ? 'bg-z-active-bg border-z-active-border text-z-active-text shadow-sm transform scale-[1.02]'
+                     : 'text-z-secondary border-transparent hover:bg-z-hover hover:text-z-primary'
                  )}
                >
                  <div className={cn(
-                   "w-8 h-8 flex items-center justify-center transition-colors",
-                   activeTab === tab.id ? "bg-z-accent text-white shadow-sm" : "bg-z-hover text-z-muted group-hover:text-gray-300"
+                   "w-8 h-8 flex items-center justify-center transition-colors shadow-sm",
+                   activeTab === tab.id ? "bg-z-accent text-z-logo-text" : "bg-z-hover text-z-secondary group-hover:text-z-primary"
                  )}>
                    <tab.icon size={16} />
                  </div>
@@ -412,7 +371,7 @@ const SettingsPage = () => {
      </div>
    }
  >
-    <div className={cn("flex-1 overflow-y-auto p-6 lg:p-10 pb-32 lg:pb-32", theme === 'dark' && 'bg-black')}>
+    <div className={cn("flex-1 overflow-y-auto p-6 lg:p-10 pb-32 lg:pb-32", theme === 'dark' && 'bg-app')}>
       <div className={cn("min-h-[600px] border mb-16", 'z-card p-8')}>
         <AnimatePresence mode="wait">
           <motion.div
@@ -422,12 +381,12 @@ const SettingsPage = () => {
             exit={{ opacity: 0, y: -10 }}
             className="space-y-8 relative z-10"
           >
-            <div className="flex items-center gap-4 border-b pb-6" style={{ borderColor: theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }}>
+            <div className="flex items-center gap-4 border-b pb-6" style={{ borderColor: 'var(--z-border)' }}>
               <div className="w-10 h-10 bg-z-active-bg flex items-center justify-center text-z-active-text">
                 {activeTabDetails?.icon && <activeTabDetails.icon size={20} />}
               </div>
              <div>
-               <h2 className={cn("text-xl font-bold ", theme === 'dark' ? 'text-white' : 'text-z-primary')}>
+               <h2 className={cn("text-xl font-bold ", 'text-z-primary')}>
                  {activeTabDetails?.label}
                </h2>
                <p className={cn("text-xs mt-1", theme === 'dark' ? 'text-z-muted' : 'text-z-secondary')}>{activeTabDetails?.sub}</p>

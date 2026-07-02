@@ -39,7 +39,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  return (
  <AnimatePresence>
  {templatesOpen && (
- <div className="fixed inset-0 z-[600] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+ <div className="fixed inset-0 z-[600] flex items-center justify-center p-6 bg-[var(--z-bg-modal)] backdrop-blur-sm">
  <motion.div
  ref={dialogRef}
  role="dialog"
@@ -60,13 +60,13 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  )}
  >
  <div className="flex items-center gap-3">
- <div className="w-8 h-8 rounded-none-none bg-gray-600 dark:bg-gray-600 flex items-center justify-center text-white">
+ <div className="w-8 h-8 rounded-none-none bg-z-accent  flex items-center justify-center text-z-primary">
  <Layout size={16} />
  </div>
  <div>
  <h3
  id={modalTitleId}
- className="text-lg font-semibold leading-none text-gray-600 dark:text-z-secondary"
+ className="text-lg font-semibold leading-none text-z-secondary "
  >
  Block Templates
  </h3>
@@ -78,7 +78,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  <button
  onClick={() => setTemplatesOpen(false)}
  aria-label="Close"
- className="p-1 hover:text-gray-600 dark:text-z-secondary transition-colors"
+ className="p-1 hover:text-z-secondary  transition-colors"
  style={{ color: theme === 'dark' ? '#fff' : '#000' }}
  >
  <X size={18} />
@@ -88,11 +88,11 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  <div className="p-6 max-h-[60vh] overflow-y-auto custom-editor-scrollbar">
  {templates.length === 0 ? (
  <div className="py-12 text-center">
- <Layout size={40} className="mx-auto mb-4 text-gray-600" />
+ <Layout size={40} className="mx-auto mb-4 text-z-secondary" />
  <p className="text-xs text-z-secondary font-semibold">
  No saved templates yet
  </p>
- <p className="text-xs text-gray-600 mt-2">
+ <p className="text-xs text-z-secondary mt-2">
  Select blocks, then save as template from the context menu
  </p>
  </div>
@@ -104,12 +104,12 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  className={cn(
  'p-4 border rounded-none-none space-y-3 relative group',
  theme === 'dark'
- ? 'bg-z-panel border-z-border hover:border-gray-500/30'
+ ? 'bg-z-panel border-z-border hover:border-z-border/30'
  : 'bg-z-input border-z-border hover:border-z-border-strong'
  )}
  >
  <div className="flex items-center justify-between">
- <span className="text-xs font-semibold text-gray-600 dark:text-z-muted">
+ <span className="text-xs font-semibold text-z-secondary">
  {template.name}
  </span>
  <span className="text-xs text-z-secondary">
@@ -119,7 +119,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  <div className="flex gap-2">
  <button
  onClick={() => applyTemplate(template)}
- className="flex-1 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-semibold rounded-none-none hover:bg-gray-500 transition-colors"
+ className="flex-1 py-2 bg-z-accent  text-z-primary text-xs font-semibold rounded-none-none hover:bg-z-border transition-colors"
  >
  Apply
  </button>
@@ -150,7 +150,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  {selectedSections.size > 0 && (
  <div className={cn(
  'p-4 border-t flex items-center justify-between',
- theme === 'dark' ? 'border-z-border bg-z-panel' : 'border-z-border shadow-sm bg-gray-50/50'
+ theme === 'dark' ? 'border-z-border bg-z-panel' : 'border-z-border shadow-sm bg-[var(--z-bg-input)]/50'
  )}>
  <span className="text-xs text-z-secondary font-semibold">
  {selectedSections.size} block{selectedSections.size > 1 ? 's' : ''} selected
@@ -161,7 +161,7 @@ export const TemplatesModal: React.FC<TemplatesModalProps> = ({
  setSelectedSections(new Set())
  }}
  aria-label="Save selection as template"
- className="flex items-center gap-2 px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-semibold rounded-none-none hover:bg-gray-500 transition-colors"
+ className="flex items-center gap-2 px-4 py-2 bg-z-accent  text-z-primary text-xs font-semibold rounded-none-none hover:bg-z-border transition-colors"
  >
  <Download size={12} aria-hidden="true" />
  Save as Template

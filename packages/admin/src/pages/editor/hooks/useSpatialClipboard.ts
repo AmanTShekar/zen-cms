@@ -25,7 +25,7 @@ export function useSpatialClipboard({
     } catch {
       copiedSectionRef.current = section
     }
-    toast.success('Section copied', { icon: '📋' })
+    toast.success('Section copied', { icon: '' })
   }, [dataRef])
 
   const insertCopiedSection = useCallback((sourceSection: Section, afterSectionId?: string) => {
@@ -47,7 +47,7 @@ export function useSpatialClipboard({
     })
     editorSetActiveSection(newSection.id)
     editorSetHasUnsavedChanges(true)
-    toast.success('Section pasted', { icon: '📋' })
+    toast.success('Section pasted', { icon: '' })
   }, [editorUpdateData, editorSetActiveSection, editorSetHasUnsavedChanges])
 
   const pasteSection = useCallback((sectionId: string) => {
@@ -62,13 +62,13 @@ export function useSpatialClipboard({
       if (copiedSectionRef.current) {
         insertCopiedSection(copiedSectionRef.current, sectionId)
       } else {
-        toast.error('No copied section found', { icon: '⚠️' })
+        toast.error('No copied section found', { icon: '️' })
       }
     }).catch(() => {
       if (copiedSectionRef.current) {
         insertCopiedSection(copiedSectionRef.current, sectionId)
       } else {
-        toast.error('No copied section found', { icon: '⚠️' })
+        toast.error('No copied section found', { icon: '️' })
       }
     })
   }, [insertCopiedSection])

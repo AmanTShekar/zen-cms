@@ -29,12 +29,12 @@ export const useI18nStore = create<I18nState>((set, get) => ({
  i18nEnabled: false,
  currentLocale: 'en',
  availableLocales: [
- { code: 'en', name: 'English', flag: '🇺🇸', default: true },
- { code: 'es', name: 'Español', flag: '🇪🇸', default: false },
- { code: 'fr', name: 'Français', flag: '🇫🇷', default: false },
- { code: 'de', name: 'Deutsch', flag: '🇩🇪', default: false },
- { code: 'zh', name: '中文', flag: '🇨🇳', default: false },
- { code: 'ja', name: '日本語', flag: '🇯🇵', default: false },
+ { code: 'en', name: 'English', flag: '', default: true },
+ { code: 'es', name: 'Español', flag: '', default: false },
+ { code: 'fr', name: 'Français', flag: '', default: false },
+ { code: 'de', name: 'Deutsch', flag: '', default: false },
+ { code: 'zh', name: '中文', flag: '', default: false },
+ { code: 'ja', name: '日本語', flag: '', default: false },
  ],
  translations: {},
 

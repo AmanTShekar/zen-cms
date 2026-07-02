@@ -33,11 +33,11 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
  }
 
  return (
- <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+ <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--z-bg-modal)] backdrop-blur-sm">
  <div
  className={cn(
  'w-full max-w-sm border rounded-none-none shadow-2xl',
- theme === 'dark' ? 'bg-black border-red-500/10' : 'bg-white border-red-100'
+ theme === 'dark' ? 'bg-app border-red-500/10' : 'bg-z-panel border-red-100'
  )}
  >
  <div className="flex items-center justify-between px-8 py-6 border-b border-z-border">
@@ -49,15 +49,15 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
  Delete Role
  </span>
  </div>
- <button onClick={onClose} className="text-z-secondary hover:text-white transition-colors">
+ <button onClick={onClose} className="text-z-secondary hover:text-z-primary transition-colors">
  <X size={18} />
  </button>
  </div>
 
  <div className="px-8 py-6 space-y-5">
- <p className="text-sm font-semibold text-gray-300 leading-relaxed">
+ <p className="text-sm font-semibold text-z-secondary leading-relaxed">
  Are you sure you want to delete{' '}
- <span className="text-white">"{role.roleName}"</span>? This action
+ <span className="text-z-primary">"{role.roleName}"</span>? This action
  cannot be undone and any users assigned to this role will lose access.
  </p>
 
@@ -75,7 +75,7 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
  className={cn(
  'flex-1 py-3.5 rounded-none-none text-sm font-semibold   border transition-all active:scale-95 disabled:opacity-40',
  theme === 'dark'
- ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
+ ? 'border-z-border text-z-muted hover:border-z-border hover:text-z-primary'
  : 'border-z-border text-z-secondary hover:border-z-border-strong'
  )}
  >
@@ -87,7 +87,7 @@ const DeleteRoleConfirmDialog: React.FC<DeleteRoleConfirmDialogProps> = ({
  disabled={loading}
  className={cn(
  'flex-1 py-3.5 rounded-none-none text-sm font-semibold   shadow-lg transition-all active:scale-95 disabled:opacity-40 flex items-center justify-center gap-2',
- 'bg-red-500 hover:bg-red-600 text-white shadow-sm/20'
+ 'bg-red-500 hover:bg-red-600 text-z-primary shadow-sm/20'
  )}
  >
  {loading ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}

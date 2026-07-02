@@ -1,0 +1,20 @@
+{
+  "name": "@zenith-open/zenithcms-plugin-auth-github",
+  "version": "1.0.0",
+  "description": "GitHub OAuth Strategy",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "passport-github2": "^0.1.12"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "peerDependencies": {
+    "@zenith-open/zenithcms-core": "workspace:*",
+    "@zenith-open/zenithcms-types": "workspace:*"
+  }
+}

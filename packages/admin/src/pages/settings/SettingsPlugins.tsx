@@ -161,7 +161,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <div className="flex items-center justify-between border-b border-z-border pb-4">
  <div className="flex flex-col">
  <h3 className="text-sm font-semibold flex items-center gap-3">
- <Puzzle size={16} className="text-gray-600 dark:text-z-muted" />
+ <Puzzle size={16} className="text-z-secondary" />
  Plugin Registry
  </h3>
  <span className="text-sm text-z-secondary font-bold mt-1">
@@ -171,7 +171,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <button
  type="button"
  onClick={() => setShowInstallForm(!showInstallForm)}
- className="flex items-center gap-2 px-4 py-2 border border-z-active-border hover:border-z-accent hover:bg-z-active-bg text-sm font-semibold transition-all text-z-accent dark:text-z-active-text hover:text-white"
+ className="flex items-center gap-2 px-4 py-2 border border-z-active-border hover:border-z-accent hover:bg-z-active-bg text-sm font-semibold transition-all text-z-accent dark:text-z-active-text hover:text-z-primary"
  >
  <Plus size={12} />
  Install Plugin
@@ -187,15 +187,15 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  exit={{ opacity: 0, height: 0 }}
  className={cn(
  'border rounded-none overflow-hidden shadow-sm',
- theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-z-border' : 'bg-z-input border-z-border'
+ 'bg-z-panel backdrop-blur-md border-z-border'
  )}
  >
  <div className="p-6 space-y-4">
  <div className="flex items-center justify-between">
- <span className="text-sm font-semibold text-gray-600 dark:text-z-muted">
+ <span className="text-sm font-semibold text-z-secondary">
  Register New Plugin
  </span>
- <button onClick={() => setShowInstallForm(false)} className="text-z-secondary hover:text-white text-sm font-semibold">
+ <button onClick={() => setShowInstallForm(false)} className="text-z-secondary hover:text-z-primary text-sm font-semibold">
  Cancel
  </button>
  </div>
@@ -209,8 +209,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => setInstallForm(prev => ({ ...prev, id: e.target.value }))}
  placeholder="acme-analytics"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'bg-z-panel border-z-border text-z-primary focus:border-z-active-border'
  )}
  />
  </div>
@@ -222,8 +222,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => setInstallForm(prev => ({ ...prev, name: e.target.value }))}
  placeholder="ACME Analytics"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'bg-z-panel border-z-border text-z-primary focus:border-z-active-border'
  )}
  />
  </div>
@@ -235,8 +235,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => setInstallForm(prev => ({ ...prev, version: e.target.value }))}
  placeholder="1.0.0"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'bg-z-panel border-z-border text-z-primary focus:border-z-active-border'
  )}
  />
  </div>
@@ -248,8 +248,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => setInstallForm(prev => ({ ...prev, author: e.target.value }))}
  placeholder="ACME Corp"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'bg-z-panel border-z-border text-z-primary focus:border-z-active-border'
  )}
  />
  </div>
@@ -261,8 +261,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => setInstallForm(prev => ({ ...prev, homepage: e.target.value }))}
  placeholder="https://example.com/plugin"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'bg-z-panel border-z-border text-z-primary focus:border-z-active-border'
  )}
  />
  </div>
@@ -274,8 +274,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => setInstallForm(prev => ({ ...prev, packageName: e.target.value }))}
  placeholder="zenith-plugin-acme-analytics"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'bg-z-panel border-z-border text-z-primary focus:border-z-active-border'
  )}
  />
  </div>
@@ -290,7 +290,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  rows={2}
  className={cn(
  'w-full border rounded-none py-2.5 px-3 text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black resize-none',
- theme === 'dark' ? 'bg-black border-z-border text-white focus:border-z-accent' : 'bg-z-panel border-z-border focus:border-z-accent'
+ theme === 'dark' ? 'bg-app border-z-border text-z-primary focus:border-z-accent' : 'bg-z-panel border-z-border focus:border-z-accent'
  )}
  />
  </div>
@@ -299,7 +299,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <button
  onClick={handleInstall}
  disabled={saving === 'install'}
- className={cn("flex items-center gap-2 px-6 py-3 text-white text-sm font-semibold   transition-all disabled:opacity-40", theme === 'dark' ? 'bg-z-accent hover:opacity-90 shadow-sm' : 'bg-gray-900 hover:bg-gray-800')}
+ className={cn("flex items-center gap-2 px-6 py-3 text-z-primary text-sm font-semibold   transition-all disabled:opacity-40", 'bg-z-accent hover:brightness-110 shadow-sm text-z-logo-text')}
  >
  {saving === 'install' ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
  Install Plugin
@@ -320,7 +320,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => setSearchQuery(e.target.value)}
  className={cn(
  'w-full border rounded-none py-3 pl-11 pr-4 text-sm font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black/40 border-z-border text-white focus:border-z-accent' : 'bg-z-panel border-z-border focus:border-z-accent'
+ theme === 'dark' ? 'bg-z-panel border-z-border text-z-primary focus:border-z-accent' : 'bg-z-panel border-z-border focus:border-z-accent'
  )}
  />
  </div>
@@ -328,18 +328,18 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  {/* Plugin list */}
  {loading ? (
  <div className="flex items-center justify-center py-12">
- <Loader2 size={24} className="text-gray-600 dark:text-z-secondary animate-spin" />
+ <Loader2 size={24} className="text-z-secondary  animate-spin" />
  </div>
  ) : filteredPlugins.length === 0 ? (
  <div className={cn(
  'p-12 border border-dashed rounded-none text-center space-y-4',
- theme === 'dark' ? 'border-z-border' : 'border-z-border'
+ 'border-z-border'
  )}>
- <Package size={40} className="mx-auto text-gray-600" />
+ <Package size={40} className="mx-auto text-z-secondary" />
  <p className="text-sm font-semibold text-z-secondary">
  {plugins.length === 0 ? 'No plugins installed' : 'No plugins match your search'}
  </p>
- <p className="text-sm text-gray-600">
+ <p className="text-sm text-z-secondary">
  {plugins.length === 0
  ? 'Install plugins to extend Zenith CMS functionality'
  : 'Try a different search term'}
@@ -357,8 +357,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  className={cn(
  'border rounded-none overflow-hidden transition-all shadow-sm',
  plugin.enabled
- ? theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-z-border' : 'bg-z-panel border-z-border shadow-sm'
- : theme === 'dark' ? 'bg-black/30 backdrop-blur-sm border-white/[0.03] opacity-60' : 'bg-z-input border-z-border shadow-sm opacity-60'
+ ? 'bg-z-panel backdrop-blur-md border-z-border shadow-sm'
+ : 'bg-z-input border-z-border opacity-60'
  )}
  >
  {/* Plugin header */}
@@ -367,25 +367,25 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <div className={cn(
  'w-10 h-10 rounded-none border flex items-center justify-center',
  plugin.enabled
- ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted'
- : theme === 'dark' ? 'bg-z-hover border-z-border text-gray-600' : 'bg-gray-100 border-z-border text-z-muted'
+ ? 'bg-z-panel/5 border-z-border text-z-secondary'
+ : theme === 'dark' ? 'bg-z-hover border-z-border text-z-secondary' : 'bg-[var(--z-bg-hover)] border-z-border text-z-muted'
  )}>
  <Puzzle size={18} />
  </div>
  <div className="flex flex-col">
  <div className="flex items-center gap-2">
- <span className="text-sm font-semibold text-white">{plugin.name}</span>
+ <span className="text-sm font-semibold text-z-primary">{plugin.name}</span>
  <span className="text-sm font-semibold text-z-secondary font-mono">v{plugin.version}</span>
  {plugin.enabled
- ? <CheckCircle2 size={12} className="text-gray-600 dark:text-z-secondary" />
- : <XCircle size={12} className="text-gray-600" />
+ ? <CheckCircle2 size={12} className="text-z-secondary " />
+ : <XCircle size={12} className="text-z-secondary" />
  }
  </div>
  <div className="flex items-center gap-2 mt-0.5">
  <span className="text-sm font-bold text-z-secondary font-mono">{plugin.id}</span>
  {plugin.author && (
  <>
- <span className="text-gray-700">·</span>
+ <span className="text-z-primary">·</span>
  <span className="text-sm font-bold text-z-secondary">{plugin.author}</span>
  </>
  )}
@@ -404,7 +404,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  rel="noopener noreferrer"
  className={cn(
  'p-2 border rounded-none transition-colors',
- theme === 'dark' ? 'border-z-border text-z-secondary hover:text-gray-600 dark:text-z-muted' : 'border-z-border text-z-muted hover:text-gray-600'
+ 'border-z-border text-z-secondary hover:text-z-primary'
  )}
  title="Plugin homepage"
  >
@@ -418,7 +418,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  'p-2 border rounded-none transition-colors',
  plugin.enabled
  ? 'border-amber-500/20 text-amber-500 hover:text-amber-400'
- : theme === 'dark' ? 'border-z-border text-z-secondary hover:text-gray-600 dark:text-z-muted' : 'border-z-border text-z-muted hover:text-gray-600'
+ : 'border-z-border text-z-secondary hover:text-z-primary'
  )}
  title={plugin.enabled ? 'Disable' : 'Enable'}
  >
@@ -433,8 +433,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  className={cn(
  'p-2 border rounded-none transition-colors',
  isExpanded
- ? 'border-gray-500/30 text-gray-600 dark:text-z-muted'
- : theme === 'dark' ? 'border-z-border text-z-secondary hover:text-white' : 'border-z-border text-z-muted hover:text-gray-600'
+ ? 'border-z-border/30 text-z-secondary'
+ : theme === 'dark' ? 'border-z-border text-z-secondary hover:text-z-primary' : 'border-z-border text-z-muted hover:text-z-secondary'
  )}
  title="Configure"
  >
@@ -446,7 +446,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  disabled={saving === plugin.id}
  className={cn(
  'p-2 border rounded-none transition-colors',
- theme === 'dark' ? 'border-z-border text-z-secondary hover:text-red-400' : 'border-z-border text-z-muted hover:text-red-600'
+ 'border-z-border text-z-secondary hover:text-status-red'
  )}
  title="Uninstall"
  >
@@ -464,7 +464,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  exit={{ opacity: 0, height: 0 }}
  className={cn(
  'border-t px-5 py-4 space-y-4',
- theme === 'dark' ? 'border-z-border bg-black/20' : 'border-z-border shadow-sm bg-gray-50/50'
+ theme === 'dark' ? 'border-z-border bg-app/20' : 'border-z-border shadow-sm bg-[var(--z-bg-input)]/50'
  )}
  >
  <span className="text-sm font-semibold text-z-muted">Plugin Settings</span>
@@ -475,7 +475,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  {schema.required && <span className="text-red-400 ml-1">*</span>}
  </label>
  {schema.description && (
- <p className="text-sm text-gray-600">{schema.description}</p>
+ <p className="text-sm text-z-secondary">{schema.description}</p>
  )}
  {schema.type === 'boolean' ? (
  <button
@@ -483,7 +483,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  className={cn(
  'flex items-center gap-2 px-3 py-2 border rounded-none transition-colors',
  plugin.config?.[key]
- ? 'border-gray-500/30 bg-gray-500/10 text-gray-600 dark:text-z-muted'
+ ? 'border-z-border/30 bg-z-panel text-z-secondary'
  : 'border-z-border text-z-secondary'
  )}
  >
@@ -495,8 +495,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  value={plugin.config?.[key] || schema.default || ''}
  onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-sm font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-sm font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'bg-z-panel border-z-border text-z-primary focus:border-z-active-border'
  )}
  >
  {schema.options?.map(opt => (
@@ -510,8 +510,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
  placeholder="••••••••"
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'bg-z-panel border-z-border text-z-primary focus:border-z-active-border'
  )}
  />
  ) : (
@@ -520,8 +520,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  value={plugin.config?.[key] || schema.default || ''}
  onChange={(e) => handleConfigChange(plugin.id, key, e.target.value)}
  className={cn(
- 'w-full border rounded-none py-2.5 px-3 text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
+ 'w-full border rounded-none py-2.5 px-3 text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'bg-z-panel border-z-border text-z-primary focus:border-z-active-border'
  )}
  />
  )}
@@ -531,7 +531,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <button
  onClick={() => handleSaveConfig(plugin)}
  disabled={saving === plugin.id}
- className={cn("flex items-center gap-2 px-5 py-2.5 text-white text-sm font-semibold   transition-all disabled:opacity-40", theme === 'dark' ? 'bg-z-accent hover:opacity-90 shadow-sm' : 'bg-gray-900 hover:bg-gray-800')}
+ className={cn("flex items-center gap-2 px-5 py-2.5 text-z-primary text-sm font-semibold   transition-all disabled:opacity-40", 'bg-z-accent hover:brightness-110 shadow-sm text-z-logo-text')}
  >
  {saving === plugin.id ? <Loader2 size={10} className="animate-spin" /> : null}
  Save Settings
@@ -549,7 +549,7 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  {/* Info footer */}
  <div className={cn(
  'p-5 border rounded-none-none space-y-3',
- theme === 'dark' ? 'bg-gray-500/5 border-gray-500/10' : 'bg-gray-50 border-z-border'
+ theme === 'dark' ? 'bg-z-hover border-z-border/10' : 'bg-[var(--z-bg-input)] border-z-border'
  )}>
  <div className="flex items-center gap-3">
  <AlertTriangle size={14} className="text-amber-400" />
@@ -558,8 +558,8 @@ const SettingsPlugins: React.FC<SettingsPluginsProps> = ({ theme }) => {
  <ul className="space-y-1.5 text-sm text-z-muted font-bold leading-relaxed">
  <li>• Plugins are registered in the database and managed via this UI</li>
  <li>• Plugin code must be loaded at engine startup via cms.config.ts</li>
- <li>• Community plugins should be published as <code className="text-gray-600 dark:text-z-muted font-mono">zenith-plugin-*</code> on npm</li>
- <li>• Use <code className="text-gray-600 dark:text-z-muted font-mono">configSchema</code> to expose settings that admins can configure here</li>
+ <li>• Community plugins should be published as <code className="text-z-secondary font-mono">zenith-plugin-*</code> on npm</li>
+ <li>• Use <code className="text-z-secondary font-mono">configSchema</code> to expose settings that admins can configure here</li>
  <li>• Disabled plugins are not applied but remain installed for easy re-enabling</li>
  </ul>
  </div>

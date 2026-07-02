@@ -69,9 +69,7 @@ export default function MediaLibrary() {
   const [focalPoint, setFocalPoint] = useState<{ x: number; y: number } | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
 
-  // Blob URL cache
-  const [blobMap, setBlobMap] = React.useState<Record<string, string>>({})
-  const blobTokens = React.useRef<Set<string>>(new Set())
+  // Removed blob cache state
 
   useEffect(() => {
     if (selectedFile) {
@@ -82,7 +80,7 @@ export default function MediaLibrary() {
   const getFullUrl = (url?: string) => {
     if (!url) return ''
     if (url.startsWith('http')) return url
-    return blobMap[url] || `${import.meta.env.VITE_API_URL || ''}${url}`
+    return `${(import.meta.env.VITE_API_URL || '').replace('/api/v1', '')}${url}`
   }
 
   const fetchFiles = useCallback(async () => {
@@ -111,31 +109,7 @@ export default function MediaLibrary() {
     fetchFiles()
   }, [fetchFiles])
 
-  // Pre-fetch blob URLs for auth
-  useEffect(() => {
-    if (!files.length && !selectedFile) return
-    const items = [...files, selectedFile].filter((f: any) => f?.url && !f.url.startsWith('http') && !blobMap[f.url])
-    if (!items.length) return
-    const apiBase = (import.meta.env.VITE_API_URL || '').replace('/api/v1', '')
-    
-    items.forEach((item) => {
-      fetch(`${apiBase}${item.url}`, { credentials: 'include' })
-        .then((r) => {
-          if (!r.ok) throw new Error('Fetch failed')
-          return r.blob()
-        })
-        .then((blob) => {
-          const objectUrl = URL.createObjectURL(blob)
-          blobTokens.current.add(objectUrl)
-          setBlobMap(prev => ({ ...prev, [item.url]: objectUrl }))
-        })
-        .catch(() => {})
-    })
-  }, [files, selectedFile, blobMap])
 
-  useEffect(() => {
-    return () => { blobTokens.current.forEach((u) => URL.revokeObjectURL(u)) }
-  }, [])
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return
@@ -246,7 +220,7 @@ export default function MediaLibrary() {
 
   if (!activeSiteId) {
     return (
-      <div className={cn('flex-1 h-full w-full flex flex-col items-center justify-center p-12 transition-colors duration-500', theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-z-primary')}>
+      <div className={cn('flex-1 h-full w-full flex flex-col items-center justify-center p-12 transition-colors duration-500', theme === 'dark' ? 'bg-app text-z-primary' : 'bg-[#fafafa] text-z-primary')}>
         <Database size={48} className="text-z-secondary/30 mb-6" />
         <h2 className="text-xl font-semibold text-z-muted mb-2">No Site Selected</h2>
         <p className="text-sm font-medium text-z-secondary">Please select a site to manage its media registry.</p>
@@ -255,13 +229,13 @@ export default function MediaLibrary() {
   }
 
   return (
-    <div className={cn('h-full flex flex-col transition-colors duration-300', theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-z-primary')}>
+    <div className={cn('h-full flex flex-col transition-colors duration-300', theme === 'dark' ? 'bg-app text-z-primary' : 'bg-[#fafafa] text-z-primary')}>
       
       {/* ── Storage Dashboard Header ───────────────────────────────────────── */}
       <div className="shrink-0 p-6 space-y-4 max-w-screen-2xl mx-auto w-full">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className={cn('w-12 h-12 flex items-center justify-center shadow-sm border transition-colors', theme === 'dark' ? 'bg-z-hover border-z-border text-white' : 'bg-z-panel border-z-border text-z-primary')}>
+            <div className={cn('w-12 h-12 flex items-center justify-center shadow-sm border transition-colors', theme === 'dark' ? 'bg-z-hover border-z-border text-z-primary' : 'bg-z-panel border-z-border text-z-primary')}>
               <HardDrive size={20} />
             </div>
             <div>
@@ -275,7 +249,7 @@ export default function MediaLibrary() {
               onClick={handleUrlLink}
               className={cn(
                 'px-5 py-2.5 font-semibold text-sm transition-all leading-none flex items-center gap-2 shadow-sm',
-                theme === 'dark' ? 'bg-z-hover text-white border border-z-border hover:bg-white/10' : 'bg-gray-100 text-black border border-z-border hover:bg-gray-200'
+                theme === 'dark' ? 'bg-z-hover text-z-primary border border-z-border hover:bg-[var(--z-bg-hover)]' : 'bg-[var(--z-bg-hover)] text-z-primary border border-z-border hover:bg-[var(--z-border)]'
               )}
             >
               <Link2 size={14} strokeWidth={3} />
@@ -283,7 +257,7 @@ export default function MediaLibrary() {
             </button>
             <label className={cn(
               'px-5 py-2.5 font-semibold text-sm transition-all leading-none flex items-center gap-2 cursor-pointer shadow-sm',
-              theme === 'dark' ? 'bg-white text-black hover:bg-gray-200' : 'bg-gray-900 text-white hover:bg-black'
+              theme === 'dark' ? 'bg-z-panel text-z-primary hover:bg-[var(--z-border)]' : 'bg-z-accent text-z-primary hover:bg-app'
             )}>
               <Plus size={14} strokeWidth={3} />
               Upload Asset
@@ -296,13 +270,13 @@ export default function MediaLibrary() {
         <div className={cn('grid grid-cols-2 md:grid-cols-4 gap-4 p-5 border shadow-sm', theme === 'dark' ? 'bg-z-panel backdrop-blur-[12px] border-z-border' : 'bg-z-panel border-z-border/60')}>
           <div className="flex flex-col justify-between">
             <span className="text-sm font-semibold text-z-secondary flex items-center gap-1.5"><Server size={11} /> Adapter</span>
-            <span className={cn('text-lg font-semibold  mt-1', theme === 'dark' ? 'text-white' : 'text-z-primary')}>
+            <span className={cn('text-lg font-semibold  mt-1', 'text-z-primary')}>
               {import.meta.env.VITE_S3_BUCKET ? 'AWS S3' : 'Local File System'}
             </span>
           </div>
           <div className="flex flex-col justify-between">
             <span className="text-sm font-semibold text-z-secondary flex items-center gap-1.5"><Database size={11} /> Mass</span>
-            <span className={cn('text-lg font-semibold  mt-1 tabular-nums', theme === 'dark' ? 'text-white' : 'text-z-primary')}>
+            <span className={cn('text-lg font-semibold  mt-1 tabular-nums', 'text-z-primary')}>
               {files.length} <span className="text-sm text-z-secondary ml-1">Assets</span>
             </span>
           </div>
@@ -317,7 +291,7 @@ export default function MediaLibrary() {
               <span>Images</span>
               <span>Data</span>
             </div>
-            <div className={cn('w-full h-2 flex border overflow-hidden', theme === 'dark' ? 'border-white/10 bg-z-hover' : 'border-z-border bg-gray-100')}>
+            <div className={cn('w-full h-2 flex border overflow-hidden', theme === 'dark' ? 'border-z-border bg-z-hover' : 'border-z-border bg-[var(--z-bg-hover)]')}>
               <div 
                 className="h-full bg-z-accent transition-all duration-1000" 
                 style={{ width: `${metrics.total ? (metrics.images / metrics.total) * 100 : 0}%` }} 
@@ -344,8 +318,8 @@ export default function MediaLibrary() {
             className={cn(
               'w-full flex items-center justify-between px-3 py-2.5 transition-all text-sm font-bold',
               activeFolder === null
-                ? (theme === 'dark' ? 'bg-z-hover text-white border-l-2 border-z-accent' : 'bg-gray-100 text-z-primary border-l-2 border-z-accent')
-                : 'text-z-secondary hover:text-gray-700 hover:bg-gray-50 border-l-2 border-transparent dark:hover:bg-z-panel'
+                ? (theme === 'dark' ? 'bg-z-hover text-z-primary border-l-2 border-z-accent' : 'bg-[var(--z-bg-hover)] text-z-primary border-l-2 border-z-accent')
+                : 'text-z-secondary hover:text-z-primary hover:bg-[var(--z-bg-input)] border-l-2 border-transparent dark:hover:bg-z-panel'
             )}
           >
             <div className="flex items-center gap-2.5">
@@ -360,8 +334,8 @@ export default function MediaLibrary() {
               className={cn(
                 'w-full flex items-center justify-between px-3 py-2.5 transition-all text-sm font-bold capitalize',
                 activeFolder === folder
-                  ? (theme === 'dark' ? 'bg-z-hover text-white border-l-2 border-z-accent' : 'bg-gray-100 text-z-primary border-l-2 border-z-accent')
-                  : 'text-z-secondary hover:text-gray-700 hover:bg-gray-50 border-l-2 border-transparent dark:hover:bg-z-panel'
+                  ? (theme === 'dark' ? 'bg-z-hover text-z-primary border-l-2 border-z-accent' : 'bg-[var(--z-bg-hover)] text-z-primary border-l-2 border-z-accent')
+                  : 'text-z-secondary hover:text-z-primary hover:bg-[var(--z-bg-input)] border-l-2 border-transparent dark:hover:bg-z-panel'
               )}
             >
               <div className="flex items-center gap-2.5">
@@ -373,10 +347,10 @@ export default function MediaLibrary() {
         </div>
 
         {/* Center - File Grid/List */}
-        <div className="flex-1 flex flex-col min-w-0 border bg-white dark:bg-black/40 border-z-border dark:border-z-border shadow-sm relative overflow-hidden">
+        <div className="flex-1 flex flex-col min-w-0 border bg-z-panel dark:bg-z-panel border-z-border dark:border-z-border shadow-sm relative overflow-hidden">
           
           {/* Toolbar */}
-          <div className={cn('flex items-center justify-between p-3 border-b z-10 bg-white/80 dark:bg-black/80 backdrop-blur-md', theme === 'dark' ? 'border-z-border' : 'border-z-border')}>
+          <div className={cn('flex items-center justify-between p-3 border-b z-10 bg-z-panel/80 dark:bg-[var(--z-bg-modal)] backdrop-blur-md', 'border-z-border')}>
             <div className="flex items-center gap-3">
               <button onClick={toggleSelectAll} className="p-1.5 text-z-secondary hover:text-z-active-text transition-colors">
                 {selectedIds.size > 0 ? <CheckSquare size={16} /> : <Square size={16} />}
@@ -391,13 +365,13 @@ export default function MediaLibrary() {
                   onChange={e => setSearch(e.target.value)}
                   className={cn(
                     'pl-8 pr-3 py-1.5 text-sm font-medium w-48 transition-all outline-none border',
-                    theme === 'dark' ? 'bg-z-panel border-white/10 text-white placeholder:text-gray-600 focus:border-z-accent/50' : 'bg-z-input border-z-border focus:border-z-accent/50'
+                    theme === 'dark' ? 'bg-z-panel border-z-border text-z-primary placeholder:text-z-secondary focus:border-z-accent/50' : 'bg-z-input border-z-border focus:border-z-accent/50'
                   )}
                 />
               </div>
 
               {selectedIds.size > 0 && (
-                <div className="flex items-center gap-2 ml-2 border-l pl-4 border-z-border dark:border-white/10">
+                <div className="flex items-center gap-2 ml-2 border-l pl-4 border-z-border ">
                   <span className="text-sm font-semibold text-z-active-text">
                     {selectedIds.size} Selected
                   </span>
@@ -409,14 +383,14 @@ export default function MediaLibrary() {
             </div>
 
             <div className="flex items-center gap-1">
-              <button onClick={() => setViewMode('grid')} className={cn('p-1.5 rounded transition-colors', viewMode === 'grid' ? (theme === 'dark' ? 'bg-white/10 text-white' : 'bg-gray-200 text-black') : 'text-z-muted hover:text-gray-600 dark:hover:text-gray-300')}>
+              <button onClick={() => setViewMode('grid')} className={cn('p-1.5 rounded transition-colors', viewMode === 'grid' ? (theme === 'dark' ? 'bg-z-hover text-z-primary' : 'bg-[var(--z-border)] text-z-primary') : 'text-z-muted hover:text-z-secondary dark:hover:text-z-secondary')}>
                 <Grid size={15} />
               </button>
-              <button onClick={() => setViewMode('list')} className={cn('p-1.5 rounded transition-colors', viewMode === 'list' ? (theme === 'dark' ? 'bg-white/10 text-white' : 'bg-gray-200 text-black') : 'text-z-muted hover:text-gray-600 dark:hover:text-gray-300')}>
+              <button onClick={() => setViewMode('list')} className={cn('p-1.5 rounded transition-colors', viewMode === 'list' ? (theme === 'dark' ? 'bg-z-hover text-z-primary' : 'bg-[var(--z-border)] text-z-primary') : 'text-z-muted hover:text-z-secondary dark:hover:text-z-secondary')}>
                 <List size={15} />
               </button>
-              <div className="w-px h-4 bg-gray-200 dark:bg-white/10 mx-1" />
-              <button onClick={fetchFiles} className="p-1.5 text-z-muted hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+              <div className="w-px h-4 bg-[var(--z-border)]  mx-1" />
+              <button onClick={fetchFiles} className="p-1.5 text-z-muted hover:text-z-secondary dark:hover:text-z-secondary transition-colors">
                 <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
               </button>
             </div>
@@ -442,29 +416,29 @@ export default function MediaLibrary() {
                       key={file._id}
                       onClick={() => setSelectedFile(file)}
                       className={cn(
-                        'group relative border cursor-pointer transition-all duration-200 bg-white dark:bg-black',
-                        isSelected ? 'border-z-accent ring-1 ring-z-active-border' : 'border-z-border dark:border-white/10 hover:border-z-active-border/50'
+                        'group relative border cursor-pointer transition-all duration-200 bg-z-panel dark:bg-app',
+                        isSelected ? 'border-z-accent ring-1 ring-z-active-border' : 'border-z-border  hover:border-z-active-border/50'
                       )}
                     >
                       <button
                         onClick={(e) => { e.stopPropagation(); toggleSelect(file._id) }}
                         className={cn(
-                          'absolute top-2 left-2 z-20 p-1 bg-black/50 backdrop-blur text-white transition-opacity',
+                          'absolute top-2 left-2 z-20 p-1 bg-app/50 backdrop-blur text-z-primary transition-opacity',
                           isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                         )}
                       >
                         {isSelected ? <CheckSquare size={14} className="text-z-active-text" /> : <Square size={14} />}
                       </button>
 
-                      <div className="aspect-square bg-gray-50 dark:bg-z-panel flex items-center justify-center overflow-hidden relative">
+                      <div className="aspect-square bg-[var(--z-bg-input)] dark:bg-z-panel flex items-center justify-center overflow-hidden relative">
                         {isImage ? (
                           <img src={getFullUrl(file.url)} alt={file.alt} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         ) : (
-                          <Binary size={32} className="text-gray-300 dark:text-white/20" strokeWidth={1} />
+                          <Binary size={32} className="text-z-secondary dark:text-z-primary/20" strokeWidth={1} />
                         )}
                       </div>
                       <div className="p-3 border-t border-z-border dark:border-z-border">
-                        <p className="text-sm font-bold truncate text-z-primary dark:text-gray-200">{file.name || 'Unnamed'}</p>
+                        <p className="text-sm font-bold truncate text-z-primary ">{file.name || 'Unnamed'}</p>
                         <p className="text-sm font-semibold text-z-secondary mt-1">{formatBytes(file.size)}</p>
                       </div>
                     </div>
@@ -474,7 +448,7 @@ export default function MediaLibrary() {
             ) : (
               // LIST VIEW
               <div className="w-full text-left">
-                <div className="grid grid-cols-[auto_1fr_100px_100px_100px] gap-4 px-4 py-2 border-b border-z-border dark:border-white/10 text-sm font-semibold text-z-secondary sticky top-0 bg-white dark:bg-black/40 backdrop-blur z-10">
+                <div className="grid grid-cols-[auto_1fr_100px_100px_100px] gap-4 px-4 py-2 border-b border-z-border  text-sm font-semibold text-z-secondary sticky top-0 bg-z-panel dark:bg-z-panel backdrop-blur z-10">
                   <div className="w-4"></div>
                   <div>Name</div>
                   <div>Size</div>
@@ -489,7 +463,7 @@ export default function MediaLibrary() {
                       key={file._id}
                       onClick={() => setSelectedFile(file)}
                       className={cn(
-                        'grid grid-cols-[auto_1fr_100px_100px_100px] gap-4 px-4 py-2.5 items-center cursor-pointer border-b border-gray-50 dark:border-z-border hover:bg-gray-50 dark:hover:bg-z-panel transition-colors',
+                        'grid grid-cols-[auto_1fr_100px_100px_100px] gap-4 px-4 py-2.5 items-center cursor-pointer border-b border-z-border dark:border-z-border hover:bg-[var(--z-bg-input)] dark:hover:bg-z-panel transition-colors',
                         isSelected && 'bg-z-active-bg/50 dark:bg-z-active-bg'
                       )}
                     >
@@ -497,14 +471,14 @@ export default function MediaLibrary() {
                         {isSelected ? <CheckSquare size={14} /> : <Square size={14} />}
                       </button>
                       <div className="flex items-center gap-3 overflow-hidden">
-                        <div className="w-6 h-6 shrink-0 bg-gray-100 dark:bg-white/10 flex items-center justify-center overflow-hidden">
+                        <div className="w-6 h-6 shrink-0 bg-z-hover flex items-center justify-center overflow-hidden">
                            {isImage ? <img src={getFullUrl(file.url)} className="w-full h-full object-cover" /> : <FileText size={12} className="text-z-muted" />}
                         </div>
-                        <span className="text-sm font-bold truncate text-z-primary dark:text-gray-200">{file.name || 'Unnamed'}</span>
+                        <span className="text-sm font-bold truncate text-z-primary ">{file.name || 'Unnamed'}</span>
                       </div>
-                      <span className="text-sm text-gray-600 font-medium tabular-nums">{formatBytes(file.size)}</span>
+                      <span className="text-sm text-z-secondary font-medium tabular-nums">{formatBytes(file.size)}</span>
                       <span className="text-sm font-semibold text-z-secondary truncate">{file.mimetype?.split('/')[1] || 'DATA'}</span>
-                      <span className="text-sm text-gray-600 tabular-nums">{timeAgo(file.createdAt)}</span>
+                      <span className="text-sm text-z-secondary tabular-nums">{timeAgo(file.createdAt)}</span>
                     </div>
                   )
                 })}
@@ -520,13 +494,13 @@ export default function MediaLibrary() {
               initial={{ width: 0, opacity: 0 }}
               animate={{ width: 320, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
-              className="shrink-0 h-full border bg-white dark:bg-black/60 backdrop-blur-xl border-z-border dark:border-z-border shadow-2xl flex flex-col overflow-hidden relative z-20"
+              className="shrink-0 h-full border bg-z-panel dark:bg-app/60 backdrop-blur-xl border-z-border dark:border-z-border shadow-2xl flex flex-col overflow-hidden relative z-20"
             >
-              <div className="flex items-center justify-between p-4 border-b border-z-border dark:border-white/10">
+              <div className="flex items-center justify-between p-4 border-b border-z-border ">
                 <span className="text-sm font-semibold text-z-secondary flex items-center gap-2">
                   <Target size={12} /> Details
                 </span>
-                <button onClick={() => setSelectedFile(null)} className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded transition-colors">
+                <button onClick={() => setSelectedFile(null)} className="p-1 hover:bg-[var(--z-bg-hover)] dark:hover:bg-[var(--z-bg-hover)] rounded transition-colors">
                   <X size={14} />
                 </button>
               </div>
@@ -534,7 +508,7 @@ export default function MediaLibrary() {
               <div className="flex-1 overflow-y-auto p-5 space-y-6">
                 
                 {/* Preview / Focal Point */}
-                <div className="relative w-full aspect-square bg-gray-100 dark:bg-black/50 border border-z-border dark:border-white/10 overflow-hidden flex items-center justify-center group select-none">
+                <div className="relative w-full aspect-square bg-[var(--z-bg-hover)] dark:bg-app/50 border border-z-border  overflow-hidden flex items-center justify-center group select-none">
                   {selectedFile.mimetype?.startsWith('image') ? (
                     <>
                       <img 
@@ -563,7 +537,7 @@ export default function MediaLibrary() {
                       )}
                     </>
                   ) : (
-                    <Binary size={48} className="text-gray-300 dark:text-white/10" strokeWidth={0.5} />
+                    <Binary size={48} className="text-z-secondary dark:text-z-primary/10" strokeWidth={0.5} />
                   )}
                 </div>
 
@@ -571,9 +545,9 @@ export default function MediaLibrary() {
                   <div className="flex flex-col gap-2 p-3 bg-z-active-bg dark:bg-z-active-bg border border-z-active-border dark:border-z-accent/20">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-semibold text-z-accent dark:text-z-active-text">Focal Matrix</span>
-                      <span className="text-sm font-mono font-bold text-gray-700 dark:text-gray-300">X:{focalPoint.x} Y:{focalPoint.y}</span>
+                      <span className="text-sm font-mono font-bold text-z-primary ">X:{focalPoint.x} Y:{focalPoint.y}</span>
                     </div>
-                    <button onClick={handleSaveMetadata} disabled={isProcessing} className="w-full py-1.5 bg-z-accent hover:bg-z-accent text-white text-sm font-semibold transition-colors">
+                    <button onClick={handleSaveMetadata} disabled={isProcessing} className="w-full py-1.5 bg-z-accent hover:brightness-110 text-z-logo-text text-sm font-semibold transition-colors">
                       {isProcessing ? 'Saving...' : 'Save Coordinates'}
                     </button>
                   </div>
@@ -581,7 +555,7 @@ export default function MediaLibrary() {
 
                 {/* Metadata */}
                 <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-z-muted border-b border-z-border dark:border-white/10 pb-2">Properties</h3>
+                  <h3 className="text-sm font-semibold text-z-muted border-b border-z-border  pb-2">Properties</h3>
                   
                   <div className="space-y-2">
                     <div className="flex justify-between items-start gap-4">
@@ -609,11 +583,11 @@ export default function MediaLibrary() {
               </div>
 
               {/* Actions Footer */}
-              <div className="p-4 border-t border-z-border dark:border-white/10 grid grid-cols-2 gap-2 bg-gray-50 dark:bg-black/50">
+              <div className="p-4 border-t border-z-border  grid grid-cols-2 gap-2 bg-[var(--z-bg-input)] dark:bg-app/50">
                 <a 
                   href={getFullUrl(selectedFile.url)} 
                   download 
-                  className="flex items-center justify-center gap-2 py-2 border border-z-border dark:border-white/10 text-sm font-semibold hover:bg-white dark:hover:bg-z-hover transition-colors"
+                  className="flex items-center justify-center gap-2 py-2 border border-z-border  text-sm font-semibold hover:bg-z-panel dark:hover:bg-z-hover transition-colors"
                 >
                   <Download size={12} /> Download
                 </a>

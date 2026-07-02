@@ -13,7 +13,7 @@ import { SearchService } from '../../services/search'
 import { InvalidPayloadError, NotFoundError, ValidationError } from '../../errors'
 import { CacheService } from '../../services/cache'
 import { getPrometheusMetrics } from '../../middleware/metrics'
-import { AIService } from '../../services/ai'
+
 import { VectorSearchService } from '../../services/vector-search'
 import { adminComponentRegistry } from '../../plugins/hooks'
 import { AdapterFactory } from '../../database/adapters/AdapterFactory'
@@ -30,9 +30,17 @@ export function maskSettings(settings: Record<string, any>) {
   if (!settings) return settings
   const result = JSON.parse(JSON.stringify(settings)) // deep clone
   
-  if (result.smtp?.password) result.smtp.password = MASK_PLACEHOLDER
-  if (result.stripe?.secretKey) result.stripe.secretKey = MASK_PLACEHOLDER
-  if (result.stripe?.webhookSecret) result.stripe.webhookSecret = MASK_PLACEHOLDER
+  if (result.smtpPass) result.smtpPass = MASK_PLACEHOLDER
+  if (result.resendKey) result.resendKey = MASK_PLACEHOLDER
+  if (result.stripeSecretKey) result.stripeSecretKey = MASK_PLACEHOLDER
+  if (result.stripeWebhookSecret) result.stripeWebhookSecret = MASK_PLACEHOLDER
+  if (result.gcsPrivateKey) result.gcsPrivateKey = MASK_PLACEHOLDER
+  if (result.azureAccountKey) result.azureAccountKey = MASK_PLACEHOLDER
+  if (result.vercelBlobToken) result.vercelBlobToken = MASK_PLACEHOLDER
+  if (result.paypalClientSecret) result.paypalClientSecret = MASK_PLACEHOLDER
+  if (result.paypalWebhookId) result.paypalWebhookId = MASK_PLACEHOLDER
+  if (result.razorpayKeySecret) result.razorpayKeySecret = MASK_PLACEHOLDER
+  if (result.razorpayWebhookSecret) result.razorpayWebhookSecret = MASK_PLACEHOLDER
   
   // Mask AI Keys
   const aiKeys = [
@@ -52,19 +60,59 @@ export function unmaskSettings(incoming: Record<string, any>, existing: Record<s
   if (!incoming) return incoming
   const result = JSON.parse(JSON.stringify(incoming))
   
-  if (result.smtp && result.smtp.password === MASK_PLACEHOLDER) {
-    if (existing?.smtp?.password) result.smtp.password = existing.smtp.password
-    else delete result.smtp.password
+  if (result.smtpPass === MASK_PLACEHOLDER) {
+    if (existing?.smtpPass) result.smtpPass = existing.smtpPass
+    else delete result.smtpPass
   }
   
-  if (result.stripe && result.stripe.secretKey === MASK_PLACEHOLDER) {
-    if (existing?.stripe?.secretKey) result.stripe.secretKey = existing.stripe.secretKey
-    else delete result.stripe.secretKey
+  if (result.resendKey === MASK_PLACEHOLDER) {
+    if (existing?.resendKey) result.resendKey = existing.resendKey
+    else delete result.resendKey
   }
   
-  if (result.stripe && result.stripe.webhookSecret === MASK_PLACEHOLDER) {
-    if (existing?.stripe?.webhookSecret) result.stripe.webhookSecret = existing.stripe.webhookSecret
-    else delete result.stripe.webhookSecret
+  if (result.stripeSecretKey === MASK_PLACEHOLDER) {
+    if (existing?.stripeSecretKey) result.stripeSecretKey = existing.stripeSecretKey
+    else delete result.stripeSecretKey
+  }
+  
+  if (result.stripeWebhookSecret === MASK_PLACEHOLDER) {
+    if (existing?.stripeWebhookSecret) result.stripeWebhookSecret = existing.stripeWebhookSecret
+    else delete result.stripeWebhookSecret
+  }
+
+  if (result.paypalClientSecret === MASK_PLACEHOLDER) {
+    if (existing?.paypalClientSecret) result.paypalClientSecret = existing.paypalClientSecret
+    else delete result.paypalClientSecret
+  }
+  
+  if (result.paypalWebhookId === MASK_PLACEHOLDER) {
+    if (existing?.paypalWebhookId) result.paypalWebhookId = existing.paypalWebhookId
+    else delete result.paypalWebhookId
+  }
+
+  if (result.razorpayKeySecret === MASK_PLACEHOLDER) {
+    if (existing?.razorpayKeySecret) result.razorpayKeySecret = existing.razorpayKeySecret
+    else delete result.razorpayKeySecret
+  }
+
+  if (result.razorpayWebhookSecret === MASK_PLACEHOLDER) {
+    if (existing?.razorpayWebhookSecret) result.razorpayWebhookSecret = existing.razorpayWebhookSecret
+    else delete result.razorpayWebhookSecret
+  }
+
+  if (result.gcsPrivateKey === MASK_PLACEHOLDER) {
+    if (existing?.gcsPrivateKey) result.gcsPrivateKey = existing.gcsPrivateKey
+    else delete result.gcsPrivateKey
+  }
+
+  if (result.azureAccountKey === MASK_PLACEHOLDER) {
+    if (existing?.azureAccountKey) result.azureAccountKey = existing.azureAccountKey
+    else delete result.azureAccountKey
+  }
+
+  if (result.vercelBlobToken === MASK_PLACEHOLDER) {
+    if (existing?.vercelBlobToken) result.vercelBlobToken = existing.vercelBlobToken
+    else delete result.vercelBlobToken
   }
   
   // Unmask AI Keys
@@ -101,33 +149,7 @@ const aiLimiter = rateLimit({
   skip: () => env.NODE_ENV === 'development' || env.NODE_ENV === 'test',
 })
 
-// ── AI Architect Schema Validator ─────────────────────────────────────────────
-// Enforces the CollectionConfig contract on AI-generated output.
-// Prevents malformed AI responses from injecting unexpected fields.
-const VALID_FIELD_TYPES = [
-  'text', 'number', 'email', 'textarea', 'checkbox',
-  'date', 'select', 'media', 'richtext', 'relation',
-  'json', 'slug', 'array', 'blocks',
-] as const
 
-const AIFieldSchema = z.object({
-  name: z.string().min(1).regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Field name must be a valid identifier'),
-  type: z.enum(VALID_FIELD_TYPES),
-  label: z.string().optional(),
-  required: z.boolean().optional(),
-  unique: z.boolean().optional(),
-  options: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
-  defaultValue: z.any().optional(),
-})
-
-const AICollectionSchema = z.object({
-  name: z.string().min(1),
-  slug: z.string().min(1).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
-  labels: z.object({ singular: z.string(), plural: z.string() }).optional(),
-  drafts: z.boolean().optional(),
-  timestamps: z.boolean().optional(),
-  fields: z.array(AIFieldSchema).min(1).max(50),
-})
 
 // removed router
 
@@ -153,112 +175,7 @@ router.get('/search', searchLimiter, requireAuth, async (req: Request, res: Resp
   }
 })
 
-router.post('/ai/generate', aiLimiter, requireAuth, async (req: Request, res: Response, next) => {
-  try {
-    const { prompt } = req.body
-    const result = await AIService.generateContent(prompt)
-    res.json(createResponse({ result }))
-  } catch (err) {
-    next(err)
-  }
-})
 
-router.post('/ai/models/fetch', aiLimiter, requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
-  try {
-    const { provider, apiKey } = req.body
-    if (!provider) throw new InvalidPayloadError('Provider is required')
-
-    let finalApiKey = apiKey
-    if (!finalApiKey || finalApiKey === '[MASKED_CREDENTIAL]') {
-      const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter
-      const siteId = req.headers['x-zenith-site-id'] as string
-      // ISOLATION FIX: scope settings lookup to siteId
-      const settingsQuery = siteId ? { siteId } : {}
-      const settings = await adapter?.findOne('z_settings', settingsQuery)
-      
-      const keyMap: Record<string, string> = {
-        openrouter: 'openRouterApiKey',
-        openai: 'openaiApiKey',
-        anthropic: 'anthropicApiKey',
-        google: 'googleApiKey',
-        groq: 'groqApiKey',
-        nvidia: 'nvidiaApiKey',
-        together: 'togetherApiKey',
-        mistral: 'mistralApiKey',
-        cohere: 'cohereApiKey',
-        xai: 'xaiApiKey'
-      }
-      
-      const dbKey = settings?.[keyMap[provider]]
-      if (dbKey && dbKey !== '[MASKED_CREDENTIAL]') {
-        finalApiKey = dbKey
-      }
-    }
-
-    if (!finalApiKey || finalApiKey === '[MASKED_CREDENTIAL]') {
-      throw new InvalidPayloadError(`No valid API key provided or found for ${provider}`)
-    }
-
-    const models = await AIService.fetchModels(provider, finalApiKey)
-    res.json(createResponse({ models }))
-  } catch (err) {
-    next(err)
-  }
-})
-
-router.post('/ai/test', aiLimiter, requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
-  try {
-    const { provider, model, apiKey } = req.body
-    if (!provider || !model) throw new InvalidPayloadError('Provider and Model are required')
-
-    let finalApiKey = apiKey
-    if (!finalApiKey || finalApiKey === '[MASKED_CREDENTIAL]') {
-      const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter
-      const siteId = req.headers['x-zenith-site-id'] as string
-      // ISOLATION FIX: scope settings lookup to siteId
-      const settingsQuery = siteId ? { siteId } : {}
-      const settings = await adapter?.findOne('z_settings', settingsQuery)
-      
-      const keyMap: Record<string, string> = {
-        openrouter: 'openRouterApiKey',
-        openai: 'openaiApiKey',
-        anthropic: 'anthropicApiKey',
-        google: 'googleApiKey',
-        groq: 'groqApiKey',
-        nvidia: 'nvidiaApiKey',
-        together: 'togetherApiKey',
-        mistral: 'mistralApiKey',
-        cohere: 'cohereApiKey',
-        xai: 'xaiApiKey'
-      }
-      
-      const dbKey = settings?.[keyMap[provider]]
-      if (dbKey && dbKey !== '[MASKED_CREDENTIAL]') {
-        finalApiKey = dbKey
-      }
-    }
-
-    if (!finalApiKey || finalApiKey === '[MASKED_CREDENTIAL]') {
-      throw new InvalidPayloadError(`No valid API key provided or found for ${provider}`)
-    }
-
-    const result = await AIService.testConnection(provider, model, finalApiKey)
-    res.json(createResponse({ result }))
-  } catch (err) {
-    next(err)
-  }
-})
-
-router.post('/ai/tag-image', aiLimiter, requireAuth, async (req: Request, res: Response, next) => {
-  try {
-    const { imageUrl } = req.body
-    if (!imageUrl) throw new InvalidPayloadError('imageUrl is required')
-    const result = await AIService.generateImageTags(imageUrl)
-    res.json(createResponse(result))
-  } catch (err) {
-    next(err)
-  }
-})
 
 // ── Semantic Vector Search ───────────────────────────────────────────────────
 
@@ -296,79 +213,4 @@ router.post('/search/index-document', requireAuth, requireRole('admin'), async (
   }
 })
 
-router.post(
-  '/ai-architect',
-  aiLimiter,
-  requireAuth,
-  requireRole('admin'),
-  async (req: Request, res: Response, next) => {
-    try {
-      const { prompt } = req.body
-      if (!prompt) throw new InvalidPayloadError('Prompt is required for AI Architect')
-
-      const systemPrompt = `You are the Zenith CMS AI Schema Architect. Your job is to convert natural language requirements into a valid, rich, real-world ready JSON CollectionConfig.
-
-Return ONLY a valid JSON object matching the following structure:
-{
-  "name": "string (the display name of the collection, e.g., 'Blog Posts')",
-  "slug": "string (lowercase plural slug, matching /^[a-z0-9-]+$/, e.g., 'blog-posts')",
-  "labels": {
-    "singular": "string (e.g., 'Blog Post')",
-    "plural": "string (e.g., 'Blog Posts')"
-  },
-  "drafts": boolean (default true for content collections like posts, false for settings/users),
-  "timestamps": boolean (default true),
-  "fields": [
-    {
-      "name": "string (camelCase field identifier, e.g., 'authorName', 'featuredImage')",
-      "type": "text" | "number" | "email" | "textarea" | "checkbox" | "date" | "select" | "media" | "richtext" | "relation",
-      "label": "string (human readable label, e.g., 'Author Name')",
-      "required": boolean,
-      "unique": boolean,
-      "options": [{"label": "Option Name", "value": "option_value"}] (only for 'select' type),
-      "defaultValue": any (optional)
-    }
-  ]
-}
-
-Rules:
-1. Provide rich, complete, real-world ready schemas. If a user asks for a blog post, include title, slug, content, author, publishDate, featuredImage, and category fields.
-2. Reply ONLY with valid JSON. Do not include markdown formatting, backticks, or any explanation.
-
-User Request: ${prompt}`
-
-      const aiResponse = await AIService.generateContent(systemPrompt)
-
-      let rawParsed: any
-      try {
-        const jsonStart = aiResponse.indexOf('{')
-        const jsonEnd = aiResponse.lastIndexOf('}')
-        if (jsonStart === -1 || jsonEnd === -1) {
-          throw new Error('AI response did not contain a valid JSON object')
-        }
-        const jsonString = aiResponse.substring(jsonStart, jsonEnd + 1)
-        rawParsed = JSON.parse(jsonString)
-      } catch (e: any) {
-        throw new InvalidPayloadError(`AI generated invalid JSON: ${e.message}. Please try a more specific prompt.`)
-      }
-
-      // Validate AI output against the CollectionConfig schema contract.
-      // This prevents malformed or adversarial AI responses from poisoning the user's config.
-      const validation = AICollectionSchema.safeParse(rawParsed)
-      if (!validation.success) {
-        throw new ValidationError(
-          validation.error.issues.map((issue) => ({
-            field: issue.path.join('.'),
-            message: issue.message,
-          }))
-        )
-      }
-
-      const schema = validation.data
-      res.json(createResponse({ message: 'AI Architect generated schema successfully', schema }))
-    } catch (err) {
-      next(err)
-    }
-  }
-)
 

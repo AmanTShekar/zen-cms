@@ -121,7 +121,7 @@ router.post('/:id/reply', async (req: Request, res: Response, next) => {
     const updatedComment = await adapter.update(COMMENTS_COLLECTION, req.params.id, {
       replies,
       updatedAt: new Date()
-    })
+    }, siteId ? { siteId } : {})
 
     res.json(createResponse(updatedComment))
   } catch (err) {
@@ -165,7 +165,7 @@ router.patch('/:id', async (req: Request, res: Response, next) => {
       }
     }
 
-    const updatedComment = await adapter.update(COMMENTS_COLLECTION, req.params.id, updates)
+    const updatedComment = await adapter.update(COMMENTS_COLLECTION, req.params.id, updates, siteId ? { siteId } : {})
     res.json(createResponse(updatedComment))
   } catch (err) {
     next(err)
@@ -189,7 +189,7 @@ router.delete('/:id', async (req: Request, res: Response, next) => {
       throw new ForbiddenError('Only the comment author or an admin can delete a comment')
     }
 
-    await adapter.delete(COMMENTS_COLLECTION, req.params.id)
+    await adapter.delete(COMMENTS_COLLECTION, req.params.id, siteId ? { siteId } : {})
     res.json(createResponse({ success: true }))
   } catch (err) {
     next(err)

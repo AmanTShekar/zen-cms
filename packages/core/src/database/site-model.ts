@@ -30,6 +30,13 @@ export interface ISite extends Document {
   stripePublicKey?: string
   stripeSecretKey?: string
   stripeWebhookSecret?: string
+  paypalClientId?: string
+  paypalClientSecret?: string
+  paypalWebhookId?: string
+  razorpayKeyId?: string
+  razorpayKeySecret?: string
+  razorpayWebhookSecret?: string
+  paymentProvider: string
   currency: string
   pricingPlans: ISitePlan[]
   createdAt: Date
@@ -41,7 +48,7 @@ const SiteSchema = new Schema<ISite>(
     name: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
     domain: { type: String, default: '' },
-    icon: { type: String, default: '🌐' },
+    icon: { type: String, default: '' },
     description: { type: String },
     ownerId: { type: String, required: true, index: true },
     workspaceId: { type: String, index: true },
@@ -58,6 +65,13 @@ const SiteSchema = new Schema<ISite>(
     stripePublicKey: { type: String, default: '' },
     stripeSecretKey: { type: String, default: '' },
     stripeWebhookSecret: { type: String, default: '' },
+    paypalClientId: { type: String, default: '' },
+    paypalClientSecret: { type: String, default: '' },
+    paypalWebhookId: { type: String, default: '' },
+    razorpayKeyId: { type: String, default: '' },
+    razorpayKeySecret: { type: String, default: '' },
+    razorpayWebhookSecret: { type: String, default: '' },
+    paymentProvider: { type: String, default: 'stripe' },
     currency: { type: String, default: 'USD' },
     pricingPlans: {
       type: [
@@ -79,7 +93,7 @@ const SiteSchema = new Schema<ISite>(
       default: [],
     },
   },
-  { timestamps: true, collection: 'z_sites' }
+  { strict: true, timestamps: true, collection: 'z_sites' }
 )
 
 export const SiteModel = mongoose.models.Site || mongoose.model<ISite>('Site', SiteSchema)

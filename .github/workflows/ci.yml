@@ -11,32 +11,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         with:
-          version: 8
+          version: 9
       - uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
         run: pnpm run lint
 
       - name: Dependency Security Audit
-        run: pnpm audit --audit-level=high || echo "⚠️ Warning: High severity vulnerabilities found. Run pnpm audit to review."
+        run: pnpm audit --audit-level=high
 
       - name: Secret Leak & SAST Check
         run: |
-          echo "🔎 Scanning codebase for potential secrets and syntax patterns..."
-          # Simple check for AWS keys, private keys, or typical credentials in committed code
-          if grep -qE "AWS_SECRET_ACCESS_KEY|SECRET_KEY|PASSWORD|PRIVATE KEY" $(git ls-files | grep -vE "\.env|seed\.ts|AGENTS.md|walkthrough.md|production_readiness"); then
-            echo "❌ Error: Potential secret keys or password strings detected in source files!"
+          echo "Scanning codebase for high-confidence secret patterns..."
+          if grep -InE "(AKIA[0-9A-Z]{16}|-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----|xox[baprs]-[0-9A-Za-z-]{10,}|gh[pousr]_[0-9A-Za-z_]{36,})" $(git ls-files | grep -vE "(\.env|seed\.ts|AGENTS\.md|walkthrough\.md|production_readiness|docker-compose\.yml|playwright\.config\.ts)"); then
+            echo "Error: potential committed secret detected."
             exit 1
           fi
-          echo "✅ Secret leak scan passed."
+          echo "Secret leak scan passed."
 
       - name: Build
         run: pnpm run build

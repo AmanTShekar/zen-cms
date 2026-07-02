@@ -84,20 +84,20 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  return createPortal(
  <AnimatePresence>
  {open && (
- <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm">
+ <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-[var(--z-bg-modal)] backdrop-blur-sm">
  <motion.div
  initial={{ opacity: 0, scale: 0.98, y: 15 }}
  animate={{ opacity: 1, scale: 1, y: 0 }}
  exit={{ opacity: 0, scale: 0.98, y: 15 }}
  className={cn(
  'border rounded-none-none w-full max-w-6xl shadow-2xl flex flex-col overflow-hidden max-h-[90vh]',
- dark ? 'bg-black border-z-border text-white' : 'bg-z-panel border-z-border shadow-sm text-z-primary'
+ dark ? 'bg-app border-z-border text-z-primary' : 'bg-z-panel border-z-border shadow-sm text-z-primary'
  )}
  >
  {/* Header */}
- <div className="p-6 border-b border-gray-50 dark:border-z-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+ <div className="p-6 border-b border-z-border dark:border-z-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
  <div className="flex items-center gap-4">
- <div className="w-10 h-10 bg-gray-600 dark:bg-gray-600 rounded-none-none flex items-center justify-center text-white shadow-lg shrink-0">
+ <div className="w-10 h-10 bg-z-accent  rounded-none-none flex items-center justify-center text-z-primary shadow-lg shrink-0">
  <Languages size={18} />
  </div>
  <div className="flex flex-col">
@@ -118,12 +118,12 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  value={referenceLocale}
  onChange={(e) => setReferenceLocale(e.target.value)}
  className={cn(
- 'w-32 px-3 py-1.5 text-xs font-bold border rounded-none-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors appearance-none cursor-pointer',
- dark ? 'border-z-border hover:border-white/30 text-white' : 'border-z-border hover:border-gray-400 text-black'
+ 'w-32 px-3 py-1.5 text-xs font-bold border rounded-none-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors appearance-none cursor-pointer',
+ dark ? 'border-z-border hover:border-z-border text-z-primary' : 'border-z-border hover:border-z-border text-z-primary'
  )}
  >
  {availableLocales.map(l => (
- <option key={l.code} value={l.code} className="text-black bg-white">{l.flag} {l.name}</option>
+ <option key={l.code} value={l.code} className="text-z-primary bg-z-panel">{l.flag} {l.name}</option>
  ))}
  </select>
  </div>
@@ -131,24 +131,24 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  <div className="text-z-muted"><Globe size={14} /></div>
  
  <div className="flex items-center gap-2 flex-1 sm:flex-none">
- <span className="text-sm font-bold text-gray-600 dark:text-z-secondary">Target:</span>
+ <span className="text-sm font-bold text-z-secondary ">Target:</span>
  <select
  value={targetLocale}
  onChange={(e) => setTargetLocale(e.target.value)}
  className={cn(
- 'w-32 px-3 py-1.5 text-xs font-bold border rounded-none-none bg-gray-500/10 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors appearance-none cursor-pointer',
- dark ? 'border-gray-500/30 hover:border-gray-500/60 text-gray-600 dark:text-z-muted' : 'border-gray-500/30 hover:border-gray-500/60 text-gray-600'
+ 'w-32 px-3 py-1.5 text-xs font-bold border rounded-none-none dark:bg-z-panel/5 bg-z-panel outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors appearance-none cursor-pointer',
+ dark ? 'border-z-border/30 hover:border-z-border/60 text-z-secondary' : 'border-z-border/30 hover:border-z-border/60 text-z-secondary'
  )}
  >
  {availableLocales.map(l => (
- <option key={l.code} value={l.code} className="text-black bg-white">{l.flag} {l.name}</option>
+ <option key={l.code} value={l.code} className="text-z-primary bg-z-panel">{l.flag} {l.name}</option>
  ))}
  </select>
  </div>
 
  <button
  onClick={onClose}
- className="ml-4 p-2 text-z-muted hover:text-white transition-colors"
+ className="ml-4 p-2 text-z-muted hover:text-z-primary transition-colors"
  >
  <X size={16} />
  </button>
@@ -156,9 +156,9 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  </div>
 
  {/* Progress Bar */}
- <div className="h-1 bg-gray-100 dark:bg-z-hover w-full relative">
+ <div className="h-1 bg-[var(--z-bg-hover)] dark:bg-z-hover w-full relative">
  <div 
- className="absolute left-0 top-0 bottom-0 bg-gray-500 transition-all duration-500" 
+ className="absolute left-0 top-0 bottom-0 bg-z-border transition-all duration-500" 
  style={{ width: `${progress}%` }}
  />
  </div>
@@ -179,8 +179,8 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  return (
  <div key={`${field.sectionId}-${field.fieldName}`} className="space-y-4 relative">
  <div className="flex items-center gap-2">
- <div className="w-1.5 h-1.5 bg-gray-500 rounded-none-none" />
- <h4 className="text-sm font-semibold text-gray-600 dark:text-z-muted">
+ <div className="w-1.5 h-1.5 bg-z-border rounded-none-none" />
+ <h4 className="text-sm font-semibold text-z-secondary">
  {field.sectionName} <span className="text-z-secondary mx-1">&gt;</span> {humanize(field.fieldName)}
  </h4>
  </div>
@@ -188,7 +188,7 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
  {/* Left: Reference (Read-only) */}
  <div className="opacity-70 pointer-events-none relative">
- <div className="absolute top-0 right-0 p-2 text-sm font-semibold text-z-muted z-10 bg-black/50 backdrop-blur-md">
+ <div className="absolute top-0 right-0 p-2 text-sm font-semibold text-z-muted z-10 bg-app/50 backdrop-blur-md">
  Reference ({referenceLocale})
  </div>
  <FieldRenderer
@@ -200,9 +200,9 @@ export const TranslationModal: React.FC<TranslationModalProps> = ({ open, onClos
  /></div>
  
  {/* Right: Target (Editable) */}
- <div className="relative border border-gray-500/20 p-4 -m-4 bg-gray-500/5">
- <div className="absolute top-0 right-0 p-2 text-sm font-semibold text-gray-600 dark:text-z-muted z-10 bg-black/50 backdrop-blur-md flex items-center gap-1.5">
- {targetValue ? <Check size={10} className="text-gray-600 dark:text-z-muted" /> : null}
+ <div className="relative border border-z-border/20 p-4 -m-4 bg-z-hover">
+ <div className="absolute top-0 right-0 p-2 text-sm font-semibold text-z-secondary z-10 bg-app/50 backdrop-blur-md flex items-center gap-1.5">
+ {targetValue ? <Check size={10} className="text-z-secondary" /> : null}
  Target ({targetLocale})
  </div>
  <FieldRenderer

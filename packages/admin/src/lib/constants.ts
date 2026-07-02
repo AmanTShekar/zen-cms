@@ -90,18 +90,18 @@ export interface LocaleOption {
 }
 
 export const SUPPORTED_LOCALES: LocaleOption[] = [
- { label: 'English', value: 'en', flag: '🇺🇸' },
- { label: 'Spanish', value: 'es', flag: '🇪🇸' },
- { label: 'French', value: 'fr', flag: '🇫🇷' },
- { label: 'German', value: 'de', flag: '🇩🇪' },
- { label: 'Portuguese', value: 'pt', flag: '🇧🇷' },
- { label: 'Italian', value: 'it', flag: '🇮🇹' },
- { label: 'Japanese', value: 'ja', flag: '🇯🇵' },
- { label: 'Korean', value: 'ko', flag: '🇰🇷' },
- { label: 'Chinese', value: 'zh', flag: '🇨🇳' },
- { label: 'Arabic', value: 'ar', flag: '🇸🇦' },
- { label: 'Hindi', value: 'hi', flag: '🇮🇳' },
- { label: 'Russian', value: 'ru', flag: '🇷🇺' },
+ { label: 'English', value: 'en', flag: '' },
+ { label: 'Spanish', value: 'es', flag: '' },
+ { label: 'French', value: 'fr', flag: '' },
+ { label: 'German', value: 'de', flag: '' },
+ { label: 'Portuguese', value: 'pt', flag: '' },
+ { label: 'Italian', value: 'it', flag: '' },
+ { label: 'Japanese', value: 'ja', flag: '' },
+ { label: 'Korean', value: 'ko', flag: '' },
+ { label: 'Chinese', value: 'zh', flag: '' },
+ { label: 'Arabic', value: 'ar', flag: '' },
+ { label: 'Hindi', value: 'hi', flag: '' },
+ { label: 'Russian', value: 'ru', flag: '' },
 ]
 
 // ── User Roles ────────────────────────────────────────────────────────────────
@@ -132,15 +132,15 @@ export const DEFAULT_PAGE_SIZE = 25
 // ── Status Colors (Tailwind classes) ──────────────────────────────────────────
 export const STATUS_COLORS: Record<string, string> = {
  draft: 'text-amber-400 bg-amber-400/10 border-amber-400/20',
- published: 'text-gray-600 dark:text-z-muted bg-gray-400/10 border-gray-400/20',
- unpublished: 'text-slate-400 bg-slate-400/10 border-slate-400/20',
+ published: 'text-z-secondary bg-z-input/10 border-z-border/20',
+ unpublished: 'text-z-secondary bg-[var(--z-bg-hover)] border-z-border',
  in_review: 'text-z-active-text bg-z-active-bg border-z-active-border/20',
  changes_requested: 'text-orange-400 bg-orange-400/10 border-orange-400/20',
- scheduled: 'text-gray-600 dark:text-z-muted bg-gray-400/10 border-gray-400/20',
- success: 'text-gray-600 dark:text-z-muted bg-gray-400/10 border-gray-400/20',
+ scheduled: 'text-z-secondary bg-z-input/10 border-z-border/20',
+ success: 'text-z-secondary bg-z-input/10 border-z-border/20',
  failed: 'text-red-400 bg-red-400/10 border-red-400/20',
 }
 
 export function getStatusColor(status: string): string {
- return STATUS_COLORS[status] || 'text-slate-400 bg-slate-400/10 border-slate-400/20'
+ return STATUS_COLORS[status] || 'text-z-secondary bg-[var(--z-bg-hover)] border-z-border'
 }

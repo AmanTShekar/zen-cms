@@ -22,14 +22,14 @@ const CollectionListBulkToolbar: React.FC<CollectionListBulkToolbarProps> = ({
  transition={{ duration: 0.2 }}
  className={cn(
  'border rounded-none-none px-6 py-3 flex items-center justify-between gap-4 shadow-lg',
- theme === 'dark' ? 'bg-gray-500/10 border-gray-500/20' : 'bg-z-input border-z-border'
+ theme === 'dark' ? 'bg-z-panel/5 border-z-border' : 'bg-z-input border-z-border'
  )}
  >
  <div className="flex items-center gap-3">
- <span className="text-sm font-semibold text-gray-600 dark:text-z-muted">
+ <span className="text-sm font-semibold text-z-secondary">
  {selectedIds.size} Selected
  </span>
- <button onClick={onClearSelection} className="p-1 text-z-secondary hover:text-white transition-colors" title="Clear selection">
+ <button onClick={onClearSelection} className="p-1 text-z-secondary hover:text-z-primary transition-colors" title="Clear selection">
  <X size={12} />
  </button>
  </div>
@@ -39,7 +39,7 @@ const CollectionListBulkToolbar: React.FC<CollectionListBulkToolbarProps> = ({
  disabled={bulkProcessing}
  className={cn(
  'px-4 py-2 rounded-none-none font-semibold text-sm   transition-all flex items-center gap-2 border',
- theme === 'dark' ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted hover:bg-gray-500/20' : 'bg-z-input border-z-border text-gray-600 hover:bg-gray-100'
+ theme === 'dark' ? 'bg-z-panel/5 border-z-border text-z-secondary hover:bg-z-hover border-z-border-strong' : 'bg-z-input border-z-border text-z-secondary hover:bg-[var(--z-bg-hover)]'
  )}
  >
  <Send size={11} /> Publish

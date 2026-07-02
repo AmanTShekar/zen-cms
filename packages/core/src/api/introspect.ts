@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+
 import { Router, Request, Response } from 'express'
 import { Client } from 'pg'
 import { requireAuth, requireRole } from '../middleware/auth'
@@ -39,10 +39,46 @@ function mapPgTypeToZenithType(pgType: string): string {
   }
 }
 
+/**
+ * Validates the connection string to prevent SSRF against internal networks.
+ */
+function isSafeConnectionString(connString: string): boolean {
+  try {
+    const parsed = new URL(connString)
+    if (parsed.protocol !== 'postgres:' && parsed.protocol !== 'postgresql:') {
+      return false
+    }
+    const host = parsed.hostname.toLowerCase()
+    
+    // Block common internal/private network patterns
+    if (
+      host === 'localhost' ||
+      host.match(/^127\.\d+\.\d+\.\d+$/) ||
+      host === '::1' ||
+      host.startsWith('10.') ||
+      host.match(/^192\.168\.\d+\.\d+$/) ||
+      host.match(/^169\.254\.\d+\.\d+$/) ||
+      host.match(/^172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+$/) ||
+      host.endsWith('.internal') ||
+      host.endsWith('.local')
+    ) {
+      return false
+    }
+    
+    return true
+  } catch {
+    return false
+  }
+}
+
 router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Response) => {
   const { connectionString } = req.body
-  if (!connectionString) {
+  if (!connectionString || typeof connectionString !== 'string') {
     return res.status(400).json({ error: 'PostgreSQL connection string is required.' })
+  }
+
+  if (!isSafeConnectionString(connectionString)) {
+    return res.status(403).json({ error: 'Invalid or forbidden connection string host.' })
   }
 
   const client = new Client({ connectionString })
@@ -82,6 +118,7 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
 
         fields.push({
           name: col.column_name,
+          // @ts-ignore: TS2322 - unresolved type from removing @ts-nocheck
           type: mapPgTypeToZenithType(col.data_type) as Record<string, any>,
           label: col.column_name.charAt(0).toUpperCase() + col.column_name.slice(1).replace(/_/g, ' '),
           required: col.is_nullable === 'NO',

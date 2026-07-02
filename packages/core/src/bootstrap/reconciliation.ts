@@ -26,7 +26,7 @@ export async function runStartupReconciliation(adapter: DatabaseAdapter, config:
       const payload = {
         name: hc.name,
         slug: hc.slug,
-        labels: hc.labels || { singular: hc.name, plural: hc.name + 's' },
+        labels: hc.labels || { singular: hc.name, plural: hc.name.toLowerCase().endsWith('s') ? hc.name : hc.name + 's' },
         isGlobal: hc.isGlobal,
         drafts: hc.drafts ?? false,
         timestamps: hc.timestamps ?? true,
@@ -50,11 +50,11 @@ export async function runStartupReconciliation(adapter: DatabaseAdapter, config:
   // Startup Reconciliation Check for Blocks
   try {
     const blocksDir = path.resolve(__dirname, '../../../../config/blocks')
-    const tsSlugs = new Set<string>()
+    const jsonSlugs = new Set<string>()
     try {
       await fs.access(blocksDir)
       const files = await fs.readdir(blocksDir)
-      files.filter(f => f.endsWith('.ts')).forEach(f => tsSlugs.add(f.replace(/\.ts$/, '')))
+      files.filter(f => f.endsWith('.json')).forEach(f => jsonSlugs.add(f.replace(/\.json$/, '')))
     } catch (e) {
       // blocksDir does not exist, ignore
     }
@@ -68,10 +68,10 @@ export async function runStartupReconciliation(adapter: DatabaseAdapter, config:
 
     const dbSlugs = new Set(dbSchemas.map((s: any) => s.slug))
     
-    // 1. Check for orphaned .ts files (File exists, DB missing)
-    for (const slug of tsSlugs) {
+    // 1. Check for orphaned .json files (File exists, DB missing)
+    for (const slug of jsonSlugs) {
       if (!dbSlugs.has(slug)) {
-        logger.error(`[Startup Reconciliation] CRITICAL: Orphaned file ${slug}.ts found in config/blocks without a corresponding z_schemas DB record. Action Required: Manually run a reconciliation command or re-generate the block via the builder.`)
+        logger.error(`[Startup Reconciliation] CRITICAL: Orphaned file ${slug}.json found in config/blocks without a corresponding z_schemas DB record. Action Required: Manually run a reconciliation command or re-generate the block via the builder.`)
       }
     }
   } catch (err: any) {

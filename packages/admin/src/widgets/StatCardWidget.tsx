@@ -47,7 +47,7 @@ export default function StatCardWidget({ config = {}, theme, title, isPreview }:
  <div
  className={cn(
  'w-9 h-9 rounded-none-none flex items-center justify-center',
- theme === 'dark' ? 'bg-z-hover text-gray-600 dark:text-z-muted' : 'bg-gray-50 text-gray-600'
+ theme === 'dark' ? 'bg-z-hover text-z-secondary' : 'bg-[var(--z-bg-input)] text-z-secondary'
  )}
  >
  <Database size={16} />

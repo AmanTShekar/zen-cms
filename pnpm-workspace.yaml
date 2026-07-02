@@ -3,8 +3,5 @@ packages:
   - 'templates/blog-demo'
   - 'templates/storefront-glass'
   - 'templates/demo'
-allowBuilds:
-  bcrypt: true
-  core-js: true
-  esbuild: true
-strictPeerDependencies: false
+
+strictPeerDependencies: true

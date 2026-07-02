@@ -41,11 +41,11 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  'flex items-center gap-1 px-2 py-1 rounded-none-none border text-sm font-semibold  ',
  isConnected
  ? theme === 'dark'
- ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted'
- : 'bg-z-input border-z-border text-gray-600'
+ ? 'bg-z-panel/5 border-z-border text-z-secondary'
+ : 'bg-z-input border-z-border text-z-secondary'
  : theme === 'dark'
  ? 'bg-z-hover border-z-border text-z-secondary'
- : 'bg-gray-100 border-z-border text-z-muted'
+ : 'bg-[var(--z-bg-hover)] border-z-border text-z-muted'
  )}
  title={isConnected ? 'Live collaboration active' : 'Offline — changes saved locally'}
  >
@@ -65,7 +65,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  animate={{ scale: 1 }}
  className={cn(
  'w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow-sm ring-2',
- theme === 'dark' ? 'ring-[#050505]' : 'ring-white'
+ theme === 'dark' ? 'ring-[#050505]' : 'ring-z-active-border'
  )}
  style={{ backgroundColor: localUser.color }}
  >
@@ -80,7 +80,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  size={6}
  fill={localUser.color}
  stroke="none"
- className="text-gray-600 dark:text-z-muted"
+ className="text-z-secondary"
  />
  </motion.div>
  </div>
@@ -96,11 +96,11 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  transition={{ delay: idx * 0.05 }}
  className={cn(
  'relative -ml-2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow-sm ring-2',
- theme === 'dark' ? 'ring-[#050505]' : 'ring-white'
+ theme === 'dark' ? 'ring-[#050505]' : 'ring-z-active-border'
  )}
  style={{
  backgroundColor: u.color,
- borderColor: theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.8)',
+ borderColor: 'var(--z-border)',
  zIndex: visibleUsers.length - idx,
  }}
  title={u.name || u.email}
@@ -120,8 +120,8 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  className={cn(
  'relative -ml-2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow-sm ring-2 transition-transform cursor-pointer',
  theme === 'dark'
- ? 'bg-gray-800 text-gray-300 ring-[#050505] hover:scale-105'
- : 'bg-gray-200 text-gray-600 ring-white hover:scale-105'
+ ? 'bg-z-base text-z-secondary ring-[#050505] hover:scale-105'
+ : 'bg-[var(--z-border)] text-z-secondary ring-z-active-border hover:scale-105'
  )}
  style={{ zIndex: 0 }}
  >
@@ -141,8 +141,8 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  className={cn(
  'absolute top-full right-0 mt-2 z-[999] w-64 rounded-xl shadow-2xl p-4 border',
  theme === 'dark'
- ? 'bg-[#111] border-white/10 text-white'
- : 'bg-white border-black/10 text-black shadow-black/5'
+ ? 'bg-[#111] border-z-border text-z-primary'
+ : 'bg-z-panel border-z-border text-z-primary shadow-[var(--z-border)]'
  )}
  onClick={() => setExpanded(false)}
  >
@@ -153,7 +153,7 @@ export const CollabAvatars: React.FC<CollabAvatarsProps> = ({
  {[localUser, ...users.filter((u) => u.id !== localUser.id)].map((u) => (
  <div key={u.id} className="flex items-center gap-2">
  <div
- className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
+ className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-z-primary shrink-0"
  style={{ backgroundColor: u.color }}
  >
  {initials(u.name, u.email)}

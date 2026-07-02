@@ -35,7 +35,7 @@ program
   .option('-y, --yes', 'Skip prompts and bootstrap with default options')
   .option('--install', 'Automatically install package dependencies')
   .action(async (directoryArg, options) => {
-    console.log('\n' + chalk.bold.hex('#8B5CF6')('⚡ Zenith CMS — Project Bootstrap Station') + '\n')
+    console.log('\n' + chalk.bold.hex('#8B5CF6')(' Zenith CMS — Project Bootstrap Station') + '\n')
 
     // 1. Gather project directory
     let targetDir = directoryArg
@@ -51,7 +51,7 @@ program
     const projectPath = path.resolve(process.cwd(), targetDir)
 
     if (fs.existsSync(projectPath)) {
-      console.error(chalk.red(`\n❌ Error: Directory "${targetDir}" already exists. Please choose another name.\n`))
+      console.error(chalk.red(`\n Error: Directory "${targetDir}" already exists. Please choose another name.\n`))
       process.exit(1)
     }
 
@@ -74,7 +74,7 @@ program
     const dbType = isPostgres ? 'PostgreSQL' : 'MongoDB'
     const dbPkg = isPostgres ? '@zenith-open/zenithcms-db-postgres' : '@zenith-open/zenithcms-db-mongodb'
 
-    console.log('\n' + chalk.cyan('🏗️  Configuring project scaffolding...'))
+    console.log('\n' + chalk.cyan('️  Configuring project scaffolding...'))
 
     // 3. Create target directories
     fs.mkdirSync(projectPath, { recursive: true })
@@ -203,11 +203,11 @@ temp
     fs.writeFileSync(path.join(projectPath, '.gitignore'), gitignoreContent)
 
     // 10. Generate README.md
-    const readmeContent = `# ⚡ ${path.basename(projectPath)} — Built with Zenith CMS
+    const readmeContent = `#  ${path.basename(projectPath)} — Built with Zenith CMS
 
 A modern, fast, security-hardened headless CMS.
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### 1. Install Dependencies
 \`\`\`bash
@@ -228,7 +228,7 @@ The Admin dashboard is running at \`http://localhost:3000/admin\`.
 `
     fs.writeFileSync(path.join(projectPath, 'README.md'), readmeContent)
 
-    console.log(chalk.green(`✓ Scaffolding complete! Created Zenith project inside "${targetDir}"`))
+    console.log(chalk.green(` Scaffolding complete! Created Zenith project inside "${targetDir}"`))
 
     // 11. Run Auto Installation if requested
     let shouldInstall = options.install || false
@@ -238,7 +238,7 @@ The Admin dashboard is running at \`http://localhost:3000/admin\`.
     }
 
     if (shouldInstall) {
-      console.log('\n' + chalk.cyan('📦 Installing dependencies... This may take a minute.'))
+      console.log('\n' + chalk.cyan(' Installing dependencies... This may take a minute.'))
       try {
         let pm = 'npm'
         // Detect package manager being used currently
@@ -246,13 +246,13 @@ The Admin dashboard is running at \`http://localhost:3000/admin\`.
           pm = 'pnpm'
         }
         execSync(`${pm} install`, { stdio: 'inherit', cwd: projectPath })
-        console.log(chalk.green(`✓ Dependencies installed successfully using ${pm}!`))
+        console.log(chalk.green(` Dependencies installed successfully using ${pm}!`))
       } catch (err) {
-        console.error(chalk.yellow(`⚠ Warning: Dependency installation failed. You may need to run installer manually.`))
+        console.error(chalk.yellow(` Warning: Dependency installation failed. You may need to run installer manually.`))
       }
     }
 
-    console.log('\n' + chalk.bold.hex('#10B981')('🚀 Zenith CMS successfully bootstrapped!') + '\n')
+    console.log('\n' + chalk.bold.hex('#10B981')(' Zenith CMS successfully bootstrapped!') + '\n')
     console.log(chalk.white('To get started:'))
     console.log(chalk.gray(`  cd ${targetDir}`))
     if (!shouldInstall) {

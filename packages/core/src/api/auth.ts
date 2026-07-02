@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { Router, Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import * as otplibPkg from 'otplib'
@@ -11,7 +10,7 @@ export function siteMiddleware(req: Request, res: Response, next: NextFunction) 
   const siteId = req.headers['x-zenith-site-id'];
 
   if (typeof siteId === 'string') {
-    (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).siteId = siteId;
+    (req as import('../types/request').ZenithRequest).siteId = siteId;
   }
   next();
 }
@@ -90,7 +89,7 @@ router.post('/login', authLimiter, async (req: Request, res: Response, next) => 
     // Constant-time dummy hash to prevent user-enumeration via timing attacks
     if (!user) {
       await AuthService.comparePassword(
-        'dummy',
+        password || 'dummy',
         '$2b$12$AAAAAAAAAAAAAAAAAAAAAA.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
       )
       throw new AuthenticationError()
@@ -195,10 +194,13 @@ router.post('/register', authLimiter, async (req: Request, res: Response, next) 
     if (!check.valid) throw new InvalidPayloadError(check.message!)
 
     const hashed = await AuthService.hashPassword(password)
+    const totalUsers = await adapter.count('users', {})
+    const assignedRole = totalUsers === 0 ? 'admin' : (role && ['viewer', 'editor'].includes(role) ? role : 'editor')
+
     const user = await adapter.create<Record<string, any>>('users', {
       email: email.toLowerCase(),
       password: hashed,
-      role: 'editor',
+      role: assignedRole,
     })
 
     const userId = (user.id || user._id).toString()
@@ -228,7 +230,7 @@ router.post('/register', authLimiter, async (req: Request, res: Response, next) 
     }
     
     // Set req.user so the audit middleware can capture this registration event
-    ;(req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user = { id: userId, email: user.email, name: user.email }
+    ;(req as import('../types/request').ZenithRequest).user = { id: userId, email: user.email, name: user.email, role: 'viewer' } as any
 
     res.status(201).json(createResponse({ user: payload, accessToken }))
   } catch (err) {
@@ -377,7 +379,7 @@ router.get('/sessions', requireAuth, async (req: Request, res: Response, next) =
 router.get('/me', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const adapter = AdapterFactory.getActiveAdapter()
-    const users = await adapter.find<Record<string, any>>('users', { id: (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user.id })
+    const users = await adapter.find<Record<string, any>>('users', { id: (req as import('../types/request').ZenithRequest).user!.id })
     const user = users[0] || null
     if (!user) throw new NotFoundError('User')
     const userId = (user.id || user._id).toString()
@@ -391,7 +393,7 @@ router.get('/me', requireAuth, async (req: Request, res: Response, next) => {
 router.delete('/me', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const adapter = AdapterFactory.getActiveAdapter()
-    const userId = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user.id
+    const userId = (req as import('../types/request').ZenithRequest).user!.id
     
     // Revoke all active sessions
     await sessionStore.revokeAllForUser(userId)
@@ -401,7 +403,11 @@ router.delete('/me', requireAuth, async (req: Request, res: Response, next) => {
     // Hard delete user from the system
     await adapter.delete('users', userId)
 
-    // Emit event for downstream cleanup (e.g. content anonymization or deletion)
+    // Cascade delete all workspaces, sites, and content owned by this user
+    const { TenantCascadeService } = await import('../services/tenant-cascade')
+    await TenantCascadeService.deleteUserOwnedTenants(adapter, userId)
+
+    // Emit event for downstream cleanup
     const { eventHub } = await import('../services/event-hub')
     eventHub.emit('user.deleted', { userId })
 
@@ -415,7 +421,7 @@ router.delete('/me', requireAuth, async (req: Request, res: Response, next) => {
 router.get('/me/export', requireAuth, async (req: Request, res: Response, next) => {
   try {
     const adapter = AdapterFactory.getActiveAdapter()
-    const userId = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user.id
+    const userId = (req as import('../types/request').ZenithRequest).user!.id
     
     const users = await adapter.find<Record<string, any>>('users', { id: userId })
     const user = users[0] || null
@@ -427,7 +433,9 @@ router.get('/me/export', requireAuth, async (req: Request, res: Response, next) 
     const exportPayload = {
       profile: user,
       exportDate: new Date().toISOString(),
-      // Add content queries here if applicable in the future
+      sites: await adapter.find('z_sites', { ownerId: userId }),
+      workspaces: await adapter.find('z_workspaces', { ownerId: userId }),
+      media: await adapter.find('media', { uploadedBy: userId })
     }
 
     res.setHeader('Content-Type', 'application/json')

@@ -117,13 +117,13 @@ export const ReorderableSectionBlock = React.memo(
  setInjectionIndex(index)
  setBlockPickerOpen(true)
  }}
- className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-60 hover:!opacity-100 transition-all z-20 px-3 py-1 rounded-none-none border-2 border-dashed border-gray-500/40 hover:border-gray-500/70 backdrop-blur-xl"
+ className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-60 hover:!opacity-100 transition-all z-20 px-3 py-1 rounded-none-none border-2 border-dashed border-z-border/40 hover:border-z-border/70 backdrop-blur-xl"
  >
  <span className={cn(
  'text-sm font-semibold  flex items-center gap-1.5 ',
- theme === 'dark' ? 'text-white/70' : 'text-black/70'
+ theme === 'dark' ? 'text-z-primary/70' : 'text-z-primary/70'
  )}>
- <Plus size={10} className="text-gray-600 dark:text-z-secondary" /> Insert
+ <Plus size={10} className="text-z-secondary " /> Insert
  </span>
  </button>
  </div>

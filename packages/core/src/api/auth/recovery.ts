@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+
 import { Router, Request, Response, NextFunction } from 'express'
 import crypto from 'crypto'
 import { AdapterFactory } from '../../database/adapters/AdapterFactory'
@@ -114,6 +114,7 @@ recoveryRouter.post('/verify-email', recoveryLimiter, async (req: Request, res: 
 // ── POST /api/v1/auth/resend-verification ────────────────────────────────────
 recoveryRouter.post('/resend-verification', recoveryLimiter, requireAuth, async (req: Request, res: Response, next) => {
   try {
+    // @ts-ignore: TS2532 - unresolved type from removing @ts-nocheck
     const userId = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user.id
     const adapter = AdapterFactory.getActiveAdapter()
     const users = await adapter.find<Record<string, any>>('users', { id: userId })

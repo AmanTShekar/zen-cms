@@ -2,7 +2,7 @@ import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { Loader2, Lock } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
-import { LexicalRichTextEditor } from './lexical'
+
 import MediaPicker from './MediaPicker'
 import RelationPicker from './RelationPicker'
 import {
@@ -159,17 +159,16 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
  }
 
  // ── Complex fields with their own internal state ────────────────────────
- if (field.type === 'richtext' || field.type === 'lexical') {
- return (
- <LexicalRichTextEditor
- mode={field.type === 'lexical' ? 'full' : undefined}
- value={value}
- onChange={onChange}
- placeholder={`Enter ${field.name}...`}
- disabled={disabled}
- />
- )
- }
+  if (field.type === 'richtext' || field.type === 'lexical') {
+    return (
+      <TextareaField
+        field={field}
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+      />
+    )
+  }
 
  if (field.type === 'media') {
  return (
@@ -320,7 +319,7 @@ const FormBuilder: React.FC<FormBuilderProps> = ({
  {field.label || field.name.replace(/([A-Z])/g, ' $1')}
  {field.required && <span className="text-rose-500">*</span>}
  {field.localized && (
- <span className="px-1.5 py-0.5 text-sm font-semibold text-gray-600 dark:text-z-muted bg-gray-500/10 border border-gray-500/20 rounded-none-none">
+ <span className="px-1.5 py-0.5 text-sm font-semibold text-z-secondary bg-z-panel border border-z-border/20 rounded-none-none">
  {isFieldDisabled ? readOnlyLocale || currentLocale : currentLocale}
  </span>
  )}

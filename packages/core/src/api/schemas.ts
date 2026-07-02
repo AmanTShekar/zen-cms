@@ -75,6 +75,7 @@ router.post('/', requireAuth, requireRole('admin'), async (req: Request, res: Re
       slug,
       singular,
       plural,
+      type: req.body.type || 'collection',
       fields: fields || [],
       settings: settings || {}
     }, { siteId })

@@ -63,8 +63,8 @@ let rateLimitStore: any = undefined
 if (redisService.client) {
   try {
     rateLimitStore = new RedisRateLimitStore()
-  } catch {
-    logger.warn('Redis unavailable for rate limiting — falling back to in-memory store')
+  } catch (err: any) {
+    logger.warn({ err }, 'Redis unavailable for rate limiting — falling back to in-memory store')
   }
 } else {
   if (env.NODE_ENV === 'production' && process.env.ALLOW_IN_MEMORY_PRODUCTION !== 'true') {
@@ -94,11 +94,13 @@ const { apiMax, apiWindowMs, authMax, authWindowMs } = readRateLimitConfig()
 
 function getRateLimitKey(req: any): string {
   const userId = req.user?.id
+  const siteId = req.siteId || req.headers?.['x-zenith-site-id'] || 'global'
   const ip = req.ip || req.socket.remoteAddress || 'any'
   const apiKey = req.headers['x-api-key']
-  if (userId) return `user:${userId}:${ip}`
-  if (apiKey) return `apikey:${apiKey.slice(0, 8)}`
-  return `ip:${ip}`
+  
+  if (userId) return `user:${userId}:${siteId}:${ip}`
+  if (apiKey) return `apikey:${apiKey.slice(0, 8)}:${siteId}`
+  return `ip:${ip}:${siteId}`
 }
 
 // General API: 100 requests per minute (configurable via env)

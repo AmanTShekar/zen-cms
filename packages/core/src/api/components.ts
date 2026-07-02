@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+
 /**
  * /api/v1/system/components
  *
@@ -228,6 +228,7 @@ router.post('/register-code', requireAuth, requireRole('admin'), async (req: Req
     const existing = await adapter.find<Record<string, any>>(COMPONENTS_COLLECTION, { slug: cleanSlug, siteId })
     let doc: Record<string, any>
     if (existing.length > 0) {
+      // @ts-ignore: TS2322 - unresolved type from removing @ts-nocheck
       doc = await adapter.update<Record<string, any>>(COMPONENTS_COLLECTION, String(existing[0]._id ?? existing[0].id), {
         displayName: resolvedName,
         category: category || existing[0].category,

@@ -1,39 +1,48 @@
 # 🪐 Zenith CMS | Elite Developer & AI Workspace Guide (`.cursorrules`)
 
-This file governs the coding standards, styling architectures, state boundaries, and environment rules of Zenith CMS. AI models (e.g. Cursor, Claude, ChatGPT) and developers MUST strictly conform to these constraints.
+This file governs the coding standards, styling architectures, state boundaries, and environment rules of Zenith CMS. AI models (e.g. Cursor, Copilot, ChatGPT) and developers MUST strictly conform to these constraints.
 
 ---
 
-## 🏛️ Monorepo Package Reference
-- **`@zenith/types`**: Shared schema interfaces, dynamic layout types, validation bounds.
-- **`@zenith/core`**: API Routing core, Postgres/MongoDB swapper engine, presence, hooks, controllers.
-- **`@zenith/admin`**: The React + Tailwind + Zustand operational console and visual dashboard.
-- **`@zenith/sdk`**: Client SDK to safely query partitioned data structures.
+## 🏛️ Monorepo Package Reference & Bounds
+- **`packages/types`**: Unified Types & generated database model interfaces.
+- **`packages/core`**: Backend API (Express, Mongoose/Postgres adapters, Zod/Ajv engines). Strictly server-side Node.js logic. Never import React components, CSS files, or client-side context hooks.
+- **`packages/admin`**: Headless Admin UI (Vite, React 19, Zustand, Tailwind CSS, Framer Motion). Must only access database structures via the custom HTTP instance `packages/admin/src/lib/api.ts`.
+- **`packages/sdk`**: Client SDK to safely query partitioned data structures.
 
 ---
 
-## 🎨 Styling & Glassmorphic Standards
-1. **Theme Scoping**: Enforce high-contrast dark visual tones with premium glassmorphism. Avoid plain/harsh primaries (e.g., `#FF0000`). Use Tailwind variables with HSL configurations.
-2. **Micro-Transitions**: All interactive targets (buttons, links, dashboard widgets) must present smooth responsive hover scaling (`transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98]`).
-3. **Grid Rigidity**: Custom components nested within the `DashboardBuilder` grid must strictly scale within dynamic wrappers (`w-full h-full select-none overflow-hidden`) to prevent layout ruptures.
+## 🔒 Crucial Security, Multi-Tenancy & Database Guardrails
+1. **Dynamic Tenant Isolation**: Every data access query on user, collection, or media databases must verify active scopes using the `X-Zenith-Site-Id` header mapping or the `siteId` context inside the engine.
+2. **Agnostic Database Queries (Drizzle/Postgres)**: Never write raw database drivers (like MongoDB regex queries) directly inside router endpoints. All queries must route through the clean database interface in `DatabaseAdapter.ts`. Ensure strict adherence to Postgres/Drizzle patterns for scalability.
+3. **Brute-Force & Lockout Systems**: All user authentication flows must register attempts via `AuthService`. Accounts locked out after 5 failed attempts for 15 minutes. Session tokens transported via secure HttpOnly, SameSite=Strict cookies.
+
+---
+
+## 🧩 Zero-Bloat Plugin Architecture
+1. **No Core Bloat**: Do NOT add new third-party SDKs (e.g., OpenAI, AWS S3, Stripe, Nodemailer) directly to the `core` package.
+2. **Plugin Extraction**: All specialized features (AI, Cloud Storage, OAuth, Email, Observability) MUST be extracted into standalone plugins under `@zenithcms/plugin-*`.
+3. **Event-Driven Hooks**: Plugins must integrate via the event lifecycle hooks (e.g., `afterChange`, `beforeDelete`) instead of hardcoding logic into core execution paths.
+
+---
+
+## 🎨 Premium Design System: Glassmorphism
+1. **Theme Scoping**: Enforce high-contrast dark visual tones with premium glassmorphism. Avoid plain/harsh primaries (e.g., `#FF0000`). Use Tailwind variables with HSL configurations (e.g., Crimson-Red `#E11D48`). Base backgrounds must use Pure Black (`bg-black`).
+2. **Grid Card CSS Recipe**: Admin dashboard panels must use:
+   `background-color: rgba(0, 0, 0, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 0px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);`
+3. **Micro-Transitions**: All interactive targets must present smooth responsive hover scaling (`transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98]`). Include Framer Motion keyframes.
+4. **Grid Rigidity**: Custom components within the `DashboardBuilder` grid must strictly scale within dynamic wrappers (`w-full h-full select-none overflow-hidden`).
 
 ---
 
 ## 📦 Atomic State & React Performance Axioms
-1. **Anti-Tangled Contexts**: Do NOT register duplicate drag-and-drop contexts. Maintain exactly one `<DndContext>` at the root grid canvas level.
-2. **No Inline Component Declarations**: Sub-components, modal sheets, and custom controllers must always be exported separately or defined at the module-root. Declaring components inline inside render triggers complete re-mount loops, disrupting field focus and state.
-3. **Zustand Splitting**: Keep Zustand slices thin and decoupled. Prevent parent re-renders by selector scoping (`const user = useStore(state => state.user)` instead of direct destructured store extraction).
-
----
-
-## 🛢️ Database & Schema Synchronization Protocols
-1. **Dynamic Scoping**: Every mutation query MUST include the site isolation context `siteId` or query via the request scoped `X-Zenith-Site-Id` header.
-2. **Relational Push**: When editing schemas, ensure any database alterations run under transactions. Never execute destructive structural changes on live production SQL columns.
-3. **Zod Compilation**: All custom database structures must present compiled Zod validation middleware schemas.
+1. **Anti-Tangled Contexts**: Do NOT register duplicate drag-and-drop contexts. Maintain exactly one `<DndContext>` at the root.
+2. **No Inline Component Declarations**: Sub-components, modal sheets, and custom controllers must always be exported separately or defined at the module-root.
+3. **Zustand Splitting**: Keep Zustand slices thin and decoupled. Prevent parent re-renders by selector scoping.
 
 ---
 
 ## 🧪 Quality Gates & CI Hooks
 1. **Zero Lint Warnings**: Code edits must build flawlessly without ESLint overrides or TypeScript ignore directives.
-2. **Strict Compiler Verification**: Before committing edits, run `tsc -b` to guarantee full type compliance.
-3. **Deterministic Pre-Commits**: Always run formatting checks (`npx prettier --check .`) to protect code readability.
+2. **Strict Compiler Verification**: Before committing edits, run `pnpm run build` to guarantee full type compliance.
+3. **Core Testing Suite**: Run `pnpm test` (expect 195/195 tests cleanly).

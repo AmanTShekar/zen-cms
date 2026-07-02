@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import api from '../../lib/api'
+import { useTenantStore } from '../../lib/tenantStore'
 import toast from 'react-hot-toast'
 
 interface DBStats {
@@ -127,10 +128,11 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
 
   const handleDownloadBackup = async (backup: Backup) => {
     try {
-      // Use fetch directly for blob download since api instance may not support responseType
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token') || ''
-      const siteId = localStorage.getItem('activeSiteId') || ''
-      const res = await fetch(`/api/v1/system/backup/download/${backup.id}`, {
+      // Use fetch directly for blob download since api instance does not support responseType
+      const token = useTenantStore.getState().token || ''
+      const siteId = useTenantStore.getState().activeSiteId || ''
+      const apiBase = (import.meta.env.VITE_API_URL || '').replace('/api/v1', '')
+      const res = await fetch(`${apiBase}/api/v1/system/backup/download/${backup.id}`, {
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
           ...(siteId ? { 'x-zenith-site-id': siteId } : {}),
@@ -170,7 +172,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
 
   const inp = cn(
     'border rounded-none py-3 px-4 text-sm font-mono transition-all outline-none focus:ring-1 focus:ring-z-active-border focus:border-z-accent',
-    dark ? 'bg-black/80 border-z-border text-white placeholder:text-gray-700' : 'bg-z-panel border-z-border'
+    dark ? 'bg-app/80 border-z-border text-z-primary placeholder:text-z-primary' : 'bg-z-panel border-z-border'
   )
 
   return (
@@ -187,7 +189,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
             </div>
             <div>
               <p className="text-sm font-semibold text-z-secondary">{stat.label}</p>
-              <p className={cn('text-xl font-semibold  mt-1', dark ? 'text-white' : 'text-z-primary')}>{stat.value}</p>
+              <p className={cn('text-xl font-semibold  mt-1', 'text-z-primary')}>{stat.value}</p>
             </div>
           </div>
         ))}
@@ -198,7 +200,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
         <p className="text-sm font-semibold text-z-secondary">Test New Connection</p>
         <form onSubmit={handleTestConnection} className="flex flex-wrap gap-3 items-end">
           <div className="flex-1 min-w-[200px] space-y-1">
-            <label className="text-sm font-semibold text-gray-600">Connection URI</label>
+            <label className="text-sm font-semibold text-z-secondary">Connection URI</label>
             <input
               type="text"
               value={dbUri}
@@ -208,7 +210,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
             />
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-semibold text-gray-600">Dialect</label>
+            <label className="text-sm font-semibold text-z-secondary">Dialect</label>
             <div className="flex gap-2">
               {(['postgres', 'mongodb'] as const).map(d => (
                 <button key={d} type="button" onClick={() => setDbDialect(d)}
@@ -221,7 +223,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
           </div>
           <button type="submit" disabled={testing || !dbUri.trim()}
             className={cn('px-6 py-3 text-sm font-semibold   border transition-all disabled:opacity-40 flex items-center gap-2',
-              dark ? 'bg-z-accent border-transparent text-white hover:opacity-90 shadow-sm' : 'bg-gray-900 border-transparent text-white hover:bg-gray-800')}>
+              dark ? 'bg-z-accent border-transparent text-z-primary hover:opacity-90 shadow-sm' : 'bg-z-accent border-transparent text-z-primary hover:brightness-110')}>
             {testing ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
             Validate
           </button>
@@ -234,13 +236,13 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
           <div className="flex items-center gap-3">
             <Archive size={16} className="text-z-secondary" />
             <div>
-              <p className={cn('text-sm font-semibold  ', dark ? 'text-gray-200' : 'text-gray-800')}>Database Backups</p>
+              <p className={cn('text-sm font-semibold  ', dark ? 'text-z-primary' : 'text-z-primary')}>Database Backups</p>
               <p className="text-sm text-z-secondary">Create and restore database snapshots</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => { setShowBackups(!showBackups) }}
-              className={cn('text-sm font-semibold   px-3 py-2 border transition-all', dark ? 'border-white/10 text-z-muted hover:text-white' : 'border-z-border text-z-secondary')}>
+              className={cn('text-sm font-semibold   px-3 py-2 border transition-all', dark ? 'border-z-border text-z-muted hover:text-z-primary' : 'border-z-border text-z-secondary')}>
               {showBackups ? 'Hide' : 'View'} Backups
             </button>
             <button onClick={handleCreateBackup} disabled={creatingBackup}
@@ -252,23 +254,23 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
           </div>
         </div>
         {showBackups && (
-          <div className="border-t" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}>
+          <div className="border-t" style={{ borderColor: 'var(--z-border)' }}>
             {backupsLoading ? (
               <div className="flex items-center justify-center py-8">
                 <Loader2 size={20} className="text-z-active-text animate-spin" />
               </div>
             ) : backups.length === 0 ? (
               <div className="py-8 text-center">
-                <p className="text-sm text-gray-600">No backups yet — create one above</p>
+                <p className="text-sm text-z-secondary">No backups yet — create one above</p>
               </div>
             ) : (
-              <div className="divide-y" style={{ borderColor: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }}>
+              <div className="divide-y" style={{ borderColor: 'var(--z-border)' }}>
                 {backups.map(b => (
                   <div key={b.id} className="flex items-center gap-4 px-5 py-3">
                     <Archive size={14} className="text-z-secondary shrink-0" />
                     <div className="flex-1">
-                      <p className={cn('text-sm font-semibold', dark ? 'text-gray-200' : 'text-gray-800')}>{b.filename}</p>
-                      <p className="text-sm text-gray-600">{new Date(b.createdAt).toLocaleString()} · {(b.size / 1024 / 1024).toFixed(2)} MB</p>
+                      <p className={cn('text-sm font-semibold', dark ? 'text-z-primary' : 'text-z-primary')}>{b.filename}</p>
+                      <p className="text-sm text-z-secondary">{new Date(b.createdAt).toLocaleString()} · {(b.size / 1024 / 1024).toFixed(2)} MB</p>
                     </div>
                     <span className={cn('text-sm font-semibold   px-2 py-0.5 border', b.status === 'ready' ? 'text-z-active-text border-z-active-border bg-z-active-bg' : b.status === 'processing' ? 'text-amber-400 border-amber-500/30 bg-amber-500/10' : 'text-red-400 border-red-500/30 bg-red-500/10')}>
                       {b.status}
@@ -298,7 +300,7 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
           </button>
           <button onClick={handleMediaSweep} disabled={sweeping}
             className={cn('flex items-center gap-2 px-6 py-3.5 border text-sm font-semibold   transition-all active:scale-95 disabled:opacity-40',
-              dark ? 'bg-z-active-bg text-z-active-text border-z-active-border hover:bg-z-active-bg' : 'bg-gray-100 text-gray-700 border-z-border hover:bg-gray-200')}>
+              dark ? 'bg-z-active-bg text-z-active-text border-z-active-border hover:bg-z-active-bg' : 'bg-[var(--z-bg-hover)] text-z-primary border-z-border hover:bg-[var(--z-border)]')}>
             {sweeping ? <Loader2 size={13} className="animate-spin" /> : <Scan size={13} />}
             Sweep Orphan Media
           </button>
@@ -314,16 +316,16 @@ const SettingsDatabase: React.FC<SettingsDatabaseProps> = ({ dbStats, theme }) =
       {/* Slow Queries */}
       {slowQueries.length > 0 && (
         <div className={cn(card, 'overflow-hidden')}>
-          <div className="p-4 border-b" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}>
+          <div className="p-4 border-b" style={{ borderColor: 'var(--z-border)' }}>
             <p className="text-sm font-semibold text-amber-400">Slow Query Analysis</p>
           </div>
-          <div className="divide-y" style={{ borderColor: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)' }}>
+          <div className="divide-y" style={{ borderColor: 'var(--z-border)' }}>
             {slowQueries.slice(0, 5).map((q, i) => (
               <div key={i} className="flex items-center gap-4 px-5 py-3">
                 <AlertTriangle size={13} className="text-amber-400 shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className={cn('text-sm font-mono truncate', dark ? 'text-gray-300' : 'text-gray-700')}>{q.query || q.command || 'Unknown query'}</p>
-                  <p className="text-sm text-gray-600">{q.collection || q.table}</p>
+                  <p className={cn('text-sm font-mono truncate', 'text-z-secondary')}>{q.query || q.command || 'Unknown query'}</p>
+                  <p className="text-sm text-z-secondary">{q.collection || q.table}</p>
                 </div>
                 <span className="text-sm font-semibold text-amber-400 shrink-0">{q.millis || q.duration}ms</span>
               </div>

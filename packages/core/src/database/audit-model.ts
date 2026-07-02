@@ -36,11 +36,11 @@ const AuditLogSchema = new Schema<IAuditLog>(
     timestamp: { type: Date, default: Date.now },
     status: { type: String, enum: ['success', 'failed'] },
     resource: { type: String },
-    siteId: { type: String },
+    siteId: { type: String, required: true },
     hash: { type: String },
     previousHash: { type: String },
   },
-  { strict: false }
+  { strict: true }
 )
 
 // High-performance indexing for rapid sorting and filtering
@@ -52,4 +52,4 @@ AuditLogSchema.index({ action: 1 })
 AuditLogSchema.index({ status: 1 })
 
 // Use a separate collection for audit logs to avoid cluttering main collections
-export const AuditLogModel = mongoose.model<IAuditLog>('z_audit_logs', AuditLogSchema)
+export const AuditLogModel = mongoose.models.z_audit_logs || mongoose.model<IAuditLog>('z_audit_logs', AuditLogSchema)

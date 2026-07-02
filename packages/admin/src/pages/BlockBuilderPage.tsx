@@ -158,7 +158,7 @@ export default function BlockBuilderPage() {
  const payload = { slug, title, description, category, icon, fields }
  const res = await api.post('/blocks/generate', payload)
  clearBlockCache()
- toast.success(res.data.message || 'Block generated as TypeScript code!')
+ toast.success(res.data.message || 'Block generated as JSON!')
  await loadBlocks()
  } catch (err: any) {
  toast.error(err.response?.data?.error?.message || 'Failed to generate block')
@@ -188,7 +188,7 @@ export default function BlockBuilderPage() {
 
  const inputClass = cn(
   'border outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-bold transition-colors py-2.5 px-3 rounded-none shadow-sm',
-  dark ? 'bg-z-panel backdrop-blur-md border-z-border focus:border-z-accent text-white placeholder-gray-600' : 'bg-z-panel border-z-border focus:border-z-accent text-z-primary placeholder-gray-400'
+  dark ? 'bg-z-panel backdrop-blur-md border-z-border focus:border-z-accent text-z-primary placeholder:text-z-muted' : 'bg-z-panel border-z-border focus:border-z-accent text-z-primary placeholder:text-z-muted'
   )
  
  const blocksByCategory = savedBlocks.reduce((acc, block) => {
@@ -199,13 +199,13 @@ export default function BlockBuilderPage() {
  }, {} as Record<string, SavedBlock[]>)
 
  return (
- <div className={cn('flex h-[calc(100vh-4rem)] overflow-hidden', dark ? 'bg-black text-white' : 'bg-gray-50 text-z-primary')}>
+ <div className={cn('flex h-[calc(100vh-4rem)] overflow-hidden', dark ? 'bg-app text-z-primary' : 'bg-[var(--z-bg-input)] text-z-primary')}>
  <div className={cn('w-64 flex-shrink-0 border-r flex flex-col', 'border-z-border bg-z-panel')}>
  <div className="p-4 border-b border-inherit flex items-center justify-between">
  <h2 className="text-sm font-semibold flex items-center gap-2">
- <Database size={14} className="text-gray-600 dark:text-z-secondary" /> Blocks
+ <Database size={14} className="text-z-secondary " /> Blocks
  </h2>
- <button onClick={resetEditor} className="p-1.5 bg-gray-500/10 hover:bg-gray-500/20 text-gray-600 dark:text-z-secondary rounded-none transition-colors" title="New Block">
+ <button onClick={resetEditor} className="p-1.5 bg-z-panel hover:bg-z-hover border-z-border-strong text-z-secondary  rounded-none transition-colors" title="New Block">
  <Plus size={14} />
  </button>
  </div>
@@ -220,8 +220,8 @@ export default function BlockBuilderPage() {
  <h3 className="text-sm font-semibold text-z-secondary">{cat}</h3>
  <div className="space-y-0.5">
  {blocks.map(block => (
- <button key={block.slug} onClick={() => loadBlock(block)} className={cn('w-full flex items-center gap-2 text-left px-3 py-2 text-sm font-semibold   transition-colors rounded-none truncate', slug === block.slug ? 'bg-z-accent text-white shadow-sm' : dark ? 'text-z-muted hover:bg-z-hover hover:text-white' : 'text-gray-600 hover:bg-gray-50')}>
- {block.isGenerated ? <Code size={12} className={slug === block.slug ? 'text-white' : 'text-z-secondary/50'} /> : <Box size={12} />}
+ <button key={block.slug} onClick={() => loadBlock(block)} className={cn('w-full flex items-center gap-2 text-left px-3 py-2 text-sm font-semibold   transition-colors rounded-none truncate', slug === block.slug ? 'bg-z-accent text-z-logo-text shadow-sm' : dark ? 'text-z-muted hover:bg-z-hover hover:text-z-primary' : 'text-z-secondary hover:bg-[var(--z-bg-input)]')}>
+ {block.isGenerated ? <Code size={12} className={slug === block.slug ? 'text-z-primary' : 'text-z-secondary/50'} /> : <Box size={12} />}
  {block.labels?.singular || block.slug}
  </button>
  ))}
@@ -235,12 +235,12 @@ export default function BlockBuilderPage() {
  <div className="flex-1 flex flex-col overflow-hidden relative">
  <PageHeader
    title="Component Builder"
-   description={`${fields.length} fields · Generating to config/blocks/${slug}.ts`}
+   description={`${fields.length} fields · Generating to config/blocks/${slug}.json`}
    icon={<Layers size={24} />}
    backLink={{ to: '/', label: 'Dashboard' }}
    actions={
      <div className="flex items-center gap-2">
-       <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-6 py-2.5 bg-z-accent hover:opacity-90 text-white text-sm font-semibold rounded-none transition-all shadow-sm disabled:opacity-50">
+       <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-6 py-2.5 bg-z-accent hover:brightness-110 text-z-logo-text text-sm font-semibold rounded-none transition-all shadow-sm disabled:opacity-50">
          {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} Save Code
        </button>
      </div>
@@ -249,7 +249,7 @@ export default function BlockBuilderPage() {
 
  <div className="flex-1 overflow-auto p-6 space-y-6">
  <div className={cn('rounded-none border p-6 space-y-4 shadow-sm transition-all', 'z-panel')}>
- <h3 className="text-sm font-semibold text-gray-600 dark:text-z-secondary flex items-center gap-2"><Settings size={12} /> Component Settings</h3>
+ <h3 className="text-sm font-semibold text-z-secondary  flex items-center gap-2"><Settings size={12} /> Component Settings</h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
  <label className="text-sm font-semibold text-z-secondary block mb-1.5">Display Name</label>
@@ -272,28 +272,28 @@ export default function BlockBuilderPage() {
 
  <div className={cn('rounded-none border shadow-sm transition-all', 'z-panel')}>
  <div className="px-6 py-4 border-b border-inherit flex items-center justify-between">
- <h3 className="text-sm font-semibold text-gray-600 dark:text-z-secondary flex items-center gap-2"><Layers size={12} /> Fields ({fields.length})</h3>
- <button onClick={() => { setModalStep('TYPE'); setActiveField({}); setEditingFieldIndex(null); setSettingsTab('BASIC'); setIsFieldModalOpen(true) }} className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-500/10 hover:bg-gray-500/20 text-gray-600 dark:text-z-secondary text-sm font-semibold rounded-none transition-all">
+ <h3 className="text-sm font-semibold text-z-secondary  flex items-center gap-2"><Layers size={12} /> Fields ({fields.length})</h3>
+ <button onClick={() => { setModalStep('TYPE'); setActiveField({}); setEditingFieldIndex(null); setSettingsTab('BASIC'); setIsFieldModalOpen(true) }} className="flex items-center gap-1.5 px-3 py-1.5 bg-z-panel hover:bg-z-hover border-z-border-strong text-z-secondary  text-sm font-semibold rounded-none transition-all">
  <Plus size={12} /> Add new field
  </button>
  </div>
  <div className="p-0">
  {fields.length === 0 ? (
  <div className="py-16 text-center">
- <Layers size={40} className="mx-auto text-gray-700 mb-4" strokeWidth={1} />
- <p className="text-sm font-semibold text-gray-600">No fields yet</p>
+ <Layers size={40} className="mx-auto text-z-primary mb-4" strokeWidth={1} />
+ <p className="text-sm font-semibold text-z-secondary">No fields yet</p>
  </div>
  ) : (
- <div className="divide-y divide-gray-100 dark:divide-white/5">
+ <div className="divide-y divide-z-border dark:divide-z-border">
  {fields.map((field, i) => (
  <div key={i} className="flex items-center justify-between px-6 py-4 hover:bg-z-hover transition-colors group cursor-pointer"
  onClick={() => { setActiveField(field); setEditingFieldIndex(i); setModalStep('SETTINGS'); setSettingsTab('BASIC'); setIsFieldModalOpen(true) }}>
  <div className="flex items-center gap-4">
- <div className="w-8 h-8 rounded-none bg-gray-500/10 flex items-center justify-center">
- {(() => { const ft = FIELD_TYPES.find(t => t.value === field.type); const Icon = ft ? ft.icon : Box; return <Icon size={14} className="text-gray-600 dark:text-z-secondary" /> })()}
+ <div className="w-8 h-8 rounded-none bg-z-panel flex items-center justify-center">
+ {(() => { const ft = FIELD_TYPES.find(t => t.value === field.type); const Icon = ft ? ft.icon : Box; return <Icon size={14} className="text-z-secondary " /> })()}
  </div>
  <div>
- <div className="text-sm font-bold text-z-primary dark:text-white flex items-center gap-2">
+ <div className="text-sm font-bold text-z-primary dark:text-z-primary flex items-center gap-2">
  {field.name || `[${field.type}]`}
  {field.required && <span className="text-sm text-red-500">*</span>}
  {field.i18n && <Globe size={10} className="text-z-active-text" />}
@@ -313,13 +313,13 @@ export default function BlockBuilderPage() {
 
  <AnimatePresence>
  {isFieldModalOpen && (
- <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
- <motion.div initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 10 }} className="w-full max-w-4xl border rounded-none shadow-sm flex flex-col max-h-[85vh] bg-black border-z-border overflow-hidden">
- <div className="px-6 py-4 border-b border-z-border flex items-center justify-between bg-black/50">
- <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+ <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--z-bg-modal)] backdrop-blur-sm p-4">
+ <motion.div initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 10 }} className="w-full max-w-4xl border rounded-none shadow-sm flex flex-col max-h-[85vh] bg-app border-z-border overflow-hidden">
+ <div className="px-6 py-4 border-b border-z-border flex items-center justify-between bg-app/50">
+ <h2 className="text-sm font-semibold text-z-primary flex items-center gap-2">
  {modalStep === 'TYPE' ? 'Select a field for your Component' : `Configure ${activeField?.type} field`}
  </h2>
- <button onClick={() => setIsFieldModalOpen(false)} className="text-z-secondary hover:text-white p-1"><X size={18} /></button>
+ <button onClick={() => setIsFieldModalOpen(false)} className="text-z-secondary hover:text-z-primary p-1"><X size={18} /></button>
  </div>
 
  {modalStep === 'TYPE' && (
@@ -328,9 +328,9 @@ export default function BlockBuilderPage() {
  const Icon = ft.icon
  return (
  <button key={ft.value} onClick={() => { setActiveField({ type: ft.value, admin: {} }); setModalStep('SETTINGS') }} className="flex items-start gap-4 p-4 rounded-none border border-z-border bg-z-hover hover:border-z-accent/50 hover:opacity-90/5 transition-all text-left">
- <div className="mt-1 p-2 rounded-none bg-black/50 border border-z-border"><Icon size={18} style={{ color: ft.color }} /></div>
+ <div className="mt-1 p-2 rounded-none bg-app/50 border border-z-border"><Icon size={18} style={{ color: ft.color }} /></div>
  <div>
- <div className="text-sm font-semibold text-white mb-1">{ft.label}</div>
+ <div className="text-sm font-semibold text-z-primary mb-1">{ft.label}</div>
  <div className="text-sm text-z-muted leading-relaxed font-bold">{ft.desc}</div>
  </div>
  </button>
@@ -341,11 +341,11 @@ export default function BlockBuilderPage() {
 
  {modalStep === 'SETTINGS' && (
  <div className="flex flex-col flex-1 overflow-hidden">
- <div className="flex border-b border-z-border px-6 pt-4 gap-6 bg-black/20">
+ <div className="flex border-b border-z-border px-6 pt-4 gap-6 bg-app/20">
  {['BASIC', 'VALIDATION', 'ADMIN'].map(tab => (
- <button key={tab} onClick={() => setSettingsTab(tab as any)} className={cn("pb-3 text-sm font-semibold   transition-colors relative", settingsTab === tab ? "text-gray-600 dark:text-z-secondary" : "text-z-secondary hover:text-white")}>
+ <button key={tab} onClick={() => setSettingsTab(tab as any)} className={cn("pb-3 text-sm font-semibold   transition-colors relative", settingsTab === tab ? "text-z-secondary " : "text-z-secondary hover:text-z-primary")}>
  {tab}
- {settingsTab === tab && <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-500" />}
+ {settingsTab === tab && <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-z-border" />}
  </button>
  ))}
  </div>
@@ -371,7 +371,7 @@ export default function BlockBuilderPage() {
  
  {activeField?.type === 'relation' && (
  <div className="col-span-2 pt-4 border-t border-z-border space-y-4">
- <label className="text-sm font-semibold text-gray-600 dark:text-z-secondary block">Relation Options</label>
+ <label className="text-sm font-semibold text-z-secondary  block">Relation Options</label>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
  <div>
  <label className="text-sm font-semibold text-z-secondary block mb-1.5">Relates To</label>
@@ -383,7 +383,7 @@ export default function BlockBuilderPage() {
  <div className="flex items-center">
  <label className="flex items-center gap-2 cursor-pointer mt-4">
  <input type="checkbox" checked={!!activeField?.hasMany} onChange={e => setActiveField(prev => ({ ...prev, hasMany: e.target.checked }))} className="accent-gray-500 w-4 h-4" />
- <span className="text-xs font-bold text-gray-300">Has Many (Array of references)</span>
+ <span className="text-xs font-bold text-z-secondary">Has Many (Array of references)</span>
  </label>
  </div>
  </div>
@@ -397,11 +397,11 @@ export default function BlockBuilderPage() {
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-z-hover p-4 rounded-none border border-z-border">
  <label className="flex items-center gap-2 cursor-pointer">
  <input type="checkbox" checked={!!activeField?.required} onChange={e => setActiveField(prev => ({ ...prev, required: e.target.checked }))} className="accent-gray-500 w-4 h-4" />
- <span className="text-xs font-bold text-gray-300">Required field</span>
+ <span className="text-xs font-bold text-z-secondary">Required field</span>
  </label>
  <label className="flex items-center gap-2 cursor-pointer">
  <input type="checkbox" checked={!!activeField?.unique} onChange={e => setActiveField(prev => ({ ...prev, unique: e.target.checked }))} className="accent-gray-500 w-4 h-4" />
- <span className="text-xs font-bold text-gray-300">Unique field</span>
+ <span className="text-xs font-bold text-z-secondary">Unique field</span>
  </label>
  </div>
  
@@ -455,15 +455,15 @@ export default function BlockBuilderPage() {
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-z-hover p-4 rounded-none border border-z-border">
  <label className="flex items-center gap-2 cursor-pointer">
  <input type="checkbox" checked={!!activeField?.i18n} onChange={e => setActiveField(prev => ({ ...prev, i18n: e.target.checked }))} className="accent-z-accent w-4 h-4" />
- <span className="text-xs font-bold text-gray-300">Enable Localization (i18n)</span>
+ <span className="text-xs font-bold text-z-secondary">Enable Localization (i18n)</span>
  </label>
  <label className="flex items-center gap-2 cursor-pointer">
  <input type="checkbox" checked={!!activeField?.admin?.hidden} onChange={e => setActiveField(prev => ({ ...prev, admin: { ...prev.admin, hidden: e.target.checked } }))} className="accent-gray-500 w-4 h-4" />
- <span className="text-xs font-bold text-gray-300">Hidden in UI</span>
+ <span className="text-xs font-bold text-z-secondary">Hidden in UI</span>
  </label>
  <label className="flex items-center gap-2 cursor-pointer">
  <input type="checkbox" checked={!!activeField?.admin?.readOnly} onChange={e => setActiveField(prev => ({ ...prev, admin: { ...prev.admin, readOnly: e.target.checked } }))} className="accent-gray-500 w-4 h-4" />
- <span className="text-xs font-bold text-gray-300">Read-Only</span>
+ <span className="text-xs font-bold text-z-secondary">Read-Only</span>
  </label>
  </div>
 
@@ -498,14 +498,14 @@ export default function BlockBuilderPage() {
  </div>
  )}
 
- <div className="px-6 py-4 border-t border-z-border bg-black/50 flex justify-between">
+ <div className="px-6 py-4 border-t border-z-border bg-app/50 flex justify-between">
  {modalStep === 'SETTINGS' ? (
- <button onClick={() => setModalStep('TYPE')} className="px-4 py-2 text-sm font-bold text-z-muted hover:text-white transition-colors">
+ <button onClick={() => setModalStep('TYPE')} className="px-4 py-2 text-sm font-bold text-z-muted hover:text-z-primary transition-colors">
  ← Back to Types
  </button>
  ) : <div />}
  {modalStep === 'SETTINGS' && (
- <button onClick={handleFieldSubmit} className="px-6 py-2 bg-z-accent hover:opacity-90 text-white text-sm font-semibold rounded-none transition-all shadow-sm">
+ <button onClick={handleFieldSubmit} className="px-6 py-2 bg-z-accent hover:brightness-110 text-z-logo-text text-sm font-semibold rounded-none transition-all shadow-sm">
  {editingFieldIndex !== null ? 'Update Field' : 'Add Field'}
  </button>
  )}

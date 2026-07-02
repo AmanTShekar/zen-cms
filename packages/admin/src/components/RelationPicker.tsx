@@ -100,7 +100,7 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
             className="flex items-center gap-3 px-4 py-2 bg-z-active-bg/30 border border-z-active-border rounded-none-none group transition-all hover:border-z-active-border cursor-pointer hover:bg-z-active-bg"
           >
             <Link2 size={12} className="text-z-active-text" />
-            <span className="text-sm font-bold text-gray-700">{getDisplayValue(item)}</span>
+            <span className="text-sm font-bold text-z-primary">{getDisplayValue(item)}</span>
             {!disabled && (
               <button
                 type="button"
@@ -149,26 +149,26 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
 
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-10 bg-black/70 backdrop-blur-md">
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-10 bg-app/70 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.98, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.98, y: 10 }}
               className={cn(
                 "w-full max-w-2xl h-[70vh] flex flex-col shadow-2xl overflow-hidden rounded-xl border",
-                theme === 'dark' ? "bg-black/65 backdrop-blur-xl border-white/10" : "bg-white border-black/10"
+                theme === 'dark' ? "bg-app/65 backdrop-blur-xl border-z-border" : "bg-z-panel border-z-border"
               )}
             >
-              <div className={cn("p-8 border-b flex items-center justify-between", theme === 'dark' ? "border-white/10" : "border-gray-50")}>
+              <div className={cn("p-8 border-b flex items-center justify-between", theme === 'dark' ? "border-z-border" : "border-z-border")}>
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-indigo-500 rounded-lg flex items-center justify-center text-white shadow-lg shadow-sm">
+                  <div className="w-10 h-10 bg-indigo-500 rounded-lg flex items-center justify-center text-z-primary shadow-lg shadow-sm">
                     <Database size={20} />
                   </div>
                   <div className="flex flex-col">
-                    <h3 className={cn("text-lg font-semibold leading-none", theme === 'dark' ? "text-white" : "text-z-primary")}>
+                    <h3 className={cn("text-lg font-semibold leading-none", theme === 'dark' ? "text-z-primary" : "text-z-primary")}>
                       Select Relation
                     </h3>
-                    <p className="text-sm font-bold text-gray-400 mt-1.5">
+                    <p className="text-sm font-bold text-z-muted mt-1.5">
                       Targeting Collection: {relationTo.toUpperCase()}
                     </p>
                   </div>
@@ -176,7 +176,7 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className={cn("w-10 h-10 flex items-center justify-center rounded-lg transition-all", theme === 'dark' ? "bg-white/5 hover:bg-white/10 text-white" : "bg-gray-50 hover:bg-gray-100 text-z-muted")}
+                  className={cn("w-10 h-10 flex items-center justify-center rounded-lg transition-all", theme === 'dark' ? "bg-z-panel/5 hover:bg-[var(--z-bg-hover)] text-z-primary" : "bg-[var(--z-bg-input)] hover:bg-[var(--z-bg-hover)] text-z-muted")}
                 >
                   <X size={18} />
                 </button>
@@ -185,7 +185,7 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
               <div className="flex-1 overflow-hidden flex flex-col p-8 gap-6">
                 <div className="relative group">
                   <Search
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-z-accent transition-colors"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-z-muted group-focus-within:text-z-accent transition-colors"
                     size={16}
                   />
                   <input
@@ -195,7 +195,7 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
                     onChange={(e) => setSearch(e.target.value)}
                     className={cn(
                       "w-full rounded-lg pl-12 pr-4 py-3 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 border",
-                      theme === 'dark' ? "bg-black/20 border-white/10 text-white" : "bg-gray-50 border-z-border text-black"
+                      theme === 'dark' ? "bg-app/20 border-z-border text-z-primary" : "bg-[var(--z-bg-input)] border-z-border text-z-primary"
                     )}
                   />
                 </div>
@@ -204,14 +204,14 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
                   {loading ? (
                     <div className="h-full flex flex-col items-center justify-center gap-4">
                       <Loader2 className="animate-spin text-z-active-text" size={24} />
-                      <span className="text-sm font-semibold text-gray-400 animate-pulse">
+                      <span className="text-sm font-semibold text-z-muted animate-pulse">
                         Syncing Records...
                       </span>
                     </div>
                   ) : items.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center gap-4 opacity-30">
-                      <Database size={32} className={theme === 'dark' ? 'text-white' : 'text-black'} />
-                      <span className={cn("text-sm font-semibold", theme === 'dark' ? 'text-white' : 'text-black')}>
+                      <Database size={32} className={theme === 'dark' ? 'text-z-primary' : 'text-z-primary'} />
+                      <span className={cn("text-sm font-semibold", theme === 'dark' ? 'text-z-primary' : 'text-z-primary')}>
                         No Records Found
                       </span>
                     </div>
@@ -229,15 +229,15 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
                             className={cn(
                               'flex items-center justify-between p-4 rounded-lg border transition-all cursor-pointer group',
                               isSelected
-                                ? 'bg-indigo-500 border-indigo-500 text-white shadow-xl shadow-sm'
-                                : theme === 'dark' ? 'bg-black/20 border-white/5 hover:border-white/10' : 'bg-white border-gray-50 hover:border-z-active-border hover:bg-z-active-bg/10'
+                                ? 'bg-indigo-500 border-indigo-500 text-z-primary shadow-xl shadow-sm'
+                                : theme === 'dark' ? 'bg-app/20 border-z-border hover:border-z-border' : 'bg-z-panel border-z-border hover:border-z-active-border hover:bg-z-active-bg/10'
                             )}
                           >
                             <div className="flex flex-col">
                               <span
                                 className={cn(
                                   'text-xs font-semibold',
-                                  isSelected ? 'text-white' : theme === 'dark' ? 'text-white' : 'text-z-primary'
+                                  isSelected ? 'text-z-primary' : 'text-z-primary'
                                 )}
                               >
                                 {getDisplayValue(item)}
@@ -245,7 +245,7 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
                               <span
                                 className={cn(
                                   'text-sm font-bold mt-1',
-                                  isSelected ? 'text-white/60' : 'text-gray-400'
+                                  isSelected ? 'text-z-primary/60' : 'text-z-muted'
                                 )}
                               >
                                 ID: {item._id.slice(-8)}
@@ -259,11 +259,11 @@ const RelationPicker: React.FC<RelationPickerProps> = ({
                 </div>
               </div>
 
-              <div className={cn("p-8 border-t flex justify-end", theme === 'dark' ? "border-white/10 bg-black/20" : "border-gray-50 bg-gray-50/50")}>
+              <div className={cn("p-8 border-t flex justify-end", theme === 'dark' ? "border-z-border bg-app/20" : "border-z-border bg-[var(--z-bg-input)]/50")}>
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className={cn("px-8 py-3 rounded-lg text-sm font-semibold shadow-xl transition-all", theme === 'dark' ? "bg-white/10 text-white hover:bg-white/20" : "bg-gray-900 text-white shadow-gray-900/20 hover:brightness-110")}
+                  className={cn("px-8 py-3 rounded-lg text-sm font-semibold shadow-xl transition-all", theme === 'dark' ? "bg-z-panel/10 text-z-primary hover:bg-z-panel/20" : "bg-z-accent text-z-primary shadow-[var(--z-border)] hover:brightness-110")}
                 >
                   Close Registry
                 </button>

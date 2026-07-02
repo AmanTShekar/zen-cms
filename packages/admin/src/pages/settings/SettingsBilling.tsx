@@ -21,7 +21,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  : 'bg-z-input border-z-border shadow-sm text-z-secondary'
  )}
  >
- <CreditCard size={48} className="mx-auto text-gray-600 dark:text-z-secondary animate-pulse" />
+ <CreditCard size={48} className="mx-auto text-z-secondary  animate-pulse" />
  <h3 className="text-lg font-semibold">
  No Active Workspace Selected
  </h3>
@@ -47,7 +47,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  >
  <div className="flex flex-col">
  <span className="text-sm font-semibold leading-none flex items-center gap-2">
- <Sparkles size={14} className="text-gray-600 dark:text-z-muted" />
+ <Sparkles size={14} className="text-z-secondary" />
  Enable Custom Pricing Plans & Monetization
  </span>
  <span className="text-sm text-z-secondary font-bold mt-1.5 leading-relaxed">
@@ -56,11 +56,23 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  </div>
  <div className="flex items-center gap-4">
  <select
+ value={activeSite.paymentProvider || 'stripe'}
+ onChange={(e) => setActiveSite({ ...activeSite, paymentProvider: e.target.value })}
+ className={cn(
+ 'border rounded-none py-1.5 px-3 text-sm font-semibold  outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'bg-z-panel border-z-border text-z-primary'
+ )}
+ >
+ <option value="stripe">Stripe</option>
+ <option value="paypal">PayPal</option>
+ <option value="razorpay">Razorpay</option>
+ </select>
+ <select
  value={activeSite.currency || 'USD'}
  onChange={(e) => setActiveSite({ ...activeSite, currency: e.target.value })}
  className={cn(
  'border rounded-none py-1.5 px-3 text-sm font-semibold  outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-z-border text-white' : 'bg-z-panel border-z-border text-gray-800'
+ 'bg-z-panel border-z-border text-z-primary'
  )}
  >
  <option value="USD">USD ($)</option>
@@ -76,40 +88,100 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  onChange={(e) => setActiveSite({ ...activeSite, billingEnabled: e.target.checked })}
  className="sr-only peer"
  />
- <div className={cn("w-12 h-6 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-none after:h-4 after:w-5 after:transition-all border shadow-inner", theme === 'dark' ? 'bg-black/80 border-z-border peer-checked:bg-z-accent' : 'bg-gray-200 peer-checked:bg-z-accent')}></div>
+ <div className={cn("w-12 h-6 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-z-panel after:rounded-none after:h-4 after:w-5 after:transition-all border shadow-inner", 'bg-z-input border-z-border peer-checked:bg-z-accent')}></div>
  </label>
  </div>
  </div>
 
  {activeSite.billingEnabled && (
  <>
- {/* Stripe Credentials */}
+ {/* Payment Credentials */}
  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
- {[
- { label: 'Stripe Publishable Key', placeholder: 'pk_test_...', field: 'stripePublicKey' },
- { label: 'Stripe Secret Key', placeholder: 'sk_test_...', field: 'stripeSecretKey' },
- { label: 'Stripe Webhook Secret', placeholder: 'whsec_...', field: 'stripeWebhookSecret' },
+ {(!activeSite.paymentProvider || activeSite.paymentProvider === 'stripe') && [
+ { label: 'Stripe Publishable Key', placeholder: 'pk_test_...', field: 'stripePublicKey', type: 'text' },
+ { label: 'Stripe Secret Key', placeholder: 'sk_test_...', field: 'stripeSecretKey', type: 'password' },
+ { label: 'Stripe Webhook Secret', placeholder: 'whsec_...', field: 'stripeWebhookSecret', type: 'password' },
  ].map((input) => (
  <div
  key={input.field}
  className={cn(
  'p-4 rounded-none border transition-all space-y-3 shadow-sm',
- theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-z-border' : 'bg-gray-50/50 border-z-border shadow-sm'
+ theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-z-active-border shadow-sm' : 'bg-z-active-bg/30 border-z-active-border shadow-sm'
  )}
  >
- <label className="text-sm font-semibold text-z-muted px-1">
+ <label className="text-sm font-semibold text-z-active-text px-1">
  {input.label}
  </label>
  <input
- type="password"
+ type={input.type}
  placeholder={input.placeholder}
  value={activeSite[input.field] || ''}
  onChange={(e) => setActiveSite({ ...activeSite, [input.field]: e.target.value })}
  className={cn(
  'w-full border rounded-none py-3 px-4 text-sm font-semibold transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
- ? 'bg-black border-z-border text-white focus:border-z-accent'
+ ? 'bg-app border-z-border text-z-primary focus:border-z-accent'
  : 'bg-z-panel border-z-border focus:border-z-accent'
+ )}
+ />
+ </div>
+ ))}
+
+ {activeSite.paymentProvider === 'paypal' && [
+ { label: 'PayPal Client ID', placeholder: 'AWX...', field: 'paypalClientId', type: 'text' },
+ { label: 'PayPal Client Secret', placeholder: 'EGd...', field: 'paypalClientSecret', type: 'password' },
+ { label: 'PayPal Webhook ID', placeholder: 'WH-...', field: 'paypalWebhookId', type: 'password' },
+ ].map((input) => (
+ <div
+ key={input.field}
+ className={cn(
+ 'p-4 rounded-none border transition-all space-y-3 shadow-sm',
+ theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-[rgba(0,112,186,0.5)] shadow-[0_0_8px_rgba(0,112,186,0.1)]' : 'bg-[#f0f8ff] border-[rgba(0,112,186,0.3)] shadow-sm'
+ )}
+ >
+ <label className="text-sm font-semibold text-[rgba(0,112,186,1)] dark:text-[#66b3ff] px-1">
+ {input.label}
+ </label>
+ <input
+ type={input.type}
+ placeholder={input.placeholder}
+ value={activeSite[input.field] || ''}
+ onChange={(e) => setActiveSite({ ...activeSite, [input.field]: e.target.value })}
+ className={cn(
+ 'w-full border rounded-none py-3 px-4 text-sm font-semibold transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark'
+ ? 'bg-app border-z-border text-z-primary focus:border-[rgba(0,112,186,1)]'
+ : 'bg-z-panel border-z-border focus:border-[rgba(0,112,186,1)]'
+ )}
+ />
+ </div>
+ ))}
+
+ {activeSite.paymentProvider === 'razorpay' && [
+ { label: 'Razorpay Key ID', placeholder: 'rzp_test_...', field: 'razorpayKeyId', type: 'text' },
+ { label: 'Razorpay Key Secret', placeholder: 'Secret...', field: 'razorpayKeySecret', type: 'password' },
+ { label: 'Razorpay Webhook Secret', placeholder: 'Webhook...', field: 'razorpayWebhookSecret', type: 'password' },
+ ].map((input) => (
+ <div
+ key={input.field}
+ className={cn(
+ 'p-4 rounded-none border transition-all space-y-3 shadow-sm',
+ theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-[rgba(51,153,204,0.5)] shadow-[0_0_8px_rgba(51,153,204,0.1)]' : 'bg-[#f4fafe] border-[rgba(51,153,204,0.3)] shadow-sm'
+ )}
+ >
+ <label className="text-sm font-semibold text-[rgba(51,153,204,1)] dark:text-[#88ccf0] px-1">
+ {input.label}
+ </label>
+ <input
+ type={input.type}
+ placeholder={input.placeholder}
+ value={activeSite[input.field] || ''}
+ onChange={(e) => setActiveSite({ ...activeSite, [input.field]: e.target.value })}
+ className={cn(
+ 'w-full border rounded-none py-3 px-4 text-sm font-semibold transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ theme === 'dark'
+ ? 'bg-app border-z-border text-z-primary focus:border-[rgba(51,153,204,1)]'
+ : 'bg-z-panel border-z-border focus:border-[rgba(51,153,204,1)]'
  )}
  />
  </div>
@@ -142,7 +214,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  }
  setActiveSite({ ...activeSite, pricingPlans: [...(activeSite.pricingPlans || []), newPlan] })
  }}
- className="flex items-center gap-2 px-4 py-2 border border-z-active-border hover:border-z-accent hover:bg-z-active-bg text-sm font-semibold transition-all text-z-accent dark:text-z-active-text hover:text-white"
+ className="flex items-center gap-2 px-4 py-2 border border-z-active-border hover:border-z-accent hover:bg-z-active-bg text-sm font-semibold transition-all text-z-accent dark:text-z-active-text hover:text-z-primary"
  >
  <PlusCircle size={12} />
  Add Plan
@@ -157,7 +229,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  'p-6 border rounded-none relative transition-all flex flex-col justify-between space-y-6 shadow-sm',
  plan.isPopular
  ? theme === 'dark'
- ? 'bg-black/80 backdrop-blur-md border-z-active-border shadow-sm'
+ ? 'bg-[var(--z-bg-modal)] backdrop-blur-md border-z-active-border shadow-sm'
  : 'bg-z-active-bg border-z-active-border'
  : theme === 'dark'
  ? 'bg-z-panel backdrop-blur-md border-z-border'
@@ -176,7 +248,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  }}
  className={cn(
  'text-sm font-semibold  outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black border-b border-transparent focus:border-z-accent bg-transparent w-full mr-4',
- theme === 'dark' ? 'text-white' : 'text-z-primary'
+ 'text-z-primary'
  )}
  />
  <button
@@ -204,7 +276,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  }}
  className={cn(
  'w-full border rounded-none py-1.5 px-3 text-sm font-semibold transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-z-border text-white' : 'bg-z-panel border-z-border'
+ 'bg-z-panel border-z-border text-z-primary'
  )}
  />
  </div>
@@ -221,7 +293,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  }}
  className={cn(
  'w-full border rounded-none py-1.5 px-3 text-sm font-semibold transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-z-border text-white' : 'bg-z-panel border-z-border'
+ 'bg-z-panel border-z-border text-z-primary'
  )}
  />
  <select
@@ -233,7 +305,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  }}
  className={cn(
  'border rounded-none py-1.5 px-2 text-sm font-semibold  outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-z-border text-white' : 'bg-z-panel border-z-border'
+ 'bg-z-panel border-z-border text-z-primary'
  )}
  >
  <option value="monthly">/mo</option>
@@ -267,11 +339,11 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  plans[planIndex] = { ...plan, paywalledCollections: next }
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
- className="rounded-none border-z-border text-z-accent focus:ring-0 focus:ring-offset-0 bg-black cursor-pointer"
+ className="rounded-none border-z-border text-z-accent focus:ring-0 focus:ring-offset-0 bg-app cursor-pointer"
  />
  <span className={cn(
  'text-sm font-semibold   transition-colors',
- checked ? 'text-gray-600 dark:text-z-muted' : 'text-z-secondary group-hover:text-z-muted'
+ checked ? 'text-z-secondary' : 'text-z-secondary group-hover:text-z-muted'
  )}>
  {col.label || col.slug}
  </span>
@@ -288,7 +360,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  <div className="space-y-1.5">
  {(plan.features || []).map((feat: string, featIdx: number) => (
  <div key={featIdx} className="flex items-center gap-2">
- <span className="text-gray-600 dark:text-z-secondary text-sm font-semibold">•</span>
+ <span className="text-z-secondary  text-sm font-semibold">•</span>
  <input
  type="text"
  value={feat}
@@ -301,7 +373,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  }}
  className={cn(
  'flex-1 border-b border-transparent focus:border-z-border bg-transparent text-sm font-bold outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black py-0.5',
- theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+ 'text-z-secondary'
  )}
  />
  <button
@@ -312,7 +384,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  plans[planIndex] = { ...plan, features: feats }
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
- className="text-gray-600 hover:text-red-400 transition-colors shrink-0"
+ className="text-z-secondary hover:text-red-400 transition-colors shrink-0"
  >
  <Trash size={10} />
  </button>
@@ -326,7 +398,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  plans[planIndex] = { ...plan, features: feats }
  setActiveSite({ ...activeSite, pricingPlans: plans })
  }}
- className="text-sm font-semibold text-gray-600 dark:text-z-muted hover:text-gray-300 flex items-center gap-1 mt-1 shrink-0"
+ className="text-sm font-semibold text-z-secondary hover:text-z-secondary flex items-center gap-1 mt-1 shrink-0"
  >
  <PlusCircleIcon size={10} />
  Add Feature bullet
@@ -349,7 +421,7 @@ const SettingsBilling: React.FC<SettingsBillingProps> = ({ activeSite, setActive
  }}
  className="sr-only peer"
  />
- <div className={cn("w-9 h-4 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-3 after:w-3.5 after:transition-all border shadow-inner", theme === 'dark' ? 'bg-black/80 border-z-border peer-checked:bg-z-accent' : 'bg-gray-200 peer-checked:bg-z-accent')}></div>
+ <div className={cn("w-9 h-4 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-z-panel after:rounded-none after:h-3 after:w-3.5 after:transition-all border shadow-inner", 'bg-z-input border-z-border peer-checked:bg-z-accent')}></div>
  </label>
  </div>
  </div>

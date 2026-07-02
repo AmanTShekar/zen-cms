@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+
 import { Router, Request, Response } from 'express'
 import { requireAuth } from '../middleware/auth'
 import { createResponse } from './utils'
@@ -56,6 +56,7 @@ router.post('/heartbeat', async (req: Request, res: Response, next) => {
 
     const user = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
+    // @ts-ignore: TS18048 - unresolved type from removing @ts-nocheck
     await PresenceService.heartbeat(user.id, user.email, collection, documentId, siteId)
     res.json(createResponse({ ok: true }))
   } catch (err) {
@@ -67,6 +68,7 @@ router.get('/:collection/:id', async (req: Request, res: Response, next) => {
   try {
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
     const users = await PresenceService.getActiveUsers(req.params.collection, req.params.id, siteId)
+    // @ts-ignore: TS2532 - unresolved type from removing @ts-nocheck
     const currentUserId = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user.id
 
     // Filter out the current user from the response (they know they're here)
@@ -108,6 +110,7 @@ router.delete('/:collection/:id', async (req: Request, res: Response, next) => {
     // but we can call leave immediately for a snappier UX
     const user = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
+    // @ts-ignore: TS18048 - unresolved type from removing @ts-nocheck
     await PresenceService.leave(user.id, req.params.collection, req.params.id, siteId)
     res.json(createResponse({ ok: true }))
   } catch (err) {

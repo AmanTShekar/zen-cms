@@ -13,9 +13,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install pnpm Package Manager
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v3
         with:
-          version: 8
+          version: 9
 
       - name: Configure Node.js Environment
         uses: actions/setup-node@v3
@@ -25,7 +25,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install Monorepo Dependencies
-        run: pnpm install --no-frozen-lockfile --no-strict-peer-dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Verify Quality Gates (Lint & Test)
         run: |
@@ -34,6 +34,17 @@ jobs:
 
       - name: Compile Monorepo Asset Bundles
         run: pnpm run build
+
+      - name: Pre-flight Publish Check (Workspace Leak)
+        run: |
+          cd packages/create-zenithcms-app
+          pnpm pack
+          tar -xf *.tgz
+          if grep -q '"workspace:\*"' package/package.json; then
+            echo "ERROR: workspace:* detected in generated tarball. pnpm publish resolution failed."
+            exit 1
+          fi
+          rm -rf package *.tgz
 
       - name: Publish Workspace Packages to NPM Registry
         run: pnpm -r publish --access public --no-git-checks

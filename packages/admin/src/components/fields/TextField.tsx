@@ -41,8 +41,8 @@ const TextField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
         className={cn(
           "w-full px-4 py-3 text-sm transition-all outline-none rounded-none-none border",
           theme === 'dark' 
-            ? "bg-gray-900/65 backdrop-blur-md border-white/8 text-white placeholder:text-z-secondary focus:border-z-accent/50 focus-visible:ring-2 focus-visible:ring-z-active-border"
-            : "bg-white/80 backdrop-blur-md border-z-border text-z-primary placeholder:text-z-muted focus:border-z-accent/50 focus-visible:ring-2 focus-visible:ring-z-active-border",
+            ? "bg-z-base/65 backdrop-blur-md border-z-border text-z-primary placeholder:text-z-secondary focus:border-z-accent/50 focus-visible:ring-2 focus-visible:ring-z-active-border"
+            : "bg-z-panel/80 backdrop-blur-md border-z-border text-z-primary placeholder:text-z-muted focus:border-z-accent/50 focus-visible:ring-2 focus-visible:ring-z-active-border",
           cf.type === 'color' && "h-11 p-1 cursor-pointer",
           cf.type === 'uid' && "font-mono text-z-active-text",
           "disabled:opacity-60 disabled:cursor-not-allowed"

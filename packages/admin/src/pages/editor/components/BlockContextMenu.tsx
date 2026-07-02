@@ -70,8 +70,8 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
  className={cn(
  'p-1.5 border rounded-none-none shadow-2xl backdrop-blur-xl relative',
  theme === 'dark'
- ? 'bg-black/95 border-white/8 text-white'
- : 'bg-white/95 border-z-border text-z-primary shadow-sm/50'
+ ? 'bg-app/95 border-z-border text-z-primary'
+ : 'bg-z-panel/95 border-z-border text-z-primary shadow-sm/50'
  )}
  >
  {/* Transform Submenu Trigger */}
@@ -81,11 +81,11 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
  onClick={() => setShowConvertMenu(!showConvertMenu)}
  className={cn(
  'w-full flex items-center justify-between px-3 py-2 text-left text-xs font-semibold rounded-none-none transition-colors',
- theme === 'dark' ? 'hover:bg-z-hover' : 'hover:bg-gray-100'
+ theme === 'dark' ? 'hover:bg-z-hover' : 'hover:bg-[var(--z-bg-hover)]'
  )}
  >
  <span className="flex items-center gap-2">
- <RefreshCw size={13} className="text-gray-600 dark:text-z-muted" />
+ <RefreshCw size={13} className="text-z-secondary" />
  Convert to Layout
  </span>
  <ChevronRight size={12} className="opacity-50" />
@@ -103,8 +103,8 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
  className={cn(
  'p-1.5 border rounded-none-none shadow-2xl backdrop-blur-xl max-h-72 overflow-y-auto custom-editor-scrollbar',
  theme === 'dark'
- ? 'bg-black/95 border-white/8 text-white'
- : 'bg-white/95 border-z-border text-z-primary'
+ ? 'bg-app/95 border-z-border text-z-primary'
+ : 'bg-z-panel/95 border-z-border text-z-primary'
  )}
  >
  {BLOCK_LIBRARY.map((block) => (
@@ -116,10 +116,10 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
  }}
  className={cn(
  'w-full flex items-center gap-2.5 px-2.5 py-1.5 text-left text-xs rounded-none-none transition-colors font-medium',
- theme === 'dark' ? 'hover:bg-z-hover' : 'hover:bg-gray-100'
+ theme === 'dark' ? 'hover:bg-z-hover' : 'hover:bg-[var(--z-bg-hover)]'
  )}
  >
- {block.icon && <block.icon size={13} className="text-gray-600 dark:text-z-muted shrink-0" />}
+ {block.icon && <block.icon size={13} className="text-z-secondary shrink-0" />}
  <span className="truncate">{block.title}</span>
  </button>
  ))}
@@ -128,7 +128,7 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
  )}
  </div>
 
- <div className={cn('h-px my-1', theme === 'dark' ? 'bg-z-hover' : 'bg-gray-100')} />
+ <div className={cn('h-px my-1', theme === 'dark' ? 'bg-z-hover' : 'bg-[var(--z-bg-hover)]')} />
 
  {/* Duplicate */}
  <button
@@ -138,41 +138,41 @@ export const BlockContextMenu: React.FC<BlockContextMenuProps> = ({
  }}
  className={cn(
  'w-full flex items-center gap-2 px-3 py-2 text-left text-xs font-semibold rounded-none-none transition-colors',
- theme === 'dark' ? 'hover:bg-z-hover' : 'hover:bg-gray-100'
+ theme === 'dark' ? 'hover:bg-z-hover' : 'hover:bg-[var(--z-bg-hover)]'
  )}
  >
- <Copy size={13} className="text-gray-600 dark:text-z-muted" />
+ <Copy size={13} className="text-z-secondary" />
  Duplicate Section
  </button>
 
  {/* Align Submenu */}
- <div className={cn('h-px my-1', theme === 'dark' ? 'bg-z-hover' : 'bg-gray-100')} />
+ <div className={cn('h-px my-1', theme === 'dark' ? 'bg-z-hover' : 'bg-[var(--z-bg-hover)]')} />
  <div className="px-3 py-1.5 text-xs font-semibold opacity-40">Alignment</div>
  <div className="flex gap-1 px-1.5 pb-1">
  <button
  onClick={() => { onAlign('left'); onClose() }}
  aria-label="Align left"
- className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-none-none transition-all', theme === 'dark' ? 'border-z-border hover:border-gray-500/30 hover:bg-gray-500/5 text-z-muted hover:text-gray-600 dark:text-z-muted' : 'border-z-border hover:border-z-border hover:bg-gray-50 text-gray-600 hover:text-gray-600')}
+ className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-none-none transition-all', theme === 'dark' ? 'border-z-border hover:border-z-border/30 hover:bg-z-hover text-z-muted hover:text-z-secondary' : 'border-z-border hover:border-z-border hover:bg-[var(--z-bg-input)] text-z-secondary hover:text-z-secondary')}
  >
  <AlignLeft size={13} aria-hidden="true" />
  </button>
  <button
  onClick={() => { onAlign('center'); onClose() }}
  aria-label="Align center"
- className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-none-none transition-all', theme === 'dark' ? 'border-z-border hover:border-gray-500/30 hover:bg-gray-500/5 text-z-muted hover:text-gray-600 dark:text-z-muted' : 'border-z-border hover:border-z-border hover:bg-gray-50 text-gray-600 hover:text-gray-600')}
+ className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-none-none transition-all', theme === 'dark' ? 'border-z-border hover:border-z-border/30 hover:bg-z-hover text-z-muted hover:text-z-secondary' : 'border-z-border hover:border-z-border hover:bg-[var(--z-bg-input)] text-z-secondary hover:text-z-secondary')}
  >
  <AlignCenter size={13} aria-hidden="true" />
  </button>
  <button
  onClick={() => { onAlign('right'); onClose() }}
  aria-label="Align right"
- className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-none-none transition-all', theme === 'dark' ? 'border-z-border hover:border-gray-500/30 hover:bg-gray-500/5 text-z-muted hover:text-gray-600 dark:text-z-muted' : 'border-z-border hover:border-z-border hover:bg-gray-50 text-gray-600 hover:text-gray-600')}
+ className={cn('flex-1 flex items-center justify-center p-1.5 border rounded-none-none transition-all', theme === 'dark' ? 'border-z-border hover:border-z-border/30 hover:bg-z-hover text-z-muted hover:text-z-secondary' : 'border-z-border hover:border-z-border hover:bg-[var(--z-bg-input)] text-z-secondary hover:text-z-secondary')}
  >
  <AlignRight size={13} aria-hidden="true" />
  </button>
  </div>
 
- <div className={cn('h-px my-1', theme === 'dark' ? 'bg-z-hover' : 'bg-gray-100')} />
+ <div className={cn('h-px my-1', theme === 'dark' ? 'bg-z-hover' : 'bg-[var(--z-bg-hover)]')} />
 
  {/* Delete */}
  <button

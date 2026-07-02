@@ -91,13 +91,23 @@ box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 
 ### Design Standards Checklist
 - [ ] **Harmony**: Base backgrounds must use Pure Black (`#000000` / `bg-black`).
-- [ ] **Accents**: Use HSL-mapped Cyber-Purple (`#8B5CF6`) or Emerald-Green (`#10B981`) instead of basic red/blue styles.
+- [ ] **Accents**: Use HSL-mapped Crimson-Red (`#E11D48`) or Ruby-Red (`#BE123C`) instead of basic red/blue styles.
 - [ ] **Interactive Scales**: Apply subtle spring scaling (`transform: scale(1.02)`) on active cards.
 - [ ] **Micro-animations**: Integrate clean, hardware-accelerated Framer Motion keyframes.
 
 ---
 
-## 🛡️ 5. Quality & Pre-PR Gate Checklist
+## 🧩 5. Zero-Bloat Plugin Architecture
+
+Zenith CMS strictly enforces a modular plugin structure. 
+
+1. **No Core Bloat**: Do NOT add new third-party SDKs (e.g., OpenAI, AWS S3, Stripe, Nodemailer) directly to the `core` package.
+2. **Plugin Extraction**: All specialized features (AI, Cloud Storage, OAuth, Email, Observability) MUST be extracted into standalone plugins under `@zenithcms/plugin-*`.
+3. **Event-Driven Hooks**: Plugins must integrate via the event lifecycle hooks (e.g., `afterChange`, `beforeDelete`) instead of hardcoding logic into core execution paths.
+
+---
+
+## 🛡️ 6. Quality & Pre-PR Gate Checklist
 
 Before proposing a change or raising a pull request, run the following verification pipeline:
 

@@ -20,43 +20,138 @@
      ThemeContext (.light class) overrides bg/text/border tokens.
   ══════════════════════════════════════════════════════════════ */
 
-  /* -- Backgrounds ------------------------------------------- */
-  --z-bg-base:      #050505;
-  --z-bg-sidebar:   rgba(0,0,0,0.65);
-  --z-bg-header:    rgba(0,0,0,0.65);
-  --z-bg-panel:     rgba(0,0,0,0.65);
-  --z-bg-input:     rgba(0,0,0,0.50);
-  --z-bg-hover:     rgba(255,255,255,0.03);
-  --z-bg-popover:   rgba(5,5,5,0.98);
-  --z-bg-tooltip:   rgba(20,20,20,0.95);
-  --z-bg-modal:     rgba(0,0,0,0.75);
-  --z-bg-row-hover: rgba(255,255,255,0.02);
-  --z-bg-selected:  rgba(255,255,255,0.04);
-  --z-bg-code:      rgba(0,0,0,0.40);
+  /* -- Backgrounds (Enterprise Solid) ------------------------ */
+  --z-bg-base:      #000000;
+  --z-bg-sidebar:   #0a0a0a; /* Solid dark, not glass */
+  --z-bg-header:    rgba(10, 10, 10, 0.95);
+  --z-bg-panel:     #0a0a0a;
+  --z-bg-input:     #000000;
+  --z-bg-hover:     #171717;
+  --z-bg-popover:   #171717;
+  --z-bg-tooltip:   #262626;
+  --z-bg-modal:     rgba(0,0,0,0.85);
+  --z-bg-row-hover: #111111;
+  --z-bg-selected:  rgba(16, 185, 129, 0.15);
+  --z-bg-code:      #050505;
 
-  /* -- Borders ----------------------------------------------- */
-  --z-border:       rgba(255,255,255,0.08);
-  --z-border-strong:rgba(255,255,255,0.15);
-  --z-border-focus: rgba(255,255,255,0.25);
-  --z-border-input: rgba(255,255,255,0.10);
+  /* -- Borders (High Contrast) ------------------------------- */
+  --z-border:       #262626; /* Highly visible */
+  --z-border-strong:#404040;
+  --z-border-focus: #10b981;
+  --z-border-input: #333333;
 
   /* -- Text -------------------------------------------------- */
   --z-text-primary:   #ffffff;
-  --z-text-secondary: #9ca3af;
-  --z-text-muted:     #6b7280;
+  --z-text-secondary: #a3a3a3;
+  --z-text-muted:     #737373;
   --z-text-inverse:   #000000;
+  
+  /* -- Sidebar ------------------------- */
+  --z-sidebar-text:       #a3a3a3;
+  --z-sidebar-text-hover: #ffffff;
 
   /* -- Scrollbar --------------------------------------------- */
-  --z-scrollbar:       rgba(255,255,255,0.10);
-  --z-scrollbar-hover: rgba(255,255,255,0.20);
+  --z-scrollbar:       #262626;
+  --z-scrollbar-hover: #404040;
 
-  /* -- Brand Accent (overridden by BrandContext) -------------- */
-  --z-accent:        #01398a;
-  --z-accent-hsl:    215 98% 27%;
-  --z-active-bg:     rgba(1, 57, 138, 0.10);
-  --z-active-border: rgba(1, 57, 138, 0.30);
-  --z-active-text:   #01398a;
-  --z-active-glow:   0 0 20px rgba(1, 57, 138, 0.15);
+  /* -- Brand Accent ------------------------------------------ */
+  --z-accent:        #10b981;
+  --z-accent-hsl:    160 84% 39%;
+  --z-active-bg:     #10b981; /* Solid primary buttons */
+  --z-active-border: #059669;
+  --z-active-text:   #ffffff;
+  --z-active-glow:   0 0 0 2px rgba(16, 185, 129, 0.30);
+  --z-logo-bg:       var(--z-accent);
+  --z-logo-text:     #ffffff;
+
+  
+  /* -- RGB variables for Tailwind opacity -- */
+  --bg-app-rgb: 0 0 0;
+  --bg-surface-rgb: 10 10 10;
+  --bg-subtle-rgb: 23 23 23;
+  --text-primary-rgb: 255 255 255;
+  --text-secondary-rgb: 163 163 163;
+  --text-muted-rgb: 115 115 115;
+  --border-rgb: 38 38 38;
+
+  /* -- Legacy compat aliases --------------------------------- */
+  --bg-app:         var(--z-bg-base);
+  --bg-surface:     var(--z-bg-panel);
+  --bg-subtle:      var(--z-bg-hover);
+  --text-primary:   var(--z-text-primary);
+  --text-secondary: var(--z-text-secondary);
+  --text-muted:     var(--z-text-muted);
+  --border:         var(--z-border);
+  --border-strong:  var(--z-border-strong);
+  --glass-bg:       var(--z-bg-panel);
+  --glass-border:   var(--z-border);
+  --glass-blur:     0px; /* Disabled for solid look */
+  --shadow-premium: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --status-green:   #10b981;
+  --status-red:     #ef4444;
+  --status-orange:  #f59e0b;
+  --status-blue:    #3b82f6;
+  --color-crimson-red: #ef4444;
+ }
+
+ /* Zenith Enterprise Dark Mode Glassmorphism */
+ html.dark .bg-z-panel,
+ html.dark .bg-surface,
+ html.dark .bg-z-input {
+  background-color: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+ }
+
+ /* Global Fix for ReactFlow Nodes inheriting black text */
+ .react-flow__node {
+   color: var(--z-text-primary) !important;
+ }
+
+ .light {
+  /* -- Backgrounds (Enterprise Solid) -------------------------- */
+  --z-bg-base:      #f9fafb; /* Ultra-clean off-white */
+  --z-bg-sidebar:   #ffffff; /* White sidebar */
+  --z-bg-header:    rgba(255, 255, 255, 0.95);
+  --z-bg-panel:     #ffffff; /* Clean white panels */
+  --z-bg-input:     #ffffff;
+  --z-bg-hover:     rgba(0, 0, 0, 0.06); /* Subtle grey hover, NOT black */
+  --z-bg-popover:   #ffffff;
+  --z-bg-tooltip:   #18181b;
+  --z-bg-modal:     rgba(0, 0, 0, 0.40); 
+  --z-bg-row-hover: rgba(0, 0, 0, 0.04);
+  --z-bg-selected:  rgba(16, 185, 129, 0.12);
+  --z-bg-code:      #f4f4f5;
+
+  /* -- Borders (High Contrast) ------------------------------- */
+  --z-border:       rgba(0, 0, 0, 0.10); 
+  --z-border-strong:rgba(0, 0, 0, 0.80); /* Near black strong borders */
+  --z-border-focus: #10b981;
+  --z-border-input: rgba(0, 0, 0, 0.20);
+
+  /* -- Text (High contrast) ----------------------------------- */
+  --z-text-primary:   #111827; /* Pure dark */
+  --z-text-secondary: #4b5563; /* Crisp gray */
+  --z-text-muted:     #6b7280; /* Readable muted */
+  --z-text-inverse:   #ffffff;
+  
+  /* -- Sidebar (Light context) ------------------------- */
+  --z-sidebar-text:       #52525b;
+  --z-sidebar-text-hover: #09090b;
+
+  /* -- Scrollbar --------------------------------------------- */
+  --z-scrollbar:       rgba(0,0,0,0.15);
+  --z-scrollbar-hover: rgba(0,0,0,0.25);
+
+  /* -- Brand Accent & Active States (High Contrast) ---------- */
+  --z-accent:        #059669;
+  --z-accent-hsl:    160 84% 39%;
+  --z-active-bg:     #111827; /* Pitch black active bg for primary buttons */
+  --z-active-border: #111827;
+  --z-active-text:   #ffffff; /* White text on active */
+  --z-active-glow:   0 4px 12px rgba(0, 0, 0, 0.15);
   --z-logo-bg:       var(--z-accent);
   --z-logo-text:     #ffffff;
 
@@ -72,57 +167,22 @@
   --glass-bg:       var(--z-bg-panel);
   --glass-border:   var(--z-border);
   --glass-blur:     12px;
-  --shadow-premium: 0 8px 32px 0 rgba(0,0,0,0.37);
-  --status-green:   var(--z-accent);
-  --status-red:     #ef4444;
-  --status-orange:  #f59e0b;
-  --status-blue:    #3b82f6;
-  --color-cyber-purple: var(--z-accent);
-  --color-emerald-green: var(--z-accent);
- }
-
- .light {
-  --z-bg-base:      #f3f4f6;
-  --z-bg-sidebar:   rgba(255,255,255,0.80);
-  --z-bg-header:    rgba(255,255,255,0.85);
-  --z-bg-panel:     #ffffff;
-  --z-bg-input:     #ffffff;
-  --z-bg-hover:     rgba(0,0,0,0.03);
-  --z-bg-popover:   #ffffff;
-  --z-bg-tooltip:   rgba(17,24,39,0.95);
-  --z-bg-modal:     rgba(0,0,0,0.50);
-  --z-bg-row-hover: rgba(0,0,0,0.02);
-  --z-bg-selected:  rgba(0,0,0,0.04);
-  --z-bg-code:      #f8f9fa;
-
-  --z-border:       rgba(0,0,0,0.08);
-  --z-border-strong:rgba(0,0,0,0.15);
-  --z-border-focus: rgba(0,0,0,0.25);
-  --z-border-input: rgba(0,0,0,0.12);
-
-  --z-text-primary:   #111827;
-  --z-text-secondary: #4b5563;
-  --z-text-muted:     #9ca3af;
-  --z-text-inverse:   #ffffff;
-
-  --z-scrollbar:       rgba(0,0,0,0.12);
-  --z-scrollbar-hover: rgba(0,0,0,0.25);
-
-  /* compat */
-  --bg-app:         var(--z-bg-base);
-  --bg-surface:     var(--z-bg-panel);
-  --bg-subtle:      var(--z-bg-hover);
-  --text-primary:   var(--z-text-primary);
-  --text-secondary: var(--z-text-secondary);
-  --text-muted:     var(--z-text-muted);
-  --border:         var(--z-border);
-  --glass-bg:       var(--z-bg-panel);
-  --glass-border:   var(--z-border);
-  --shadow-premium: 0 8px 32px 0 rgba(31,38,135,0.07);
+  --shadow-premium: 0 4px 20px 0 rgba(0,0,0,0.03);
   --status-green:   #059669;
-  --status-red:     #dc2626;
+  --status-red:     #ef4444;
   --status-orange:  #d97706;
   --status-blue:    #2563eb;
+  --color-crimson-red: #ef4444;
+ 
+  /* -- RGB variables for Tailwind opacity -- */
+  --bg-app-rgb: 249 250 251;
+  --bg-surface-rgb: 255 255 255;
+  --bg-subtle-rgb: 0 0 0;
+  --text-primary-rgb: 17 24 39;
+  --text-secondary-rgb: 75 85 99;
+  --text-muted-rgb: 156 163 175;
+  --border-rgb: 0 0 0;
+
  }
 
  * {
@@ -169,6 +229,64 @@
  .font-mono {
   font-family: 'JetBrains Mono', monospace;
  }
+
+  /* ── Enterprise Grade Global Resets (Buttons, Inputs, Cards) ────────────────── */
+  
+  /* Enforce borders on all interactive elements & panels if they don't have them */
+  button, input, select, textarea, .z-card, label:has(input[type="file"]), a[role="button"] {
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--z-border);
+    border-radius: 0px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Specific Input Styling */
+  input, select, textarea {
+    background-color: var(--z-bg-input);
+    color: var(--z-text-primary);
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--z-border-focus);
+    outline: none;
+    box-shadow: 0 0 0 1px var(--z-border-focus);
+  }
+  
+  /* Specific Button Interactions */
+  button:not(:disabled):hover, label:has(input[type="file"]):hover, a[role="button"]:hover {
+    background-color: var(--z-bg-hover); /* Default hover */
+    border-color: var(--z-border-strong);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  }
+  
+  /* Light Mode Exclusive Black Button Hover */
+  .light button:not(:disabled):not([class*="bg-z-accent"]):not([class*="bg-z-active"]):hover, 
+  .light label:has(input[type="file"]):hover, 
+  .light a[role="button"]:hover {
+    background-color: #111827 !important;
+    color: #ffffff !important;
+    border-color: #000000 !important;
+  }
+  
+  button:not(:disabled):active, label:has(input[type="file"]):active, a[role="button"]:active {
+    transform: scale(0.96) translateY(1px);
+    box-shadow: none;
+  }
+  
+  button:disabled, a[role="button"][aria-disabled="true"] {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: var(--z-border);
+    filter: grayscale(1);
+  }
+  
+  /* Prevent overriding primary button borders with strong border if it ruins the aesthetic */
+  button[class*="bg-z-accent"]:not(:disabled):hover,
+  button[class*="bg-z-active"]:not(:disabled):hover,
+  label:has(input[type="file"])[class*="bg-z-accent"]:hover {
+    filter: brightness(1.1);
+  }
 
   /* Zenith glassmorphic panel — used by all cards/panels */
   .z-card {
@@ -269,11 +387,11 @@
   }
 
  .btn-primary {
- @apply bg-primary text-app hover:brightness-110 active:scale-95 px-6 py-2.5 rounded-lg font-bold transition-all shadow-premium flex items-center justify-center gap-2 text-[14px];
+ @apply bg-z-accent text-white border border-z-active-border hover:brightness-110 active:scale-95 px-6 py-2.5 rounded-lg font-bold transition-all shadow-premium flex items-center justify-center gap-2 text-[14px];
  }
 
  .btn-secondary {
- @apply bg-primary/5 text-primary border border-primary/10 hover:bg-primary/10 px-5 py-2.5 rounded-lg font-medium transition-all flex items-center justify-center gap-2 text-[13px];
+ @apply bg-z-input text-z-primary border border-z-border-strong hover:bg-z-hover hover:border-z-border-focus hover:text-z-active-text px-5 py-2.5 rounded-lg font-medium transition-all flex items-center justify-center gap-2 text-[13px] shadow-sm;
  }
 
  /* 📊 Data Grids - More Spacious */
@@ -290,7 +408,7 @@
  }
 
  tr:hover td {
- @apply bg-primary/[0.02];
+ @apply bg-[var(--z-bg-row-hover)];
  }
 
  /* 💎 Typography Scales */
@@ -481,17 +599,11 @@
 }
 
 .zenith-lexical-editor .lexical-quote {
- border-left: 3px solid rgba(139, 92, 246, 0.5);
+ border-left: 3px solid var(--z-active-border);
  padding: 0.5em 1em;
  margin: 1em 0;
- 
- background: rgba(139, 92, 246, 0.05);
+ background: var(--z-active-bg);
  border-radius: 0 8px 8px 0;
-}
-
-.dark .zenith-lexical-editor .lexical-quote {
- border-left-color: rgba(139, 92, 246, 0.6);
- background: rgba(139, 92, 246, 0.08);
 }
 
 /* ── Lists ──────────────────────────────────────────────── */
@@ -516,13 +628,8 @@
  font-size: 0.85em;
  padding: 0.15em 0.4em;
  border-radius: 4px;
- background: rgba(139, 92, 246, 0.12);
- color: #a78bfa;
-}
-
-.dark .zenith-lexical-editor .lexical-code-text {
- background: rgba(139, 92, 246, 0.18);
- color: #c4b5fd;
+ background: var(--z-active-bg);
+ color: var(--z-active-text);
 }
 
 /* ── Code block ─────────────────────────────────────────── */
@@ -567,7 +674,7 @@
  border: none;
  height: 1px;
  margin: 2em 0;
- background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.4), transparent);
+ background: linear-gradient(90deg, transparent, var(--z-active-border), transparent);
 }
 
 /* ── Link ───────────────────────────────────────────────── */
@@ -608,9 +715,9 @@
  font-size: 0.9em;
  font-weight: 600;
  text-decoration: none;
- background: rgba(139, 92, 246, 0.1);
- color: #a78bfa;
- border: 1px solid rgba(139, 92, 246, 0.15);
+ background: var(--z-active-bg);
+ color: var(--z-active-text);
+ border: 1px solid var(--z-active-border);
 }
 
 .zenith-lexical-editor .lexical-media-caption {
@@ -631,9 +738,9 @@
  border-radius: 0px;
  font-size: 0.85em;
  font-weight: 700;
- background: rgba(139, 92, 246, 0.1);
- border: 1px solid rgba(139, 92, 246, 0.15);
- color: #a78bfa;
+ background: var(--z-active-bg);
+ border: 1px solid var(--z-active-border);
+ color: var(--z-active-text);
  cursor: default;
 }
 
@@ -676,14 +783,14 @@
 .light .zenith-lexical-editor table { border-color: rgba(0, 0, 0, 0.1); }
 
 .zenith-lexical-editor th {
- background: rgba(139, 92, 246, 0.1);
+ background: var(--z-active-bg);
  font-weight: 800;
  font-size: 0.8em;
  text-transform: uppercase;
  letter-spacing: 0.05em;
  padding: 0.75em 1em;
  text-align: left;
- border-bottom: 2px solid rgba(139, 92, 246, 0.2);
+ border-bottom: 2px solid var(--z-active-border);
 }
 
 .zenith-lexical-editor td {

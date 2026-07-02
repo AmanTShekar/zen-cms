@@ -5,7 +5,7 @@ import path from 'path'
 import sharp from 'sharp'
 import { requireAuth } from '../middleware/auth'
 import { createResponse, createErrorResponse } from './utils'
-import { AIService } from '../services/ai'
+
 import { StorageService } from '../services/storage'
 import { MediaService } from '../services/media'
 import { validateMagicBytes } from './magic-bytes'
@@ -39,8 +39,14 @@ router.post('/', requireAuth, upload.single('file'), async (req: import('express
   
   if (req.body.url) {
     try {
+      const urlStr = String(req.body.url)
+      const parsedUrl = new URL(urlStr)
+      if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+        throw new InvalidPayloadError('Only HTTP/HTTPS URLs are allowed')
+      }
+
       const doc = await adapter.create('media', {
-        url: req.body.url,
+        url: urlStr,
         id: `url-${Date.now()}`,
         mimetype: 'image/jpeg', // default for hotlinked
         size: 0,
@@ -100,15 +106,15 @@ router.post('/', requireAuth, upload.single('file'), async (req: import('express
     }
 
     // 1. Upload to cloud media service or standardized storage provider
-    if (process.env.CLOUDINARY_URL || env.CLOUDINARY_CLOUD_NAME) {
-      // Cloudinary active
+    if (await MediaService.getHealth(req.headers['x-zenith-site-id'] as string) === 'ok') {
+      // Media Plugin active
       const result = await MediaService.uploadFile(finalPath, {
         filename: req.file.originalname,
         mimetype: finalMimetype,
         siteId: req.headers['x-zenith-site-id'] as string,
       })
-      url = result.secure_url
-      fileId = result.public_id
+      url = result.secure_url || result.url
+      fileId = result.public_id || result.id
     } else {
       // Standard active storage provider (dynamic Local or AWS S3 / Cloudflare R2)
       const result = await StorageService.saveFile(finalPath, req.file.originalname, {
@@ -121,23 +127,7 @@ router.post('/', requireAuth, upload.single('file'), async (req: import('express
 
     // 2. Auto-generate Alt Text & Smart Tags if AI is enabled
     let tags: string[] = []
-    if (process.env.ANTHROPIC_API_KEY || env.OPENROUTER_API_KEY || env.OPENAI_API_KEY) {
-      try {
-        altText = await AIService.generateAltText(url, 'uploaded media', req.headers['x-zenith-site-id'] as string)
-      } catch (e) {
-        console.error('Failed to generate alt text', e)
-      }
-      try {
-        const tagResult = await AIService.generateImageTags(url, req.headers['x-zenith-site-id'] as string)
-        tags = tagResult.tags
-        // Use AI description as alt text if none generated
-        if (!altText && tagResult.description) {
-          altText = tagResult.description
-        }
-      } catch (e) {
-        console.error('Failed to generate image tags', e)
-      }
-    }
+    // AI has been extracted to plugin
 
     // 3. Extract focal point from body (sent by MediaPicker FocalPointCropper)
     // When using multer, nested objects arrive as JSON strings — parse them
@@ -172,7 +162,7 @@ router.post('/', requireAuth, upload.single('file'), async (req: import('express
     const doc = await adapter.create('media', {
       url,
       id: fileId,
-      mimetype: req.file.mimetype,
+      mimetype: finalMimetype,
       size: req.file.size,
       alt: altText,
       tags,

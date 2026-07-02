@@ -144,7 +144,7 @@ router.delete('/:id', requireAuth, requireRole('admin'), async (req: Request, re
     const existing = await adapter.findOne<Record<string, any>>(CAMPAIGNS_COLLECTION, { _id: id, siteId })
     if (!existing) throw new NotFoundError(`Campaign "${id}" not found`)
 
-    const deleted = await adapter.delete(CAMPAIGNS_COLLECTION, id)
+    const deleted = await adapter.delete(CAMPAIGNS_COLLECTION, id, { siteId })
     if (!deleted) throw new NotFoundError(`Campaign "${id}" not found`)
 
     res.json(createResponse({ message: 'Campaign deleted' }))

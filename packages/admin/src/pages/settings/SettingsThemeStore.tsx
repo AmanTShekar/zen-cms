@@ -172,7 +172,7 @@ function MiniPreview({ p, label }: { p: ThemePreset; label?: string }) {
         </div>
         {/* Content */}
         <div className="flex-1 p-2 space-y-1.5">
-          <div className="h-1.5 bg-gray-700/50" style={{ width: '50%', borderRadius: v.radius }} />
+          <div className="h-1.5 bg-z-base/50" style={{ width: '50%', borderRadius: v.radius }} />
           <div className="grid grid-cols-2 gap-1">
             <div
               className="h-7 border"
@@ -247,7 +247,7 @@ function ThemeCard({
       style={
         isActive
           ? { borderColor: preset.activeBorder, boxShadow: preset.activeGlow }
-          : { borderColor: dark ? 'rgba(255,255,255,0.06)' : '#e5e7eb' }
+          : { borderColor: 'var(--z-border)' }
       }
     >
       {/* Preview */}
@@ -290,7 +290,7 @@ function ThemeCard({
           </div>
           <div className="flex-1 p-2 space-y-1.5">
             <div
-              className="h-1.5 bg-gray-700/40"
+              className="h-1.5 bg-z-base/40"
               style={{ width: '50%', borderRadius: v.radius }}
             />
             <div className="grid grid-cols-2 gap-1">
@@ -338,7 +338,7 @@ function ThemeCard({
       <div
         className={cn(
           'p-3 border-t relative',
-          dark ? 'bg-black/60 border-z-border' : 'bg-white border-z-border'
+          dark ? 'bg-app/60 border-z-border' : 'bg-z-panel border-z-border'
         )}
       >
         {/* Structural Badge */}
@@ -365,7 +365,7 @@ function ThemeCard({
               <span
                 className={cn(
                   'text-sm font-semibold  tracking-wide truncate',
-                  dark ? 'text-white' : 'text-z-primary'
+                  'text-z-primary'
                 )}
               >
                 {preset.name}
@@ -395,7 +395,7 @@ function ThemeCard({
             {onEdit && (
               <button
                 onClick={onEdit}
-                className="p-1 border text-z-secondary hover:text-white"
+                className="p-1 border text-z-secondary hover:text-z-primary"
                 style={{ borderColor: 'rgba(255,255,255,0.08)' }}
                 title="Edit"
               >
@@ -405,7 +405,7 @@ function ThemeCard({
             {onExport && (
               <button
                 onClick={onExport}
-                className="p-1 border text-z-secondary hover:text-white"
+                className="p-1 border text-z-secondary hover:text-z-primary"
                 style={{ borderColor: 'rgba(255,255,255,0.08)' }}
                 title="Export JSON"
               >
@@ -533,7 +533,7 @@ function ThemeCreatorWizard({
   const inp = cn(
     'w-full border py-2 px-3 text-sm font-semibold outline-none focus:ring-1 focus:ring-z-active-border transition-all',
     dark
-      ? 'bg-black border-z-border text-white placeholder:text-gray-600'
+      ? 'bg-app border-z-border text-z-primary placeholder:text-z-secondary'
       : 'bg-z-panel border-z-border text-z-primary'
   )
   const lbl = 'text-sm font-semibold   text-z-secondary block mb-1.5'
@@ -553,7 +553,7 @@ function ThemeCreatorWizard({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+      className="fixed inset-0 z-50 bg-[var(--z-bg-modal)] backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
     >
       <motion.div
         initial={{ scale: 0.95, y: 20 }}
@@ -566,7 +566,7 @@ function ThemeCreatorWizard({
         {/* Header */}
         <div
           className="flex items-center justify-between px-6 py-4 border-b"
-          style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : '#e5e7eb' }}
+          style={{ borderColor: 'var(--z-border)' }}
         >
           <div>
             <h3 className="text-sm font-semibold">
@@ -578,7 +578,7 @@ function ThemeCreatorWizard({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 border text-z-secondary hover:text-white"
+            className="p-1.5 border text-z-secondary hover:text-z-primary"
             style={{ borderColor: dark ? 'rgba(255,255,255,0.08)' : '#e5e7eb' }}
           >
             <X size={14} />
@@ -588,7 +588,7 @@ function ThemeCreatorWizard({
         {/* Step indicators */}
         <div
           className="flex border-b"
-          style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : '#e5e7eb' }}
+          style={{ borderColor: 'var(--z-border)' }}
         >
           {steps.map(({ label, icon: Icon }, i) => (
             <button
@@ -599,8 +599,8 @@ function ThemeCreatorWizard({
                 i === step
                   ? 'border-z-accent text-z-active-text'
                   : i < step
-                    ? 'border-transparent text-z-muted hover:text-gray-300'
-                    : 'border-transparent text-gray-600'
+                    ? 'border-transparent text-z-muted hover:text-z-secondary'
+                    : 'border-transparent text-z-secondary'
               )}
             >
               <Icon size={10} />
@@ -683,7 +683,7 @@ function ThemeCreatorWizard({
                 <div
                   className={cn(
                     'p-3 border text-sm text-z-secondary',
-                    dark ? 'border-z-border bg-z-panel' : 'border-z-border bg-gray-50'
+                    dark ? 'border-z-border bg-z-panel' : 'border-z-border bg-[var(--z-bg-input)]'
                   )}
                 >
                   <p className="font-semibold text-z-active-text mb-1">
@@ -799,7 +799,7 @@ function ThemeCreatorWizard({
                 <div
                   className={cn(
                     'flex items-center justify-between p-3 border',
-                    dark ? 'border-z-border' : 'border-z-border'
+                    'border-z-border'
                   )}
                 >
                   <div>
@@ -904,7 +904,7 @@ function ThemeCreatorWizard({
                           preview.sidebarBg === s.value
                             ? 'border-z-accent/50 text-z-active-text'
                             : dark
-                              ? 'border-z-border text-z-secondary hover:text-gray-300'
+                              ? 'border-z-border text-z-secondary hover:text-z-secondary'
                               : 'border-z-border text-z-muted'
                         )}
                       >
@@ -988,7 +988,7 @@ function ThemeCreatorWizard({
                 <div
                   className={cn(
                     'p-3 border text-sm',
-                    dark ? 'border-z-border bg-z-panel' : 'border-z-border bg-gray-50'
+                    dark ? 'border-z-border bg-z-panel' : 'border-z-border bg-[var(--z-bg-input)]'
                   )}
                 >
                   <p className="font-semibold text-z-active-text mb-1">
@@ -1027,7 +1027,7 @@ function ThemeCreatorWizard({
                 <div
                   className={cn(
                     'border divide-y text-sm font-mono',
-                    dark ? 'border-z-border divide-white/[0.04]' : 'border-z-border divide-gray-100'
+                    dark ? 'border-z-border divide-z-border' : 'border-z-border divide-z-border'
                   )}
                 >
                   {[
@@ -1044,12 +1044,12 @@ function ThemeCreatorWizard({
                       <span
                         className={cn(
                           'w-24 shrink-0 font-semibold   text-sm',
-                          dark ? 'text-z-secondary' : 'text-z-muted'
+                          'text-z-secondary'
                         )}
                       >
                         {k}
                       </span>
-                      <span className={cn('truncate', dark ? 'text-gray-300' : 'text-gray-700')}>
+                      <span className={cn('truncate', 'text-z-secondary')}>
                         {v}
                       </span>
                     </div>
@@ -1058,12 +1058,12 @@ function ThemeCreatorWizard({
 
                 {/* Export JSON preview */}
                 <details
-                  className={cn('border text-sm', dark ? 'border-z-border' : 'border-z-border')}
+                  className={cn('border text-sm', 'border-z-border')}
                 >
                   <summary
                     className={cn(
                       'px-3 py-2 cursor-pointer font-semibold  ',
-                      dark ? 'text-z-secondary hover:text-gray-300' : 'text-z-secondary'
+                      dark ? 'text-z-secondary hover:text-z-secondary' : 'text-z-secondary'
                     )}
                   >
                     View JSON output
@@ -1072,8 +1072,8 @@ function ThemeCreatorWizard({
                     className={cn(
                       'p-3 font-mono text-sm overflow-auto max-h-40 border-t',
                       dark
-                        ? 'border-z-border text-z-muted bg-black/30'
-                        : 'border-z-border text-gray-600 bg-gray-50'
+                        ? 'border-z-border text-z-muted bg-app/30'
+                        : 'border-z-border text-z-secondary bg-[var(--z-bg-input)]'
                     )}
                   >
                     {JSON.stringify(
@@ -1091,14 +1091,14 @@ function ThemeCreatorWizard({
         {/* Footer nav */}
         <div
           className="flex gap-2 px-6 py-4 border-t"
-          style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : '#e5e7eb' }}
+          style={{ borderColor: 'var(--z-border)' }}
         >
           <button
             onClick={onClose}
             className={cn(
               'px-4 py-2.5 border text-sm font-semibold   transition-all',
               dark
-                ? 'border-z-border text-z-muted hover:text-white'
+                ? 'border-z-border text-z-muted hover:text-z-primary'
                 : 'border-z-border text-z-secondary'
             )}
           >
@@ -1110,7 +1110,7 @@ function ThemeCreatorWizard({
               className={cn(
                 'px-4 py-2.5 border text-sm font-semibold   flex items-center gap-2 transition-all',
                 dark
-                  ? 'border-z-border text-z-muted hover:text-white'
+                  ? 'border-z-border text-z-muted hover:text-z-primary'
                   : 'border-z-border text-z-secondary'
               )}
             >
@@ -1125,8 +1125,8 @@ function ThemeCreatorWizard({
               className={cn(
                 'px-6 py-2.5 text-sm font-semibold   flex items-center gap-2 transition-all',
                 canProceed
-                  ? 'bg-z-accent text-white hover:opacity-90'
-                  : 'bg-gray-700 text-z-secondary cursor-not-allowed'
+                  ? 'bg-z-accent text-z-logo-text hover:opacity-90'
+                  : 'bg-z-base text-z-secondary cursor-not-allowed'
               )}
             >
               Next <ChevronRight size={12} />
@@ -1254,7 +1254,7 @@ export default function SettingsThemeStore({ theme }: Props) {
               className={cn(
                 'flex items-center gap-2 px-3 py-2 border text-sm font-semibold   transition-all',
                 dark
-                  ? 'border-z-border text-z-muted hover:text-white'
+                  ? 'border-z-border text-z-muted hover:text-z-primary'
                   : 'border-z-border text-z-secondary hover:text-z-primary'
               )}
             >
@@ -1313,8 +1313,8 @@ export default function SettingsThemeStore({ theme }: Props) {
                 tab === id
                   ? 'border-z-active-border bg-z-active-bg text-z-active-text'
                   : dark
-                    ? 'border-z-border text-z-secondary hover:text-gray-300'
-                    : 'border-z-border text-z-secondary hover:text-gray-700'
+                    ? 'border-z-border text-z-secondary hover:text-z-secondary'
+                    : 'border-z-border text-z-secondary hover:text-z-primary'
               )}
             >
               <Icon size={10} /> {label} <span className="text-sm opacity-50">({count})</span>
@@ -1330,7 +1330,7 @@ export default function SettingsThemeStore({ theme }: Props) {
             className={cn(
               'pl-8 pr-3 py-2 border text-sm font-semibold outline-none w-44 focus:ring-1 focus:ring-z-active-border',
               dark
-                ? 'bg-black border-z-border text-white placeholder:text-gray-600'
+                ? 'bg-app border-z-border text-z-primary placeholder:text-z-secondary'
                 : 'bg-z-panel border-z-border'
             )}
           />
@@ -1420,17 +1420,17 @@ export default function SettingsThemeStore({ theme }: Props) {
           >
             {customThemes.length === 0 ? (
               <div className={cn(card, 'flex flex-col items-center justify-center py-20 gap-5')}>
-                <Wand2 size={32} className="text-gray-600" />
+                <Wand2 size={32} className="text-z-secondary" />
                 <div className="text-center">
                   <p
                     className={cn(
                       'text-sm font-semibold   mb-1',
-                      dark ? 'text-z-muted' : 'text-gray-600'
+                      dark ? 'text-z-muted' : 'text-z-secondary'
                     )}
                   >
                     No Custom Themes Yet
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-z-secondary">
                     Create one with the wizard, or import a <code>.json</code> file
                   </p>
                 </div>
@@ -1440,7 +1440,7 @@ export default function SettingsThemeStore({ theme }: Props) {
                     className={cn(
                       'flex items-center gap-2 px-4 py-2 border text-sm font-semibold  ',
                       dark
-                        ? 'border-z-border text-z-muted hover:text-white'
+                        ? 'border-z-border text-z-muted hover:text-z-primary'
                         : 'border-z-border text-z-secondary'
                     )}
                   >
@@ -1494,8 +1494,8 @@ export default function SettingsThemeStore({ theme }: Props) {
                   className={cn(
                     'border-2 border-dashed flex flex-col items-center justify-center gap-2 py-16 transition-all',
                     dark
-                      ? 'border-z-border text-gray-600 hover:border-white/20 hover:text-z-muted'
-                      : 'border-z-border text-z-muted hover:border-gray-400'
+                      ? 'border-z-border text-z-secondary hover:border-z-border hover:text-z-muted'
+                      : 'border-z-border text-z-muted hover:border-z-border'
                   )}
                 >
                   <Wand2 size={20} />

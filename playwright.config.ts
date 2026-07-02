@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: './e2e/tests',
+  testDir: './tests/e2e/tests',
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1, // 1 retry locally to handle flakiness
@@ -13,13 +13,21 @@ export default defineConfig({
     trace: 'on-first-retry',
     actionTimeout: 30000,
     navigationTimeout: 60000,
-    storageState: 'e2e/storageState.json',
+    storageState: 'tests/e2e/storageState.json',
   },
-  globalSetup: require.resolve('./e2e/global-setup.ts'),
+  globalSetup: require.resolve('./tests/e2e/global-setup.ts'),
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'Mobile Chrome',
+      use: { ...devices['Pixel 5'] },
+    },
+    {
+      name: 'Mobile Safari',
+      use: { ...devices['iPhone 12'] },
     },
   ],
   webServer: [
@@ -31,10 +39,11 @@ export default defineConfig({
       env: {
         NODE_ENV: 'test',
         PORT: '9001',
-        DATABASE_TYPE: 'mongodb',
+        DATABASE_TYPE: process.env.DATABASE_TYPE || 'mongodb',
         MONGODB_URI: 'mongodb://localhost:27017/zenith-e2e',
-        JWT_SECRET: 'e2e_secret',
-        JWT_REFRESH_SECRET: 'e2e_refresh',
+        POSTGRES_URI: 'postgresql://postgres:postgres@localhost:5432/zenith_e2e',
+        JWT_SECRET: 'e2e_secret_must_be_at_least_32_characters_long',
+        JWT_REFRESH_SECRET: 'e2e_refresh_must_be_at_least_32_characters_long',
       },
     },
     {

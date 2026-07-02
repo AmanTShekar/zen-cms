@@ -93,7 +93,7 @@ router.post('/', async (req: Request, res: Response, next) => {
     const site = await adapter.create<Record<string, any>>('z_sites', {
       name,
       slug: slug.toLowerCase(),
-      icon: icon || '🌐',
+      icon: icon || '',
       description,
       ownerId: user.id,
       workspaceId,
@@ -192,12 +192,38 @@ router.delete('/:id', async (req: Request, res: Response, next) => {
     }
     if (!site) throw new NotFoundError('Site workspace', id)
 
+    // @ts-ignore: TS18048 - unresolved type from removing @ts-nocheck
     if (site.ownerId !== user.id) {
       throw new ForbiddenError('Only the site owner can permanently delete this site workspace.')
     }
 
+    // Cascade delete: first find all collections for this site to delete their content
+    const collections = await adapter.find<Record<string, any>>('z_collections', { siteId: site.slug })
+    
+    // Delete content from all dynamic collections belonging to this site
+    for (const col of collections) {
+      if (col.slug) {
+        await adapter.deleteMany(col.slug, { siteId: site.slug })
+        
+        // If it's a drafted collection, delete draft records as well
+        if (col.drafts) {
+          try {
+            await adapter.deleteMany(`${col.slug}_drafts`, { siteId: site.slug })
+          } catch (e) {
+            // Ignore if drafts collection doesn't exist
+          }
+        }
+      }
+    }
+
+    // Delete core system records tied to this site
+    await adapter.deleteMany('z_collections', { siteId: site.slug })
+    await adapter.deleteMany('media', { siteId: site.slug })
+    await adapter.deleteMany('z_webhook_configs', { siteId: site.slug })
+    await adapter.deleteMany('z_api_keys', { siteId: site.slug })
+
     await adapter.delete('z_sites', id)
-    res.json(createResponse({ success: true, message: 'Site workspace successfully removed.' }))
+    res.json(createResponse({ success: true, message: 'Site workspace and all associated data successfully removed.' }))
   } catch (err) {
     next(err)
   }

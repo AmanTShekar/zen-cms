@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+
 import { Router, Request, Response } from 'express'
 import { requireAuth } from '../middleware/auth'
 import { createResponse } from './utils'
@@ -57,6 +57,7 @@ router.get('/', async (req: Request, res: Response, next) => {
     // Count totals and fetch items per collection in parallel
     const perColLimit = skip + limit // max items needed from any single collection
     const results = await Promise.allSettled(
+      // @ts-ignore: TS2345 - unresolved type from removing @ts-nocheck
       softDeleteCollections.map(async (col: { softDelete?: boolean, slug: string }) => {
         // Adapter-agnostic filter: only the deletedAt check goes to the DB.
         // Free-text search is applied as a JS post-filter below to avoid
@@ -88,6 +89,7 @@ router.get('/', async (req: Request, res: Response, next) => {
           items: filteredDocs.map((doc: Record<string, any>) => ({
             _id: doc._id,
             collectionSlug: col.slug,
+            // @ts-ignore: TS2339 - unresolved type from removing @ts-nocheck
             collectionName: col.name || col.slug,
             title: getDocTitle(doc),
             deletedAt: doc.deletedAt,
@@ -125,6 +127,7 @@ router.get('/', async (req: Request, res: Response, next) => {
         },
         collections: softDeleteCollections.map((c: { softDelete?: boolean, slug?: string }) => ({
           slug: c.slug,
+          // @ts-ignore: TS2339 - unresolved type from removing @ts-nocheck
           name: c.name || c.slug,
         })),
       })
@@ -188,11 +191,13 @@ router.post('/purge', async (req: Request, res: Response, next) => {
 
     // Adapter-agnostic lookup: try `id` first (Postgres), fall back to `_id` (MongoDB)
     // Also verify the document is actually soft-deleted (deletedAt non-null) in JS
-    let doc: Record<string, any> | null = await adapter.findOne(collection, { id, siteId: siteId || undefined }).catch(() => null)
-    if (!doc) doc = await adapter.findOne(collection, { _id: id, siteId: siteId || undefined }).catch(() => null)
+    const queryById = { id, ...(siteId ? { siteId } : {}) }
+    const queryByMongoId = { _id: id, ...(siteId ? { siteId } : {}) }
+    let doc: Record<string, any> | null = await adapter.findOne(collection, queryById).catch(() => null)
+    if (!doc) doc = await adapter.findOne(collection, queryByMongoId).catch(() => null)
     if (!doc || !doc.deletedAt) throw new NotFoundError(collection, id)
 
-    await adapter.delete(collection, id)
+    await adapter.delete(collection, id, siteId ? { siteId } : {})
     res.json(createResponse({ purged: true, collection, id }))
   } catch (err) {
     next(err)
@@ -222,6 +227,7 @@ router.delete('/', async (req: Request, res: Response, next) => {
     }
 
     const results = await Promise.allSettled(
+      // @ts-ignore: TS2345 - unresolved type from removing @ts-nocheck
       collections.map(async (col: { softDelete?: boolean, slug: string }) => {
         const filter: Record<string, any> = { deletedAt: { $ne: null } }
         if (siteId) filter.siteId = siteId

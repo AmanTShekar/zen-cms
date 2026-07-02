@@ -197,7 +197,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  onClick={() =>
  hasMany ? onChange(selectedFiles.filter((_, idx) => idx !== i)) : onChange(null)
  }
- className="absolute top-1 right-1 p-1 bg-black/60 text-white rounded-none-none opacity-0 group-hover:opacity-100 transition-opacity"
+ className="absolute top-1 right-1 p-1 bg-app/60 text-z-primary rounded-none-none opacity-0 group-hover:opacity-100 transition-opacity"
  >
  <X size={10} />
  </button>
@@ -211,7 +211,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
    e.stopPropagation()
    setIsOpen(true)
  }}
- className="w-20 h-20 rounded-none-none border border-dashed border-z-border flex flex-col items-center justify-center gap-1.5 text-z-muted hover:border-gray-500/50 hover:text-gray-600 dark:text-z-muted hover:bg-gray-500/5 transition-all group"
+ className="w-20 h-20 rounded-none-none border border-dashed border-z-border flex flex-col items-center justify-center gap-1.5 text-z-muted hover:border-z-border/50 hover:text-z-secondary hover:bg-z-hover transition-all group"
  >
  <Plus
  size={18}
@@ -233,7 +233,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  initial={{ opacity: 0 }}
  animate={{ opacity: 1 }}
  exit={{ opacity: 0 }}
- className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-12"
+ className="fixed inset-0 z-[1000] flex items-center justify-center bg-[var(--z-bg-modal)] backdrop-blur-sm p-4 md:p-12"
  onClick={() => setIsOpen(false)}
  >
  <motion.div
@@ -243,19 +243,19 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
  className={cn(
  'w-full max-w-5xl max-h-full border rounded-none-none shadow-2xl flex flex-col overflow-hidden',
- theme === 'dark' ? 'bg-black/90 backdrop-blur-xl border-white/10' : 'bg-z-popover border-z-border'
+ theme === 'dark' ? 'bg-app/90 backdrop-blur-xl border-z-border' : 'bg-z-popover border-z-border'
  )}
  onClick={(e) => e.stopPropagation()}
  >
  <div className="flex flex-col p-4 gap-4">
  <div className="flex items-center justify-between">
- <h3 className={cn('text-sm font-semibold  ', theme === 'dark' ? 'text-white' : 'text-black')}>
+ <h3 className={cn('text-sm font-semibold  ', theme === 'dark' ? 'text-z-primary' : 'text-z-primary')}>
  Asset Registry
  </h3>
  <button
  type="button"
  onClick={() => setIsOpen(false)}
- className={cn('p-1 rounded-none-none transition-colors', theme === 'dark' ? 'text-z-muted hover:text-white hover:bg-white/10' : 'text-z-secondary hover:text-black hover:bg-black/5')}
+ className={cn('p-1 rounded-none-none transition-colors', theme === 'dark' ? 'text-z-muted hover:text-z-primary hover:bg-[var(--z-bg-hover)]' : 'text-z-secondary hover:text-z-primary hover:bg-app/5')}
  >
  <X size={14} />
  </button>
@@ -266,7 +266,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  <motion.div key="focal-step" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex flex-col gap-4">
  {/* Focal Point Editor */}
  <div className="flex items-center gap-3">
- <button type="button" onClick={() => setFocalPending(null)} className="text-sm font-semibold text-z-muted hover:text-white transition-colors border border-z-border px-3 py-1.5 rounded-none-none">
+ <button type="button" onClick={() => setFocalPending(null)} className="text-sm font-semibold text-z-muted hover:text-z-primary transition-colors border border-z-border px-3 py-1.5 rounded-none-none">
  ← Back
  </button>
  </div>
@@ -284,37 +284,37 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  {/* Top Bar: Search, URL, and Upload */}
  <div className="flex flex-col md:flex-row gap-3">
  <div className="flex-[2] relative group">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-z-secondary group-focus-within:text-gray-600 dark:text-z-muted transition-colors" size={14} />
+ <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-z-secondary group-focus-within:text-z-secondary transition-colors" size={14} />
  <input
  type="text"
  placeholder="Search assets..."
  value={search}
  onChange={(e) => setSearch(e.target.value)}
- className="w-full bg-z-hover border border-z-border rounded-none-none pl-9 pr-3 py-2 text-sm font-medium text-white placeholder:text-z-secondary transition-all focus:bg-white/10 focus:border-gray-500/50 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black"
+ className="w-full bg-z-hover border border-z-border rounded-none-none pl-9 pr-3 py-2 text-sm font-medium text-z-primary placeholder:text-z-secondary transition-all focus:bg-z-panel/10 focus:border-z-border/50 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black"
  />
  </div>
  <div className="flex-[2] relative flex gap-2">
  <div className="relative flex-1 group">
- <Link className="absolute left-3 top-1/2 -translate-y-1/2 text-z-secondary group-focus-within:text-gray-600 dark:text-z-muted transition-colors" size={14} />
+ <Link className="absolute left-3 top-1/2 -translate-y-1/2 text-z-secondary group-focus-within:text-z-secondary transition-colors" size={14} />
  <input
  type="url"
  placeholder="https://..."
  value={externalUrl}
  onChange={(e) => setExternalUrl(e.target.value)}
  onKeyDown={(e) => e.key === 'Enter' && handleAddExternalUrl()}
- className="w-full bg-z-hover border border-z-border rounded-none-none pl-9 pr-3 py-2 text-sm font-medium text-white placeholder:text-z-secondary transition-all focus:bg-white/10 focus:border-gray-500/50 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black"
+ className="w-full bg-z-hover border border-z-border rounded-none-none pl-9 pr-3 py-2 text-sm font-medium text-z-primary placeholder:text-z-secondary transition-all focus:bg-z-panel/10 focus:border-z-border/50 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black"
  />
  </div>
  <button
  type="button"
  onClick={handleAddExternalUrl}
  disabled={!externalUrl.trim()}
- className="px-3 py-2 bg-gray-500/20 text-gray-600 dark:text-z-muted hover:bg-gray-500/30 hover:text-white rounded-none-none text-sm font-bold transition-all border border-gray-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+ className="px-3 py-2 bg-z-hover border-z-border-strong text-z-secondary hover:bg-z-border/30 hover:text-z-primary rounded-none-none text-sm font-bold transition-all border border-z-border/30 disabled:opacity-50 disabled:cursor-not-allowed"
  >
  Add
  </button>
  </div>
- <label className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-600/20 hover:bg-gray-600/30 text-gray-600 dark:text-z-muted rounded-none-none transition-all text-sm font-bold cursor-pointer border border-gray-500/30">
+ <label className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-z-accent/20 hover:bg-z-accent/30 text-z-secondary rounded-none-none transition-all text-sm font-bold cursor-pointer border border-z-border/30">
  <UploadCloud size={14} />
  <span>Upload</span>
  <input type="file" className="hidden" onChange={handleUpload} />
@@ -322,11 +322,11 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  </div>
 
  {/* Middle Area: Scrollable Grid */}
- <div className="flex-1 min-h-[300px] max-h-[50vh] overflow-y-auto grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 pr-2 custom-scrollbar border border-z-border rounded-none-none p-3 bg-black/20">
+ <div className="flex-1 min-h-[300px] max-h-[50vh] overflow-y-auto grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 pr-2 custom-scrollbar border border-z-border rounded-none-none p-3 bg-app/20">
  {loading ? (
  <div className="col-span-full h-full flex flex-col items-center justify-center gap-4">
- <Loader2 className="animate-spin text-gray-600 dark:text-z-secondary" size={24} />
- <span className="text-sm font-semibold text-gray-600 dark:text-z-muted animate-pulse">Syncing...</span>
+ <Loader2 className="animate-spin text-z-secondary " size={24} />
+ <span className="text-sm font-semibold text-z-secondary animate-pulse">Syncing...</span>
  </div>
  ) : (
  (() => {
@@ -357,8 +357,8 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  className={cn(
  'group relative aspect-square rounded-none-none border overflow-hidden cursor-pointer transition-all',
  isSelected
- ? 'border-gray-500 shadow-sm scale-[0.98]'
- : 'border-z-border hover:border-gray-500/30'
+ ? 'border-z-border shadow-sm scale-[0.98]'
+ : 'border-z-border hover:border-z-border/30'
  )}
  >
  <img
@@ -370,17 +370,17 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  className={cn(
  'absolute inset-0 transition-all duration-300',
  isSelected
- ? 'bg-gray-600/10'
- : 'bg-black/0 group-hover:bg-black/40'
+ ? 'bg-z-accent/10'
+ : 'bg-app/0 group-hover:bg-app/40'
  )}
  />
- <div className="absolute inset-x-0 bottom-0 p-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all bg-gradient-to-t from-black/80 to-transparent">
- <p className="text-sm font-semibold text-white truncate">
+ <div className="absolute inset-x-0 bottom-0 p-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all bg-gradient-to-t from-[var(--z-bg-panel)] to-transparent">
+ <p className="text-sm font-semibold text-z-primary truncate">
  {file.filename || 'Untitled_Asset'}
  </p>
  </div>
  {isSelected && (
- <div className="absolute top-2 right-2 bg-gray-600 dark:bg-gray-600 text-white rounded-none-none p-1.5 shadow-xl animate-in zoom-in-50 duration-300">
+ <div className="absolute top-2 right-2 bg-z-accent  text-z-primary rounded-none-none p-1.5 shadow-xl animate-in zoom-in-50 duration-300">
  <Check size={10} strokeWidth={4} />
  </div>
  )}
@@ -396,14 +396,14 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ value, onChange, hasMany, dis
  <button
  type="button"
  onClick={() => { setIsOpen(false); setFocalPending(null) }}
- className="px-4 py-2 text-sm font-bold text-z-muted hover:text-white transition-colors"
+ className="px-4 py-2 text-sm font-bold text-z-muted hover:text-z-primary transition-colors"
  >
  Cancel
  </button>
  <button
  type="button"
  onClick={() => { setIsOpen(false); setFocalPending(null) }}
- className="px-6 py-2 bg-gray-500/20 text-gray-600 dark:text-z-muted hover:bg-gray-500/30 hover:text-white rounded-none-none text-sm font-bold transition-all border border-gray-500/30"
+ className="px-6 py-2 bg-z-hover border-z-border-strong text-z-secondary hover:bg-z-border/30 hover:text-z-primary rounded-none-none text-sm font-bold transition-all border border-z-border/30"
  >
  Done
  </button>

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+
 /**
  * Check admin user credentials
  * Run: npx tsx packages/core/src/database/check-admin.ts
@@ -18,6 +18,7 @@ async function checkAdmin() {
       { name: 'failedLoginAttempts', type: 'number' },
       { name: 'lockUntil', type: 'date' }
     ]
+  // @ts-ignore: TS2694 - unresolved type from removing @ts-nocheck
   } as import('@zenith-open/zenithcms-types').CollectionSchema)
 
   const admins = await adapter.find<{ email: string, role: string, failedLoginAttempts: number, lockUntil: string }>('users', { role: 'admin' }, { limit: 1 })

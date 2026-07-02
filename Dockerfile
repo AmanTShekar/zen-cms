@@ -1,31 +1,34 @@
 # syntax=docker/dockerfile:1.4
 
 ARG NODE_VERSION=20
+ARG PNPM_VERSION=9.15.9
 
 ####################################################################################################
 ## Stage 1: Build
 
 FROM node:${NODE_VERSION}-alpine AS builder
 
-RUN npm install -g corepack@latest
 RUN apk --no-cache add python3 py3-setuptools build-base
 
 WORKDIR /zenith
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
 RUN pnpm fetch --frozen-lockfile
 
 COPY . .
 RUN pnpm install --recursive --offline --frozen-lockfile
 RUN pnpm run build
 
+# Remove devDependencies to drastically reduce the final image size
+RUN pnpm install --prod --ignore-scripts
+
 ####################################################################################################
 ## Stage 2: Production Image
 
 FROM node:${NODE_VERSION}-alpine AS runtime
 
-RUN npm install -g pm2 corepack@latest
+RUN npm install -g pm2@6.0.8
 
 WORKDIR /zenith
 

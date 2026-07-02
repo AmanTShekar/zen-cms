@@ -145,7 +145,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  return (
  <AnimatePresence>
  {seoOpen && (
- <div className="fixed inset-0 z-[600] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+ <div className="fixed inset-0 z-[600] flex items-center justify-center p-6 bg-[var(--z-bg-modal)] backdrop-blur-sm">
  <motion.div
  ref={dialogRef}
  role="dialog"
@@ -172,7 +172,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  id={modalTitleId}
  className={cn(
  'text-lg font-semibold  leading-none',
- theme === 'dark' ? 'text-white' : 'text-black',
+ theme === 'dark' ? 'text-z-primary' : 'text-z-primary',
  )}
  >
  SEO Meta
@@ -181,7 +181,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  type="button"
  onClick={() => setSeoOpen(false)}
  aria-label="Close"
- className="p-1 hover:text-gray-600 dark:text-z-secondary transition-colors"
+ className="p-1 hover:text-z-secondary  transition-colors"
  >
  <X size={18} />
  </button>
@@ -205,11 +205,11 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  'flex items-center gap-2 px-3 py-2 text-xs font-semibold   transition-all border rounded-none-none flex-1 justify-center',
  previewTab === tab.id
  ? theme === 'dark'
- ? 'bg-white/10 border-z-border text-white'
- : 'bg-z-panel border-z-border text-black shadow-sm'
+ ? 'bg-z-panel/10 border-z-border text-z-primary'
+ : 'bg-z-panel border-z-border text-z-primary shadow-sm'
  : theme === 'dark'
- ? 'text-z-secondary border-transparent hover:text-gray-300'
- : 'text-z-muted border-transparent hover:text-gray-600'
+ ? 'text-z-secondary border-transparent hover:text-z-secondary'
+ : 'text-z-muted border-transparent hover:text-z-secondary'
  )}
  >
  <tab.icon size={11} aria-hidden="true" />
@@ -222,7 +222,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <div
  className={cn(
  'rounded-none-none border overflow-hidden transition-all min-h-[180px]',
- theme === 'dark' ? 'bg-z-panel border-z-border' : 'bg-z-input border-z-border'
+ theme === 'dark' ? 'bg-z-panel/5 border-z-border' : 'bg-z-input border-z-border'
  )}
  >
  {/* ── Google SERP Preview ── */}
@@ -244,7 +244,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  {seoTitle}
  </h2>
  <p
- className="text-[13px] text-gray-700 leading-4"
+ className="text-[13px] text-z-primary leading-4"
  style={{ fontFamily: 'Arial, sans-serif' }}
  >
  {truncate(seoDescription, 160)}
@@ -282,21 +282,21 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  >
  {/* Header */}
  <div className="flex items-center gap-3 px-3 py-2">
- <div className="w-8 h-8 rounded-none-none bg-gray-500 flex items-center justify-center text-white text-xs font-semibold shrink-0">
+ <div className="w-8 h-8 rounded-none-none bg-z-border flex items-center justify-center text-z-primary text-xs font-semibold shrink-0">
  Z
  </div>
  <div className="min-w-0">
  <div className="flex items-center gap-1">
- <span className={cn('text-sm font-semibold', theme === 'dark' ? 'text-white' : 'text-black')}>
+ <span className={cn('text-sm font-semibold', theme === 'dark' ? 'text-z-primary' : 'text-z-primary')}>
  Zenith CMS
  </span>
- <span className={cn('text-xs', theme === 'dark' ? 'text-z-secondary' : 'text-z-muted')}>@zenith·now</span>
+ <span className={cn('text-xs', 'text-z-secondary')}>@zenith·now</span>
  </div>
- <span className={cn('text-xs', theme === 'dark' ? 'text-z-secondary' : 'text-z-muted')}>{pageUrl}</span>
+ <span className={cn('text-xs', 'text-z-secondary')}>{pageUrl}</span>
  </div>
  </div>
  {/* Card content */}
- <div className={cn('px-3 pb-2 text-sm leading-4 font-normal', theme === 'dark' ? 'text-white' : 'text-black')}>
+ <div className={cn('px-3 pb-2 text-sm leading-4 font-normal', theme === 'dark' ? 'text-z-primary' : 'text-z-primary')}>
  {seoTitle}
  </div>
  {/* Image */}
@@ -305,7 +305,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  style={{
  backgroundImage: `url(${ogImage})`,
  height: '157px',
- borderColor: theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+ borderColor: 'var(--z-border)',
  }}
  />
  {/* Card footer */}
@@ -349,7 +349,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  <div
  className={cn(
  'text-[13px] font-bold leading-4 line-clamp-2 mb-1',
- theme === 'dark' ? 'text-white' : 'text-z-primary'
+ 'text-z-primary'
  )}
  style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}
  >
@@ -387,7 +387,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  onClick={() => generateAIContent(field)}
  disabled={isGenerating[field]}
  title={`Auto-generate ${field} with AI`}
- className="text-gray-400 hover:text-indigo-500 transition-colors disabled:opacity-50"
+ className="text-z-muted hover:text-indigo-500 transition-colors disabled:opacity-50"
  >
  {isGenerating[field] ? <Loader2 size={12} className="animate-spin" /> : <Wand2 size={12} />}
  </button>
@@ -397,7 +397,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  'text-xs font-semibold ',
  charCount(localMeta.description) > 155
  ? 'text-rose-500'
- : 'text-gray-600'
+ : 'text-z-secondary'
  )}>
  {charCount(localMeta.description)} / 155
  </span>
@@ -407,7 +407,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  'text-xs font-semibold ',
  charCount(localMeta.title) > 60
  ? 'text-rose-500'
- : 'text-gray-600'
+ : 'text-z-secondary'
  )}>
  {charCount(localMeta.title)} / 60
  </span>
@@ -423,8 +423,8 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  className={cn(
  'w-full rounded-none-none py-3 px-4 text-xs font-semibold h-24 resize-none transition-all border',
  theme === 'dark'
- ? 'bg-z-hover border-z-border text-white focus-visible:border-gray-500/30'
- : 'bg-z-input border-z-border text-black focus-visible:border-gray-600/30',
+ ? 'bg-z-hover border-z-border text-z-primary focus-visible:border-z-border/30'
+ : 'bg-z-input border-z-border text-z-primary focus-visible:border-z-border/30',
  )}
  placeholder="Enter page description..."
  />
@@ -439,8 +439,8 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  className={cn(
  'w-full rounded-none-none py-3 px-4 text-xs font-semibold transition-all border',
  theme === 'dark'
- ? 'bg-z-hover border-z-border text-white focus-visible:border-gray-500/30'
- : 'bg-z-input border-z-border text-black focus-visible:border-gray-600/30',
+ ? 'bg-z-hover border-z-border text-z-primary focus-visible:border-z-border/30'
+ : 'bg-z-input border-z-border text-z-primary focus-visible:border-z-border/30',
  )}
  placeholder={field === 'title' ? 'Enter SEO title...' : 'Enter keywords (comma separated)...'}
  />
@@ -455,7 +455,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  'p-4 border-t flex items-center justify-between shrink-0',
  theme === 'dark'
  ? 'border-z-border bg-z-panel'
- : 'border-z-border shadow-sm bg-gray-50',
+ : 'border-z-border shadow-sm bg-[var(--z-bg-input)]',
  )}
  >
  <button
@@ -480,8 +480,8 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  className={cn(
  'px-4 py-2 text-xs font-semibold  rounded-none-none border transition-all',
  theme === 'dark'
- ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
- : 'border-z-border text-gray-600 hover:border-z-border-strong hover:text-black',
+ ? 'border-z-border text-z-muted hover:border-z-border hover:text-z-primary'
+ : 'border-z-border text-z-secondary hover:border-z-border-strong hover:text-z-primary',
  )}
  >
  Cancel
@@ -490,7 +490,7 @@ export const SEOModal: React.FC<SEOModalProps> = ({ onSave }) => {
  type="button"
  onClick={commitAndClose}
  aria-label="Save SEO and close"
- className="flex items-center gap-2 px-4 py-2 bg-gray-600 dark:bg-gray-600 text-white text-xs font-semibold rounded-none-none hover:bg-gray-500 transition-all"
+ className="flex items-center gap-2 px-4 py-2 bg-z-accent  text-z-primary text-xs font-semibold rounded-none-none hover:bg-z-border transition-all"
  >
  <Save size={12} aria-hidden="true" />
  Save & Close

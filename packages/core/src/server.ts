@@ -4,7 +4,10 @@
  * Run in development: npx pnpm --filter @zenith-open/zenithcms-core dev
  * Run in production:  node dist/server.js
  */
-import 'dotenv/config'
+import dotenv from 'dotenv'
+import path from 'path'
+dotenv.config({ path: path.resolve(process.cwd(), '../../.env') })
+dotenv.config()
 import * as Sentry from '@sentry/node'
 import { ZenithEngine } from './index'
 import { logger } from './services/logger'

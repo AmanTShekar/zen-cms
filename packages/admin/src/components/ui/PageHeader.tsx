@@ -9,6 +9,7 @@ export interface PageHeaderProps {
   actions?: React.ReactNode;
   className?: string;
   backLink?: { to: string; label: string };
+  breadcrumbs?: any;
 }
 
 export function PageHeader({ title, description, icon, actions, className, backLink }: PageHeaderProps) {
@@ -17,7 +18,7 @@ export function PageHeader({ title, description, icon, actions, className, backL
   return (
     <div className={cn(
       "px-6 py-4 border-b flex items-center justify-between transition-colors",
-      theme === 'dark' ? 'bg-black/80 backdrop-blur-md border-z-border' : 'bg-white/80 backdrop-blur-md border-z-border',
+      theme === 'dark' ? 'bg-[var(--z-bg-modal)] backdrop-blur-md border-z-border' : 'bg-z-panel/80 backdrop-blur-md border-z-border',
       className
     )}>
       <div className="flex items-center gap-4">
@@ -37,7 +38,7 @@ export function PageHeader({ title, description, icon, actions, className, backL
         <div>
           <h1 className={cn(
             "text-xl font-semibold   leading-none",
-            theme === 'dark' ? 'text-white' : 'text-z-primary'
+            'text-z-primary'
           )}>
             {title}
           </h1>

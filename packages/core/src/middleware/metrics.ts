@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import os from 'os'
 
 let totalRequests = 0
-const statusCodes: Record<string, number> = {}
+let statusCodes: Record<string, number> = {}
 let totalResponseTimeMs = 0
 
 const DEFAULT_BUCKETS = [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]
@@ -32,6 +32,11 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
 
     const status = res.statusCode.toString()
     statusCodes[status] = (statusCodes[status] || 0) + 1
+
+    // Prevent memory leaks from unbounded status code attacks
+    if (Object.keys(statusCodes).length > 200) {
+      statusCodes = {}
+    }
   })
 
   next()
@@ -108,31 +113,42 @@ export function getPrometheusMetrics(): string {
   lines.push('# TYPE os_total_memory_bytes gauge')
   lines.push(`os_total_memory_bytes ${totalMem}`)
 
-  for (const line of customMetricLines) {
-    lines.push(line)
+  lines.push(`# HELP db_query_duration_seconds Database query duration in seconds.`)
+  lines.push(`# TYPE db_query_duration_seconds gauge`)
+  for (const [collection, durationMs] of Object.entries(dbQueryDurations)) {
+    lines.push(`db_query_duration_seconds{collection="${collection}"} ${(durationMs / 1000).toFixed(6)}`)
   }
+
+  if (lastBlockGenerationDuration > 0) {
+    lines.push(`# HELP block_generation_duration_seconds Block generation duration in seconds.`)
+    lines.push(`# TYPE block_generation_duration_seconds gauge`)
+    lines.push(`block_generation_duration_seconds ${(lastBlockGenerationDuration / 1000).toFixed(3)}`)
+  }
+
+  lines.push(`# HELP active_websocket_connections Number of active WebSocket connections.`)
+  lines.push(`# TYPE active_websocket_connections gauge`)
+  lines.push(`active_websocket_connections ${activeWsConnections}`)
 
   return lines.join('\n') + '\n'
 }
 
-const customMetricLines: string[] = []
+let dbQueryDurations: Record<string, number> = {}
+let lastBlockGenerationDuration = 0
+let activeWsConnections = 0
 
 export function recordDbQueryDuration(collection: string, durationMs: number): void {
-  customMetricLines.push(`# HELP db_query_duration_seconds Database query duration in seconds.`)
-  customMetricLines.push(`# TYPE db_query_duration_seconds gauge`)
-  customMetricLines.push(`db_query_duration_seconds{collection="${collection}"} ${(durationMs / 1000).toFixed(6)}`)
+  dbQueryDurations[collection] = durationMs
+  if (Object.keys(dbQueryDurations).length > 500) {
+    dbQueryDurations = {}
+  }
 }
 
 export function recordBlockGenerationDuration(durationMs: number): void {
-  customMetricLines.push(`# HELP block_generation_duration_seconds Block generation duration in seconds.`)
-  customMetricLines.push(`# TYPE block_generation_duration_seconds gauge`)
-  customMetricLines.push(`block_generation_duration_seconds ${(durationMs / 1000).toFixed(3)}`)
+  lastBlockGenerationDuration = durationMs
 }
 
 export function setActiveWebsocketConnections(count: number): void {
-  customMetricLines.push(`# HELP active_websocket_connections Number of active WebSocket connections.`)
-  customMetricLines.push(`# TYPE active_websocket_connections gauge`)
-  customMetricLines.push(`active_websocket_connections ${count}`)
+  activeWsConnections = count
 }
 
 function getEventLoopLag(): number {

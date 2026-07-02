@@ -5,7 +5,6 @@ import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { logger } from './logger'
 import { EmailService } from './email'
 import { WebhookService } from './webhook'
-import { AIService } from './ai'
 import vm from 'vm'
 
 /**
@@ -385,7 +384,10 @@ export const FlowEngine = {
       }
     } else if (type === 'ai_prompt') {
       if (config.prompt) {
-        return await AIService.generateContent(config.prompt, flow.siteId)
+        const payload = { prompt: config.prompt, siteId: flow.siteId, result: null }
+        await eventHub.emit('flow.action.ai_prompt', payload)
+        if (!payload.result) throw new Error('AI action failed: No AI plugin installed or responded.')
+        return payload.result
       }
     } else if (type === 'email') {
       if (config.to && config.subject) {

@@ -7,9 +7,9 @@ const webhookConfigSchema = new Schema(
     events: [{ type: String, required: true }],
     enabled: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
-  },
-  { collection: 'z_webhook_configs' }
+    updatedAt: { type: Date, default: Date.now },
+    siteId: { type: String, required: true, index: true },
+  }, { strict: true,  collection: 'z_webhook_configs' }
 )
 
 // Index on URL for faster lookups (optional)

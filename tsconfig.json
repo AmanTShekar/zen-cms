@@ -24,7 +24,9 @@
     "packages/types/src/**/*.ts",
     "packages/cli/src/**/*.ts",
     "packages/sdk/src/**/*.ts",
-    "packages/create-zenithcms-app/src/**/*.ts"
+    "packages/create-zenithcms-app/src/**/*.ts",
+    "server.ts",
+    "cms.config.ts"
   ],
   "exclude": ["node_modules", "**/dist", "**/*.test.ts", "internal"]
 }

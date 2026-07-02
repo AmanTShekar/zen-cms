@@ -514,6 +514,54 @@ router.post(
 )
 
 router.post(
+  '/gcs/test',
+  requireAuth,
+  requireRole('admin'),
+  async (req: Request, res: Response, next) => {
+    try {
+      const { GCSStorageService } = await import('../../services/gcs-storage')
+      const siteId = req.headers['x-zenith-site-id'] as string | undefined
+      await GCSStorageService.testConnection(req.body, siteId)
+      res.json(createResponse({ success: true, message: 'GCS connection verified' }))
+    } catch (err: any) {
+      res.status(400).json(createErrorResponse(400, err.message || 'GCS verification failed'))
+    }
+  }
+)
+
+router.post(
+  '/azure/test',
+  requireAuth,
+  requireRole('admin'),
+  async (req: Request, res: Response, next) => {
+    try {
+      const { AzureStorageService } = await import('../../services/azure-storage')
+      const siteId = req.headers['x-zenith-site-id'] as string | undefined
+      await AzureStorageService.testConnection(req.body, siteId)
+      res.json(createResponse({ success: true, message: 'Azure connection verified' }))
+    } catch (err: any) {
+      res.status(400).json(createErrorResponse(400, err.message || 'Azure verification failed'))
+    }
+  }
+)
+
+router.post(
+  '/vercel-blob/test',
+  requireAuth,
+  requireRole('admin'),
+  async (req: Request, res: Response, next) => {
+    try {
+      const { VercelBlobService } = await import('../../services/vercel-blob')
+      const siteId = req.headers['x-zenith-site-id'] as string | undefined
+      await VercelBlobService.testConnection(req.body, siteId)
+      res.json(createResponse({ success: true, message: 'Vercel Blob connection verified' }))
+    } catch (err: any) {
+      res.status(400).json(createErrorResponse(400, err.message || 'Vercel Blob verification failed'))
+    }
+  }
+)
+
+router.post(
   '/collections',
   requireAuth,
   requireRole('admin'),
@@ -546,7 +594,7 @@ router.post(
       const colConfig: Record<string, any> = {
         name,
         slug: fileSlug,
-        labels: { singular: name, plural: `${name}s` },
+        labels: { singular: name, plural: name.toLowerCase().endsWith('s') ? name : `${name}s` },
         drafts: !!drafts,
         timestamps: true,
         fields,

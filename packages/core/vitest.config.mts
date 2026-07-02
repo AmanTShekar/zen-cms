@@ -11,6 +11,8 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
+    pool: 'forks',
+    fileParallelism: false,
     setupFiles: ['./vitest.setup.ts'],
     globals: true,
     coverage: {

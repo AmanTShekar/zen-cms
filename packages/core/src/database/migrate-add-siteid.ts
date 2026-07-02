@@ -18,12 +18,10 @@ export async function migrateLegacySiteIds() {
 
   for (const coll of collections) {
     // Find docs without a siteId field
-    const withoutSite = await (adapter as import('./adapters/BaseAdapter').DatabaseAdapter).find(coll, { siteId: { $exists: false } });
-    if (!withoutSite?.length) continue;
-    console.info(`Migrating ${withoutSite.length} documents in ${coll}`);
-    for (const doc of withoutSite) {
-      await (adapter as import('./adapters/BaseAdapter').DatabaseAdapter).update(coll, doc._id || doc.id || '', { siteId });
-    }
+    const count = await (adapter as import('./adapters/BaseAdapter').DatabaseAdapter).count(coll, { siteId: { $exists: false } });
+    if (!count) continue;
+    console.info(`Migrating ${count} documents in ${coll}`);
+    await (adapter as import('./adapters/BaseAdapter').DatabaseAdapter).updateMany(coll, { siteId: { $exists: false } }, { siteId });
   }
   console.info('Legacy siteId migration completed');
 }

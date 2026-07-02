@@ -9,6 +9,7 @@ export interface IFlowRun extends Document {
   resumeAt?: string
   createdAt: Date
   updatedAt: Date
+  siteId: string
 }
 
 const FlowRunSchema = new Schema<IFlowRun>(
@@ -18,9 +19,10 @@ const FlowRunSchema = new Schema<IFlowRun>(
     context: { type: Schema.Types.Mixed, default: {} },
     completedNodes: { type: Schema.Types.Mixed, default: {} },
     error: { type: String },
-    resumeAt: { type: String }
+    resumeAt: { type: String },
+    siteId: { type: String, required: true, index: true },
   },
-  { timestamps: true, strict: false }
+  { timestamps: true, strict: true }
 )
 
 export const FlowRunModel = mongoose.models.z_flow_runs || mongoose.model<IFlowRun>('z_flow_runs', FlowRunSchema)

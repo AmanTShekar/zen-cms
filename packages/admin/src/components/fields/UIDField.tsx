@@ -29,7 +29,7 @@ const UIDField: React.FC<UIDFieldProps> = ({ value, onChange, disabled }) => {
         disabled={disabled}
         readOnly
         className={cn(
-          'w-full bg-z-hover backdrop-blur-md border border-white/10 rounded-none-none pl-9 pr-10 py-2 text-sm',
+          'w-full bg-z-hover backdrop-blur-md border border-z-border rounded-none-none pl-9 pr-10 py-2 text-sm',
           'focus:border-z-accent/50 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black disabled:opacity-60 disabled:cursor-not-allowed',
           'text-z-active-text/80 font-mono'
         )}

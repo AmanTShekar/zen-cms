@@ -187,7 +187,7 @@ const CollectionsPage: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="animate-spin text-gray-600 dark:text-z-secondary" size={32} />
+        <Loader2 className="animate-spin text-z-secondary " size={32} />
       </div>
     )
   }
@@ -200,7 +200,7 @@ const CollectionsPage: React.FC = () => {
           <div className="flex items-center gap-4 w-full md:w-auto flex-wrap">
             <button
               onClick={() => setIsVisualModalOpen(true)}
-              className="flex items-center gap-2 px-6 py-4 bg-z-accent text-white text-sm font-semibold hover:bg-z-accent transition-colors shadow-lg shadow-sm"
+              className="flex items-center gap-2 px-6 py-4 bg-z-accent text-z-logo-text text-sm font-semibold hover:bg-z-accent transition-colors shadow-lg shadow-sm"
             >
               <Plus size={14} />
               Create Collection
@@ -227,7 +227,7 @@ const CollectionsPage: React.FC = () => {
                 className={cn(
                   'w-full border rounded-none-none py-4 pl-12 pr-4 text-sm font-semibold transition-all outline-none  ',
                   theme === 'dark'
-                    ? 'bg-z-hover border-z-border text-white focus:border-z-accent/50 focus:bg-z-hover'
+                    ? 'bg-z-hover border-z-border text-z-primary focus:border-z-accent/50 focus:bg-z-hover'
                     : 'bg-z-panel border-z-border focus:border-z-accent/50'
                 )}
               />
@@ -237,9 +237,9 @@ const CollectionsPage: React.FC = () => {
       />
       <div className={cn(
         'flex-1 overflow-y-auto p-6 md:p-10 space-y-10 transition-colors duration-500',
-        theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-z-primary'
+        theme === 'dark' ? 'bg-app text-z-primary' : 'bg-[#fafafa] text-z-primary'
       )}>
-        {/* 📊 System Integrity Grid */}
+        {/*  System Integrity Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
@@ -270,7 +270,7 @@ const CollectionsPage: React.FC = () => {
                 <span className="text-4xl font-semibold">
                   {item.value}
                 </span>
-                <span className="text-sm font-bold text-gray-600 dark:text-z-secondary">
+                <span className="text-sm font-bold text-z-secondary ">
                   {item.sub}
                 </span>
               </div>
@@ -278,7 +278,7 @@ const CollectionsPage: React.FC = () => {
           ))}
         </div>
 
-        {/* 🚀 Collection Matrix */}
+        {/*  Collection Matrix */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
           {filteredCollections.map((col, i) => (
             <motion.div
@@ -291,9 +291,7 @@ const CollectionsPage: React.FC = () => {
                 onClick={() => navigate(`/collections/${col.slug}`)}
                 className={cn(
                   'group p-8 border flex flex-col items-center text-center gap-5 transition-all duration-500 relative overflow-hidden cursor-pointer',
-                  theme === 'dark'
-                    ? 'bg-black/65 backdrop-blur-xl border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.1)] hover:scale-[1.02] hover:border-z-accent/50 hover:shadow-[0_8px_40px_rgba(139,92,246,0.15)]'
-                    : 'bg-white/80 backdrop-blur-xl border-black/5 shadow-[0_4px_30px_rgba(0,0,0,0.05)] hover:scale-[1.02] hover:border-z-accent/50 hover:shadow-[0_8px_40px_rgba(139,92,246,0.15)]'
+                  'bg-z-panel backdrop-blur-xl border-z-border shadow-sm hover:scale-[1.02] hover:border-z-active-border hover:shadow-premium'
                 )}
               >
                 {/* Micro-animation gradient background */}
@@ -302,9 +300,7 @@ const CollectionsPage: React.FC = () => {
                 <div
                   className={cn(
                     'w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 relative z-10',
-                    theme === 'dark'
-                      ? 'bg-white/5 text-z-muted group-hover:bg-z-accent/20 group-hover:text-z-active-text'
-                      : 'bg-black/5 text-z-muted group-hover:bg-z-accent/10 group-hover:text-z-accent'
+                    'bg-z-hover text-z-muted group-hover:bg-z-active-bg group-hover:text-z-active-text'
                   )}
                 >
                   <Layers size={24} strokeWidth={1.5} />
@@ -315,7 +311,7 @@ const CollectionsPage: React.FC = () => {
                     {col.label.replace(/-/g, ' ')}
                   </h3>
                   <div className="flex items-center justify-center mb-4">
-                    <span className={cn('px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest', theme === 'dark' ? 'bg-white/10 text-white' : 'bg-black/5 text-black')}>
+                    <span className="px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-z-hover text-z-primary">
                       {stats[col.slug] || 0} Entries
                     </span>
                   </div>
@@ -340,23 +336,21 @@ const CollectionsPage: React.FC = () => {
         </div>
 
         {isAIModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--z-bg-modal)] backdrop-blur-sm p-4">
             <div
               className={cn(
                 'w-full max-w-3xl p-8 border shadow-2xl relative',
-                theme === 'dark'
-                  ? 'bg-[#0a0a0a] border-z-border text-white'
-                  : 'bg-z-panel border-z-border'
+                'bg-z-panel border-z-border'
               )}
             >
               <button
                 onClick={() => setIsAIModalOpen(false)}
-                className="absolute top-4 right-4 text-z-secondary hover:text-white"
+                className="absolute top-4 right-4 text-z-secondary hover:text-z-primary"
               >
-                ✕
+                
               </button>
               <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                <Zap className="text-gray-600 dark:text-z-secondary" /> AI Schema Architect
+                <Zap className="text-z-secondary " /> AI Schema Architect
               </h2>
               <p className="text-sm font-bold text-z-secondary mb-6">
                 Describe the collection you want to create and let AI build the schema configuration.
@@ -367,15 +361,15 @@ const CollectionsPage: React.FC = () => {
                 onChange={(e) => setAiPrompt(e.target.value)}
                 placeholder="e.g., I need a blog post collection with title, content, cover image, seo metadata, and a category dropdown..."
                 className={cn(
-                  'w-full h-32 p-4 mb-4 font-mono text-sm border outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:ring-2 focus:ring-gray-500 resize-none',
-                  theme === 'dark' ? 'bg-black border-z-border' : 'bg-z-input border-z-border'
+                  'w-full h-32 p-4 mb-4 font-mono text-sm border outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:ring-2 focus:ring-z-active-border resize-none',
+                  theme === 'dark' ? 'bg-app border-z-border' : 'bg-z-input border-z-border'
                 )}
               />
 
               <button
                 onClick={handleAIGenerate}
                 disabled={aiLoading}
-                className="w-full py-4 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white font-semibold flex items-center justify-center gap-2"
+                className="w-full py-4 bg-z-accent  hover:bg-z-base text-z-primary font-semibold flex items-center justify-center gap-2"
               >
                 {aiLoading ? <Loader2 className="animate-spin" size={16} /> : <Database size={16} />}
                 {aiLoading ? 'Synthesizing Architecture...' : 'Generate Schema'}
@@ -387,12 +381,12 @@ const CollectionsPage: React.FC = () => {
                     Generated Schema Configuration (Copy to cms.config.ts)
                   </p>
                   <div className="relative">
-                    <pre className="p-4 bg-black text-gray-600 dark:text-z-muted text-xs font-mono overflow-auto max-h-64 border border-z-border">
+                    <pre className="p-4 bg-[var(--z-bg-code)] text-z-muted text-xs font-mono overflow-auto max-h-64 border border-z-border">
                       {JSON.stringify(aiResult, null, 2)}
                     </pre>
                     <button
                       onClick={() => navigator.clipboard.writeText(JSON.stringify(aiResult, null, 2))}
-                      className="absolute top-2 right-2 px-3 py-1 bg-white/10 hover:bg-white/20 text-sm font-semibold text-white"
+                      className="absolute top-2 right-2 px-3 py-1 bg-z-hover hover:bg-z-panel border border-z-border text-sm font-semibold text-z-primary"
                     >
                       Copy
                     </button>
@@ -403,23 +397,21 @@ const CollectionsPage: React.FC = () => {
           </div>
         )}
         {isVisualModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--z-bg-modal)] backdrop-blur-md p-4 overflow-y-auto">
             <div
               className={cn(
                 'w-full max-w-4xl p-10 border shadow-2xl relative my-8',
-                theme === 'dark'
-                  ? 'bg-[#0a0a0a] border-z-border text-white'
-                  : 'bg-z-panel border-z-border text-z-primary'
+                'bg-z-panel border-z-border text-z-primary'
               )}
             >
               <button
                 onClick={() => setIsVisualModalOpen(false)}
-                className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-z-hover hover:bg-white/10 rounded-none-none border border-z-border transition-colors text-z-muted hover:text-white"
+                className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-z-hover hover:bg-z-panel rounded-none-none border border-z-border transition-colors text-z-muted hover:text-z-primary"
               >
-                ✕
+                
               </button>
               <h2 className="text-3xl font-semibold mb-4 flex items-center gap-3">
-                <Database className="text-gray-600 dark:text-z-secondary animate-pulse" /> Visual Schema Builder
+                <Database className="text-z-secondary  animate-pulse" /> Visual Schema Builder
               </h2>
               <p className="text-sm font-semibold text-z-secondary mb-8 border-b border-z-border pb-4">
                 Define collection specifications, fields, types, and constraints visually without
@@ -428,7 +420,7 @@ const CollectionsPage: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-600 dark:text-z-secondary block">
+                  <label className="text-sm font-semibold text-z-secondary  block">
                     Collection Name
                   </label>
                   <input
@@ -438,16 +430,14 @@ const CollectionsPage: React.FC = () => {
                     onChange={(e) => handleNameChange(e.target.value)}
                     placeholder="e.g. Review"
                     className={cn(
-                      'w-full px-4 py-3 text-sm font-bold border rounded-none-none focus:ring-2 focus:ring-gray-500 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all   ',
-                      theme === 'dark'
-                        ? 'bg-black border-z-border text-white'
-                        : 'bg-z-input border-z-border'
+                      'w-full px-4 py-3 text-sm font-bold border rounded-none-none focus:ring-2 focus:ring-z-active-border outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all   ',
+                      'bg-z-input border-z-border text-z-primary'
                     )}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-600 dark:text-z-secondary block">
+                  <label className="text-sm font-semibold text-z-secondary  block">
                     Slug
                   </label>
                   <input
@@ -457,9 +447,9 @@ const CollectionsPage: React.FC = () => {
                     onChange={(e) => setNewColSlug(e.target.value)}
                     placeholder="e.g. reviews"
                     className={cn(
-                      'w-full px-4 py-3 text-sm font-bold border rounded-none-none focus:ring-2 focus:ring-gray-500 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all lowercase  ',
+                      'w-full px-4 py-3 text-sm font-bold border rounded-none-none focus:ring-2 focus:ring-z-active-border outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all lowercase  ',
                       theme === 'dark'
-                        ? 'bg-black border-z-border text-z-muted'
+                        ? 'bg-app border-z-border text-z-muted'
                         : 'bg-z-input border-z-border text-z-secondary'
                     )}
                   />
@@ -472,7 +462,7 @@ const CollectionsPage: React.FC = () => {
                   id="enable-drafts-checkbox"
                   checked={newColDrafts}
                   onChange={(e) => setNewColDrafts(e.target.checked)}
-                  className="w-4 h-4 text-gray-600 focus:ring-gray-500 border-z-border-strong rounded-none-none bg-black"
+                  className="w-4 h-4 text-z-secondary focus:ring-z-active-border border-z-border-strong rounded-none-none bg-app"
                 />
                 <label
                   htmlFor="enable-drafts-checkbox"
@@ -489,7 +479,7 @@ const CollectionsPage: React.FC = () => {
                   </h3>
                   <button
                     onClick={handleAddField}
-                    className="px-4 py-2 border border-dashed border-gray-500/30 text-gray-600 dark:text-z-muted hover:bg-gray-500/5 text-sm font-semibold transition-all flex items-center gap-2"
+                    className="px-4 py-2 border border-dashed border-z-border/30 text-z-secondary hover:bg-z-hover text-sm font-semibold transition-all flex items-center gap-2"
                   >
                     <Plus size={12} /> Add Field
                   </button>
@@ -502,12 +492,12 @@ const CollectionsPage: React.FC = () => {
                       className={cn(
                         'p-5 border rounded-none-none grid grid-cols-1 md:grid-cols-4 gap-4 items-center relative group/field',
                         theme === 'dark'
-                          ? 'bg-black border-z-border'
+                          ? 'bg-app border-z-border'
                           : 'bg-z-input border-z-border shadow-sm'
                       )}
                     >
                       <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-600 dark:text-z-secondary block">
+                        <label className="text-sm font-semibold text-z-secondary  block">
                           Field Name
                         </label>
                         <input
@@ -517,25 +507,25 @@ const CollectionsPage: React.FC = () => {
                           onChange={(e) => handleFieldChange(index, 'name', e.target.value)}
                           placeholder="e.g. rating"
                           className={cn(
-                            'w-full px-3 py-2 text-xs font-bold border rounded-none-none focus:ring-2 focus:ring-gray-500 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all lowercase font-mono',
+                            'w-full px-3 py-2 text-xs font-bold border rounded-none-none focus:ring-2 focus:ring-z-active-border outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all lowercase font-mono',
                             theme === 'dark'
-                              ? 'bg-black border-z-border text-white'
+                              ? 'bg-app border-z-border text-z-primary'
                               : 'bg-z-panel border-z-border'
                           )}
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-600 dark:text-z-secondary block">
+                        <label className="text-sm font-semibold text-z-secondary  block">
                           Type
                         </label>
                         <select
                           value={field.type}
                           onChange={(e) => handleFieldChange(index, 'type', e.target.value)}
                           className={cn(
-                            'w-full px-3 py-2 text-xs font-bold border rounded-none-none focus:ring-2 focus:ring-gray-500 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
+                            'w-full px-3 py-2 text-xs font-bold border rounded-none-none focus:ring-2 focus:ring-z-active-border outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
                             theme === 'dark'
-                              ? 'bg-black border-z-border text-white'
+                              ? 'bg-app border-z-border text-z-primary'
                               : 'bg-z-panel border-z-border'
                           )}
                         >
@@ -551,7 +541,7 @@ const CollectionsPage: React.FC = () => {
 
                       {field.type === 'select' ? (
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-gray-600 dark:text-z-secondary block">
+                          <label className="text-sm font-semibold text-z-secondary  block">
                             Options (Comma separated)
                           </label>
                           <input
@@ -560,25 +550,25 @@ const CollectionsPage: React.FC = () => {
                             onChange={(e) => handleFieldChange(index, 'options', e.target.value)}
                             placeholder="e.g. red, blue, green"
                             className={cn(
-                              'w-full px-3 py-2 text-xs font-bold border rounded-none-none focus:ring-2 focus:ring-gray-500 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
+                              'w-full px-3 py-2 text-xs font-bold border rounded-none-none focus:ring-2 focus:ring-z-active-border outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
                               theme === 'dark'
-                                ? 'bg-black border-z-border text-white'
+                                ? 'bg-app border-z-border text-z-primary'
                                 : 'bg-z-panel border-z-border'
                             )}
                           />
                         </div>
                       ) : field.type === 'relationship' ? (
                         <div className="space-y-2">
-                          <label className="text-sm font-semibold text-gray-600 dark:text-z-secondary block">
+                          <label className="text-sm font-semibold text-z-secondary  block">
                             Relate To Collection
                           </label>
                           <select
                             value={field.relationTo || ''}
                             onChange={(e) => handleFieldChange(index, 'relationTo', e.target.value)}
                             className={cn(
-                              'w-full px-3 py-2 text-xs font-bold border rounded-none-none focus:ring-2 focus:ring-gray-500 outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
+                              'w-full px-3 py-2 text-xs font-bold border rounded-none-none focus:ring-2 focus:ring-z-active-border outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
                               theme === 'dark'
-                                ? 'bg-black border-z-border text-white'
+                                ? 'bg-app border-z-border text-z-primary'
                                 : 'bg-z-panel border-z-border'
                             )}
                           >
@@ -598,7 +588,7 @@ const CollectionsPage: React.FC = () => {
                             id={`required-checkbox-${index}`}
                             checked={!!field.required}
                             onChange={(e) => handleFieldChange(index, 'required', e.target.checked)}
-                            className="w-3.5 h-3.5 text-gray-600 focus:ring-gray-500 border-z-border-strong rounded-none-none bg-black"
+                            className="w-3.5 h-3.5 text-z-secondary focus:ring-z-active-border border-z-border-strong rounded-none-none bg-app"
                           />
                           <label
                             htmlFor={`required-checkbox-${index}`}
@@ -629,7 +619,7 @@ const CollectionsPage: React.FC = () => {
                   className={cn(
                     'px-6 py-3 font-semibold text-sm   transition-all leading-none border',
                     theme === 'dark'
-                      ? 'bg-z-hover border-z-border text-z-muted hover:text-white'
+                      ? 'bg-z-hover border-z-border text-z-muted hover:text-z-primary'
                       : 'bg-z-panel border-z-border text-z-muted hover:text-z-primary'
                   )}
                 >
@@ -638,7 +628,7 @@ const CollectionsPage: React.FC = () => {
                 <button
                   onClick={handleCreateCollection}
                   disabled={visualLoading}
-                  className="px-8 py-3 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white rounded-none-none text-sm font-semibold shadow-xl shadow-gray-600/20 transition-all flex items-center gap-2 leading-none"
+                  className="px-8 py-3 bg-z-accent  hover:bg-z-base text-z-primary rounded-none-none text-sm font-semibold shadow-xl shadow-[var(--z-border)] transition-all flex items-center gap-2 leading-none"
                 >
                   {visualLoading ? (
                     <Loader2 size={12} className="animate-spin" />

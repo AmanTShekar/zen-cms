@@ -30,7 +30,7 @@ export function ActionPanel({
         <div className={cn(
           "shrink-0 border-b lg:border-b-0 lg:border-r flex flex-col",
           sidebarWidth,
-          theme === 'dark' ? 'border-z-border bg-[#050505]' : 'border-z-border bg-gray-50/30'
+          theme === 'dark' ? 'border-z-border bg-[#050505]' : 'border-z-border bg-[var(--z-bg-input)]/30'
         )}>
           {sidebar}
         </div>
@@ -44,7 +44,7 @@ export function ActionPanel({
         <div className={cn(
           "shrink-0 border-t lg:border-t-0 lg:border-l flex flex-col",
           sidebarWidth,
-          theme === 'dark' ? 'border-z-border bg-[#050505]' : 'border-z-border bg-gray-50/30'
+          theme === 'dark' ? 'border-z-border bg-[#050505]' : 'border-z-border bg-[var(--z-bg-input)]/30'
         )}>
           {sidebar}
         </div>

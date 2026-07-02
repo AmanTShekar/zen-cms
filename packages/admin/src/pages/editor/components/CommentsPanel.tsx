@@ -52,32 +52,32 @@ const CommentItem: React.FC<{
  className={cn(
  'border rounded-none-none overflow-hidden',
  comment.resolved
- ? theme === 'dark' ? 'border-gray-500/10 bg-gray-500/[0.03]' : 'border-z-border bg-gray-50/50'
- : theme === 'dark' ? 'border-z-border bg-z-panel' : 'border-z-border bg-white'
+ ? theme === 'dark' ? 'border-z-border/10 bg-z-border/[0.03]' : 'border-z-border bg-[var(--z-bg-input)]/50'
+ : theme === 'dark' ? 'border-z-border bg-z-panel' : 'border-z-border bg-z-panel'
  )}
  >
  {/* Thread header */}
  <div className="px-3 py-2.5 flex items-start gap-2.5">
  <div className={cn(
  'w-7 h-7 rounded-none-none flex items-center justify-center shrink-0 mt-0.5',
- theme === 'dark' ? 'bg-gray-500/10 border border-gray-500/20' : 'bg-gray-50 border border-z-border'
+ theme === 'dark' ? 'bg-z-panel border border-z-border/20' : 'bg-[var(--z-bg-input)] border border-z-border'
  )}>
- <span className="text-xs font-semibold text-gray-600 dark:text-z-muted">
+ <span className="text-xs font-semibold text-z-secondary">
  {comment.author?.[0] || '?'}
  </span>
  </div>
  <div className="flex-1 min-w-0">
  <div className="flex items-center gap-2 flex-wrap">
- <span className="text-xs font-semibold text-gray-300">
+ <span className="text-xs font-semibold text-z-secondary">
  {comment.author}
  </span>
- <span className="text-sm text-gray-600 font-bold">
+ <span className="text-sm text-z-secondary font-bold">
  {timeAgo(comment.createdAt)}
  </span>
  {comment.resolved && (
  <span className={cn(
  'text-sm font-semibold  px-1.5 py-0.5 rounded-none-none',
- theme === 'dark' ? 'bg-gray-500/10 text-gray-600 dark:text-z-muted' : 'bg-gray-100 text-gray-600'
+ theme === 'dark' ? 'bg-z-panel/5 text-z-secondary' : 'bg-[var(--z-bg-hover)] text-z-secondary'
  )}>
  Resolved
  </span>
@@ -93,7 +93,7 @@ const CommentItem: React.FC<{
  </div>
  <p className={cn(
  'text-xs leading-relaxed font-medium mt-1',
- comment.resolved ? ' text-z-secondary' : theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+ comment.resolved ? ' text-z-secondary' : 'text-z-secondary'
  )}>
  {comment.content}
  </p>
@@ -110,7 +110,7 @@ const CommentItem: React.FC<{
  onClick={() => setRepliesOpen((v) => !v)}
  className={cn(
  'w-full flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold   transition-colors',
- theme === 'dark' ? 'text-z-secondary hover:text-gray-300' : 'text-z-muted hover:text-gray-600'
+ theme === 'dark' ? 'text-z-secondary hover:text-z-secondary' : 'text-z-muted hover:text-z-secondary'
  )}
  >
  <CornerDownRight size={8} />
@@ -131,12 +131,12 @@ const CommentItem: React.FC<{
  {comment.replies.map((reply, idx) => (
  <div key={idx} className={cn(
  'flex gap-2 pl-3 border-l-2',
- theme === 'dark' ? 'border-gray-500/20' : 'border-z-border'
+ theme === 'dark' ? 'border-z-border/20' : 'border-z-border'
  )}>
  <div className="flex-1 min-w-0">
  <div className="flex items-center gap-1.5">
  <span className="text-xs font-semibold text-z-muted">{reply.author}</span>
- <span className="text-sm text-gray-600">{timeAgo(reply.createdAt)}</span>
+ <span className="text-sm text-z-secondary">{timeAgo(reply.createdAt)}</span>
  </div>
  <p className="text-xs text-z-secondary font-medium">{reply.content}</p>
  </div>
@@ -158,7 +158,7 @@ const CommentItem: React.FC<{
  onClick={() => setReplyOpen((v) => !v)}
  className={cn(
  'flex items-center gap-1 text-xs font-semibold   transition-colors',
- theme === 'dark' ? 'text-z-secondary hover:text-gray-300' : 'text-z-muted hover:text-gray-600'
+ theme === 'dark' ? 'text-z-secondary hover:text-z-secondary' : 'text-z-muted hover:text-z-secondary'
  )}
  >
  <CornerDownRight size={9} />
@@ -170,8 +170,8 @@ const CommentItem: React.FC<{
  className={cn(
  'flex items-center gap-1 text-xs font-semibold   transition-colors',
  comment.resolved
- ? theme === 'dark' ? 'text-gray-600 dark:text-z-muted hover:text-gray-300' : 'text-gray-600 dark:text-z-secondary hover:text-gray-600'
- : theme === 'dark' ? 'text-z-muted/50 hover:text-gray-300' : 'text-gray-300 hover:text-gray-600 dark:text-z-secondary'
+ ? theme === 'dark' ? 'text-z-secondary hover:text-z-secondary' : 'text-z-secondary  hover:text-z-secondary'
+ : theme === 'dark' ? 'text-z-muted/50 hover:text-z-secondary' : 'text-z-secondary hover:text-z-secondary '
  )}
  >
  {comment.resolved ? <CheckCheck size={9} /> : <Check size={9} />}
@@ -183,7 +183,7 @@ const CommentItem: React.FC<{
  onClick={() => onDelete(comment._id)}
  className={cn(
  'flex items-center gap-1 text-xs font-semibold   transition-colors ml-auto',
- theme === 'dark' ? 'text-gray-600 hover:text-rose-400' : 'text-z-muted hover:text-rose-500'
+ theme === 'dark' ? 'text-z-secondary hover:text-rose-400' : 'text-z-muted hover:text-rose-500'
  )}
  >
  <Trash2 size={9} />
@@ -216,8 +216,8 @@ const CommentItem: React.FC<{
  className={cn(
  'flex-1 px-2.5 py-1.5 text-xs rounded-none-none border transition-all',
  theme === 'dark'
- ? 'bg-z-hover border-white/8 text-white placeholder-gray-600 focus:border-gray-500/50'
- : 'bg-z-input border-z-border text-z-primary placeholder-gray-400 focus:border-z-border-strong'
+ ? 'bg-z-hover border-z-border text-z-primary placeholder:text-z-muted focus:border-z-border/50'
+ : 'bg-z-input border-z-border text-z-primary placeholder:text-z-muted focus:border-z-border-strong'
  )}
  />
  <button
@@ -227,8 +227,8 @@ const CommentItem: React.FC<{
  className={cn(
  'px-2.5 py-1.5 text-xs font-semibold   border transition-all rounded-none-none disabled:opacity-50',
  theme === 'dark'
- ? 'bg-gray-500/20 border-gray-500/20 text-gray-300 hover:bg-gray-500/30'
- : 'bg-z-input border-z-border text-gray-600 hover:bg-gray-100'
+ ? 'bg-z-hover border-z-border-strong border-z-border/20 text-z-secondary hover:bg-z-border/30'
+ : 'bg-z-input border-z-border text-z-secondary hover:bg-[var(--z-bg-hover)]'
  )}
  >
  <Send size={10} aria-hidden="true" />
@@ -238,7 +238,7 @@ const CommentItem: React.FC<{
  aria-label="Cancel reply"
  className={cn(
  'px-2 py-1.5 text-xs font-semibold   border rounded-none-none',
- theme === 'dark' ? 'border-z-border text-gray-600' : 'border-z-border text-z-muted'
+ theme === 'dark' ? 'border-z-border text-z-secondary' : 'border-z-border text-z-muted'
  )}
  >
  <X size={10} aria-hidden="true" />
@@ -279,13 +279,13 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  {/* Panel header */}
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2">
- <MessageSquare size={11} className="text-gray-600 dark:text-z-muted" />
- <span className="text-xs font-semibold text-gray-600 dark:text-z-muted">
+ <MessageSquare size={11} className="text-z-secondary" />
+ <span className="text-xs font-semibold text-z-secondary">
  Review
  </span>
  <span className={cn(
  'px-1.5 py-0.5 text-sm font-semibold rounded-none-none',
- theme === 'dark' ? 'bg-z-hover text-z-secondary' : 'bg-gray-100 text-z-secondary'
+ theme === 'dark' ? 'bg-z-hover text-z-secondary' : 'bg-[var(--z-bg-hover)] text-z-secondary'
  )}>
  {comments.filter((c) => !c.resolved).length} open / {comments.length} total
  </span>
@@ -294,7 +294,7 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  onClick={() => setShowResolved((v) => !v)}
  className={cn(
  'text-xs font-semibold   transition-colors',
- theme === 'dark' ? 'text-z-secondary hover:text-gray-300' : 'text-z-muted hover:text-gray-600'
+ theme === 'dark' ? 'text-z-secondary hover:text-z-secondary' : 'text-z-muted hover:text-z-secondary'
  )}
  >
  {showResolved ? 'Hide resolved' : 'Show resolved'}
@@ -304,7 +304,7 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  {/* New comment input */}
  <div className={cn(
  'border rounded-none-none p-2.5',
- theme === 'dark' ? 'border-z-border bg-white/[0.01]' : 'border-z-border bg-gray-50/50'
+ theme === 'dark' ? 'border-z-border bg-z-panel' : 'border-z-border bg-[var(--z-bg-input)]/50'
  )}>
  <textarea
  value={newComment}
@@ -315,20 +315,20 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  placeholder="Add a comment... (Cmd+Enter to submit)"
  rows={2}
  className={cn(
- 'w-full px-2 py-1.5 text-xs rounded-none-none border-none bg-transparent resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:ring-0 placeholder-gray-500',
- theme === 'dark' ? 'text-gray-300 placeholder-gray-600' : 'text-gray-700 placeholder-gray-400'
+ 'w-full px-2 py-1.5 text-xs rounded-none-none border-none bg-transparent resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black focus:ring-0 placeholder:text-z-muted',
+ theme === 'dark' ? 'text-z-secondary placeholder:text-z-muted' : 'text-z-primary placeholder:text-z-muted'
  )}
  />
  <div className="flex items-center justify-between mt-1.5">
- <span className="text-sm text-gray-600 font-bold">Cmd+Enter to submit</span>
+ <span className="text-sm text-z-secondary font-bold">Cmd+Enter to submit</span>
  <button
  onClick={handleCreate}
  disabled={posting || !newComment.trim()}
  className={cn(
  'flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold   border rounded-none-none transition-all disabled:opacity-50',
  theme === 'dark'
- ? 'bg-gray-500/20 border-gray-500/30 text-gray-300 hover:bg-gray-500/30 hover:border-gray-500/50'
- : 'bg-z-input border-z-border text-gray-600 hover:bg-gray-100 hover:border-z-border-strong'
+ ? 'bg-z-hover border-z-border-strong border-z-border/30 text-z-secondary hover:bg-z-border/30 hover:border-z-border/50'
+ : 'bg-z-input border-z-border text-z-secondary hover:bg-[var(--z-bg-hover)] hover:border-z-border-strong'
  )}
  >
  <MessageSquare size={9} />
@@ -341,18 +341,18 @@ export const CommentsPanel: React.FC<CommentsPanelProps> = ({
  {loading ? (
  <div className="text-center py-4">
  <div className={cn(
- 'w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-none-none animate-spin mx-auto mb-2'
+ 'w-4 h-4 border-2 border-z-border border-t-transparent rounded-none-none animate-spin mx-auto mb-2'
  )} />
  <p className="text-xs text-z-secondary font-bold">Loading comments...</p>
  </div>
  ) : filteredComments.length === 0 ? (
  <div className={cn(
  'py-5 text-center border border-dashed rounded-none-none',
- theme === 'dark' ? 'border-z-border' : 'border-z-border'
+ 'border-z-border'
  )}>
- <MessageSquare size={16} className="mx-auto text-gray-600 mb-1.5" />
+ <MessageSquare size={16} className="mx-auto text-z-secondary mb-1.5" />
  <p className="text-xs text-z-secondary font-bold">No comments yet</p>
- <p className="text-xs text-gray-600 mt-0.5">Be the first to leave a review note</p>
+ <p className="text-xs text-z-secondary mt-0.5">Be the first to leave a review note</p>
  </div>
  ) : (
  <div className="space-y-2">

@@ -2,7 +2,9 @@ import { AdapterFactory } from '../database/adapters/AdapterFactory'
 
 export class RBACEngine {
   constructor() {}
-  enforce(action: string, resource: string) { return true }
+  async enforce(action: string, resource: string, userRole: string, siteId?: string): Promise<boolean> {
+    return RBACEngine.checkAccess(userRole, resource, action, siteId);
+  }
   
   static async checkAccess(role: string, resource: string, action: string, siteId?: string): Promise<boolean> {
     if (role === 'admin') return true
@@ -64,6 +66,36 @@ export class RBACEngine {
       return {}
     } catch (e) {
       return {}
+    }
+  }
+
+  static async satisfiesRoleRequired(userRole: string, requiredRoles: string[], siteId?: string): Promise<boolean> {
+    try {
+      const adapter = AdapterFactory.getActiveAdapter()
+      const query: Record<string, any> = { roleName: userRole }
+      if (siteId) {
+        query.siteId = siteId
+      } else {
+        query.siteId = { $exists: false }
+      }
+      const rolesResult = await adapter.find<Record<string, any>>('z_roles', query)
+      if (!rolesResult || rolesResult.length === 0) return false
+      
+      const customRole = rolesResult[0]
+      const permissions = Array.isArray(customRole.permissions) ? customRole.permissions : []
+      
+      const hasWildcard = customRole.hasWildcard || permissions.some((p: any) => p.resource === '*' && p.actions.includes('*'))
+      if (requiredRoles.includes('admin') && hasWildcard) return true
+      
+      const hasWrite = permissions.some((p: any) => p.actions.includes('*') || p.actions.includes('create') || p.actions.includes('update'))
+      if (requiredRoles.includes('editor') && (hasWildcard || hasWrite)) return true
+      
+      const hasRead = permissions.some((p: any) => p.actions.includes('*') || p.actions.includes('read'))
+      if (requiredRoles.includes('viewer') && (hasWildcard || hasWrite || hasRead)) return true
+      
+      return false
+    } catch {
+      return false
     }
   }
 }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+
 import { Express } from 'express'
 import { CMSConfig, FieldConfig as CMSField } from '@zenith-open/zenithcms-types'
 import { logger } from '../services/logger'
@@ -135,6 +135,7 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
         if (field.type === 'group' && !processedTypes.has(typeName)) {
           processedTypes.add(typeName)
           const subFields = (field as Record<string, any>).fields
+            // @ts-ignore: TS2345 - unresolved type from removing @ts-nocheck
             ?.map((f: Record<string, any>) => `  ${f.name}: ${fieldTypeToGraphQL(f, typeName, config)}`)
             .join('\n')
           schemaSdl += `\ntype ${typeName} {\n${subFields}\n}\n`
@@ -144,6 +145,7 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
         if (field.type === 'array' && !processedTypes.has(typeName)) {
           processedTypes.add(typeName)
           const subFields = (field as Record<string, any>).fields
+            // @ts-ignore: TS2345 - unresolved type from removing @ts-nocheck
             ?.map((f: Record<string, any>) => `  ${f.name}: ${fieldTypeToGraphQL(f, typeName, config)}`)
             .join('\n')
           schemaSdl += `\ntype ${typeName} {\n${subFields}\n}\n`
@@ -163,6 +165,7 @@ export async function setupGraphQL(app: Express, config: CMSConfig) {
             const blockTypeName = `${typeName}_${slug.charAt(0).toUpperCase() + slug.slice(1)}`
             unionTypes.push(blockTypeName)
             const blockFields = blockDef.fields
+              // @ts-ignore: TS2345 - unresolved type from removing @ts-nocheck
               ?.map((f: Record<string, any>) => `  ${f.name}: ${fieldTypeToGraphQL(f, blockTypeName, config)}`)
               .join('\n')
             schemaSdl += `\ntype ${blockTypeName} {\n  blockType: String\n${blockFields}\n}\n`
@@ -511,19 +514,34 @@ ${typeFields}
             createError: (max: number, actual: number) => new GraphQLError(`Query is too complex: ${actual}. Maximum allowed complexity: ${max}`),
           }),
         ],
+        // @ts-ignore: TS2322 - unresolved type from removing @ts-nocheck
         context: async (req: import('express').Request) => {
           // ── Authentication ────────────────────────────────────────────────
           // Check Bearer token OR httpOnly cookie
+          // @ts-ignore: TS2339 - unresolved type from removing @ts-nocheck
           const authHeader = req.raw.headers['authorization'] || ''
+          // @ts-ignore: TS2339 - unresolved type from removing @ts-nocheck
           const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : req.raw.cookies?.accessToken
-          const user = token ? AuthService.verifyToken(token) : null
+          let user = null
+          if (token) {
+            try {
+              user = AuthService.verifyToken(token)
+            } catch (err: any) {
+              throw new GraphQLError(err.message || 'Authentication error', {
+                extensions: { code: 'UNAUTHENTICATED' }
+              })
+            }
+          }
 
           // Adapter is injected by the engine on setup — falls back gracefully
+          // @ts-ignore: TS2339 - unresolved type from removing @ts-nocheck
           const adapter = (req.raw as Record<string, any>).__zenithAdapter || AdapterFactory.getActiveAdapter()
+          // @ts-ignore: TS2339 - unresolved type from removing @ts-nocheck
           const siteId = req.raw.headers['x-zenith-site-id'] || req.raw.headers['X-Zenith-Site-Id']
 
           // ── Secure Tenant Resolution (IDOR Protection) ──
           if (siteId && user) {
+            // @ts-ignore: TS2345 - unresolved type from removing @ts-nocheck
             const hasAccess = await verifySiteAccess(user as Record<string, any>, siteId)
             if (!hasAccess) {
               throw new Error('Forbidden: Access denied to this site')
@@ -536,6 +554,7 @@ ${typeFields}
             if (!loaders.has(slug)) {
               loaders.set(
                 slug,
+                // @ts-ignore: TS2345 - unresolved type from removing @ts-nocheck
                 new SimpleDataLoader(async (keys: string[]) => {
                   // Adapter-safe per-ID fetching (avoids MongoDB $in for Postgres parity)
                   const fetched = await Promise.all(

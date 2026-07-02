@@ -142,7 +142,7 @@ const SettingsUsers: React.FC<SettingsUsersProps> = ({ users, theme, fetchData }
 
   const inp = cn(
     'border rounded-none py-2 px-3 text-sm outline-none transition-all focus:ring-1 focus:ring-z-active-border focus:border-z-accent',
-    dark ? 'bg-black/80 border-z-border text-white placeholder:text-gray-700' : 'bg-z-panel border-z-border'
+    dark ? 'bg-app/80 border-z-border text-z-primary placeholder:text-z-primary' : 'bg-z-panel border-z-border'
   )
 
   return (
@@ -177,7 +177,7 @@ const SettingsUsers: React.FC<SettingsUsersProps> = ({ users, theme, fetchData }
                 Delete ({selectedIds.length})
               </button>
             )}
-            <span className={cn('text-sm font-semibold  ', dark ? 'text-z-secondary' : 'text-z-secondary')}>
+            <span className={cn('text-sm font-semibold  ', 'text-z-secondary')}>
               {filtered.length}/{users.length} users
             </span>
             <button onClick={() => setInviteOpen(true)}
@@ -191,8 +191,8 @@ const SettingsUsers: React.FC<SettingsUsersProps> = ({ users, theme, fetchData }
         {/* User Cards */}
         <div className="space-y-2">
           {filtered.length === 0 ? (
-            <div className={cn('py-12 border border-dashed text-center', dark ? 'border-z-border' : 'border-z-border')}>
-              <Users size={28} className="text-gray-600 mx-auto mb-3" />
+            <div className={cn('py-12 border border-dashed text-center', 'border-z-border')}>
+              <Users size={28} className="text-z-secondary mx-auto mb-3" />
               <p className="text-sm text-z-secondary">No users match your filters</p>
             </div>
           ) : (
@@ -217,10 +217,10 @@ const SettingsUsers: React.FC<SettingsUsersProps> = ({ users, theme, fetchData }
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className={cn('text-sm font-semibold  leading-none', dark ? 'text-white' : 'text-z-primary')}>
+                        <span className={cn('text-sm font-semibold  leading-none', 'text-z-primary')}>
                           {user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.email}
                         </span>
-                        <span className={cn('text-sm font-semibold   px-1.5 py-0.5 border', ROLE_BADGE[user.role] || 'text-z-muted border-white/10 bg-z-hover')}>
+                        <span className={cn('text-sm font-semibold   px-1.5 py-0.5 border', ROLE_BADGE[user.role] || 'text-z-muted border-z-border bg-z-hover')}>
                           {user.role}
                         </span>
                         <span className={cn('text-sm font-semibold   px-1.5 py-0.5 border', STATUS_BADGE[status] || STATUS_BADGE.active)}>
@@ -232,12 +232,12 @@ const SettingsUsers: React.FC<SettingsUsersProps> = ({ users, theme, fetchData }
                           <span className="text-sm text-z-secondary">{user.email}</span>
                         )}
                         {user.lastLogin && (
-                          <span className="text-sm text-gray-600 flex items-center gap-1">
+                          <span className="text-sm text-z-secondary flex items-center gap-1">
                             <Clock size={8} /> Last login {new Date(user.lastLogin).toLocaleDateString()}
                           </span>
                         )}
                         {user.createdAt && (
-                          <span className="text-sm text-gray-600">Joined {new Date(user.createdAt).toLocaleDateString()}</span>
+                          <span className="text-sm text-z-secondary">Joined {new Date(user.createdAt).toLocaleDateString()}</span>
                         )}
                       </div>
                     </div>
@@ -250,7 +250,7 @@ const SettingsUsers: React.FC<SettingsUsersProps> = ({ users, theme, fetchData }
                           value={user.role}
                           onChange={e => handleRoleChange(user, e.target.value)}
                           disabled={updatingRoleId === user._id}
-                          className={cn('text-sm font-semibold  border py-1.5 px-2 outline-none transition-all cursor-pointer', dark ? 'bg-black/80 border-z-border text-z-muted hover:border-z-active-border' : 'bg-z-panel border-z-border text-z-secondary')}
+                          className={cn('text-sm font-semibold  border py-1.5 px-2 outline-none transition-all cursor-pointer', dark ? 'bg-app/80 border-z-border text-z-muted hover:border-z-active-border' : 'bg-z-panel border-z-border text-z-secondary')}
                           onClick={e => e.stopPropagation()}
                         >
                           {ROLE_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}

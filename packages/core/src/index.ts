@@ -1,3 +1,5 @@
+import { AuthService } from './services/auth'
+import { logger } from './services/logger'
 import express, { Express } from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
@@ -9,7 +11,7 @@ import fs from 'fs/promises'
 
 import { CMSConfig } from '@zenith-open/zenithcms-types'
 import { applyPlugins, createPluginContext, ZenithPlugin } from './plugins'
-import { logger } from './services/logger'
+export { logger } from './services/logger'
 import { SchedulerService } from './services/scheduler'
 import { runStartupReconciliation } from './bootstrap/reconciliation'
 import { ContentService } from './services/content'
@@ -18,9 +20,12 @@ import { WebhookService } from './services/webhook'
 import { PresenceService } from './services/presence'
 import { sessionStore } from './services/session-store'
 import { eventHub } from './services/event-hub'
-import { AuthService } from './services/auth'
-
-// ── Register Mongoose Schemas (Required for MongoDB Mode) ────────────────────
+export { AuthService } from './services/auth'
+export { AdapterFactory } from './database/adapters/AdapterFactory'
+export { createResponse } from './api/utils'
+export { requireAuth, requireRole } from './middleware/auth'
+export { InvalidPayloadError, ServiceUnavailableError, ValidationError } from './errors'
+export { env } from './config/env'
 import './database/registry'
 
 // ── Middleware ───────────────────────────────────────────────────────────────
@@ -51,7 +56,6 @@ import locksRouter from './api/locks'
 import commentsRouter from './api/comments'
 import presenceRouter from './api/presence'
 import { DeploymentService } from './services/deployment'
-import contentToolsRouter from './api/content-tools'
 import membersRouter from './api/members'
 import flowsRouter from './api/flows'
 import dashboardRouter from './api/dashboard'
@@ -451,7 +455,6 @@ export class ZenithEngine {
     router.use('/api/v1/locks', locksRouter)
     router.use('/api/v1/comments', commentsRouter)
     router.use('/api/v1/presence', presenceRouter)
-    router.use('/api/v1/content-tools', contentToolsRouter)
     router.use('/api/v1/members', membersRouter)
     router.use('/api/v1/flows', flowsRouter)
     router.use('/api/v1/dashboard', dashboardRouter)
@@ -1110,6 +1113,4 @@ export * from './plugins'
 export * from './plugins/strapi-bridge'
 export { LicensingService } from './services/LicensingService'
 export { eventHub } from './services/event-hub'
-export { AIService } from './services/ai'
 export type { CMSConfig, CollectionConfig, FieldConfig } from '@zenith-open/zenithcms-types'
-

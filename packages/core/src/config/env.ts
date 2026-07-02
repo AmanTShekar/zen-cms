@@ -1,10 +1,15 @@
 import { z } from 'zod';
+import dotenv from 'dotenv';
+import path from 'path';
+
+dotenv.config({ path: path.resolve(process.cwd(), '../../.env') });
+dotenv.config();
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.string().transform(Number).default('3000'),
-  JWT_SECRET: z.string().default('dev_fallback_secret_change_in_prod'),
-  JWT_REFRESH_SECRET: z.string().default('dev_fallback_refresh_change_in_prod'),
+  JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
+  JWT_REFRESH_SECRET: z.string().min(32, "JWT_REFRESH_SECRET must be at least 32 characters"),
   ADMIN_URL: z.string().url().default('http://localhost:5173'),
   CORS_ORIGINS: z.string().optional(),
   TRUST_PROXY: z.string().optional(),
@@ -23,6 +28,14 @@ const envSchema = z.object({
   S3_SECRET_KEY: z.string().optional(),
   S3_ENDPOINT: z.string().optional(),
   S3_FORCE_PATH_STYLE: z.enum(['true', 'false']).default('false'),
+  GCS_PROJECT_ID: z.string().optional(),
+  GCS_CLIENT_EMAIL: z.string().optional(),
+  GCS_PRIVATE_KEY: z.string().optional(),
+  GCS_BUCKET: z.string().optional(),
+  AZURE_ACCOUNT_NAME: z.string().optional(),
+  AZURE_ACCOUNT_KEY: z.string().optional(),
+  AZURE_CONTAINER_NAME: z.string().optional(),
+  BLOB_READ_WRITE_TOKEN: z.string().optional(),
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
   CLOUDINARY_API_SECRET: z.string().optional(),
@@ -55,23 +68,12 @@ let parsedEnv: z.infer<typeof envSchema>;
 
 try {
   parsedEnv = envSchema.parse(process.env);
-  
-  if (parsedEnv.NODE_ENV === 'production') {
-    if (parsedEnv.JWT_SECRET === 'dev_fallback_secret_change_in_prod') {
-      console.error('FATAL: JWT_SECRET must be set in production!');
-      process.exit(1);
-    }
-    if (parsedEnv.JWT_REFRESH_SECRET === 'dev_fallback_refresh_change_in_prod') {
-      console.error('FATAL: JWT_REFRESH_SECRET must be set in production!');
-      process.exit(1);
-    }
-  }
 } catch (error) {
   if (error instanceof z.ZodError) {
-    console.error('❌ Invalid environment variables:');
+    console.error(' Invalid environment variables:');
     error.errors.forEach(e => console.error(`  - ${e.path.join('.')}: ${e.message}`));
   } else {
-    console.error('❌ Error parsing environment variables', error);
+    console.error(' Error parsing environment variables', error);
   }
   process.exit(1);
 }

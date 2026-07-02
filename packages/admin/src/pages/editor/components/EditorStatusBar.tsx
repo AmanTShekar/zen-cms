@@ -51,8 +51,8 @@ export const EditorStatusBar: React.FC = () => {
  className={cn(
  'h-7 border-t flex items-center justify-between px-5 shrink-0 select-none',
  theme === 'dark'
- ? 'bg-z-popover border-z-border text-gray-600'
- : 'bg-white/90 border-z-border shadow-sm text-z-muted'
+ ? 'bg-z-popover border-z-border text-z-secondary'
+ : 'bg-z-panel/90 border-z-border shadow-sm text-z-muted'
  )}
  >
  <div className="flex items-center gap-4 text-xs font-semibold">
@@ -60,18 +60,18 @@ export const EditorStatusBar: React.FC = () => {
  <span className="font-semibold">{stats.words.toLocaleString()}</span>{' '}
  <span className={stats.words === 0 ? 'text-rose-500/50' : ''}>words</span>
  </span>
- <span className="w-px h-3 bg-white/10" />
+ <span className="w-px h-3 bg-z-panel/10" />
  <span>
  <span className="font-semibold">{stats.chars.toLocaleString()}</span>{' '}
  <span className={stats.chars === 0 ? 'text-rose-500/50' : ''}>chars</span>
  </span>
- <span className="w-px h-3 bg-white/10" />
+ <span className="w-px h-3 bg-z-panel/10" />
  <span>
  <span className="font-semibold">{stats.blocks}</span>{' '}
  {stats.blocks === 1 ? 'block' : 'blocks'}
  </span>
  </div>
- <div className="flex items-center gap-4 text-xs font-semibold text-gray-600/50">
+ <div className="flex items-center gap-4 text-xs font-semibold text-z-secondary/50">
  <span>ZENITH EDITOR</span>
  <span>v0.2</span>
  </div>

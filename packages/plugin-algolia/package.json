@@ -1,0 +1,20 @@
+{
+  "name": "@zenith-open/zenithcms-plugin-algolia",
+  "version": "1.0.0",
+  "description": "Algolia search indexing plugin for Zenith CMS",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "algoliasearch": "5.55.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "peerDependencies": {
+    "@zenith-open/zenithcms-core": "workspace:*",
+    "@zenith-open/zenithcms-types": "workspace:*"
+  }
+}

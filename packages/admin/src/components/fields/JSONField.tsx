@@ -60,12 +60,12 @@ const JSONField: React.FC<JSONFieldProps> = ({ value, onChange, disabled, rows =
           spellCheck={false}
           className={cn(
             'w-full bg-[#0d1117] backdrop-blur-md border rounded-none-none px-9 py-3 text-sm font-mono resize-y outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors',
-            'text-[#e6edf3] placeholder:text-gray-600 disabled:opacity-60 disabled:cursor-not-allowed',
+            'text-[#e6edf3] placeholder:text-z-secondary disabled:opacity-60 disabled:cursor-not-allowed',
             focused
               ? 'border-z-accent/50'
               : jsonValid === false
                 ? 'border-red-500/40'
-                : 'border-white/10'
+                : 'border-z-border'
           )}
           placeholder='{"key": "value"}'
         />
@@ -74,7 +74,7 @@ const JSONField: React.FC<JSONFieldProps> = ({ value, onChange, disabled, rows =
         <div className="flex items-center gap-2">
           <span className={cn(
             'inline-block w-1.5 h-1.5 rounded-none-full',
-            jsonValid === true ? 'bg-z-accent shadow-sm' : jsonValid === false ? 'bg-red-500 shadow-[0_0_6px_#ef4444]' : 'bg-gray-600'
+            jsonValid === true ? 'bg-z-accent shadow-sm' : jsonValid === false ? 'bg-red-500 shadow-[0_0_6px_#ef4444]' : 'bg-z-accent'
           )} />
           <span className={cn(
             'text-sm font-bold  ',

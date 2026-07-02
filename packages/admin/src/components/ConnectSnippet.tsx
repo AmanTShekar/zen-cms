@@ -138,8 +138,8 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  className={cn(
  'px-4 py-2 text-sm font-semibold   border-b-2 -mb-px transition-all',
  tab === t.id
- ? 'border-gray-500 text-gray-600 dark:text-z-muted'
- : 'border-transparent text-z-secondary hover:text-gray-300'
+ ? 'border-z-border text-z-secondary'
+ : 'border-transparent text-z-secondary hover:text-z-secondary'
  )}
  >
  {t.label}
@@ -151,10 +151,10 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  <div
  className={cn(
  'relative rounded-none-none border overflow-hidden',
- isDark ? 'bg-black border-z-border' : 'bg-gray-900 border-gray-700'
+ isDark ? 'bg-app border-z-border' : 'bg-z-accent border-z-border'
  )}
  >
- <pre className="overflow-x-auto p-5 text-sm font-mono text-gray-300 leading-relaxed">
+ <pre className="overflow-x-auto p-5 text-sm font-mono text-z-secondary leading-relaxed">
  <code>{snippet}</code>
  </pre>
  <button
@@ -162,8 +162,8 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  className={cn(
  'absolute top-3 right-3 p-2 border rounded-none-none text-sm font-semibold  transition-all',
  copied
- ? 'border-gray-500 text-gray-600 dark:text-z-secondary bg-gray-500/10'
- : 'border-z-border text-z-muted hover:border-white/30 bg-black/40'
+ ? 'border-z-border text-z-secondary  bg-z-panel'
+ : 'border-z-border text-z-muted hover:border-z-border bg-app/40'
  )}
  >
  {copied ? <Check size={13} /> : <Copy size={13} />}
@@ -178,8 +178,8 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  className={cn(
  'flex items-center gap-2 px-5 py-2.5 border text-sm font-semibold  rounded-none-none transition-all',
  isDark
- ? 'border-z-border text-z-muted hover:border-gray-500/40 hover:text-gray-600 dark:text-z-muted'
- : 'border-z-border text-gray-600 hover:border-z-border-strong'
+ ? 'border-z-border text-z-muted hover:border-z-border/40 hover:text-z-secondary'
+ : 'border-z-border text-z-secondary hover:border-z-border-strong'
  )}
  >
  {testing ? <Loader2 size={13} className="animate-spin" /> : <Globe size={13} />}
@@ -187,7 +187,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  </button>
 
  {testResult === 'ok' && (
- <span className="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-z-secondary">
+ <span className="flex items-center gap-2 text-sm font-semibold text-z-secondary ">
  <CheckCircle2 size={13} /> Connected successfully
  </span>
  )}
@@ -196,7 +196,7 @@ export default function ConnectSnippet({ apiKey, publicUrl, theme }: Props) {
  <p>Connection failed. Check that:</p>
  <ul className="list-disc list-inside text-z-secondary normal-case not- font-medium space-y-0.5">
  <li>
- Your CMS is running at <code className="text-gray-300">{publicUrl}</code>
+ Your CMS is running at <code className="text-z-secondary">{publicUrl}</code>
  </li>
  <li>The API key is not expired or revoked</li>
  <li>This origin is in Settings → Allowed Origins</li>

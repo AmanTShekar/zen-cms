@@ -162,14 +162,14 @@ function BlockRow({
       whileDrag={{ scale: 1.01, zIndex: 50, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
       className={cn(
         'group relative bg-app border rounded-none-none overflow-visible shadow-sm transition-colors duration-150',
-        isExpanded ? 'border-accent/60 shadow-sm' : 'border-border hover:border-white/20'
+        isExpanded ? 'border-accent/60 shadow-sm' : 'border-border hover:border-z-border'
       )}
     >
       {/* Index Badge */}
       <div className={cn(
         'absolute -left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-none-full flex items-center justify-center text-sm font-semibold border z-10 transition-all',
         isExpanded
-          ? 'bg-accent text-white border-accent shadow-sm'
+          ? 'bg-accent text-z-primary border-accent shadow-sm'
           : 'bg-app text-z-muted border-border group-hover:border-accent/40 group-hover:text-accent'
       )}>
         {index + 1}
@@ -187,17 +187,17 @@ function BlockRow({
         )}
 
         {/* Icon */}
-        <div className={cn('w-7 h-7 rounded-none flex items-center justify-center flex-shrink-0 bg-gradient-to-br text-white/70', grad)}>
+        <div className={cn('w-7 h-7 rounded-none flex items-center justify-center flex-shrink-0 bg-gradient-to-br text-z-primary/70', grad)}>
           {getBlockIcon(block.blockType)}
         </div>
 
         {/* Labels */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-white truncate">
+            <span className="text-sm font-bold text-z-primary truncate">
               {previewText || blockDef?.labels?.singular || block.blockType}
             </span>
-            <span className="flex-shrink-0 px-1.5 py-px text-sm font-semibold text-z-muted bg-white/[0.05] border border-border rounded-none">
+            <span className="flex-shrink-0 px-1.5 py-px text-sm font-semibold text-z-muted bg-z-panel/[0.05] border border-border rounded-none">
               {block.blockType}
             </span>
           </div>
@@ -210,8 +210,8 @@ function BlockRow({
         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" onClick={(e) => e.stopPropagation()}>
           {!disabled && (
             <>
-              <button type="button" onClick={onMoveUp} disabled={index === 0} title="Move Up" className="p-1.5 text-z-muted hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowUp size={11} /></button>
-              <button type="button" onClick={onMoveDown} disabled={index === total - 1} title="Move Down" className="p-1.5 text-z-muted hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowDown size={11} /></button>
+              <button type="button" onClick={onMoveUp} disabled={index === 0} title="Move Up" className="p-1.5 text-z-muted hover:text-z-primary disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowUp size={11} /></button>
+              <button type="button" onClick={onMoveDown} disabled={index === total - 1} title="Move Down" className="p-1.5 text-z-muted hover:text-z-primary disabled:opacity-20 disabled:cursor-not-allowed transition-colors"><ArrowDown size={11} /></button>
               <button type="button" onClick={onDuplicate} title="Duplicate" className="p-1.5 text-z-muted hover:text-accent transition-colors"><Copy size={11} /></button>
               <button type="button" onClick={onRemove} title="Remove" className="p-1.5 text-z-muted hover:text-danger transition-colors"><Trash2 size={11} /></button>
             </>
@@ -232,7 +232,7 @@ function BlockRow({
             transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-6 pt-4 border-t border-border bg-white/[0.05]/40">
+            <div className="px-5 pb-6 pt-4 border-t border-border bg-z-panel/[0.05]/40">
               {blockDef ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {blockDef.fields.map((f) => {
@@ -297,7 +297,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
     : { [activeCategory]: filtered }
 
   return createPortal(
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-8 bg-black/70 backdrop-blur-md" onClick={onClose}>
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-8 bg-app/70 backdrop-blur-md" onClick={onClose}>
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -306,20 +306,20 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
         onClick={(e) => e.stopPropagation()}
         className={cn(
           "w-full max-w-4xl border rounded-none-none overflow-hidden shadow-2xl flex flex-col h-[85vh]",
-          theme === 'dark' ? 'bg-[#0B0F19] border-white/10' : 'bg-z-panel border-z-border'
+          theme === 'dark' ? 'bg-[#0B0F19] border-z-border' : 'bg-z-panel border-z-border'
         )}
       >
         {/* Header */}
         <div
           className={cn(
             'p-6 border-b flex items-center justify-between shrink-0',
-            theme === 'dark' ? 'border-white/5' : 'border-z-border',
+            theme === 'dark' ? 'border-z-border' : 'border-z-border',
           )}
         >
           <h3
             className={cn(
               'text-lg font-semibold  italic leading-none',
-              theme === 'dark' ? 'text-white' : 'text-black',
+              theme === 'dark' ? 'text-z-primary' : 'text-z-primary',
             )}
           >
             Add Component
@@ -338,13 +338,13 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
 
         <div className={cn(
           "flex-1 overflow-hidden flex flex-col p-6",
-          theme === 'dark' ? 'bg-[#0B0F19]' : 'bg-white'
+          theme === 'dark' ? 'bg-[#0B0F19]' : 'bg-z-panel'
         )}>
           {/* Search */}
           <div className="relative mb-6 shrink-0">
             <Search size={14} className={cn(
               "absolute left-4 top-1/2 -translate-y-1/2",
-              theme === 'dark' ? 'text-z-secondary' : 'text-z-muted'
+              'text-z-secondary'
             )} />
             <input 
               ref={searchRef} 
@@ -355,8 +355,8 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
               className={cn(
                 "w-full rounded-none-none pl-11 pr-11 py-3 text-xs font-bold transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black",
                 theme === 'dark' 
-                  ? 'bg-z-hover border border-white/10 text-white placeholder:text-gray-600 focus:border-z-accent/40 focus:bg-white/[0.05]'
-                  : 'bg-gray-50 border border-z-border text-z-primary placeholder:text-z-muted focus:border-z-active-border focus:bg-white'
+                  ? 'bg-z-hover border border-z-border text-z-primary placeholder:text-z-secondary focus:border-z-accent/40 focus:bg-z-panel/[0.05]'
+                  : 'bg-[var(--z-bg-input)] border border-z-border text-z-primary placeholder:text-z-muted focus:border-z-active-border focus:bg-z-panel'
               )} 
             />
             {search && (
@@ -364,7 +364,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                 onClick={() => setSearch('')} 
                 className={cn(
                   "absolute right-4 top-1/2 -translate-y-1/2 transition-colors",
-                  theme === 'dark' ? 'text-z-secondary hover:text-white' : 'text-z-muted hover:text-black'
+                  theme === 'dark' ? 'text-z-secondary hover:text-z-primary' : 'text-z-muted hover:text-z-primary'
                 )}
               >
                 <X size={14} />
@@ -373,7 +373,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
           </div>
 
           {/* Categories Tab Bar */}
-          <div className="flex items-center gap-1 p-1 border border-white/5 bg-z-panel rounded-none-none shrink-0 mb-4 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1 p-1 border border-z-border bg-z-panel rounded-none-none shrink-0 mb-4 overflow-x-auto no-scrollbar">
             {categories.map((cat) => (
               <button 
                 key={cat} 
@@ -387,7 +387,7 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                       : 'bg-z-active-bg border-z-active-border text-z-accent shadow-sm'
                     : theme === 'dark'
                       ? 'bg-transparent border-transparent text-z-secondary hover:bg-z-hover'
-                      : 'bg-transparent border-transparent text-z-secondary hover:bg-gray-100'
+                      : 'bg-transparent border-transparent text-z-secondary hover:bg-[var(--z-bg-hover)]'
                 )}
               >
                 {cat}
@@ -430,24 +430,24 @@ function ComponentPicker({ blocksList, onSelect, onClose }: {
                             <img src={stock.admin.imageURL} alt={stock.slug} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                           ) : (
                             <div className={cn('absolute inset-0 bg-gradient-to-br flex items-center justify-center', grad)}>
-                              <div className="text-white/40 group-hover:text-white/80 transition-colors" style={{ transform: 'scale(2)' }}>
+                              <div className="text-z-primary/40 group-hover:text-z-primary/80 transition-colors" style={{ transform: 'scale(2)' }}>
                                 {getBlockIcon(stock.slug)}
                               </div>
                             </div>
                           )}
                           {stock.admin?.category && (
-                            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-sm font-semibold bg-black/60 backdrop-blur text-white/80 rounded-none-none">
+                            <span className="absolute top-2 left-2 px-1.5 py-0.5 text-sm font-semibold bg-app/60 backdrop-blur text-z-primary/80 rounded-none-none">
                               {stock.admin.category}
                             </span>
                           )}
                           {stock.admin?.imageURL && (
-                            <div className="absolute top-2 right-2 w-5 h-5 bg-black/50 backdrop-blur flex items-center justify-center text-white/70 rounded-none-none">
+                            <div className="absolute top-2 right-2 w-5 h-5 bg-app/50 backdrop-blur flex items-center justify-center text-z-primary/70 rounded-none-none">
                               {getBlockIcon(stock.slug)}
                             </div>
                           )}
                         </div>
                         <div className="p-3 flex-1 bg-app group-hover:bg-accent/5 transition-colors">
-                          <p className="text-sm font-semibold text-white mb-0.5">{stock.labels?.singular || stock.slug}</p>
+                          <p className="text-sm font-semibold text-z-primary mb-0.5">{stock.labels?.singular || stock.slug}</p>
                           <p className="text-sm text-z-muted leading-relaxed line-clamp-2">{stock.admin?.description || `Add ${stock.slug} to your page.`}</p>
                         </div>
                       </motion.button>
@@ -552,7 +552,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <Layers size={16} className="text-accent" />
-            <span className="text-sm font-semibold text-white">Page Components</span>
+            <span className="text-sm font-semibold text-z-primary">Page Components</span>
             {blocks.length > 0 && (
               <span className="px-1.5 py-0.5 text-sm font-semibold bg-accent/15 text-accent border border-accent/25 rounded-none-full">
                 {blocks.length}
@@ -565,33 +565,33 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
               onClick={() => setShowPreview(!showPreview)}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold   transition-all rounded-none-none border",
-                showPreview ? "bg-z-active-bg text-z-active-text border-z-active-border" : "bg-z-panel text-z-muted border-white/5 hover:text-white"
+                showPreview ? "bg-z-active-bg text-z-active-text border-z-active-border" : "bg-z-panel text-z-muted border-z-border hover:text-z-primary"
               )}
             >
               {showPreview ? <EyeOff size={12} /> : <Eye size={12} />}
               {showPreview ? 'Close Preview' : 'Live Preview'}
             </button>
             {blocks.length > 0 && (
-              <div className="flex items-center gap-1.5 border border-white/5 bg-z-panel p-0.5 rounded-none-none mr-2">
+              <div className="flex items-center gap-1.5 border border-z-border bg-z-panel p-0.5 rounded-none-none mr-2">
                 <button
                   type="button"
                   onClick={expandAll}
-                  className="px-2.5 py-1 text-sm font-semibold text-z-muted hover:text-white transition-all hover:bg-white/[0.05]"
+                  className="px-2.5 py-1 text-sm font-semibold text-z-muted hover:text-z-primary transition-all hover:bg-z-panel/[0.05]"
                 >
                   Expand All
                 </button>
-                <div className="w-px h-3 bg-white/10" />
+                <div className="w-px h-3 bg-z-panel/10" />
                 <button
                   type="button"
                   onClick={collapseAll}
-                  className="px-2.5 py-1 text-sm font-semibold text-z-muted hover:text-white transition-all hover:bg-white/[0.05]"
+                  className="px-2.5 py-1 text-sm font-semibold text-z-muted hover:text-z-primary transition-all hover:bg-z-panel/[0.05]"
                 >
                   Collapse All
                 </button>
               </div>
             )}
             {!disabled && (
-              <button type="button" onClick={handleOpenPicker} className="flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white text-sm font-semibold hover:bg-accent/90 transition-all shadow-sm shadow-accent/20 rounded-none-none">
+              <button type="button" onClick={handleOpenPicker} className="flex items-center gap-1.5 px-3 py-1.5 bg-accent text-z-primary text-sm font-semibold hover:bg-accent/90 transition-all shadow-sm shadow-accent/20 rounded-none-none">
                 <Plus size={11} /> Add Component
               </button>
             )}
@@ -600,16 +600,16 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
 
       {/* Empty State */}
       {blocks.length === 0 && (
-        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="border border-dashed border-border p-10 flex flex-col items-center gap-4 text-center bg-white/[0.05]/20 rounded-none-none">
+        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="border border-dashed border-border p-10 flex flex-col items-center gap-4 text-center bg-z-panel/[0.05]/20 rounded-none-none">
           <div className="w-12 h-12 rounded-none-full bg-accent/10 border border-accent/20 flex items-center justify-center">
             <Layers size={20} className="text-accent/50" />
           </div>
           <div>
-            <p className="text-sm font-bold text-white mb-1">No components yet</p>
+            <p className="text-sm font-bold text-z-primary mb-1">No components yet</p>
             <p className="text-xs text-z-muted max-w-xs leading-relaxed">Build your page by stacking components — hero sections, feature grids, pricing tables and more.</p>
           </div>
           {!disabled && (
-            <button type="button" onClick={handleOpenPicker} className="flex items-center gap-2 px-4 py-2 bg-accent text-white text-sm font-semibold hover:bg-accent/90 transition-all shadow-sm shadow-accent/20 mt-1 rounded-none-none">
+            <button type="button" onClick={handleOpenPicker} className="flex items-center gap-2 px-4 py-2 bg-accent text-z-primary text-sm font-semibold hover:bg-accent/90 transition-all shadow-sm shadow-accent/20 mt-1 rounded-none-none">
               <Plus size={12} /> Add Your First Component
             </button>
           )}
@@ -662,8 +662,8 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
 
       {/* Side-by-Side Live Preview Iframe */}
       {showPreview && (
-        <div className="w-full h-full min-h-[700px] border border-white/10 rounded-none-none overflow-hidden sticky top-4 bg-[#0B0F19] shadow-2xl flex flex-col">
-          <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between shrink-0">
+        <div className="w-full h-full min-h-[700px] border border-z-border rounded-none-none overflow-hidden sticky top-4 bg-[#0B0F19] shadow-2xl flex flex-col">
+          <div className="px-4 py-2 border-b border-z-border flex items-center justify-between shrink-0">
             <span className="text-sm font-semibold text-z-active-text italic flex items-center gap-2">
               <div className="w-2 h-2 rounded-none-full bg-z-accent animate-pulse shadow-sm" />
               Live Preview Connected
@@ -672,7 +672,7 @@ const BlocksBuilder: React.FC<BlocksBuilderProps> = ({
           </div>
           <iframe 
              src={previewUrl} 
-             className="w-full flex-1 border-0 bg-white" 
+             className="w-full flex-1 border-0 bg-z-panel" 
              title="Live Preview"
           />
         </div>

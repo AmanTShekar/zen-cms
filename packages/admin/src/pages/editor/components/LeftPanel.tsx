@@ -104,7 +104,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  animate={{ opacity: 1 }}
  exit={{ opacity: 0 }}
  onClick={() => setLeftOpen(false)}
- className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[99]"
+ className="md:hidden fixed inset-0 bg-app/50 backdrop-blur-sm z-[99]"
  />
  <motion.aside
  initial={{ x: '-100%' }}
@@ -115,7 +115,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  className={cn(
  'border-r flex flex-col z-50 overflow-hidden shrink-0 h-full',
  'md:relative fixed inset-y-0 left-0 max-md:!w-[280px] max-md:z-[100] max-md:shadow-2xl',
- dark ? 'bg-black border-z-border' : 'bg-z-panel border-z-border'
+ dark ? 'bg-app border-z-border' : 'bg-z-panel border-z-border'
  )}
  >
  {/* Resize handle */}
@@ -123,7 +123,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  onMouseDown={startResizing('left')}
  className={cn(
  'absolute right-0 top-0 bottom-0 w-1 cursor-col-resize z-50 transition-colors',
- resizingSide === 'left' ? 'bg-gray-500' : 'bg-transparent hover:bg-gray-500/50'
+ resizingSide === 'left' ? 'bg-z-border' : 'bg-transparent hover:bg-z-hover'
  )}
  />
 
@@ -138,7 +138,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  <button
  onClick={() => { setInjectionIndex(0); setBlockPickerOpen(true); }}
  className={cn(
- 'p-1 rounded-none-none border transition-all text-z-muted hover:text-gray-600 dark:text-z-secondary',
+ 'p-1 rounded-none-none border transition-all text-z-muted hover:text-z-secondary ',
  dark ? 'bg-z-hover border-z-border' : 'bg-z-input border-z-border'
  )}
  aria-label="Add new section"
@@ -162,7 +162,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  <div className="relative">
  <Search size={11} className={cn(
  'absolute left-2.5 top-1/2 -translate-y-1/2',
- dark ? 'text-gray-600' : 'text-z-muted'
+ dark ? 'text-z-secondary' : 'text-z-muted'
  )} />
  <input
  type="text"
@@ -172,8 +172,8 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  className={cn(
  'w-full pl-7 pr-7 py-1.5 text-xs font-bold border rounded-none-none bg-transparent transition-all',
  dark
- ? 'border-z-border text-white placeholder-gray-600 focus:border-gray-500/30'
- : 'border-z-border text-black placeholder-gray-400 focus:border-gray-500/30'
+ ? 'border-z-border text-z-primary placeholder:text-z-muted focus:border-z-border/30'
+ : 'border-z-border text-z-primary placeholder:text-z-muted focus:border-z-border/30'
  )}
  aria-label="Filter layers"
  />
@@ -182,7 +182,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  onClick={() => setSearchQuery('')}
  className={cn(
  'absolute right-2 top-1/2 -translate-y-1/2 p-0.5',
- dark ? 'text-gray-600 hover:text-white' : 'text-z-muted hover:text-black'
+ dark ? 'text-z-secondary hover:text-z-primary' : 'text-z-muted hover:text-z-primary'
  )}
  aria-label="Clear filter"
  >
@@ -223,11 +223,11 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  'w-full flex items-center gap-2.5 px-2.5 py-2 rounded-none-none border text-left transition-all',
  activeSection === section.id
  ? dark
- ? 'bg-white border-white text-black'
- : 'bg-black border-black text-white'
+ ? 'bg-z-panel border-z-border text-z-primary'
+ : 'bg-[var(--z-active-bg)] text-[var(--z-active-text)] border border-[var(--z-active-border)] shadow-sm'
  : dark
- ? 'bg-z-hover border-z-border text-z-muted hover:bg-white/10'
- : 'bg-z-input border-z-border text-gray-600 hover:bg-gray-100'
+ ? 'bg-z-hover border-z-border text-z-secondary hover:bg-[var(--z-bg-hover)]'
+ : 'bg-z-panel border-z-border text-z-secondary hover:bg-[var(--z-bg-hover)] hover:text-z-primary'
  )}
  aria-label={`Select section: ${section.blockName || section.title || humanize(section.blockType)}`}
  >
@@ -245,7 +245,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  'text-sm font-semibold   shrink-0',
  activeSection === section.id
  ? 'opacity-60'
- : dark ? 'text-gray-600' : 'text-z-muted'
+ : dark ? 'text-z-secondary' : 'text-z-muted'
  )}>
  {humanize(section.blockType)}
  </span>
@@ -273,11 +273,11 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  'flex-1 flex items-center gap-2.5 px-2.5 py-2 rounded-none-none border text-left transition-all cursor-pointer',
  activeSection === section.id
  ? dark
- ? 'bg-white border-white text-black'
- : 'bg-black border-black text-white'
+ ? 'bg-z-panel border-z-border text-z-primary'
+ : 'bg-[var(--z-active-bg)] text-[var(--z-active-text)] border border-[var(--z-active-border)] shadow-sm'
  : dark
- ? 'bg-z-hover border-z-border text-z-muted hover:bg-white/10'
- : 'bg-z-input border-z-border text-gray-600 hover:bg-gray-100'
+ ? 'bg-z-hover border-z-border text-z-secondary hover:bg-[var(--z-bg-hover)]'
+ : 'bg-z-panel border-z-border text-z-secondary hover:bg-[var(--z-bg-hover)] hover:text-z-primary'
  )}
  aria-label={`Select section: ${section.blockName || section.title || humanize(section.blockType)}`}
  >
@@ -299,7 +299,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
  <span className={cn(
  'text-sm font-semibold   shrink-0',
  activeSection === section.id
- ? dark ? 'text-z-muted/80' : 'text-gray-600/80'
+ ? dark ? 'text-z-muted/80' : 'text-z-secondary/80'
  : 'text-z-muted'
  )}>
  {humanize(section.blockType)}

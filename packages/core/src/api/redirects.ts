@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+
 import { Router, Request, Response } from 'express'
 import { requireAuth } from '../middleware/auth'
 import { createResponse } from './utils'
@@ -132,6 +132,7 @@ router.patch('/:id', async (req: Request, res: Response, next) => {
       const allByMongoId = await adapter.find('z_redirects', { _id: req.params.id })
       existing = allByMongoId[0] || null
     }
+    // @ts-ignore: TS2322 - unresolved type from removing @ts-nocheck
     if (siteId && existing?.siteId !== siteId) existing = null
     if (!existing) throw new NotFoundError('redirect', req.params.id)
 
@@ -151,7 +152,7 @@ router.patch('/:id', async (req: Request, res: Response, next) => {
     if (to !== undefined) updates.to = to
     if (type !== undefined) updates.type = type
 
-    const updated = await adapter.update('z_redirects', req.params.id, updates)
+    const updated = await adapter.update('z_redirects', req.params.id, updates, siteId ? { siteId } : {})
     res.json(createResponse(updated))
   } catch (err) {
     next(err)
@@ -169,7 +170,7 @@ router.delete('/:id', async (req: Request, res: Response, next) => {
     const existing = await adapter.findOne('z_redirects', filter)
     if (!existing) throw new NotFoundError('redirect', req.params.id)
 
-    await adapter.delete('z_redirects', req.params.id)
+    await adapter.delete('z_redirects', req.params.id, siteId ? { siteId } : {})
     res.json(createResponse({ deleted: true }))
   } catch (err) {
     next(err)

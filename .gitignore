@@ -106,3 +106,11 @@ packages/types/src/**/*.js.map
 packages/types/src/**/*.d.ts
 docs/col
 
+
+compare.md
+compare2.md
+.clinerules
+.windsurfrules
+playwright-report/
+packages/admin/playwright-report/
+media/

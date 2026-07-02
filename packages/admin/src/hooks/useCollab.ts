@@ -1,6 +1,4 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import * as Y from 'yjs'
-import { WebsocketProvider } from 'y-websocket'
 import { useAuthStore } from '../store/authStore'
 import api from '../lib/api'
 import { useShallow } from 'zustand/react/shallow'
@@ -55,9 +53,9 @@ interface UseCollabReturn {
  collabUsers: CollabUser[]
  /** Your own local user */
  localUser: CollabUser
- /** Y.Doc instance — attached when wsUrl is provided */
- doc: Y.Doc | null
- /** Whether Y.js WebSocket is connected */
+ /** Y.Doc instance (deprecated from core, returns null) */
+ doc: any | null
+ /** Whether Y.js WebSocket is connected (always false in core) */
  isConnected: boolean
  /** Broadcast a field-level cursor position to other users */
  broadcastCursor: (sectionId?: string, fieldKey?: string) => void
@@ -83,11 +81,9 @@ export function useCollab({
 }: UseCollabOptions): UseCollabReturn {
  const { user  } = useAuthStore(useShallow(state => ({ user: state.user })))
  const [collabUsers, setCollabUsers] = useState<CollabUser[]>([])
- const [isConnected, setIsConnected] = useState(false)
- const [doc, setDoc] = useState<Y.Doc | null>(null)
+ const [isConnected] = useState(false)
+ const [doc] = useState<any | null>(null)
 
- const docRef = useRef<Y.Doc | null>(null)
- const providerRef = useRef<WebsocketProvider | null>(null)
  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
  const localUser: CollabUser = {
@@ -97,70 +93,9 @@ export function useCollab({
  color: colorForId(user?.id || 'local'),
  }
 
- // ── Y.js setup ─────────────────────────────────────────────────────────────
- useEffect(() => {
- if (!wsUrl || !enabled) {
- docRef.current = null
- setDoc(null)
- return
- }
-
- const newDoc = new Y.Doc()
- docRef.current = newDoc
- setDoc(newDoc)
-
- const provider = new WebsocketProvider(wsUrl, `${collection}:${documentId}`, newDoc, {
- connect: true,
- })
- providerRef.current = provider
-
- provider.on('status', ({ status }: { status: string }) => {
- setIsConnected(status === 'connected')
- })
-
- // Presence / awareness — broadcast local user info
- const awareness = provider.awareness
- awareness.setLocalStateField('user', {
- id: localUser.id,
- email: localUser.email,
- name: localUser.name,
- color: localUser.color,
- cursor: null,
- })
-
- // Sync collab users from awareness
- const updateUsers = () => {
- const states = awareness.getStates()
- const users: CollabUser[] = []
- states.forEach((state) => {
- if (state.user) {
- users.push({
- id: state.user.id,
- email: state.user.email,
- name: state.user.name,
- color: state.user.color || colorForId(state.user.id),
- cursor: state.user.cursor,
- })
- }
- })
- setCollabUsers(users)
- }
-
- awareness.on('change', updateUsers)
- updateUsers()
-
- return () => {
- awareness.off('change', updateUsers)
- provider.destroy()
- providerRef.current = null
- docRef.current = null
- }
- }, [wsUrl, collection, documentId, enabled])
-
  // ── Polling fallback (no WebSocket required) ─────────────────────────────────
  useEffect(() => {
  if (!enabled) return
- if (wsUrl && isConnected) return
 
  const fetchPresence = async () => {
  try {
@@ -197,14 +132,7 @@ export function useCollab({
 
  // ── Broadcast cursor ────────────────────────────────────────────────────────
  const broadcastCursor = useCallback((sectionId?: string, fieldKey?: string) => {
- const provider = providerRef.current
- if (!provider) return
- const awareness = provider.awareness
- const current = awareness.getLocalState() as any
- awareness.setLocalStateField('user', {
- ...(current.user || {}),
- cursor: { sectionId, fieldKey },
- })
+  // Cursor broadcasting requires the multiplayer plugin
  }, [])
 
  return {

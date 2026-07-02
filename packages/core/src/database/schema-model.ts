@@ -9,11 +9,10 @@ const schemaModelSchema = new Schema(
     description: { type: String },
     iconName: { type: String },
     fields: { type: Schema.Types.Mixed },
-    siteId: { type: String },
+    siteId: { type: String, required: true },
     source: { type: String, default: 'custom' },
     isGlobal: { type: Boolean, default: false },
-  },
-  { collection: 'z_schemas', timestamps: true }
+  }, { strict: true,  collection: 'z_schemas', timestamps: true }
 )
 
 schemaModelSchema.index({ slug: 1, siteId: 1 }, { unique: true })

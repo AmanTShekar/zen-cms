@@ -5,7 +5,6 @@ import path from 'path'
 import { pathToFileURL } from 'url'
 import { AdapterFactory } from './adapters/AdapterFactory'
 import { logger } from '../services/logger'
-import { sql } from 'drizzle-orm'
 
 /**
  * Zenith CMS — Database Migration Runner
@@ -17,7 +16,7 @@ export class Migrator {
   private static async ensureMigrationTable(adapter: import('@zenith-open/zenithcms-types').DatabaseAdapter) {
     if (adapter.name === 'postgres-drizzle' || adapter.name === 'PostgresDrizzle') {
       try {
-        await adapter.db.execute(`
+        await adapter.executeRaw(`
           CREATE TABLE IF NOT EXISTS z_migrations (
             id SERIAL PRIMARY KEY,
             name VARCHAR(255) NOT NULL UNIQUE,
@@ -34,10 +33,10 @@ export class Migrator {
   private static async getExecutedMigrations(adapter: import('@zenith-open/zenithcms-types').DatabaseAdapter): Promise<string[]> {
     try {
       if (adapter.name === 'postgres-drizzle' || adapter.name === 'PostgresDrizzle') {
-        const res = await adapter.db.execute(`SELECT name FROM z_migrations`)
+        const res = await adapter.executeRaw(`SELECT name FROM z_migrations LIMIT 1000`)
         return res.rows.map((r: Record<string, any>) => r.name)
       } else {
-        const migrations = await adapter.find('z_migrations', {})
+        const migrations = await adapter.find('z_migrations', {}, { limit: 1000 })
         return migrations.map((m: Record<string, any>) => m.name)
       }
     } catch (err) {
@@ -47,7 +46,7 @@ export class Migrator {
 
   private static async markMigrationExecuted(adapter: import('@zenith-open/zenithcms-types').DatabaseAdapter, name: string) {
     if (adapter.name === 'postgres-drizzle' || adapter.name === 'PostgresDrizzle') {
-      await adapter.db.execute(sql`INSERT INTO z_migrations (name, batch) VALUES (${name}, 1)`)
+      await adapter.executeRaw(`INSERT INTO z_migrations (name, batch) VALUES ($1, 1)`, [name])
     } else {
       await adapter.create('z_migrations', { name, batch: 1, executedAt: new Date() })
     }
@@ -55,7 +54,7 @@ export class Migrator {
 
   private static async removeMigrationRecord(adapter: import('@zenith-open/zenithcms-types').DatabaseAdapter, name: string) {
     if (adapter.name === 'postgres-drizzle' || adapter.name === 'PostgresDrizzle') {
-      await adapter.db.execute(sql`DELETE FROM z_migrations WHERE name = ${name}`)
+      await adapter.executeRaw(`DELETE FROM z_migrations WHERE name = $1`, [name])
     } else {
       await adapter.deleteMany('z_migrations', { name })
     }
@@ -80,8 +79,8 @@ export class Migrator {
         fs.mkdirSync(migrationsDir, { recursive: true })
       }
 
-      const files = fs
-        .readdirSync(migrationsDir)
+      const filesRaw = await fs.promises.readdir(migrationsDir)
+      const files = filesRaw
         .filter((f) => f.endsWith('.ts') || f.endsWith('.js'))
         .sort()
 

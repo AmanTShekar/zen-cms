@@ -1,0 +1,20 @@
+{
+  "name": "@zenith-open/zenithcms-plugin-auth-google",
+  "version": "1.0.0",
+  "description": "Google OAuth Strategy",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "passport-google-oauth20": "^2.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "peerDependencies": {
+    "@zenith-open/zenithcms-core": "workspace:*",
+    "@zenith-open/zenithcms-types": "workspace:*"
+  }
+}

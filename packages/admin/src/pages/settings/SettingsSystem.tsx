@@ -153,7 +153,7 @@ const SettingsSystem: React.FC<SettingsSystemProps> = ({ theme }) => {
         <AlertTriangle size={20} className="text-amber-500 shrink-0 mt-0.5" />
         <div>
           <h3 className={cn('text-sm font-semibold  ', dark ? 'text-amber-400' : 'text-amber-700')}>System Level Operations</h3>
-          <p className={cn('text-sm font-bold   mt-1', dark ? 'text-z-muted' : 'text-gray-600')}>
+          <p className={cn('text-sm font-bold   mt-1', dark ? 'text-z-muted' : 'text-z-secondary')}>
             These operations directly manipulate process management (PM2, Docker) and may cause temporary service interruptions. Ensure all users are offline before executing destructive operations.
           </p>
         </div>
@@ -163,7 +163,7 @@ const SettingsSystem: React.FC<SettingsSystemProps> = ({ theme }) => {
       <div className="space-y-2">
         <div className="flex items-center justify-between px-1">
           <p className="text-sm font-semibold text-z-secondary">Live System Health</p>
-          <button onClick={fetchHealth} className={cn('flex items-center gap-1 text-sm font-semibold  ', dark ? 'text-z-secondary hover:text-white' : 'text-z-muted hover:text-gray-800')}>
+          <button onClick={fetchHealth} className={cn('flex items-center gap-1 text-sm font-semibold  ', dark ? 'text-z-secondary hover:text-z-primary' : 'text-z-muted hover:text-z-primary')}>
             <RefreshCw size={10} className={healthLoading ? 'animate-spin' : ''} />
             Refresh
           </button>
@@ -208,7 +208,7 @@ const SettingsSystem: React.FC<SettingsSystemProps> = ({ theme }) => {
                 <Icon size={15} className={color} />
               </div>
               <div>
-                <p className={cn('text-sm font-semibold', dark ? 'text-white' : 'text-z-primary')}>{healthLoading ? '...' : value}</p>
+                <p className={cn('text-sm font-semibold', 'text-z-primary')}>{healthLoading ? '...' : value}</p>
                 <p className="text-sm font-semibold text-z-secondary">{label}</p>
               </div>
             </div>
@@ -225,8 +225,8 @@ const SettingsSystem: React.FC<SettingsSystemProps> = ({ theme }) => {
               { label: 'Platform', value: navigator.platform || '—' },
             ].map(({ label, value }) => (
               <div key={label} className="space-y-0.5">
-                <p className="text-sm font-semibold text-gray-600">{label}</p>
-                <p className={cn('text-sm font-mono font-bold', dark ? 'text-gray-300' : 'text-gray-700')}>{value}</p>
+                <p className="text-sm font-semibold text-z-secondary">{label}</p>
+                <p className={cn('text-sm font-mono font-bold', 'text-z-secondary')}>{value}</p>
               </div>
             ))}
           </div>
@@ -242,16 +242,16 @@ const SettingsSystem: React.FC<SettingsSystemProps> = ({ theme }) => {
                 <op.icon size={20} />
               </div>
               <div>
-                <h4 className={cn('text-sm font-semibold  ', dark ? 'text-white' : 'text-z-primary')}>{op.title}</h4>
-                <p className={cn('text-sm font-bold   leading-relaxed mt-2', dark ? 'text-z-secondary' : 'text-z-secondary')}>{op.description}</p>
+                <h4 className={cn('text-sm font-semibold  ', 'text-z-primary')}>{op.title}</h4>
+                <p className={cn('text-sm font-bold   leading-relaxed mt-2', 'text-z-secondary')}>{op.description}</p>
               </div>
             </div>
-            <div className="mt-6 pt-4 border-t" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}>
+            <div className="mt-6 pt-4 border-t" style={{ borderColor: 'var(--z-border)' }}>
               <button
                 onClick={op.action}
                 disabled={runningOperation !== null}
                 className={cn('w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold   transition-all disabled:opacity-40',
-                  dark ? 'bg-z-hover hover:bg-white/10 text-white border border-white/10 hover:border-white/20' : 'bg-gray-200 hover:bg-gray-300 text-z-primary border border-transparent')}
+                  dark ? 'bg-z-hover hover:bg-[var(--z-bg-hover)] text-z-primary border border-z-border hover:border-z-border' : 'bg-[var(--z-border)] hover:bg-z-input text-z-primary border border-transparent')}
               >
                 {runningOperation === op.title ? (
                   <><Loader2 size={12} className="animate-spin" />Executing...</>
@@ -277,10 +277,10 @@ const SettingsSystem: React.FC<SettingsSystemProps> = ({ theme }) => {
           </button>
         </div>
         {showLogs && (
-          <div className={cn('border rounded-none overflow-hidden', dark ? 'bg-black border-z-border' : 'bg-gray-900 border-gray-700')}>
+          <div className={cn('border rounded-none overflow-hidden', dark ? 'bg-app border-z-border' : 'bg-z-accent border-z-border')}>
             <div className="flex items-center justify-between px-4 py-2 border-b border-z-border">
               <span className="text-sm font-semibold text-green-400">● LIVE</span>
-              <button onClick={fetchLogs} disabled={logsLoading} className="text-sm text-z-secondary hover:text-white">
+              <button onClick={fetchLogs} disabled={logsLoading} className="text-sm text-z-secondary hover:text-z-primary">
                 <RefreshCw size={10} className={logsLoading ? 'animate-spin' : ''} />
               </button>
             </div>
@@ -288,7 +288,7 @@ const SettingsSystem: React.FC<SettingsSystemProps> = ({ theme }) => {
               {logsLoading ? (
                 <Loader2 size={14} className="animate-spin text-green-400" />
               ) : logs.length === 0 ? (
-                <p className="text-gray-600">No log entries available</p>
+                <p className="text-z-secondary">No log entries available</p>
               ) : (
                 logs.map((line, i) => (
                   <p key={i} className="leading-5">{line}</p>

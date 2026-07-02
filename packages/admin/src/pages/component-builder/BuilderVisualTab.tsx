@@ -49,7 +49,7 @@ export const BuilderVisualTab = ({
     <motion.div key="visual" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
       {/* General info */}
       <div className={cn('p-6 border rounded-none space-y-4 shadow-sm transition-all', 'z-panel')}>
-        <h3 className="text-sm font-semibold text-gray-600 dark:text-z-secondary border-b border-gray-500/20 pb-2">General Info</h3>
+        <h3 className="text-sm font-semibold text-z-secondary  border-b border-z-border/20 pb-2">General Info</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <label className="text-sm font-bold text-z-secondary block">Display Name</label>
@@ -58,7 +58,7 @@ export const BuilderVisualTab = ({
           <div className="space-y-1.5">
             <label className="text-sm font-bold text-z-secondary block">Category</label>
             <select value={activeComponent.category} onChange={(e) => setActiveComponent({ ...activeComponent, category: e.target.value })} className={cn(inputCls, 'cursor-pointer')}>
-              {CATEGORIES.map(c => <option key={c} value={c} className="text-black">{c}</option>)}
+              {CATEGORIES.map(c => <option key={c} value={c} className="text-z-primary">{c}</option>)}
             </select>
           </div>
           <div className="space-y-1.5 col-span-2">
@@ -74,9 +74,9 @@ export const BuilderVisualTab = ({
 
       {/* Fields */}
       <div className={cn('p-6 border rounded-none shadow-sm transition-all', 'z-panel')}>
-        <div className="flex items-center justify-between mb-5 border-b border-gray-500/20 pb-2">
-          <h3 className="text-sm font-semibold text-gray-600 dark:text-z-secondary">Fields Configuration</h3>
-          <button onClick={addField} className="flex items-center gap-1.5 text-sm font-semibold text-gray-600 dark:text-z-muted hover:text-white hover:bg-z-active-bg px-3 py-1.5 bg-gray-500/10 rounded-none transition-all">
+        <div className="flex items-center justify-between mb-5 border-b border-z-border/20 pb-2">
+          <h3 className="text-sm font-semibold text-z-secondary ">Fields Configuration</h3>
+          <button onClick={addField} className="flex items-center gap-1.5 text-sm font-semibold text-z-secondary hover:text-z-primary hover:bg-z-active-bg px-3 py-1.5 bg-z-panel rounded-none transition-all">
             <Plus size={12} /> Add Field
           </button>
         </div>
@@ -89,7 +89,7 @@ export const BuilderVisualTab = ({
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className={cn('flex items-center gap-3 p-3.5 border rounded-none group shadow-sm transition-all', dark ? 'bg-black/40 backdrop-blur-sm border-z-border hover:border-z-active-border' : 'bg-z-input border-z-border hover:border-z-border-strong')}
+                className={cn('flex items-center gap-3 p-3.5 border rounded-none group shadow-sm transition-all', dark ? 'bg-z-panel backdrop-blur-sm border-z-border hover:border-z-active-border' : 'bg-z-input border-z-border hover:border-z-border-strong')}
               >
                 <input
                   type="text"
@@ -103,7 +103,7 @@ export const BuilderVisualTab = ({
                   onChange={e => updateField(idx, 'type', e.target.value)}
                   className="w-36 bg-transparent border-b border-transparent focus:border-z-accent text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black py-1 transition-colors cursor-pointer"
                 >
-                  {FIELD_TYPES.map(t => <option key={t} value={t} className="text-black">{t}</option>)}
+                  {FIELD_TYPES.map(t => <option key={t} value={t} className="text-z-primary">{t}</option>)}
                 </select>
                 <label className="flex items-center gap-2 text-sm font-semibold text-z-muted">
                   <input type="checkbox" checked={field.required || false} onChange={e => updateField(idx, 'required', e.target.checked)} className="accent-z-accent" />
@@ -127,9 +127,9 @@ export const BuilderVisualTab = ({
             <div className="flex gap-2">
               <button
                 onClick={() => { navigator.clipboard.writeText(generateJSON()); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
-                className={cn('flex items-center gap-1.5 px-3 py-1.5 border text-sm font-semibold   rounded-none transition-all', dark ? 'border-z-border hover:bg-z-hover' : 'border-z-border hover:bg-gray-50')}
+                className={cn('flex items-center gap-1.5 px-3 py-1.5 border text-sm font-semibold   rounded-none transition-all', dark ? 'border-z-border hover:bg-z-hover' : 'border-z-border hover:bg-[var(--z-bg-input)]')}
               >
-                {copied ? <Check size={12} className="text-gray-600 dark:text-z-secondary" /> : <Copy size={12} />} Copy JSON
+                {copied ? <Check size={12} className="text-z-secondary " /> : <Copy size={12} />} Copy JSON
               </button>
               <button
                 onClick={() => { const blob = new Blob([generateTS()], { type: 'text/typescript' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `${activeComponent.slug || 'component'}.ts`; a.click() }}
@@ -139,7 +139,7 @@ export const BuilderVisualTab = ({
               </button>
             </div>
           </div>
-          <pre className={cn('text-sm font-mono overflow-auto max-h-64 p-4 rounded-none text-gray-600 dark:text-z-muted shadow-inner border', dark ? 'bg-z-popover border-z-border' : 'bg-gray-900 border-gray-800')}>{generateJSON()}</pre>
+          <pre className={cn('text-sm font-mono overflow-auto max-h-64 p-4 rounded-none text-z-secondary shadow-inner border', dark ? 'bg-z-popover border-z-border' : 'bg-z-accent border-z-border')}>{generateJSON()}</pre>
         </div>
       )}
     </motion.div>

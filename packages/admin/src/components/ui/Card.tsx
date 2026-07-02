@@ -30,7 +30,7 @@ export function Card({
         theme === 'dark' 
           ? 'bg-z-panel backdrop-blur-md border-z-border shadow-sm' 
           : 'bg-z-panel border-z-border shadow-sm',
-        interactive && (theme === 'dark' ? 'hover:border-z-accent/50 hover:bg-black/80' : 'hover:border-z-accent/50 hover:bg-gray-50'),
+        interactive && (theme === 'dark' ? 'hover:border-z-accent/50 hover:bg-app/80' : 'hover:border-z-accent/50 hover:bg-[var(--z-bg-input)]'),
         paddingClass,
         className
       )}
@@ -47,7 +47,7 @@ export function CardHeader({ className, children, ...props }: React.HTMLAttribut
     <div
       className={cn(
         "flex flex-row items-center justify-between border-b px-6 py-4",
-        theme === 'dark' ? 'border-z-border bg-z-panel' : 'border-z-border bg-gray-50/50',
+        theme === 'dark' ? 'border-z-border bg-z-panel' : 'border-z-border bg-[var(--z-bg-input)]/50',
         className
       )}
       {...props}

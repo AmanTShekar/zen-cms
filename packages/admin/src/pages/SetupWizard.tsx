@@ -31,34 +31,34 @@ const PROJECT_TYPES = [
  {
  id: 'blog',
  label: 'Blog / Media',
- icon: '📝',
+ icon: '',
  collections: ['posts', 'categories', 'authors'],
  },
  {
  id: 'ecommerce',
  label: 'E-Commerce',
- icon: '🛒',
+ icon: '',
  collections: ['products', 'categories', 'orders'],
  },
  {
  id: 'portfolio',
  label: 'Portfolio',
- icon: '🎨',
+ icon: '',
  collections: ['projects', 'skills', 'testimonials'],
  },
- { id: 'saas', label: 'SaaS / App', icon: '⚡', collections: ['pages', 'team', 'faqs'] },
- { id: 'custom', label: 'Custom', icon: '⚙️', collections: [] },
+ { id: 'saas', label: 'SaaS / App', icon: '', collections: ['pages', 'team', 'faqs'] },
+ { id: 'custom', label: 'Custom', icon: '️', collections: [] },
 ]
 
 const STARTER_COLLECTIONS = [
- { id: 'posts', label: 'Blog Posts', icon: '📝' },
- { id: 'pages', label: 'Pages', icon: '📄' },
- { id: 'products', label: 'Products', icon: '📦' },
- { id: 'categories', label: 'Categories', icon: '🏷️' },
- { id: 'team', label: 'Team Members', icon: '👥' },
- { id: 'faqs', label: 'FAQs', icon: '❓' },
- { id: 'testimonials', label: 'Testimonials', icon: '💬' },
- { id: 'projects', label: 'Projects', icon: '🎨' },
+ { id: 'posts', label: 'Blog Posts', icon: '' },
+ { id: 'pages', label: 'Pages', icon: '' },
+ { id: 'products', label: 'Products', icon: '' },
+ { id: 'categories', label: 'Categories', icon: '️' },
+ { id: 'team', label: 'Team Members', icon: '' },
+ { id: 'faqs', label: 'FAQs', icon: '' },
+ { id: 'testimonials', label: 'Testimonials', icon: '' },
+ { id: 'projects', label: 'Projects', icon: '' },
 ]
 
 interface WizardState {
@@ -190,17 +190,17 @@ export default function SetupWizard() {
  }
 
  const isDark = theme === 'dark'
- const bg = isDark ? 'bg-black text-white' : 'bg-gray-50 text-z-primary'
+ const bg = isDark ? 'bg-app text-z-primary' : 'bg-[var(--z-bg-input)] text-z-primary'
  const card = isDark ? 'bg-[#0a0a0a] border-z-border' : 'bg-z-panel border-z-border shadow-sm shadow-sm'
  const input = isDark
- ? 'bg-z-hover border-z-border text-white placeholder-gray-600 focus:border-gray-500'
- : 'bg-z-panel border-z-border text-z-primary placeholder-gray-400 focus:border-gray-400'
+ ? 'bg-z-hover border-z-border text-z-primary placeholder:text-z-muted focus:border-z-border'
+ : 'bg-z-panel border-z-border text-z-primary placeholder:text-z-muted focus:border-z-border'
 
  const STEPS = [
  {
  title: 'Welcome to Zenith',
  subtitle: "Let's get your CMS set up in under 2 minutes.",
- icon: <Zap size={28} className="text-gray-600 dark:text-z-muted" />,
+ icon: <Zap size={28} className="text-z-secondary" />,
  content: (
  <div className="space-y-6">
  <div className="space-y-3">
@@ -212,7 +212,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ projectName: e.target.value })}
  placeholder="e.g. Acme Corp CMS"
  className={cn(
- 'w-full px-4 py-3 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[13px] font-medium transition-colors',
+ 'w-full px-4 py-3 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[13px] font-medium transition-colors',
  input
  )}
  />
@@ -227,7 +227,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ publicUrl: e.target.value })}
  placeholder="https://mywebsite.com"
  className={cn(
- 'w-full px-4 py-3 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[13px] font-medium transition-colors',
+ 'w-full px-4 py-3 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[13px] font-medium transition-colors',
  input
  )}
  />
@@ -242,7 +242,7 @@ export default function SetupWizard() {
  {
  title: 'What are you building?',
  subtitle: "We'll pre-select relevant content types for you.",
- icon: <Globe size={28} className="text-gray-600 dark:text-z-muted" />,
+ icon: <Globe size={28} className="text-z-secondary" />,
  content: (
  <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-3 gap-3">
  {PROJECT_TYPES.map((pt) => (
@@ -254,7 +254,7 @@ export default function SetupWizard() {
  className={cn(
  'flex flex-col items-center gap-3 p-5 border rounded-none-none transition-all text-center',
  state.projectType === pt.id
- ? 'border-gray-500 bg-gray-500/10'
+ ? 'border-z-border bg-z-panel'
  : isDark
  ? 'border-z-border hover:border-z-border'
  : 'border-z-border shadow-sm hover:border-z-border'
@@ -271,7 +271,7 @@ export default function SetupWizard() {
  {
  title: 'Choose your content types',
  subtitle: 'Select the collections you want to start with.',
- icon: <Layers size={28} className="text-gray-600 dark:text-z-muted" />,
+ icon: <Layers size={28} className="text-z-secondary" />,
  content: (
  <div className="space-y-3">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -290,7 +290,7 @@ export default function SetupWizard() {
  className={cn(
  'flex items-center gap-3 px-4 py-3 border rounded-none-none text-left transition-all',
  selected
- ? 'border-gray-500 bg-gray-500/10'
+ ? 'border-z-border bg-z-panel'
  : isDark
  ? 'border-z-border hover:border-z-border'
  : 'border-z-border shadow-sm hover:border-z-border'
@@ -298,7 +298,7 @@ export default function SetupWizard() {
  >
  <span>{col.icon}</span>
  <span className="text-sm font-semibold">{col.label}</span>
- {selected && <Check size={12} className="text-gray-600 dark:text-z-muted ml-auto shrink-0" />}
+ {selected && <Check size={12} className="text-z-secondary ml-auto shrink-0" />}
  </button>
  )
  })}
@@ -315,7 +315,7 @@ export default function SetupWizard() {
  {
  title: 'Database Setup',
  subtitle: 'Configure your database connection and write it to .env.',
- icon: <Database size={28} className="text-gray-600 dark:text-z-muted" />,
+ icon: <Database size={28} className="text-z-secondary" />,
  content: (
  <div className="space-y-4">
  <div className="space-y-2">
@@ -343,7 +343,7 @@ export default function SetupWizard() {
  className={cn(
  'flex-1 py-3 border text-sm font-semibold   rounded-none-none transition-all',
  state.dbDialect === dialect
- ? 'border-gray-500 bg-gray-500/10 text-white'
+ ? 'border-z-border bg-z-panel text-z-primary'
  : 'border-z-border hover:border-z-border text-z-muted'
  )}
  >
@@ -366,7 +366,7 @@ export default function SetupWizard() {
  : 'postgresql://postgres:postgres@localhost:5432/zenith'
  }
  className={cn(
- 'w-full px-4 py-3 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-mono transition-colors',
+ 'w-full px-4 py-3 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-mono transition-colors',
  input
  )}
  />
@@ -377,7 +377,7 @@ export default function SetupWizard() {
  type="button"
  onClick={testDbConnection}
  disabled={state.dbTestStatus === 'testing'}
- className="flex-1 py-3 border border-z-border hover:border-white/30 text-sm font-semibold rounded-none-none transition-all flex items-center justify-center gap-2"
+ className="flex-1 py-3 border border-z-border hover:border-z-border text-sm font-semibold rounded-none-none transition-all flex items-center justify-center gap-2"
  >
  {state.dbTestStatus === 'testing' ? (
  <Loader2 size={12} className="animate-spin" />
@@ -393,7 +393,7 @@ export default function SetupWizard() {
  className={cn(
  'flex-1 py-3 text-sm font-semibold   rounded-none-none transition-all flex items-center justify-center gap-2',
  state.dbTestStatus === 'success' && !state.dbSaved
- ? 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white shadow-lg shadow-gray-600/20'
+ ? 'bg-z-accent  hover:bg-z-base text-z-primary shadow-lg shadow-[var(--z-border)]'
  : 'bg-z-hover border border-z-border text-z-secondary cursor-not-allowed'
  )}
  >
@@ -406,15 +406,15 @@ export default function SetupWizard() {
  className={cn(
  'p-4 border rounded-none-none text-sm font-bold  tracking-wide ',
  state.dbTestStatus === 'success'
- ? 'bg-gray-500/5 border-gray-500/20 text-gray-600 dark:text-z-muted'
+ ? 'bg-z-hover border-z-border/20 text-z-secondary'
  : state.dbTestStatus === 'testing'
- ? 'bg-gray-500/5 border-gray-500/10 text-gray-600 dark:text-z-muted'
+ ? 'bg-z-hover border-z-border/10 text-z-secondary'
  : 'bg-red-500/5 border-red-500/20 text-red-400'
  )}
  >
  {state.dbTestStatus === 'testing' && 'Testing database connectivity...'}
- {state.dbTestStatus === 'success' && '✓ Connection verified! Click Save to apply to .env.'}
- {state.dbTestStatus === 'failed' && `✗ ${state.dbTestMessage}`}
+ {state.dbTestStatus === 'success' && ' Connection verified! Click Save to apply to .env.'}
+ {state.dbTestStatus === 'failed' && ` ${state.dbTestMessage}`}
  </div>
  )}
  </div>
@@ -424,7 +424,7 @@ export default function SetupWizard() {
  {
  title: 'AI Integration Engine',
  subtitle: 'Integrate state-of-the-art AI features natively into your CMS.',
- icon: <Cpu size={28} className="text-gray-600 dark:text-z-muted" />,
+ icon: <Cpu size={28} className="text-z-secondary" />,
  content: (
  <div className="space-y-4">
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -437,7 +437,7 @@ export default function SetupWizard() {
  href="https://openrouter.ai/keys"
  target="_blank"
  rel="noreferrer"
- className="text-sm font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
+ className="text-sm font-bold text-z-secondary hover:underline flex items-center gap-0.5"
  >
  Get Key <HelpCircle size={8} />
  </a>
@@ -448,7 +448,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ openRouterApiKey: e.target.value })}
  placeholder="sk-or-..."
  className={cn(
- 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-mono transition-colors',
+ 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-mono transition-colors',
  input
  )}
  />
@@ -463,7 +463,7 @@ export default function SetupWizard() {
  href="https://platform.openai.com/api-keys"
  target="_blank"
  rel="noreferrer"
- className="text-sm font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
+ className="text-sm font-bold text-z-secondary hover:underline flex items-center gap-0.5"
  >
  Get Key <HelpCircle size={8} />
  </a>
@@ -474,7 +474,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ openaiApiKey: e.target.value })}
  placeholder="sk-proj-..."
  className={cn(
- 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-mono transition-colors',
+ 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-mono transition-colors',
  input
  )}
  />
@@ -489,7 +489,7 @@ export default function SetupWizard() {
  href="https://console.anthropic.com/settings/keys"
  target="_blank"
  rel="noreferrer"
- className="text-sm font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
+ className="text-sm font-bold text-z-secondary hover:underline flex items-center gap-0.5"
  >
  Get Key <HelpCircle size={8} />
  </a>
@@ -500,7 +500,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ anthropicApiKey: e.target.value })}
  placeholder="sk-ant-..."
  className={cn(
- 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-mono transition-colors',
+ 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-mono transition-colors',
  input
  )}
  />
@@ -515,7 +515,7 @@ export default function SetupWizard() {
  href="https://console.x.ai"
  target="_blank"
  rel="noreferrer"
- className="text-sm font-bold text-gray-600 dark:text-z-muted hover:underline flex items-center gap-0.5"
+ className="text-sm font-bold text-z-secondary hover:underline flex items-center gap-0.5"
  >
  Get Key <HelpCircle size={8} />
  </a>
@@ -526,17 +526,17 @@ export default function SetupWizard() {
  onChange={(e) => patch({ xaiApiKey: e.target.value })}
  placeholder="xai-..."
  className={cn(
- 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-mono transition-colors',
+ 'w-full px-3 py-2.5 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-mono transition-colors',
  input
  )}
  />
  </div>
  </div>
 
- <div className="p-3 border border-gray-500/20 bg-gray-500/[0.03] rounded-none-none flex items-start gap-2.5">
- <Info size={14} className="text-gray-600 dark:text-z-muted shrink-0 mt-0.5" />
+ <div className="p-3 border border-z-border/20 bg-z-border/[0.03] rounded-none-none flex items-start gap-2.5">
+ <Info size={14} className="text-z-secondary shrink-0 mt-0.5" />
  <div>
- <p className="text-sm font-semibold text-gray-600 dark:text-z-muted">
+ <p className="text-sm font-semibold text-z-secondary">
  Free AI Keys Available
  </p>
  <p className="text-sm text-z-muted leading-normal mt-1">
@@ -545,7 +545,7 @@ export default function SetupWizard() {
  href="https://openrouter.ai"
  target="_blank"
  rel="noreferrer"
- className="underline hover:text-white"
+ className="underline hover:text-z-primary"
  >
  OpenRouter
  </a>
@@ -564,25 +564,25 @@ export default function SetupWizard() {
  {
  title: 'Schema Architect',
  desc: 'Autogenerate rich collection structures via prompts',
- icon: '🏗️',
+ icon: '️',
  },
  {
  title: 'SEO Analyzer',
  desc: 'Real-time keyword density & readability auditing',
- icon: '🔍',
+ icon: '',
  },
  {
  title: 'Alt-Text Generator',
  desc: 'Auto semantic accessibility description for media uploads',
- icon: '🖼️',
+ icon: '️',
  },
  {
  title: 'Metadata Optimizer',
  desc: 'Auto CTR optimized SEO title and description generator',
- icon: '📝',
+ icon: '',
  },
  ].map((feat, i) => (
- <div key={i} className="p-2.5 border border-z-border bg-white/[0.01] rounded-none-none flex gap-2">
+ <div key={i} className="p-2.5 border border-z-border bg-z-panel rounded-none-none flex gap-2">
  <span className="text-base">{feat.icon}</span>
  <div>
  <p className="text-sm font-semibold leading-none">{feat.title}</p>
@@ -599,7 +599,7 @@ export default function SetupWizard() {
  {
  title: 'Generate your API key',
  subtitle: 'This key lets your website fetch content from Zenith.',
- icon: <Key size={28} className="text-gray-600 dark:text-z-muted" />,
+ icon: <Key size={28} className="text-z-secondary" />,
  content: (
  <div className="space-y-5">
  {!state.generatedKey ? (
@@ -613,7 +613,7 @@ export default function SetupWizard() {
  onChange={(e) => patch({ keyName: e.target.value })}
  placeholder="My Website"
  className={cn(
- 'w-full px-4 py-3 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[13px] font-medium transition-colors',
+ 'w-full px-4 py-3 border rounded-none-none outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black text-[13px] font-medium transition-colors',
  input
  )}
  />
@@ -624,7 +624,7 @@ export default function SetupWizard() {
  <button
  onClick={handleComplete}
  disabled={loading}
- className="w-full flex items-center justify-center gap-3 py-4 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-sm font-semibold rounded-none-none transition-all shadow-lg shadow-gray-600/20"
+ className="w-full flex items-center justify-center gap-3 py-4 bg-z-accent  hover:bg-z-base text-z-primary text-sm font-semibold rounded-none-none transition-all shadow-lg shadow-[var(--z-border)]"
  >
  {loading ? <Loader2 size={16} className="animate-spin" /> : <Key size={16} />}
  {loading ? 'Generating...' : 'Generate API Key'}
@@ -636,17 +636,17 @@ export default function SetupWizard() {
  className={cn(
  'p-4 border rounded-none-none space-y-3',
  isDark
- ? 'bg-gray-500/5 border-gray-500/20'
- : 'bg-gray-50 border-z-border'
+ ? 'bg-z-hover border-z-border/20'
+ : 'bg-[var(--z-bg-input)] border-z-border'
  )}
  >
- <p className="text-sm font-semibold text-gray-600 dark:text-z-secondary">
- ✓ Key generated — copy it now. It will not be shown again.
+ <p className="text-sm font-semibold text-z-secondary ">
+  Key generated — copy it now. It will not be shown again.
  </p>
  <div
  className={cn(
  'flex items-center gap-3 p-3 border rounded-none-none font-mono text-sm break-all',
- isDark ? 'bg-black border-z-border' : 'bg-gray-100 border-z-border'
+ isDark ? 'bg-app border-z-border' : 'bg-[var(--z-bg-hover)] border-z-border'
  )}
  >
  <span className="flex-1">{state.generatedKey}</span>
@@ -655,10 +655,10 @@ export default function SetupWizard() {
  className={cn(
  'shrink-0 px-3 py-1.5 border rounded-none-none text-sm font-semibold  transition-all',
  state.keyCopied
- ? 'border-gray-50 text-gray-600 dark:text-z-secondary'
+ ? 'border-z-border text-z-secondary '
  : isDark
- ? 'border-z-border hover:border-white/40'
- : 'border-z-border-strong hover:border-gray-500'
+ ? 'border-z-border hover:border-z-border'
+ : 'border-z-border-strong hover:border-z-border'
  )}
  >
  {state.keyCopied ? <Check size={13} /> : <Copy size={13} />}
@@ -674,7 +674,7 @@ export default function SetupWizard() {
  {
  title: 'Connect your app',
  subtitle: 'Use these snippets to start pulling content from Zenith.',
- icon: <Server size={28} className="text-gray-600 dark:text-z-muted" />,
+ icon: <Server size={28} className="text-z-secondary" />,
  content: (
  <ConnectSnippet
  apiKey={state.generatedKey}
@@ -697,7 +697,7 @@ export default function SetupWizard() {
  <div className="w-full max-w-2xl flex justify-end mb-4 mx-auto mt-auto">
  <button
  onClick={skip}
- className="flex items-center gap-1 text-sm font-semibold text-z-secondary hover:text-gray-300 transition-colors"
+ className="flex items-center gap-1 text-sm font-semibold text-z-secondary hover:text-z-secondary transition-colors"
  >
  Skip setup <X size={11} />
  </button>
@@ -707,7 +707,7 @@ export default function SetupWizard() {
  <div className={cn('w-full max-w-2xl border rounded-none-none overflow-hidden mx-auto my-auto', card)}>
  {/* Progress bar */}
  <div
- className={cn('h-1 transition-all duration-500 bg-gray-600 dark:bg-gray-600')}
+ className={cn('h-1 transition-all duration-500 bg-z-accent ')}
  style={{ width: `${((step + 1) / TOTAL_STEPS) * 100}%` }}
  />
 
@@ -727,7 +727,7 @@ export default function SetupWizard() {
  key={i}
  className={cn(
  'w-6 h-1 rounded-none-none transition-all',
- i <= step ? 'bg-gray-500' : isDark ? 'bg-white/10' : 'bg-gray-200'
+ i <= step ? 'bg-z-border' : 'bg-z-hover'
  )}
  />
  ))}
@@ -748,7 +748,7 @@ export default function SetupWizard() {
  <div
  className={cn(
  'w-14 h-14 rounded-none-none flex items-center justify-center shrink-0',
- isDark ? 'bg-gray-500/10' : 'bg-gray-50'
+ isDark ? 'bg-z-panel' : 'bg-[var(--z-bg-input)]'
  )}
  >
  {current.icon}
@@ -779,8 +779,8 @@ export default function SetupWizard() {
  step === 0
  ? 'opacity-30 cursor-not-allowed'
  : isDark
- ? 'border-z-border hover:border-white/30'
- : 'border-z-border hover:border-gray-400'
+ ? 'border-z-border hover:border-z-border'
+ : 'border-z-border hover:border-z-border'
  )}
  >
  <ArrowLeft size={14} /> Back
@@ -788,7 +788,7 @@ export default function SetupWizard() {
  {step === TOTAL_STEPS - 1 ? (
  <button
  onClick={() => { window.location.href = '/' }}
- className="flex items-center gap-2 px-8 py-2.5 bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white text-sm font-semibold rounded-none-none transition-all shadow-lg shadow-gray-600/20"
+ className="flex items-center gap-2 px-8 py-2.5 bg-z-accent  hover:bg-z-base text-z-primary text-sm font-semibold rounded-none-none transition-all shadow-lg shadow-[var(--z-border)]"
  >
  <CheckCircle2 size={14} /> Go to Dashboard
  </button>
@@ -799,8 +799,8 @@ export default function SetupWizard() {
  className={cn(
  'flex items-center gap-2 px-8 py-2.5 text-sm font-semibold  rounded-none-none transition-all',
  current.canNext
- ? 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-700 text-white shadow-lg shadow-gray-600/20'
- : 'opacity-30 cursor-not-allowed bg-gray-600 text-gray-300'
+ ? 'bg-z-accent  hover:bg-z-base text-z-primary shadow-lg shadow-[var(--z-border)]'
+ : 'opacity-30 cursor-not-allowed bg-z-accent text-z-secondary'
  )}
  >
  Continue <ArrowRight size={14} />

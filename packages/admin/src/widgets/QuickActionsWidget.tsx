@@ -4,10 +4,10 @@ import { cn } from '../lib/utils'
 import type { WidgetProps } from './registry'
 
 const ACTIONS = [
-  { title: 'New Content', icon: Plus, path: '/collections', color: 'bg-z-accent hover:bg-z-accent', text: 'text-white' },
-  { title: 'Media Library', icon: Box, path: '/media', color: 'bg-z-accent hover:bg-z-accent', text: 'text-white' },
-  { title: 'AI Writer', icon: Sparkles, path: '/ai-architect', color: 'bg-purple-500 hover:bg-purple-600', text: 'text-white' },
-  { title: 'Templates', icon: Layout, path: '/templates', color: 'bg-z-accent hover:bg-z-accent', text: 'text-white' },
+  { title: 'New Content', icon: Plus, path: '/collections', color: 'bg-z-accent hover:bg-z-accent', text: 'text-z-logo-text' },
+  { title: 'Media Library', icon: Box, path: '/media', color: 'bg-z-accent hover:bg-z-accent', text: 'text-z-logo-text' },
+  { title: 'AI Writer', icon: Sparkles, path: '/ai-architect', color: 'bg-z-accent hover:bg-z-accent', text: 'text-z-logo-text' },
+  { title: 'Templates', icon: Layout, path: '/templates', color: 'bg-z-accent hover:bg-z-accent', text: 'text-z-logo-text' },
 ]
 
 export default function QuickActionsWidget({ config = {}, theme }: WidgetProps) {
@@ -28,8 +28,8 @@ export default function QuickActionsWidget({ config = {}, theme }: WidgetProps) 
               onClick={() => navigate(a.path)}
               className={cn(
                 'flex flex-col items-center justify-center gap-3 p-4 border rounded-none-none group transition-all text-center w-full h-full shadow-sm hover:shadow-lg cursor-pointer transform hover:-translate-y-0.5',
-                a.color || 'bg-gray-800 hover:bg-gray-900',
-                a.text || 'text-white',
+                a.color || 'bg-z-accent hover:brightness-110',
+                a.text || 'text-z-primary',
                 theme === 'dark' ? 'border-z-border' : 'border-transparent'
               )}
             >

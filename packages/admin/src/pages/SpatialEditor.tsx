@@ -235,7 +235,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  }, [resizingSide, resize, stopResizing])
 
  // Preview sync effects
- useEffect(() => { if (iframeRef.current?.contentWindow) iframeRef.current.contentWindow.postMessage({ type: 'SET_THEME', theme }, '*') }, [theme])
+  // Intentionally removed SET_THEME sync so the preview maintains its own theme.
  useEffect(() => { if (iframeRef.current?.contentWindow && editorActiveSection) iframeRef.current.contentWindow.postMessage({ type: 'ZENITH_PARENT_SELECT', sectionId: editorActiveSection, id: editorActiveSection }, '*') }, [editorActiveSection])
  
  // Auto-scroll to top-level fields when focused
@@ -438,7 +438,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  })
  })
  setSchemaFields(schema)
- } catch { if (!isCancelledRef.current) toast.error('Failed to sync editor', { icon: '⚠️', duration: 5000 }) } finally { if (!isCancelledRef.current) setTimeout(() => editorSetLoading(false), 500) }
+ } catch { if (!isCancelledRef.current) toast.error('Failed to sync editor', { icon: '️', duration: 5000 }) } finally { if (!isCancelledRef.current) setTimeout(() => editorSetLoading(false), 500) }
  }
  fetchData()
  }, [id, isGlobal, siteId])
@@ -450,7 +450,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  initialFocusDoneRef.current = false;
  }, [id])
 
- // 🧲 Focus a specific section when navigated directly (e.g. from collection detail) 🧲
+ //  Focus a specific section when navigated directly (e.g. from collection detail) 
  useEffect(() => {
  if (!data?.sections?.length) return
  if (initialFocusDoneRef.current) return
@@ -516,7 +516,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  editorSetActiveSection(newSection.id)
  setBlockPickerOpen(false)
  setInjectionIndex(null)
- toast.success(`Section added: ${blockType.toUpperCase()}`, { icon: '✨' })
+ toast.success(`Section added: ${blockType.toUpperCase()}`, { icon: '' })
  }
 
   const duplicateSection = useCallback((sectionId: string) => {
@@ -534,7 +534,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
     }
     editorUpdateData((prev) => { const idx = prev.sections.findIndex((s) => s.id === sectionId); const newSections = [...prev.sections]; newSections.splice(idx + 1, 0, duplicatedSection); return { ...prev, sections: newSections } })
     editorSetActiveSection(duplicatedSection.id)
-    toast.success('Section duplicated', { icon: '📋' })
+    toast.success('Section duplicated', { icon: '' })
   }, [dataRef, editorUpdateData, editorSetActiveSection]);
 
   const removeSection = useCallback((id: string) => {
@@ -594,7 +594,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  return { ...prev, sections: newSections }
  })
  editorSetHasUnsavedChanges(true)
- toast.success(`Converted block layout to: ${targetBlockDef.title}`, { icon: '🔄' })
+ toast.success(`Converted block layout to: ${targetBlockDef.title}`, { icon: '' })
  }
 
   const toggleCollapse = useCallback((sectionId: string) => {
@@ -632,7 +632,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  } catch {
  copiedSectionRef.current = section
  }
- toast.success('Section copied', { icon: '📋' })
+ toast.success('Section copied', { icon: '' })
  }
 
  const insertCopiedSection = (sourceSection: Section, afterSectionId?: string) => {
@@ -654,7 +654,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  })
  editorSetActiveSection(newSection.id)
  editorSetHasUnsavedChanges(true)
- toast.success('Section pasted', { icon: '📋' })
+ toast.success('Section pasted', { icon: '' })
  }
 
  const pasteSection = (sectionId: string) => {
@@ -669,13 +669,13 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  if (copiedSectionRef.current) {
  insertCopiedSection(copiedSectionRef.current, sectionId)
  } else {
- toast.error('No copied section found', { icon: '⚠️' })
+ toast.error('No copied section found', { icon: '️' })
  }
  }).catch(() => {
  if (copiedSectionRef.current) {
  insertCopiedSection(copiedSectionRef.current, sectionId)
  } else {
- toast.error('No copied section found', { icon: '⚠️' })
+ toast.error('No copied section found', { icon: '️' })
  }
  })
  }
@@ -701,7 +701,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  sections: prev.sections.map((s) => ({ ...s, collapsed: !allCollapsed })),
  }))
  editorSetHasUnsavedChanges(true)
- toast.success(allCollapsed ? 'All sections expanded' : 'All sections collapsed', { icon: '📐' })
+ toast.success(allCollapsed ? 'All sections expanded' : 'All sections collapsed', { icon: '' })
  }
 
   const updateAlign = useCallback((sectionId: string, align: 'left' | 'center' | 'right') => {
@@ -741,17 +741,17 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  const saveAsTemplate = async (sectionIds: string[]) => {
  const templateSections = data?.sections.filter((s) => sectionIds.includes(s.id)) || []
  if (templateSections.length === 0) return
- try { await api.post('/templates', { name: `Template ${new Date().toLocaleTimeString()}`, content: { sections: templateSections } }); setTemplatesOpen(false); toast.success('Template saved to server!', { icon: '📦' }) } catch { toast.error('Failed to save template', { icon: '⚠️', duration: 5000 }) }
+ try { await api.post('/templates', { name: `Template ${new Date().toLocaleTimeString()}`, content: { sections: templateSections } }); setTemplatesOpen(false); toast.success('Template saved to server!', { icon: '' }) } catch { toast.error('Failed to save template', { icon: '️', duration: 5000 }) }
  }
 
  const applyTemplate = async (template: any) => {
  editorUpdateData((prev) => ({ ...prev, sections: [...(prev.sections || []), ...(template.sections || []).map((s: Section) => ({ ...s, id: uid() }))] }))
  setTemplatesOpen(false)
- toast.success(`${template.name} applied!`, { icon: '✨' })
+ toast.success(`${template.name} applied!`, { icon: '' })
  }
 
  const deleteTemplate = async (templateId: string) => {
- try { await api.delete(`/templates/${templateId}`); toast.success('Template deleted') } catch { toast.error('Failed to delete template', { icon: '⚠️', duration: 5000 }) }
+ try { await api.delete(`/templates/${templateId}`); toast.success('Template deleted') } catch { toast.error('Failed to delete template', { icon: '️', duration: 5000 }) }
  }
 
  // Version restore
@@ -792,20 +792,20 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  // Loading state
  if (loading)
  return (
- <div className={cn('h-screen w-full flex flex-col items-center justify-center gap-6', theme === 'dark' ? 'bg-black' : 'bg-[#fafafa]')}>
+ <div className={cn('h-screen w-full flex flex-col items-center justify-center gap-6', theme === 'dark' ? 'bg-app' : 'bg-[#fafafa]')}>
  <div className="relative flex items-center justify-center w-24 h-24">
- <div className={cn("absolute inset-0 rounded-full border-2", theme === 'dark' ? 'border-white/5 border-t-white/30' : 'border-black/5 border-t-black/30', "animate-spin")} />
- <Loader2 size={32} className={cn("animate-spin opacity-50", theme === 'dark' ? 'text-white' : 'text-black')} strokeWidth={1} style={{ animationDuration: '3s' }} />
- <div className={cn("absolute inset-0 blur-3xl animate-pulse", theme === 'dark' ? 'bg-white/5' : 'bg-black/5')} />
+ <div className={cn("absolute inset-0 rounded-full border-2", theme === 'dark' ? 'border-z-border border-z-border' : 'border-z-border border-z-border', "animate-spin")} />
+ <Loader2 size={32} className={cn("animate-spin opacity-50", theme === 'dark' ? 'text-z-primary' : 'text-z-primary')} strokeWidth={1} style={{ animationDuration: '3s' }} />
+ <div className={cn("absolute inset-0 blur-3xl animate-pulse", theme === 'dark' ? 'bg-z-panel/5' : 'bg-app/5')} />
  </div>
- <p className={cn("text-sm font-semibold tracking-widest uppercase", theme === 'dark' ? 'text-white/40' : 'text-black/40')}>
+ <p className={cn("text-sm font-semibold tracking-widest uppercase", theme === 'dark' ? 'text-z-primary/40' : 'text-z-primary/40')}>
  Loading
  </p>
  </div>
  )
 
  return (
- <div className={cn('h-screen flex flex-col overflow-hidden transition-colors duration-500', theme === 'dark' ? 'bg-black text-white' : 'bg-white text-black')}>
+ <div className={cn('h-screen flex flex-col overflow-hidden transition-colors duration-500', theme === 'dark' ? 'bg-app text-z-primary' : 'bg-z-panel text-z-primary')}>
  {/* ── Header ── */}
  {/* ── Editor Toolbar ── */}
  <EditorToolbar
@@ -837,7 +837,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  )}
 
  {/* Canvas */}
- <main className={cn('flex-1 relative flex flex-col overflow-hidden transition-colors', theme === 'dark' ? 'bg-[#030303]' : 'bg-gray-50')}>
+ <main className={cn('flex-1 relative flex flex-col overflow-hidden transition-colors', theme === 'dark' ? 'bg-[#030303]' : 'bg-[var(--z-bg-input)]')}>
 
  <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 pt-6 lg:pt-10 pb-20 no-scrollbar scroll-smooth relative z-10 custom-editor-scrollbar">
  <div className="max-w-[1400px] mx-auto min-h-screen flex flex-col">
@@ -846,9 +846,9 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  {/* Document Kernel (Root Fields) */}
  <div id="document-kernel" className={cn('space-y-6 transition-all duration-500', data?.align === 'center' && 'text-center', data?.align === 'right' && 'text-right')}>
  <div className="flex items-center justify-between">
- <div className={cn('flex items-center gap-0.5 p-0.5 rounded-none-none border', theme === 'dark' ? 'bg-z-hover border-z-border' : 'bg-gray-100 border-z-border')}>
+ <div className={cn('flex items-center gap-0.5 p-0.5 rounded-none-none border', theme === 'dark' ? 'bg-z-hover border-z-border' : 'bg-[var(--z-bg-hover)] border-z-border')}>
  {(['left', 'center', 'right'] as const).map((align) => (
- <button key={align} onClick={() => data && editorSetData({ ...data, align })} className={cn('p-1 transition-all', data?.align === align || (!data?.align && align === 'left') ? theme === 'dark' ? 'bg-z-accent/20 text-z-accent dark:text-z-active-text' : 'bg-white text-black shadow-sm' : 'text-z-muted hover:text-z-accent dark:text-z-active-text')}>
+ <button key={align} onClick={() => data && editorSetData({ ...data, align })} className={cn('p-1 transition-all', data?.align === align || (!data?.align && align === 'left') ? theme === 'dark' ? 'bg-z-accent/20 text-z-accent dark:text-z-active-text' : 'bg-z-active-bg text-z-active-text shadow-sm border border-z-active-border' : 'text-z-muted hover:text-z-primary hover:bg-[var(--z-bg-hover)] rounded dark:text-z-active-text')}>
  {align === 'left' && <AlignLeft size={12} />} {align === 'center' && <AlignCenter size={12} />} {align === 'right' && <AlignRight size={12} />}
  </button>
  ))}
@@ -933,7 +933,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  )}
 
  {topLevelFields.length > 0 && (
- <div className={cn("border rounded-none-none p-10 shadow-sm relative overflow-hidden transition-colors", theme === 'dark' ? 'bg-black border-z-border' : 'bg-z-panel border-z-border shadow-sm')}>
+ <div className={cn("border rounded-none-none p-10 shadow-sm relative overflow-hidden transition-colors", theme === 'dark' ? 'bg-app border-z-border' : 'bg-z-panel border-z-border shadow-sm')}>
  <div className="absolute top-0 right-0 p-10 opacity-[0.01] pointer-events-none">
  <Terminal size={180} strokeWidth={0.5} />
  </div>
@@ -965,7 +965,7 @@ const SpatialEditor: React.FC<SpatialEditorProps> = ({ isGlobal, id: propId, foc
  </div>
  ) : (
  <div className="flex-1 flex flex-col pt-10">
- <div className={cn('flex-1 p-10 font-mono text-sm overflow-auto rounded-none-none border', theme === 'dark' ? 'bg-black/50 border-z-border text-z-active-text' : 'bg-gray-100 border-z-border text-z-accent')}>
+ <div className={cn('flex-1 p-10 font-mono text-sm overflow-auto rounded-none-none border', theme === 'dark' ? 'bg-app/50 border-z-border text-z-active-text' : 'bg-[var(--z-bg-hover)] border-z-border text-z-accent')}>
  <pre className="no-scrollbar">{JSON.stringify(data, null, 3)}</pre>
  </div>
  </div>

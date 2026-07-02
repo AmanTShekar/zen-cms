@@ -34,7 +34,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
  <AnimatePresence>
  {open && (
  <div
- className="fixed inset-0 z-[900] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+ className="fixed inset-0 z-[900] flex items-center justify-center bg-[var(--z-bg-modal)] backdrop-blur-sm"
  onClick={(e) => { if (e.target === e.currentTarget) onCancel() }}
  >
  <motion.div
@@ -49,7 +49,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
  className={cn(
  'w-full max-w-sm border rounded-none-none shadow-2xl p-5',
  dark
- ? 'bg-black border-z-border text-white'
+ ? 'bg-app border-z-border text-z-primary'
  : 'bg-z-panel border-z-border text-z-primary'
  )}
  >
@@ -64,14 +64,14 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
  </div>
  <div className="flex-1 min-w-0">
  <h3 className="text-sm font-semibold">{title}</h3>
- <p className={cn('text-xs font-bold mt-1.5 leading-relaxed', dark ? 'text-z-muted' : 'text-gray-600')}>
+ <p className={cn('text-xs font-bold mt-1.5 leading-relaxed', dark ? 'text-z-muted' : 'text-z-secondary')}>
  {message}
  </p>
  </div>
  <button
  onClick={onCancel}
  aria-label="Cancel"
- className={cn('shrink-0 p-1 transition-colors', dark ? 'text-z-secondary hover:text-white' : 'text-z-muted hover:text-black')}
+ className={cn('shrink-0 p-1 transition-colors', dark ? 'text-z-secondary hover:text-z-primary' : 'text-z-muted hover:text-z-primary')}
  >
  <X size={14} />
  </button>
@@ -83,8 +83,8 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
  className={cn(
  'flex-1 py-2 text-xs font-semibold   border rounded-none-none transition-all',
  dark
- ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
- : 'border-z-border text-gray-600 hover:border-z-border-strong hover:text-black'
+ ? 'border-z-border text-z-muted hover:border-z-border hover:text-z-primary'
+ : 'border-z-border text-z-secondary hover:border-z-border-strong hover:text-z-primary'
  )}
  >
  Cancel
@@ -95,8 +95,8 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
  className={cn(
  'flex-1 py-2 text-xs font-semibold   rounded-none-none transition-all',
  danger
- ? 'bg-rose-600 hover:bg-rose-500 text-white'
- : 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white'
+ ? 'bg-rose-600 hover:bg-rose-500 text-z-primary'
+ : 'bg-z-accent  hover:bg-z-border text-z-primary'
  )}
  >
  {confirmLabel}

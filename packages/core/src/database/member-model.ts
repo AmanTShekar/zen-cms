@@ -11,6 +11,7 @@ export interface IMember extends Document {
   stripeCustomerId?: string
   metadata: Record<string, any>
   lastLogin?: Date
+  siteId: string
   comparePassword: (password: string) => Promise<boolean>
 }
 
@@ -19,7 +20,6 @@ const MemberSchema = new Schema<IMember>(
     email: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       lowercase: true,
     },
@@ -38,9 +38,12 @@ const MemberSchema = new Schema<IMember>(
     stripeCustomerId: { type: String },
     metadata: { type: Schema.Types.Mixed, default: {} },
     lastLogin: { type: Date },
+    siteId: { type: String, required: true, index: true },
   },
-  { timestamps: true }
+  { strict: true, timestamps: true }
 )
+
+MemberSchema.index({ email: 1, siteId: 1 }, { unique: true })
 
 MemberSchema.pre('save', async function (next) {
   if (!this.isModified('password') || !this.password) return next()
@@ -54,4 +57,4 @@ MemberSchema.methods.comparePassword = async function (candidatePassword: string
   return bcrypt.compare(candidatePassword, this.password)
 }
 
-export const MemberModel = mongoose.model<IMember>('z_members', MemberSchema)
+export const MemberModel = mongoose.models.z_members || mongoose.model<IMember>('z_members', MemberSchema)

@@ -98,7 +98,7 @@ router.delete('/:id', requireAuth, requireRole('admin'), async (req: Request, re
     const existing = await adapter.findOne<Record<string, any>>(PLUGINS_COLLECTION, { _id: id, siteId })
     if (!existing) throw new InvalidPayloadError(`Plugin "${id}" not found`)
 
-    const deleted = await adapter.delete(PLUGINS_COLLECTION, id)
+    const deleted = await adapter.delete(PLUGINS_COLLECTION, id, siteId ? { siteId } : {})
     if (!deleted) throw new InvalidPayloadError(`Plugin "${id}" not found`)
 
     res.json(createResponse({ message: 'Plugin uninstalled' }))

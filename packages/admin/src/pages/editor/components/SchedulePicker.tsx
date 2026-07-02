@@ -84,7 +84,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
  <button
  onClick={onClose}
  aria-label="Close scheduler"
- className={cn('p-0.5', theme === 'dark' ? 'text-z-secondary hover:text-white' : 'text-z-muted hover:text-black')}
+ className={cn('p-0.5', theme === 'dark' ? 'text-z-secondary hover:text-z-primary' : 'text-z-muted hover:text-z-primary')}
  >
  <X size={12} aria-hidden="true" />
  </button>
@@ -97,8 +97,8 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
  className={cn(
  'w-full px-2 py-1.5 rounded-none-none border text-xs font-mono',
  theme === 'dark'
- ? 'bg-z-hover border-z-border text-white'
- : 'bg-z-input border-z-border text-black'
+ ? 'bg-z-hover border-z-border text-z-primary'
+ : 'bg-z-input border-z-border text-z-primary'
  )}
  />
  <div className="flex gap-2 mt-2">
@@ -106,7 +106,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
  onClick={onClose}
  className={cn(
  'flex-1 py-1.5 border text-xs font-semibold  text-center transition-all',
- theme === 'dark' ? 'border-z-border text-z-muted hover:bg-z-hover' : 'border-z-border text-z-secondary hover:bg-gray-50'
+ theme === 'dark' ? 'border-z-border text-z-muted hover:bg-z-hover' : 'border-z-border text-z-secondary hover:bg-[var(--z-bg-input)]'
  )}
  >
  Cancel
@@ -116,7 +116,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({ open, onClose })
  disabled={!scheduleInput}
  className={cn(
  'flex-1 py-1.5 text-xs font-semibold  text-center transition-all disabled:opacity-40',
- theme === 'dark' ? 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white'
+ 'bg-z-accent  hover:bg-z-border text-z-primary'
  )}
  >
  Apply

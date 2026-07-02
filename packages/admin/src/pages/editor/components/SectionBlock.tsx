@@ -123,7 +123,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  ? {
  info: 'border-l-4 border-l-sky-500 bg-sky-500/5',
  warning: 'border-l-4 border-l-amber-500 bg-amber-500/5',
- success: 'border-l-4 border-l-gray-500 bg-gray-500/5',
+ success: 'border-l-4 border-z-border bg-z-hover',
  error: 'border-l-4 border-l-rose-500 bg-rose-500/5',
  }[calloutType as 'info' | 'warning' | 'success' | 'error'] || 'border-l-4 border-l-sky-500 bg-sky-500/5'
  : ''
@@ -135,10 +135,10 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
 
  const themeClasses = {
  default: '',
- light: 'bg-white/90 text-black border-z-border shadow-sm',
- dark: 'bg-z-popover text-white border-z-border shadow-lg',
- 'cyber-gray': 'bg-gradient-to-br from-gray-950/70 via-gray-900/50 to-black/80 text-white border-gray-500/20 shadow-sm/5',
- glassmorphic: 'bg-gray-900/65 backdrop-blur-[12px] border-white/8 shadow-sm text-white'
+ light: 'bg-z-panel/90 text-z-primary border-z-border shadow-sm',
+ dark: 'bg-z-popover text-z-primary border-z-border shadow-lg',
+ 'cyber-gray': 'bg-gradient-to-br from-[var(--z-bg-panel)] via-[var(--z-bg-base)] to-[var(--z-bg-panel)] text-z-primary border-z-border/20 shadow-sm/5',
+ glassmorphic: 'bg-z-input backdrop-blur-[12px] border-z-border shadow-sm text-z-primary'
  }[blockTheme as 'default' | 'light' | 'dark' | 'cyber-gray' | 'glassmorphic'] || ''
 
  const paddingClasses = {
@@ -193,8 +193,8 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  className={cn(
  'rounded-none-none border transition-all duration-500 relative cursor-pointer',
  calloutClasses,
- themeClasses || (theme === 'dark' ? 'bg-white/[0.01] border-z-border hover:border-z-border' : 'bg-z-panel border-z-border shadow-sm hover:border-z-border'),
- isActive && 'ring-2 ring-gray-500/50 scale-[1.005]',
+ themeClasses || (theme === 'dark' ? 'bg-z-panel border-z-border hover:border-z-border' : 'bg-z-panel border-z-border shadow-sm hover:border-z-border'),
+ isActive && 'ring-2 ring-z-active-border scale-[1.005]',
  isMultiSelected && !isActive && 'ring-2 ring-amber-500/40'
  )}
  >
@@ -203,7 +203,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  className={cn(
  'flex items-center justify-between px-6 py-4 border-b select-none',
  isCollapsed ? 'border-b-0' : '',
- theme === 'dark' ? 'border-white/[0.03] bg-z-panel' : 'border-z-border shadow-sm bg-gray-50/50'
+ theme === 'dark' ? 'border-z-border bg-z-panel' : 'border-z-border shadow-sm bg-[var(--z-bg-input)]/50'
  )}
  >
  <div className="flex items-center gap-3 min-w-0">
@@ -218,8 +218,8 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  className={cn(
  'w-7 h-7 rounded-none-none border flex items-center justify-center cursor-grab active:cursor-grabbing shrink-0 transition-all',
  theme === 'dark'
- ? 'bg-z-hover border-z-border text-z-muted/60 hover:bg-gray-500/10 hover:border-gray-500/30 hover:text-gray-600 dark:text-z-muted'
- : 'bg-gray-100 border-z-border text-z-secondary/60 hover:bg-gray-50 hover:border-z-border-strong hover:text-gray-600'
+ ? 'bg-z-hover border-z-border text-z-muted/60 hover:bg-z-panel hover:border-z-border/30 hover:text-z-secondary'
+ : 'bg-[var(--z-bg-hover)] border-z-border text-z-secondary/60 hover:bg-[var(--z-bg-input)] hover:border-z-border-strong hover:text-z-secondary'
  )}
  >
  <Grip size={12} aria-hidden="true" />
@@ -228,7 +228,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  {/* Index badge */}
  <span className={cn(
  'text-sm font-semibold leading-none w-5 text-center',
- theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
+ 'text-z-secondary'
  )}>
  {String(index + 1).padStart(2, '0')}
  </span>
@@ -236,7 +236,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  {/* Block type pill — human-readable */}
  <span className={cn(
  'px-2 py-0.5 text-sm font-semibold   border shrink-0',
- theme === 'dark' ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted' : 'bg-z-input border-z-border text-gray-700'
+ theme === 'dark' ? 'bg-z-panel/5 border-z-border text-z-secondary' : 'bg-z-input border-z-border text-z-primary'
  )}>
  {humanize(section.blockType)}
  </span>
@@ -253,7 +253,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  onClick={(e) => e.stopPropagation()}
  className={cn(
  'text-xs font-semibold  bg-transparent border-b px-1 min-w-[80px] max-w-[200px]',
- theme === 'dark' ? 'text-white border-z-border' : 'text-black border-z-border-strong'
+ theme === 'dark' ? 'text-z-primary border-z-border' : 'text-z-primary border-z-border-strong'
  )}
  placeholder="Block name..."
  />
@@ -267,8 +267,8 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  className={cn(
  'text-xs font-semibold  truncate cursor-text px-1 flex items-center gap-1.5',
  section.blockName
- ? theme === 'dark' ? 'text-white' : 'text-black'
- : theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
+ ? theme === 'dark' ? 'text-z-primary' : 'text-z-primary'
+ : 'text-z-secondary'
  )}
  >
  {section.blockName || 'Add name...'}
@@ -290,7 +290,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  onClick={(e) => { e.stopPropagation(); onToggleCollapse() }}
  className={cn(
  'p-1.5 rounded-none-none border transition-all',
- theme === 'dark' ? 'text-z-secondary border-transparent hover:text-gray-600 dark:text-z-muted' : 'text-z-muted border-transparent hover:text-gray-600 dark:text-z-secondary'
+ theme === 'dark' ? 'text-z-secondary border-transparent hover:text-z-secondary' : 'text-z-muted border-transparent hover:text-z-secondary '
  )}
  title={isCollapsed ? 'Expand' : 'Collapse'}
  >
@@ -311,8 +311,8 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  className={cn(
  'p-1.5 rounded-none-none border transition-all',
  menuOpen
- ? theme === 'dark' ? 'bg-gray-500/20 border-gray-500/30 text-gray-600 dark:text-z-muted' : 'bg-gray-100 border-z-border text-gray-600'
- : theme === 'dark' ? 'text-z-secondary border-transparent hover:text-gray-600 dark:text-z-muted' : 'text-z-muted border-transparent hover:text-gray-600 dark:text-z-secondary'
+ ? theme === 'dark' ? 'bg-z-hover border-z-border-strong border-z-border/30 text-z-secondary' : 'bg-[var(--z-bg-hover)] border-z-border text-z-secondary'
+ : theme === 'dark' ? 'text-z-secondary border-transparent hover:text-z-secondary' : 'text-z-muted border-transparent hover:text-z-secondary '
  )}
  title="Actions"
  >
@@ -335,11 +335,11 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  {/* Sub-toolbar: align + undo/redo (moved from header to reduce clutter) */}
  <div className={cn(
  'flex items-center justify-between -mx-6 -mt-6 mb-6 px-4 py-2 border-b',
- theme === 'dark' ? 'bg-white/[0.01] border-z-border' : 'bg-gray-50/50 border-z-border shadow-sm'
+ theme === 'dark' ? 'bg-z-panel/5 border-z-border' : 'bg-[var(--z-bg-input)]/50 border-z-border shadow-sm'
  )}>
  <div className={cn(
  'flex items-center gap-0.5 p-0.5 rounded-none-none border',
- theme === 'dark' ? 'bg-black/20 border-z-border' : 'bg-z-panel border-z-border'
+ theme === 'dark' ? 'bg-app/20 border-z-border' : 'bg-z-panel border-z-border'
  )}>
  {(['left', 'center', 'right'] as const).map((align) => (
  <button
@@ -349,8 +349,8 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  className={cn(
  'p-1 transition-all',
  section.align === align || (!section.align && align === 'left')
- ? theme === 'dark' ? 'bg-white/10 text-white' : 'bg-black text-white shadow-sm'
- : 'text-z-muted hover:text-gray-600 dark:text-z-secondary'
+ ? theme === 'dark' ? 'bg-z-hover text-z-primary' : 'bg-app text-z-primary shadow-sm'
+ : 'text-z-muted hover:text-z-secondary '
  )}
  >
  {align === 'left' && <AlignLeft size={10} />}
@@ -363,7 +363,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  <span
  className={cn(
  'text-sm font-bold   select-none',
- theme === 'dark' ? 'text-gray-700' : 'text-z-muted'
+ theme === 'dark' ? 'text-z-primary' : 'text-z-muted'
  )}
  title="Use Ctrl+Z / Ctrl+Y to undo or redo changes"
  >
@@ -375,12 +375,12 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  {section.blockType === 'code' && (
  <div className={cn(
  "w-full px-4 py-2 border-b flex items-center justify-between -mx-6 -mt-6 mb-6",
- theme === 'dark' ? 'bg-[#0F172A]/80 border-z-border' : 'bg-gray-100 border-z-border'
+ theme === 'dark' ? 'bg-[#0F172A]/80 border-z-border' : 'bg-[var(--z-bg-hover)] border-z-border'
  )}>
  <div className="flex gap-1.5">
  <span className="w-2.5 h-2.5 rounded-none-none bg-rose-500" />
  <span className="w-2.5 h-2.5 rounded-none-none bg-amber-500" />
- <span className="w-2.5 h-2.5 rounded-none-none bg-gray-500" />
+ <span className="w-2.5 h-2.5 rounded-none-none bg-z-border" />
  </div>
  <span className="text-xs font-semibold text-z-secondary">
  {section.content?.language || 'javascript'} terminal
@@ -389,10 +389,10 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  )}
 
  {section.blockType === 'table' ? (
- <div className="w-full overflow-x-auto border border-z-border bg-black/20 p-4 rounded-none-none">
+ <div className="w-full overflow-x-auto border border-z-border bg-app/20 p-4 rounded-none-none">
  <div className="overflow-x-auto min-w-full pb-4"><table className="w-full border-collapse text-left text-xs font-mono">
  <thead>
- <tr className={cn(theme === 'dark' ? 'bg-z-hover border-b border-z-border' : 'bg-gray-150 border-b border-z-border')}>
+ <tr className={cn(theme === 'dark' ? 'bg-z-hover border-b border-z-border' : 'bg-[var(--z-bg-hover)] border-b border-z-border')}>
  {((section.content?.headers) || []).map((h, hIdx) => (
  <th key={hIdx} className="p-2.5">
  <input
@@ -403,7 +403,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  headers[hIdx] = { ...headers[hIdx], text: e.target.value }
  handleFieldChange('headers', headers)
  }}
- className="bg-transparent border-none font-bold w-full focus:bg-z-hover focus-visible:ring-2 focus-visible:ring-gray-500 rounded-none px-1 text-xs"
+ className="bg-transparent border-none font-bold w-full focus:bg-z-hover focus-visible:ring-2 focus-visible:ring-z-active-border rounded-none px-1 text-xs"
  placeholder={`Header ${hIdx + 1}`}
  />
  </th>
@@ -420,7 +420,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  }))
  handleFieldChange('rows', rows)
  }}
- className="text-xs text-gray-600 dark:text-z-muted font-bold hover:text-gray-300"
+ className="text-xs text-z-secondary font-bold hover:text-z-secondary"
  >
  + Col
  </button>
@@ -429,7 +429,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  </thead>
  <tbody>
  {((section.content?.rows) || []).map((row, rIdx) => (
- <tr key={rIdx} className={cn(theme === 'dark' ? 'border-b border-z-border hover:bg-white/[0.01]' : 'border-b border-gray-150 hover:bg-gray-50')}>
+ <tr key={rIdx} className={cn(theme === 'dark' ? 'border-b border-z-border hover:bg-z-panel' : 'border-b border-z-border hover:bg-[var(--z-bg-input)]')}>
  {((row.cells) || []).map((cell, cIdx) => (
  <td key={cIdx} className="p-2">
  <input
@@ -442,7 +442,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  rows[rIdx] = { ...rows[rIdx], cells }
  handleFieldChange('rows', rows)
  }}
- className="bg-transparent border-none w-full focus:bg-z-hover focus-visible:ring-2 focus-visible:ring-gray-500 rounded-none px-1"
+ className="bg-transparent border-none w-full focus:bg-z-hover focus-visible:ring-2 focus-visible:ring-z-active-border rounded-none px-1"
  placeholder="Cell..."
  />
  </td>
@@ -472,7 +472,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  rows.push({ cells: newCells })
  handleFieldChange('rows', rows)
  }}
- className="text-xs text-gray-600 dark:text-z-muted font-bold hover:text-gray-300 flex items-center gap-1"
+ className="text-xs text-z-secondary font-bold hover:text-z-secondary flex items-center gap-1"
  >
  + Add Row
  </button>
@@ -516,8 +516,8 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  <span className={cn(
  'px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold rounded-none-none border',
  theme === 'dark'
- ? 'bg-gray-500/10 border-gray-500/20 text-gray-600'
- : 'bg-gray-100 border-gray-200 text-z-muted'
+ ? 'bg-z-panel/5 border-z-border text-z-secondary'
+ : 'bg-[var(--z-bg-hover)] border-z-border text-z-muted'
  )}>
  {field.type}
  </span>
@@ -559,7 +559,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  {fieldsToRender.some(f => ['anchorId', 'theme', 'paddingY', 'containerWidth', 'bgImage'].includes(f.name)) && (
  <div className={cn(
  'pt-6 mt-6 border-t',
- theme === 'dark' ? 'border-z-border' : 'border-z-border'
+ 'border-z-border'
  )}>
  <h4 className="text-sm font-semibold text-z-secondary/50 mb-4 px-1">
  Layout & Styling
@@ -615,7 +615,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
  style={{ position: 'fixed', top: menuPos.top, left: menuPos.left, zIndex: 900 }}
  className={cn(
  'min-w-[160px] border shadow-xl rounded-none-none',
- theme === 'dark' ? 'bg-black border-z-border' : 'bg-z-panel border-z-border'
+ theme === 'dark' ? 'bg-app border-z-border' : 'bg-z-panel border-z-border'
  )}
  onClick={(e) => e.stopPropagation()}
  >
@@ -655,8 +655,8 @@ const ActionItem: React.FC<{
  danger
  ? 'text-rose-500 hover:bg-rose-500/10'
  : theme === 'dark'
- ? 'text-z-muted hover:bg-z-hover hover:text-white'
- : 'text-gray-600 hover:bg-gray-50 hover:text-black'
+ ? 'text-z-muted hover:bg-z-hover hover:text-z-primary'
+ : 'text-z-secondary hover:bg-[var(--z-bg-input)] hover:text-z-primary'
  )}
  >
  <span className="opacity-60">{icon}</span>

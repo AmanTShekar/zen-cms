@@ -4,12 +4,12 @@
  * Defines and validates all workflow state transitions with role-based guards.
  * State graph:
  *
- *   draft ──▶ in_review ──▶ changes_requested ◀──┐
+ *   draft ── in_review ── changes_requested ◀──┐
  *     ▲         │                │               │
  *     └─────────┴────────────────┴───────────────┤
  *     (unpublish / request changes → draft)       │
  *           │              │                      │
- *           └──────────────┴──────▶ published ──┘
+ *           └──────────────┴────── published ──┘
  *
  * Roles: view_user < editor < admin
  * - view_user: can only submit (draft → in_review)

@@ -56,9 +56,9 @@ const FlowSchema = new Schema<IFlow>(
     ],
     nodes: { type: [Schema.Types.Mixed], default: [] },
     edges: { type: [Schema.Types.Mixed], default: [] },
-    siteId: { type: String, index: true },
+    siteId: { type: String, required: true, index: true },
   },
-  { timestamps: true, strict: false }
+  { timestamps: true, strict: true }
 )
 
-export const FlowModel = mongoose.models.Flow || mongoose.model<IFlow>('Flow', FlowSchema)
+export const FlowModel = mongoose.models.z_flows || mongoose.model<IFlow>('z_flows', FlowSchema)

@@ -13,7 +13,7 @@ import { SearchService } from '../../services/search'
 import { InvalidPayloadError, NotFoundError, ValidationError } from '../../errors'
 import { CacheService } from '../../services/cache'
 import { getPrometheusMetrics } from '../../middleware/metrics'
-import { AIService } from '../../services/ai'
+
 import { VectorSearchService } from '../../services/vector-search'
 import { adminComponentRegistry } from '../../plugins/hooks'
 import { AdapterFactory } from '../../database/adapters/AdapterFactory'

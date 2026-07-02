@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { Router, Request, Response, NextFunction } from 'express'
-import crypto from 'crypto'
+import { ZenithRequest } from '../types/request'
 import { CollectionConfig, WebhookTarget } from '@zenith-open/zenithcms-types'
 import { DatabaseAdapter } from '../database/adapters/BaseAdapter'
 import { getCompiledZodSchema } from '../schema/engine'
-import { createResponse } from './utils'
+import { createResponse, applyCacheHeaders } from './utils'
 import { requireAuth } from '../middleware/auth'
 import { WebhookService } from '../services/webhook'
 import { CacheService } from '../services/cache'
@@ -14,7 +12,7 @@ import { parseQueryParams } from './query-parser'
 import { NotFoundError, ForbiddenError, ValidationError } from '../errors'
 import { eventHub } from '../services/event-hub'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
-import { mutationLimiter } from '../middleware/rate-limit'
+import { mutationLimiter, exportLimiter } from '../middleware/rate-limit'
 
 /**
  * Helper to dynamically query and verify granular role permissions in the database.
@@ -27,7 +25,7 @@ interface GranularAccessResult {
 import { RBACEngine } from '../services/rbac'
 
 async function verifyGranularAccess(
-  user: Record<string, any>,
+  user: Record<string, any> | undefined,
   resource: string,
   action: string,
   _adapter: DatabaseAdapter,
@@ -54,7 +52,7 @@ async function verifyGranularAccess(
   }
 
   try {
-    const hasAccess = await RBACEngine.checkAccess(user.role, resource, action as Record<string, any>, siteId)
+    const hasAccess = await RBACEngine.checkAccess(user.role, resource, action as string, siteId)
     if (hasAccess === null) {
       // No custom role found, but they passed specialAccess. Allow fallback to schema access fns.
       return null
@@ -111,7 +109,7 @@ export function createCollectionRouter(
 
   // ── Access Control Helper ──────────────────────────────────────────────────
 
-  const verifyAccess = async (user: Record<string, any>, action: keyof NonNullable<CollectionConfig['access']>, siteId?: string) => {
+  const verifyAccess = async (user: Record<string, any> | undefined, action: keyof NonNullable<CollectionConfig['access']>, siteId?: string) => {
     let fieldPermissions: Record<string, any> = {}
     if (config.publicRead && action === 'read' && !user) return fieldPermissions
 
@@ -131,7 +129,7 @@ export function createCollectionRouter(
     return fieldPermissions
   }
 
-  const sanitizeFields = (doc: Record<string, any>, user: Record<string, any>, action: 'read' | 'update', fieldPermissions: Record<string, { read?: boolean; write?: boolean }> = {}) => {
+  const sanitizeFields = (doc: Record<string, any>, user: Record<string, any> | undefined, action: 'read' | 'update', fieldPermissions: Record<string, { read?: boolean; write?: boolean }> = {}) => {
     if (!doc) return doc
     const sanitized = { ...doc }
     config.fields.forEach((field) => {
@@ -164,7 +162,7 @@ export function createCollectionRouter(
 
   // ── Authentication & Role Middleware ──────────────────────────────────────────
 
-  router.use((req, res, next) => {
+  router.use((req: ZenithRequest, res, next) => {
     if (!req.headers['x-zenith-site-id']) {
       return res.status(400).json({ error: { message: 'Missing x-zenith-site-id header' } })
     }
@@ -179,11 +177,11 @@ export function createCollectionRouter(
 
   // Role enforcement per verb — delegates to schema access functions first,
   // then falls back to safe defaults so the framework never hardcodes role names.
-  router.use(async (req, res, next) => {
+  router.use(async (req: ZenithRequest, res, next) => {
     if (req.method === 'GET') return next() // read handled per-route via verifyAccess
 
-    const user = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user
-    const siteId = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).siteId
+    const user = req.user
+    const siteId = req.siteId
     if (!user) return next() // will be caught by requireAuth above
 
     let action = 'read'
@@ -244,23 +242,29 @@ export function createCollectionRouter(
 
   // ── Route Handlers ─────────────────────────────────────────────────────────
 
-  router.get('/', async (req, res, next) => {
+  router.get('/', async (req: ZenithRequest, res, next) => {
     try {
       const { contentService, cachePrefix } = getContext()
-      const user = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user
+      const user = req.user
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       const siteId = req.headers['x-zenith-site-id'] as string
       const fieldPermissions = await verifyAccess(user, 'read', req.siteId)
 
       if (config.singleton) {
         const doc = await contentService.findById('singleton', { user, locale, siteId })
-        return res.json(createResponse(sanitizeFields(doc, user, 'read', fieldPermissions)))
+        const sanitized = sanitizeFields(doc, user, 'read', fieldPermissions)
+        const dRec = doc as Record<string, any> | null
+        if (dRec) {
+          const hashStr = `${dRec._id}:${dRec.updatedAt || ''}`
+          if (applyCacheHeaders(req, res, hashStr, dRec.updatedAt, 300)) return
+        }
+        return res.json(createResponse(sanitized))
       }
 
       const { filter, sort, pagination, select, populate } = parseQueryParams(req.query, config)
       const cacheKey = `${cachePrefix}:list:${JSON.stringify(req.query)}:loc:${locale || 'en'}:site:${siteId || ''}`
 
-      const cached = CacheService.get(cacheKey)
+      const cached = await CacheService.get(cacheKey)
       if (cached) {
         res.setHeader('Cache-Control', 'private, max-age=60, must-revalidate')
         return res.json(cached)
@@ -326,16 +330,8 @@ export function createCollectionRouter(
 
       const firstUpdated = (docs[0] as Record<string, any>)?.updatedAt || ''
       const lastUpdated = (docs[docs.length - 1] as Record<string, any>)?.updatedAt || ''
-      const etag = crypto.createHash('sha256').update(`${total}:${pagination.pageSize}:${firstUpdated}:${lastUpdated}`).digest('hex').slice(0, 16)
-      const ifNoneMatch = req.headers['if-none-match']
-      if (ifNoneMatch === etag) {
-        return res.status(304).end()
-      }
-      res.setHeader('ETag', `"${etag}"`)
-      if (docs.length > 0 && lastUpdated) {
-        res.setHeader('Last-Modified', new Date(lastUpdated).toUTCString())
-      }
-      res.setHeader('Cache-Control', 'private, max-age=60, must-revalidate')
+      const hashStr = `${total}:${pagination.pageSize}:${firstUpdated}:${lastUpdated}`
+      if (applyCacheHeaders(req, res, hashStr, docs.length > 0 ? lastUpdated : undefined, 60)) return
 
       CacheService.set(cacheKey, response, 60, [config.slug])
       res.json(response)
@@ -344,10 +340,10 @@ export function createCollectionRouter(
     }
   })
 
-  router.get('/:id', async (req, res, next) => {
+  router.get('/:id', async (req: ZenithRequest, res, next) => {
     try {
       const { contentService } = getContext()
-      const user = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user
+      const user = req.user
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       const siteId = req.headers['x-zenith-site-id'] as string
       const fieldPermissions = await verifyAccess(user, 'read', req.siteId)
@@ -356,16 +352,9 @@ export function createCollectionRouter(
       if (!doc) throw new NotFoundError(config.name, req.params.id)
 
       const sanitized = sanitizeFields(doc, user, 'read', fieldPermissions)
-      const etag = crypto.createHash('sha256').update(`${(doc as Record<string, any>)._id}:${(doc as Record<string, any>).updatedAt || ''}`).digest('hex').slice(0, 16)
-      const ifNoneMatch = req.headers['if-none-match']
-      if (ifNoneMatch === etag) {
-        return res.status(304).end()
-      }
-      res.setHeader('ETag', `"${etag}"`)
-      if ((doc as Record<string, any>).updatedAt) {
-        res.setHeader('Last-Modified', new Date((doc as Record<string, any>).updatedAt).toUTCString())
-      }
-      res.setHeader('Cache-Control', 'private, max-age=300, must-revalidate')
+      const dRec = doc as Record<string, any>
+      const hashStr = `${dRec._id}:${dRec.updatedAt || ''}`
+      if (applyCacheHeaders(req, res, hashStr, dRec.updatedAt, 300)) return
 
       res.json(createResponse(sanitized))
     } catch (err) {
@@ -373,10 +362,10 @@ export function createCollectionRouter(
     }
   })
 
-  router.post('/:id/preview-token', async (req, res, next) => {
+  router.post('/:id/preview-token', async (req: ZenithRequest, res, next) => {
     try {
       const { contentService } = getContext()
-      const user = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user
+      const user = req.user
       const siteId = req.headers['x-zenith-site-id'] as string
       // Just return a dummy token for now so frontend stops throwing 404
       const token = `preview_${req.params.id}_${Date.now()}`
@@ -386,10 +375,10 @@ export function createCollectionRouter(
     }
   })
 
-  router.post('/', mutationLimiter, async (req, res, next) => {
+  router.post('/', mutationLimiter, async (req: ZenithRequest, res, next) => {
     try {
       const { schema, contentService } = getContext()
-      const user = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user
+      const user = req.user
       const siteId = req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       const fieldPermissions = await verifyAccess(user, 'create', req.siteId)
@@ -415,11 +404,11 @@ export function createCollectionRouter(
     }
   })
 
-  router.patch('/', async (req, res, next) => {
+  router.patch('/', async (req: ZenithRequest, res, next) => {
     try {
       if (!config.singleton) return next()
       const { schema, contentService } = getContext()
-      const user = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user
+      const user = req.user
       const siteId = req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       const fieldPermissions = await verifyAccess(user, 'update', req.siteId)
@@ -449,10 +438,10 @@ export function createCollectionRouter(
     }
   })
 
-  router.patch('/:id', mutationLimiter, async (req, res, next) => {
+  router.patch('/:id', mutationLimiter, async (req: ZenithRequest, res, next) => {
     try {
       const { schema, contentService } = getContext()
-      const user = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user
+      const user = req.user
       const siteId = req.headers['x-zenith-site-id'] as string
       const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
       const fieldPermissions = await verifyAccess(user, 'update', req.siteId)
@@ -482,10 +471,10 @@ export function createCollectionRouter(
     }
   })
 
-  router.delete('/:id', mutationLimiter, async (req, res, next) => {
+  router.delete('/:id', mutationLimiter, async (req: ZenithRequest, res, next) => {
     try {
       const { contentService } = getContext()
-      const user = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user
+      const user = req.user
       const siteId = req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'delete', req.siteId)
 
@@ -499,10 +488,10 @@ export function createCollectionRouter(
 
   // ── Content Import & Export ──────────────────────────────────────────────────
 
-  router.post('/import', async (req, res, next) => {
+  router.post('/import', async (req: ZenithRequest, res, next) => {
     try {
       const { schema, contentService } = getContext()
-      const user = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user
+      const user = req.user
       const siteId = req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'create', req.siteId)
 
@@ -544,7 +533,7 @@ export function createCollectionRouter(
       // Process in parallel batches of 50 to avoid N+1 serial waterfall.
       // Wrapped in a transaction to ensure atomicity per batch.
       const BATCH_SIZE = 50
-      const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
+      const adapter = req.zenith?.adapter || AdapterFactory.getActiveAdapter()
 
       for (let b = 0; b < validRecords.length; b += BATCH_SIZE) {
         const batch = validRecords.slice(b, b + BATCH_SIZE)
@@ -586,12 +575,13 @@ export function createCollectionRouter(
     }
   })
 
-  router.get('/export', async (req, res, next) => {
+  router.get('/export', exportLimiter, async (req: ZenithRequest, res, next) => {
     try {
       const { contentService } = getContext()
-      const user = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user
+      const user = req.user
       const siteId = req.headers['x-zenith-site-id'] as string
       await verifyAccess(user, 'read', req.siteId)
+      const fieldPermissions = await RBACEngine.getFieldPermissions(user?.role || 'viewer', config.slug, siteId)
 
       // Cap at 1000 records per export request to prevent V8 heap exhaustion.
       // For larger datasets, use the pagination query params (?page=N) and call repeatedly.
@@ -604,7 +594,7 @@ export function createCollectionRouter(
         adapter.count(config.slug, siteId ? { siteId } : {}),
       ])
 
-      const sanitizedDocs = docs.map((d) => sanitizeFields(d, user, 'read'))
+      const sanitizedDocs = docs.map((d) => sanitizeFields(d, user, 'read', fieldPermissions))
       const totalPages = Math.ceil(total / requestedLimit)
 
       res.setHeader('Content-Type', 'application/json')
@@ -622,10 +612,10 @@ export function createCollectionRouter(
   // ── Versioning & History ────────────────────────────────────────────────────
 
   if (config.versions) {
-    router.get('/:id/versions', async (req, res, next) => {
+    router.get('/:id/versions', async (req: ZenithRequest, res, next) => {
       try {
         const { contentService } = getContext()
-        const user = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user
+        const user = req.user
         const siteId = req.headers['x-zenith-site-id'] as string
         const locale = (req.query.locale as string) || (req.headers['x-zenith-locale'] as string)
         
@@ -633,6 +623,9 @@ export function createCollectionRouter(
         await contentService.findById(req.params.id, { user, locale, siteId })
 
         const versions = await adapter.getVersions(config.slug, req.params.id)
+        const lastVer = versions[0] as Record<string, any> | undefined
+        const hashStr = `${versions.length}:${lastVer?.updatedAt || ''}`
+        if (applyCacheHeaders(req, res, hashStr, lastVer?.updatedAt, 300)) return
         res.json(createResponse(versions))
       } catch (err) {
         next(err)

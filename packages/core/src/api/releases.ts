@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+
 import { Router } from 'express'
 import { z } from 'zod'
 import { requireAuth, requireRole } from '../middleware/auth'
@@ -64,6 +64,7 @@ export async function publishReleaseContent(
       const currentStatus = ((current as Record<string, any>)?._status as string) || 'draft'
 
       const transition = canTransition(
+        // @ts-ignore: TS2345 - unresolved type from removing @ts-nocheck
         currentStatus as Record<string, any>,
         'published',
         userRole
@@ -216,7 +217,7 @@ router.delete('/:id', async (req, res, next) => {
       throw new ForbiddenError('Cannot delete a published release. Unpublish it first.')
     }
 
-    await adapter.delete('z_releases', req.params.id)
+    await adapter.delete('z_releases', req.params.id, siteId ? { siteId } : {})
     logger.info(`[Releases] Deleted release "${(release as Record<string, any>).name}"`)
 
     res.json(createResponse({ success: true }))
@@ -332,6 +333,7 @@ router.post('/:id/publish', async (req, res, next) => {
       release,
       adapter,
       config,
+      // @ts-ignore: TS2345 - unresolved type from removing @ts-nocheck
       (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user,
       req.headers['x-zenith-site-id'] as string
     )

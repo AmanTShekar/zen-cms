@@ -191,21 +191,21 @@ const AuditLogPage: React.FC = () => {
                 'px-6 py-2 border rounded-lg flex items-center gap-8 shadow-sm transition-all',
                 theme === 'dark'
                   ? 'bg-z-panel border-z-border'
-                  : 'bg-white border-gray-200'
+                  : 'bg-z-panel border-z-border'
               )}
             >
               <div className="flex flex-col items-end">
                 <span className="text-sm font-semibold text-z-muted opacity-60">
                   Total Logs
                 </span>
-                <span className="text-xl font-semibold leading-none text-gray-600 dark:text-z-secondary">
+                <span className="text-xl font-semibold leading-none text-z-secondary ">
                   {total.toLocaleString()}
                 </span>
               </div>
               {stats && (
                 <>
                   <div
-                    className={cn('w-px h-8', theme === 'dark' ? 'bg-z-hover' : 'bg-gray-100')}
+                    className={cn('w-px h-8', theme === 'dark' ? 'bg-z-hover' : 'bg-[var(--z-bg-hover)]')}
                   />
                   <div className="flex flex-col items-end">
                     <span className="text-sm font-semibold text-z-muted opacity-60">
@@ -216,13 +216,13 @@ const AuditLogPage: React.FC = () => {
                     </span>
                   </div>
                   <div
-                    className={cn('w-px h-8', theme === 'dark' ? 'bg-z-hover' : 'bg-gray-100')}
+                    className={cn('w-px h-8', theme === 'dark' ? 'bg-z-hover' : 'bg-[var(--z-bg-hover)]')}
                   />
                   <div className="flex flex-col items-end">
                     <span className="text-sm font-semibold text-z-muted opacity-60">
                       Status
                     </span>
-                    <span className="text-xs font-semibold text-gray-600 dark:text-z-secondary leading-none">
+                    <span className="text-xs font-semibold text-z-secondary  leading-none">
                       Stable
                     </span>
                   </div>
@@ -238,8 +238,8 @@ const AuditLogPage: React.FC = () => {
               className={cn(
                 'w-10 h-10 border rounded-lg flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-sm',
                 theme === 'dark'
-                  ? 'bg-z-panel border-z-border text-gray-400 hover:border-gray-500'
-                  : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300'
+                  ? 'bg-z-panel border-z-border text-z-muted hover:border-z-border'
+                  : 'bg-z-panel border-z-border text-z-muted hover:border-[var(--z-border-strong)]'
               )}
             >
               <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
@@ -251,7 +251,7 @@ const AuditLogPage: React.FC = () => {
       <div
         className={cn(
           'flex-1 overflow-y-auto p-10 space-y-6 transition-colors duration-500',
-          theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-z-primary'
+          theme === 'dark' ? 'bg-app text-z-primary' : 'bg-[#fafafa] text-z-primary'
         )}
       >
         {/* Table Card */}
@@ -260,14 +260,14 @@ const AuditLogPage: React.FC = () => {
             'flex flex-col border rounded-xl shadow-sm transition-all overflow-hidden',
             theme === 'dark'
               ? 'bg-z-panel border-z-border'
-              : 'bg-white border-gray-200'
+              : 'bg-z-panel border-z-border'
           )}
         >
           {/* Control Bar */}
           <div
             className={cn(
               'px-8 py-5 border-b flex items-center justify-between gap-6 transition-colors',
-              theme === 'dark' ? 'border-z-border' : 'border-z-border'
+              'border-z-border'
             )}
           >
             <div className="flex items-center gap-4 flex-1">
@@ -275,13 +275,13 @@ const AuditLogPage: React.FC = () => {
                 className={cn(
                   'flex items-center gap-3 border px-4 py-2 rounded-md w-full max-w-md shadow-sm transition-all group relative overflow-hidden',
                   theme === 'dark'
-                    ? 'bg-[#1c1c1c] border-gray-800 focus-within:border-z-accent'
-                    : 'bg-white border-gray-300 focus-within:border-z-accent'
+                    ? 'bg-[#1c1c1c] border-z-border focus-within:border-z-accent'
+                    : 'bg-z-panel border-[var(--z-border-strong)] focus-within:border-z-accent'
                 )}
               >
                 <Search
                   size={16}
-                  className="text-z-secondary group-focus-within:text-gray-600 dark:text-z-secondary transition-colors"
+                  className="text-z-secondary group-focus-within:text-z-secondary  transition-colors"
                 />
                 <input
                   type="text"
@@ -289,7 +289,7 @@ const AuditLogPage: React.FC = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   placeholder="Search by email, name, collection..."
-                  className="bg-transparent border-none outline-none text-sm w-full placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                  className="bg-transparent border-none outline-none text-sm w-full placeholder:text-z-muted dark:placeholder:text-z-secondary"
                 />
               </div>
 
@@ -302,8 +302,8 @@ const AuditLogPage: React.FC = () => {
                 className={cn(
                   'px-4 py-2 border rounded-md text-sm outline-none transition-all shadow-sm',
                   theme === 'dark'
-                    ? 'bg-[#1c1c1c] border-gray-800 text-white focus:border-z-accent'
-                    : 'bg-white border-gray-300 text-gray-900 focus:border-z-accent'
+                    ? 'bg-[#1c1c1c] border-z-border text-z-primary focus:border-z-accent'
+                    : 'bg-z-panel border-[var(--z-border-strong)] text-z-primary focus:border-z-accent'
                 )}
               >
                 <option value="">All Actions</option>
@@ -323,8 +323,8 @@ const AuditLogPage: React.FC = () => {
                 className={cn(
                   'flex items-center gap-2 px-4 py-2 border rounded-md text-sm font-medium transition-all hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:hover:bg-red-500/10 dark:hover:text-red-400 dark:hover:border-red-500/20',
                   theme === 'dark'
-                    ? 'bg-[#1c1c1c] border-gray-800 text-gray-400'
-                    : 'bg-white border-gray-300 text-gray-600'
+                    ? 'bg-[#1c1c1c] border-z-border text-z-muted'
+                    : 'bg-z-panel border-[var(--z-border-strong)] text-z-secondary'
                 )}
               >
                 <Trash2 size={14} />
@@ -336,8 +336,8 @@ const AuditLogPage: React.FC = () => {
                 className={cn(
                   'flex items-center gap-2 px-5 py-2 rounded-md font-medium text-sm transition-all shadow-sm active:scale-95',
                   theme === 'dark'
-                    ? 'bg-white text-black hover:bg-gray-200'
-                    : 'bg-gray-900 text-white hover:bg-gray-800'
+                    ? 'bg-z-panel text-z-primary hover:bg-[var(--z-border)]'
+                    : 'bg-z-accent text-z-primary hover:brightness-110'
                 )}
               >
                 {exporting ? (
@@ -359,23 +359,23 @@ const AuditLogPage: React.FC = () => {
                     className={cn(
                       'border-b text-left',
                       theme === 'dark'
-                        ? 'border-gray-800 bg-[#1c1c1c]'
-                        : 'border-gray-200 bg-gray-50'
+                        ? 'border-z-border bg-[#1c1c1c]'
+                        : 'border-z-border bg-[var(--z-bg-input)]'
                     )}
                   >
-                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-z-muted">
                       Operator
                     </th>
-                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-z-muted">
                       Action
                     </th>
-                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-z-muted">
                       Collection
                     </th>
-                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-z-muted">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500 text-right">
+                    <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-z-muted text-right">
                       Timestamp
                     </th>
                   </tr>
@@ -383,7 +383,7 @@ const AuditLogPage: React.FC = () => {
                 <tbody
                   className={cn(
                     'divide-y',
-                    theme === 'dark' ? 'divide-white/[0.08]' : 'divide-gray-200'
+                    theme === 'dark' ? 'divide-z-border' : 'divide-z-border'
                   )}
                 >
                   {loading ? (
@@ -391,7 +391,7 @@ const AuditLogPage: React.FC = () => {
                       <td colSpan={5} className="py-20 text-center">
                         <Loader2
                           size={24}
-                          className="animate-spin text-gray-600 dark:text-z-secondary mx-auto opacity-40"
+                          className="animate-spin text-z-secondary  mx-auto opacity-40"
                         />
                       </td>
                     </tr>
@@ -414,7 +414,7 @@ const AuditLogPage: React.FC = () => {
                             showDetails === (log._id || log.id) ? null : log._id || log.id
                           )
                         }
-                        className="hover:bg-gray-500/[0.02] transition-colors cursor-pointer group"
+                        className="hover:bg-z-border/[0.02] transition-colors cursor-pointer group"
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
@@ -422,17 +422,17 @@ const AuditLogPage: React.FC = () => {
                               className={cn(
                                 'w-8 h-8 rounded-full border flex items-center justify-center flex-shrink-0',
                                 theme === 'dark'
-                                  ? 'bg-[#2c2c2c] border-gray-700 text-gray-300'
-                                  : 'bg-gray-100 border-gray-200 text-gray-600'
+                                  ? 'bg-[#2c2c2c] border-z-border text-z-secondary'
+                                  : 'bg-[var(--z-bg-hover)] border-z-border text-z-secondary'
                               )}
                             >
                               <KeyRound size={14} />
                             </div>
                             <div className="flex flex-col">
-                              <span className={cn("text-sm font-semibold leading-none", theme === 'dark' ? "text-white" : "text-gray-900")}>
+                              <span className={cn("text-sm font-semibold leading-none", theme === 'dark' ? "text-z-primary" : "text-z-primary")}>
                                 {displayName(log)}
                               </span>
-                              <span className="text-xs text-gray-500 mt-1">
+                              <span className="text-xs text-z-muted mt-1">
                                 {log.userId
                                   ? `ID: ${log.userId.slice(-8).toUpperCase()}`
                                   : 'SYSTEM'}
@@ -453,11 +453,11 @@ const AuditLogPage: React.FC = () => {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex flex-col">
-                            <span className={cn("text-sm font-medium leading-none", theme === 'dark' ? "text-gray-200" : "text-gray-700")}>
+                            <span className={cn("text-sm font-medium leading-none", theme === 'dark' ? "text-z-primary" : "text-z-primary")}>
                               {log.collectionName || 'SYSTEM'}
                             </span>
                             {log.documentId && (
-                              <div className="flex items-center gap-1.5 mt-1 text-gray-500">
+                              <div className="flex items-center gap-1.5 mt-1 text-z-muted">
                                 <ArrowRight size={10} />
                                 <span className="text-xs font-mono">
                                   DOC_{log.documentId.slice(-12).toUpperCase()}
@@ -480,10 +480,10 @@ const AuditLogPage: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex flex-col items-end gap-1">
-                            <span className={cn("text-sm font-medium leading-none", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>
+                            <span className={cn("text-sm font-medium leading-none", theme === 'dark' ? "text-z-secondary" : "text-z-primary")}>
                               {log.timestamp ? new Date(log.timestamp).toLocaleDateString() : '-'}
                             </span>
-                            <span className="text-xs text-gray-500 leading-none">
+                            <span className="text-xs text-z-muted leading-none">
                               {log.timestamp ? new Date(log.timestamp).toLocaleTimeString() : '-'}
                             </span>
                           </div>
@@ -506,19 +506,19 @@ const AuditLogPage: React.FC = () => {
                   className={cn(
                     'px-8 py-6 border-t transition-colors',
                     theme === 'dark'
-                      ? 'bg-[#151515] border-gray-800'
-                      : 'bg-[#fafafa] border-gray-200'
+                      ? 'bg-[#151515] border-z-border'
+                      : 'bg-[#fafafa] border-z-border'
                   )}
                 >
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-sm font-mono">
                     <div>
-                      <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">
+                      <div className="text-xs font-semibold uppercase tracking-wider text-z-muted mb-1">
                         IP Address
                       </div>
                       <div className="text-sm font-medium">{log.ip || 'N/A'}</div>
                     </div>
                     <div>
-                      <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">
+                      <div className="text-xs font-semibold uppercase tracking-wider text-z-muted mb-1">
                         User Agent
                       </div>
                       <div className="text-sm font-medium truncate" title={log.userAgent}>
@@ -526,7 +526,7 @@ const AuditLogPage: React.FC = () => {
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">
+                      <div className="text-xs font-semibold uppercase tracking-wider text-z-muted mb-1">
                         Resource
                       </div>
                       <div className="text-sm font-medium truncate" title={log.resource}>
@@ -535,7 +535,7 @@ const AuditLogPage: React.FC = () => {
                     </div>
                     {log.siteId && (
                       <div>
-                        <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">
+                        <div className="text-xs font-semibold uppercase tracking-wider text-z-muted mb-1">
                           Site ID
                         </div>
                         <div className="text-sm font-medium">{log.siteId}</div>
@@ -544,7 +544,7 @@ const AuditLogPage: React.FC = () => {
                     {log.hash && (
                       <>
                         <div>
-                          <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">
+                          <div className="text-xs font-semibold uppercase tracking-wider text-z-muted mb-1">
                             Audit Hash
                           </div>
                           <div className="text-sm font-medium truncate font-mono" title={log.hash}>
@@ -552,7 +552,7 @@ const AuditLogPage: React.FC = () => {
                           </div>
                         </div>
                         <div>
-                          <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">
+                          <div className="text-xs font-semibold uppercase tracking-wider text-z-muted mb-1">
                             Prev Hash
                           </div>
                           <div className="text-sm font-medium truncate font-mono" title={log.previousHash}>
@@ -564,15 +564,15 @@ const AuditLogPage: React.FC = () => {
                   </div>
                   {log.changes && (
                     <div className="mt-4">
-                      <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+                      <div className="text-xs font-semibold uppercase tracking-wider text-z-muted mb-2">
                         Changes
                       </div>
                       <pre
                         className={cn(
                           'p-4 rounded-md text-xs font-mono max-h-48 overflow-auto border shadow-sm',
                           theme === 'dark'
-                            ? 'bg-[#111111] border-gray-800 text-gray-300'
-                            : 'bg-white border-gray-200 text-gray-700'
+                            ? 'bg-[#111111] border-z-border text-z-secondary'
+                            : 'bg-z-panel border-z-border text-z-primary'
                         )}
                       >
                         {JSON.stringify(log.changes, null, 2)}
@@ -587,12 +587,12 @@ const AuditLogPage: React.FC = () => {
           <div
             className={cn(
               'px-8 py-5 border-t flex items-center justify-between transition-colors rounded-b-xl',
-              theme === 'dark' ? 'bg-[#1c1c1c] border-gray-800' : 'bg-gray-50 border-gray-200'
+              theme === 'dark' ? 'bg-[#1c1c1c] border-z-border' : 'bg-[var(--z-bg-input)] border-z-border'
             )}
           >
             <div className="flex items-center gap-4">
-              <Cpu size={14} className="text-gray-400" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+              <Cpu size={14} className="text-z-muted" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-z-muted">
                 SECURE AUDIT TRAIL
               </span>
               {stats?.byAction && Object.keys(stats.byAction).length > 0 && (
@@ -600,7 +600,7 @@ const AuditLogPage: React.FC = () => {
                   {Object.entries(stats.byAction).map(([action, count]) => (
                     <span
                       key={action}
-                      className="text-xs font-semibold uppercase tracking-wider text-gray-500"
+                      className="text-xs font-semibold uppercase tracking-wider text-z-muted"
                     >
                       {action}:{count}
                     </span>
@@ -610,7 +610,7 @@ const AuditLogPage: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold text-gray-500 tracking-wider uppercase mr-2">
+              <span className="text-xs font-semibold text-z-muted tracking-wider uppercase mr-2">
                 Page {page} of {totalPages}
               </span>
               <button
@@ -619,8 +619,8 @@ const AuditLogPage: React.FC = () => {
                 className={cn(
                   'w-8 h-8 border rounded-md flex items-center justify-center transition-all disabled:opacity-20',
                   theme === 'dark'
-                    ? 'bg-[#2c2c2c] border-gray-700 text-gray-300 hover:bg-[#3c3c3c]'
-                    : 'bg-white border-gray-300 shadow-sm text-gray-600 hover:bg-gray-50'
+                    ? 'bg-[#2c2c2c] border-z-border text-z-secondary hover:bg-[#3c3c3c]'
+                    : 'bg-z-panel border-[var(--z-border-strong)] shadow-sm text-z-secondary hover:bg-[var(--z-bg-input)]'
                 )}
               >
                 <ChevronLeft size={16} />
@@ -630,8 +630,8 @@ const AuditLogPage: React.FC = () => {
                 className={cn(
                   'px-3 py-1 rounded-md text-sm font-medium border shadow-sm',
                   theme === 'dark'
-                    ? 'bg-white text-black border-white'
-                    : 'bg-gray-900 border-gray-900 text-white'
+                    ? 'bg-z-panel text-z-primary border-z-border'
+                    : 'bg-z-accent border-z-border text-z-primary'
                 )}
               >
                 {page}
@@ -643,8 +643,8 @@ const AuditLogPage: React.FC = () => {
                 className={cn(
                   'w-8 h-8 border rounded-md flex items-center justify-center transition-all disabled:opacity-20',
                   theme === 'dark'
-                    ? 'bg-[#2c2c2c] border-gray-700 text-gray-300 hover:bg-[#3c3c3c]'
-                    : 'bg-white border-gray-300 shadow-sm text-gray-600 hover:bg-gray-50'
+                    ? 'bg-[#2c2c2c] border-z-border text-z-secondary hover:bg-[#3c3c3c]'
+                    : 'bg-z-panel border-[var(--z-border-strong)] shadow-sm text-z-secondary hover:bg-[var(--z-bg-input)]'
                 )}
               >
                 <ChevronRight size={16} />
@@ -656,26 +656,26 @@ const AuditLogPage: React.FC = () => {
 
       {/* Custom Purge Modal */}
       {showPurgeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--z-bg-modal)] backdrop-blur-sm">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className={cn(
               "w-full max-w-md rounded-xl p-8 shadow-2xl border",
-              theme === 'dark' ? "bg-z-panel border-z-border" : "bg-white border-gray-200"
+              theme === 'dark' ? "bg-z-panel border-z-border" : "bg-z-panel border-z-border"
             )}
           >
             <div className="flex items-center gap-3 text-red-500 mb-4">
               <AlertTriangle size={24} />
-              <h2 className="text-xl font-bold text-white tracking-tight">Purge Audit Logs</h2>
+              <h2 className="text-xl font-bold text-z-primary tracking-tight">Purge Audit Logs</h2>
             </div>
-            <p className={cn("text-sm mb-6 leading-relaxed", theme === 'dark' ? "text-z-muted" : "text-gray-500")}>
+            <p className={cn("text-sm mb-6 leading-relaxed", theme === 'dark' ? "text-z-muted" : "text-z-muted")}>
               This action is <span className="font-bold text-red-500">irreversible</span>. It will permanently delete audit logs matching your criteria.
             </p>
             
             <div className="space-y-5 mb-8">
               <div>
-                <label className={cn("block text-xs font-semibold uppercase tracking-wider mb-2", theme === 'dark' ? "text-z-secondary" : "text-gray-600")}>
+                <label className={cn("block text-xs font-semibold uppercase tracking-wider mb-2", theme === 'dark' ? "text-z-secondary" : "text-z-secondary")}>
                   Logs older than (days):
                 </label>
                 <input
@@ -686,15 +686,15 @@ const AuditLogPage: React.FC = () => {
                   className={cn(
                     "w-full border rounded-md px-4 py-2.5 text-sm outline-none transition-all",
                     theme === 'dark' 
-                      ? "bg-[#1c1c1c] border-gray-800 text-white focus:border-red-500/50" 
-                      : "bg-gray-50 border-gray-300 text-gray-900 focus:border-red-500/50"
+                      ? "bg-[#1c1c1c] border-z-border text-z-primary focus:border-red-500/50" 
+                      : "bg-[var(--z-bg-input)] border-[var(--z-border-strong)] text-z-primary focus:border-red-500/50"
                   )}
                 />
-                <p className="text-[10px] text-gray-500 mt-1.5 font-medium uppercase tracking-wide">Set to 0 to delete all logs.</p>
+                <p className="text-[10px] text-z-muted mt-1.5 font-medium uppercase tracking-wide">Set to 0 to delete all logs.</p>
               </div>
               
               <div>
-                <label className={cn("block text-xs font-semibold uppercase tracking-wider mb-2", theme === 'dark' ? "text-z-secondary" : "text-gray-600")}>
+                <label className={cn("block text-xs font-semibold uppercase tracking-wider mb-2", theme === 'dark' ? "text-z-secondary" : "text-z-secondary")}>
                   Authorization Code: <span className="text-red-400 font-mono select-all font-bold tracking-widest">{purgeExpectedCode}</span>
                 </label>
                 <input
@@ -705,8 +705,8 @@ const AuditLogPage: React.FC = () => {
                   className={cn(
                     "w-full border rounded-md px-4 py-2.5 text-sm outline-none transition-all font-mono tracking-widest",
                     theme === 'dark' 
-                      ? "bg-[#1c1c1c] border-gray-800 text-white focus:border-red-500/50" 
-                      : "bg-gray-50 border-gray-300 text-gray-900 focus:border-red-500/50"
+                      ? "bg-[#1c1c1c] border-z-border text-z-primary focus:border-red-500/50" 
+                      : "bg-[var(--z-bg-input)] border-[var(--z-border-strong)] text-z-primary focus:border-red-500/50"
                   )}
                 />
               </div>
@@ -718,8 +718,8 @@ const AuditLogPage: React.FC = () => {
                 className={cn(
                   "px-5 py-2.5 text-sm font-semibold border rounded-md transition-all",
                   theme === 'dark' 
-                    ? "border-z-border bg-z-panel text-gray-400 hover:text-white hover:bg-gray-800" 
-                    : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+                    ? "border-z-border bg-z-panel text-z-muted hover:text-z-primary hover:brightness-110" 
+                    : "border-z-border bg-z-panel text-z-secondary hover:bg-[var(--z-bg-input)]"
                 )}
               >
                 Cancel
@@ -727,7 +727,7 @@ const AuditLogPage: React.FC = () => {
               <button
                 onClick={executePurge}
                 disabled={purgeInputCode !== purgeExpectedCode}
-                className="px-5 py-2.5 text-sm font-semibold bg-red-500/10 text-red-500 border border-red-500/20 rounded-md hover:bg-red-500 hover:text-white transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
+                className="px-5 py-2.5 text-sm font-semibold bg-red-500/10 text-red-500 border border-red-500/20 rounded-md hover:bg-red-500 hover:text-z-primary transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed shadow-sm"
               >
                 Confirm Purge
               </button>

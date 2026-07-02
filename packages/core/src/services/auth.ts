@@ -4,6 +4,8 @@ import crypto from 'crypto'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { sessionStore, SessionStore } from './session-store'
 import { env } from '../config/env';
+import { logger } from './logger';
+import { InvalidTokenError } from '../errors';
 
 
 // ── Security: Hard-fail if secrets are missing in production ──────────────────
@@ -90,8 +92,15 @@ export const AuthService = {
       const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] }) as AuthUser & { jti?: string }
       void decoded.jti
       return { id: decoded.id, email: decoded.email, role: decoded.role }
-    } catch {
-      return null
+    } catch (err: any) {
+      if (err instanceof jwt.TokenExpiredError) {
+        throw new InvalidTokenError('Token expired')
+      } else if (err instanceof jwt.JsonWebTokenError) {
+        throw new InvalidTokenError('Invalid token')
+      } else {
+        logger.error({ err }, 'JWT verification failed: unexpected error');
+        throw new InvalidTokenError('Invalid token')
+      }
     }
   },
 
@@ -100,12 +109,18 @@ export const AuthService = {
       const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] }) as AuthUser & { jti?: string }
       if (decoded.jti) {
         const revoked = await sessionStore.isRevoked(decoded.jti)
-        if (revoked) return null
+        if (revoked) throw new InvalidTokenError('Token revoked')
       }
       return { id: decoded.id, email: decoded.email, role: decoded.role }
     } catch (err: any) {
-      console.error('verifyTokenAsync error:', err)
-      return null
+      if (err instanceof jwt.TokenExpiredError) {
+        throw new InvalidTokenError('Token expired')
+      } else if (err instanceof jwt.JsonWebTokenError || err instanceof InvalidTokenError) {
+        throw new InvalidTokenError('Invalid token')
+      } else {
+        console.error('verifyTokenAsync error:', err)
+        throw new InvalidTokenError('Invalid token')
+      }
     }
   },
 

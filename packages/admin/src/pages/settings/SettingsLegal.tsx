@@ -118,13 +118,13 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
 
   const inp = cn(
     'w-full border rounded-none py-2.5 px-4 text-sm font-mono outline-none transition-all focus:ring-1 focus:ring-z-active-border focus:border-z-accent',
-    dark ? 'bg-black/80 border-z-border text-white placeholder:text-gray-700' : 'bg-z-panel border-z-border text-z-primary'
+    'bg-z-input border-z-border text-z-primary placeholder:text-z-muted'
   )
 
   const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
     <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
       <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} className="sr-only peer" />
-      <div className={cn("w-11 h-6 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-none after:h-5 after:w-5 after:transition-all border shadow-inner", dark ? 'bg-black/80 peer-checked:bg-z-accent border-z-border' : 'bg-gray-200 peer-checked:bg-z-accent')}></div>
+      <div className={cn("w-11 h-6 rounded-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--z-bg-hover)] after:rounded-none after:h-5 after:w-5 after:transition-all border shadow-inner", 'bg-[var(--z-border-strong)] peer-checked:bg-z-accent border-transparent')}></div>
     </label>
   )
 
@@ -138,13 +138,13 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
           <Icon size={18} />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className={cn('text-sm font-semibold  ', dark ? 'text-white' : 'text-z-primary')}>{title}</h3>
+          <h3 className={cn('text-sm font-semibold  ', 'text-z-primary')}>{title}</h3>
           <p className="text-sm text-z-secondary mt-0.5">{desc}</p>
         </div>
         {expanded === id ? <ChevronUp size={16} className="text-z-secondary" /> : <ChevronDown size={16} className="text-z-secondary" />}
       </button>
       {expanded === id && (
-        <div className="px-5 pb-5 space-y-4 border-t" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}>
+        <div className="px-5 pb-5 space-y-4 border-t" style={{ borderColor: 'var(--z-border)' }}>
           <div className="pt-4 space-y-4">{children}</div>
         </div>
       )}
@@ -154,9 +154,9 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
   const ToggleRow = ({
     label, desc, value, onChange, disabled = false
   }: { label: string; desc: string; value: boolean; onChange: (v: boolean) => void; disabled?: boolean }) => (
-    <div className={cn('flex items-center justify-between p-4 border', dark ? 'bg-black/40 border-z-border' : 'bg-gray-50 border-z-border')}>
+    <div className={cn('flex items-center justify-between p-4 border', 'bg-z-panel border-z-border')}>
       <div>
-        <p className={cn('text-sm font-semibold  ', dark ? 'text-gray-200' : 'text-gray-800')}>{label}</p>
+        <p className={cn('text-sm font-semibold  ', dark ? 'text-z-primary' : 'text-z-primary')}>{label}</p>
         <p className="text-sm text-z-secondary mt-0.5">{desc}</p>
       </div>
       <Toggle checked={value} onChange={disabled ? () => {} : onChange} />
@@ -190,13 +190,13 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
                 'flex items-center gap-3 p-4 border text-left transition-all',
                 enabled
                   ? dark ? `bg-${color}-500/10 border-${color}-500/30 shadow-sm` : `bg-${color}-50 border-${color}-200`
-                  : dark ? 'bg-black/40 border-z-border hover:border-white/20' : 'bg-z-input border-z-border hover:border-z-border-strong'
+                  : 'bg-z-panel border-z-border hover:border-z-active-border'
               )}
             >
-              <Icon size={16} className={enabled ? `text-${color}-400` : 'text-gray-600'} />
+              <Icon size={16} className={enabled ? `text-${color}-400` : 'text-z-secondary'} />
               <div>
-                <p className={cn('text-sm font-semibold  ', enabled ? dark ? `text-${color}-300` : `text-${color}-700` : dark ? 'text-z-muted' : 'text-gray-600')}>{label}</p>
-                <p className="text-sm text-gray-600">{enabled ? 'Enabled' : 'Disabled'}</p>
+                <p className={cn('text-sm font-semibold  ', enabled ? dark ? `text-${color}-300` : `text-${color}-700` : dark ? 'text-z-muted' : 'text-z-secondary')}>{label}</p>
+                <p className="text-sm text-z-secondary">{enabled ? 'Enabled' : 'Disabled'}</p>
               </div>
             </button>
           )
@@ -232,7 +232,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
             className={inp}
             placeholder="365"
           />
-          <p className="text-sm text-gray-600">User content and logs older than this will be eligible for deletion. Default: 365 days.</p>
+          <p className="text-sm text-z-secondary">User content and logs older than this will be eligible for deletion. Default: 365 days.</p>
         </div>
       </Section>
 
@@ -250,7 +250,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
             {COOKIE_CATEGORIES.map(cat => {
               const isEnabled = settings.cookieConsentCategories.includes(cat.id)
               return (
-                <div key={cat.id} className={cn('flex items-start gap-3 p-3 border', dark ? 'border-z-border bg-black/30' : 'border-z-border bg-gray-50')}>
+                <div key={cat.id} className={cn('flex items-start gap-3 p-3 border', 'border-z-border bg-z-hover')}>
                   <input
                     type="checkbox"
                     checked={isEnabled || cat.forced}
@@ -264,7 +264,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
                     className="mt-0.5 accent-z-accent"
                   />
                   <div>
-                    <p className={cn('text-sm font-semibold  ', dark ? 'text-gray-200' : 'text-gray-800')}>
+                    <p className={cn('text-sm font-semibold  ', dark ? 'text-z-primary' : 'text-z-primary')}>
                       {cat.label} {cat.forced && <span className="text-z-secondary">(Required)</span>}
                     </p>
                     <p className="text-sm text-z-secondary mt-0.5">{cat.desc}</p>
@@ -395,7 +395,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
                 setRequestLoading(false)
               }
             }}
-            className={cn('flex items-center justify-center gap-2 p-4 border text-sm font-semibold   transition-all', dark ? 'bg-z-hover border-white/10 text-gray-300 hover:border-z-active-border hover:text-z-active-text' : 'bg-z-input border-z-border text-gray-700 hover:bg-z-active-bg hover:text-z-accent')}
+            className={cn('flex items-center justify-center gap-2 p-4 border text-sm font-semibold   transition-all', dark ? 'bg-z-hover border-z-border text-z-secondary hover:border-z-active-border hover:text-z-active-text' : 'bg-z-input border-z-border text-z-primary hover:bg-z-active-bg hover:text-z-accent')}
           >
             {requestLoading ? <Loader2 size={13} className="animate-spin" /> : <Download size={13} />}
             Export All User Data
@@ -426,7 +426,7 @@ export default function SettingsLegal({ theme = 'dark' }: SettingsLegalProps) {
         <button
           onClick={handleSave}
           disabled={saving}
-          className={cn('flex items-center gap-2 px-8 py-3 text-sm font-semibold   transition-all', dark ? 'bg-z-accent hover:opacity-90 text-white shadow-sm' : 'bg-z-accent text-white hover:opacity-90')}
+          className={cn('flex items-center gap-2 px-8 py-3 text-sm font-semibold   transition-all', dark ? 'bg-z-accent hover:brightness-110 text-z-logo-text shadow-sm' : 'bg-z-accent text-z-logo-text hover:opacity-90')}
         >
           {saving ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
           Save Compliance Config

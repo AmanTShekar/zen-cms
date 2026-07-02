@@ -107,18 +107,18 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdated,
   }
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[var(--z-bg-modal)] backdrop-blur-sm p-4">
       <div
         className={cn(
           'w-full max-w-md border rounded-none-none shadow-2xl max-h-[90vh] flex flex-col',
-          theme === 'dark' ? 'bg-black border-z-border' : 'bg-z-panel border-z-border shadow-sm shadow-black/10'
+          theme === 'dark' ? 'bg-app border-z-border' : 'bg-z-panel border-z-border shadow-sm shadow-[var(--z-border)]'
         )}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-8 py-6 border-b border-z-border shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-none-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
-              <UserCog size={18} className="text-gray-600 dark:text-z-secondary" />
+            <div className="w-10 h-10 rounded-none-none bg-z-panel border border-z-border/20 flex items-center justify-center">
+              <UserCog size={18} className="text-z-secondary " />
             </div>
             <span className="text-sm font-semibold tracking-wide text-inherit">Edit Operator</span>
           </div>
@@ -175,12 +175,12 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdated,
                     onClick={() => setColor(c)}
                     className={cn(
                       'w-8 h-8 rounded-none-none border-2 transition-transform hover:scale-110 flex items-center justify-center',
-                      color === c ? 'border-white shadow-[0_0_10px_rgba(255,255,255,0.3)]' : 'border-transparent'
+                      color === c ? 'border-z-border shadow-[0_0_10px_rgba(255,255,255,0.3)]' : 'border-transparent'
                     )}
                     style={{ backgroundColor: c }}
                     title={`Select color ${c}`}
                   >
-                    {color === c && <Check size={12} className="text-white mix-blend-difference" />}
+                    {color === c && <Check size={12} className="text-z-primary mix-blend-difference" />}
                   </button>
                 ))}
                 <input
@@ -234,8 +234,8 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdated,
                     <div className={cn(
                       'w-4 h-4 border rounded-none-none flex items-center justify-center transition-colors',
                       specialAccess.has(scope.id)
-                        ? 'bg-amber-500 border-amber-500 text-black'
-                        : 'border-gray-500/30 text-transparent'
+                        ? 'bg-amber-500 border-amber-500 text-z-primary'
+                        : 'border-z-border/30 text-transparent'
                     )}>
                       <Check size={10} strokeWidth={4} />
                     </div>
@@ -254,8 +254,8 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdated,
                 className={cn(
                   'w-full py-4 rounded-none-none text-sm font-semibold   shadow-lg transition-all active:scale-95 disabled:opacity-40',
                   theme === 'dark'
-                    ? 'bg-z-accent hover:bg-z-accent text-black'
-                    : 'bg-z-accent hover:opacity-90 text-white'
+                    ? 'bg-z-accent hover:bg-z-accent text-z-primary'
+                    : 'bg-z-accent hover:brightness-110 text-z-logo-text'
                 )}
               >
                 {loading ? (

@@ -37,7 +37,7 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
   return (
     <div className="flex flex-col justify-between">
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+        <p className="text-sm font-bold text-z-primary  flex items-center gap-2">
           <History size={14} className="text-z-secondary" /> {title || 'Audit & Activity Log'}
         </p>
       </div>
@@ -68,7 +68,7 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
                 key={log._id || i}
                 onClick={() => window.location.href = '/audit-log'}
                 className={cn(
-                  "border-b last:border-b-0 transition-colors hover:bg-black/[0.02] dark:hover:bg-z-panel cursor-pointer group",
+                  "border-b last:border-b-0 transition-colors hover:bg-app/[0.02] dark:hover:bg-z-panel cursor-pointer group",
                   'border-z-border'
                 )}
               >
@@ -77,12 +77,12 @@ export default function AuditLogWidget({ theme, title, isPreview }: WidgetProps)
                     "text-sm font-bold   px-1.5 py-0.5 rounded-none-none",
                     log.action === 'create' ? 'bg-z-active-bg text-z-accent dark:text-z-active-text' :
                     log.action === 'delete' ? 'bg-red-500/10 text-red-600 dark:text-red-400' :
-                    'bg-gray-500/10 text-gray-600 dark:text-z-muted'
+                    'bg-z-panel text-z-secondary'
                   )}>
                     {log.action}
                   </span>
                 </td>
-                <td className="py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <td className="py-2.5 text-sm font-medium text-z-primary ">
                   {(log.collection || 'system').replace(/-/g, ' ')}
                 </td>
                 <td className="py-2.5 text-sm text-z-secondary truncate max-w-[100px]">

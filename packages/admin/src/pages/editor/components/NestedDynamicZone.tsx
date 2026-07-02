@@ -37,13 +37,13 @@ const DraggableZoneItem = ({
  as="div"
  className={cn(
  'border rounded-none-none overflow-hidden',
- theme === 'dark' ? 'bg-z-panel border-white/8' : 'bg-z-input border-z-border'
+ theme === 'dark' ? 'bg-z-panel border-z-border' : 'bg-z-input border-z-border'
  )}
  >
  <div
  className={cn(
  'flex items-center gap-2 px-3 py-2.5 cursor-pointer select-none',
- theme === 'dark' ? 'bg-z-panel hover:bg-z-hover' : 'bg-gray-100/50 hover:bg-gray-100'
+ theme === 'dark' ? 'bg-z-panel hover:bg-z-hover' : 'bg-[var(--z-bg-hover)]/50 hover:bg-[var(--z-bg-hover)]'
  )}
  onClick={() => toggleExpand(dzId)}
  >
@@ -56,16 +56,16 @@ const DraggableZoneItem = ({
  </div>
  <div className={cn(
  'w-5 h-5 rounded-none-none flex items-center justify-center shrink-0',
- theme === 'dark' ? 'bg-gray-500/10' : 'bg-gray-50'
+ theme === 'dark' ? 'bg-z-panel/5' : 'bg-[var(--z-bg-input)]'
  )}>
- <BlockIcon size={10} className="text-gray-600 dark:text-z-muted" />
+ <BlockIcon size={10} className="text-z-secondary" />
  </div>
  <div className="flex-1 min-w-0">
- <p className="text-xs font-semibold text-gray-300 truncate">
+ <p className="text-xs font-semibold text-z-secondary truncate">
  {componentLabel}
  </p>
  </div>
- <span className={cn('text-sm font-semibold shrink-0', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
+ <span className={cn('text-sm font-semibold shrink-0', 'text-z-secondary')}>
  #{idx + 1}
  </span>
  <div className="flex items-center gap-0.5 shrink-0" onClick={(e) => e.stopPropagation()}>
@@ -77,9 +77,9 @@ const DraggableZoneItem = ({
  </button>
  <button
  onClick={() => toggleExpand(dzId)}
- className="p-1 text-z-secondary hover:text-gray-600 dark:text-z-muted transition-colors"
+ className="p-1 text-z-secondary hover:text-z-secondary transition-colors"
  >
- {isExpanded ? <ChevronUp size={12} className="text-gray-600 dark:text-z-muted" /> : <ChevronDown size={12} className="text-z-muted" />}
+ {isExpanded ? <ChevronUp size={12} className="text-z-secondary" /> : <ChevronDown size={12} className="text-z-muted" />}
  </button>
  </div>
  </div>
@@ -92,7 +92,7 @@ const DraggableZoneItem = ({
  transition={{ duration: 0.15 }}
  className="overflow-hidden"
  >
- <div className={cn('px-4 py-4 space-y-4 border-t', theme === 'dark' ? 'border-z-border' : 'border-z-border')}>
+ <div className={cn('px-4 py-4 space-y-4 border-t', 'border-z-border')}>
  {def.fields.map((field: any) => (
  <div key={field.name} className="space-y-1">
  <label className="text-xs font-semibold text-z-muted block">
@@ -187,8 +187,8 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
  <div className="space-y-3">
  {/* Zone label */}
  <div className="flex items-center gap-2 px-1">
- <Layers size={10} className="text-gray-600 dark:text-z-muted" />
- <span className="text-xs font-semibold text-gray-600 dark:text-z-muted">
+ <Layers size={10} className="text-z-secondary" />
+ <span className="text-xs font-semibold text-z-secondary">
  Dynamic Zone
  </span>
  <span className="text-xs text-z-secondary">— {value.length} component{value.length !== 1 ? 's' : ''}</span>
@@ -237,14 +237,14 @@ export const NestedDynamicZone: React.FC<NestedDynamicZoneProps> = ({
  className={cn(
  'w-full flex items-center justify-center gap-2 py-2.5 border border-dashed rounded-none-none transition-all text-xs font-semibold  ',
  theme === 'dark'
- ? 'border-z-border text-z-secondary hover:border-gray-500/40 hover:text-gray-600 dark:text-z-muted hover:bg-gray-500/5'
- : 'border-z-border text-z-muted hover:border-gray-400 hover:text-gray-600 hover:bg-gray-50/50'
+ ? 'border-z-border text-z-secondary hover:border-z-border/40 hover:text-z-secondary hover:bg-z-hover'
+ : 'border-z-border text-z-muted hover:border-z-border hover:text-z-secondary hover:bg-[var(--z-bg-input)]/50'
  )}
  >
  <Plus size={12} />
  Add Component
  {availableComponents.length > 0 && (
- <span className={cn('text-sm font-semibold ml-1', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
+ <span className={cn('text-sm font-semibold ml-1', 'text-z-secondary')}>
  ({availableComponents.length} available)
  </span>
  )}

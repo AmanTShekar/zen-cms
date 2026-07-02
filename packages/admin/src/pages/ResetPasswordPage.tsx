@@ -68,21 +68,21 @@ const ResetPasswordPage: React.FC = () => {
  return (
  <div
  className={cn(
- 'min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-sans antialiased dark:bg-gray-600 transition-colors duration-500',
- theme === 'dark' ? 'bg-black text-white' : 'bg-[#fafafa] text-[#111827]'
+ 'min-h-screen flex items-center justify-center p-6 relative overflow-hidden font-sans antialiased  transition-colors duration-500',
+ theme === 'dark' ? 'bg-app text-z-primary' : 'bg-[#fafafa] text-[#111827]'
  )}
  >
- {/* 🏛️ Professional Minimalist Background */}
+ {/* ️ Professional Minimalist Background */}
  <div
  className={cn(
  'absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-none-none blur-[120px] pointer-events-none transition-all duration-500',
- theme === 'dark' ? 'bg-gray-500/10' : 'bg-gray-500/[0.03]'
+ theme === 'dark' ? 'bg-z-panel/5' : 'bg-z-border/[0.03]'
  )}
  ></div>
  <div
  className={cn(
  'absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-none-none blur-[120px] pointer-events-none transition-all duration-500',
- theme === 'dark' ? 'bg-gray-500/10' : 'bg-gray-500/[0.02]'
+ theme === 'dark' ? 'bg-z-panel/5' : 'bg-z-border/[0.02]'
  )}
  ></div>
 
@@ -96,7 +96,7 @@ const ResetPasswordPage: React.FC = () => {
  <div
  className={cn(
  'w-14 h-14 mb-6 rounded-none-none flex items-center justify-center shadow-2xl relative group cursor-pointer overflow-hidden transition-all duration-500 hover:scale-105',
- theme === 'dark' ? 'bg-white text-black' : 'bg-gray-900 text-white'
+ 'bg-z-primary text-z-inverse'
  )}
  >
  <Logo size="sm" className="scale-75" />
@@ -104,7 +104,7 @@ const ResetPasswordPage: React.FC = () => {
  <h1
  className={cn(
  'text-4xl font-semibold   leading-none transition-colors',
- theme === 'dark' ? 'text-white' : 'text-z-primary'
+ 'text-z-primary'
  )}
  >
  ZENITH
@@ -128,7 +128,7 @@ const ResetPasswordPage: React.FC = () => {
  <h2
  className={cn(
  'text-xl font-semibold   transition-colors',
- theme === 'dark' ? 'text-white' : 'text-z-primary'
+ 'text-z-primary'
  )}
  >
  Reset Password
@@ -142,7 +142,7 @@ const ResetPasswordPage: React.FC = () => {
  <div
  className={cn(
  'p-1 rounded-none-none border flex items-center gap-1 transition-all',
- theme === 'dark' ? 'bg-z-hover border-z-border' : 'bg-gray-100 border-z-border'
+ theme === 'dark' ? 'bg-z-hover border-z-border' : 'bg-[var(--z-bg-hover)] border-z-border'
  )}
  >
  <button
@@ -150,8 +150,8 @@ const ResetPasswordPage: React.FC = () => {
  className={cn(
  'w-7 h-7 flex items-center justify-center rounded-none-none transition-all',
  theme === 'light'
- ? 'bg-white text-z-primary shadow-sm'
- : 'text-z-muted hover:text-white'
+ ? 'bg-z-panel text-z-primary shadow-sm'
+ : 'text-z-muted hover:text-z-primary'
  )}
  >
  <Sun size={14} />
@@ -161,8 +161,8 @@ const ResetPasswordPage: React.FC = () => {
  className={cn(
  'w-7 h-7 flex items-center justify-center rounded-none-none transition-all',
  theme === 'dark'
- ? 'bg-gray-900 text-white shadow-sm'
- : 'text-z-muted hover:text-white'
+ ? 'bg-z-accent text-z-primary shadow-sm'
+ : 'text-z-muted hover:text-z-primary'
  )}
  >
  <Moon size={14} />
@@ -187,8 +187,8 @@ const ResetPasswordPage: React.FC = () => {
  className={cn(
  'w-full rounded-none-none py-4 flex items-center justify-center gap-3 text-xs font-semibold   shadow-xl transition-all group',
  theme === 'dark'
- ? 'bg-white text-black hover:bg-gray-100 shadow-white/5'
- : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
+ ? 'bg-z-panel text-z-primary hover:bg-[var(--z-bg-hover)] shadow-[var(--z-border)]'
+ : 'bg-z-accent text-z-primary hover:bg-app shadow-[var(--z-border)]'
  )}
  >
  <ArrowLeft size={16} />
@@ -198,12 +198,12 @@ const ResetPasswordPage: React.FC = () => {
  ) : success ? (
  <div className="space-y-6 text-center">
  <div className="flex justify-center">
- <CheckCircle className="text-gray-600 dark:text-z-secondary w-12 h-12 animate-pulse" />
+ <CheckCircle className="text-z-secondary  w-12 h-12 animate-pulse" />
  </div>
  <p
  className={cn(
  'text-xs font-bold  tracking-wide px-2 leading-relaxed',
- theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+ theme === 'dark' ? 'text-z-secondary' : 'text-z-secondary'
  )}
  >
  {success}
@@ -213,8 +213,8 @@ const ResetPasswordPage: React.FC = () => {
  className={cn(
  'w-full rounded-none-none py-4 flex items-center justify-center gap-3 text-xs font-semibold   shadow-xl transition-all group',
  theme === 'dark'
- ? 'bg-white text-black hover:bg-gray-100 shadow-white/5'
- : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
+ ? 'bg-z-panel text-z-primary hover:bg-[var(--z-bg-hover)] shadow-[var(--z-border)]'
+ : 'bg-z-accent text-z-primary hover:bg-app shadow-[var(--z-border)]'
  )}
  >
  <span>Proceed to Login</span>
@@ -248,8 +248,8 @@ const ResetPasswordPage: React.FC = () => {
  className={cn(
  'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
  theme === 'dark'
- ? 'text-white/20 group-focus-within:text-gray-600 dark:text-z-muted'
- : 'text-gray-300 group-focus-within:text-gray-600'
+ ? 'text-z-primary/20 group-focus-within:text-z-secondary'
+ : 'text-z-secondary group-focus-within:text-z-secondary'
  )}
  size={16}
  />
@@ -258,10 +258,10 @@ const ResetPasswordPage: React.FC = () => {
  type={showPassword ? 'text' : 'password'}
  placeholder="••••••••"
  className={cn(
- 'w-full border rounded-none-none py-3 pl-12 pr-12 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
+ 'w-full border rounded-none-none py-3 pl-12 pr-12 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
  theme === 'dark'
- ? 'bg-z-hover border-z-border text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20'
- : 'bg-z-input border-z-border shadow-sm text-z-primary focus:bg-white focus:ring-2 focus:ring-gray-100'
+ ? 'bg-z-hover border-z-border text-z-primary focus:bg-z-panel/10 focus:ring-2 focus:ring-z-active-border'
+ : 'bg-z-input border-z-border shadow-sm text-z-primary focus:bg-z-panel focus:ring-2 focus:ring-z-active-border'
  )}
  />
  <button
@@ -270,8 +270,8 @@ const ResetPasswordPage: React.FC = () => {
  className={cn(
  'absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-none-none transition-colors',
  theme === 'dark'
- ? 'text-white/20 hover:text-white'
- : 'text-gray-300 hover:text-z-primary'
+ ? 'text-z-primary/20 hover:text-z-primary'
+ : 'text-z-secondary hover:text-z-primary'
  )}
  >
  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -294,8 +294,8 @@ const ResetPasswordPage: React.FC = () => {
  className={cn(
  'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
  theme === 'dark'
- ? 'text-white/20 group-focus-within:text-gray-600 dark:text-z-muted'
- : 'text-gray-300 group-focus-within:text-gray-600'
+ ? 'text-z-primary/20 group-focus-within:text-z-secondary'
+ : 'text-z-secondary group-focus-within:text-z-secondary'
  )}
  size={16}
  />
@@ -304,10 +304,10 @@ const ResetPasswordPage: React.FC = () => {
  type="password"
  placeholder="••••••••"
  className={cn(
- 'w-full border rounded-none-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
+ 'w-full border rounded-none-none py-3 pl-12 pr-4 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-all',
  theme === 'dark'
- ? 'bg-z-hover border-z-border text-white focus:bg-white/10 focus:ring-2 focus:ring-gray-500/20'
- : 'bg-z-input border-z-border shadow-sm text-z-primary focus:bg-white focus:ring-2 focus:ring-gray-100'
+ ? 'bg-z-hover border-z-border text-z-primary focus:bg-z-panel/10 focus:ring-2 focus:ring-z-active-border'
+ : 'bg-z-input border-z-border shadow-sm text-z-primary focus:bg-z-panel focus:ring-2 focus:ring-z-active-border'
  )}
  />
  </div>
@@ -325,8 +325,8 @@ const ResetPasswordPage: React.FC = () => {
  className={cn(
  'w-full rounded-none-none py-4 flex items-center justify-center gap-3 text-xs font-semibold   shadow-xl transition-all group disabled:opacity-50 disabled:pointer-events-none',
  theme === 'dark'
- ? 'bg-white text-black hover:bg-gray-100 shadow-white/5'
- : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
+ ? 'bg-z-panel text-z-primary hover:bg-[var(--z-bg-hover)] shadow-[var(--z-border)]'
+ : 'bg-z-primary text-z-inverse hover:brightness-110 shadow-[var(--z-border)]'
  )}
  >
  {isSubmitting ? (
@@ -348,8 +348,8 @@ const ResetPasswordPage: React.FC = () => {
  className={cn(
  'text-sm font-semibold   hover:underline flex items-center justify-center gap-2 transition-colors',
  theme === 'dark'
- ? 'text-gray-600 dark:text-z-muted hover:text-gray-300'
- : 'text-gray-600 hover:text-gray-700'
+ ? 'text-z-secondary hover:text-z-secondary'
+ : 'text-z-secondary hover:text-z-primary'
  )}
  >
  <ArrowLeft size={10} />

@@ -26,7 +26,7 @@ const WorkspaceSchema = new Schema<IWorkspace>(
       },
     ],
   },
-  { timestamps: true, collection: 'z_workspaces' }
+  { strict: true, timestamps: true, collection: 'z_workspaces' }
 )
 
 export const WorkspaceModel = mongoose.models.Workspace || mongoose.model<IWorkspace>('Workspace', WorkspaceSchema)

@@ -7,6 +7,7 @@ export interface IFlowLog extends Document {
   msg: string
   details?: Record<string, any>
   timestamp: Date
+  siteId: string
 }
 
 const FlowLogSchema = new Schema<IFlowLog>(
@@ -16,9 +17,10 @@ const FlowLogSchema = new Schema<IFlowLog>(
     nodeId: { type: String },
     msg: { type: String, required: true },
     details: { type: Schema.Types.Mixed },
-    timestamp: { type: Date, default: Date.now }
+    timestamp: { type: Date, default: Date.now },
+    siteId: { type: String, required: true, index: true },
   },
-  { strict: false }
+  { strict: true }
 )
 
 export const FlowLogModel = mongoose.models.z_flow_logs || mongoose.model<IFlowLog>('z_flow_logs', FlowLogSchema)

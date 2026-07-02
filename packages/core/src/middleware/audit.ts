@@ -16,6 +16,12 @@ const SENSITIVE_FIELDS = new Set([
   'authorization', 'x-api-key', 'x-csrf-token',
 ])
 
+export function registerSensitiveFields(fields: string[]) {
+  for (const field of fields) {
+    SENSITIVE_FIELDS.add(field)
+  }
+}
+
 function redactSensitive(data: any): any {
   if (!data || typeof data !== 'object') return data
   if (Array.isArray(data)) return data.map(redactSensitive)
@@ -124,14 +130,14 @@ async function forwardToWebhook(logEntry: AuditLogData, attempt = 1): Promise<bo
 /**
  * Forward audit log to append-only file system log.
  */
-function forwardToFileSystem(logEntry: AuditLogData) {
+async function forwardToFileSystem(logEntry: AuditLogData) {
   try {
     const logDir = path.resolve(process.cwd(), 'logs')
     if (!fs.existsSync(logDir)) {
       fs.mkdirSync(logDir, { recursive: true })
     }
     const logPath = path.join(logDir, 'audit.log')
-    fs.appendFileSync(logPath, JSON.stringify(logEntry) + '\n', 'utf8')
+    await fs.promises.appendFile(logPath, JSON.stringify(logEntry) + '\n', 'utf8')
   } catch (err: any) {
     logger.error({ err: err.message }, 'Failed to append to local audit.log')
   }

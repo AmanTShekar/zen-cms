@@ -12,9 +12,8 @@
   },
   "dependencies": {
     "mongoose": "^8.4.0",
-    "node-cache": "^5.1.2",
+    "@zenith-open/zenithcms-db-common": "workspace:*",
     "pino": "^9.0.0",
-    "ioredis": "^5.4.1",
     "@zenith-open/zenithcms-types": "workspace:*"
   },
   "devDependencies": {

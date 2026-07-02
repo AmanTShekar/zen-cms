@@ -1,4 +1,6 @@
-version: '3.8'
+# Local development compose file.
+# Before using this as a production or shared deployment template, remove all
+# fallback passwords/secrets below and supply values from a real secret manager.
 
 services:
   core:
@@ -10,15 +12,18 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
-      - DATABASE_TYPE=postgres
-      - DATABASE_URL=postgresql://zenith:zenith_password@postgres:5432/zenith
-      - MONGODB_URI=mongodb://zenith:zenith_password@mongodb:27017/zenith?authSource=admin
-      - REDIS_URL=redis://redis:6379
-      - JWT_SECRET=change_me_to_a_secure_random_string_in_production
-      - JWT_REFRESH_SECRET=change_me_to_another_secure_string
-      - CORS_ORIGINS=http://localhost:8080
-      - UPLOADS_DIR=/app/packages/core/uploads
+      - NODE_ENV=${NODE_ENV:-production}
+      - DATABASE_TYPE=${DATABASE_TYPE:-postgres}
+      # Local-only fallback credentials. Override before pushing deployment manifests.
+      - DATABASE_URL=${DATABASE_URL:-postgresql://zenith:zenith_password@postgres:5432/zenith}
+      - MONGODB_URI=${MONGODB_URI:-mongodb://zenith:zenith_password@mongodb:27017/zenith?authSource=admin}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      # Local-only fallback secrets. Override before any non-local deployment.
+      - JWT_SECRET=${JWT_SECRET:-change_me_to_a_secure_random_string_in_production}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-change_me_to_another_secure_string}
+      - AUDIT_HASH_SECRET=${AUDIT_HASH_SECRET:-generate_a_secure_hash_secret_for_audit_logs}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:8080}
+      - UPLOADS_DIR=${UPLOADS_DIR:-/app/packages/core/uploads}
     networks:
       - frontend-net
       - backend-net
@@ -48,17 +53,18 @@ services:
     container_name: zenith_postgres
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=zenith
-      - POSTGRES_PASSWORD=zenith_password
-      - POSTGRES_DB=zenith
+      - POSTGRES_USER=${POSTGRES_USER:-zenith}
+      # Local-only fallback password. Override before pushing deployment manifests.
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-zenith_password}
+      - POSTGRES_DB=${POSTGRES_DB:-zenith}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     networks:
       - backend-net
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U zenith -d zenith"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-zenith} -d ${POSTGRES_DB:-zenith}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -68,11 +74,12 @@ services:
     container_name: zenith_mongodb
     restart: unless-stopped
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=zenith
-      - MONGO_INITDB_ROOT_PASSWORD=zenith_password
-      - MONGO_INITDB_DATABASE=zenith
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME:-zenith}
+      # Local-only fallback password. Override before pushing deployment manifests.
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD:-zenith_password}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE:-zenith}
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     networks:
       - backend-net
     volumes:
@@ -83,7 +90,7 @@ services:
     container_name: zenith_redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     networks:
       - backend-net
     healthcheck:

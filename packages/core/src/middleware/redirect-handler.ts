@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
+import NodeCache from 'node-cache'
 
 /**
  * Redirect Handler Middleware
@@ -11,6 +12,10 @@ import { Request, Response, NextFunction } from 'express'
  *
  * Inspired by Payload CMS redirect plugin pattern.
  */
+// Use NodeCache with a max of 1000 keys and a standard TTL of 1 minute
+const redirectCache = new NodeCache({ stdTTL: 60, maxKeys: 1000 })
+const CACHE_TTL_MS = 60000 // 1 minute TTL for redirects to avoid 404 DB exhaustion
+
 export async function redirectHandler(req: Request, res: Response, next: NextFunction) {
   try {
     const adapter = (req as any).zenith?.adapter
@@ -24,14 +29,27 @@ export async function redirectHandler(req: Request, res: Response, next: NextFun
     if (skipPrefixes.some((p) => req.path.startsWith(p))) return next()
 
     const siteId = req.headers['x-zenith-site-id'] as string | undefined
+    const cacheKey = `${siteId || 'global'}:${req.path}`
+
+    if (redirectCache.has(cacheKey)) {
+      const cached = redirectCache.get<{ to: string, type: string } | null>(cacheKey)
+      if (!cached) return next()
+      return res.redirect(parseInt(cached.type, 10), cached.to)
+    }
+
     const filter: Record<string, any> = { from: req.path }
     if (siteId) filter.siteId = siteId
 
     const redirect = await adapter.findOne('z_redirects', filter)
-    if (!redirect) return next()
+    if (!redirect) {
+      redirectCache.set(cacheKey, null)
+      return next()
+    }
 
     const target = redirect.to
     const statusCode = parseInt(redirect.type || '301', 10)
+
+    redirectCache.set(cacheKey, { to: target, type: statusCode.toString() })
 
     // Update hit counter — works across both MongoDB and Postgres
     try {

@@ -13,7 +13,7 @@ interface SettingsApiKeyModalProps {
 
 const SettingsApiKeyModal: React.FC<SettingsApiKeyModalProps> = ({ newKey, setNewKey, theme }) => {
  return (
- <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+ <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[var(--z-bg-modal)] backdrop-blur-sm">
  <motion.div
  {...({
  initial: { scale: 0.9, opacity: 0 },
@@ -30,7 +30,7 @@ const SettingsApiKeyModal: React.FC<SettingsApiKeyModalProps> = ({ newKey, setNe
  </div>
 
  <div className="flex items-center gap-4 mb-8">
- <div className="w-12 h-12 rounded-none-none bg-gray-500/10 flex items-center justify-center text-gray-600 dark:text-z-secondary border border-gray-500/20">
+ <div className="w-12 h-12 rounded-none-none bg-z-panel flex items-center justify-center text-z-secondary  border border-z-border/20">
  <CheckCircle2 size={24} />
  </div>
  <div>
@@ -57,7 +57,7 @@ const SettingsApiKeyModal: React.FC<SettingsApiKeyModalProps> = ({ newKey, setNe
  navigator.clipboard.writeText(newKey.key)
  toast.success('KEY_COPIED_TO_CLIPBOARD')
  }}
- className="p-2.5 rounded-none-none bg-gray-500 text-white shrink-0 shadow-lg shadow-sm/20 hover:scale-105 active:scale-95 transition-all"
+ className="p-2.5 rounded-none-none bg-z-border text-z-primary shrink-0 shadow-lg shadow-sm/20 hover:scale-105 active:scale-95 transition-all"
  >
  <Copy size={14} />
  </button>
@@ -68,7 +68,7 @@ const SettingsApiKeyModal: React.FC<SettingsApiKeyModalProps> = ({ newKey, setNe
  <p className="text-sm font-bold text-z-muted">
  Frontend .env Integration:
  </p>
- <div className={cn('p-4 rounded-none-none border font-mono text-sm whitespace-pre transition-colors text-gray-600 dark:text-z-muted', theme === 'dark' ? 'bg-[#0a0a0a] border-z-border' : 'bg-gray-900 border-gray-800')}>
+ <div className={cn('p-4 rounded-none-none border font-mono text-sm whitespace-pre transition-colors text-z-secondary', theme === 'dark' ? 'bg-[#0a0a0a] border-z-border' : 'bg-z-accent border-z-border')}>
 {`VITE_CMS_URL=${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/api/v1
 VITE_CMS_API_KEY=${newKey.key}
 VITE_CMS_SITE_ID=your_tenant_id`}
@@ -77,7 +77,7 @@ VITE_CMS_SITE_ID=your_tenant_id`}
 
  <button
  onClick={() => setNewKey(null)}
- className="w-full py-4 rounded-none-none bg-white text-black font-semibold text-sm hover:bg-gray-200 transition-all"
+ className="w-full py-4 rounded-none-none bg-z-panel text-z-primary font-semibold text-sm hover:bg-[var(--z-border)] transition-all"
  >
  I've copied the key
  </button>

@@ -1,11 +1,7 @@
-import { Resend } from 'resend'
-import nodemailer from 'nodemailer'
 import { z } from 'zod'
 import { logger } from './logger'
 import { ADMIN_URL } from './auth'
-import { AdapterFactory } from '../database/adapters/AdapterFactory'
-import { env } from '../config/env';
-
+import { eventHub } from './event-hub'
 
 const recipientSchema = z.string().email().max(254)
 
@@ -18,68 +14,13 @@ export interface EmailOptions {
 }
 
 /**
- * Zenith Email Service
+ * Zenith Email Service (Event Emitter)
  * ─────────────────────
- * Production: Uses SMTP (Nodemailer) or Resend based on z_settings or env vars.
- * Development: Logs email to console if no config is found.
+ * The core does NOT handle sending emails directly (to avoid nodemailer bloat).
+ * Instead, this service formats emails and emits the 'email:send' event.
+ * Official plugins like @zenithcms/plugin-email listen for this event.
  */
 export class EmailService {
-  private static async resolveConfig(overrideSettings?: Record<string, any>, siteId?: string) {
-    const config = {
-      resendKey: env.RESEND_API_KEY,
-      smtpHost: env.SMTP_HOST,
-      smtpPort: env.SMTP_PORT || 587,
-      smtpUser: env.SMTP_USER,
-      smtpPass: env.SMTP_PASS,
-      fromEmail: env.EMAIL_FROM || 'Zenith CMS <noreply@zenith.local>'
-    }
-
-    if (overrideSettings) {
-      if (overrideSettings.smtpHost) config.smtpHost = overrideSettings.smtpHost
-      if (overrideSettings.smtpPort) config.smtpPort = overrideSettings.smtpPort
-      if (overrideSettings.smtpUser) config.smtpUser = overrideSettings.smtpUser
-      if (overrideSettings.smtpPass && overrideSettings.smtpPass !== '[MASKED_CREDENTIAL]') config.smtpPass = overrideSettings.smtpPass
-      if (overrideSettings.fromEmail) config.fromEmail = overrideSettings.fromEmail
-      return config
-    }
-
-    try {
-      const adapter = AdapterFactory.getActiveAdapter()
-      if (adapter) {
-        const query = siteId ? { siteId } : {}
-        const settings = await adapter.findOne<Record<string, any>>('z_settings', query)
-        if (settings) {
-          if (settings.smtpHost) config.smtpHost = settings.smtpHost
-          if (settings.smtpPort) config.smtpPort = settings.smtpPort
-          if (settings.smtpUser) config.smtpUser = settings.smtpUser
-          if (settings.smtpPass && settings.smtpPass !== '[MASKED_CREDENTIAL]') config.smtpPass = settings.smtpPass
-          if (settings.fromEmail) config.fromEmail = settings.fromEmail
-        }
-      }
-    } catch (e) {
-      logger.warn('Failed to load email config from settings')
-    }
-    return config
-  }
-
-  static async testConnection(overrideSettings: Record<string, any>, siteId?: string): Promise<boolean> {
-    const config = await this.resolveConfig(overrideSettings, siteId)
-    if (!config.smtpHost) throw new Error('SMTP Host is required')
-    
-    const transporter = nodemailer.createTransport({
-      host: config.smtpHost,
-      port: config.smtpPort,
-      secure: config.smtpPort === 465,
-      auth: (config.smtpUser && config.smtpPass) ? {
-        user: config.smtpUser,
-        pass: config.smtpPass
-      } : undefined
-    })
-
-    await transporter.verify()
-    return true
-  }
-
   static async send(options: EmailOptions, overrideSettings?: Record<string, any>, siteId?: string): Promise<void> {
     const recipients = Array.isArray(options.to) ? options.to : [options.to]
     for (const addr of recipients) {
@@ -90,61 +31,22 @@ export class EmailService {
       }
     }
 
-    const config = await this.resolveConfig(overrideSettings, siteId)
-    const from = options.from || config.fromEmail
-    const to = recipients
-
-    // 1. Try SMTP if configured
-    if (config.smtpHost) {
-      try {
-        const transporter = nodemailer.createTransport({
-          host: config.smtpHost,
-          port: config.smtpPort,
-          secure: config.smtpPort === 465,
-          auth: (config.smtpUser && config.smtpPass) ? {
-            user: config.smtpUser,
-            pass: config.smtpPass
-          } : undefined
-        })
-        await transporter.sendMail({
-          from,
-          to,
-          subject: options.subject,
-          html: options.html,
-          text: options.text,
-        })
-        logger.info({ to, subject: options.subject }, 'Email sent via SMTP')
-        return
-      } catch (err) {
-        logger.error({ err, to }, 'SMTP email failed')
-        // fallthrough
-      }
+    // Emit the event to the system. If the @zenithcms/plugin-email is installed, 
+    // it will pick this up and send it via SMTP or Resend.
+    eventHub.emit('email:send', {
+      options,
+      overrideSettings,
+      siteId
+    })
+    
+    // In dev mode, we can still print a helpful mock log so developers know an email *would* have sent.
+    if (process.env.NODE_ENV !== 'production') {
+      logger.info('─── EMAIL EVENT FIRED (dev mode) ───────────────────')
+      logger.info(`  To:      ${options.to}`)
+      logger.info(`  Subject: ${options.subject}`)
+      logger.info(`  Body:    ${options.html.replace(/<[^>]+>/g, '').substring(0, 120)}...`)
+      logger.info('────────────────────────────────────────────────────')
     }
-
-    // 2. Try Resend if configured
-    if (config.resendKey) {
-      try {
-        const client = new Resend(config.resendKey)
-        await client.emails.send({
-          from,
-          to,
-          subject: options.subject,
-          html: options.html,
-          text: options.text,
-        })
-        logger.info({ to, subject: options.subject }, 'Email sent via Resend')
-        return
-      } catch (err) {
-        logger.error({ err, to }, 'Resend email failed')
-      }
-    }
-
-    // 3. Dev mode: pretty console log
-    logger.info('─── EMAIL (dev mode) ───────────────────────────────')
-    logger.info(`  To:      ${to}`)
-    logger.info(`  Subject: ${options.subject}`)
-    logger.info(`  Body:    ${options.html.replace(/<[^>]+>/g, '').substring(0, 120)}...`)
-    logger.info('────────────────────────────────────────────────────')
   }
 
   static async sendWelcomeEmail(email: string, name: string, siteId?: string): Promise<void> {

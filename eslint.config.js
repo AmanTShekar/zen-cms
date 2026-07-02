@@ -37,7 +37,7 @@ export default tseslint.config(
           varsIgnorePattern: '^_',
         },
       ],
-      '@typescript-eslint/no-explicit-any': 'off', // Allowed for dynamic schema synthesis
+      '@typescript-eslint/no-explicit-any': 'warn', // Enforce type safety; use 'unknown' instead where possible
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-unsafe-function-type': 'off',
       '@typescript-eslint/no-namespace': 'off',

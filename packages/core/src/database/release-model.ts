@@ -38,13 +38,13 @@ const ReleaseSchema = new Schema<IRelease>(
     publishedAt: { type: Date },
     publishedBy: { type: String },
     failureReason: { type: String },
-    siteId: { type: String },
+    siteId: { type: String, required: true },
   },
-  { timestamps: true }
+  { strict: true, timestamps: true }
 )
 
 // Index for fast listing and site scoping
 ReleaseSchema.index({ siteId: 1, status: 1 })
 ReleaseSchema.index({ scheduledAt: 1 })
 
-export const ReleaseModel = mongoose.model<IRelease>('z_releases', ReleaseSchema)
+export const ReleaseModel = mongoose.models.z_releases || mongoose.model<IRelease>('z_releases', ReleaseSchema)

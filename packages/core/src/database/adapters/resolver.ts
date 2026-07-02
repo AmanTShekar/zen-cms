@@ -9,9 +9,13 @@ export function resolveDatabaseConfig(customUri?: string, customType?: 'mongodb'
 
   // Direct explicit selection
   if (dbType === 'postgres') {
-    return { type: 'postgres', uri: customUri || postgresUri || 'postgres://localhost:5432/zenith' }
+    const uri = customUri || postgresUri
+    if (!uri) throw new Error('POSTGRES_URI environment variable is required when using postgres')
+    return { type: 'postgres', uri }
   } else if (dbType === 'mongodb') {
-    return { type: 'mongodb', uri: customUri || mongoUri || 'mongodb://localhost:27017/zenith' }
+    const uri = customUri || mongoUri
+    if (!uri) throw new Error('MONGODB_URI environment variable is required when using mongodb')
+    return { type: 'mongodb', uri }
   } else if (customUri) {
     // Auto-detection based on custom uri prefix
     if (customUri.startsWith('postgres://') || customUri.startsWith('postgresql://')) {
@@ -22,22 +26,9 @@ export function resolveDatabaseConfig(customUri?: string, customType?: 'mongodb'
   } else if (postgresUri && !mongoUri) {
     // Auto-detection based on environment variables presence
     return { type: 'postgres', uri: postgresUri }
+  } else if (mongoUri) {
+    return { type: 'mongodb', uri: mongoUri }
   } else {
-    // Fallback to default mongodb uri
-    if (!mongoUri && !postgresUri) {
-      console.warn('\x1b[33m%s\x1b[0m', `
-┌────────────────────────────────────────────────────────────┐
-│                  ⚠️  ZENITH STARTUP WARNING  ⚠️             │
-├────────────────────────────────────────────────────────────┤
-│ No active database environment variables were detected.    │
-│ Please check that you have created a .env file from the    │
-│ .env.example template.                                    │
-│                                                            │
-│ Expected: MONGODB_URI or POSTGRES_URI / DATABASE_URL       │
-│ Defaulting to local MongoDB: mongodb://localhost:27017     │
-└────────────────────────────────────────────────────────────┘
-      `)
-    }
-    return { type: 'mongodb', uri: mongoUri || 'mongodb://localhost:27017/zenith' }
+    throw new Error('Database configuration missing. Provide MONGODB_URI or POSTGRES_URI.')
   }
 }

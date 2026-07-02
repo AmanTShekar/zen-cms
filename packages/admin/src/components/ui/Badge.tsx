@@ -10,7 +10,7 @@ export function Badge({ className, variant = 'default', children, ...props }: Ba
   const { theme } = useTheme();
 
   const variantClasses = {
-    default: theme === 'dark' ? 'bg-white/[0.05] text-gray-300 border-z-border-strong' : 'bg-gray-100 text-gray-700 border-z-border',
+    default: theme === 'dark' ? 'bg-z-panel/[0.05] text-z-secondary border-z-border-strong' : 'bg-[var(--z-bg-hover)] text-z-primary border-z-border',
     success: theme === 'dark' ? 'bg-z-active-bg text-z-active-text border-z-accent/20' : 'bg-z-active-bg text-z-accent border-z-active-border',
     warning: theme === 'dark' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-amber-50 text-amber-700 border-amber-200',
     danger: theme === 'dark' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-red-50 text-red-700 border-red-200',

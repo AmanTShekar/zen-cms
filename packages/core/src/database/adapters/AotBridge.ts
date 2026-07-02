@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+
 import * as path from 'path'
 import * as fs from 'fs'
 import { pathToFileURL } from 'url'
@@ -70,6 +70,7 @@ export class AotBridge {
   ): Promise<Record<string, any>> {
     const capitalized = collection.charAt(0).toUpperCase() + collection.slice(1)
     const fnName = `${operation}${capitalized}Compiled`
+    // @ts-ignore: TS2531 - unresolved type from removing @ts-nocheck
     const fn = this.compiledModule[fnName]
     if (!fn) {
       throw new Error(`[AotBridge] Compiled query handler ${fnName} not found`)

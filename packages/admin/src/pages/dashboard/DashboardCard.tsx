@@ -11,7 +11,7 @@ interface DashboardCardProps {
   noPadding?: boolean
 }
 
-export function DashboardCard({ title, icon, action, children, className, noPadding }: DashboardCardProps) {
+export const DashboardCard = React.memo(function DashboardCard({ title, icon, action, children, className, noPadding }: DashboardCardProps) {
   const { theme } = useTheme()
 
   return (
@@ -24,22 +24,16 @@ export function DashboardCard({ title, icon, action, children, className, noPadd
     >
       {(title || action) && (
         <div
-          className={cn(
-            'flex items-center justify-between px-5 py-4 border-b shrink-0',
-            theme === 'dark' ? 'border-z-border' : 'border-z-border'
-          )}
+          className="flex items-center justify-between px-5 py-4 border-b shrink-0 border-z-border"
         >
           <div className="flex items-center gap-2.5">
             {icon && (
-              <span className={cn('text-z-secondary', theme === 'dark' ? 'text-z-secondary' : 'text-z-muted')}>
+              <span className="text-z-secondary">
                 {icon}
               </span>
             )}
             {title && (
-              <h2 className={cn(
-                'text-sm font-semibold  ',
-                theme === 'dark' ? 'text-z-muted' : 'text-z-secondary'
-              )}>
+              <h2 className="text-sm font-semibold text-z-secondary">
                 {title}
               </h2>
             )}
@@ -52,4 +46,4 @@ export function DashboardCard({ title, icon, action, children, className, noPadd
       </div>
     </div>
   )
-}
+})

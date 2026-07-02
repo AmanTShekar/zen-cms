@@ -8,6 +8,7 @@ import {
   GripVertical,
   Layout,
   LayoutDashboard,
+  Inbox,
   LogOut,
   Menu,
   Moon,
@@ -17,11 +18,13 @@ import {
   ShieldCheck,
   Sparkles,
   Sun,
-  Workflow,
+  Upload,
   X,
+  WifiOff,
 } from 'lucide-react'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
+import { useNetworkStatus } from '../hooks/useNetworkStatus'
 import { SiteSelector } from '../components/SiteSelector'
 import { useTheme } from '../context/ThemeContext'
 import { useSystemMetadata } from '../hooks/useQueries'
@@ -33,6 +36,7 @@ import { useShallow } from 'zustand/react/shallow'
 import GlobalSearch from '../components/GlobalSearch'
 import Logo from '../components/Logo'
 import { useBrand } from '../context/BrandContext'
+import { pluginRegistry } from '../lib/plugin-registry'
 
 interface RegistryItem {
   slug: string
@@ -56,6 +60,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
     useShallow((state) => ({ logout: state.logout, user: state.user }))
   )
   const { theme, toggleTheme } = useTheme()
+  const isOnline = useNetworkStatus()
   const { brand, preset, applyPreset } = useBrand()
   const activeSiteName = useTenantStore((state) => state.activeSiteName)
   const activeSiteId = useTenantStore((state) => state.activeSiteId)
@@ -79,21 +84,19 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
 
   const navBase = (dark: boolean, open: boolean) =>
     cn(
-      'flex items-center transition-all group relative border',
-      open ? 'gap-4 px-4 py-3' : 'justify-center py-3 px-0',
-      dark
-        ? 'border-transparent hover:bg-z-hover hover:text-gray-300 text-z-secondary'
-        : 'border-transparent hover:bg-gray-100 hover:text-z-primary text-z-secondary'
+      'relative flex items-center w-full px-4 py-2.5 transition-all outline-none rounded-none-none',
+      open ? 'justify-start gap-3' : 'justify-center',
+      'text-z-sidebar-text hover:text-z-sidebar-text-hover hover:bg-[var(--z-bg-hover)] group'
     )
   const dotBase = 'w-2 h-2 transition-all flex-shrink-0'
 
   const envMode = import.meta.env.MODE || 'development'
   let envConfig = {
-    bg: 'bg-gray-500/5',
-    border: 'border-gray-500/10',
-    dot: 'bg-gray-500',
+    bg: 'bg-z-hover',
+    border: 'border-z-border/10',
+    dot: 'bg-z-border',
     shadow: 'shadow-[0_0_8px_#6b7280]',
-    text: 'text-gray-600 dark:text-z-secondary',
+    text: 'text-z-sidebar-text ',
   }
   if (envMode === 'development') {
     envConfig = {
@@ -122,7 +125,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
   }
 
   // React Query Hook for metadata
-  const { data: health, isSuccess } = useSystemMetadata()
+  const { data: health } = useSystemMetadata()
   const collections = (health?.collections || []).filter((c: any) => {
     if ((user as any)?.role === 'admin') return true
     if (!(user as any)?.specialAccess || (user as any).specialAccess.length === 0) return true
@@ -147,14 +150,17 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
   })
   const location = useLocation()
 
+  const pluginNavItems = pluginRegistry.getSidebarItems().map(item => ({
+    name: item.label,
+    path: item.path,
+    icon: Puzzle, // Fallback icon for plugins
+  }))
+
   const defaultNavItems = [
     { name: 'System Overview', path: '/', icon: LayoutDashboard },
-    { name: 'Media Storage', path: '/media', icon: Box },
+    ...pluginNavItems,
     { name: 'Templates', path: '/templates', icon: Layout },
     { name: 'Plugins', path: '/plugins', icon: Puzzle },
-    { name: 'Data Graph', path: '/graph', icon: Network },
-    { name: 'Workflows', path: '/automations', icon: Workflow },
-    { name: 'AI Assistant', path: '/ai-architect', icon: Sparkles },
   ]
 
   const saveSidebarConfig = useCallback(
@@ -269,7 +275,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
           }}
         >
           {/* Logo & Brand */}
-          <div className="flex items-center gap-4 border-r border-white/5 pr-4 h-full">
+          <div className="flex items-center gap-4 border-r border-z-border pr-4 h-full">
             <div
               className="w-8 h-8 flex items-center justify-center font-semibold text-xs"
               style={{
@@ -299,7 +305,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
               <span className="text-sm font-semibold leading-none">
                 {brand.appName || 'Zenith'}
               </span>
-              <span className="text-sm font-semibold text-gray-500 leading-none mt-1">
+              <span className="text-sm font-semibold text-z-sidebar-text leading-none mt-1">
                 {brand.appTagline || 'v1.0'}
               </span>
             </div>
@@ -307,7 +313,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
 
           {/* Site Selector (Inline) */}
           <div className="mx-4 flex-shrink-0">
-            <div className="text-sm font-semibold text-z-secondary mb-1">Active Scope</div>
+            <div className="text-sm font-semibold text-z-sidebar-text mb-1">Active Scope</div>
             <div className="text-sm font-semibold text-z-primary">
               {activeSiteName || 'System Root'}
             </div>
@@ -325,10 +331,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     key={item.name}
                     to={item.path}
                     className={cn(
-                      'flex items-center gap-2 px-3 py-2 border transition-all whitespace-nowrap',
-                      theme === 'dark'
-                        ? 'border-transparent hover:bg-white/5 text-z-secondary'
-                        : 'border-transparent hover:bg-black/5 text-z-secondary'
+                      'flex items-center gap-2 px-3 py-2 border transition-all whitespace-nowrap border-transparent hover:bg-z-hover text-z-sidebar-text hover:text-z-primary'
                     )}
                     style={{
                       ...activeLink(isActive),
@@ -350,7 +353,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
           </nav>
 
           {/* Right Utilities */}
-          <div className="flex items-center gap-4 pl-4 border-l border-white/5 h-full">
+          <div className="flex items-center gap-4 pl-4 border-l border-z-border h-full">
             <GlobalSearch />
             <div
               className={cn(
@@ -364,19 +367,19 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
             </div>
             <Link
               to="/settings"
-              className="p-1.5 hover:bg-white/10 text-z-secondary transition-all"
+              className="p-1.5 hover:bg-z-hover text-z-sidebar-text hover:text-z-primary transition-all"
             >
               <Settings size={14} />
             </Link>
             <button
               onClick={toggleTheme}
-              className="p-1.5 hover:bg-white/10 text-z-secondary transition-all"
+              className="p-1.5 hover:bg-z-hover text-z-sidebar-text hover:text-z-primary transition-all"
             >
               {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
             </button>
             <button
               onClick={logout}
-              className="p-1.5 hover:bg-red-500/20 text-red-400 transition-all ml-2 border border-red-500/20"
+              className="p-1.5 hover:bg-red-500/20 text-red-500 hover:text-red-600 transition-all ml-2 border border-red-500/20"
             >
               <LogOut size={14} />
             </button>
@@ -407,12 +410,12 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-40 bg-[var(--z-bg-modal)] backdrop-blur-sm"
           />
         )}
       </AnimatePresence>
 
-      {/* 🛡️ Compact Sidebar */}
+      {/* ️ Compact Sidebar */}
       <motion.aside
         initial={false}
         animate={{
@@ -434,7 +437,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
         {/* Workspace */}
         <div
           className={cn(
-            'h-20 flex items-center border-b border-white/[0.03]',
+            'h-20 flex items-center border-b border-z-border',
             isSidebarOpen ? 'justify-between px-6' : 'justify-center px-0'
           )}
         >
@@ -460,7 +463,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
               <motion.div
                 animate={{ opacity: [0.1, 0.4, 0.1], scale: [1, 1.2, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="absolute inset-0 bg-gray-500/20"
+                className="absolute inset-0 bg-z-hover border-z-border-strong"
               />
             </div>
             <AnimatePresence>
@@ -474,9 +477,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     <span className="text-lg font-semibold leading-none">
                       {brand.appName || 'Zenith'}
                     </span>
-                    <div className="w-1 h-1 bg-gray-500 animate-pulse" />
+                    <div className="w-1 h-1 bg-z-border animate-pulse" />
                   </div>
-                  <span className="text-sm font-semibold text-gray-600 dark:text-z-secondary leading-none mt-1.5">
+                  <span className="text-sm font-semibold text-z-sidebar-text leading-none mt-1.5">
                     {brand.appTagline || 'v1.0 Beta'}
                   </span>
                 </motion.div>
@@ -502,7 +505,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                     )}
                   >
                     {isSidebarOpen && (
-                      <span className="text-sm font-semibold text-z-secondary leading-none">
+                      <span className="text-sm font-semibold text-z-sidebar-text leading-none">
                         Navigation
                       </span>
                     )}
@@ -512,14 +515,14 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                         className={cn(
                           'p-1 border rounded-none-none transition-all',
                           isCustomizing
-                            ? 'bg-gray-500/20 border-gray-500/40 text-gray-600 dark:text-z-muted'
-                            : 'border-transparent text-z-secondary hover:text-gray-300'
+                            ? 'bg-z-hover border-z-border-strong border-z-border/40 text-z-sidebar-text'
+                            : 'border-transparent text-z-sidebar-text hover:text-z-sidebar-text'
                         )}
                         title={isCustomizing ? 'Done' : 'Customize'}
                       >
                         <Settings size={10} />
                       </button>
-                      <Command size={10} className="text-z-secondary" />
+                      <Command size={10} className="text-z-sidebar-text" />
                     </div>
                   </div>
 
@@ -538,13 +541,10 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                             value={item}
                             as="div"
                             className={cn(
-                              'flex items-center gap-4 px-4 py-3 rounded-none-none border group cursor-grab active:cursor-grabbing',
-                              theme === 'dark'
-                                ? 'border-z-border text-z-muted hover:bg-z-hover'
-                                : 'border-z-border shadow-sm text-z-secondary hover:bg-gray-50'
+                              'flex items-center gap-4 px-4 py-3 rounded-none-none border group cursor-grab active:cursor-grabbing border-z-border shadow-sm text-z-sidebar-text hover:bg-z-hover hover:text-z-primary'
                             )}
                           >
-                            <GripVertical size={12} className="text-z-secondary shrink-0" />
+                            <GripVertical size={12} className="text-z-sidebar-text shrink-0" />
                             <Icon size={16} strokeWidth={1.5} className="shrink-0" />
                             {isSidebarOpen && (
                               <span className="flex-1 text-sm font-semibold tracking-wide leading-none truncate">
@@ -556,13 +556,13 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                                 e.stopPropagation()
                                 toggleItemVisibility(item.name)
                               }}
-                              className="p-1 hover:text-gray-100 transition-colors shrink-0"
+                              className="p-1 hover:text-z-primary transition-colors shrink-0"
                               title={item.visible ? 'Hide' : 'Show'}
                             >
                               {item.visible ? (
                                 <Eye size={10} />
                               ) : (
-                                <EyeOff size={10} className="text-gray-600" />
+                                <EyeOff size={10} className="text-z-sidebar-text" />
                               )}
                             </button>
                           </Reorder.Item>
@@ -611,9 +611,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
             })()}
           </nav>
 
-          <nav className="space-y-1.5 pt-4 border-t border-white/[0.03]">
+          <nav className="space-y-1.5 pt-4 border-t border-z-border">
             <div className="px-3 mb-2 flex items-center justify-end">
-              <ShieldCheck size={10} className="text-gray-600 dark:text-z-secondary opacity-50" />
+              <ShieldCheck size={10} className="text-z-sidebar-text  opacity-50" />
             </div>
 
             <div className="space-y-0.5">
@@ -651,9 +651,9 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                 isSidebarOpen ? 'px-4 justify-start gap-2' : 'justify-center'
               )}
             >
-              <Database size={14} className="text-z-secondary opacity-50" />
+              <Database size={14} className="text-z-sidebar-text opacity-50" />
               {isSidebarOpen && (
-                <span className="text-xs font-semibold text-z-secondary leading-none">
+                <span className="text-xs font-semibold text-z-sidebar-text leading-none">
                   Content Collections
                 </span>
               )}
@@ -678,7 +678,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                         dotBase,
                         isActive
                           ? 'scale-110 shadow-[0_0_6px_currentColor]'
-                          : 'bg-gray-700/40 group-hover:bg-gray-500'
+                          : 'bg-z-base/40 group-hover:bg-z-border'
                       )}
                       style={activeDot(isActive)}
                     />
@@ -693,11 +693,11 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
             </div>
           </nav>
 
-          {/* 🖥️ System Administration Category */}
-          <nav className="space-y-1.5 pt-4 border-t border-white/[0.03]">
+          {/* ️ System Administration Category */}
+          <nav className="space-y-1.5 pt-4 border-t border-z-border">
             <div className="px-4 mb-2 flex items-center justify-start gap-2">
-              <Settings size={14} className="text-z-secondary opacity-50" />
-              <span className="text-xs font-semibold text-z-secondary leading-none">
+              <Settings size={14} className="text-z-sidebar-text opacity-50" />
+              <span className="text-xs font-semibold text-z-sidebar-text leading-none">
                 System Administration
               </span>
             </div>
@@ -728,7 +728,7 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
                         dotBase,
                         isActive
                           ? 'scale-110 shadow-[0_0_6px_currentColor]'
-                          : 'bg-gray-700/40 group-hover:bg-gray-500'
+                          : 'bg-z-base/40 group-hover:bg-z-border'
                       )}
                       style={activeDot(isActive)}
                     />
@@ -743,15 +743,15 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-white/[0.03] bg-black/[0.02]">
+        <div className="p-4 border-t border-z-border bg-z-hover">
           <button
             onClick={logout}
             className={cn(
-              'w-full flex items-center gap-4 py-3.5 transition-all group border border-transparent hover:border-red-500/20',
+              'w-full flex items-center gap-4 py-3.5 transition-all group border border-transparent hover:border-red-500/20 shadow-sm',
               isSidebarOpen ? 'justify-start px-4' : 'justify-center',
               theme === 'dark'
                 ? 'bg-red-500/5 text-red-400 hover:bg-red-500/10'
-                : 'bg-red-50 text-red-600 hover:bg-red-100 shadow-sm'
+                : 'bg-red-50 text-red-600 hover:bg-red-100'
             )}
           >
             <LogOut size={16} className="group-hover:-translate-x-1 transition-transform" />
@@ -760,13 +760,21 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
         </div>
       </motion.aside>
 
-      {/* 🚀 Dynamic Main Node */}
+      {/*  Dynamic Main Node */}
       <main
+        role="main"
         className="flex-1 flex flex-col min-w-0 relative h-full overflow-hidden"
         style={{ background: 'var(--z-bg-base)' }}
       >
         <div className="flex-1 flex flex-col overflow-hidden">
+          {!isOnline && (
+            <div className="bg-red-500 text-white text-sm font-semibold px-4 py-2 flex items-center justify-center gap-2 relative z-50 shadow-md">
+              <WifiOff size={16} />
+              You are currently offline. Some features may be unavailable.
+            </div>
+          )}
           <header
+            role="banner"
             className="h-20 flex items-center justify-between px-4 md:px-8 z-40 shrink-0"
             style={{
               background: 'var(--z-bg-header)',
@@ -779,6 +787,8 @@ const DashboardLayout: React.FC<{ children?: React.ReactNode }> = ({ children })
               <button
                 onClick={() => setSidebarOpen(!isSidebarOpen)}
                 title={isSidebarOpen ? 'Collapse Sidebar' : 'Expand Sidebar'}
+                aria-expanded={isSidebarOpen}
+                aria-label="Toggle Sidebar"
                 className="p-2 transition-all"
                 style={{
                   background: 'var(--z-bg-hover)',

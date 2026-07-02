@@ -113,7 +113,7 @@ export function useSpatialSave({
  }
  editorSetHasUnsavedChanges(false)
  useEditorStore.getState().setLastSavedAt(new Date().toISOString())
- } catch { toast.error('Auto-save failed', { icon: '⚠️', duration: 3000 }) } finally { editorSetSaving(false) }
+ } catch { toast.error('Auto-save failed', { icon: '️', duration: 3000 }) } finally { editorSetSaving(false) }
  })()
  }, 30000)
  return () => { if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current) }
@@ -179,7 +179,7 @@ export function useSpatialSave({
  const newId = res.data?.data?._id || res.data?.data?.id
  editorSetHasUnsavedChanges(false)
  useEditorStore.getState().setLastSavedAt(new Date().toISOString())
- toast.success(pStatus === 'published' ? '✨ Published!' : '📝 Saved as Draft', {})
+ toast.success(pStatus === 'published' ? ' Published!' : ' Saved as Draft', {})
  
  if (isNewDoc && newId) {
  navigate(`/collections/${params.slug || 'pages'}/${newId}`, { replace: true })

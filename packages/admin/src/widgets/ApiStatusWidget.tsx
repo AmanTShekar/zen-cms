@@ -35,7 +35,7 @@ export default function ApiStatusWidget({ theme, title, isPreview }: WidgetProps
   return (
     <div className="flex flex-col justify-between gap-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+        <p className="text-sm font-bold text-z-primary  flex items-center gap-2">
           <Activity size={14} className={isOk ? "text-z-active-text" : "text-z-muted"} /> 
           {title || 'API Health & Connectivity'}
         </p>
@@ -53,7 +53,7 @@ export default function ApiStatusWidget({ theme, title, isPreview }: WidgetProps
         <div className="flex items-center gap-4">
           <div className={cn(
             "w-12 h-12 rounded-none-none flex items-center justify-center border",
-            isChecking ? "bg-gray-100 border-z-border text-z-muted dark:bg-gray-800 dark:border-gray-700" :
+            isChecking ? "bg-[var(--z-bg-hover)] border-z-border text-z-muted  " :
             isOk ? "bg-z-active-bg border-z-active-border text-z-accent dark:bg-z-active-bg dark:border-z-accent/20 dark:text-z-active-text" : 
             "bg-red-50 border-red-200 text-red-600 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400"
           )}>
@@ -74,9 +74,9 @@ export default function ApiStatusWidget({ theme, title, isPreview }: WidgetProps
         </div>
 
         {latency !== null && !isChecking && (
-          <div className="flex flex-col items-end border-l pl-4 border-z-border dark:border-gray-800">
+          <div className="flex flex-col items-end border-l pl-4 border-z-border ">
             <span className="text-sm text-z-secondary font-bold mb-1">Latency</span>
-            <span className="text-xl font-semibold tabular-nums text-gray-800 dark:text-gray-100 leading-none">
+            <span className="text-xl font-semibold tabular-nums text-z-primary  leading-none">
               {latency}<span className="text-sm font-medium text-z-muted ml-0.5">ms</span>
             </span>
           </div>

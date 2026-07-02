@@ -2,7 +2,6 @@
 // @ts-nocheck
 import { Router, Request, Response } from 'express';
 import { requireAuth, requireRole } from '../../middleware/auth';
-import { AIProviderService } from '../../services/ai-providers';
 import { z } from 'zod';
 import { AdapterFactory } from '../../database/adapters/AdapterFactory';
 import { DatabaseAdapter } from '../../database/adapters/BaseAdapter';
@@ -17,13 +16,36 @@ function getAdapter(req: Request): DatabaseAdapter {
   return (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter || AdapterFactory.getActiveAdapter();
 }
 
-// Validation schema for testing AI keys
-const ValidateKeySchema = z.object({
-  provider: z.string(),
-  apiKey: z.string(),
-});
 
 // ── Global Settings ──────────────────────────────────────────────────────────
+
+// GET /api/v1/system/settings/public-billing
+settingsRouter.get('/public-billing', async (req: Request, res: Response, next) => {
+  try {
+    const adapter = getAdapter(req);
+    const siteId = req.headers['x-zenith-site-id'] as string;
+    const query = siteId ? { siteId } : {};
+    const settings = await adapter.findOne<Record<string, any>>('z_settings', query);
+    
+    if (!settings || !settings.billingEnabled) {
+      return res.json({ data: { billingEnabled: false } });
+    }
+
+    res.json({
+      data: {
+        billingEnabled: true,
+        currency: settings.currency || 'USD',
+        paymentProvider: settings.paymentProvider || 'stripe',
+        pricingPlans: settings.pricingPlans || [],
+        stripePublicKey: settings.stripePublicKey,
+        paypalClientId: settings.paypalClientId,
+        razorpayKeyId: settings.razorpayKeyId
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // GET /api/v1/system/settings
 settingsRouter.get('/', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
@@ -148,31 +170,3 @@ settingsRouter.post('/gdpr/purge-expired', requireAuth, requireRole('admin'), as
   }
 });
 
-// ── AI Provider Endpoints ────────────────────────────────────────────────────
-
-// POST /api/v1/system/settings/ai/validate
-settingsRouter.post('/ai/validate', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
-  try {
-    const { provider, apiKey } = ValidateKeySchema.parse(req.body);
-    const isValid = await AIProviderService.validateKey(provider, apiKey);
-
-    if (isValid) {
-      res.json({ success: true, message: 'API Key is valid' });
-    } else {
-      res.status(401).json({ success: false, error: 'Invalid API Key for provider' });
-    }
-  } catch (err) {
-    next(err);
-  }
-});
-
-// POST /api/v1/system/settings/ai/models
-settingsRouter.post('/ai/models', requireAuth, requireRole('admin'), async (req: Request, res: Response, next) => {
-  try {
-    const { provider, apiKey } = ValidateKeySchema.parse(req.body);
-    const models = await AIProviderService.fetchModels(provider, apiKey);
-    res.json({ data: models });
-  } catch (err: any) {
-    res.status(500).json({ success: false, error: err.message || 'Failed to fetch models' });
-  }
-});

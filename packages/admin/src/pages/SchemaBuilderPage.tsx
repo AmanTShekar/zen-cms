@@ -139,8 +139,8 @@ function FieldTypePicker({ value, onChange, theme }: { value: FieldType; onChang
  className={cn(
  'w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold   transition-all rounded-none',
  value === ft.value
- ? 'bg-z-accent text-white'
- : theme === 'dark' ? 'text-z-muted hover:bg-z-hover hover:text-white' : 'text-gray-600 hover:bg-gray-50'
+ ? 'bg-z-accent text-z-logo-text'
+ : theme === 'dark' ? 'text-z-muted hover:bg-z-hover hover:text-z-primary' : 'text-z-secondary hover:bg-[var(--z-bg-input)]'
  )}
  >
  <FtIcon size={12} style={{ color: value === ft.value ? 'white' : ft.color }} />
@@ -155,64 +155,106 @@ function FieldTypePicker({ value, onChange, theme }: { value: FieldType; onChang
  )
 }
 
+
+
 // ── Nested Fields Editor ──────────────────────────────────────────────────────
 function NestedFieldsEditor({
-  fields, onUpdate, theme, availableCollections
+ fields, onUpdate, theme, availableCollections
 }: {
-  fields: FieldConfig[]
-  onUpdate: (fields: FieldConfig[]) => void
-  theme: string
-  availableCollections: string[]
+ fields: FieldConfig[]
+ onUpdate: (fields: FieldConfig[]) => void
+ theme: string
+ availableCollections: string[]
 }) {
-  const inputClass = cn(
-    'w-full border p-2 text-sm font-mono outline-none focus-visible:ring-2 focus-visible:ring-z-active-border transition-colors rounded-none shadow-sm',
-    'z-input'
-  )
+  const addField = () => {
+    onUpdate([...fields, { name: `nestedField${fields.length + 1}`, type: 'text', label: `Nested Field ${fields.length + 1}` }])
+  }
   
-  const addField = () => onUpdate([...fields, { name: `field${fields.length + 1}`, type: 'text', label: `Field ${fields.length + 1}` }])
-  const removeField = (index: number) => onUpdate(fields.filter((_, i) => i !== index))
+  const removeField = (index: number) => {
+    onUpdate(fields.filter((_, i) => i !== index))
+  }
+
   const updateField = (index: number, key: string, value: any) => {
     const next = [...fields]
     next[index] = { ...next[index], [key]: value }
     onUpdate(next)
   }
 
+  const inputClass = cn(
+    'border outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black text-sm font-bold transition-colors py-2 px-3 rounded-none shadow-sm',
+    'z-input'
+  )
+
   return (
-    <div className="space-y-4 mt-4 border-l-2 border-z-accent/50 pl-4">
+    <div className="mt-4 border-l-2 border-z-accent/50 pl-4 space-y-4">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-bold text-z-secondary">Nested Fields Configuration</label>
-        <button type="button" onClick={addField} className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-none transition-all">
-          <Plus size={12} /> Add Sub-field
+        <h4 className="text-sm font-bold text-z-primary">Nested Fields ({fields.length})</h4>
+        <button
+          onClick={addField}
+          type="button"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-z-panel hover:bg-z-hover border border-z-border text-z-secondary text-sm font-semibold rounded-none transition-all"
+        >
+          <Plus size={12} /> Add Field
         </button>
       </div>
-
-      <div className="space-y-3">
-        {fields.map((field, i) => (
-          <div key={i} className="p-4 relative group rounded-none bg-black/20 border border-white/10">
-            <button type="button" onClick={() => removeField(i)} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1 text-red-500/50 hover:text-red-500 transition-all rounded-none">
-              <Trash2 size={12} />
-            </button>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pr-6">
-              <div>
-                <label className="text-xs font-semibold text-z-secondary block mb-1">Field Name</label>
-                <input type="text" value={field.name} onChange={e => updateField(i, 'name', e.target.value.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, ''))} className={inputClass} placeholder="name" />
+      
+      {fields.length === 0 ? (
+        <div className="p-4 border border-dashed border-z-border text-center text-z-secondary text-sm">
+          No nested fields added yet.
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {fields.map((field, i) => (
+            <div key={i} className="p-4 relative group border border-z-border bg-z-panel">
+              <button
+                type="button"
+                onClick={() => removeField(i)}
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1 text-red-500/50 hover:text-red-500 transition-all rounded-none hover:bg-red-500/10 z-10"
+              >
+                <Trash2 size={12} />
+              </button>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pr-6">
+                <div>
+                  <label className="text-xs font-semibold text-z-secondary block mb-1">Field Name (key)</label>
+                  <input
+                    type="text"
+                    value={field.name}
+                    onChange={e => updateField(i, 'name', e.target.value.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, ''))}
+                    className={cn(inputClass, 'w-full rounded-none font-mono text-xs')}
+                    placeholder="fieldName"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-z-secondary block mb-1">Field Type</label>
+                  <FieldTypePicker
+                    value={field.type}
+                    onChange={v => updateField(i, 'type', v)}
+                    theme={theme}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-z-secondary block mb-1">Display Label</label>
+                  <input
+                    type="text"
+                    value={field.label || ''}
+                    onChange={e => updateField(i, 'label', e.target.value)}
+                    className={cn(inputClass, 'w-full rounded-none text-xs')}
+                    placeholder="Human readable label"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-xs font-semibold text-z-secondary block mb-1">Field Type</label>
-                <FieldTypePicker value={field.type} onChange={v => updateField(i, 'type', v)} theme={theme} />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-z-secondary block mb-1">Display Label</label>
-                <input type="text" value={field.label || ''} onChange={e => updateField(i, 'label', e.target.value)} className={inputClass} placeholder="Label" />
-              </div>
+              
+              <FieldAdvancedPanel
+                field={field}
+                onUpdate={(key, value) => updateField(i, key, value)}
+                theme={theme}
+                availableCollections={availableCollections}
+              />
             </div>
-            
-            <div className="mt-2">
-               <FieldAdvancedPanel field={field} onUpdate={(key, value) => updateField(i, key, value)} theme={theme} availableCollections={availableCollections} />
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -239,7 +281,7 @@ function FieldAdvancedPanel({
  <button
  type="button"
  onClick={() => setOpen(!open)}
- className="flex items-center gap-1.5 text-sm font-semibold text-z-secondary hover:text-gray-600 dark:text-z-secondary transition-colors"
+ className="flex items-center gap-1.5 text-sm font-semibold text-z-secondary hover:text-z-secondary  transition-colors"
  >
  {open ? <ChevronDown size={10} /> : <ChevronRight size={10} />}
  Advanced Options
@@ -401,7 +443,7 @@ function FieldAdvancedPanel({
  <button
  type="button"
  onClick={() => onUpdate('options', [...(field.options || []), { label: '', value: '' }])}
- className="flex items-center gap-1 text-sm font-semibold text-gray-600 dark:text-z-secondary hover:text-gray-600 dark:text-z-muted"
+ className="flex items-center gap-1 text-sm font-semibold text-z-secondary  hover:text-z-secondary"
  >
  <Plus size={10} /> Add Option
  </button>
@@ -672,7 +714,7 @@ ${fieldsCode}
   )
 
  return (
- <div className={cn('flex h-[calc(100vh-4rem)] overflow-hidden', dark ? 'bg-black text-white' : 'bg-gray-50 text-z-primary')}>
+ <div className={cn('flex h-[calc(100vh-4rem)] overflow-hidden', dark ? 'bg-app text-z-primary' : 'bg-[var(--z-bg-input)] text-z-primary')}>
 
  {/* ── Schemas Sidebar ─────────────────────────────────────────────── */}
  <div className={cn('w-64 flex-shrink-0 border-r flex flex-col', 'border-z-border bg-z-panel')}>
@@ -682,7 +724,7 @@ ${fieldsCode}
  </h2>
  <button
  onClick={resetEditor}
- className="p-1.5 bg-gray-500/10 hover:bg-gray-500/20 text-gray-600 dark:text-z-secondary rounded-none transition-colors"
+ className="p-1.5 bg-z-panel hover:bg-z-hover border-z-border-strong text-z-secondary  rounded-none transition-colors"
  title="New Schema"
  >
  <Plus size={14} />
@@ -704,11 +746,11 @@ ${fieldsCode}
  onClick={() => loadSchema(schema)}
  className={cn(
  'flex-1 flex items-center justify-between text-left px-3 py-2.5 text-sm font-semibold   transition-colors rounded-none truncate',
- isActive ? 'bg-z-accent text-white shadow-sm' : dark ? 'text-z-muted hover:bg-z-hover hover:text-white' : 'text-gray-600 hover:bg-gray-50'
+ isActive ? 'bg-z-accent text-z-logo-text shadow-sm' : dark ? 'text-z-muted hover:bg-z-hover hover:text-z-primary' : 'text-z-secondary hover:bg-[var(--z-bg-input)]'
  )}
  >
  <span>{schema.slug}</span>
- {schema.isCodeFirst && <Lock size={10} className={isActive ? 'text-white' : 'text-z-secondary'} />}
+ {schema.isCodeFirst && <Lock size={10} className={isActive ? 'text-z-primary' : 'text-z-secondary'} />}
  </button>
  {!schema.isCodeFirst && (
  <button
@@ -734,7 +776,7 @@ ${fieldsCode}
       <div className="flex items-center gap-2">
         <button
           onClick={() => setShowAI(true)}
-          className="px-4 py-2 bg-purple-600/10 text-purple-500 hover:bg-purple-600/20 text-sm font-bold rounded-none transition-all"
+          className="px-4 py-2 bg-z-active-bg text-z-accent hover:opacity-80 text-sm font-bold rounded-none transition-all"
         >
           AI Generate
         </button>
@@ -753,7 +795,7 @@ ${fieldsCode}
         <button
           onClick={handleSave}
           disabled={saving || isCodeFirst}
-          className="px-4 py-2 bg-z-accent hover:bg-z-accent/90 text-white text-sm font-bold rounded-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-z-accent hover:bg-z-accent/90 text-z-primary text-sm font-bold rounded-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving ? 'Saving...' : isCodeFirst ? 'Locked' : 'Save'}
         </button>
@@ -817,16 +859,16 @@ ${fieldsCode}
  }}
  className={cn(
  'w-8 h-4 rounded-none relative transition-all cursor-pointer',
- settings[key] ? 'bg-gray-500' : dark ? 'bg-white/10' : 'bg-gray-200',
+ settings[key] ? 'bg-z-border' : dark ? 'bg-z-panel/10' : 'bg-[var(--z-border)]',
  isCodeFirst && 'opacity-50 cursor-not-allowed'
  )}
  >
  <div className={cn(
- 'absolute top-0.5 w-3 h-3 rounded-none bg-white shadow transition-all',
+ 'absolute top-0.5 w-3 h-3 rounded-none bg-z-panel shadow transition-all',
  settings[key] ? 'left-4' : 'left-0.5'
  )} />
  </div>
- <span className="text-sm font-bold capitalize text-z-muted group-hover:text-gray-200 transition-colors">
+ <span className="text-sm font-bold capitalize text-z-muted group-hover:text-z-primary transition-colors">
  {key.replace(/([A-Z])/g, ' $1').trim()}
  </span>
  </label>
@@ -843,7 +885,7 @@ ${fieldsCode}
  {!isCodeFirst && (
  <button
  onClick={addField}
- className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-500/10 hover:bg-gray-500/20 text-gray-600 dark:text-z-secondary text-sm font-semibold rounded-none transition-all"
+ className="flex items-center gap-1.5 px-3 py-1.5 bg-z-panel hover:bg-z-hover border-z-border-strong text-z-secondary  text-sm font-semibold rounded-none transition-all"
  >
  <Plus size={12} /> Add Field
  </button>
@@ -947,9 +989,9 @@ ${fieldsCode}
 
  {fields.length === 0 && (
  <div className="py-16 text-center">
- <Layers size={40} className="mx-auto text-gray-700 mb-4" strokeWidth={1} />
- <p className="text-sm font-semibold text-gray-600">No fields yet</p>
- <p className="text-sm text-gray-600 mt-1">Click "Add Field" or use AI Generate to get started</p>
+ <Layers size={40} className="mx-auto text-z-primary mb-4" strokeWidth={1} />
+ <p className="text-sm font-semibold text-z-secondary">No fields yet</p>
+ <p className="text-sm text-z-secondary mt-1">Click "Add Field" or use AI Generate to get started</p>
  </div>
  )}
  </div>
@@ -960,16 +1002,16 @@ ${fieldsCode}
  {/* ── Code Modal ─────────────────────────────────────────────────── */}
  <AnimatePresence>
  {showCode && (
- <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
- <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-3xl border rounded-none-none shadow-2xl p-6 relative flex flex-col h-[80vh] bg-black border-z-border">
- <button onClick={() => setShowCode(false)} className="absolute top-4 right-4 text-z-secondary hover:text-white"><X size={20} /></button>
+ <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-app/70 backdrop-blur-sm p-4">
+ <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-3xl border rounded-none-none shadow-2xl p-6 relative flex flex-col h-[80vh] bg-app border-z-border">
+ <button onClick={() => setShowCode(false)} className="absolute top-4 right-4 text-z-secondary hover:text-z-primary"><X size={20} /></button>
  <h2 className="text-xl font-semibold mb-4 flex items-center gap-3">
- <Code className="text-gray-600 dark:text-z-secondary" /> Generated TypeScript
+ <Code className="text-z-secondary " /> Generated TypeScript
  </h2>
- <div className="flex-1 bg-[#1E1E1E] border border-z-border p-5 overflow-auto text-sm font-mono text-gray-600 dark:text-z-muted relative rounded-none-none">
+ <div className="flex-1 bg-[#1E1E1E] border border-z-border p-5 overflow-auto text-sm font-mono text-z-secondary relative rounded-none-none">
  <button
  onClick={() => { navigator.clipboard.writeText(generateCode()); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
- className="absolute top-3 right-3 p-2 bg-white/10 hover:bg-white/20 text-white transition-colors rounded-none-none"
+ className="absolute top-3 right-3 p-2 bg-z-panel/10 hover:bg-z-panel/20 text-z-primary transition-colors rounded-none-none"
  >
  {copied ? <Check size={14} /> : <Copy size={14} />}
  </button>
@@ -983,9 +1025,9 @@ ${fieldsCode}
  {/* ── AI Generate Modal ───────────────────────────────────────────── */}
  <AnimatePresence>
  {showAI && (
- <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
- <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none-none shadow-2xl p-6 relative bg-black border-z-border">
- <button onClick={() => setShowAI(false)} className="absolute top-4 right-4 text-z-secondary hover:text-white"><X size={20} /></button>
+ <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-app/70 backdrop-blur-sm p-4">
+ <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none-none shadow-2xl p-6 relative bg-app border-z-border">
+ <button onClick={() => setShowAI(false)} className="absolute top-4 right-4 text-z-secondary hover:text-z-primary"><X size={20} /></button>
  <h2 className="text-xl font-semibold mb-2 flex items-center gap-3">
  <Sparkles className="text-purple-400" /> AI Schema Architect
  </h2>
@@ -997,12 +1039,12 @@ ${fieldsCode}
  value={aiPrompt}
  onChange={e => setAiPrompt(e.target.value)}
  placeholder='e.g. "A blog post collection with title, slug, content, featured image, author relation to users, published date, and category select field with options."'
- className="w-full bg-black border border-z-border focus:border-purple-500/50 p-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none-none placeholder:text-gray-600 text-white resize-none mb-4"
+ className="w-full bg-app border border-z-border focus:border-z-active-border/50 p-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none-none placeholder:text-z-secondary text-z-primary resize-none mb-4"
  />
  <button
  disabled={isAIGenerating || !aiPrompt}
  onClick={handleAIGenerate}
- className="w-full py-3.5 bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold flex justify-center items-center gap-2 transition-all rounded-none-none disabled:opacity-50"
+ className="w-full py-3.5 bg-z-accent hover:opacity-80 text-z-logo-text text-sm font-semibold flex justify-center items-center gap-2 transition-all rounded-none-none disabled:opacity-50"
  >
  {isAIGenerating ? <><Loader2 size={14} className="animate-spin" /> Generating...</> : <><Sparkles size={14} /> Generate Schema</>}
  </button>
@@ -1014,11 +1056,11 @@ ${fieldsCode}
  {/* ── Introspect Modal ─────────────────────────────────────────────── */}
  <AnimatePresence>
  {showIntrospect && (
- <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
- <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none-none shadow-2xl p-6 relative bg-black border-z-border">
- <button onClick={() => setShowIntrospect(false)} className="absolute top-4 right-4 text-z-secondary hover:text-white"><X size={20} /></button>
+ <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-app/70 backdrop-blur-sm p-4">
+ <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-lg border rounded-none-none shadow-2xl p-6 relative bg-app border-z-border">
+ <button onClick={() => setShowIntrospect(false)} className="absolute top-4 right-4 text-z-secondary hover:text-z-primary"><X size={20} /></button>
  <h2 className="text-xl font-semibold mb-2 flex items-center gap-3">
- <Database className="text-gray-600 dark:text-z-secondary" /> DB Introspection
+ <Database className="text-z-secondary " /> DB Introspection
  </h2>
  <p className="text-sm text-z-muted mb-5 font-medium">
  Connect to a Postgres database to reverse-engineer tables into Zenith schema fields.
@@ -1028,12 +1070,12 @@ ${fieldsCode}
  placeholder="postgresql://user:password@localhost:5432/mydb"
  value={dbUri}
  onChange={e => setDbUri(e.target.value)}
- className="w-full bg-black border border-z-border focus:border-gray-500/50 p-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none-none placeholder:text-gray-600 text-white mb-4 font-mono"
+ className="w-full bg-app border border-z-border focus:border-z-border/50 p-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none-none placeholder:text-z-secondary text-z-primary mb-4 font-mono"
  />
  <button
  disabled={isIntrospecting}
  onClick={handleIntrospect}
- className="w-full py-3.5 bg-gray-500 hover:bg-gray-400 text-white text-sm font-semibold flex justify-center items-center gap-2 transition-all rounded-none-none"
+ className="w-full py-3.5 bg-z-border hover:bg-z-input text-z-primary text-sm font-semibold flex justify-center items-center gap-2 transition-all rounded-none-none"
  >
  {isIntrospecting ? <><Loader2 size={14} className="animate-spin" /> Scanning...</> : <><RefreshCw size={14} /> Analyze Database</>}
  </button>

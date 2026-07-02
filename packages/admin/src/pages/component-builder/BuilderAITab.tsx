@@ -28,7 +28,7 @@ export const BuilderAITab = ({
               value={aiPrompt}
               onChange={e => setAiPrompt(e.target.value)}
               placeholder='e.g. "A pricing card component with a plan name, price per month, list of up to 5 feature bullets, a CTA button label, a highlighted/featured boolean flag, and a color accent picker."'
-              className={cn('w-full border p-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none placeholder:text-gray-600 resize-none shadow-inner', dark ? 'bg-black/40 backdrop-blur-sm border-z-border focus:border-z-accent/50 text-white' : 'bg-z-input border-z-border focus:border-z-accent text-z-primary')}
+              className={cn('w-full border p-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded-none placeholder:text-z-secondary resize-none shadow-inner', dark ? 'bg-z-panel backdrop-blur-sm border-z-border focus:border-z-accent/50 text-z-primary' : 'bg-z-input border-z-border focus:border-z-accent text-z-primary')}
             />
           </div>
 
@@ -43,7 +43,7 @@ export const BuilderAITab = ({
               <button
                 key={suggestion}
                 onClick={() => setAiPrompt(suggestion)}
-                className={cn('text-sm font-semibold   px-3 py-1.5 border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-white hover:border-z-accent/50 hover:bg-z-active-bg' : 'border-z-border text-z-secondary hover:text-black hover:border-z-active-border')}
+                className={cn('text-sm font-semibold   px-3 py-1.5 border rounded-none transition-all', dark ? 'border-z-border text-z-secondary hover:text-z-primary hover:border-z-accent/50 hover:bg-z-active-bg' : 'border-z-border text-z-secondary hover:text-z-primary hover:border-z-active-border')}
               >
                 {suggestion.slice(0, 40)}...
               </button>
@@ -53,7 +53,7 @@ export const BuilderAITab = ({
           <button
             disabled={isAIGenerating || !aiPrompt.trim()}
             onClick={handleAIGenerate}
-            className="w-full py-4 bg-z-accent hover:opacity-90 text-white text-sm font-semibold flex justify-center items-center gap-2 transition-all rounded-none disabled:opacity-50 shadow-sm"
+            className="w-full py-4 bg-z-accent hover:brightness-110 text-z-logo-text text-sm font-semibold flex justify-center items-center gap-2 transition-all rounded-none disabled:opacity-50 shadow-sm"
           >
             {isAIGenerating
               ? <><Loader2 size={14} className="animate-spin" /> Generating with AI...</>

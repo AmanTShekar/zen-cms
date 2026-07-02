@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { Router } from 'express'
 import { z } from 'zod'
 import { requireAuth, requireRole } from '../middleware/auth'
@@ -8,6 +6,7 @@ import { ValidationError, NotFoundError, ForbiddenError } from '../errors'
 import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { logger } from '../services/logger'
 import { invalidateRoleCache } from '../services/rbac'
+import { sessionStore } from '../services/session-store'
 
 const router: import('express').Router = Router()
 
@@ -263,7 +262,7 @@ router.post('/assign', async (req, res, next) => {
   try {
     // ISOLATION FIX: Only true global admins can assign global user roles.
     // A site-level custom role with wildcard permissions cannot escalate privileges globally.
-    if ((req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user.role !== 'admin') {
+    if ((req as import('../types/request').ZenithRequest).user!.role !== 'admin') {
       throw new ForbiddenError('Only true global administrators can assign global roles.')
     }
 
@@ -282,16 +281,27 @@ router.post('/assign', async (req, res, next) => {
     const user = users[0]
     if (!user) throw new NotFoundError('User', validation.data.userId)
 
+    const previousRole = user.role
     await adapter.update('users', user.id || user._id, { role: validation.data.role })
     user.role = validation.data.role
 
-    logger.info(`[Roles] Assigned role "${validation.data.role}" to user "${user.email}"`)
+    // ── Security: Immediately invalidate all active sessions for the affected
+    // user. Without this, a JWT minted under the old role remains valid until
+    // it naturally expires, allowing a demoted (or banned) admin to continue
+    // hitting privileged endpoints — including /blocks/generate.
+    const userId = (user.id || user._id).toString()
+    const revokedCount = await sessionStore.revokeAllForUser(userId)
+    logger.info(
+      `[Roles] Assigned role "${validation.data.role}" (was "${previousRole}") to user "${user.email}". ` +
+      `Revoked ${revokedCount} active session(s) to enforce immediate role propagation.`
+    )
 
     res.json(
       createResponse({
         userId: user.id || user._id,
         email: user.email,
         role: user.role,
+        sessionsRevoked: revokedCount,
       })
     )
   } catch (err) {
@@ -303,7 +313,7 @@ router.post('/assign', async (req, res, next) => {
 router.get('/users/list', async (req, res, next) => {
   try {
     // ISOLATION FIX: Only true global admins can list all global users.
-    if ((req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).user.role !== 'admin') {
+    if ((req as import('../types/request').ZenithRequest).user!.role !== 'admin') {
       throw new ForbiddenError('Only true global administrators can list global users.')
     }
 

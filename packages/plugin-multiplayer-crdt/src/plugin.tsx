@@ -1,0 +1,1 @@
+export { useYjsCollab } from './useYjsCollab';

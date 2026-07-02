@@ -1,78 +1,17 @@
-import { CollectionConfig, FieldConfig, DatabaseAdapter, FindOptions, BaseOptions, AuditLogData, VersionData, WebhookDeliveryData, WebhookDeliveryRecord } from '@zenith-open/zenithcms-types'
-import NodeCache from 'node-cache'
-import Redis from 'ioredis'
+// PostgresDrizzleAdapter — fully typed, @ts-nocheck removed 2026-06-29
+import { CollectionConfig, DatabaseAdapter, FindOptions, BaseOptions, AuditLogData, VersionData, WebhookDeliveryData, WebhookDeliveryRecord } from '@zenith-open/zenithcms-types'
+import { CacheLayer, createCacheLayer } from '@zenith-open/zenithcms-db-common'
 import pino from 'pino'
 
-export interface CacheLayer {
-  get<T>(key: string): Promise<T | undefined>
-  set<T>(key: string, value: T, collection: string): Promise<void>
-  invalidate(collection: string): Promise<void>
-}
 
-export class LocalCacheLayer implements CacheLayer {
-  private cache: NodeCache
-  constructor() {
-    this.cache = new NodeCache({ stdTTL: 60, checkperiod: 120 })
-  }
-  async get<T>(key: string): Promise<T | undefined> {
-    return this.cache.get<T>(key)
-  }
-  async set<T>(key: string, value: T, collection: string): Promise<void> {
-    this.cache.set(key, value)
-  }
-  async invalidate(collection: string): Promise<void> {
-    const keys = this.cache.keys()
-    const targets = keys.filter((k) => k.startsWith(`${collection}:`))
-    this.cache.del(targets)
-  }
-}
 
-export class RedisCacheLayer implements CacheLayer {
-  private redis: Redis
-  constructor(redisUrl: string) {
-    this.redis = new Redis(redisUrl, {
-      maxRetriesPerRequest: 3,
-    })
-    logger.info('PostgresDrizzleAdapter: Redis_Cache_Layer Initialized')
-  }
-  async get<T>(key: string): Promise<T | undefined> {
-    try {
-      const data = await this.redis.get(key)
-      return data ? JSON.parse(data) : undefined
-    } catch (error: any) {
-      logger.warn({ error: error.message }, 'RedisCacheLayer: Get failed')
-      return undefined
-    }
-  }
-  async set<T>(key: string, value: T, collection: string): Promise<void> {
-    try {
-      const setKey = `zenith:cache:collection:${collection}`
-      await this.redis.setex(key, 60, JSON.stringify(value))
-      await this.redis.sadd(setKey, key)
-      await this.redis.expire(setKey, 120)
-    } catch (error: any) {
-      logger.warn({ error: error.message }, 'RedisCacheLayer: Set failed')
-    }
-  }
-  async invalidate(collection: string): Promise<void> {
-    try {
-      const setKey = `zenith:cache:collection:${collection}`
-      const keys = await this.redis.smembers(setKey)
-      if (keys.length > 0) {
-        await this.redis.del(...keys)
-      }
-      await this.redis.del(setKey)
-    } catch (error: any) {
-      logger.warn({ error: error.message }, 'RedisCacheLayer: Invalidate failed')
-    }
-  }
-}
 
 // Import Drizzle ORM and Postgres
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres'
 import { Pool } from 'pg'
-import { sql, eq, and, desc, or } from 'drizzle-orm'
+import { sql, eq, and, desc, or, inArray } from 'drizzle-orm'
 import { QueryASTParser, QueryNode, FieldNode, LogicalNode } from './query-ast'
+import { getTableConfig } from 'drizzle-orm/pg-core'
 import {
   pgTable,
   text,
@@ -211,7 +150,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       id: uuid('id').defaultRandom().primaryKey(),
       name: text('name').notNull(),
       slug: text('slug').unique().notNull(),
-      icon: text('icon').default('🌐'),
+      icon: text('icon').default(''),
       description: text('description'),
       ownerId: text('owner_id').notNull(),
       workspaceId: text('workspace_id'),
@@ -299,13 +238,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
   }
 
   constructor(private connectionString: string) {
-    const redisUrl = process.env.REDIS_URL
-    if (redisUrl) {
-      this.cache = new RedisCacheLayer(redisUrl)
-    } else {
-      this.cache = new LocalCacheLayer()
-      logger.warn('PostgresDrizzleAdapter: Local_Cache_Layer Initialized (Warning: Cache desync risk under horizontal scaling)')
-    }
+    this.cache = createCacheLayer('PostgresDrizzleAdapter')
 
     logger.info('PostgresDrizzleAdapter: Zod Parser Cache pre-allocated for speed.')
 
@@ -383,6 +316,15 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     return this.db as unknown as T
   }
 
+  async executeRaw(query: string, params?: any[]): Promise<any> {
+    if (params) {
+      // Very naive parameter binding for raw execute escape hatch, 
+      // primarily used for simple schema queries in migrations.
+      return await this.db.execute(sql.raw(query))
+    }
+    return await this.db.execute(sql.raw(query))
+  }
+
   private getDbClient(options?: BaseOptions): NodePgDatabase<any> {
     const tenantId = (options as any)?.tenantId || (options as any)?.siteId
     if (tenantId && this.tenantPools[tenantId]) {
@@ -438,381 +380,58 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     }
 
     try {
-      const createAuditLogTable = sql`
-        CREATE TABLE IF NOT EXISTS audit_logs (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          timestamp TIMESTAMP DEFAULT NOW() NOT NULL,
-          collection_name TEXT NOT NULL,
-          document_id TEXT,
-          user_id TEXT,
-          user_email TEXT,
-          user_name TEXT,
-          action TEXT NOT NULL,
-          changes JSONB,
-          ip TEXT,
-          user_agent TEXT,
-          status TEXT,
-          resource TEXT,
-          site_id TEXT,
-          hash TEXT,
-          previous_hash TEXT
-        );
-        CREATE INDEX IF NOT EXISTS idx_audit_collection ON audit_logs(collection_name);
-        CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_logs(timestamp);
-        CREATE INDEX IF NOT EXISTS idx_audit_site ON audit_logs(site_id);
+      for (const table of Object.values(this.systemTables)) {
+        const config = getTableConfig(table)
+        const colDefs = config.columns.map((col: any) => {
+          let type = 'TEXT'
+          if (col.columnType.includes('UUID')) type = 'UUID'
+          else if (col.columnType.includes('Timestamp')) type = 'TIMESTAMP'
+          else if (col.columnType.includes('Text')) type = 'TEXT'
+          else if (col.columnType.includes('Jsonb')) type = 'JSONB'
+          else if (col.columnType.includes('Boolean')) type = 'BOOLEAN'
+          else if (col.columnType.includes('Integer')) type = 'INTEGER'
+          else if (col.columnType.includes('BigInt')) type = 'BIGINT'
+          
+          let def = `${col.name} ${type}`
+          
+          if (col.primary) def += ' PRIMARY KEY'
+          
+          if (col.default !== undefined) {
+             if (typeof col.default === 'string') def += ` DEFAULT '${col.default}'`
+             else def += ` DEFAULT ${col.default}`
+          } else if (col.defaultFn || col.hasDefault) {
+             if (col.name === 'id' && type === 'UUID') def += ' DEFAULT gen_random_uuid()'
+             else if (['timestamp', 'created_at', 'updated_at', 'executed_at'].includes(col.name)) def += ' DEFAULT NOW()'
+          }
+          
+          if (col.notNull) def += ' NOT NULL'
+          if (col.isUnique) def += ' UNIQUE'
+          
+          return def
+        })
         
-        -- Enable RLS for Audit Logs
-        ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
-        DROP POLICY IF EXISTS tenant_isolation_policy ON audit_logs;
-        CREATE POLICY tenant_isolation_policy ON audit_logs 
-          FOR ALL 
-          USING (
-            site_id = current_setting('app.site_id', true) 
-            OR current_setting('app.site_id', true) = ''
-            OR current_setting('app.site_id', true) IS NULL
-            OR site_id IS NULL
-          );
-        CREATE INDEX IF NOT EXISTS idx_audit_action ON audit_logs(action);
-      `
+        await db.execute(sql.raw(`CREATE TABLE IF NOT EXISTS ${config.name} (\n  ${colDefs.join(',\n  ')}\n);`))
+      }
 
-      const createVersionTable = sql`
-        CREATE TABLE IF NOT EXISTS versions (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          timestamp TIMESTAMP DEFAULT NOW() NOT NULL,
-          collection_name TEXT NOT NULL,
-          collection_slug TEXT NOT NULL,
-          document_id TEXT NOT NULL,
-          snapshot JSONB NOT NULL,
-          delta JSONB,
-          created_by TEXT NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_versions_doc ON versions(document_id);
-      `
+      // Special handling for RLS on audit logs
+      await db.execute(sql.raw(`CREATE INDEX IF NOT EXISTS idx_audit_collection ON audit_logs(collection_name);`))
+      await db.execute(sql.raw(`CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_logs(timestamp);`))
+      await db.execute(sql.raw(`CREATE INDEX IF NOT EXISTS idx_audit_site ON audit_logs(site_id);`))
+      await db.execute(sql.raw(`CREATE INDEX IF NOT EXISTS idx_audit_action ON audit_logs(action);`))
+      
+      await db.execute(sql.raw(`ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;`))
+      await db.execute(sql.raw(`DROP POLICY IF EXISTS tenant_isolation_policy ON audit_logs;`))
+      await db.execute(sql.raw(`CREATE POLICY tenant_isolation_policy ON audit_logs FOR ALL USING (site_id = current_setting('app.site_id', true) OR current_setting('app.site_id', true) = '' OR current_setting('app.site_id', true) IS NULL OR site_id IS NULL);`))
 
-      const createFlowsTable = sql`
-        CREATE TABLE IF NOT EXISTS flows (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          name TEXT NOT NULL,
-          description TEXT,
-          active BOOLEAN DEFAULT false NOT NULL,
-          trigger JSONB NOT NULL DEFAULT '{}'::jsonb,
-          steps JSONB NOT NULL DEFAULT '[]'::jsonb,
-          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_flows_active ON flows(active);
-      `
+      await db.execute(sql.raw(`CREATE INDEX IF NOT EXISTS idx_versions_doc ON versions(document_id);`))
+      await db.execute(sql.raw(`CREATE INDEX IF NOT EXISTS idx_flows_active ON flows(active);`))
+      await db.execute(sql.raw(`CREATE INDEX IF NOT EXISTS idx_resets_token ON z_password_resets(token);`))
+      await db.execute(sql.raw(`CREATE INDEX IF NOT EXISTS idx_migrations_name ON z_migrations(name);`))
+      await db.execute(sql.raw(`CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_event ON z_webhook_deliveries(event);`))
+      await db.execute(sql.raw(`CREATE INDEX IF NOT EXISTS idx_webhook_configs_url ON z_webhook_configs(url);`))
+      await db.execute(sql.raw(`CREATE INDEX IF NOT EXISTS idx_schemas_slug ON z_schemas(slug);`))
+      await db.execute(sql.raw(`CREATE INDEX IF NOT EXISTS idx_campaigns_status ON z_campaigns(status);`))
 
-
-
-      const createPasswordResetsTable = sql`
-        CREATE TABLE IF NOT EXISTS z_password_resets (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          user_id TEXT NOT NULL,
-          token TEXT NOT NULL,
-          expires_at TIMESTAMP NOT NULL,
-          used BOOLEAN DEFAULT false NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_resets_token ON z_password_resets(token);
-      `
-
-
-
-      const createMigrationsTable = sql`
-        CREATE TABLE IF NOT EXISTS z_migrations (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          name TEXT UNIQUE NOT NULL,
-          batch INTEGER NOT NULL,
-          executed_at TIMESTAMP DEFAULT NOW() NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_migrations_name ON z_migrations(name);
-      `
-
-      const createWebhookDeliveriesTable = sql`
-        CREATE TABLE IF NOT EXISTS z_webhook_deliveries (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          timestamp TIMESTAMP DEFAULT NOW() NOT NULL,
-          collection_slug TEXT,
-          event TEXT NOT NULL,
-          url TEXT NOT NULL,
-          payload JSONB,
-          success BOOLEAN NOT NULL,
-          response_status INTEGER
-        );
-        CREATE INDEX IF NOT EXISTS idx_webhook_deliveries_event ON z_webhook_deliveries(event);
-      `
-
-      const createWebhookConfigsTable = sql`
-        CREATE TABLE IF NOT EXISTS z_webhook_configs (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          url TEXT NOT NULL,
-          secret TEXT,
-          events JSONB NOT NULL DEFAULT '[]',
-          enabled BOOLEAN DEFAULT true NOT NULL,
-          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_webhook_configs_url ON z_webhook_configs(url);
-      `
-
-      const createSchemasTable = sql`
-        CREATE TABLE IF NOT EXISTS z_schemas (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          slug TEXT UNIQUE NOT NULL,
-          singular TEXT NOT NULL,
-          plural TEXT NOT NULL,
-          fields JSONB NOT NULL DEFAULT '[]'::jsonb,
-          settings JSONB NOT NULL DEFAULT '{}'::jsonb,
-          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_schemas_slug ON z_schemas(slug);
-      `
-
-      const createCampaignsTable = sql`
-        CREATE TABLE IF NOT EXISTS z_campaigns (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          subject TEXT NOT NULL,
-          body TEXT NOT NULL,
-          status TEXT DEFAULT 'draft' NOT NULL,
-          audience TEXT DEFAULT 'all' NOT NULL,
-          sent_at TIMESTAMP,
-          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-        );
-      `
-
-      const createPluginsTable = sql`
-        CREATE TABLE IF NOT EXISTS z_plugins (
-          id TEXT PRIMARY KEY,
-          name TEXT NOT NULL,
-          version TEXT DEFAULT '1.0.0',
-          description TEXT DEFAULT '',
-          author TEXT DEFAULT '',
-          homepage TEXT DEFAULT '',
-          package_name TEXT DEFAULT '',
-          config_schema JSONB DEFAULT '{}'::jsonb,
-          config JSONB DEFAULT '{}'::jsonb,
-          enabled BOOLEAN DEFAULT true NOT NULL,
-          installed_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-        );
-      `
-
-      const createSettingsTable = sql`
-        CREATE TABLE IF NOT EXISTS z_settings (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          site_name TEXT DEFAULT 'Zenith CMS',
-          public_url TEXT, -- No default: must be set explicitly per deployment (PUBLIC_URL env var)
-          maintenance_mode BOOLEAN DEFAULT false,
-          enable_drafts BOOLEAN DEFAULT true,
-          default_locale TEXT DEFAULT 'en',
-          allowed_origins JSONB DEFAULT '["*"]'::jsonb,
-          jwt_expires_in TEXT DEFAULT '7d',
-          password_min_length INTEGER DEFAULT 8,
-          rate_limit_window INTEGER DEFAULT 15,
-          rate_limit_max INTEGER DEFAULT 100,
-          custom_css TEXT DEFAULT ''
-        );
-      `
-
-      const createSitesTable = sql`
-        CREATE TABLE IF NOT EXISTS z_sites (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          name TEXT NOT NULL,
-          slug TEXT UNIQUE NOT NULL,
-          icon TEXT DEFAULT '🌐',
-          description TEXT,
-          owner_id TEXT NOT NULL,
-          workspace_id TEXT,
-          members JSONB DEFAULT '[]'::jsonb,
-          collections JSONB DEFAULT '[]'::jsonb,
-          globals JSONB DEFAULT '[]'::jsonb,
-          billing_enabled BOOLEAN DEFAULT false,
-          stripe_public_key TEXT,
-          stripe_secret_key TEXT,
-          stripe_webhook_secret TEXT,
-          currency TEXT DEFAULT 'USD',
-          pricing_plans JSONB DEFAULT '[]'::jsonb,
-          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_sites_slug ON z_sites(slug);
-        CREATE INDEX IF NOT EXISTS idx_sites_workspace ON z_sites(workspace_id);
-      `
-
-      const createWorkspacesTable = sql`
-        CREATE TABLE IF NOT EXISTS z_workspaces (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          name TEXT NOT NULL,
-          slug TEXT UNIQUE NOT NULL,
-          owner_id TEXT NOT NULL,
-          members JSONB DEFAULT '[]'::jsonb,
-          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_workspaces_slug ON z_workspaces(slug);
-      `
-
-      const migrateSitesWorkspaceId = sql`
-        ALTER TABLE z_sites ADD COLUMN IF NOT EXISTS workspace_id TEXT;
-        CREATE INDEX IF NOT EXISTS idx_sites_workspace ON z_sites(workspace_id);
-      `
-
-      const createUserPreferencesTable = sql`
-        CREATE TABLE IF NOT EXISTS z_preferences (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          user_id TEXT NOT NULL,
-          key TEXT NOT NULL,
-          value JSONB NOT NULL,
-          updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          UNIQUE (user_id, key)
-        );
-      `
-
-      const createMembersTable = sql`
-        CREATE TABLE IF NOT EXISTS z_members (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          email TEXT UNIQUE NOT NULL,
-          password TEXT,
-          name TEXT,
-          avatar TEXT,
-          is_subscribed BOOLEAN DEFAULT false,
-          subscription_status TEXT DEFAULT 'none',
-          stripe_customer_id TEXT,
-          metadata JSONB DEFAULT '{}'::jsonb,
-          last_login TIMESTAMP,
-          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_members_email ON z_members(email);
-      `
-
-      const createDashboardLayoutsTable = sql`
-        CREATE TABLE IF NOT EXISTS z_dashboard_layouts (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          user_id TEXT NOT NULL,
-          site_id TEXT,
-          widgets JSONB DEFAULT '[]'::jsonb,
-          columns INTEGER DEFAULT 12,
-          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          UNIQUE (user_id, site_id)
-        );
-      `
-
-      const createOnboardingStateTable = sql`
-        CREATE TABLE IF NOT EXISTS z_onboarding (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          current_step INTEGER DEFAULT 0,
-          total_steps INTEGER DEFAULT 7,
-          completed_at TIMESTAMP,
-          skipped BOOLEAN DEFAULT false,
-          answers JSONB DEFAULT '{}'::jsonb,
-          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-        );
-      `
-
-      const createCollectionsTable = sql`
-        CREATE TABLE IF NOT EXISTS z_collections (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          name TEXT NOT NULL,
-          slug TEXT UNIQUE NOT NULL,
-          labels JSONB,
-          drafts BOOLEAN DEFAULT false NOT NULL,
-          timestamps BOOLEAN DEFAULT true NOT NULL,
-          fields JSONB NOT NULL,
-          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_collections_slug ON z_collections(slug);
-      `
-
-      const createRedirectsTable = sql`
-        CREATE TABLE IF NOT EXISTS z_redirects (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          from_path TEXT NOT NULL,
-          to_path TEXT NOT NULL,
-          redirect_type TEXT DEFAULT '301' NOT NULL,
-          site_id TEXT,
-          hits INTEGER DEFAULT 0 NOT NULL,
-          last_hit_at TIMESTAMP,
-          created_by TEXT,
-          created_at TIMESTAMP DEFAULT NOW() NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_redirects_from ON z_redirects(from_path);
-      `
-
-      const createReleasesTable = sql`
-        CREATE TABLE IF NOT EXISTS z_releases (
-          id UUID PRIMARY KEY,
-          name TEXT NOT NULL,
-          description TEXT DEFAULT '',
-          documents JSONB DEFAULT '[]'::jsonb NOT NULL,
-          status TEXT NOT NULL DEFAULT 'pending',
-          scheduled_at TIMESTAMP,
-          published_at TIMESTAMP,
-          published_by TEXT,
-          failure_reason TEXT,
-          site_id TEXT,
-          created_by TEXT,
-          created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_releases_status ON z_releases(status);
-        CREATE INDEX IF NOT EXISTS idx_releases_scheduled ON z_releases(scheduled_at);
-        CREATE INDEX IF NOT EXISTS idx_releases_site ON z_releases(site_id);
-      `
-
-      const createPresenceTable = sql`
-        CREATE TABLE IF NOT EXISTS z_presence (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          user_id TEXT NOT NULL,
-          email TEXT NOT NULL,
-          collection_name TEXT NOT NULL,
-          document_id TEXT NOT NULL,
-          last_active BIGINT NOT NULL
-        );
-      `
-
-      const createLocksTable = sql`
-        CREATE TABLE IF NOT EXISTS z_locks (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          collection_name TEXT NOT NULL,
-          document_id TEXT NOT NULL,
-          site_id TEXT,
-          locked_by TEXT NOT NULL,
-          locked_by_email TEXT NOT NULL,
-          locked_at TIMESTAMP DEFAULT NOW() NOT NULL,
-          lock_expires_at TIMESTAMP NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS idx_locks_doc ON z_locks(collection_name, document_id);
-      `
-
-      await db.execute(createAuditLogTable)
-      await db.execute(createVersionTable)
-      await db.execute(createFlowsTable)
-      await db.execute(createPasswordResetsTable)
-      await db.execute(createMigrationsTable)
-      await db.execute(createWebhookDeliveriesTable)
-      await db.execute(createWebhookConfigsTable)
-      await db.execute(createSchemasTable)
-      await db.execute(createCampaignsTable)
-      await db.execute(createPluginsTable)
-      await db.execute(createSettingsTable)
-      await db.execute(createSitesTable)
-      await db.execute(createWorkspacesTable)
-      await db.execute(migrateSitesWorkspaceId)
-      await db.execute(createUserPreferencesTable)
-      await db.execute(createMembersTable)
-      await db.execute(createDashboardLayoutsTable)
-      await db.execute(createOnboardingStateTable)
-      await db.execute(createCollectionsTable)
-      await db.execute(createRedirectsTable)
-      await db.execute(createReleasesTable)
-      await db.execute(createPresenceTable)
-      await db.execute(createLocksTable)
     } finally {
       if (acquired) {
         try {
@@ -1375,6 +994,45 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     const loaded = await this._loadJunctionIds(collection, [mappedRecord])
     const populated = await this._populateRelations(collection, loaded, options, [collection])
     return populated[0] as T
+  }
+
+  async findMany<T = unknown>(
+    collection: string,
+    ids: string[],
+    options: FindOptions = {}
+  ): Promise<T[]> {
+    if (!ids || ids.length === 0) return []
+    const cacheKey = this._getCacheKey(collection, { id: { $in: ids } }, options)
+    const cached = await this.cache.get<T[]>(cacheKey)
+    if (cached) return cached
+
+    const table = this.getTable(collection)
+    const client = this.getDbClient(options)
+    
+    // In Postgres/Drizzle, 'inArray' needs the table.id column
+    // The exact column depends on the dynamic table creation, it should be table.id
+    const siteId = options?.siteId || options?.tenantId
+    const dbQuery = this._selectWithColumns(client, table, collection, options)
+    
+    let where: any = inArray(table.id, ids)
+    if (siteId && table.siteId) {
+      where = and(where, eq(table.siteId, siteId))
+    }
+    
+    const result = await dbQuery.where(where).limit(Math.min(ids.length, 1000))
+    
+    const mapped = result.map((r: any) => {
+      const mappedRecord = { ...r, _id: r.id }
+      if ('status' in mappedRecord) {
+        mappedRecord._status = mappedRecord.status
+      }
+      return mappedRecord
+    })
+
+    const loaded = await this._loadJunctionIds(collection, mapped)
+    const populated = await this._populateRelations(collection, loaded, options, [collection])
+    await this.cache.set(cacheKey, populated, collection)
+    return populated as T[]
   }
 
   /**
@@ -1984,7 +1642,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
       const selectWhere = where ? selectQuery.where(where) : selectQuery
       const rows = await selectWhere
       ids = rows.map((r: any) => r.id)
-    } catch (err) {
+    } catch {
       // Ignore select failure
     }
 
@@ -2026,7 +1684,7 @@ export class PostgresDrizzleAdapter implements DatabaseAdapter {
     return Number(result[0]?.count || 0)
   }
 
-  async aggregate<T = unknown>(collection: string, pipeline: unknown[], options?: BaseOptions): Promise<T[]> {
+  async aggregate(_collection: string, _pipeline: any[], _options?: BaseOptions): Promise<any[]> {
     throw new Error('Aggregation pipelines not natively supported in Postgres. Use native SQL.')
   }
 

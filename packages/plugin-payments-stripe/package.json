@@ -1,0 +1,20 @@
+{
+  "name": "@zenith-open/zenithcms-plugin-payments-stripe",
+  "version": "1.0.0",
+  "description": "Stripe Payments Plugin",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "stripe": "^14.20.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "peerDependencies": {
+    "@zenith-open/zenithcms-core": "workspace:*",
+    "@zenith-open/zenithcms-types": "workspace:*"
+  }
+}

@@ -64,17 +64,8 @@ export async function resolveRelations(
         const idsArray = Array.from(idsToFetch)
         let relatedDocs: Record<string, any>[] = []
         try {
-          // Use adapter-agnostic per-ID fetching instead of MongoDB-specific $in operator.
-          // This works correctly with both Mongoose and Postgres adapters.
-          const fetched = await Promise.all(
-            idsArray.map((id) => {
-              const query1 = siteId ? { id, siteId } : { id }
-              const query2 = siteId ? { _id: id, siteId } : { _id: id }
-              return adapter.findOne(relationTo, query1).catch(() =>
-                adapter.findOne(relationTo, query2).catch(() => null)
-              )
-            })
-          )
+          // Use adapter-agnostic batch fetching (findMany) to eliminate N+1 queries.
+          const fetched = await adapter.findMany(relationTo, idsArray, { siteId })
           relatedDocs = fetched.filter(Boolean) as Record<string, any>[]
         } catch (err) {
           logger.error({ err, collection: relationTo }, `Failed to fetch relations from ${relationTo}`)

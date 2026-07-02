@@ -59,7 +59,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  initial={{ opacity: 0 }}
  animate={{ opacity: 1 }}
  exit={{ opacity: 0 }}
- className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+ className="fixed inset-0 z-[1000] flex items-center justify-center bg-app/70 backdrop-blur-sm"
  onClick={(e) => {
  if (e.target === e.currentTarget) onClose()
  }}
@@ -72,8 +72,8 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  className={cn(
  'w-full max-w-md border rounded-none-none shadow-2xl',
  theme === 'dark'
- ? 'bg-black border-rose-500/20 text-white'
- : 'bg-white border-rose-200 text-z-primary'
+ ? 'bg-app border-rose-500/20 text-z-primary'
+ : 'bg-z-panel border-rose-200 text-z-primary'
  )}
  >
  {/* Header */}
@@ -96,7 +96,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  <p className="text-xs font-bold text-z-secondary mt-1 leading-relaxed">
  Another editor saved changes to this document while you were editing.
  <br />
- Version mismatch: you had <span className="font-semibold text-gray-600 dark:text-z-muted">v{localVersion ?? '?'}</span>, server now at <span className="font-semibold text-amber-400">v{serverVersion ?? '?'}</span>.
+ Version mismatch: you had <span className="font-semibold text-z-secondary">v{localVersion ?? '?'}</span>, server now at <span className="font-semibold text-amber-400">v{serverVersion ?? '?'}</span>.
  </p>
  {conflictMessage && (
  <p className="text-xs font-bold text-rose-400/70 mt-1.5 tracking-wide">
@@ -108,7 +108,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  onClick={onClose}
  className={cn(
  'shrink-0 p-1 transition-colors',
- theme === 'dark' ? 'text-z-secondary hover:text-white' : 'text-z-muted hover:text-black'
+ theme === 'dark' ? 'text-z-secondary hover:text-z-primary' : 'text-z-muted hover:text-z-primary'
  )}
  >
  <X size={16} />
@@ -120,24 +120,24 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  <div className={cn(
  'p-4 border rounded-none-none text-xs font-bold tracking-wide leading-relaxed',
  theme === 'dark'
- ? 'bg-white/3 border-z-border text-z-muted'
- : 'bg-z-input border-z-border shadow-sm text-gray-600'
+ ? 'bg-z-panel/3 border-z-border text-z-muted'
+ : 'bg-z-input border-z-border shadow-sm text-z-secondary'
  )}>
- <p>Choose <span className="font-semibold text-white">"Use Their Version"</span> to discard your unsaved changes and reload the server's latest content.</p>
- <p className="mt-2">Choose <span className="font-semibold text-white">"Keep My Changes"</span> to overwrite the server's changes with yours (the server will update its version to match).</p>
+ <p>Choose <span className="font-semibold text-z-primary">"Use Their Version"</span> to discard your unsaved changes and reload the server's latest content.</p>
+ <p className="mt-2">Choose <span className="font-semibold text-z-primary">"Keep My Changes"</span> to overwrite the server's changes with yours (the server will update its version to match).</p>
  </div>
 
  {/* Version comparison */}
  <div className={cn(
  'grid grid-cols-1 md:grid-cols-2 gap-3 p-3 border border-dashed rounded-none-none',
- theme === 'dark' ? 'border-z-border' : 'border-z-border'
+ 'border-z-border'
  )}>
  <div className="text-center">
- <p className="text-sm font-semibold text-gray-600 mb-1">Your Version</p>
- <p className="text-lg font-semibold text-gray-600 dark:text-z-muted">v{localVersion ?? '?'}</p>
+ <p className="text-sm font-semibold text-z-secondary mb-1">Your Version</p>
+ <p className="text-lg font-semibold text-z-secondary">v{localVersion ?? '?'}</p>
  </div>
  <div className="text-center">
- <p className="text-sm font-semibold text-gray-600 mb-1">Server Version</p>
+ <p className="text-sm font-semibold text-z-secondary mb-1">Server Version</p>
  <p className="text-lg font-semibold text-amber-400">v{serverVersion ?? '?'}</p>
  </div>
  </div>
@@ -168,7 +168,7 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
  disabled={loading}
  onClick={handleForceSave}
  className={cn(
- 'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-semibold   rounded-none-none transition-all bg-gray-600 dark:bg-gray-600 text-white hover:bg-gray-500 border border-gray-600',
+ 'flex-1 flex items-center justify-center gap-2 py-3 text-xs font-semibold   rounded-none-none transition-all bg-z-accent  text-z-primary hover:bg-z-border border border-z-border',
  loading && 'opacity-50 cursor-not-allowed'
  )}
  >

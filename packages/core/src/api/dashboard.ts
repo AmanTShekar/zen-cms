@@ -249,7 +249,7 @@ router.put('/layout', async (req: Request, res: Response, next) => {
         columns,
         siteId: siteId || null,
         updated_at: new Date()
-      })
+      }, { siteId: siteId || null })
     } else {
       layout = await adapter.create('z_dashboard_layouts', {
         userId: user.id,

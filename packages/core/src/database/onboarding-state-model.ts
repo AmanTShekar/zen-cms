@@ -38,17 +38,17 @@ const OnboardingAnswersSchema = new Schema<IOnboardingAnswers>(
 
 const OnboardingStateSchema = new Schema<IOnboardingState>(
   {
-    siteId: { type: String, index: true },
+    siteId: { type: String, required: true, index: true },
     currentStep: { type: Number, default: 0, min: 0 },
     totalSteps: { type: Number, default: 7 },
     completedAt: { type: Date },
     skipped: { type: Boolean, default: false },
     answers: { type: OnboardingAnswersSchema, default: () => ({}) },
   },
-  { timestamps: true }
+  { strict: true, timestamps: true }
 )
 
-export const OnboardingStateModel = mongoose.model<IOnboardingState>(
+export const OnboardingStateModel = mongoose.models.z_onboarding || mongoose.model<IOnboardingState>(
   'z_onboarding',
   OnboardingStateSchema
 )

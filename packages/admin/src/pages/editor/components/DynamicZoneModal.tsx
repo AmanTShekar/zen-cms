@@ -36,7 +36,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item, idx, theme, removeF
  className={cn(
  'flex items-center gap-3 p-3 rounded-none-none border group',
  theme === 'dark'
- ? 'bg-z-hover border-z-border hover:border-gray-500/20'
+ ? 'bg-z-hover border-z-border hover:border-z-border/20'
  : 'bg-z-input border-z-border hover:border-z-border'
  )}
  >
@@ -46,8 +46,8 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item, idx, theme, removeF
  >
  <GripVertical size={12} className="text-z-secondary" />
  </div>
- <div className="w-6 h-6 rounded-none-none bg-gray-500/10 flex items-center justify-center shrink-0">
- <Layout size={12} className="text-gray-600 dark:text-z-muted" />
+ <div className="w-6 h-6 rounded-none-none bg-z-panel flex items-center justify-center shrink-0">
+ <Layout size={12} className="text-z-secondary" />
  </div>
  <div className="flex-1 min-w-0">
  <p className="text-xs font-semibold truncate">
@@ -106,7 +106,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  animate={{ opacity: 1 }}
  exit={{ opacity: 0 }}
  onClick={() => setDynamicZoneModalOpen(false)}
- className="absolute inset-0 bg-black/70 backdrop-blur-md"
+ className="absolute inset-0 bg-app/70 backdrop-blur-md"
  />
  <motion.div
  ref={dialogRef}
@@ -126,13 +126,13 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  theme === 'dark' ? 'border-z-border' : 'border-z-border shadow-sm'
  )}>
  <div className="flex items-center gap-3">
- <div className="w-8 h-8 rounded-none-none bg-gray-600/20 border border-gray-500/30 flex items-center justify-center">
- <Layers size={16} className="text-gray-600 dark:text-z-muted" />
+ <div className="w-8 h-8 rounded-none-none bg-z-accent/20 border border-z-border/30 flex items-center justify-center">
+ <Layers size={16} className="text-z-secondary" />
  </div>
  <div>
  <h2
  id={modalTitleId}
- className="text-base font-semibold text-gray-600 dark:text-z-muted leading-none"
+ className="text-base font-semibold text-z-secondary leading-none"
  >
  Dynamic Zone
  </h2>
@@ -148,8 +148,8 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  className={cn(
  'p-1.5 rounded-none-none border transition-all',
  theme === 'dark'
- ? 'bg-z-hover border-z-border hover:bg-white hover:text-black'
- : 'bg-gray-100 border-z-border hover:bg-black hover:text-white'
+ ? 'bg-z-hover border-z-border hover:bg-z-panel hover:text-z-primary'
+ : 'bg-[var(--z-bg-hover)] border-z-border hover:bg-app hover:text-z-primary'
  )}
  >
  <X size={14} />
@@ -203,7 +203,7 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  <div className="relative">
  <Search size={12} className={cn(
  'absolute left-3 top-1/2 -translate-y-1/2',
- theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
+ 'text-z-secondary'
  )} />
  <input
  type="text"
@@ -213,14 +213,14 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  className={cn(
  'w-full pl-8 pr-3 py-2 text-xs font-bold border rounded-none-none bg-transparent',
  theme === 'dark'
- ? 'border-z-border text-white placeholder-gray-600 focus:border-gray-500/30'
- : 'border-z-border text-black placeholder-gray-400 focus:border-gray-500/30'
+ ? 'border-z-border text-z-primary placeholder:text-z-muted focus:border-z-border/30'
+ : 'border-z-border text-z-primary placeholder:text-z-muted focus:border-z-border/30'
  )}
  />
  </div>
  <div className="max-h-64 overflow-y-auto space-y-1.5 custom-editor-scrollbar">
  {filteredBlocks.length === 0 ? (
- <p className={cn('text-xs font-bold text-center py-4', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
+ <p className={cn('text-xs font-bold text-center py-4', 'text-z-secondary')}>
  No components match your search
  </p>
  ) : (
@@ -235,20 +235,20 @@ export const DynamicZoneModal: React.FC<DynamicZoneModalProps> = ({
  className={cn(
  'w-full flex items-center gap-3 p-3 rounded-none-none border transition-all text-left',
  theme === 'dark'
- ? 'bg-white/[0.01] border-z-border hover:border-gray-500/30 hover:bg-gray-500/5'
- : 'bg-z-input border-z-border hover:border-z-border-strong hover:bg-gray-50'
+ ? 'bg-z-panel border-z-border hover:border-z-border/30 hover:bg-z-hover'
+ : 'bg-z-input border-z-border hover:border-z-border-strong hover:bg-[var(--z-bg-input)]'
  )}
  >
- <div className="w-8 h-8 rounded-none-none bg-gray-500/10 flex items-center justify-center shrink-0">
- <Icon size={14} className="text-gray-600 dark:text-z-muted" />
+ <div className="w-8 h-8 rounded-none-none bg-z-panel flex items-center justify-center shrink-0">
+ <Icon size={14} className="text-z-secondary" />
  </div>
  <div className="flex-1 min-w-0">
  <p className="text-xs font-semibold truncate">{block.title}</p>
- <p className={cn('text-sm font-bold truncate', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
+ <p className={cn('text-sm font-bold truncate', 'text-z-secondary')}>
  {block.description}
  </p>
  </div>
- <PlusCircle size={14} aria-hidden="true" className="text-gray-600 dark:text-z-secondary opacity-50 shrink-0" />
+ <PlusCircle size={14} aria-hidden="true" className="text-z-secondary  opacity-50 shrink-0" />
  </button>
  )
  })

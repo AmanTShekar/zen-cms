@@ -36,6 +36,20 @@ export interface ISystemSettings extends Document {
   openaiApiKey?: string
   anthropicApiKey?: string
   xaiApiKey?: string
+  // Billing & Payments
+  billingEnabled?: boolean
+  currency?: string
+  paymentProvider?: string
+  stripePublicKey?: string
+  stripeSecretKey?: string
+  stripeWebhookSecret?: string
+  paypalClientId?: string
+  paypalClientSecret?: string
+  paypalWebhookId?: string
+  razorpayKeyId?: string
+  razorpayKeySecret?: string
+  razorpayWebhookSecret?: string
+  pricingPlans?: any[]
   updatedBy: mongoose.Types.ObjectId
   siteId?: string
 }
@@ -46,7 +60,7 @@ const SystemSettingsSchema = new Schema<ISystemSettings>(
     siteDescription: { type: String, default: '' },
     logoUrl: { type: String, default: '' },
     faviconUrl: { type: String, default: '' },
-    publicUrl: { type: String, default: 'http://localhost:3000' },
+    publicUrl: { type: String },
     maintenanceMode: { type: Boolean, default: false },
     enableDrafts: { type: Boolean, default: true },
     defaultLocale: { type: String, default: 'en' },
@@ -77,15 +91,29 @@ const SystemSettingsSchema = new Schema<ISystemSettings>(
     enableBackup: { type: Boolean, default: false },
     backupInterval: { type: String, default: 'daily' },
     customCSS: { type: String, default: '' },
+    // Billing & Payments
+    billingEnabled: { type: Boolean, default: false },
+    currency: { type: String, default: 'USD' },
+    paymentProvider: { type: String, default: 'stripe' },
+    stripePublicKey: { type: String },
+    stripeSecretKey: { type: String },
+    stripeWebhookSecret: { type: String },
+    paypalClientId: { type: String },
+    paypalClientSecret: { type: String },
+    paypalWebhookId: { type: String },
+    razorpayKeyId: { type: String },
+    razorpayKeySecret: { type: String },
+    razorpayWebhookSecret: { type: String },
+    pricingPlans: { type: Schema.Types.Mixed, default: [] },
     updatedBy: { type: Schema.Types.ObjectId, ref: 'User' },
-    siteId: { type: String },
+    siteId: { type: String, required: true },
   },
-  { timestamps: true }
+  { strict: true, timestamps: true }
 )
 
 SystemSettingsSchema.index({ siteId: 1 }, { unique: true })
 
-export const SystemSettingsModel = mongoose.model<ISystemSettings>(
+export const SystemSettingsModel = mongoose.models.z_settings || mongoose.model<ISystemSettings>(
   'z_settings',
   SystemSettingsSchema
 )

@@ -32,7 +32,7 @@ export default function SystemHealthWidget({ theme, title, isPreview }: WidgetPr
   }
 
   const getStatusColor = (pct: number | null) => {
-    if (pct === null) return 'bg-gray-500'
+    if (pct === null) return 'bg-z-border'
     if (pct < 50) return 'bg-z-accent'
     if (pct < 80) return 'bg-amber-500'
     return 'bg-red-500'
@@ -53,7 +53,7 @@ export default function SystemHealthWidget({ theme, title, isPreview }: WidgetPr
   return (
     <div className="flex flex-col justify-between gap-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+        <p className="text-sm font-bold text-z-primary  flex items-center gap-2">
           <Cpu size={14} className="text-z-secondary" /> 
           {title || 'Infrastructure Vitals'}
         </p>
@@ -77,14 +77,14 @@ export default function SystemHealthWidget({ theme, title, isPreview }: WidgetPr
               </div>
               <span className={cn(
                 "text-xl font-semibold  leading-none block mb-3",
-                m.isDb && m.value === 'Connected' ? "text-z-active-text" : "text-z-primary dark:text-gray-100"
+                m.isDb && m.value === 'Connected' ? "text-z-active-text" : "text-z-primary "
               )}>
                 {m.value}
               </span>
             </div>
 
             {/* Progress Bar Container */}
-            <div className="w-full h-1.5 bg-gray-100 dark:bg-white/10 rounded-none-none overflow-hidden flex items-center">
+            <div className="w-full h-1.5 bg-z-hover rounded-none-none overflow-hidden flex items-center">
               {m.pct !== null ? (
                 <div 
                   className={cn("h-full transition-all duration-1000", getStatusColor(m.pct))} 
@@ -93,7 +93,7 @@ export default function SystemHealthWidget({ theme, title, isPreview }: WidgetPr
               ) : m.isDb && m.value === 'Connected' ? (
                 <div className="h-full bg-z-accent w-full" />
               ) : (
-                <div className="h-full bg-gray-300 dark:bg-gray-700 w-full opacity-50" />
+                <div className="h-full bg-z-input  w-full opacity-50" />
               )}
             </div>
           </div>

@@ -6,9 +6,14 @@ import { AdapterFactory } from '../database/adapters/AdapterFactory'
 import { sessionStore } from '../services/session-store'
 import { redisService } from '../services/redis'
 
-// Simple in-memory fallback for dev mode without Redis
-const localSiteAccessCache = new Map<string, { value: boolean; expires: number }>()
-
+export const GLOBAL_ROUTES = [
+  '/api/v1/auth',
+  '/api/v1/system',
+  '/api/v1/sites',
+  '/api/v1/workspaces',
+  '/api/v1/media',
+  '/media',
+]
 // Extend Express Request to include user
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -26,9 +31,6 @@ export async function verifySiteAccess(user: AuthUser, siteId: string): Promise<
   if (redisService.client) {
     const cached = await redisService.client.get(cacheKey)
     if (cached !== null) return cached === '1'
-  } else {
-    const cached = localSiteAccessCache.get(cacheKey)
-    if (cached && cached.expires > Date.now()) return cached.value
   }
 
   const adapter = AdapterFactory.getActiveAdapter()
@@ -53,8 +55,6 @@ export async function verifySiteAccess(user: AuthUser, siteId: string): Promise<
   
   if (redisService.client) {
     await redisService.client.setex(cacheKey, 300, accessGranted ? '1' : '0')
-  } else {
-    localSiteAccessCache.set(cacheKey, { value: accessGranted, expires: Date.now() + 300 * 1000 })
   }
 
   return accessGranted
@@ -79,10 +79,12 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
       return res.status(401).json(createErrorResponse(401, 'Authentication required', undefined, 'AuthenticationError'))
     }
 
-    const decoded = AuthService.verifyToken(token) as any
-
-    if (!decoded) {
-      return res.status(401).json(createErrorResponse(401, 'Invalid or expired token', undefined, 'AuthenticationError'))
+    let decoded: any;
+    try {
+      decoded = AuthService.verifyToken(token) as any
+    } catch (err: any) {
+      const msg = err.message || 'Invalid or expired token'
+      return res.status(401).json(createErrorResponse(401, msg, undefined, 'AuthenticationError'))
     }
 
     // ── Token Revocation Check ──
@@ -101,12 +103,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
       req.siteId = headerSiteId
     }
 
-    const isGlobalRoute = req.originalUrl.startsWith('/api/v1/auth') || 
-                          req.originalUrl.startsWith('/api/v1/system') ||
-                          req.originalUrl.startsWith('/api/v1/sites') ||
-                          req.originalUrl.startsWith('/api/v1/workspaces') ||
-                          req.originalUrl.startsWith('/api/v1/media') ||
-                          req.originalUrl.startsWith('/media')
+    const isGlobalRoute = GLOBAL_ROUTES.some(route => req.originalUrl.startsWith(route))
 
     if (!req.siteId && !isGlobalRoute) {
       return res.status(400).json(createErrorResponse(400, 'Missing x-zenith-site-id header', undefined, 'BadRequestError'))
@@ -147,31 +144,11 @@ export function requireRole(...roles: Array<string>) {
       return next()
     }
 
-    // Resolve custom roles from database
+    // Resolve custom roles via RBAC Engine
     try {
-      const adapter = (await import('../database/adapters/AdapterFactory')).AdapterFactory.getActiveAdapter()
-      const query: any = { roleName: req.user.role }
-      if (req.siteId) {
-        query.siteId = req.siteId
-      } else {
-        // Prevent cross-tenant role leakage on global routes by requiring global roles to have no siteId
-        query.siteId = { $exists: false }
-      }
-      const customRole = await adapter.findOne<any>('z_roles', query)
-      
-      if (customRole) {
-        // If the route requires 'admin', check if custom role has wildcard access
-        const hasWildcard = customRole.permissions.some((p: any) => p.resource === '*' && p.actions.includes('*'))
-        if (roles.includes('admin') && hasWildcard) return next()
-        
-        // If route requires 'editor', check if they have write access to any resource
-        const hasWrite = customRole.permissions.some((p: any) => p.actions.includes('*') || p.actions.includes('create') || p.actions.includes('update'))
-        if (roles.includes('editor') && (hasWildcard || hasWrite)) return next()
-        
-        // If route requires 'viewer', check if they have read access
-        const hasRead = customRole.permissions.some((p: any) => p.actions.includes('*') || p.actions.includes('read'))
-        if (roles.includes('viewer') && (hasWildcard || hasWrite || hasRead)) return next()
-      }
+      const { RBACEngine } = await import('../services/rbac')
+      const hasAccess = await RBACEngine.satisfiesRoleRequired(req.user.role, roles, req.siteId)
+      if (hasAccess) return next()
     } catch (err) {
       // Ignore DB errors, fallback to 403
     }

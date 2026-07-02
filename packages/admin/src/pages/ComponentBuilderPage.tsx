@@ -242,21 +242,21 @@ const ComponentBuilderPage: React.FC = () => {
  }
 
  const inputCls = cn(
- 'w-full border p-3 text-sm font-bold outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none',
- 'bg-z-input border-z-border focus:border-gray-500 text-z-primary'
+ 'w-full border p-3 text-sm font-bold outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black transition-colors rounded-none',
+ 'bg-z-input border-z-border focus:border-z-border text-z-primary'
  )
 
  return (
- <div className={cn('flex h-[calc(100vh-64px)] overflow-hidden', dark ? 'bg-black' : 'bg-gray-50')}>
+ <div className={cn('flex h-[calc(100vh-64px)] overflow-hidden', dark ? 'bg-app' : 'bg-[var(--z-bg-input)]')}>
  {/* ── Sidebar List ──────────────────────────────────────────────── */}
  <div className={cn('w-64 border-r shrink-0 flex flex-col', 'border-z-border bg-z-panel')}>
  <div className="p-4 border-b border-inherit flex items-center justify-between">
  <h2 className="text-sm font-semibold flex items-center gap-2">
- <Box size={14} className="text-gray-600 dark:text-z-secondary" /> Components
+ <Box size={14} className="text-z-secondary " /> Components
  </h2>
  <button
  onClick={handleCreateNew}
- className="p-1.5 hover:bg-gray-500/10 text-gray-600 dark:text-z-secondary rounded-none transition-colors"
+ className="p-1.5 hover:bg-z-panel text-z-secondary  rounded-none transition-colors"
  >
  <Plus size={14} />
  </button>
@@ -271,8 +271,8 @@ const ComponentBuilderPage: React.FC = () => {
  className={cn(
  'flex-1 text-left px-3 py-2 text-sm font-bold   transition-colors overflow-hidden text-ellipsis whitespace-nowrap rounded-none',
  activeComponent?.id === c.id
- ? 'bg-gray-500 text-white'
- : dark ? 'text-z-muted hover:bg-z-hover hover:text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-black'
+ ? 'bg-z-border text-z-primary'
+ : dark ? 'text-z-muted hover:bg-z-hover hover:text-z-primary' : 'text-z-secondary hover:bg-[var(--z-bg-input)] hover:text-z-primary'
  )}
  >
  {c.displayName}
@@ -280,7 +280,7 @@ const ComponentBuilderPage: React.FC = () => {
  <div className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
  <button
  onClick={(e) => { e.stopPropagation(); handleDuplicate(c.id) }}
- className="p-1 text-z-muted hover:text-gray-600 dark:text-z-muted transition-colors"
+ className="p-1 text-z-muted hover:text-z-secondary transition-colors"
  title="Duplicate"
  >
  <Copy size={12} />
@@ -320,14 +320,14 @@ const ComponentBuilderPage: React.FC = () => {
    </a>
    <h1 className="text-2xl font-semibold">Component Builder</h1>
  </div>
- <p className={cn('text-sm   font-bold mt-1 ml-8', dark ? 'text-z-secondary' : 'text-z-muted')}>
+ <p className={cn('text-sm   font-bold mt-1 ml-8', 'text-z-secondary')}>
  {activeComponent.id ? 'Editing existing component' : 'Creating new component'}
  </p>
  </div>
  <div className="flex items-center gap-2">
   <button
   onClick={() => setShowPreview(!showPreview)}
-  className={cn('flex items-center gap-2 px-4 py-2.5 border text-sm font-semibold   rounded-none transition-all shadow-sm', dark ? 'bg-z-panel backdrop-blur-md border-z-border hover:border-z-active-border' : 'bg-z-panel border-z-border hover:bg-gray-50')}
+  className={cn('flex items-center gap-2 px-4 py-2.5 border text-sm font-semibold   rounded-none transition-all shadow-sm', dark ? 'bg-z-panel backdrop-blur-md border-z-border hover:border-z-active-border' : 'bg-z-panel border-z-border hover:bg-[var(--z-bg-input)]')}
   >
  {showPreview ? <EyeOff size={14} /> : <Eye size={14} />}
  {showPreview ? 'Hide' : 'Preview'}
@@ -335,7 +335,7 @@ const ComponentBuilderPage: React.FC = () => {
   <button
   onClick={handleSave}
   disabled={saving}
-  className="flex items-center gap-2 px-6 py-2.5 bg-z-accent hover:opacity-90 text-white text-sm font-semibold shadow-sm rounded-none transition-all disabled:opacity-50"
+  className="flex items-center gap-2 px-6 py-2.5 bg-z-accent hover:brightness-110 text-z-logo-text text-sm font-semibold shadow-sm rounded-none transition-all disabled:opacity-50"
   >
   {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
   Save Component
@@ -358,8 +358,8 @@ const ComponentBuilderPage: React.FC = () => {
   className={cn(
   'flex items-center gap-2 px-4 py-2 text-sm font-semibold   rounded-none transition-all',
   activeTab === tab.key
-  ? 'bg-z-accent text-white shadow-sm'
-  : dark ? 'text-z-secondary hover:text-gray-300' : 'text-z-secondary hover:text-z-primary'
+  ? 'bg-z-accent text-z-logo-text shadow-sm'
+  : dark ? 'text-z-secondary hover:text-z-secondary' : 'text-z-secondary hover:text-z-primary'
   )}
   >
  <Icon size={12} /> {tab.label}
@@ -409,7 +409,7 @@ const ComponentBuilderPage: React.FC = () => {
  ) : (
  <div className="h-full flex items-center justify-center">
   <div className="text-center space-y-5 max-w-md px-8">
-  <div className="w-16 h-16 mx-auto rounded-none bg-black/40 border border-z-border flex items-center justify-center shadow-sm">
+  <div className="w-16 h-16 mx-auto rounded-none bg-z-panel border border-z-border flex items-center justify-center shadow-sm">
   <Box size={28} className="text-z-active-text" strokeWidth={1.5} />
   </div>
  <div className="flex items-center justify-center mb-6">
@@ -420,16 +420,16 @@ const ComponentBuilderPage: React.FC = () => {
  </div>
  <div>
  <p className="text-[14px] font-semibold">Component Builder</p>
- <p className={cn('text-sm font-medium mt-2 leading-relaxed', dark ? 'text-z-secondary' : 'text-z-muted')}>
+ <p className={cn('text-sm font-medium mt-2 leading-relaxed', 'text-z-secondary')}>
  Create reusable components like Navbars, Cards, and Hero Sections to use in Dynamic Zones and Blocks.
  Import from JSON, TypeScript interfaces, or let AI generate them.
  </p>
  </div>
   <div className="flex gap-3 justify-center">
-  <button onClick={handleCreateNew} className="flex items-center gap-2 px-5 py-3 bg-z-accent hover:opacity-90 text-white text-sm font-semibold rounded-none transition-all shadow-sm">
+  <button onClick={handleCreateNew} className="flex items-center gap-2 px-5 py-3 bg-z-accent hover:brightness-110 text-z-logo-text text-sm font-semibold rounded-none transition-all shadow-sm">
   <Plus size={14} /> New Component
   </button>
-  <button onClick={() => { handleCreateNew(); setTimeout(() => setActiveTab('ai'), 50) }} className="flex items-center gap-2 px-5 py-3 bg-z-accent hover:opacity-90 text-white text-sm font-semibold rounded-none transition-all shadow-sm">
+  <button onClick={() => { handleCreateNew(); setTimeout(() => setActiveTab('ai'), 50) }} className="flex items-center gap-2 px-5 py-3 bg-z-accent hover:brightness-110 text-z-logo-text text-sm font-semibold rounded-none transition-all shadow-sm">
   <Sparkles size={14} /> AI Generate
   </button>
   </div>

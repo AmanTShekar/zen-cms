@@ -212,8 +212,11 @@ router.delete('/:id', async (req: Request, res: Response, next) => {
       })
     }
 
-    await adapter.delete('z_workspaces', id)
-    res.json(createResponse({ success: true, message: 'Workspace removed.' }))
+    // Cascade delete all sites in this workspace
+    const { TenantCascadeService } = await import('../services/tenant-cascade')
+    await TenantCascadeService.deleteWorkspace(adapter, id)
+
+    res.json(createResponse({ success: true, message: 'Workspace and all associated sites removed.' }))
   } catch (err) {
     next(err)
   }

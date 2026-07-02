@@ -105,7 +105,7 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
       <div className="space-y-4">
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-3">
-            <span className={cn('text-sm font-semibold  ', dark ? 'text-z-secondary' : 'text-z-secondary')}>
+            <span className={cn('text-sm font-semibold  ', 'text-z-secondary')}>
               {apiKeys.length} Active {apiKeys.length === 1 ? 'Credential' : 'Credentials'}
             </span>
             {apiKeys.some(k => getDaysUntilExpiry(k.expiresAt) !== null && getDaysUntilExpiry(k.expiresAt)! <= 7) && (
@@ -125,7 +125,7 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
 
         {/* Key Cards */}
         {apiKeys.length === 0 ? (
-          <div className={cn('py-10 border border-dashed', dark ? 'border-z-border' : 'border-z-border')}>
+          <div className={cn('py-10 border border-dashed', 'border-z-border')}>
             <EmptyState
               icon={Key}
               title="No API keys"
@@ -142,7 +142,7 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
             {apiKeys.map(key => {
               const isExpanded = expandedId === key._id
               const days = getDaysUntilExpiry(key.expiresAt)
-              const roleClass = ROLE_COLORS[key.role] || 'text-z-muted border-white/10 bg-z-hover'
+              const roleClass = ROLE_COLORS[key.role] || 'text-z-muted border-z-border bg-z-hover'
               return (
                 <div key={key._id} className={card}>
                   {/* Header */}
@@ -155,7 +155,7 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className={cn('text-[13px] font-semibold  ', dark ? 'text-white' : 'text-z-primary')}>{key.name}</span>
+                        <span className={cn('text-[13px] font-semibold  ', 'text-z-primary')}>{key.name}</span>
                         <span className={cn('text-sm font-semibold   px-2 py-0.5 border', roleClass)}>{key.role}</span>
                         <ExpiryBadge expiresAt={key.expiresAt} dark={dark} />
                       </div>
@@ -200,15 +200,15 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
 
                   {/* Expanded Detail */}
                   {isExpanded && (
-                    <div className="px-5 pb-5 pt-3 border-t space-y-4" style={{ borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' }}>
+                    <div className="px-5 pb-5 pt-3 border-t space-y-4" style={{ borderColor: 'var(--z-border)' }}>
                       {/* Key ID */}
                       <div className="space-y-1.5">
                         <label className="text-sm font-semibold text-z-secondary">Key ID (prefix)</label>
                         <div className="flex items-center gap-2">
-                          <code className={cn('flex-1 font-mono text-sm px-3 py-2 border truncate', dark ? 'bg-black/80 border-z-border text-z-active-text' : 'bg-z-panel border-z-border text-gray-700')}>
+                          <code className={cn('flex-1 font-mono text-sm px-3 py-2 border truncate', 'bg-z-panel border-z-border text-z-primary')}>
                             {key._id}
                           </code>
-                          <button onClick={() => handleCopyId(key._id)} className={cn('p-2 border transition-all', dark ? 'border-white/10 text-z-secondary hover:text-white' : 'border-z-border text-z-secondary')}>
+                          <button onClick={() => handleCopyId(key._id)} className={cn('p-2 border transition-all', dark ? 'border-z-border text-z-secondary hover:text-z-primary' : 'border-z-border text-z-secondary')}>
                             {copiedId === key._id ? <Check size={13} className="text-z-active-text" /> : <Copy size={13} />}
                           </button>
                         </div>
@@ -220,7 +220,7 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
                           <label className="text-sm font-semibold text-z-secondary">Granted Permissions</label>
                           <div className="flex flex-wrap gap-1.5">
                             {key.permissions.map((perm: any, i: number) => (
-                              <span key={i} className={cn('text-sm font-semibold   px-2 py-1 border', dark ? 'bg-z-hover border-white/10 text-z-muted' : 'bg-z-input border-z-border text-z-secondary')}>
+                              <span key={i} className={cn('text-sm font-semibold   px-2 py-1 border', dark ? 'bg-z-hover border-z-border text-z-muted' : 'bg-z-input border-z-border text-z-secondary')}>
                                 {perm.resource}: {perm.actions.join(', ')}
                               </span>
                             ))}
@@ -231,7 +231,7 @@ const SettingsApiKeys: React.FC<SettingsApiKeysProps> = ({ apiKeys, theme, fetch
                       {/* Usage example */}
                       <div className="space-y-1.5">
                         <label className="text-sm font-semibold text-z-secondary">Usage Example</label>
-                        <pre className={cn('text-sm font-mono p-3 border overflow-x-auto', dark ? 'bg-black/80 border-z-border text-gray-300' : 'bg-z-input border-z-border text-gray-700')}>
+                        <pre className={cn('text-sm font-mono p-3 border overflow-x-auto', 'bg-z-input border-z-border text-z-primary')}>
 {`curl https://api.example.com/api/v1/posts \\
   -H "Authorization: Bearer YOUR_KEY"`}
                         </pre>

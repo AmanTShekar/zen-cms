@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
+
 import { Router, Request, Response } from 'express'
 import path from 'path'
 import fs from 'fs'
@@ -53,7 +53,7 @@ router.patch('/:id', requireAuth, async (req: Request, res: Response, next) => {
     if (!siteId) return res.status(400).json({ error: { message: 'Missing siteId' } })
     const existing = await adapter.findOne('media', { _id: req.params.id, siteId })
     if (!existing) throw new NotFoundError('Media', req.params.id)
-    const updated = await adapter.update('media', req.params.id, req.body)
+    const updated = await adapter.update('media', req.params.id, req.body, siteId ? { siteId } : {})
     res.json(createResponse(updated))
   } catch (err) {
     next(err)
@@ -75,7 +75,7 @@ router.delete('/:id', requireAuth, async (req: Request, res: Response, next) => 
       const filePath = path.join(mediaDir, existing.filename)
       if (fs.existsSync(filePath)) await fsPromises.unlink(filePath)
     }
-    await adapter.delete('media', req.params.id)
+    await adapter.delete('media', req.params.id, siteId ? { siteId } : {})
     res.json(createResponse({ success: true }))
   } catch (err) {
     next(err)
@@ -158,7 +158,7 @@ router.get('/:id/transform', async (req: Request, res: Response, next) => {
   }
 })
 
-router.get('/:filename', requireAuth, async (req: Request, res: Response, next) => {
+router.get('/:filename', async (req: Request, res: Response, next) => {
   try {
     const adapter = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).zenith?.adapter || AdapterFactory.getActiveAdapter()
     const siteId = (req as import('express').Request & { user?: Record<string, any>, zenith?: Record<string, any> }).siteId || req.headers['x-zenith-site-id']
@@ -246,6 +246,7 @@ router.get('/:filename', requireAuth, async (req: Request, res: Response, next) 
       }
 
       if (format) {
+        // @ts-ignore: TS2345 - unresolved type from removing @ts-nocheck
         transform = transform.toFormat(format as Record<string, any>)
       }
 

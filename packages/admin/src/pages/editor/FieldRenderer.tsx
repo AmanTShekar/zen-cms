@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { Plus, Trash2, Settings2, HelpCircle, GripVertical } from 'lucide-react'
 import { Reorder, useDragControls } from 'framer-motion'
-import { LexicalRichTextEditor } from '../../components/lexical'
+
 import MediaPicker from '../../components/MediaPicker'
 import { InlineRelationPicker } from './components/InlineRelationPicker'
 import { NestedDynamicZone } from './components/NestedDynamicZone'
@@ -73,15 +73,15 @@ const ReorderableArrayItem = React.memo(({ item, idx, theme, onRemove, onChange,
  className={cn(
  'p-3 border rounded-none-none relative transition-all group/item',
  theme === 'dark'
- ? 'bg-z-panel border-z-border hover:border-z-border'
- : 'bg-gray-50 border-gray-155 hover:border-z-border-strong shadow-sm'
+ ? 'bg-z-panel/5 border-z-border hover:border-z-border'
+ : 'bg-[var(--z-bg-input)] border-z-border hover:border-z-border-strong shadow-sm'
  )}
  >
  <div className="flex items-center gap-2 mb-2">
  <div onPointerDown={(e) => dragControls.start(e)} className="cursor-grab">
- <GripVertical size={12} className={cn('opacity-30', theme === 'dark' ? 'text-z-secondary' : 'text-z-muted')} />
+ <GripVertical size={12} className={cn('opacity-30', 'text-z-secondary')} />
  </div>
- <span className={cn('text-sm font-semibold   ', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
+ <span className={cn('text-sm font-semibold   ', 'text-z-secondary')}>
  #{idx + 1}
  </span>
  <button
@@ -208,12 +208,17 @@ export const FieldRenderer = React.memo(({
  case 'richtext':
  case 'lexical':
  return (
- <LexicalRichTextEditor
- mode="full"
- value={value || ''}
- onChange={onChange}
- placeholder={field.placeholder || `Enter ${humanize(field.name)}...`}
- />
+   <textarea
+     value={value || ''}
+     onChange={(e) => onChange(e.target.value)}
+     placeholder={field.placeholder || `Enter ${field.name}...`}
+     className={cn(
+       "w-full px-4 py-3 text-sm transition-all rounded-none-none min-h-[120px] resize-y",
+       theme === 'dark'
+         ? "bg-z-base/65 backdrop-blur-md border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-accent/50 text-z-primary"
+         : "bg-z-panel border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-border text-z-primary"
+     )}
+   />
  )
 
  case 'email':
@@ -227,8 +232,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs transition-all rounded-none-none",
  theme === 'dark'
- ? "bg-black border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
- : "bg-white border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
+ ? "bg-z-base/65 backdrop-blur-md border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-accent/50 text-z-primary"
+ : "bg-z-panel border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-border text-z-primary"
  )}
  />
  )
@@ -244,8 +249,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs transition-all rounded-none-none",
  theme === 'dark'
- ? "bg-black border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
- : "bg-white border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
+ ? "bg-z-base/65 backdrop-blur-md border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-accent/50 text-z-primary"
+ : "bg-z-panel border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-border text-z-primary"
  )}
  />
  )
@@ -264,8 +269,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "flex-1 px-4 py-2.5 text-xs transition-all rounded-none-none font-mono",
  theme === 'dark'
- ? "bg-black border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
- : "bg-white border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
+ ? "bg-z-base/65 backdrop-blur-md border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-accent/50 text-z-primary"
+ : "bg-z-panel border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-border text-z-primary"
  )}
  />
  <button
@@ -274,18 +279,18 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'px-2.5 py-2.5 text-sm font-semibold  border rounded-none-none transition-all shrink-0',
  isAuto
- ? 'bg-gray-500/10 border-gray-500/30 text-gray-600 dark:text-z-muted'
+ ? 'bg-z-panel border-z-border/30 text-z-secondary'
  : theme === 'dark'
- ? 'border-z-border text-z-secondary hover:text-gray-600 dark:text-z-muted'
- : 'border-z-border text-z-muted hover:text-gray-600'
+ ? 'border-z-border text-z-secondary hover:text-z-secondary'
+ : 'border-z-border text-z-muted hover:text-z-secondary'
  )}
  title={isAuto ? 'Auto-generation enabled' : 'Enable auto-generation'}
  >
- {isAuto ? '⚡ Auto' : 'Manual'}
+ {isAuto ? ' Auto' : 'Manual'}
  </button>
  </div>
  {isAuto && (
- <p className={cn('text-sm font-bold px-1', theme === 'dark' ? 'text-gray-600' : 'text-z-muted')}>
+ <p className={cn('text-sm font-bold px-1', 'text-z-secondary')}>
  Will be auto-generated from the "{sourceField}" field
  </p>
  )}
@@ -315,8 +320,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "flex-1 px-4 py-2.5 text-xs font-mono transition-all rounded-none-none ",
  theme === 'dark'
- ? "bg-black border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
- : "bg-white border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
+ ? "bg-z-base/65 backdrop-blur-md border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-accent/50 text-z-primary"
+ : "bg-z-panel border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-border text-z-primary"
  )}
  />
  </div>
@@ -333,8 +338,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'w-6 h-6 rounded-none-none border-2 transition-all',
  value === colorVal
- ? 'border-gray-500 scale-110'
- : theme === 'dark' ? 'border-z-border hover:border-white/30' : 'border-z-border hover:border-gray-400'
+ ? 'border-z-border scale-110'
+ : theme === 'dark' ? 'border-z-border hover:border-z-border' : 'border-z-border hover:border-z-border'
  )}
  style={{ backgroundColor: colorVal }}
  title={colorLabel}
@@ -357,8 +362,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs transition-all rounded-none-none",
  theme === 'dark'
- ? "bg-black border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
- : "bg-white border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
+ ? "bg-z-base/65 backdrop-blur-md border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-accent/50 text-z-primary"
+ : "bg-z-panel border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-border text-z-primary"
  )}
  />
  )
@@ -373,8 +378,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs transition-all rounded-none-none resize-y",
  theme === 'dark'
- ? "bg-black border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
- : "bg-white border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
+ ? "bg-z-base/65 backdrop-blur-md border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-accent/50 text-z-primary"
+ : "bg-z-panel border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-border text-z-primary"
  )}
  />
  )
@@ -390,8 +395,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs font-mono transition-all rounded-none-none resize-y",
  theme === 'dark'
- ? "bg-black border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-[#e6edf3]"
- : "bg-gray-900 border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-gray-100"
+ ? "bg-z-base/65 backdrop-blur-md border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-accent/50 text-[#e6edf3]"
+ : "bg-z-accent border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-border text-z-primary"
  )}
  />
  )
@@ -402,7 +407,7 @@ export const FieldRenderer = React.memo(({
  return (
  <div className={cn(
  "border-l-2 pl-3 space-y-2",
- theme === 'dark' ? "border-gray-500/30" : "border-z-border-strong"
+ theme === 'dark' ? "border-z-border/30" : "border-z-border-strong"
  )}>
  {collapsibleFields.map((subField) => (
  <div key={subField.name} className="space-y-1">
@@ -427,8 +432,8 @@ export const FieldRenderer = React.memo(({
  <div className={cn(
  "w-full px-4 py-3 border text-xs rounded-none-none",
  theme === 'dark'
- ? "bg-gray-500/5 border-gray-500/20 text-gray-300"
- : "bg-z-input border-z-border text-gray-600"
+ ? "bg-z-hover border-z-border/20 text-z-secondary"
+ : "bg-z-input border-z-border text-z-secondary"
  )}>
  ⧉ Joined data — read-only
  </div>
@@ -450,8 +455,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-3 py-2 text-xs transition-all rounded-none-none",
  theme === 'dark'
- ? "bg-black border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
- : "bg-white border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
+ ? "bg-z-base/65 backdrop-blur-md border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-accent/50 text-z-primary"
+ : "bg-z-panel border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-border text-z-primary"
  )}
  />
  </div>
@@ -465,8 +470,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-3 py-2 text-xs transition-all rounded-none-none",
  theme === 'dark'
- ? "bg-black border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
- : "bg-white border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
+ ? "bg-z-base/65 backdrop-blur-md border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-accent/50 text-z-primary"
+ : "bg-z-panel border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-border text-z-primary"
  )}
  />
  </div>
@@ -498,7 +503,7 @@ export const FieldRenderer = React.memo(({
  />
  <span className={cn(
  "text-xs",
- theme === 'dark' ? "text-gray-300" : "text-gray-700"
+ theme === 'dark' ? "text-z-secondary" : "text-z-primary"
  )}>
  {optLabel}
  </span>
@@ -553,8 +558,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs transition-all rounded-none-none",
  theme === 'dark'
- ? "bg-black border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
- : "bg-white border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
+ ? "bg-z-base/65 backdrop-blur-md border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-accent/50 text-z-primary"
+ : "bg-z-panel border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-border text-z-primary"
  )}
  />
  )
@@ -567,11 +572,11 @@ export const FieldRenderer = React.memo(({
  type="checkbox"
  checked={!!value}
  onChange={(e) => onChange(e.target.checked)}
- className="w-4 h-4 rounded-none-none border border-z-border bg-z-hover checked:bg-gray-50 checked:border-gray-50 transition-all accent-gray-500"
+ className="w-4 h-4 rounded-none-none border border-z-border bg-z-hover checked:bg-[var(--z-bg-input)] checked:border-z-border transition-all accent-gray-500"
  />
  <span className={cn(
  "text-xs font-medium",
- theme === 'dark' ? "text-gray-300" : "text-gray-700"
+ theme === 'dark' ? "text-z-secondary" : "text-z-primary"
  )}>
  {humanize(field.name)}
  </span>
@@ -626,11 +631,11 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'w-full px-4 py-2.5 text-xs transition-all rounded-none-none flex items-center justify-between gap-2',
  theme === 'dark'
- ? 'bg-black border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white'
- : 'bg-white border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black'
+ ? 'bg-z-base/65 backdrop-blur-md border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-accent/50 text-z-primary'
+ : 'bg-z-panel border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-border text-z-primary'
  )}
  >
- <span className={cn('truncate', !selectedValues.length && (theme === 'dark' ? 'text-z-secondary' : 'text-z-muted'))}>
+ <span className={cn('truncate', !selectedValues.length && ('text-z-secondary'))}>
  {selectedLabels || 'Select option...'}
  </span>
  <svg className={cn('w-3 h-3 shrink-0 transition-transform', dropdownOpen && 'rotate-180', theme === 'dark' ? 'text-z-muted' : 'text-z-secondary')} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
@@ -646,7 +651,7 @@ export const FieldRenderer = React.memo(({
  <button
  type="button"
  onClick={() => onChange([])}
- className={cn('w-full text-left px-3 py-1.5 text-sm font-semibold  ', theme === 'dark' ? 'text-z-secondary hover:bg-z-hover' : 'text-z-muted hover:bg-gray-50')}
+ className={cn('w-full text-left px-3 py-1.5 text-sm font-semibold  ', theme === 'dark' ? 'text-z-secondary hover:bg-z-hover' : 'text-z-muted hover:bg-[var(--z-bg-input)]')}
  >Clear all</button>
  )}
  {options.map((opt: string | { label: string; value: any }) => {
@@ -661,18 +666,18 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'w-full text-left px-3 py-2 text-xs flex items-center gap-2 transition-colors',
  isSelected
- ? theme === 'dark' ? 'bg-gray-500/10 text-gray-600 dark:text-z-muted' : 'bg-gray-50 text-gray-600'
- : theme === 'dark' ? 'text-gray-300 hover:bg-z-hover' : 'text-gray-700 hover:bg-gray-50'
+ ? theme === 'dark' ? 'bg-z-panel/5 text-z-secondary' : 'bg-[var(--z-bg-input)] text-z-secondary'
+ : theme === 'dark' ? 'text-z-secondary hover:bg-z-hover' : 'text-z-primary hover:bg-[var(--z-bg-input)]'
  )}
  >
  <span className={cn(
  'w-3.5 h-3.5 border shrink-0 flex items-center justify-center transition-all rounded-none-none',
  isSelected
- ? 'bg-gray-500 border-gray-500'
+ ? 'bg-z-border border-z-border'
  : theme === 'dark' ? 'border-z-border' : 'border-z-border-strong'
  )}>
  {isSelected && (
- <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+ <svg className="w-2.5 h-2.5 text-z-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
  )}
  </span>
  <span className="font-bold truncate">{optLabel}</span>
@@ -710,8 +715,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs transition-all rounded-none-none",
  theme === 'dark'
- ? "bg-black border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-white"
- : "bg-white border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-black"
+ ? "bg-z-base/65 backdrop-blur-md border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-accent/50 text-z-primary"
+ : "bg-z-panel border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-border text-z-primary"
  )}
  />
  )
@@ -732,7 +737,7 @@ export const FieldRenderer = React.memo(({
  return (
  <div className="space-y-4">
  <div className="flex items-center justify-between">
- <span className="text-xs font-semibold text-gray-600 dark:text-z-muted">
+ <span className="text-xs font-semibold text-z-secondary">
  {items.length} {items.length === 1 ? 'Item' : 'Items'}
  </span>
  <button
@@ -741,8 +746,8 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'flex items-center gap-1 px-2.5 py-1 text-xs font-semibold   transition-all border',
  theme === 'dark'
- ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted hover:bg-gray-500/20'
- : 'bg-z-input border-z-border text-gray-600 hover:bg-gray-100'
+ ? 'bg-z-panel/5 border-z-border text-z-secondary hover:bg-z-hover border-z-border-strong'
+ : 'bg-z-input border-z-border text-z-secondary hover:bg-[var(--z-bg-hover)]'
  )}
  >
  <Plus size={10} /> Add Item
@@ -779,7 +784,7 @@ export const FieldRenderer = React.memo(({
  case 'group': {
  const groupVal = value && typeof value === 'object' ? value : {}
  return (
- <div className="border-l border-gray-500/20 pl-3 space-y-3">
+ <div className="border-l border-z-border/20 pl-3 space-y-3">
  {field.fields?.map((subField) => (
  <div key={subField.name} className="space-y-1">
  <label className="text-xs font-semibold text-z-muted block">
@@ -811,14 +816,14 @@ export const FieldRenderer = React.memo(({
  className={cn(
  "w-full px-4 py-2.5 text-xs font-mono transition-all rounded-none-none resize-y",
  theme === 'dark'
- ? "bg-black border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:border-gray-500 text-[#e6edf3]"
- : "bg-gray-900 border border-z-border focus-visible:ring-2 focus-visible:ring-gray-500/20 focus-visible:border-gray-500 text-gray-100"
+ ? "bg-z-base/65 backdrop-blur-md border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-accent/50 text-[#e6edf3]"
+ : "bg-z-accent border border-z-border focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:border-z-border text-z-primary"
  )}
  />
  <div className="flex items-center gap-2">
  <span className={cn(
  "inline-block w-1.5 h-1.5 rounded-none-none",
- jsonValid === true ? "bg-gray-500 shadow-sm" : jsonValid === false ? "bg-red-500 shadow-[0_0_6px_#ef4444]" : "bg-gray-600"
+ jsonValid === true ? "bg-z-border shadow-sm" : jsonValid === false ? "bg-red-500 shadow-[0_0_6px_#ef4444]" : "bg-z-accent"
  )} />
  <span className="text-xs font-bold" style={{ color: jsonValid === true ? 'var(--z-accent)' : jsonValid === false ? '#ef4444' : '#6b7280' }}>
  {jsonValid === true ? 'Valid JSON' : jsonValid === false ? 'Invalid JSON' : 'JSON'}
@@ -844,16 +849,16 @@ export const FieldRenderer = React.memo(({
  key={block._id || idx}
  className={cn(
  'border rounded-none-none overflow-hidden',
- theme === 'dark' ? 'bg-z-panel border-z-border' : 'bg-z-input border-z-border'
+ theme === 'dark' ? 'bg-z-panel/5 border-z-border' : 'bg-z-input border-z-border'
  )}
  >
  <div className={cn(
  'flex items-center gap-2 px-3 py-2 border-b',
- theme === 'dark' ? 'bg-z-panel border-z-border' : 'bg-gray-100/50 border-z-border'
+ theme === 'dark' ? 'bg-z-panel/5 border-z-border' : 'bg-[var(--z-bg-hover)]/50 border-z-border'
  )}>
  <span className={cn(
  'text-sm font-semibold   px-1.5 py-0.5 border rounded-none-none',
- theme === 'dark' ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted' : 'bg-z-input border-z-border text-gray-700'
+ theme === 'dark' ? 'bg-z-panel/5 border-z-border text-z-secondary' : 'bg-z-input border-z-border text-z-primary'
  )}>
  {blockDef?.labels?.singular || humanize(blockType || 'block')}
  </span>
@@ -906,13 +911,13 @@ export const FieldRenderer = React.memo(({
  className={cn(
  'w-full py-2.5 border-2 border-dashed flex flex-col items-center justify-center gap-1.5 transition-all group rounded-none-none',
  theme === 'dark'
- ? 'border-z-border hover:border-gray-500/50 hover:bg-gray-500/5 text-z-muted hover:text-gray-600 dark:text-z-muted'
- : 'border-z-border-strong hover:border-gray-400 hover:bg-gray-50 text-z-secondary hover:text-gray-600'
+ ? 'border-z-border hover:border-z-border/50 hover:bg-z-hover text-z-muted hover:text-z-secondary'
+ : 'border-z-border-strong hover:border-z-border hover:bg-[var(--z-bg-input)] text-z-secondary hover:text-z-secondary'
  )}
  >
  <div className={cn(
  'p-1.5 rounded-none-none transition-colors',
- theme === 'dark' ? 'bg-z-hover group-hover:bg-gray-500/20' : 'bg-gray-100 group-hover:bg-gray-100'
+ theme === 'dark' ? 'bg-z-hover group-hover:bg-z-hover border-z-border-strong' : 'bg-[var(--z-bg-hover)] group-hover:bg-[var(--z-bg-hover)]'
  )}>
  <Plus size={14} className="stroke-[3]" />
  </div>
@@ -934,7 +939,7 @@ export const FieldRenderer = React.memo(({
  {tabs.length > 1 && (
  <div className={cn(
  'flex gap-0.5 p-0.5 rounded-none-none border',
- theme === 'dark' ? 'bg-black/20 border-z-border' : 'bg-gray-100 border-z-border'
+ 'bg-z-panel border-z-border'
  )}>
  {tabs.map((tab: any, idx: number) => (
  <button
@@ -945,11 +950,11 @@ export const FieldRenderer = React.memo(({
  'px-3 py-1.5 text-sm font-semibold   transition-all',
  activeTab === idx
  ? theme === 'dark'
- ? 'bg-white/10 text-white'
- : 'bg-white text-black shadow-sm'
+ ? 'bg-z-hover text-z-primary'
+ : 'bg-z-panel text-z-primary shadow-sm'
  : theme === 'dark'
- ? 'text-z-secondary hover:text-white'
- : 'text-z-muted hover:text-black'
+ ? 'text-z-secondary hover:text-z-primary'
+ : 'text-z-muted hover:text-z-primary'
  )}
  >
  {tab.label || `Tab ${idx + 1}`}
@@ -1020,11 +1025,11 @@ export const FieldRenderer = React.memo(({
  >
  {showFieldIndicators && (
  <div className="stega-field-indicator">
- {isSelected ? <Settings2 size={10} /> : <span className="text-sm">⚡</span>}
+ {isSelected ? <Settings2 size={10} /> : <span className="text-sm"></span>}
  </div>
  )}
  {field.description && (
- <p className={cn('text-sm font-medium mt-0.5 mb-1', theme === 'dark' ? 'text-z-secondary' : 'text-z-muted')}>
+ <p className={cn('text-sm font-medium mt-0.5 mb-1', 'text-z-secondary')}>
  {field.description}
  </p>
  )}

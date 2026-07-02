@@ -8,8 +8,7 @@ const versionSchema = new Schema(
     delta: { type: Schema.Types.Mixed },
     createdBy: { type: String },
     timestamp: { type: Date, default: Date.now },
-  },
-  { collection: 'z_versions' }
+  }, { strict: true,  collection: 'z_versions' }
 )
 
 export const VersionModel = mongoose.models.Version || mongoose.model('Version', versionSchema)

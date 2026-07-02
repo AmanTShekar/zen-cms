@@ -8,13 +8,13 @@ import { cn } from '../../../lib/utils'
 import { useFocusTrap } from '../../../hooks/useFocusTrap'
 import api from '../../../lib/api'
 import toast from 'react-hot-toast'
-import { registerMediaBlob } from '../../../components/lexical/nodes/MediaNode'
+
 import { useShallow } from 'zustand/react/shallow'
 
-const fileFullUrl = (file: any, blobMap: Record<string, string>): string => {
+const fileFullUrl = (file: any): string => {
  if (!file.url) return ''
  if (file.url.startsWith('http')) return file.url
- return blobMap[file.url] || `${(import.meta.env.VITE_API_URL || '').replace('/api/v1', '')}${file.url}`
+ return `${(import.meta.env.VITE_API_URL || '').replace('/api/v1', '')}${file.url}`
 }
 
 export const MediaLibraryModal: React.FC = () => {
@@ -30,30 +30,7 @@ export const MediaLibraryModal: React.FC = () => {
  setMediaLoading,
   } = useEditorStore(useShallow(state => ({ mediaAssets: state.mediaAssets, setMediaAssets: state.setMediaAssets, mediaSearch: state.mediaSearch, setMediaSearch: state.setMediaSearch, mediaTypeFilter: state.mediaTypeFilter, setMediaTypeFilter: state.setMediaTypeFilter, mediaLoading: state.mediaLoading, setMediaLoading: state.setMediaLoading })))
 
- const [blobMap, setBlobMap] = React.useState<Record<string, string>>({})
- const blobTokens = useRef<Set<string>>(new Set())
 
- // Pre-fetch media assets with credentials when modal opens
- React.useEffect(() => {
- if (!mediaLibraryOpen || !mediaAssets.length) return
- const apiBase = (import.meta.env.VITE_API_URL || '').replace('/api/v1', '')
- const uncached = mediaAssets.filter((f: any) => f.url && !f.url.startsWith('http') && !blobMap[f.url])
- uncached.forEach((file: any) => {
- fetch(`${apiBase}${file.url}`, { credentials: 'include' })
- .then((r) => r.blob())
- .then((blob) => {
- const objectUrl = URL.createObjectURL(blob)
- blobTokens.current.add(objectUrl)
- setBlobMap(prev => ({ ...prev, [file.url]: objectUrl }))
- registerMediaBlob(file.url, objectUrl)
- })
- .catch(() => {})
- })
- }, [mediaLibraryOpen, mediaAssets])
-
- React.useEffect(() => {
- return () => { blobTokens.current.forEach((u) => URL.revokeObjectURL(u)) }
- }, [])
 
  React.useEffect(() => {
  if (!mediaLibraryOpen) return
@@ -105,7 +82,7 @@ export const MediaLibraryModal: React.FC = () => {
  animate={{ opacity: 1 }}
  exit={{ opacity: 0 }}
  onClick={() => setMediaLibraryOpen(false)}
- className="absolute inset-0 bg-black/80 backdrop-blur-md"
+ className="absolute inset-0 bg-[var(--z-bg-modal)] backdrop-blur-md"
  />
  <motion.div
  ref={dialogRef}
@@ -132,7 +109,7 @@ export const MediaLibraryModal: React.FC = () => {
  id={modalTitleId}
  className={cn(
  'text-lg font-semibold  leading-none',
- theme === 'dark' ? 'text-white' : 'text-black',
+ theme === 'dark' ? 'text-z-primary' : 'text-z-primary',
  )}
  >
  Asset Registry
@@ -143,7 +120,7 @@ export const MediaLibraryModal: React.FC = () => {
  aria-label="Close"
  className={cn(
  'p-1 transition-colors',
- theme === 'dark' ? 'text-z-muted hover:text-gray-600 dark:text-z-secondary' : 'text-z-secondary hover:text-gray-600'
+ theme === 'dark' ? 'text-z-muted hover:text-z-secondary ' : 'text-z-secondary hover:text-z-secondary'
  )}
  >
  <X size={18} />
@@ -159,7 +136,7 @@ export const MediaLibraryModal: React.FC = () => {
  <Search
  className={cn(
  'absolute left-4 top-1/2 -translate-y-1/2 transition-colors',
- theme === 'dark' ? 'text-gray-555 group-focus-within:text-gray-600 dark:text-z-muted' : 'text-z-muted group-focus-within:text-gray-600'
+ theme === 'dark' ? 'text-z-secondary group-focus-within:text-z-secondary' : 'text-z-muted group-focus-within:text-z-secondary'
  )}
  size={15}
  />
@@ -172,8 +149,8 @@ export const MediaLibraryModal: React.FC = () => {
  className={cn(
  'w-full rounded-none-none pl-12 pr-4 py-3 text-xs font-bold transition-all',
  theme === 'dark'
- ? 'bg-z-hover border border-z-border text-white placeholder:text-gray-600 focus-visible:border-gray-500/40 focus-visible:bg-white/[0.05]'
- : 'bg-gray-50 border border-z-border text-z-primary placeholder:text-z-muted focus-visible:border-gray-400 focus-visible:bg-white'
+ ? 'bg-z-hover border border-z-border text-z-primary placeholder:text-z-secondary focus-visible:border-z-border/40 focus-visible:bg-z-panel/[0.05]'
+ : 'bg-[var(--z-bg-input)] border border-z-border text-z-primary placeholder:text-z-muted focus-visible:border-z-border focus-visible:bg-z-panel'
  )}
  />
  </div>
@@ -186,8 +163,8 @@ export const MediaLibraryModal: React.FC = () => {
  className={cn(
  'rounded-none-none border py-3 px-4 text-xs font-semibold  transition-all',
  theme === 'dark'
- ? 'bg-z-hover border-z-border text-z-muted focus-visible:border-gray-500/40'
- : 'bg-gray-55 border-z-border text-gray-600 focus-visible:border-gray-400'
+ ? 'bg-z-hover border-z-border text-z-muted focus-visible:border-z-border/40'
+ : 'bg-[var(--z-bg-hover)] border-z-border text-z-secondary focus-visible:border-z-border'
  )}
  >
  <option value="all">All Types</option>
@@ -202,8 +179,8 @@ export const MediaLibraryModal: React.FC = () => {
  <label className={cn(
  'flex items-center gap-2 px-5 py-3 rounded-none-none border cursor-pointer transition-all text-xs font-semibold  ',
  theme === 'dark'
- ? 'bg-gray-600/20 border-gray-500/30 text-gray-300 hover:bg-gray-600/30 hover:border-gray-500/50'
- : 'bg-z-input border-z-border text-gray-700 hover:bg-gray-100 hover:border-z-border-strong'
+ ? 'bg-z-accent/20 border-z-border/30 text-z-secondary hover:bg-z-accent/30 hover:border-z-border/50'
+ : 'bg-z-input border-z-border text-z-primary hover:bg-[var(--z-bg-hover)] hover:border-z-border-strong'
  )}>
  <Upload size={14} />
  Ingest
@@ -233,8 +210,8 @@ export const MediaLibraryModal: React.FC = () => {
  <div className="flex-1 overflow-y-auto p-6">
  {mediaLoading ? (
  <div className="flex flex-col items-center justify-center h-full gap-5">
- <Loader2 size={36} className="animate-spin text-gray-600 dark:text-z-secondary" />
- <span className="text-xs font-semibold text-gray-600 dark:text-z-muted animate-pulse">
+ <Loader2 size={36} className="animate-spin text-z-secondary " />
+ <span className="text-xs font-semibold text-z-secondary animate-pulse">
  Loading Registry...
  </span>
  </div>
@@ -245,19 +222,19 @@ export const MediaLibraryModal: React.FC = () => {
  <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
  <div className={cn(
  'w-16 h-16 rounded-none-none border-2 border-dashed flex items-center justify-center',
- theme === 'dark' ? 'border-z-border text-gray-600' : 'border-z-border text-gray-300'
+ theme === 'dark' ? 'border-z-border text-z-secondary' : 'border-z-border text-z-secondary'
  )}>
  <ImageIcon size={28} />
  </div>
  <p className={cn(
  'text-xs font-semibold  ',
- theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
+ 'text-z-secondary'
  )}>
  No assets in the registry
  </p>
  <span className={cn(
  'text-xs font-bold  ',
- theme === 'dark' ? 'text-gray-700' : 'text-gray-300'
+ theme === 'dark' ? 'text-z-primary' : 'text-z-secondary'
  )}>
  Upload files using the ingest button above
  </span>
@@ -268,10 +245,10 @@ export const MediaLibraryModal: React.FC = () => {
  if (filteredAssets.length === 0) {
  return (
  <div className="flex flex-col items-center justify-center h-40 gap-3">
- <Search size={28} className={theme === 'dark' ? 'text-gray-700' : 'text-gray-300'} />
+ <Search size={28} className={theme === 'dark' ? 'text-z-primary' : 'text-z-secondary'} />
  <span className={cn(
  'text-xs font-semibold  ',
- theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
+ 'text-z-secondary'
  )}>
  No assets match your filter
  </span>
@@ -283,7 +260,7 @@ export const MediaLibraryModal: React.FC = () => {
  <div className="grid grid-cols-1 md:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
  {filteredAssets.map((file, i) => {
  const isImage = (file.mimetype || '').startsWith('image/')
- const url = fileFullUrl(file, blobMap)
+ const url = fileFullUrl(file)
  return (
  <motion.div
  key={file._id || i}
@@ -316,12 +293,12 @@ export const MediaLibraryModal: React.FC = () => {
  ) : (
  <div className={cn(
  'w-full h-full flex flex-col items-center justify-center gap-2',
- theme === 'dark' ? 'bg-z-hover' : 'bg-gray-50'
+ theme === 'dark' ? 'bg-z-hover' : 'bg-[var(--z-bg-input)]'
  )}>
- <File size={24} className={theme === 'dark' ? 'text-z-secondary' : 'text-z-muted'} />
+ <File size={24} className={'text-z-secondary'} />
  <span className={cn(
  'text-sm font-semibold   text-center px-1 truncate w-full',
- theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
+ 'text-z-secondary'
  )}>
  {(file.mimetype || 'file').split('/')[1]?.toUpperCase().slice(0, 4) || 'FILE'}
  </span>
@@ -330,13 +307,13 @@ export const MediaLibraryModal: React.FC = () => {
  {/* Hover overlay */}
  <div className={cn(
  'absolute inset-0 flex flex-col items-start justify-end p-2 opacity-0 group-hover:opacity-100 transition-opacity',
- theme === 'dark' ? 'bg-gradient-to-t from-black/90 via-black/40' : 'bg-gradient-to-t from-black/80 via-black/20'
+ theme === 'dark' ? 'bg-gradient-to-t from-[var(--z-bg-panel)] via-[var(--z-bg-base)]' : 'bg-gradient-to-t from-[var(--z-bg-panel)] via-[var(--z-bg-base)]'
  )}>
- <p className="text-white text-xs font-semibold truncate w-full leading-tight">
+ <p className="text-z-primary text-xs font-semibold truncate w-full leading-tight">
  {file.name}
  </p>
  {file.size && (
- <span className="text-white/50 text-xs font-bold">
+ <span className="text-z-primary/50 text-xs font-bold">
  {(file.size / 1024).toFixed(1)} KB
  </span>
  )}
@@ -351,8 +328,8 @@ export const MediaLibraryModal: React.FC = () => {
  className={cn(
  'mt-1.5 px-2 py-1 rounded-none-none border text-xs font-semibold  transition-all',
  theme === 'dark'
- ? 'border-z-border text-white/70 hover:border-white/40 hover:text-white bg-z-hover'
- : 'border-white/30 text-white/80 hover:border-z-border0 hover:text-white bg-white/10'
+ ? 'border-z-border text-z-primary/70 hover:border-z-border hover:text-z-primary bg-z-hover'
+ : 'border-z-border text-z-primary/80 hover:border-z-border0 hover:text-z-primary bg-z-panel/10'
  )}
  >
  Copy URL
@@ -376,7 +353,7 @@ export const MediaLibraryModal: React.FC = () => {
  }}
  className={cn(
  'mt-1 px-2 py-1 rounded-none-none border text-xs font-semibold  transition-all',
- 'border-gray-500/40 text-gray-600 dark:text-z-muted hover:border-gray-500 hover:text-gray-300 bg-gray-500/10'
+ 'border-z-border/40 text-z-secondary hover:border-z-border hover:text-z-secondary bg-z-panel'
  )}
  >
  Select
@@ -386,8 +363,8 @@ export const MediaLibraryModal: React.FC = () => {
  <div className={cn(
  'absolute top-1.5 left-1.5 px-1.5 py-0.5 text-sm font-semibold  border rounded-none-none',
  theme === 'dark'
- ? 'bg-black/60 border-z-border text-z-muted'
- : 'bg-white/80 border-z-border text-z-secondary'
+ ? 'bg-app/60 border-z-border text-z-muted'
+ : 'bg-z-panel/80 border-z-border text-z-secondary'
  )}>
  {(file.mimetype || 'file').split('/')[1]?.toUpperCase().slice(0, 4) || 'FILE'}
  </div>
@@ -403,11 +380,11 @@ export const MediaLibraryModal: React.FC = () => {
  {/* Footer */}
  <div className={cn(
  'flex items-center justify-between px-8 py-3 border-t shrink-0',
- theme === 'dark' ? 'border-z-border bg-white/[0.015]' : 'border-z-border shadow-sm bg-gray-50'
+ theme === 'dark' ? 'border-z-border bg-z-panel/[0.015]' : 'border-z-border shadow-sm bg-[var(--z-bg-input)]'
  )}>
  <span className={cn(
  'text-xs font-bold  ',
- theme === 'dark' ? 'text-gray-655' : 'text-z-muted'
+ theme === 'dark' ? 'text-z-secondary' : 'text-z-muted'
  )}>
  Click any asset to copy its URL • Supports images, video, audio, PDF
  </span>
@@ -418,8 +395,8 @@ export const MediaLibraryModal: React.FC = () => {
  className={cn(
  'px-5 py-2 text-xs font-semibold  rounded-none-none border transition-all',
  theme === 'dark'
- ? 'border-z-border text-z-muted hover:border-z-border hover:text-white'
- : 'border-z-border text-gray-600 hover:border-z-border-strong hover:text-black'
+ ? 'border-z-border text-z-muted hover:border-z-border hover:text-z-primary'
+ : 'border-z-border text-z-secondary hover:border-z-border-strong hover:text-z-primary'
  )}
  >
  Close

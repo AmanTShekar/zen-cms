@@ -45,7 +45,7 @@ export function useSpatialActions({
     editorSetActiveSection(newSection.id)
     setBlockPickerOpen(false)
     setInjectionIndex(null)
-    toast.success(`Section added: ${blockType.toUpperCase()}`, { icon: '✨' })
+    toast.success(`Section added: ${blockType.toUpperCase()}`, { icon: '' })
   }, [BLOCK_LIBRARY, editorUpdateData, editorSetActiveSection, setBlockPickerOpen, setInjectionIndex, injectionIndex])
 
   const duplicateSection = useCallback((sectionId: string) => {
@@ -68,7 +68,7 @@ export function useSpatialActions({
       return { ...prev, sections: newSections } 
     })
     editorSetActiveSection(duplicatedSection.id)
-    toast.success('Section duplicated', { icon: '📋' })
+    toast.success('Section duplicated', { icon: '' })
   }, [dataRef, editorUpdateData, editorSetActiveSection])
 
   const removeSection = useCallback((id: string) => {
@@ -133,7 +133,7 @@ export function useSpatialActions({
       return { ...prev, sections: newSections }
     })
     editorSetHasUnsavedChanges(true)
-    toast.success(`Converted block layout to: ${targetBlockDef.title}`, { icon: '🔄' })
+    toast.success(`Converted block layout to: ${targetBlockDef.title}`, { icon: '' })
   }, [BLOCK_LIBRARY, editorUpdateData, editorSetHasUnsavedChanges])
 
   const toggleCollapse = useCallback((sectionId: string) => {
@@ -182,7 +182,7 @@ export function useSpatialActions({
       sections: prev.sections.map((s: any) => ({ ...s, collapsed: !allCollapsed })),
     }))
     editorSetHasUnsavedChanges(true)
-    toast.success(allCollapsed ? 'All sections expanded' : 'All sections collapsed', { icon: '📐' })
+    toast.success(allCollapsed ? 'All sections expanded' : 'All sections collapsed', { icon: '' })
   }, [dataRef, editorUpdateData, editorSetHasUnsavedChanges])
 
   const updateAlign = useCallback((sectionId: string, align: 'left' | 'center' | 'right') => {

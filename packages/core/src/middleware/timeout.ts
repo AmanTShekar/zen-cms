@@ -9,14 +9,23 @@ import { createErrorResponse } from '../api/utils'
  */
 export function requestTimeout(ms: number) {
   return (req: Request, res: Response, next: NextFunction) => {
+    const controller = new AbortController()
+    ;(req as any).signal = controller.signal
+
     const timer = setTimeout(() => {
-      res.status(408).json(
-        createErrorResponse(408, 'Request timed out', undefined, 'TimeoutError')
-      )
+      controller.abort()
+      if (!res.headersSent) {
+        res.status(408).json(
+          createErrorResponse(408, 'Request timed out', undefined, 'TimeoutError')
+        )
+      }
     }, ms)
 
     res.on('finish', () => clearTimeout(timer))
-    res.on('close', () => clearTimeout(timer))
+    res.on('close', () => {
+      clearTimeout(timer)
+      controller.abort()
+    })
 
     next()
   }

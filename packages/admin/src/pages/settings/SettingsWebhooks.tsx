@@ -224,7 +224,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <div className="flex items-center justify-between border-b border-z-border pb-4">
  <div className="flex flex-col">
  <h3 className="text-sm font-semibold flex items-center gap-3">
- <Webhook size={16} className="text-gray-600 dark:text-z-muted" />
+ <Webhook size={16} className="text-z-secondary" />
  Webhook Management
  </h3>
  <span className="text-sm text-z-secondary font-bold mt-1">
@@ -235,7 +235,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <button
  type="button"
  onClick={() => setShowForm(true)}
- className="flex items-center gap-2 px-4 py-2 border border-gray-500/30 hover:border-gray-500 hover:bg-gray-500/10 text-sm font-semibold transition-all text-gray-600 dark:text-z-muted hover:text-white"
+ className="flex items-center gap-2 px-4 py-2 border border-z-border hover:border-z-active-border hover:bg-z-hover text-sm font-semibold transition-all text-z-secondary hover:text-z-primary"
  >
  <Plus size={12} />
  Add Webhook
@@ -247,13 +247,13 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  {showForm && (
  <div className={cn(
  'p-6 border rounded-none space-y-5 shadow-sm',
- theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-z-border' : 'bg-z-input border-z-border'
+ 'bg-z-panel backdrop-blur-md border-z-border'
  )}>
  <div className="flex items-center justify-between">
- <span className="text-sm font-semibold text-gray-600 dark:text-z-muted">
+ <span className="text-sm font-semibold text-z-secondary">
  {editingId ? 'Edit Webhook' : 'New Webhook'}
  </span>
- <button onClick={resetForm} className="text-z-secondary hover:text-white text-sm font-semibold">Cancel</button>
+ <button onClick={resetForm} className="text-z-secondary hover:text-z-primary text-sm font-semibold">Cancel</button>
  </div>
 
  <div className="space-y-4">
@@ -265,8 +265,8 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  onChange={(e) => setFormUrl(e.target.value)}
  placeholder="https://example.com/api/webhooks/zenith"
  className={cn(
- 'w-full border rounded-none py-3 px-4 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
+ 'w-full border rounded-none py-3 px-4 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'bg-z-panel border-z-border text-z-primary focus:border-z-active-border'
  )}
  />
  </div>
@@ -279,8 +279,8 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  onChange={(e) => setFormSecret(e.target.value)}
  placeholder="whsec_..."
  className={cn(
- 'w-full border rounded-none py-3 px-4 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
- theme === 'dark' ? 'bg-black border-z-border text-white focus:border-gray-500' : 'bg-z-panel border-z-border focus:border-gray-500'
+ 'w-full border rounded-none py-3 px-4 text-sm font-mono transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'bg-z-panel border-z-border text-z-primary focus:border-z-active-border'
  )}
  />
  </div>
@@ -289,7 +289,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <label className="text-sm font-semibold text-z-secondary">Subscribed Events</label>
  <div className={cn(
  'p-4 border rounded-none flex flex-wrap gap-2 max-h-40 overflow-y-auto',
- theme === 'dark' ? 'bg-black/50 border-z-border' : 'bg-z-panel border-z-border'
+ 'bg-z-panel border-z-border'
  )}>
  {AVAILABLE_EVENTS.map((evt) => {
  const checked = formEvents.includes(evt.value)
@@ -301,8 +301,8 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  className={cn(
  'px-3 py-1.5 text-sm font-semibold   border rounded-none transition-all',
  checked
- ? 'border-gray-500/40 bg-gray-500/10 text-gray-600 dark:text-z-muted'
- : theme === 'dark' ? 'border-z-border text-z-secondary hover:text-gray-300' : 'border-z-border text-z-muted hover:text-gray-600'
+ ? 'border-z-border/40 bg-z-panel text-z-secondary'
+ : 'border-z-border text-z-secondary hover:text-z-primary'
  )}
  >
  {evt.label}
@@ -317,7 +317,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <button
  onClick={handleSave}
  disabled={saving}
- className={cn("flex items-center gap-2 px-6 py-3 text-white text-sm font-semibold   transition-all disabled:opacity-40", theme === 'dark' ? 'bg-z-accent hover:opacity-90 shadow-sm' : 'bg-gray-900 hover:bg-gray-800')}
+ className={cn("flex items-center gap-2 px-6 py-3 text-z-primary text-sm font-semibold   transition-all disabled:opacity-40", 'bg-z-accent hover:brightness-110 shadow-sm text-z-logo-text')}
  >
  {saving ? <Loader2 size={12} className="animate-spin" /> : null}
  {editingId ? 'Update Webhook' : 'Create Webhook'}
@@ -329,7 +329,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  {/* Webhook list */}
  {loading ? (
  <div className="flex items-center justify-center py-12">
- <Loader2 size={24} className="text-gray-600 dark:text-z-secondary animate-spin" />
+ <Loader2 size={24} className="text-z-secondary  animate-spin" />
  </div>
  ) : webhooks.length === 0 ? (
  <div className="py-6">
@@ -341,7 +341,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  <button
  type="button"
  onClick={() => setShowForm(true)}
- className="flex items-center gap-2 px-4 py-2 border border-gray-500/30 hover:border-gray-500 hover:bg-gray-500/10 text-sm font-semibold transition-all text-gray-600 dark:text-z-muted hover:text-white"
+ className="flex items-center gap-2 px-4 py-2 border border-z-border hover:border-z-active-border hover:bg-z-hover text-sm font-semibold transition-all text-z-secondary hover:text-z-primary"
  >
  <Plus size={12} />
  Add Webhook
@@ -357,15 +357,15 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  className={cn(
  'p-5 border rounded-none transition-all shadow-sm',
  wh.enabled
- ? theme === 'dark' ? 'bg-z-panel backdrop-blur-md border-z-border' : 'bg-z-panel border-z-border shadow-sm'
- : theme === 'dark' ? 'bg-black/30 backdrop-blur-sm border-white/[0.03] opacity-60' : 'bg-z-input border-z-border shadow-sm opacity-60'
+ ? 'bg-z-panel backdrop-blur-md border-z-border shadow-sm'
+ : 'bg-z-input border-z-border opacity-60'
  )}
  >
  <div className="flex items-center justify-between mb-3">
  <div className="flex items-center gap-3">
  {wh.enabled
- ? <CheckCircle2 size={14} className="text-gray-600 dark:text-z-secondary" />
- : <XCircle size={14} className="text-gray-600" />
+ ? <CheckCircle2 size={14} className="text-z-secondary " />
+ : <XCircle size={14} className="text-z-secondary" />
  }
  <span className="text-sm font-mono font-bold truncate max-w-md">{wh.url}</span>
  </div>
@@ -375,7 +375,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  disabled={testingId === wh.id || !wh.enabled}
  className={cn(
  'p-2 border rounded-none-none transition-colors',
- theme === 'dark' ? 'border-z-border text-z-secondary hover:text-gray-600 dark:text-z-muted' : 'border-z-border text-z-muted hover:text-gray-600'
+ 'border-z-border text-z-secondary hover:text-z-primary'
  )}
  title="Send test event"
  >
@@ -386,8 +386,8 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  className={cn(
  'p-2 border rounded-none-none transition-colors',
  wh.enabled
- ? theme === 'dark' ? 'border-z-border text-amber-500 hover:text-amber-400' : 'border-z-border text-amber-600'
- : theme === 'dark' ? 'border-z-border text-z-secondary hover:text-gray-600 dark:text-z-muted' : 'border-z-border text-z-muted hover:text-gray-600'
+ ? 'border-z-border text-status-orange hover:brightness-110'
+ : 'border-z-border text-z-secondary hover:text-z-primary'
  )}
  title={wh.enabled ? 'Disable' : 'Enable'}
  >
@@ -397,7 +397,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  onClick={() => handleEdit(wh)}
  className={cn(
  'px-3 py-1.5 text-sm font-semibold  border rounded-none-none transition-colors',
- theme === 'dark' ? 'border-z-border text-z-secondary hover:text-white' : 'border-z-border text-z-muted hover:text-z-primary'
+ 'border-z-border text-z-secondary hover:text-z-primary'
  )}
  >
  Edit
@@ -406,7 +406,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  onClick={() => handleDelete(wh.id)}
  className={cn(
  'p-2 border rounded-none-none transition-colors',
- theme === 'dark' ? 'border-z-border text-z-secondary hover:text-red-400' : 'border-z-border text-z-muted hover:text-red-600'
+ 'border-z-border text-z-secondary hover:text-status-red'
  )}
  title="Delete"
  >
@@ -417,8 +417,8 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  className={cn(
  'p-2 border rounded-none-none transition-colors',
  expandedWebhook === wh.id
- ? 'border-gray-500/40 text-gray-600 dark:text-z-muted'
- : theme === 'dark' ? 'border-z-border text-z-secondary hover:text-gray-600 dark:text-z-muted' : 'border-z-border text-z-muted hover:text-gray-600'
+ ? 'border-z-border/40 text-z-secondary'
+ : 'border-z-border text-z-secondary hover:text-z-primary'
  )}
  title="Delivery log"
  >
@@ -433,7 +433,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  className={cn(
  'px-2 py-0.5 text-sm font-semibold   border rounded-none-none',
  evt === '*'
- ? 'border-gray-500/30 text-gray-600 dark:text-z-muted bg-gray-500/5'
+ ? 'border-z-border/30 text-z-secondary bg-z-hover'
  : 'border-z-border text-z-secondary'
  )}
  >
@@ -443,7 +443,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  {wh.secret && (
  <span className={cn(
  'px-2 py-0.5 text-sm font-semibold   border rounded-none-none',
- theme === 'dark' ? 'border-gray-500/20 text-gray-600 dark:text-z-secondary' : 'border-z-border text-gray-600'
+ 'border-z-border text-z-secondary'
  )}>
  Signed
  </span>
@@ -455,12 +455,12 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  {expandedWebhook === wh.id && (
  <div className={cn(
  'border border-t-0 rounded-none-none p-4',
- theme === 'dark' ? 'bg-black/30 border-z-border' : 'bg-z-input border-z-border'
+ 'bg-z-input border-z-border'
  )}>
  <div className="flex items-center justify-between mb-4">
  <div className="flex items-center gap-2">
- <Clock size={12} className="text-gray-600 dark:text-z-muted" />
- <span className="text-sm font-semibold text-gray-600 dark:text-z-muted">
+ <Clock size={12} className="text-z-secondary" />
+ <span className="text-sm font-semibold text-z-secondary">
  Delivery Log
  </span>
  </div>
@@ -469,7 +469,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  disabled={loadingDeliveries === wh.id}
  className={cn(
  'flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold  border rounded-none-none transition-colors',
- theme === 'dark' ? 'border-z-border text-z-secondary hover:text-gray-600 dark:text-z-muted' : 'border-z-border text-z-muted hover:text-gray-600'
+ 'border-z-border text-z-secondary hover:text-z-primary'
  )}
  >
  {loadingDeliveries === wh.id ? (
@@ -483,7 +483,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
 
  {loadingDeliveries === wh.id ? (
  <div className="flex items-center justify-center py-8">
- <Loader2 size={16} className="text-gray-600 dark:text-z-secondary animate-spin" />
+ <Loader2 size={16} className="text-z-secondary  animate-spin" />
  </div>
  ) : !deliveries[wh.url] || deliveries[wh.url].length === 0 ? (
  <div className="py-2">
@@ -498,7 +498,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  {/* Header */}
  <div className={cn(
  'grid grid-cols-[1fr_1fr_80px_80px_100px_40px] gap-2 px-3 py-2 text-sm font-semibold   border-b',
- theme === 'dark' ? 'text-z-secondary border-z-border' : 'text-z-muted border-z-border'
+ 'text-z-secondary border-z-border'
  )}>
  <span>Event</span>
  <span>Collection</span>
@@ -513,39 +513,39 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  className={cn(
  'grid grid-cols-[1fr_1fr_80px_80px_100px_40px] gap-2 px-3 py-2.5 text-sm font-mono border rounded-none-none transition-colors items-center',
  d.success
- ? theme === 'dark' ? 'bg-gray-500/[0.03] border-gray-500/10' : 'bg-gray-50 border-z-border'
- : theme === 'dark' ? 'bg-red-500/[0.03] border-red-500/10' : 'bg-red-50 border-red-100'
+ ? 'bg-z-hover border-z-border'
+ : 'bg-z-active-bg border-z-active-border'
  )}
  >
  <span className="font-bold truncate">{d.event}</span>
  <span className={cn(
  'truncate',
- theme === 'dark' ? 'text-z-secondary' : 'text-z-muted'
+ 'text-z-secondary'
  )}>
  {d.collectionSlug || '—'}
  </span>
  <span className="flex items-center gap-1">
  {d.success ? (
- <CheckCircle2 size={9} className="text-gray-600 dark:text-z-secondary" />
+ <CheckCircle2 size={9} className="text-z-secondary " />
  ) : (
  <XCircle size={9} className="text-red-500" />
  )}
- <span className={d.success ? 'text-gray-600 dark:text-z-secondary' : 'text-red-500'}>
+ <span className={d.success ? 'text-z-secondary ' : 'text-red-500'}>
  {d.success ? 'OK' : 'Failed'}
  </span>
  </span>
  <span className={cn(
  'font-bold',
  d.responseStatus && d.responseStatus >= 200 && d.responseStatus < 300
- ? 'text-gray-600 dark:text-z-secondary'
+ ? 'text-z-secondary '
  : d.responseStatus && d.responseStatus >= 400
  ? 'text-red-500'
- : theme === 'dark' ? 'text-z-secondary' : 'text-z-muted'
+ : 'text-z-secondary'
  )}>
  {d.responseStatus || '—'}
  </span>
  <span className={cn(
- theme === 'dark' ? 'text-gray-600' : 'text-z-muted'
+ 'text-z-secondary'
  )}>
  {formatTimestamp(d.timestamp)}
  </span>
@@ -555,7 +555,7 @@ const SettingsWebhooks: React.FC<SettingsWebhooksProps> = ({ theme }) => {
  disabled={replayingId === d.id}
  className={cn(
  'p-1.5 border rounded-none-none transition-colors',
- theme === 'dark' ? 'border-z-border text-z-muted hover:text-gray-600 dark:text-z-muted hover:border-gray-500/30' : 'border-z-border text-z-secondary hover:text-gray-600 hover:border-z-border-strong'
+ 'border-z-border text-z-secondary hover:text-z-primary hover:border-z-border-strong'
  )}
  title="Replay Delivery"
  >

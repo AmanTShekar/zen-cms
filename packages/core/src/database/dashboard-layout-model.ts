@@ -50,16 +50,16 @@ const DashboardWidgetSchema = new Schema<IDashboardWidget>(
 const DashboardLayoutSchema = new Schema<IDashboardLayout>(
   {
     userId: { type: Schema.Types.ObjectId, ref: 'z_users', required: true, index: true },
-    siteId: { type: String, index: true },
+    siteId: { type: String, required: true, index: true },
     widgets: { type: [DashboardWidgetSchema], default: [] },
     columns: { type: Number, default: 12, min: 1, max: 12 },
   },
-  { timestamps: true }
+  { strict: true, timestamps: true }
 )
 
 DashboardLayoutSchema.index({ userId: 1, siteId: 1 }, { unique: true })
 
-export const DashboardLayoutModel = mongoose.model<IDashboardLayout>(
+export const DashboardLayoutModel = mongoose.models.z_dashboard_layouts || mongoose.model<IDashboardLayout>(
   'z_dashboard_layouts',
   DashboardLayoutSchema
 )

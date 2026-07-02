@@ -124,18 +124,18 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  // Common button class for toolbar icon buttons
  const iconBtn = cn(
  'w-8 h-8 rounded-none-none flex items-center justify-center border transition-all',
- dark ? 'bg-z-hover border-z-border' : 'bg-gray-100 border-z-border'
+ dark ? 'bg-z-hover border-z-border' : 'bg-z-panel border-z-border'
  )
 
  const iconBtnActive = (active: boolean) =>
  active
- ? dark ? 'bg-white/10 border-z-border text-white' : 'bg-gray-200 border-z-border-strong text-black'
- : dark ? 'text-z-secondary hover:text-white' : 'text-z-muted hover:text-black'
+ ? dark ? 'bg-z-panel/10 border-z-border text-z-primary' : 'bg-[var(--z-active-bg)] text-[var(--z-active-text)] border border-[var(--z-active-border)] shadow-sm'
+ : dark ? 'text-z-secondary hover:text-z-primary' : 'text-z-muted hover:text-z-primary'
 
  const iconBtnDisabled = (disabled: boolean) =>
  disabled
- ? dark ? 'bg-black/20 border-z-border text-white/20 cursor-not-allowed' : 'bg-z-input border-z-border shadow-sm text-gray-300 cursor-not-allowed'
- : dark ? 'bg-z-hover border-z-border text-z-muted hover:text-gray-600 dark:text-z-muted' : 'bg-gray-100 border-z-border text-z-secondary hover:text-gray-600'
+ ? dark ? 'bg-app/20 border-z-border text-z-primary/20 cursor-not-allowed' : 'bg-z-input border-z-border shadow-sm text-z-secondary cursor-not-allowed'
+ : dark ? 'bg-z-hover border-z-border text-z-muted hover:text-z-secondary' : 'bg-z-panel border-z-border text-z-secondary hover:bg-[var(--z-bg-input)]'
 
  // Last saved time display
  const lastSavedLabel = lastSavedAt
@@ -146,26 +146,26 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <header
  className={cn(
  'h-14 border-b flex items-center justify-between px-4 z-[100] backdrop-blur-3xl transition-all gap-3 shrink-0 overflow-visible',
- dark ? 'bg-z-popover border-z-border' : 'bg-white/90 border-z-border shadow-sm shadow-sm'
+ dark ? 'bg-z-popover border-z-border' : 'bg-z-panel border-z-border shadow-sm'
  )}
  >
  {/* Left: Back + SEO */}
  <div className="flex items-center gap-2 shrink-0">
  <button
  onClick={handleBack}
- className={cn(iconBtn, dark ? 'text-z-muted hover:text-white' : 'text-gray-600 hover:text-black')}
+ className={cn(iconBtn, dark ? 'text-z-muted hover:text-z-primary' : 'text-z-secondary hover:text-z-primary')}
  aria-label="Back to collection"
  title="Back"
  >
  <ChevronLeft size={16} />
  </button>
- <div className={cn('h-4 w-px mx-1', dark ? 'bg-white/10' : 'bg-gray-200')} />
+ <div className={cn('h-4 w-px mx-1', dark ? 'bg-z-panel/10' : 'bg-[var(--z-border)]')} />
  <button
  onClick={() => setSeoOpen(!seoOpen)}
  className={cn(
  'px-2.5 py-1.5 rounded-none-none border text-xs font-semibold  flex items-center gap-1.5 transition-all',
  seoOpen
- ? 'bg-gray-500/10 border-gray-500/20 text-gray-600 dark:text-z-muted'
+ ? 'bg-z-panel/5 border-z-border text-z-secondary'
  : dark ? 'bg-z-hover border-z-border text-z-muted' : 'bg-z-input border-z-border text-z-secondary'
  )}
  aria-label={seoOpen ? 'Close SEO panel' : 'Open SEO panel'}
@@ -189,7 +189,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <Undo2 size={15} />
  {undoStack.length > 0 && (
  <span
- className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-sm font-semibold tabular-nums rounded-none-none bg-gray-600 dark:bg-gray-600 text-white leading-none"
+ className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-sm font-semibold tabular-nums rounded-none-none bg-z-accent  text-z-primary leading-none"
  aria-hidden="true"
  >
  {undoStack.length > 99 ? '99+' : undoStack.length}
@@ -206,7 +206,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <Redo2 size={15} />
  {redoStack.length > 0 && (
  <span
- className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-sm font-semibold tabular-nums rounded-none-none bg-gray-600/80 text-white leading-none"
+ className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center text-sm font-semibold tabular-nums rounded-none-none bg-z-accent/80 text-z-primary leading-none"
  aria-hidden="true"
  >
  {redoStack.length > 99 ? '99+' : redoStack.length}
@@ -248,7 +248,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <button
  onClick={toggleTheme}
  aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
- className={cn(iconBtn, dark ? 'text-z-muted hover:text-white' : 'text-z-secondary hover:text-black')}
+ className={cn(iconBtn, dark ? 'text-z-muted hover:text-z-primary' : 'text-z-secondary hover:text-z-primary')}
  >
  {dark ? <Sun size={15} /> : <Moon size={15} />}
  </button>
@@ -267,7 +267,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  {i18nEnabled && (
  <button
  onClick={() => setShowTranslationModal(true)}
- className={cn(iconBtn, 'text-gray-600 dark:text-z-secondary hover:text-gray-600 dark:text-z-muted')}
+ className={cn(iconBtn, 'text-z-secondary  hover:text-z-secondary')}
  title="Translation Mode (Side-by-Side)"
  aria-label="Open Translation Mode"
  >
@@ -283,7 +283,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  aria-label={`Current language: ${currentLocale.toUpperCase()}. Click to change.`}
  className={cn(
  'h-8 px-2 rounded-none-none border flex items-center gap-1.5 text-xs font-semibold  transition-all',
- dark ? 'bg-z-hover border-z-border text-z-muted hover:text-white' : 'bg-gray-100 border-z-border text-z-secondary hover:text-black'
+ dark ? 'bg-z-hover border-z-border text-z-muted hover:text-z-primary' : 'bg-z-panel border-z-border text-z-secondary hover:bg-[var(--z-bg-input)] hover:text-z-primary'
  )}
  >
  <Languages size={13} />
@@ -303,8 +303,8 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  className={cn(
  'w-full flex items-center gap-2 px-3 py-2 text-xs font-bold  transition-colors',
  currentLocale === locale.code
- ? dark ? 'bg-gray-500/10 text-gray-600 dark:text-z-muted' : 'bg-gray-50 text-gray-600'
- : dark ? 'text-z-muted hover:bg-z-hover' : 'text-gray-600 hover:bg-gray-50'
+ ? dark ? 'bg-z-panel/5 text-z-secondary' : 'bg-z-hover text-z-primary shadow-sm'
+ : dark ? 'text-z-muted hover:bg-z-hover' : 'text-z-secondary hover:bg-[var(--z-bg-hover)] hover:text-z-primary'
  )}
  >
  <span>{locale.flag}</span>
@@ -319,14 +319,14 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <div className="w-px h-6 bg-z-hover mx-1" />
 
  {/* Visual / JSON toggle */}
- <div className={cn('flex items-center gap-0.5 p-0.5 rounded-none-none border', dark ? 'bg-z-hover border-z-border' : 'bg-gray-100 border-z-border')}>
+ <div className={cn('flex items-center gap-0.5 p-0.5 rounded-none-none border', dark ? 'bg-z-hover border-z-border' : 'bg-z-panel border-z-border')}>
  <button
  onClick={() => setViewMode('visual')}
  className={cn(
  'px-2.5 py-1 rounded-none-none text-xs font-semibold  transition-all',
  viewMode === 'visual'
- ? dark ? 'bg-white text-black' : 'bg-black text-white'
- : dark ? 'text-white/50 hover:text-white' : 'text-gray-600 hover:text-black'
+ ? dark ? 'bg-z-panel text-z-primary' : 'bg-[var(--z-active-bg)] text-[var(--z-active-text)] border border-[var(--z-active-border)] shadow-sm'
+ : dark ? 'text-z-primary/50 hover:text-z-primary' : 'text-z-secondary hover:text-z-primary'
  )}
  >
  Visual
@@ -336,8 +336,8 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  className={cn(
  'px-2.5 py-1 rounded-none-none text-xs font-semibold  transition-all',
  viewMode === 'code'
- ? dark ? 'bg-white text-black' : 'bg-black text-white'
- : dark ? 'text-white/50 hover:text-white' : 'text-gray-600 hover:text-black'
+ ? dark ? 'bg-z-panel text-z-primary' : 'bg-[var(--z-active-bg)] text-[var(--z-active-text)] border border-[var(--z-active-border)] shadow-sm'
+ : dark ? 'text-z-primary/50 hover:text-z-primary' : 'text-z-secondary hover:text-z-primary'
  )}
  >
  JSON
@@ -370,7 +370,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  'flex items-center gap-1 px-2.5 py-1.5 rounded-none-none border text-xs font-semibold  transition-all',
  publishStatus === 'published'
  ? dark ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-green-50 border-green-200 text-green-600'
- : dark ? 'bg-z-hover border-z-border text-z-secondary hover:text-white' : 'bg-z-input border-z-border text-z-muted hover:text-black'
+ : dark ? 'bg-z-hover border-z-border text-z-secondary hover:text-z-primary' : 'bg-z-input border-z-border text-z-muted hover:text-z-primary'
  )}
  aria-label="Publish document"
  >
@@ -383,7 +383,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
 
  {/* Last saved timestamp */}
  {lastSavedLabel && (
- <span className={cn('text-sm font-semibold  ', dark ? 'text-gray-600' : 'text-z-muted')}>
+ <span className={cn('text-sm font-semibold  ', dark ? 'text-z-secondary' : 'text-z-muted')}>
  {lastSavedLabel}
  </span>
  )}
@@ -396,7 +396,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  'h-8 px-2.5 rounded-none-none border flex items-center gap-1.5 text-xs font-semibold  transition-all',
  scheduledAt
  ? dark ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-600'
- : dark ? 'bg-z-hover border-z-border text-z-secondary hover:text-white' : 'bg-gray-100 border-z-border text-z-muted hover:text-black'
+ : dark ? 'bg-z-hover border-z-border text-z-secondary hover:text-z-primary' : 'bg-[var(--z-bg-hover)] border-z-border text-z-muted hover:text-z-primary'
  )}
  title={scheduledAt ? `Scheduled: ${new Date(scheduledAt).toLocaleString()}` : 'Schedule publish'}
  aria-label={scheduledAt ? `Scheduled for ${new Date(scheduledAt).toLocaleDateString()}` : 'Schedule publish'}
@@ -425,7 +425,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
  <button
  onClick={handleSave}
  disabled={saving}
- className="flex items-center gap-1.5 px-4 py-1.5 rounded-none-none text-xs font-semibold bg-gray-600 dark:bg-gray-600 text-white shadow-[0_0_16px_rgba(79,70,229,0.3)] hover:bg-gray-500 transition-all active:scale-95 disabled:opacity-50"
+ className="flex items-center gap-1.5 px-4 py-1.5 rounded-none-none text-xs font-semibold bg-z-accent  text-z-primary shadow-[0_0_16px_rgba(79,70,229,0.3)] hover:bg-z-border transition-all active:scale-95 disabled:opacity-50"
  aria-label="Save document"
  >
  {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}

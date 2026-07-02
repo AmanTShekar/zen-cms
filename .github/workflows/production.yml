@@ -84,9 +84,10 @@ jobs:
         run: echo "REPO_LC=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
 
       - name: Run Trivy vulnerability scanner on Core
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: 'ghcr.io/${{ env.REPO_LC }}/core:${{ github.sha }}'
+          version: 'v0.72.0'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -94,9 +95,10 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       - name: Run Trivy vulnerability scanner on Admin
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: 'ghcr.io/${{ env.REPO_LC }}/admin:${{ github.sha }}'
+          version: 'v0.72.0'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true

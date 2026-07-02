@@ -1,8 +1,7 @@
 import mongoose, { Model } from 'mongoose'
 import { CollectionConfig, DatabaseAdapter, FindOptions, BaseOptions, AuditLogData, VersionData, WebhookDeliveryData, WebhookDeliveryRecord } from '@zenith-open/zenithcms-types'
 import { getModelForCollection } from './model-factory'
-import NodeCache from 'node-cache'
-import Redis from 'ioredis'
+import { CacheLayer, createCacheLayer } from '@zenith-open/zenithcms-db-common'
 import pino from 'pino'
 
 const logger = pino()
@@ -11,70 +10,7 @@ const logger = pino()
 const MAX_QUERY_LIMIT = 500
 const DEFAULT_QUERY_LIMIT = 100
 
-export interface CacheLayer {
-  get<T>(key: string): Promise<T | undefined>
-  set<T>(key: string, value: T, collection: string): Promise<void>
-  invalidate(collection: string): Promise<void>
-}
 
-export class LocalCacheLayer implements CacheLayer {
-  private cache: NodeCache
-  constructor() {
-    this.cache = new NodeCache({ stdTTL: 60, checkperiod: 120 })
-  }
-  async get<T>(key: string): Promise<T | undefined> {
-    return this.cache.get<T>(key)
-  }
-  async set<T>(key: string, value: T, collection: string): Promise<void> {
-    this.cache.set(key, value)
-  }
-  async invalidate(collection: string): Promise<void> {
-    const keys = this.cache.keys()
-    const targets = keys.filter((k) => k.startsWith(`${collection}:`))
-    this.cache.del(targets)
-  }
-}
-
-export class RedisCacheLayer implements CacheLayer {
-  private redis: Redis
-  constructor(redisUrl: string) {
-    this.redis = new Redis(redisUrl, {
-      maxRetriesPerRequest: 3,
-    })
-    logger.info('MongooseAdapter: Redis_Cache_Layer Initialized')
-  }
-  async get<T>(key: string): Promise<T | undefined> {
-    try {
-      const data = await this.redis.get(key)
-      return data ? JSON.parse(data) : undefined
-    } catch (error: any) {
-      logger.warn({ error: error.message }, 'RedisCacheLayer: Get failed')
-      return undefined
-    }
-  }
-  async set<T>(key: string, value: T, collection: string): Promise<void> {
-    try {
-      const setKey = `zenith:cache:collection:${collection}`
-      await this.redis.setex(key, 60, JSON.stringify(value))
-      await this.redis.sadd(setKey, key)
-      await this.redis.expire(setKey, 120)
-    } catch (error: any) {
-      logger.warn({ error: error.message }, 'RedisCacheLayer: Set failed')
-    }
-  }
-  async invalidate(collection: string): Promise<void> {
-    try {
-      const setKey = `zenith:cache:collection:${collection}`
-      const keys = await this.redis.smembers(setKey)
-      if (keys.length > 0) {
-        await this.redis.del(...keys)
-      }
-      await this.redis.del(setKey)
-    } catch (error: any) {
-      logger.warn({ error: error.message }, 'RedisCacheLayer: Invalidate failed')
-    }
-  }
-}
 
 /**
  * Mongoose Database Adapter — Hardened Edition
@@ -116,13 +52,7 @@ export class MongooseAdapter implements DatabaseAdapter {
   }
 
   constructor(private uri: string) {
-    const redisUrl = process.env.REDIS_URL
-    if (redisUrl) {
-      this.cache = new RedisCacheLayer(redisUrl)
-    } else {
-      this.cache = new LocalCacheLayer()
-      logger.warn('MongooseAdapter: Local_Cache_Layer Initialized (Warning: Cache desync risk under horizontal scaling)')
-    }
+    this.cache = createCacheLayer('MongooseAdapter')
     logger.info('MongooseAdapter: Neural_Cache_Layer Initialized')
   }
 
@@ -130,20 +60,38 @@ export class MongooseAdapter implements DatabaseAdapter {
     return mongoose.connection as unknown as T
   }
 
+  async executeRaw(query: string, params?: any[]): Promise<any> {
+    // Mongoose adapter doesn't natively use raw SQL, so we'll throw or return null
+    // depending on usage. For now, just throw an unsupported error.
+    throw new Error('executeRaw is not supported on MongooseAdapter')
+  }
+
   async connect(): Promise<void> {
-    try {
-      const poolMax = parseInt(process.env.DB_POOL_SIZE || '10', 10)
-      await mongoose.connect(this.uri, {
-        serverSelectionTimeoutMS: 5000,
-        socketTimeoutMS: 45000,
-        maxPoolSize: poolMax,
-        autoIndex: process.env.ZENITH_AUTO_MIGRATE !== 'false',
-      })
-      logger.info('MongooseAdapter: Connected to MongoDB')
-      this._initSystemModels()
-    } catch (error: any) {
-      logger.error({ error: error.message }, 'MongooseAdapter: Connection failed')
-      throw error
+    const poolMax = parseInt(process.env.DB_POOL_SIZE || '10', 10)
+    const maxRetries = parseInt(process.env.DB_CONNECT_MAX_RETRIES || '5', 10)
+    const retryDelay = parseInt(process.env.DB_CONNECT_RETRY_DELAY_MS || '3000', 10)
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        await mongoose.connect(this.uri, {
+          serverSelectionTimeoutMS: parseInt(process.env.DB_SERVER_SELECTION_TIMEOUT_MS || '5000', 10),
+          socketTimeoutMS: parseInt(process.env.DB_SOCKET_TIMEOUT_MS || '45000', 10),
+          maxPoolSize: poolMax,
+          autoIndex: process.env.ZENITH_AUTO_MIGRATE !== 'false',
+        })
+        logger.info({ attempt }, 'MongooseAdapter: Connected to MongoDB')
+        this._initSystemModels()
+        return
+      } catch (error: any) {
+        logger.error({ attempt, error: error.message }, 'MongooseAdapter: Connection failed')
+        if (attempt < maxRetries) {
+          logger.info({ nextAttemptIn: retryDelay }, 'Retrying MongoDB connection...')
+          await new Promise((resolve) => setTimeout(resolve, retryDelay))
+        } else {
+          logger.fatal('Could not connect to MongoDB after all retries. Exiting.')
+          process.exit(1)
+        }
+      }
     }
   }
 
@@ -414,6 +362,33 @@ export class MongooseAdapter implements DatabaseAdapter {
     })
   }
 
+  async findMany<T = unknown>(
+    collection: string,
+    ids: string[],
+    options: BaseOptions = {}
+  ): Promise<T[]> {
+    return this._withCircuitBreaker(async () => {
+      if (!ids || ids.length === 0) return []
+      
+      const model = this.getModel(collection)
+      const siteId = options?.siteId || options?.tenantId || (globalThis as any).zenithAls?.getStore()?.siteId
+      
+      const query: Record<string, unknown> = { _id: { $in: ids } }
+      if (siteId && siteId !== 'global') {
+        query.siteId = siteId
+      }
+
+      const docs = await model
+        .find(query)
+        .session(options.session as any)
+        .maxTimeMS(30000)
+        .lean()
+        .exec()
+      
+      return docs as T[]
+    })
+  }
+
   private async _invalidateCache(collection: string) {
     await this.cache.invalidate(collection)
   }
@@ -539,9 +514,16 @@ export class MongooseAdapter implements DatabaseAdapter {
     return this._withCircuitBreaker(async () => {
       const model = this.getModel(collection)
       const siteId = options?.siteId || options?.tenantId || (globalThis as any).zenithAls?.getStore()?.siteId
-      const filter: Record<string, unknown> = { _id: id }
+      
+      const objectId = mongoose.Types.ObjectId.isValid(id) && typeof id === 'string' && id.length === 24 
+        ? new mongoose.Types.ObjectId(id) 
+        : id
+
+      const filter: Record<string, unknown> = { _id: objectId }
       if (siteId) filter.siteId = siteId
+      console.log(`[DEBUG DELETE] collection=${collection} resolvedCollection=${model.modelName} filter=`, filter)
       const result = await model.findOneAndDelete(filter, { session: options.session as any }).maxTimeMS(30000)
+      console.log(`[DEBUG DELETE] result=`, !!result)
       await this._invalidateCache(collection)
       return !!result
     })

@@ -40,9 +40,9 @@ export function globalErrorHandler(err: any, req: Request, res: Response, _next:
     })
   }
 
-  // Mongoose duplicate key error
-  if ((err as any)?.code === 11000) {
-    const field = Object.keys((err as any).keyPattern || {})[0]
+  // Duplicate key error (MongoDB: 11000, Postgres: 23505)
+  if ((err as any)?.code === 11000 || (err as any)?.code === '23505') {
+    const field = Object.keys((err as any).keyPattern || {})[0] || (err as any).constraint || 'unknown_field'
     logger.warn({ field }, 'Duplicate key violation')
     return res.status(409).json({
       error: 'RECORD_NOT_UNIQUE',

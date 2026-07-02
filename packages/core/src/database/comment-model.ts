@@ -66,13 +66,13 @@ const CommentSchema = new Schema<IComment>(
         updatedAt: { type: Date, default: Date.now },
       },
     ],
-    siteId: { type: String, index: true },
+    siteId: { type: String, required: true, index: true },
   },
-  { timestamps: true, suppressReservedKeysWarning: true }
+  { strict: true, timestamps: true, suppressReservedKeysWarning: true }
 )
 
 // Compound index for fast queries
 CommentSchema.index({ collection: 1, documentId: 1, resolved: 1, siteId: 1, createdAt: -1 })
 
-export const Comment = mongoose.model<IComment>('Comment', CommentSchema)
+export const Comment = mongoose.models.Comment || mongoose.model<IComment>('Comment', CommentSchema)
 export default Comment

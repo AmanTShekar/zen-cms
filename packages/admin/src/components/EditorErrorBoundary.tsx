@@ -78,7 +78,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  <h2
  className={cn(
  'text-sm font-semibold   mb-2',
- theme === 'dark' ? 'text-white' : 'text-black'
+ theme === 'dark' ? 'text-z-primary' : 'text-z-primary'
  )}
  >
  Something went wrong
@@ -98,7 +98,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  onClick={onReset}
  className={cn(
  'flex items-center gap-2 px-4 py-2 text-xs font-semibold  border rounded-none-none transition-all',
- 'bg-gray-600 dark:bg-gray-600 hover:bg-gray-500 text-white border-gray-600'
+ 'bg-z-accent  hover:bg-z-border text-z-primary border-z-border'
  )}
  >
  <RefreshCw size={12} />
@@ -110,7 +110,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  'flex items-center gap-2 px-3 py-2 text-xs font-semibold  border rounded-none-none transition-all',
  theme === 'dark'
  ? 'border-z-border text-z-muted hover:bg-z-hover'
- : 'border-z-border text-z-secondary hover:bg-gray-50'
+ : 'border-z-border text-z-secondary hover:bg-[var(--z-bg-input)]'
  )}
  >
  <Copy size={11} />
@@ -123,7 +123,7 @@ const ErrorUI: React.FC<{ error: ErrorInfo; onReset: () => void; onCopy: () => v
  <summary
  className={cn(
  'text-sm font-semibold   cursor-pointer mb-1',
- theme === 'dark' ? 'text-z-secondary' : 'text-z-muted'
+ 'text-z-secondary'
  )}
  >
  Component Stack

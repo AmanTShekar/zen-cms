@@ -397,6 +397,12 @@ export class ContentService<T = any> {
 
       let updateData = { ...data }
 
+      // Task 06: Scheduled Publishing Intercept
+      // If workflowStatus is 'scheduled' and scheduledAt is provided, force _status to 'draft'
+      if (updateData.workflowStatus === 'scheduled' && updateData.scheduledAt) {
+        updateData._status = 'draft'
+      }
+
       if (!options.skipHooks) {
         if (this.config.hooks?.beforeValidate)
           updateData = await this.executeHook('beforeValidate', this.config.hooks.beforeValidate, updateData, options.user)

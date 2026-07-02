@@ -33,7 +33,7 @@ const PointField: React.FC<Props> = ({ field: _field, value, onChange, disabled 
           onChange={(e) => onChange([Number(e.target.value), coords[1]])}
           step="any"
           disabled={disabled}
-          className="w-full bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-none-none px-3 py-3 text-sm focus:border-z-accent/50 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black disabled:opacity-60 disabled:cursor-not-allowed text-white placeholder:text-z-secondary"
+          className="w-full bg-z-panel/[0.05] backdrop-blur-md border border-z-border rounded-none-none px-3 py-3 text-sm focus:border-z-accent/50 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black disabled:opacity-60 disabled:cursor-not-allowed text-z-primary placeholder:text-z-secondary"
           placeholder="0.0"
         />
       </div>
@@ -47,7 +47,7 @@ const PointField: React.FC<Props> = ({ field: _field, value, onChange, disabled 
           onChange={(e) => onChange([coords[0], Number(e.target.value)])}
           step="any"
           disabled={disabled}
-          className="w-full bg-white/[0.05] backdrop-blur-md border border-white/10 rounded-none-none px-3 py-3 text-sm focus:border-z-accent/50 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black disabled:opacity-60 disabled:cursor-not-allowed text-white placeholder:text-z-secondary"
+          className="w-full bg-z-panel/[0.05] backdrop-blur-md border border-z-border rounded-none-none px-3 py-3 text-sm focus:border-z-accent/50 outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black disabled:opacity-60 disabled:cursor-not-allowed text-z-primary placeholder:text-z-secondary"
           placeholder="0.0"
         />
       </div>
@@ -63,7 +63,7 @@ const RowField: React.FC<RowFieldProps> = ({ field, value, onChange, renderField
     <div className="flex gap-4 items-end">
       {rowFields.map((f) => (
         <div key={f.name} className="flex-1 space-y-1.5">
-          <label className="text-xs font-semibold text-gray-300 capitalize">
+          <label className="text-xs font-semibold text-z-secondary capitalize">
             {f.label || f.name}
             {(f as any).required && <span className="text-danger ml-1">*</span>}
           </label>
@@ -80,7 +80,7 @@ const RowField: React.FC<RowFieldProps> = ({ field, value, onChange, renderField
 }
 
 const JoinField: React.FC<{ field: { collection?: string } }> = ({ field }) => (
-  <div className="w-full bg-z-hover border border-white/10 rounded-none-none px-4 py-3 text-sm text-z-muted italic flex items-center gap-2">
+  <div className="w-full bg-z-hover border border-z-border rounded-none-none px-4 py-3 text-sm text-z-muted italic flex items-center gap-2">
     <span className="text-z-active-text">⧉</span>
     Joined data from{' '}
     <span className="font-mono text-z-active-text text-xs">{field.collection}</span> — read-only
@@ -111,9 +111,9 @@ const RadioField: React.FC<Props> = ({ field, value, onChange, disabled }) => {
               checked={value === optVal}
               onChange={(e) => onChange(e.target.value)}
               disabled={disabled}
-              className="w-4 h-4 border border-white/20 text-z-active-text focus:ring-z-active-border disabled:opacity-60 accent-z-accent"
+              className="w-4 h-4 border border-z-border text-z-active-text focus:ring-z-active-border disabled:opacity-60 accent-z-accent"
             />
-            <span className="text-sm text-gray-300 group-hover:text-white transition-colors">
+            <span className="text-sm text-z-secondary group-hover:text-z-primary transition-colors">
               {String(optLabel)}
             </span>
           </label>

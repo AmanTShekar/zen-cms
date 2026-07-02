@@ -33,9 +33,9 @@ const TabField: React.FC<TabFieldProps> = ({ field, value, onChange, disabled, r
   const currentFields = currentTab?.fields || []
 
   return (
-    <div className="border border-white/10 bg-z-panel backdrop-blur-md">
+    <div className="border border-z-border bg-z-panel backdrop-blur-md">
       {/* Tab Headers */}
-      <div className="flex border-b border-white/10">
+      <div className="flex border-b border-z-border">
         {tabs.map((tab, idx) => (
           <button
             key={tab.name}
@@ -45,7 +45,7 @@ const TabField: React.FC<TabFieldProps> = ({ field, value, onChange, disabled, r
               'px-4 py-2.5 text-sm font-semibold   transition-colors',
               activeTab === idx
                 ? 'text-z-active-text border-b-2 border-z-accent bg-z-hover'
-                : 'text-z-secondary hover:text-gray-300'
+                : 'text-z-secondary hover:text-z-secondary'
             )}
           >
             {tab.label || tab.name}

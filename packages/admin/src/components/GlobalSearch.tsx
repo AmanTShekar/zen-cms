@@ -67,7 +67,7 @@ const GlobalSearch: React.FC = () => {
  part.toLowerCase() === match.toLowerCase() ? (
  <span
  key={i}
- className="text-gray-600 dark:text-z-secondary font-semibold underline decoration-2 underline-offset-2"
+ className="text-z-secondary  font-semibold underline decoration-2 underline-offset-2"
  >
  {part}
  </span>
@@ -114,13 +114,13 @@ const GlobalSearch: React.FC = () => {
   className={cn(
   'flex items-center gap-2 px-4 py-2.5 rounded-none-none transition-all border',
   isFocused
-  ? 'bg-white border-gray-500 text-z-primary shadow-md ring-4 ring-gray-500/10 dark:bg-black dark:border-gray-500 dark:text-gray-100 dark:ring-gray-500/20'
-  : 'bg-z-panel border-z-border text-gray-600 hover:bg-gray-50 shadow-sm dark:bg-black/50 dark:border-z-border dark:text-z-muted dark:hover:bg-z-hover'
+  ? 'bg-z-panel border-z-border text-z-primary shadow-md ring-4 ring-z-active-border dark:bg-app   dark:ring-z-active-border'
+  : 'bg-z-panel border-z-border text-z-secondary hover:bg-[var(--z-bg-input)] shadow-sm dark:bg-app/50 dark:border-z-border dark:text-z-muted dark:hover:bg-z-hover'
   )}
   >
   <Search
   size={16}
-  className={cn('transition-colors', isFocused ? 'text-gray-600 dark:text-z-secondary' : 'text-z-muted dark:text-z-secondary')}
+  className={cn('transition-colors', isFocused ? 'text-z-secondary ' : 'text-z-muted ')}
   />
   <input
   type="text"
@@ -128,15 +128,15 @@ const GlobalSearch: React.FC = () => {
   onChange={(e) => setQuery(e.target.value)}
   onFocus={() => setIsFocused(true)}
   placeholder="SEARCH SYSTEM..."
-  className="bg-transparent border-none text-sm font-semibold flex-1 placeholder:text-z-muted dark:placeholder:text-gray-600 focus:outline-none focus:ring-0 rounded-none-none px-1"
+  className="bg-transparent border-none text-sm font-semibold flex-1 placeholder:text-z-muted dark:placeholder:text-z-secondary focus:outline-none focus:ring-0 rounded-none-none px-1"
   />
   {query && (
-  <button onClick={() => setQuery('')} className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-none-none transition-colors">
+  <button onClick={() => setQuery('')} className="p-1 hover:bg-[var(--z-bg-hover)] dark:hover:bg-[var(--z-bg-hover)] rounded-none-none transition-colors">
   <X size={14} className="text-z-secondary" />
   </button>
   )}
   {!isFocused && !query && (
-  <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-none-none border border-z-border dark:border-z-border bg-gray-50 dark:bg-black/40 text-sm font-semibold text-z-secondary dark:text-z-secondary">
+  <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-none-none border border-z-border dark:border-z-border bg-[var(--z-bg-input)] dark:bg-app/40 text-sm font-semibold text-z-secondary ">
   <span>⌘</span>
   <span>K</span>
   </div>
@@ -150,28 +150,28 @@ const GlobalSearch: React.FC = () => {
   animate={{ opacity: 1, y: 0, scale: 1 }}
   exit={{ opacity: 0, y: 10, scale: 0.98 }}
   transition={{ duration: 0.2, ease: "easeOut" }}
-  className="absolute top-full left-0 right-0 mt-3 bg-white border border-z-border dark:bg-[#0a0a0a] dark:border-z-border rounded-none-none shadow-2xl overflow-hidden flex flex-col text-z-primary dark:text-gray-100"
+  className="absolute top-full left-0 right-0 mt-3 bg-z-panel border border-z-border dark:bg-[#0a0a0a] dark:border-z-border rounded-none-none shadow-2xl overflow-hidden flex flex-col text-z-primary "
   >
   <div className="max-h-[400px] overflow-y-auto p-2">
   {results.length > 0 && (
   <div className="space-y-0.5 mb-2">
-  <div className="px-3 py-2 text-sm font-semibold text-z-muted dark:text-z-secondary">
+  <div className="px-3 py-2 text-sm font-semibold text-z-muted ">
   Database Nodes
   </div>
   {results.map((res: any) => (
   <button
   key={res.id}
   onClick={() => handleSelect(`/collections/${res.collection}/${res.id}`)}
-  className="w-full flex items-center gap-3 p-2.5 rounded-none-none hover:bg-gray-50 dark:hover:bg-z-hover transition-all text-left group"
+  className="w-full flex items-center gap-3 p-2.5 rounded-none-none hover:bg-[var(--z-bg-input)] dark:hover:bg-z-hover transition-all text-left group"
   >
-  <div className="w-8 h-8 rounded-none-none bg-gray-50 dark:bg-gray-500/10 flex items-center justify-center text-gray-600 dark:text-z-secondary flex-shrink-0 border border-z-border dark:border-gray-500/20 group-hover:scale-105 transition-transform">
+  <div className="w-8 h-8 rounded-none-none bg-[var(--z-bg-input)] dark:bg-z-panel flex items-center justify-center text-z-secondary  flex-shrink-0 border border-z-border /20 group-hover:scale-105 transition-transform">
   <FileText size={14} />
   </div>
   <div className="flex flex-col min-w-0">
-  <span className="text-sm font-semibold truncate text-z-primary dark:text-gray-100">
+  <span className="text-sm font-semibold truncate text-z-primary ">
   {highlightMatch(res.title, query)}
   </span>
-  <span className="text-sm font-bold text-z-muted dark:text-z-secondary">
+  <span className="text-sm font-bold text-z-muted ">
   {res.collectionLabel}
   </span>
   </div>
@@ -181,8 +181,8 @@ const GlobalSearch: React.FC = () => {
   )}
 
   {/* System Protocols & Settings Deep Search */}
-  <div className="pt-2 border-t border-z-border dark:border-white/[0.05] space-y-0.5">
-  <div className="px-3 py-2 text-sm font-semibold text-z-muted dark:text-z-secondary">
+  <div className="pt-2 border-t border-z-border border-z-border space-y-0.5">
+  <div className="px-3 py-2 text-sm font-semibold text-z-muted ">
   System Protocols
   </div>
   {(() => {
@@ -194,8 +194,8 @@ const GlobalSearch: React.FC = () => {
   ) {
   return (
   <div className="py-10 text-center flex flex-col items-center justify-center gap-2">
-  <Search size={20} className="text-gray-300 dark:text-gray-700" />
-  <span className="text-sm font-semibold text-z-muted dark:text-gray-600">
+  <Search size={20} className="text-z-secondary dark:text-z-primary" />
+  <span className="text-sm font-semibold text-z-muted dark:text-z-secondary">
   No matching records found
   </span>
   </div>
@@ -206,16 +206,16 @@ const GlobalSearch: React.FC = () => {
   <button
   key={cmd.label}
   onClick={() => handleSelect(cmd.path)}
-  className="w-full flex items-center gap-3 p-2.5 rounded-none-none hover:bg-gray-50 dark:hover:bg-z-hover transition-all text-left group"
+  className="w-full flex items-center gap-3 p-2.5 rounded-none-none hover:bg-[var(--z-bg-input)] dark:hover:bg-z-hover transition-all text-left group"
   >
-  <div className="w-8 h-8 rounded-none-none bg-gray-100 dark:bg-z-hover flex items-center justify-center text-z-secondary dark:text-z-muted flex-shrink-0 group-hover:bg-gray-500 group-hover:text-white dark:group-hover:bg-gray-500 dark:group-hover:text-white transition-all group-hover:scale-105 border border-transparent dark:border-white/[0.05]">
+  <div className="w-8 h-8 rounded-none-none bg-[var(--z-bg-hover)] dark:bg-z-hover flex items-center justify-center text-z-secondary flex-shrink-0 group-hover:bg-z-border group-hover:text-z-primary dark:group-hover:bg-z-border dark:group-hover:text-z-primary transition-all group-hover:scale-105 border border-transparent border-z-border">
   <cmd.icon size={14} />
   </div>
   <div className="flex flex-col min-w-0">
-  <span className="text-sm font-semibold truncate text-z-primary dark:text-gray-100">
+  <span className="text-sm font-semibold truncate text-z-primary ">
   {highlightMatch(cmd.label, query)}
   </span>
-  <span className="text-sm font-bold text-z-muted dark:text-z-secondary truncate">
+  <span className="text-sm font-bold text-z-muted  truncate">
   {highlightMatch(cmd.sub, query)}
   </span>
   </div>
@@ -225,13 +225,13 @@ const GlobalSearch: React.FC = () => {
   </div>
   </div>
 
-  <div className="px-4 py-2.5 bg-gray-50 dark:bg-black border-t border-z-border dark:border-z-border flex items-center justify-between">
-  <span className="text-sm font-semibold text-z-secondary dark:text-z-secondary">
+  <div className="px-4 py-2.5 bg-[var(--z-bg-input)] dark:bg-app border-t border-z-border dark:border-z-border flex items-center justify-between">
+  <span className="text-sm font-semibold text-z-secondary ">
   Core_Intelligence_Stream
   </span>
   <div className="flex items-center gap-2">
-  <div className="w-1.5 h-1.5 bg-gray-500 rounded-none-none animate-pulse shadow-sm" />
-  <span className="text-sm font-semibold text-gray-600 dark:text-z-secondary">
+  <div className="w-1.5 h-1.5 bg-z-border rounded-none-none animate-pulse shadow-sm" />
+  <span className="text-sm font-semibold text-z-secondary ">
   Sync_Active
   </span>
   </div>

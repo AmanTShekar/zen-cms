@@ -52,36 +52,36 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  }
 
  return (
- <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+ <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--z-bg-modal)] backdrop-blur-sm">
  <div
  className={cn(
  'w-full max-w-md border rounded-none-none shadow-2xl',
  theme === 'dark'
- ? 'bg-black border-z-border'
- : 'bg-z-panel border-z-border shadow-sm shadow-black/10'
+ ? 'bg-app border-z-border'
+ : 'bg-z-panel border-z-border shadow-sm shadow-[var(--z-border)]'
  )}
  >
  {/* Header */}
  <div className="flex items-center justify-between px-8 py-6 border-b border-z-border">
  <div className="flex items-center gap-3">
- <div className="w-10 h-10 rounded-none-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
- <Users size={18} className="text-gray-600 dark:text-z-secondary" />
+ <div className="w-10 h-10 rounded-none-none bg-z-panel border border-z-border/20 flex items-center justify-center">
+ <Users size={18} className="text-z-secondary " />
  </div>
  <span className="text-sm font-semibold tracking-wide">
  Initialize Operator
  </span>
  </div>
- <button onClick={onClose} className="text-z-secondary hover:text-white transition-colors">
+ <button onClick={onClose} className="text-z-secondary hover:text-z-primary transition-colors">
  <X size={18} />
  </button>
  </div>
 
  {sent ? (
  <div className="px-8 py-12 text-center space-y-4">
- <div className="w-16 h-16 mx-auto rounded-none-none bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
- <Users size={28} className="text-gray-600 dark:text-z-secondary" />
+ <div className="w-16 h-16 mx-auto rounded-none-none bg-z-panel border border-z-border/20 flex items-center justify-center">
+ <Users size={28} className="text-z-secondary " />
  </div>
- <p className="text-sm font-semibold text-gray-600 dark:text-z-secondary">
+ <p className="text-sm font-semibold text-z-secondary ">
  Invitation Dispatched
  </p>
  <p className="text-sm text-z-secondary">
@@ -103,10 +103,10 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  autoFocus
  placeholder="operator@example.com"
  className={cn(
- 'w-full border rounded-none-none py-4 px-5 text-[13px] font-semibold transition-all outline-none focus-visible:ring-2 focus-visible:ring-gray-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-black',
+ 'w-full border rounded-none-none py-4 px-5 text-[13px] font-semibold transition-all outline-none focus-visible:ring-2 focus-visible:ring-z-active-border focus-visible:ring-offset-1 focus-visible:ring-offset-black',
  theme === 'dark'
- ? 'bg-z-hover border-z-border text-white focus:border-gray-500/50'
- : 'bg-z-input border-z-border focus:border-gray-500'
+ ? 'bg-z-hover border-z-border text-z-primary focus:border-z-border/50'
+ : 'bg-z-input border-z-border focus:border-z-border'
  )}
  />
  </div>
@@ -125,7 +125,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  className={cn(
  'py-3 text-sm font-semibold   border rounded-none-none transition-all',
  role === r
- ? 'border-gray-500/40 bg-gray-500/10 text-gray-600 dark:text-z-muted'
+ ? 'border-z-border/40 bg-z-panel text-z-secondary'
  : theme === 'dark'
  ? 'border-z-border text-z-secondary hover:border-z-border'
  : 'border-z-border text-z-muted hover:border-z-border-strong'
@@ -144,8 +144,8 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  className={cn(
  'w-full py-4 rounded-none-none text-sm font-semibold   shadow-lg transition-all active:scale-95 disabled:opacity-40',
  theme === 'dark'
- ? 'bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 text-white'
- : 'bg-gray-900 hover:bg-gray-800 text-white'
+ ? 'bg-z-border hover:bg-z-accent  text-z-primary'
+ : 'bg-z-accent hover:brightness-110 text-z-primary'
  )}
  >
  {loading ? (
@@ -161,7 +161,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ onClose, onInvited, t
  )}
 
  <div className="px-8 pb-6">
- <p className="text-sm text-gray-600 text-center">
+ <p className="text-sm text-z-secondary text-center">
  48h expiring token · sent via SMTP relay · password set on first login
  </p>
  </div>

@@ -24,6 +24,9 @@ export interface DatabaseAdapter {
   /** Escape hatch for bypassing the Adapter AST and executing vendor-specific queries natively */
   getNativeClient<T = any>(): T
 
+  /** Escape hatch for executing raw DDL/SQL queries directly */
+  executeRaw(query: string, params?: any[]): Promise<any>
+
   // ── CRUD Operations ───────────────────────────────────────────────────────
   find<T = any>(
     collection: string,
@@ -35,6 +38,11 @@ export interface DatabaseAdapter {
     query: Record<string, any>,
     options?: BaseOptions
   ): Promise<T | null>
+  findMany<T = any>(
+    collection: string,
+    ids: string[],
+    options?: BaseOptions
+  ): Promise<T[]>
   create<T = any>(collection: string, data: Partial<T>, options?: BaseOptions): Promise<T>
   update<T = any>(
     collection: string,

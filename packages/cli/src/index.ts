@@ -35,7 +35,7 @@ program
   .description('Start the Zenith CMS server')
   .option('-p, --port <number>', 'Port to run on', '4001')
   .action((options) => {
-    console.log(chalk.bold.hex('#00F5FF')('🚀 Zenith CMS starting on port ' + options.port))
+    console.log(chalk.bold.hex('#00F5FF')(' Zenith CMS starting on port ' + options.port))
 
     // In a real environment, this would run the server.ts from the installed package
     // For this monorepo, we'll simulate the startup
@@ -51,7 +51,7 @@ program
   .description('Generate TypeScript types from zenith.config.ts')
   .option('-o, --output <path>', 'Output file path', 'zenith-types.d.ts')
   .action(async (options) => {
-    console.log(chalk.bold.hex('#00F5FF')('🔍 Analyzing schema and generating types...'))
+    console.log(chalk.bold.hex('#00F5FF')(' Analyzing schema and generating types...'))
 
     try {
       let configPath = path.join(process.cwd(), 'zenith.config.ts')
@@ -184,7 +184,7 @@ program
       output += `}\n`
 
       fs.writeFileSync(path.join(process.cwd(), options.output), output)
-      console.log(chalk.green(`✓ Types generated successfully at ${options.output}`))
+      console.log(chalk.green(` Types generated successfully at ${options.output}`))
     } catch (err: unknown) {
       console.error(chalk.red(`Error: ${(err as Error).message}`))
     }
@@ -194,7 +194,7 @@ program
   .command('init')
   .description('Initialize a new Zenith CMS project')
   .action(() => {
-    console.log(chalk.bold.hex('#00F5FF')('🏗️  Initializing Zenith CMS project...'))
+    console.log(chalk.bold.hex('#00F5FF')('️  Initializing Zenith CMS project...'))
 
     const configContent = `import type { CMSConfig } from '@zenith-open/zenithcms-types';
 
@@ -214,7 +214,7 @@ const config: CMSConfig = {
 export default config;`
 
     fs.writeFileSync(path.join(process.cwd(), 'zenith.config.ts'), configContent)
-    console.log(chalk.green('✓ Created zenith.config.ts'))
+    console.log(chalk.green(' Created zenith.config.ts'))
     console.log(chalk.gray('\nNext steps:'))
     console.log(chalk.white('1. Run ') + chalk.bold('zenith start'))
   })
@@ -224,7 +224,7 @@ program
   .description('Export CMS collection schemas to a JSON file')
   .option('-o, --output <path>', 'Output schema file path', 'zenith-schema.json')
   .action((options) => {
-    console.log(chalk.bold.hex('#00F5FF')('📤 Exporting schema configurations...'))
+    console.log(chalk.bold.hex('#00F5FF')(' Exporting schema configurations...'))
 
     try {
       let configPath = path.join(process.cwd(), 'zenith.config.ts')
@@ -247,7 +247,7 @@ program
       }
 
       fs.writeFileSync(path.resolve(process.cwd(), options.output), JSON.stringify(outputData, null, 2), 'utf-8')
-      console.log(chalk.green(`✓ Schema exported successfully to ${options.output}`))
+      console.log(chalk.green(` Schema exported successfully to ${options.output}`))
     } catch (err: unknown) {
       console.error(chalk.red(`Error exporting schema: ${(err as Error).message}`))
     }
@@ -258,7 +258,7 @@ program
   .description('Export CMS collection data to JSON files')
   .option('-o, --output-dir <path>', 'Output directory path', 'zenith-export')
   .action((options) => {
-    console.log(chalk.bold.hex('#00F5FF')('📤 Starting CMS database data export...'))
+    console.log(chalk.bold.hex('#00F5FF')(' Starting CMS database data export...'))
 
     try {
       let configPath = path.join(process.cwd(), 'zenith.config.ts')
@@ -313,9 +313,9 @@ async function run() {
       const docs = await adapter.find(col.slug, {}, { limit: 100000 })
       const filePath = path.join(outputDir, \`\${col.slug}.json\`)
       fs.writeFileSync(filePath, JSON.stringify(docs, null, 2), 'utf-8')
-      console.log(\`✓ Exported \${docs.length} documents for collection: \${col.slug}\`)
+      console.log(\` Exported \${docs.length} documents for collection: \${col.slug}\`)
     } catch (err: unknown) {
-      console.warn(\`⚠️ Skipping or failed to export collection \${col.slug}: \${(err as Error).message}\`)
+      console.warn(\`️ Skipping or failed to export collection \${col.slug}: \${(err as Error).message}\`)
     }
   }
 
@@ -347,7 +347,7 @@ program
   .argument('[name]', 'Migration name identifier', 'auto')
   .description('Generate SQL schema migrations based on zenith.config.ts changes')
   .action((name) => {
-    console.log(chalk.bold.hex('#00F5FF')('🏗️  Analyzing schema diffs and compiling SQL migration...'))
+    console.log(chalk.bold.hex('#00F5FF')('️  Analyzing schema diffs and compiling SQL migration...'))
 
     try {
       let configPath = path.join(process.cwd(), 'zenith.config.ts')
@@ -518,7 +518,7 @@ async function run() {
   const filePath = path.join(migrationsDir, filename)
 
   fs.writeFileSync(filePath, upSql, 'utf-8')
-  console.log(\`✓ Generated migration file: migrations/\${filename}\`)
+  console.log(\` Generated migration file: migrations/\${filename}\`)
 }
 
 run().catch(err => {
@@ -543,7 +543,7 @@ program
   .command('migration:run')
   .description('Run all pending SQL database migrations')
   .action(() => {
-    console.log(chalk.bold.hex('#00F5FF')('🚀 Executing pending migrations...'))
+    console.log(chalk.bold.hex('#00F5FF')(' Executing pending migrations...'))
 
     try {
       const tempRunnerPath = path.join(process.cwd(), '.zenith-migration-run-runner.ts')
@@ -612,7 +612,7 @@ async function run() {
       INSERT INTO z_migrations (name, batch) 
       VALUES (\${filename}, \${nextBatch})
     \`)
-    console.log(\`✓ Applied \${filename}\`)
+    console.log(\` Applied \${filename}\`)
   }
 
   await adapter.disconnect()
@@ -641,7 +641,7 @@ program
   .command('migration:status')
   .description('Display status of all migrations')
   .action(() => {
-    console.log(chalk.bold.hex('#00F5FF')('🔍 Checking database migrations status...'))
+    console.log(chalk.bold.hex('#00F5FF')(' Checking database migrations status...'))
 
     try {
       const tempRunnerPath = path.join(process.cwd(), '.zenith-migration-status-runner.ts')
@@ -720,7 +720,7 @@ program
   .argument('[name]', 'Plugin name (e.g. acme-analytics)')
   .option('-d, --dir <path>', 'Output directory', '.')
   .action(async (nameArg, options) => {
-    console.log(chalk.bold.hex('#8B5CF6')('\n🔌 Zenith CMS Plugin Scaffold\n'))
+    console.log(chalk.bold.hex('#8B5CF6')('\n Zenith CMS Plugin Scaffold\n'))
 
     let pluginName = nameArg
     if (!pluginName) {
@@ -735,7 +735,7 @@ program
 
     const targetDir = path.resolve(options.dir, packageName)
     if (fs.existsSync(targetDir)) {
-      console.error(chalk.red(`\n❌ Error: Directory "${packageName}" already exists.\n`))
+      console.error(chalk.red(`\n Error: Directory "${packageName}" already exists.\n`))
       process.exit(1)
     }
 
@@ -879,7 +879,7 @@ This plugin hooks into the following lifecycle events:
 MIT
 `)
 
-    console.log(chalk.green(`✓ Plugin scaffolded: ${packageName}/`))
+    console.log(chalk.green(` Plugin scaffolded: ${packageName}/`))
     console.log(chalk.gray(`  src/index.ts    — Plugin source`))
     console.log(chalk.gray(`  package.json    — npm package config`))
     console.log(chalk.gray(`  tsconfig.json   — TypeScript config`))
@@ -895,7 +895,7 @@ program
   .command('sync:blocks')
   .description('Sync manually edited block schema (.ts) files to the database')
   .action(() => {
-    console.log(chalk.bold.hex('#00F5FF')('🔄 Syncing local block schemas to database...'))
+    console.log(chalk.bold.hex('#00F5FF')(' Syncing local block schemas to database...'))
 
     try {
       const tempRunnerPath = path.join(process.cwd(), '.zenith-sync-blocks-runner.ts')
@@ -914,9 +914,9 @@ async function run() {
     return
   }
 
-  const files = fs.readdirSync(blocksDir).filter(f => f.endsWith('.ts'))
+  const files = fs.readdirSync(blocksDir).filter(f => f.endsWith('.json'))
   if (files.length === 0) {
-    console.log('No .ts block files found in config/blocks.')
+    console.log('No .json block files found in config/blocks.')
     return
   }
 
@@ -943,7 +943,7 @@ async function run() {
       }
 
       if (!blockDef) {
-        console.warn(\`⚠️ Skipped \${file}: No valid block definition found (missing slug or fields).\`)
+        console.warn(\`️ Skipped \${file}: No valid block definition found (missing slug or fields).\`)
         continue
       }
 
@@ -965,15 +965,15 @@ async function run() {
         await adapter.create('z_schemas', dbPayload)
       }
       
-      console.log(\`✓ Synced block: \${blockDef.slug}\`)
+      console.log(\` Synced block: \${blockDef.slug}\`)
       syncedCount++
     } catch (err: unknown) {
-      console.error(\`❌ Failed to sync \${file}: \${(err as Error).message}\`)
+      console.error(\` Failed to sync \${file}: \${(err as Error).message}\`)
     }
   }
 
   await adapter.disconnect()
-  console.log(\`\\n🎉 Successfully synced \${syncedCount} block(s) to the database!\`)
+  console.log(\`\\n Successfully synced \${syncedCount} block(s) to the database!\`)
 }
 
 run().catch(err => {

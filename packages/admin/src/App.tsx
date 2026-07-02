@@ -16,14 +16,14 @@ class ErrorBoundary extends React.Component<
  render() {
  if (this.state.hasError) {
  return this.props.fallback ?? (
- <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-6 p-8">
- <div className="text-[80px] leading-none select-none text-white/5 font-semibold font-mono">
+ <div className="min-h-screen flex flex-col items-center justify-center bg-app gap-6 p-8">
+ <div className="text-[80px] leading-none select-none text-z-primary/5 font-semibold font-mono">
  500
  </div>
  <p className="text-sm font-semibold text-red-500/60">
  Unexpected Error
  </p>
- <p className="text-sm text-gray-600 font-bold">
+ <p className="text-sm text-z-secondary font-bold">
  An unexpected error occurred. Please refresh the page or contact support.
  </p>
  <button
@@ -39,7 +39,7 @@ class ErrorBoundary extends React.Component<
  }
 }
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
 import { useAuthStore } from './store/authStore'
 import DashboardLayout from './layouts/DashboardLayout'
 import LoginPage from './pages/LoginPage'
@@ -64,9 +64,6 @@ const AuditLogPage = lazy(() => import('./pages/AuditLogPage'))
 const MediaLibrary = lazy(() => import('./pages/MediaLibrary'))
 const SpatialEditor = lazy(() => import('./pages/SpatialEditor'))
 const ComponentBuilderPage = lazy(() => import('./pages/ComponentBuilderPage'))
-const FlowBuilderPage = lazy(() => import('./pages/FlowBuilderPage'))
-const AIWriterPage = lazy(() => import('./pages/AIWriterPage'))
-const VisualGraphPage = lazy(() => import('./pages/VisualGraphPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const PluginsPage = lazy(() => import('./pages/PluginsPage'))
 const SchemaBuilderPage = lazy(() => import('./pages/SchemaBuilderPage'))
@@ -77,15 +74,17 @@ const SetupWizard = lazy(() => import('./pages/SetupWizard'))
 const RedirectsPage = lazy(() => import('./pages/RedirectsPage'))
 const TrashPage = lazy(() => import('./pages/TrashPage'))
 const BuilderPage = lazy(() => import('./pages/BuilderPage'))
+const ApiExplorerPage = lazy(() => import('./pages/ApiExplorerPage'))
+import { pluginRegistry } from './lib/plugin-registry'
 
 const PageLoader = () => (
- <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-6">
+ <div className="min-h-screen flex flex-col items-center justify-center bg-app gap-6">
  <div className="relative flex items-center justify-center w-24 h-24">
- <div className="absolute inset-0 rounded-full border-2 border-white/5 border-t-white/30 animate-spin" />
- <Loader2 size={32} className="text-white animate-spin opacity-50" strokeWidth={1} style={{ animationDuration: '3s' }} />
- <div className="absolute inset-0 blur-3xl bg-white/5 animate-pulse" />
+ <div className="absolute inset-0 rounded-full border-2 border-z-border border-z-border animate-spin" />
+ <Loader2 size={32} className="text-z-primary animate-spin opacity-50" strokeWidth={1} style={{ animationDuration: '3s' }} />
+ <div className="absolute inset-0 blur-3xl bg-z-panel/5 animate-pulse" />
  </div>
- <p className="text-sm font-semibold text-white/40 tracking-widest uppercase">
+ <p className="text-sm font-semibold text-z-primary/40 tracking-widest uppercase">
  Loading
  </p>
  </div>
@@ -98,16 +97,7 @@ const InnerPageLoader = () => (
   </div>
 )
 
-const queryClient = new QueryClient({
- defaultOptions: {
- queries: {
- retry: 1,
- refetchOnWindowFocus: false,
- staleTime: 5 * 60 * 1000,
- gcTime: 10 * 60 * 1000,
- },
- },
-})
+
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -129,13 +119,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
  if (isLoading || (isAuthenticated && onboardingDone === null)) {
  return (
- <div className="min-h-screen flex flex-col items-center justify-center bg-black gap-6">
+ <div className="min-h-screen flex flex-col items-center justify-center bg-app gap-6">
  <div className="relative flex items-center justify-center w-24 h-24">
- <div className="absolute inset-0 rounded-full border-2 border-white/5 border-t-white/30 animate-spin" />
- <Loader2 size={32} className="text-white animate-spin opacity-50" strokeWidth={1} style={{ animationDuration: '3s' }} />
- <div className="absolute inset-0 blur-3xl bg-white/5 animate-pulse"></div>
+ <div className="absolute inset-0 rounded-full border-2 border-z-border border-z-border animate-spin" />
+ <Loader2 size={32} className="text-z-primary animate-spin opacity-50" strokeWidth={1} style={{ animationDuration: '3s' }} />
+ <div className="absolute inset-0 blur-3xl bg-z-panel/5 animate-pulse"></div>
  </div>
- <p className="text-sm font-semibold text-white/40 tracking-widest uppercase">
+ <p className="text-sm font-semibold text-z-primary/40 tracking-widest uppercase">
  Initializing System
  </p>
  </div>
@@ -168,7 +158,7 @@ const App: React.FC = () => {
  return (
  <ThemeProvider>
  <BrandProvider>
- <QueryClientProvider client={queryClient}>
+
  <BlockLibraryProvider>
  <Toaster
  position="bottom-right"
@@ -216,7 +206,7 @@ const App: React.FC = () => {
  }
  />
 
- {/* 🌑 Standalone Focused Spatial Architecture (No Sidebar) */}
+ {/*  Standalone Focused Spatial Architecture (No Sidebar) */}
  <Route
  path="/collections/:slug/new"
  element={
@@ -278,7 +268,7 @@ const App: React.FC = () => {
  }
  />
 
- {/* 🏛️ Standard Operational Routes (Wrapped in DashboardLayout) */}
+ {/* ️ Standard Operational Routes (Wrapped in DashboardLayout) */}
  <Route
  path="/*"
  element={
@@ -287,28 +277,41 @@ const App: React.FC = () => {
  <DashboardLayout>
  <Suspense fallback={<InnerPageLoader />}>
  <Routes>
- <Route path="/" element={<DashboardBuilder />} />
- <Route path="/collections" element={<CollectionsPage />} />
- <Route path="/collections/:slug" element={<CollectionList />} />
- <Route path="/collections/:slug/hooks" element={<CollectionHooksPage />} />
- <Route path="/audit-log" element={<AuditLogPage />} />
- <Route path="/media" element={<MediaLibrary />} />
- <Route
- path="/members"
- element={<Navigate to="/collections/members" replace />}
- />
- <Route path="/automations" element={<FlowBuilderPage />} />
- <Route path="/graph" element={<VisualGraphPage />} />
- <Route path="/ai-architect" element={<AIWriterPage />} />
- <Route path="/templates" element={<TemplatesPage />} />
- <Route path="/plugins" element={<PluginsPage />} />
- <Route path="/schema-builder" element={<SchemaBuilderPage />} />
- <Route path="/block-builder" element={<BlockBuilderPage />} />
- <Route path="/settings" element={<SettingsPage />} />
- <Route path="/redirects" element={<RedirectsPage />} />
- <Route path="/trash" element={<TrashPage />} />
- <Route path="/component-builder" element={<ComponentBuilderPage />} />
- <Route path="*" element={<Navigate to="/" replace />} />
+  <Route path="/" element={<DashboardBuilder />} />
+  <Route path="/collections" element={<CollectionsPage />} />
+  <Route path="/collections/:slug" element={<CollectionList />} />
+  <Route path="/collections/:slug/hooks" element={<CollectionHooksPage />} />
+  <Route path="/audit-log" element={<AuditLogPage />} />
+  <Route path="/media" element={<MediaLibrary />} />
+  <Route
+  path="/members"
+  element={<Navigate to="/collections/members" replace />}
+  />
+  <Route path="/templates" element={<TemplatesPage />} />
+  <Route path="/plugins" element={<PluginsPage />} />
+  <Route path="/schema-builder" element={<SchemaBuilderPage />} />
+  <Route path="/block-builder" element={<BlockBuilderPage />} />
+  <Route path="/settings" element={<SettingsPage />} />
+  <Route path="/api-explorer" element={<ApiExplorerPage />} />
+  <Route path="/redirects" element={<RedirectsPage />} />
+  <Route path="/trash" element={<TrashPage />} />
+  <Route path="/component-builder" element={<ComponentBuilderPage />} />
+  {/* ── Plugin-injected routes (seamlessly added after pnpm install) ── */}
+  {pluginRegistry.getRoutes().map((route) => {
+   const PluginPage = lazy(route.component)
+   return (
+    <Route
+     key={route.path}
+     path={route.path}
+     element={
+      <Suspense fallback={<InnerPageLoader />}>
+       <PluginPage />
+      </Suspense>
+     }
+    />
+   )
+  })}
+  <Route path="*" element={<Navigate to="/" replace />} />
  </Routes>
  </Suspense>
  </DashboardLayout>
@@ -319,7 +322,7 @@ const App: React.FC = () => {
  </Routes>
  </BrowserRouter>
  </BlockLibraryProvider>
- </QueryClientProvider>
+
  </BrandProvider>
  </ThemeProvider>
  )

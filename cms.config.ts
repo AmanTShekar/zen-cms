@@ -6,12 +6,16 @@ import type { CMSConfig } from '@zenith-open/zenithcms-types'
  *
  * Add your custom Collections and Globals here, or use the Schema Builder in the Admin UI.
  */
+import { aiArchitectPlugin } from '@zenith-open/zenithcms-plugin-ai-architect'
+
 const config: CMSConfig = {
   collections: [],
 
   globals: [],
 
-  plugins: [],
+  plugins: [
+    aiArchitectPlugin(),
+  ],
 
   // Optional: register webhooks to fire on collection events
   webhooks: [
